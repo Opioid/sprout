@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_TRANSMITTANCE_OPEN_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_TRANSMITTANCE_OPEN_HPP
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector3.hpp"
@@ -7,7 +8,7 @@ namespace sampler { class Sampler; }
 
 namespace scene {
 
-namespace material { namespace bxdf { struct Result; } }
+namespace material::bxdf { struct Result; }
 
 struct Intersection;
 struct Ray;
@@ -18,9 +19,9 @@ namespace rendering {
 
 class Worker;
 
-namespace integrator { namespace surface { namespace transmittance {
+namespace integrator::surface::transmittance {
 
-class Open : public integrator::Integrator {
+class Open final : public integrator::Integrator {
 
 public:
 
@@ -41,4 +42,6 @@ private:
 	uint32_t max_bounces_;
 };
 
-}}}}
+}}
+
+#endif

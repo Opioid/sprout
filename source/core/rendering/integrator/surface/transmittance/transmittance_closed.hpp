@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_TRANSMITTANCE_CLOSED_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_TRANSMITTANCE_CLOSED_HPP
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector3.hpp"
@@ -10,9 +11,9 @@ namespace rendering {
 
 class Worker;
 
-namespace integrator { namespace surface { namespace transmittance {
+namespace integrator::surface::transmittance {
 
-class Closed : public integrator::Integrator {
+class Closed final : public integrator::Integrator {
 
 public:
 
@@ -33,4 +34,6 @@ private:
 //	sampler::Golden_ratio samplers_[2];
 };
 
-}}}}
+}}
+
+#endif

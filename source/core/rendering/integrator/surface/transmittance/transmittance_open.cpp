@@ -9,7 +9,7 @@
 #include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 
-namespace rendering { namespace integrator { namespace surface { namespace transmittance {
+namespace rendering::integrator::surface::transmittance {
 
 Open::Open(rnd::Generator& rng, const take::Settings& take_settings, uint32_t max_bounces) :
 	integrator::Integrator(rng, take_settings),
@@ -73,4 +73,4 @@ size_t Open::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}}}
+}

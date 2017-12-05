@@ -9,7 +9,7 @@
 #include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 
-namespace rendering { namespace integrator { namespace surface { namespace transmittance {
+namespace rendering::integrator::surface::transmittance {
 
 Closed::Closed(rnd::Generator& rng, const take::Settings& take_settings) :
 	integrator::Integrator(rng, take_settings)
@@ -53,12 +53,6 @@ float3 Closed::resolve(const Ray& ray, Intersection& intersection,
 		const float3 wo = -tray.direction;
 		auto& material_sample = intersection.sample(wo, tray.time, filter, worker);
 
-//		if (i < 2) {
-//			material_sample.sample(samplers_[i], sample_result);
-//		} else {
-//			material_sample.sample(sampler, sample_result);
-//		}
-
 		material_sample.sample(sampler, sample_result);
 		if (0.f == sample_result.pdf || float3::identity() == sample_result.reflection) {
 			break;
@@ -84,4 +78,4 @@ size_t Closed::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}}}
+}
