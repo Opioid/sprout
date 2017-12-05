@@ -25,7 +25,7 @@ public:
 				 float attenuation_distance, float ior, float ior_outside);
 
 		float3 color_;
-		float3 absorption_coffecient_;
+		float3 absorption_coeffecient_;
 		float ior_;
 		float ior_outside_;
 	};

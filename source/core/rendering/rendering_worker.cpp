@@ -89,7 +89,7 @@ float3 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transm
 }
 
 float3 Worker::transmittance(const scene::Ray& ray) {
-	float3 transmission(1.f);
+	float3 transmittance(1.f);
 
 	scene::Ray tray = ray;
 
@@ -101,13 +101,13 @@ float3 Worker::transmittance(const scene::Ray& ray) {
 			break;
 		}
 
-		transmission *= volume_integrator_->transmittance(tray, *volume, *this);
+		transmittance *= volume_integrator_->transmittance(tray, *volume, *this);
 
 		tray.min_t = tray.max_t + epsilon;
 		tray.max_t = ray.max_t;
 	}
 
-	return transmission;
+	return transmittance;
 }
 
 sampler::Sampler* Worker::sampler() {

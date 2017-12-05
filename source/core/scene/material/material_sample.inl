@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_MATERIAL_SAMPLE_INL
+#define SU_SCENE_MATERIAL_SAMPLE_INL
 
 #include "material_sample.hpp"
 #include "material_sample_helper.hpp"
@@ -104,3 +105,5 @@ inline void Sample::set_basis(const float3& geo_n, const float3& wo) {
 }
 
 }
+
+#endif

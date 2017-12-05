@@ -20,7 +20,7 @@ bxdf::Result Sample::evaluate(const float3& /*wi*/) const {
 }
 
 float3 Sample::absorption_coeffecient() const {
-	return layer_.absorption_coffecient_;
+	return layer_.absorption_coeffecient_;
 }
 
 float Sample::ior() const {
@@ -46,8 +46,8 @@ bool Sample::is_transmissive() const {
 void Sample::Layer::set(const float3& refraction_color, const float3& absorption_color,
 						float attenuation_distance, float ior, float ior_outside) {
 	color_ = refraction_color;
-	absorption_coffecient_ = material::absorption_coefficient(absorption_color,
-															  attenuation_distance);
+	absorption_coeffecient_ = material::absorption_coefficient(absorption_color,
+															   attenuation_distance);
 	ior_ = ior;
 	ior_outside_ = ior_outside;
 }

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_HELPER_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_HELPER_HPP
 
 #include "base/math/vector3.inl"
 #include "base/spectrum/rgb.hpp"
@@ -40,3 +41,5 @@ static inline bool russian_roulette(float3& throughput, float continuation_proba
 }
 
 }
+
+#endif

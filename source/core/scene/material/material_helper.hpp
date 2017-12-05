@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_HELPER_HPP
+#define SU_CORE_SCENE_MATERIAL_HELPER_HPP
 
 #include "image/texture/texture_types.hpp"
 #include "scene/scene_renderstate.hpp"
@@ -9,7 +10,7 @@
 #endif
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 static inline float3 sample_normal(const image::texture::Adapter& map,
 								   const image::texture::sampler::Sampler_2D& sampler,
@@ -22,4 +23,6 @@ static inline float3 sample_normal(const image::texture::Adapter& map,
 	return n;
 }
 
-}}
+}
+
+#endif
