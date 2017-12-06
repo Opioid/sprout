@@ -48,7 +48,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 //	const int3 dimensions(3200, 320, 256);
 
 //	const int3 dimensions(1600, 160, 128);
-	const int3 dimensions(1000, 80, 64);
+	const int3 dimensions(1250, 100, 80);
 
 //	const int3 dimensions(320, 32, 16);
 
