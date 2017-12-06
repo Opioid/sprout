@@ -255,7 +255,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	const float3 weighted_reflection = sample_result.reflection / sample_result.pdf;
 
 	float3 tr;
-	const float3 vli = worker.volume_li(ray, primary_ray, tr);
+	const float3 vli = worker.volume_li(secondary_ray, primary_ray, tr);
 	result += weighted_reflection * vli;
 	sample_result.reflection *= tr;
 
@@ -293,9 +293,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 															worker);
 
 	if (light_material_sample.same_hemisphere(wo)) {
-		const float3 t = worker.transmittance(secondary_ray);
-
-		const float3 ls_energy = t * light_material_sample.radiance();
+		const float3 ls_energy = tr * light_material_sample.radiance();
 
 		const float weight = power_heuristic(sample_result.pdf, ls_pdf * light.pdf);
 

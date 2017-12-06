@@ -8,6 +8,7 @@ namespace scene {
 
 struct Ray : public math::Ray {
 	enum class Properties {
+		Null			= 0,
 		Visible_volumes	= 1 << 0
 	};
 

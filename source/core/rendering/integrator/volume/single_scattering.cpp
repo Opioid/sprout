@@ -1,6 +1,7 @@
 #include "single_scattering.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -27,7 +28,7 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
-										const Worker& worker) {
+										Worker& worker) {
 	scene::entity::Composed_transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
@@ -98,12 +99,15 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		// Direct light scattering
 		radiance += tr * estimate_direct_light(w, current, transformation,
 											   ray.time, volume, worker);
+
+//		if (ray.depth < 1) {
+//		// Indirect light scattering
+//		const float3 idir = math::sample_sphere_uniform(float2(rng_.random_float(), rng_.random_float()));
+//		scene::Ray iray(current, idir, 0.f, scene::Ray_max_t,
+//						ray.time, ray.depth + 1, scene::Ray::Properties::Null);
+//		worker.li(iray);
+//		}
 	}
-
-	// indirect lighting
-//	const float3 sp = ray.point(min_t + 0.5f * range);
-
-//	worker.li();
 
 	transmittance = tr;
 

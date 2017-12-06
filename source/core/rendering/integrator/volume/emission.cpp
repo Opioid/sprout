@@ -19,7 +19,7 @@ void Emission::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per
 
 void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worker& worker) {
+float3 Emission::transmittance(const Ray& ray, const Volume& volume, Worker& worker) {
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
