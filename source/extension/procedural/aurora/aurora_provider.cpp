@@ -105,7 +105,7 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 	const float start_height_deviation = 60000.f;
 	const float start_height = ground_to_bottom_ + aurora_height_ - start_height_deviation;
 
-	const uint32_t num_particles = 1 * 16384;
+	const uint32_t num_particles = 4 * 16384;
 
 	const float nf = static_cast<float>(num_particles);
 
@@ -122,7 +122,7 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 					  + std::sin(3.5f * x * (2.f * math::Pi)) * 20000.f
 					  + (x * x) * std::sin(17.f * x * (2.f * math::Pi)) * 12000.f;
 
-		const float y = start_height + std::sin(x * (7.f * math::Pi)) * start_height_deviation;
+		const float y = (start_height + std::sin(x * (7.f * math::Pi)) * start_height_deviation);
 	//	const float y = start_height + start_height_deviation;
 
 		const float3 position(x * aurora_volume_[0],
@@ -136,11 +136,14 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 
 
 	// Keep those as useful
-	const float filter_radius = 8.f;
-	const float alpha = 0.04f;
+//	const float filter_radius = 8.f;
+//	const float alpha = 0.04f;
 
 //	const float filter_radius = 4.f;
 //	const float alpha = 0.125f;
+
+	const float filter_radius = 6.f;
+	const float alpha = 0.075f;
 
 	Volume_filter filter(target.description().dimensions, filter_radius, alpha,
 						 thread_pool.num_threads());
@@ -165,7 +168,7 @@ void Provider::simulate_particle(const float3& start, float peak_height, rnd::Ge
 		const float grace_progress = std::min(1.f - (position[1] - peak_height) / grace_range, 1.f);
 
 		//	const float progress = 1.f - normalized_height;
-		const float spread = (100.f + progress * 1000.f);
+		const float spread = progress * progress * progress * 3000.f;
 
 		const float3 color = progress * grace_progress * spectrum::linear_rgb(normalized_height);
 
