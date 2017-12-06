@@ -35,22 +35,20 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 		float radius = transformation.scale[0];
 
 		if (l <= radius * radius) {
-			intersection.epsilon = 5e-4f * hit_t;
-
 			intersection.p = p;
-
+			intersection.geo_n = normal;
 			float3 t = -transformation.rotation.r[0];
 			float3 b = -transformation.rotation.r[1];
 			intersection.t = t;
 			intersection.b = b;
 			intersection.n = normal;
-			intersection.geo_n = normal;
 
 			float3 sk = k / radius;
 			float uv_scale = 0.5f * transformation.scale[2];
 			intersection.uv[0] = (math::dot(t, sk) + 1.f) * uv_scale;
 			intersection.uv[1] = (math::dot(b, sk) + 1.f) * uv_scale;
 
+			intersection.epsilon = 5e-4f * hit_t;
 			intersection.part = 0;
 
 			SOFT_ASSERT(testing::check(intersection, transformation, ray));

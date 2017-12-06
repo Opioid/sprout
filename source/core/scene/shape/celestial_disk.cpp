@@ -29,18 +29,23 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 	const float det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
-		intersection.epsilon = 5e-4f;
-
 		constexpr float hit_t = Almost_ray_max_t;
+		ray.max_t = hit_t;
 
 		intersection.p = ray.point(hit_t);
+		intersection.geo_n = n;
 		intersection.t = transformation.rotation.r[0];
 		intersection.b = transformation.rotation.r[1];
 		intersection.n = n;
-		intersection.geo_n = n;
+
+		const float3 k = ray.direction - n;
+		const float3 sk = k / radius;
+		intersection.uv[0] = (math::dot(intersection.t, sk) + 1.f) * 0.5f;
+		intersection.uv[1] = (math::dot(intersection.b, sk) + 1.f) * 0.5f;
+
+		intersection.epsilon = 5e-4f;
 		intersection.part = 0;
 
-		ray.max_t = hit_t;
 		return true;
 	}
 
