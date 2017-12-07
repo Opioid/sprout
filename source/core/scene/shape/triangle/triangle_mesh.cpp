@@ -161,7 +161,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		const Vector geo_n = tree_.triangle_normal_v(pi.index);
 		const Vector dv = math::dot3_1(geo_n, ray_direction);
 
-		inside = simd::get_x(dv) > 0.f;
+		inside = simd::get_x(dv) >= 0.f;
 
 		return true;
 	}

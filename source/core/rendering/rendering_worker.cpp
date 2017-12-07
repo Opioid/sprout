@@ -12,6 +12,8 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
+#include "base/debug/assert.hpp"
+
 namespace rendering {
 
 Worker::~Worker() {
@@ -76,14 +78,18 @@ float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance
 	for (; tray.min_t < tray.max_t;) {
 		float epsilon;
 		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
-
 		if (!volume) {
 			break;
 		}
 
-		float3 temp;
-		radiance += tr * volume_integrator_->li(tray, primary_ray, *volume, *this, temp);
-		tr *= temp;
+		// Otherwise too small to handle meaningfully, but we still want to continue raymarching
+		if (tray.max_t - tray.min_t > 0.0005f) {
+			float3 temp;
+			radiance += tr * volume_integrator_->li(tray, primary_ray, *volume, *this, temp);
+			tr *= temp;
+		}
+
+		SOFT_ASSERT(tray.max_t + epsilon - tray.min_t > 0.0001f);
 
 		tray.min_t = tray.max_t + epsilon;
 		tray.max_t = ray.max_t;
@@ -105,12 +111,16 @@ float3 Worker::transmittance(const Ray& ray) {
 	for (; tray.min_t < tray.max_t;) {
 		float epsilon;
 		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
-
 		if (!volume) {
 			break;
 		}
 
-		transmittance *= volume_integrator_->transmittance(tray, *volume, *this);
+		// Otherwise too small to handle meaningfully, but we still want to continue raymarching
+		if (tray.max_t - tray.min_t > 0.0005f) {
+			transmittance *= volume_integrator_->transmittance(tray, *volume, *this);
+		}
+
+		SOFT_ASSERT(tray.max_t + epsilon - tray.min_t > 0.0001f);
 
 		tray.min_t = tray.max_t + epsilon;
 		tray.max_t = ray.max_t;

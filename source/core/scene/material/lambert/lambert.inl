@@ -18,7 +18,7 @@ bxdf::Result Isotropic::reflection(const float3& color, float n_dot_wi, const La
 	const float  pdf = n_dot_wi * math::Pi_inv;
 
 	(void)layer;
-	SOFT_ASSERT(testing::check(result, float3::identity(), float3::identity(), pdf, layer));
+	SOFT_ASSERT(testing::check(reflection, float3::identity(), float3::identity(), pdf, layer));
 
 	return { reflection, pdf };
 }

@@ -37,6 +37,6 @@ bool check(const bxdf::Sample& result, const float3& wo,
 	return true;
 }
 
-}}}
+}
 
 #endif

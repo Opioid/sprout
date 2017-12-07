@@ -425,7 +425,7 @@ bxdf::Result Anisotropic::reflection(const float3& h, float n_dot_wi, float n_do
 	const float pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	const float3 reflection = d * g * f;
 
-	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, layer));
+	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
 	return { reflection, pdf };
 }
