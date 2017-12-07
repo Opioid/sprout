@@ -42,10 +42,11 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 	float min_t = ray.min_t;
 	const float range = ray.max_t - min_t;
 
-	if (range < 0.0005f) {
-		transmittance = float3(1.f);
-		return float3(0.f);
-	}
+// This is handled outside now
+//	if (range < 0.0005f) {
+//		transmittance = float3(1.f);
+//		return float3(0.f);
+//	}
 
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);

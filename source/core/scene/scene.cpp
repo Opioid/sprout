@@ -106,6 +106,12 @@ float3 Scene::thin_absorption(const Ray& ray, Sampler_filter filter, const Worke
 
 const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_stack,
 													float& epsilon) const {
+	if (ray.max_t - ray.min_t < 0.0005f) {
+		// Very short segments can cause precision problems
+		// and probably have no meaningful contribution to the final result anyway
+		return nullptr;
+	}
+
 	const float original_max_t = ray.max_t;
 
 	ray.max_t = Ray_max_t;
@@ -123,20 +129,23 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 			ray.max_t = original_max_t;
 		}
 
+		if (ray.max_t - ray.min_t < 0.0005f) {
+			return nullptr;
+		}
+
 		epsilon = local_epsilon;
 		return volume;
-	} else if (ray.max_t >= original_max_t) {
-		return nullptr;
 	}
 
-	entity::Composed_transformation temp;
-	const auto& transformation = volume->transformation_at(ray.time, temp);
-
+	const float first = ray.max_t;
 	const float next = ray.max_t + (local_epsilon * take_settings_.ray_offset_factor);
 
 	if (next >= original_max_t) {
 		return nullptr;
 	}
+
+	entity::Composed_transformation temp;
+	const auto& transformation = volume->transformation_at(ray.time, temp);
 
 	ray.min_t = next;
 	ray.max_t = Ray_max_t;
@@ -144,6 +153,8 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 	if (!volume->shape()->intersect(transformation, ray, node_stack, epsilon, inside)) {
 		return nullptr;
 	}
+
+	ray.min_t = first;
 
 	if (ray.max_t > original_max_t) {
 		ray.max_t = original_max_t;
