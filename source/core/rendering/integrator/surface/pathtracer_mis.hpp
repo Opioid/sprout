@@ -6,6 +6,7 @@
 #include "transmittance/transmittance_open.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
+#include "scene/scene_ray.hpp"
 #include <memory>
 
 namespace scene {
@@ -54,8 +55,8 @@ private:
 								 Sampler_filter filter, bool primary_ray, Worker& worker,
 								 Bxdf_sample& sample_result, bool& requires_bounce);
 
-	float3 evaluate_light(const Light& light, float light_weight, float time,
-						  float ray_offset, uint32_t depth, uint32_t sampler_dimension,
+	float3 evaluate_light(const Light& light, float light_weight, const Ray& history,
+						  float ray_offset, uint32_t sampler_dimension,
 						  const Intersection& intersection,
 						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
@@ -64,8 +65,8 @@ private:
 								const float3& attenuation, Sampler_filter filter,
 								Worker& worker, Bxdf_sample& sample_result);
 
-	sampler::Sampler& material_sampler(uint32_t bounce);
-	sampler::Sampler& light_sampler(uint32_t bounce);
+	sampler::Sampler& material_sampler(uint32_t bounce, Ray::Properties properties);
+	sampler::Sampler& light_sampler(uint32_t bounce, Ray::Properties properties);
 
 	const Settings settings_;
 

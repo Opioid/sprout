@@ -43,6 +43,10 @@ private:
 						  const Transformation& transformation, float time,
 						  uint32_t sampler_dimension, const Volume& volume, Worker& worker);
 
+	float3 estimate_indirect_light(const float3& w, const float3& p,
+								   const Transformation& transformation, const Ray& history,
+								   const Volume& volume, Worker& worker);
+
 	const Settings settings_;
 
 	sampler::Random sampler_;

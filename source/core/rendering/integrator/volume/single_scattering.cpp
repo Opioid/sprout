@@ -101,13 +101,11 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		radiance += tr * estimate_direct_light(w, current, transformation,
 											   ray.time, volume, worker);
 
-//		if (ray.depth < 1) {
-//		// Indirect light scattering
-//		const float3 idir = math::sample_sphere_uniform(float2(rng_.random_float(), rng_.random_float()));
-//		scene::Ray iray(current, idir, 0.f, scene::Ray_max_t,
-//						ray.time, ray.depth + 1, scene::Ray::Properties::Null);
-//		worker.li(iray);
-//		}
+		if (ray.depth < 1) {
+			// Indirect light scattering
+			radiance += tr * estimate_indirect_light(w, current, transformation,
+													 ray, volume, worker);
+		}
 	}
 
 	transmittance = tr;
@@ -163,8 +161,8 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;
-	if (!light.sample(p, time, sampler_, sampler_dimension,
-					  Sampler_filter::Nearest, worker, light_sample)) {
+	if (!light.sample(p, time, sampler_, sampler_dimension, Sampler_filter::Nearest,
+					  worker, light_sample)) {
 		return float3::identity();
 	}
 
@@ -186,6 +184,26 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 	}
 
 	return float3(0.f);
+}
+
+float3 Single_scattering::estimate_indirect_light(const float3& w, const float3& p,
+												  const Transformation& transformation,
+												  const Ray& history, const Volume& volume,
+												  Worker& worker) {
+	const float2 uv(rng_.random_float(), rng_.random_float());
+	const float3 dir = math::sample_sphere_uniform(uv);
+
+	const float phase = volume.phase(w, -dir);
+
+	const float3 scattering = volume.scattering(transformation, p, Sampler_filter::Undefined,
+												worker);
+
+	scene::Ray secondary_ray(p, dir, 0.f, scene::Ray_max_t, history.time,
+							 history.depth + 1, Ray::Property::Within_volume);
+
+	const float3 li = worker.li(secondary_ray).xyz();
+
+	return phase * scattering * li;
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,

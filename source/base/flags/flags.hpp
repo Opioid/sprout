@@ -13,6 +13,10 @@ struct Flags {
 
 	Flags(T flag) : values(static_cast<impl_type>(flag)) {}
 
+	constexpr bool equal(T flag) const {
+		return static_cast<impl_type>(flag) == values;
+	}
+
 	constexpr bool test(T flag) const {
 		return static_cast<impl_type>(flag) == (values & static_cast<impl_type>(flag));
 	}

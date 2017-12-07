@@ -213,12 +213,12 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
-			const float select = light_sampler(ray.depth).generate_sample_1D(1);
+			const float select = light_sampler(ray.depth, ray.properties).generate_sample_1D(1);
 
 			const auto light = worker.scene().random_light(select);
 
-			result += evaluate_light(light.ref, light.pdf, ray.time, ray_offset, ray.depth,
-									 0, intersection, material_sample, filter, worker);
+			result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0,
+									 intersection, material_sample, filter, worker);
 		}
 
 		result *= settings_.num_light_samples_reciprocal;
@@ -228,8 +228,8 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto& light = *lights[l];
 			for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
-				result += evaluate_light(light, light_weight, ray.time, ray_offset, ray.depth,
-										 l, intersection, material_sample, filter, worker);
+				result += evaluate_light(light, light_weight, ray, ray_offset, l,
+										 intersection, material_sample, filter, worker);
 			}
 		}
 
@@ -237,7 +237,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	}
 
 	// Material BSDF importance sample
-	material_sample.sample(material_sampler(ray.depth), sample_result);
+	material_sample.sample(material_sampler(ray.depth, ray.properties), sample_result);
 
 	// Those cases are handled outside
 	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
@@ -247,8 +247,10 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		return result;
 	}
 
+	const bool is_translucent = material_sample.is_translucent();
+
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset,
-					  scene::Ray_max_t, ray.time, ray.depth + 1);
+					  scene::Ray_max_t, ray.time, ray.depth + 1, ray.properties);
 
 	const bool hit = intersect_and_resolve_mask(secondary_ray, intersection, filter, worker);
 
@@ -276,8 +278,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		light.pdf = num_lights_reciprocal_;
 	}
 
-	const float ls_pdf = light.ref.pdf(secondary_ray, intersection.geo,
-									   material_sample.is_translucent(),
+	const float ls_pdf = light.ref.pdf(secondary_ray, intersection.geo, is_translucent,
 									   Sampler_filter::Nearest, worker);
 
 	if (0.f == ls_pdf) {
@@ -305,21 +306,23 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, float time,
-									  float ray_offset, uint32_t depth, uint32_t sampler_dimension,
+float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, const Ray& history,
+									  float ray_offset, uint32_t sampler_dimension,
 									  const Intersection& intersection,
 									  const Material_sample& material_sample,
 									  Sampler_filter filter, Worker& worker) {
 	// Light source importance sample
 	scene::light::Sample light_sample;
-	if (!light.sample(intersection.geo.p, material_sample.geometric_normal(), time,
-					  material_sample.is_translucent(), light_sampler(depth),
+	if (!light.sample(intersection.geo.p, material_sample.geometric_normal(),
+					  history.time, material_sample.is_translucent(),
+					  light_sampler(history.depth, history.properties),
 					  sampler_dimension, Sampler_filter::Nearest, worker, light_sample)) {
 		return float3(0.f);
 	}
 
 	const Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
-						 light_sample.shape.t - ray_offset, time, depth);
+						 light_sample.shape.t - ray_offset, history.time,
+						 history.depth, history.properties);
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
 	if (math::any_greater_zero(tv)) {
@@ -348,16 +351,16 @@ float3 Pathtracer_MIS::resolve_transmission(const Ray& ray, Intersection& inters
 	}
 }
 
-sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {
-	if (Num_material_samplers > bounce) {
+sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce, Ray::Properties properties) {
+	if (Num_material_samplers > bounce && properties.equal(Ray::Property::Null)) {
 		return material_samplers_[bounce];
 	}
 
 	return sampler_;
 }
 
-sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
-	if (Num_light_samplers > bounce) {
+sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce, Ray::Properties properties) {
+	if (Num_light_samplers > bounce && properties.equal(Ray::Property::Null)) {
 		return light_samplers_[bounce];
 	}
 

@@ -34,6 +34,8 @@ class Worker : public scene::Worker {
 
 public:
 
+	using Ray = scene::Ray;
+
 	~Worker();
 
 	void init(uint32_t id, const scene::Scene& scene, uint32_t max_sample_size,
@@ -43,11 +45,11 @@ public:
 
 	void prepare(uint32_t num_samples_per_pixel);
 
-	float4 li(scene::Ray& ray);
-	float4 surface_li(scene::Ray& ray);
-	float3 volume_li(const scene::Ray& ray, bool primary_ray, float3& transmittance);
+	float4 li(Ray& ray);
+	float4 surface_li(Ray& ray);
+	float3 volume_li(const Ray& ray, bool primary_ray, float3& transmittance);
 
-	float3 transmittance(const scene::Ray& ray);
+	float3 transmittance(const Ray& ray);
 
 	sampler::Sampler* sampler();
 

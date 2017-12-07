@@ -39,7 +39,7 @@ void Worker::prepare(uint32_t num_samples_per_pixel) {
 	sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 }
 
-float4 Worker::li(scene::Ray& ray) {
+float4 Worker::li(Ray& ray) {
 	scene::prop::Intersection intersection;
 	const bool hit = intersect(ray, intersection);
 
@@ -51,7 +51,7 @@ float4 Worker::li(scene::Ray& ray) {
 	}
 }
 
-float4 Worker::surface_li(scene::Ray& ray) {
+float4 Worker::surface_li(Ray& ray) {
 	scene::prop::Intersection intersection;
 	const bool hit = intersect(ray, intersection);
 
@@ -62,11 +62,16 @@ float4 Worker::surface_li(scene::Ray& ray) {
 	}
 }
 
-float3 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transmittance) {
+float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance) {
 	float3 tr(1.f);
 	float3 radiance(0.f);
 
-	scene::Ray tray = ray;
+//	if (ray.properties.test(Ray::Property::Within_volume)) {
+//		transmittance = Worker::transmittance(ray);
+//		return radiance;
+//	}
+
+	Ray tray = ray;
 
 	for (; tray.min_t < tray.max_t;) {
 		float epsilon;
@@ -88,10 +93,14 @@ float3 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transm
 	return radiance;
 }
 
-float3 Worker::transmittance(const scene::Ray& ray) {
+float3 Worker::transmittance(const Ray& ray) {
 	float3 transmittance(1.f);
 
-	scene::Ray tray = ray;
+//	if (ray.properties.test(Ray::Property::Within_volume)) {
+//		return transmittance;
+//	}
+
+	Ray tray = ray;
 
 	for (; tray.min_t < tray.max_t;) {
 		float epsilon;

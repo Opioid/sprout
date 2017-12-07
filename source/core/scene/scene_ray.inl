@@ -7,7 +7,7 @@
 namespace scene {
 
 inline Ray::Ray(const float3& origin, const float3& direction, float min_t, float max_t,
-				float time, uint32_t depth, flags::Flags<Properties> properties, float ior) :
+				float time, uint32_t depth, Properties properties, float ior) :
 				math::Ray(origin, direction, min_t, max_t),
 				time(time), depth(depth), properties(properties), ior(ior) {}
 }
