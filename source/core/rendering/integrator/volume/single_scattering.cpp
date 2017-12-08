@@ -42,12 +42,6 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 	float min_t = ray.min_t;
 	const float range = ray.max_t - min_t;
 
-// This is handled outside now
-//	if (range < 0.0005f) {
-//		transmittance = float3(1.f);
-//		return float3(0.f);
-//	}
-
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
@@ -61,15 +55,14 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 	float3 radiance(0.f);
 	float3 tr(1.f);
 
-	float3 current = ray.point(min_t);
-	float3 previous;
+	const float3 start = ray.point(min_t);
 
 	const float r = std::max(rng_.random_float(), 0.0001f);
 
 	min_t += r * step;
 
 	const float3 next = ray.point(min_t);
-	Ray tau_ray(current, next - current, 0.f, 1.f, ray.time);
+	Ray tau_ray(start, next - start, 0.f, 1.f, ray.time);
 
 	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
 	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
@@ -77,20 +70,18 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
 		// This happens sometimes when the range is very small compared to the world coordinates.
 		if (float3::identity() == tau_ray.direction) {
-			tau_ray.origin = current;
+			tau_ray.origin = ray.point(min_t + step);
 			tau_ray.direction = tau_ray_direction;
 			tau_ray.inv_direction = inv_tau_ray_direction;
 			continue;
 		}
 
-		previous = current;
-		current  = ray.point(min_t);
-
 		const float3 tau = volume.optical_depth(transformation, tau_ray, settings_.step_size,
 												rng_, Sampler_filter::Undefined, worker);
 		tr *= math::exp(-tau);
 
-		tau_ray.origin = previous;
+		const float3 current = ray.point(min_t);
+		tau_ray.origin = current;
 		// This stays the same during the loop,
 		// but we need a different value in the first iteration.
 		// Would be nicer to restructure the loop.
@@ -98,14 +89,16 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Direct light scattering
-		radiance += tr * estimate_direct_light(w, current, transformation,
-											   ray.time, volume, worker);
+		float3 local_radiance = estimate_direct_light(w, current, transformation,
+													  ray.time, volume, worker);
 
 		if (ray.depth < 1) {
 			// Indirect light scattering
-			radiance += tr * estimate_indirect_light(w, current, transformation,
-													 ray, volume, worker);
+			local_radiance += estimate_indirect_light(w, current, transformation,
+													  ray, volume, worker);
 		}
+
+		radiance += tr * local_radiance;
 	}
 
 	transmittance = tr;
@@ -175,7 +168,6 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 		const float3 scattering = volume.scattering(transformation, p, Sampler_filter::Undefined,
 													worker);
 
-//		const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
 		const float3 tr = worker.transmittance(shadow_ray);
 
 		const float3 l = tr * light_sample.radiance;
