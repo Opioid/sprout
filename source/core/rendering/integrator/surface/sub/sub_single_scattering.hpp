@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_SUB_SINGLE_SCATTERING_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_SUB_SINGLE_SCATTERING_HPP
 
 #include "sub_integrator.hpp"
 #include "sampler/sampler_random.hpp"
@@ -11,7 +12,7 @@ class Prop;
 
 }
 
-namespace rendering { namespace integrator { namespace surface { namespace sub {
+namespace rendering::integrator::surface::sub {
 
 class alignas(64) Single_scattering : public Integrator {
 
@@ -59,4 +60,6 @@ private:
 	Single_scattering::Settings settings_;
 };
 
-}}}}
+}
+
+#endif

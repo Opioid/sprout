@@ -13,7 +13,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-namespace rendering { namespace integrator { namespace surface { namespace sub {
+namespace rendering::integrator::surface::sub {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
 									 const Settings& settings) :
@@ -77,6 +77,11 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 			// Direct light scattering
 			radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
 												   ray.time, ray.depth, sampler_, worker);
+
+			if (ray.depth < 1) {
+				radiance += tr * estimate_indirect_light(current, intersection.prop, bssrdf,
+														 ray.time, ray.depth, sampler_, worker);
+			}
 		}
 
 		result += step * radiance;
@@ -85,7 +90,6 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
 		material_sample.sample(sampler_, sample_result);
-
 		if (0.f == sample_result.pdf) {
 			break;
 		}
@@ -126,4 +130,4 @@ Integrator* Single_scattering_factory::create(uint32_t id, rnd::Generator& rng) 
 	return new(&integrators_[id]) Single_scattering(rng, take_settings_, settings_);
 }
 
-}}}}
+}
