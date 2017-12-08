@@ -15,6 +15,8 @@ public:
 	struct Settings {
 		float step_size;
 
+		uint32_t max_indirect_bounces;
+
 		Light_sampling light_sampling;
 	};
 
@@ -57,7 +59,8 @@ class Single_scattering_factory : public Factory {
 public:
 
 	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size, Light_sampling light_sampling);
+							  float step_size, uint32_t max_indirect_bounces,
+							  Light_sampling light_sampling);
 
 	~Single_scattering_factory();
 

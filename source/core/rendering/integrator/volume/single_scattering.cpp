@@ -92,7 +92,7 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		float3 local_radiance = estimate_direct_light(w, current, transformation,
 													  ray.time, volume, worker);
 
-		if (ray.depth < 1) {
+		if (ray.depth < settings_.max_indirect_bounces) {
 			// Indirect light scattering
 			local_radiance += estimate_indirect_light(w, current, transformation,
 													  ray, volume, worker);
@@ -200,10 +200,11 @@ float3 Single_scattering::estimate_indirect_light(const float3& w, const float3&
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
 													 uint32_t num_integrators, float step_size,
+													 uint32_t max_indirect_bounces,
 													 Light_sampling light_sampling) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{step_size, light_sampling} {}
+	settings_{step_size, max_indirect_bounces, light_sampling} {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::free_aligned(integrators_);

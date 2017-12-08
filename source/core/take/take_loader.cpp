@@ -128,7 +128,8 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	if (!take->surface_integrator_factory) {
 		const float step_size = 1.f;
 		auto sub_factory = std::make_unique<
-			surface::sub::Single_scattering_factory>(take->settings, num_threads, step_size);
+			surface::sub::Single_scattering_factory>(take->settings, num_threads,
+													 step_size);
 
 		const Light_sampling light_sampling { Light_sampling::Strategy::Single, 1 };
 		const uint32_t min_bounces = 4;
@@ -146,10 +147,12 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	}
 
 	if (!take->volume_integrator_factory) {
+		const float step_size = 1.f;
+		const uint32_t max_indirect_bounces = 0;
 		const Light_sampling light_sampling { Light_sampling::Strategy::Single, 1 };
 		take->volume_integrator_factory = std::make_shared<
-			volume::Single_scattering_factory>(take->settings, num_threads,
-											   1.f, light_sampling);
+			volume::Single_scattering_factory>(take->settings, num_threads, step_size,
+											   max_indirect_bounces, light_sampling);
 
 		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
@@ -558,6 +561,8 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			const uint32_t max_indirect_bounces = json::read_uint(n.value,
+																  "max_indirect_bounces", 0);
 
 			const auto light_sampling_node = n.value.FindMember("light_sampling");
 			if (n.value.MemberEnd() != light_sampling_node) {
@@ -565,7 +570,8 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			}
 
 			return std::make_shared<Single_scattering_factory>(settings, num_workers,
-															   step_size, light_sampling);
+															   step_size, max_indirect_bounces,
+															   light_sampling);
 		}
 	}
 
