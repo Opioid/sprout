@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_SUB_INTEGRATOR_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_SUB_INTEGRATOR_HPP
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector3.hpp"
@@ -17,7 +18,7 @@ namespace rendering {
 
 class Worker;
 
-namespace integrator { namespace surface { namespace sub {
+namespace integrator::surface::sub {
 
 class Integrator : public integrator::Integrator {
 
@@ -53,4 +54,6 @@ protected:
 	const take::Settings& take_settings_;
 };
 
-}}}}
+}}
+
+#endif
