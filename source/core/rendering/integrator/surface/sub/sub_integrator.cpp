@@ -68,7 +68,7 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::pr
 float3 Integrator::estimate_indirect_light(const float3& position, const scene::prop::Prop* prop,
 										   const scene::material::BSSRDF& bssrdf,
 										   float time, uint32_t depth,
-										   sampler::Sampler& sampler, Worker& worker) {
+										   sampler::Sampler& /*sampler*/, Worker& worker) {
 	const float2 uv(rng_.random_float(), rng_.random_float());
 	const float3 dir = math::sample_sphere_uniform(uv);
 

@@ -65,7 +65,7 @@ float Height::density(const Transformation& transformation, const float3& p,
 					  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	// p is in object space already
 
-	// calculate height, relative to volume, in world space
+	// calculate scaled height
 	const float height = transformation.scale[1] * (1.f + p[1]);
 
 	return a_ * math::exp(-b_ * height);

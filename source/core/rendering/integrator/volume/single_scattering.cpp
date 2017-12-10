@@ -29,7 +29,7 @@ void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scra
 
 float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 										Worker& worker) {
-	scene::entity::Composed_transformation temp;
+	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const float3 tau = volume.optical_depth(transformation, ray, settings_.step_size, rng_,

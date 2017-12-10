@@ -45,18 +45,17 @@ class Integrator {
 
 public:
 
-	using Ray			 = scene::Ray;
-	using Scene			 = scene::Scene;
-	using Transformation = scene::entity::Composed_transformation;
-	using Light			 = scene::light::Light;
-	using Prop			 = scene::prop::Prop;
-	using Intersection	 = scene::prop::Intersection;
-
-
+	using Ray			  = scene::Ray;
+	using Scene			  = scene::Scene;
+	using Transformation  = scene::entity::Composed_transformation;
+	using Light			  = scene::light::Light;
 	using Material_sample = scene::material::Sample;
 	using Sampler_filter  = scene::material::Sampler_settings::Filter;
 	using Bxdf_sample	  = scene::material::bxdf::Sample;
 	using Bxdf_type		  = scene::material::bxdf::Type;
+	using Prop			  = scene::prop::Prop;
+	using Intersection	  = scene::prop::Intersection;
+
 
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
