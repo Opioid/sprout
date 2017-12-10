@@ -37,16 +37,14 @@ public:
 
 private:
 
-	float3 estimate_direct_light(const float3& w, const float3& p,
-								 const Transformation& transformation, float time,
+	float3 estimate_direct_light(const float3& w, const float3& p, float time,
 								 const Volume& volume, Worker& worker);
 
 	float3 evaluate_light(const Light& light, float light_weight, const float3& w, const float3& p,
-						  const Transformation& transformation, float time,
-						  uint32_t sampler_dimension, const Volume& volume, Worker& worker);
+						  float time, uint32_t sampler_dimension,
+						  const Volume& volume, Worker& worker);
 
-	float3 estimate_indirect_light(const float3& w, const float3& p,
-								   const Transformation& transformation, const Ray& history,
+	float3 estimate_indirect_light(const float3& w, const float3& p, const Ray& history,
 								   const Volume& volume, Worker& worker);
 
 	const Settings settings_;
