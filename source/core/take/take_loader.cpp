@@ -415,8 +415,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			const float radius = json::read_float(n.value, "radius", 1.f);
 			return std::make_shared<AO_factory>(settings, num_workers, num_samples, radius);
 		} else if ("Whitted" == n.name) {
-			const uint32_t num_light_samples = json::read_uint(
-						n.value, "num_light_samples", light_sampling.num_samples);
+			const uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
+															   light_sampling.num_samples);
 
 			return std::make_shared<Whitted_factory>(settings, num_workers, num_light_samples);
 		} else if ("PT" == n.name) {
@@ -444,14 +444,14 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
 														 default_max_bounces);
 
-			float path_termination_probability = json::read_float(
-						n.value, "path_termination_probability",
-						default_path_termination_probability);
+			const float path_termination_probability = json::read_float(
+							n.value, "path_termination_probability",
+							default_path_termination_probability);
 
-			uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
-														 light_sampling.num_samples);
+			const uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
+															   light_sampling.num_samples);
 
-			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_DL_factory>(
 						settings, num_workers, min_bounces, max_bounces,
@@ -467,10 +467,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
-			const auto light_sampling_node = n.value.FindMember("light_sampling");
-			if (n.value.MemberEnd() != light_sampling_node) {
-				load_light_sampling(light_sampling_node->value, light_sampling);
-			}
+			load_light_sampling(n.value, light_sampling);
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
@@ -482,7 +479,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 		} else if ("Debug" == n.name) {
 			auto vector = Debug::Settings::Vector::Shading_normal;
 
-			std::string vector_type = json::read_string(n.value, "vector");
+			const std::string vector_type = json::read_string(n.value, "vector");
 
 			if ("Tangent" == vector_type) {
 				vector = Debug::Settings::Vector::Tangent;
@@ -564,10 +561,7 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			const uint32_t max_indirect_bounces = json::read_uint(n.value,
 																  "max_indirect_bounces", 0);
 
-			const auto light_sampling_node = n.value.FindMember("light_sampling");
-			if (n.value.MemberEnd() != light_sampling_node) {
-				load_light_sampling(light_sampling_node->value, light_sampling);
-			}
+			load_light_sampling(n.value, light_sampling);
 
 			return std::make_shared<Single_scattering_factory>(settings, num_workers,
 															   step_size, max_indirect_bounces,
@@ -762,9 +756,14 @@ void Loader::load_settings(const json::Value& settings_value, Settings& settings
 	}
 }
 
-void Loader::load_light_sampling(const json::Value& sampling_value,
+void Loader::load_light_sampling(const json::Value& parent_value,
 								 rendering::integrator::Light_sampling& sampling) {
-	for (auto& n : sampling_value.GetObject()) {
+	const auto light_sampling_node = parent_value.FindMember("light_sampling");
+	if (parent_value.MemberEnd() == light_sampling_node) {
+		return;
+	}
+
+	for (auto& n : light_sampling_node->value.GetObject()) {
 		if ("strategy" == n.name) {
 			std::string strategy = json::read_string(n.value);
 

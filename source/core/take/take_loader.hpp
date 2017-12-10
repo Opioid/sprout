@@ -103,7 +103,7 @@ private:
 
 	static void load_settings(const json::Value& settings_value, Settings& settings);
 
-	static void load_light_sampling(const json::Value& sampling_value,
+	static void load_light_sampling(const json::Value& parent_value,
 									rendering::integrator::Light_sampling& sampling);
 };
 
