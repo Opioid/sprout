@@ -86,7 +86,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	bool hit = resolve_mask(ray, intersection, filter, worker);
 
 	float3 throughput(1.f);
-	float3 result = worker.volume_li(ray, true, throughput);
+	float3 result = worker.volume_li(ray, primary_ray, throughput);
 
 	if (!hit) {
 		return float4(result, 1.f);

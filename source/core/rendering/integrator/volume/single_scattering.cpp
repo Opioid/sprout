@@ -180,8 +180,8 @@ float3 Single_scattering::estimate_indirect_light(const float3& w, const float3&
 
 	const float phase = volume.phase(w, -dir);
 
-	scene::Ray secondary_ray(p, dir, 0.f, scene::Ray_max_t, history.time,
-							 history.depth + 1, Ray::Property::Within_volume);
+	Ray secondary_ray(p, dir, 0.f, scene::Ray_max_t, history.time,
+					  history.depth + 1, Ray::Property::Within_volume);
 
 	const float3 li = worker.li(secondary_ray).xyz();
 
