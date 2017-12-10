@@ -43,9 +43,11 @@ Options parse(int argc, char* argv[]) {
 			 cxxopts::value<bool>(result.verbose))
 		;
 
-		options.parse(argc, argv);
+		const int initial_argc = argc;
 
-		if (0 == argc && options.count("help")) {
+		const auto parsed = options.parse(argc, argv);
+
+		if (1 == initial_argc || parsed.count("help")) {
 			std::stringstream stream;
 			stream << options.help({"", "Group"});
 			logging::info(stream.str());
