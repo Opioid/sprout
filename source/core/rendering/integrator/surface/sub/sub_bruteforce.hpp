@@ -36,7 +36,7 @@ public:
 
 private:
 
-	const Settings settings_;
+//	const Settings settings_;
 
 	sampler::Random sampler_;
 };

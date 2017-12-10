@@ -104,7 +104,7 @@ private:
 	std::string mount_folder_;
 
 	std::map<std::string, entity::Extension_provider*> extension_providers_;
-    std::map<std::string, shape::triangle::Generator*> mesh_generators_;
+	std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 };
 
 }

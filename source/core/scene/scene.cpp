@@ -170,7 +170,7 @@ entity::Entity* Scene::entity(size_t index) const {
 	return entities_[index];
 }
 
-entity::Entity* Scene::entity(const std::string& name) const {
+entity::Entity* Scene::entity(std::string_view name) const {
 	auto e = named_entities_.find(name);
 	if (named_entities_.end() == e) {
 		return nullptr;

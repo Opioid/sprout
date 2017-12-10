@@ -15,9 +15,9 @@
 namespace rendering::integrator::surface::sub {
 
 Bruteforce::Bruteforce(rnd::Generator& rng, const take::Settings& take_settings,
-					   const Settings& settings) :
+					   const Settings& /*settings*/) :
 	Integrator(rng, take_settings),
-	settings_(settings),
+//	settings_(settings),
 	sampler_(rng) {}
 
 void Bruteforce::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}

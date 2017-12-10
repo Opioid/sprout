@@ -6,7 +6,7 @@
 namespace memory {
 
 template<typename T>
-bool Variant_map::query(const std::string& key, T& value) const {
+bool Variant_map::query(std::string_view key, T& value) const {
 	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
@@ -24,7 +24,7 @@ bool Variant_map::query(const std::string& key, T& value) const {
 	return true;
 }
 
-inline bool Variant_map::query(const std::string& key, bool& value) const {
+inline bool Variant_map::query(std::string_view key, bool& value) const {
 	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
@@ -42,7 +42,7 @@ inline bool Variant_map::query(const std::string& key, bool& value) const {
 	return true;
 }
 
-inline bool Variant_map::query(const std::string& key, int32_t& value) const {
+inline bool Variant_map::query(std::string_view key, int32_t& value) const {
 	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
@@ -60,7 +60,7 @@ inline bool Variant_map::query(const std::string& key, int32_t& value) const {
 	return true;
 }
 
-inline bool Variant_map::query(const std::string& key, uint32_t& value) const {
+inline bool Variant_map::query(std::string_view key, uint32_t& value) const {
 	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
@@ -78,7 +78,7 @@ inline bool Variant_map::query(const std::string& key, uint32_t& value) const {
 	return true;
 }
 
-inline bool Variant_map::query(const std::string& key, float& value) const {
+inline bool Variant_map::query(std::string_view key, float& value) const {
 	const auto i = map_.find(key);
 
 	if (map_.end() == i) {

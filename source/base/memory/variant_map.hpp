@@ -11,12 +11,12 @@ class Variant_map {
 public:
 
 	template<typename T>
-	bool query(const std::string& key, T& value) const;
+	bool query(std::string_view key, T& value) const;
 
-	bool query(const std::string& key, bool& value) const;
-	bool query(const std::string& key, int32_t& value) const;
-	bool query(const std::string& key, uint32_t& value) const;
-	bool query(const std::string& key, float& value) const;
+	bool query(std::string_view key, bool& value) const;
+	bool query(std::string_view key, int32_t& value) const;
+	bool query(std::string_view key, uint32_t& value) const;
+	bool query(std::string_view key, float& value) const;
 
 	template<typename T>
 	void set(const std::string& key, T value);
@@ -60,7 +60,7 @@ private:
 		};
 	};
 
-	std::map<std::string, Variant> map_;
+	std::map<std::string, Variant, std::less<>> map_;
 };
 
 }

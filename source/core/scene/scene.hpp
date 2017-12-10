@@ -82,7 +82,7 @@ public:
 	float simulation_time() const;
 
 	entity::Entity* entity(size_t index) const;
-	entity::Entity* entity(const std::string& name) const;
+	entity::Entity* entity(std::string_view name) const;
 
 	const std::vector<light::Light*>& lights() const;
 
@@ -155,7 +155,7 @@ private:
 
 	std::vector<entity::Entity*> entities_;
 
-	std::map<std::string, entity::Entity*> named_entities_;
+	std::map<std::string, entity::Entity*, std::less<>> named_entities_;
 
 	std::vector<float> light_powers_;
 

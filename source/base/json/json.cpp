@@ -61,20 +61,16 @@ std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
 	return document;
 }
 
-std::unique_ptr<rapidjson::Document> parse(const char* buffer) {
+std::unique_ptr<rapidjson::Document> parse(std::string_view buffer) {
 	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
-	document->Parse(buffer);
+	document->Parse(buffer.data());
 
 	if (document->HasParseError()) {
 		throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
 	}
 
 	return document;
-}
-
-std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {
-	return parse(buffer.c_str());
 }
 
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
@@ -95,8 +91,8 @@ bool read_bool(const rapidjson::Value& value) {
 	return value.GetBool();
 }
 
-bool read_bool(const rapidjson::Value& value, const std::string& name, bool default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+bool read_bool(const rapidjson::Value& value, std::string_view name, bool default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
@@ -108,8 +104,8 @@ float read_float(const rapidjson::Value& value) {
 	return value.GetFloat();
 }
 
-float read_float(const rapidjson::Value& value, const std::string& name, float default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+float read_float(const rapidjson::Value& value, std::string_view name, float default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
@@ -121,9 +117,8 @@ float2 read_float2(const rapidjson::Value& value) {
 	return float2(value[0u].GetFloat(), value[1].GetFloat());
 }
 
-float2 read_float2(const rapidjson::Value& value, const std::string& name,
-				   float2 default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+float2 read_float2(const rapidjson::Value& value, std::string_view name, float2 default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
@@ -137,9 +132,9 @@ float3 read_float3(const rapidjson::Value& value) {
 				  value[2].GetFloat());
 }
 
-float3 read_float3(const rapidjson::Value& value, const std::string& name,
+float3 read_float3(const rapidjson::Value& value, std::string_view name,
 				   const float3& default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
@@ -162,8 +157,8 @@ uint32_t read_uint(const rapidjson::Value& value) {
 	return value.GetUint();
 }
 
-uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+uint32_t read_uint(const rapidjson::Value& value, std::string_view name, uint32_t default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
@@ -175,9 +170,8 @@ int2 read_int2(const rapidjson::Value& value) {
 	return int2(value[0].GetInt(), value[1].GetInt());
 }
 
-int2 read_int2(const rapidjson::Value& value, const std::string& name,
-			   int2 default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+int2 read_int2(const rapidjson::Value& value, std::string_view name, int2 default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
@@ -189,9 +183,8 @@ uint2 read_uint2(const rapidjson::Value& value) {
 	return uint2(value[0].GetUint(), value[1].GetUint());
 }
 
-uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
-				 uint2 default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+uint2 read_uint2(const rapidjson::Value& value, std::string_view name, uint2 default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
@@ -232,9 +225,9 @@ std::string read_string(const rapidjson::Value& value) {
 	return std::string(value.GetString(), value.GetStringLength());
 }
 
-std::string read_string(const rapidjson::Value& value, const std::string& name,
+std::string read_string(const rapidjson::Value& value, std::string_view name,
 						const std::string& default_value) {
-	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.data());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}

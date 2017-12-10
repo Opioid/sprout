@@ -107,14 +107,8 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 
 	const uint32_t num_particles = 4 * 16384;
 
-	const float nf = static_cast<float>(num_particles);
-
 	for (uint32_t i = 0; i < num_particles; ++i) {
-		const float cf = static_cast<float>(i);
-
-		const float r0 = rng.random_float();
-
-		const float x = math::radical_inverse_vdC(i, 0);// cf / nf;
+		const float x = math::radical_inverse_vdC(i, 0);
 
 	//	const float ix = 1.f - x;
 
