@@ -6,7 +6,6 @@
 namespace scene::volume {
 
 Volume::Volume() :
-	local_aabb_(float3(-1.f), float3(1.f)),
 	absorption_(0.f), scattering_(0.f), anisotropy_(0.f),
 	match_scene_scale_(false) {}
 
@@ -40,10 +39,6 @@ void Volume::set_scene_aabb(const math::AABB& aabb) {
 			math::quaternion::create(world_transformation_.rotation)
 		});
 	}
-}
-
-const math::AABB& Volume::aabb() const {
-	return aabb_;
 }
 
 float Volume::phase_schlick(const float3& w, const float3& wp, float k) {

@@ -40,15 +40,11 @@ public:
 
 	void set_scene_aabb(const math::AABB& aabb);
 
-	const math::AABB& aabb() const;
-
 protected:
 
 	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;
 
 	static float phase_schlick(const float3& w, const float3& wp, float k);
-
-	math::AABB local_aabb_;
 
 	float3 absorption_;
 	float3 scattering_;
