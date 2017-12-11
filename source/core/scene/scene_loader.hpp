@@ -72,8 +72,6 @@ private:
 
 	void load_light(const json::Value& light_value, prop::Prop* prop, Scene& scene);
 
-	volume::Volume* load_volume(const json::Value& volume_value, Scene& scene);
-
 	entity::Entity* load_extension(const std::string& type, const json::Value& extension_value,
 								   const std::string& name, Scene& scene);
 

@@ -152,7 +152,7 @@ void Loader::load_entities(const json::Value& entities_value,
 
 		try {
 			if ("Light" == type_name) {
-				scene::prop::Prop* prop = load_prop(e, name, scene);
+				prop::Prop* prop = load_prop(e, name, scene);
 				entity = prop;
 				if (prop && prop->visible_in_reflection()) {
 					load_light(e, prop, scene);
@@ -161,8 +161,6 @@ void Loader::load_entities(const json::Value& entities_value,
 				entity = load_prop(e, name, scene);
 			} else if ("Dummy" == type_name) {
 				entity = scene.create_dummy();
-			} else if ("Volume" == type_name) {
-				entity = load_volume(e, scene);
 			} else {
 				entity = load_extension(type_name, e, name, scene);
 			}
@@ -266,8 +264,12 @@ prop::Prop* Loader::load_prop(const json::Value& prop_value,
 		return nullptr;
 	}
 
-	while (materials.size() < shape->num_parts()) {
-		materials.push_back(fallback_material_);
+	if (1 == materials.size() && materials[0]->is_volumetric()) {
+
+	} else {
+		while (materials.size() < shape->num_parts()) {
+			materials.push_back(fallback_material_);
+		}
 	}
 
 	prop::Prop* prop = scene.create_prop(shape, materials, name);
@@ -294,52 +296,6 @@ void Loader::load_light(const json::Value& /*light_value*/, prop::Prop* prop, Sc
 			}
 		}
 	}
-}
-
-volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scene) {
-	std::shared_ptr<shape::Shape> shape;
-	std::string behavior_type;
-	std::string behavior_file;
-	const json::Value* parameters_value = nullptr;
-
-	for (auto& n : volume_value.GetObject()) {
-		if ("shape" == n.name) {
-			shape = load_shape(n.value);
-		} else if ("behavior" == n.name && n.value.IsObject()) {
-			behavior_type = json::read_string(n.value, "type");
-			behavior_file = json::read_string(n.value, "file");
-		} else if ("parameters" == n.name) {
-			parameters_value = &n.value;
-		}
-	}
-
-	if (!shape) {
-		return nullptr;
-	}
-
-	volume::Volume* volume = nullptr;
-
-	if ("Homogenous" == behavior_type) {
-		volume = scene.create_homogenous_volume(shape);
-	} else if ("Height" == behavior_type) {
-		volume = scene.create_height_volume(shape);
-	} else if (!behavior_file.empty()) {
-		memory::Variant_map options;
-		options.set("usage", image::texture::Provider::Usage::Mask);
-		auto grid = resource_manager_.load<image::texture::Texture>(behavior_file, options);
-		volume = scene.create_grid_volume(shape, grid);
-	}
-
-	if (!volume) {
-		throw std::runtime_error("Cannot create behavior \"" + behavior_type + "\": "
-								 "Undefined type");
-	}
-
-	if (parameters_value) {
-		volume->set_parameters(*parameters_value);
-	}
-
-	return volume;
 }
 
 entity::Entity* Loader::load_extension(const std::string& type, const json::Value& extension_value,

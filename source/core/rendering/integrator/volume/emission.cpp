@@ -23,8 +23,11 @@ float3 Emission::transmittance(const Ray& ray, const Volume& volume, Worker& wor
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-	const float3 tau = volume.optical_depth(transformation, ray, settings_.step_size, rng_,
-											Sampler_filter::Nearest, worker);
+	const auto& material = *volume.material(0);
+
+	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
@@ -33,8 +36,10 @@ float3 Emission::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-	const float3 emission = volume.emission(transformation, ray, settings_.step_size, rng_,
-											Sampler_filter::Undefined, worker);
+	const auto& material = *volume.material(0);
+
+	const float3 emission = material.emission(transformation, ray, settings_.step_size, rng_,
+											  Sampler_filter::Undefined, worker);
 
 	transmittance = float3(1.f);
 

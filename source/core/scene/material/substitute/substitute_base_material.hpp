@@ -1,8 +1,7 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_MATERIAL_HPP
 
 #include "scene/material/material.hpp"
-
-namespace image::texture::sampler { class Sampler_2D; }
 
 namespace scene::material::substitute {
 
@@ -53,3 +52,5 @@ protected:
 };
 
 }
+
+#endif

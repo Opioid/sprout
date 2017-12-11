@@ -39,6 +39,10 @@
 #include "substitute/substitute_subsurface_sample.hpp"
 #include "substitute/substitute_translucent_material.hpp"
 #include "substitute/substitute_translucent_sample.hpp"
+#include "volumetric/volumetric_height.hpp"
+#include "volumetric/volumetric_homogeneous.hpp"
+#include "volumetric/volumetric_grid.hpp"
+#include "volumetric/volumetric_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
@@ -116,6 +120,8 @@ Material_ptr Provider::load(const json::Value& value, const std::string& mount_f
 			material = load_sky(n.value, manager);
 		} else if ("Substitute" == n.name) {
 			material = load_substitute(n.value, manager);
+		} else if ("Volumetric" == n.name) {
+			material = load_volumetric(n.value, manager);
 		}
 	}
 
@@ -940,6 +946,89 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 	return material;
 }
 
+Material_ptr Provider::load_volumetric(const json::Value& volumetric_value,
+									   resource::Manager& manager) {
+	Sampler_settings sampler_settings;
+
+	Texture_adapter density_map;
+	Texture_adapter emission_map;
+	float3 color(0.6f, 0.6f, 0.6f);
+	bool use_absorption_color = false;
+	float3 absorption_color(0.f);
+	bool use_scattering_color = false;
+	float3 scattering_color(0.f);
+	float attenuation_distance = 1.f;
+	float anisotropy = 0.f;
+	float a = 0.f;
+	float b = 0.f;
+
+	for (auto& n : volumetric_value.GetObject()) {
+		if ("color" == n.name) {
+			color = read_color(n.value);
+		} else if ("absorption_color" == n.name) {
+			use_absorption_color = true;
+			absorption_color = read_color(n.value);
+		} else if ("scattering_color" == n.name) {
+			use_scattering_color = true;
+			scattering_color = read_color(n.value);
+		} else if ("attenuation_distance" == n.name) {
+			attenuation_distance = json::read_float(n.value);
+		} else if ("anisotropy" == n.name) {
+			anisotropy = json::read_float(n.value);
+		} else if ("a" == n.name) {
+			a = json::read_float(n.value);
+		} else if ("b" == n.name) {
+			b = json::read_float(n.value);
+		} else if ("textures" == n.name) {
+			for (auto& tn : n.value.GetArray()) {
+				Texture_description texture_description;
+				read_texture_description(tn, texture_description);
+
+				if (texture_description.filename.empty()) {
+					continue;
+				}
+
+				memory::Variant_map options;
+				if ("Density" == texture_description.usage) {
+					options.set("usage", image::texture::Provider::Usage::Mask);
+					density_map = create_texture(texture_description, options, manager);
+				} else if ("Emission" == texture_description.usage) {
+					options.set("usage", image::texture::Provider::Usage::Color);
+					emission_map = create_texture(texture_description, options, manager);
+				}
+			}
+		} else if ("sampler" == n.name) {
+			read_sampler_settings(n.value, sampler_settings);
+		}
+	}
+
+	absorption_color = use_absorption_color ? absorption_color : color;
+	scattering_color = use_scattering_color ? scattering_color : color;
+
+	if (density_map.is_valid()) {
+		auto material = std::make_shared<volumetric::Grid>(sampler_settings, density_map);
+		material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+		material->set_anisotropy(anisotropy);
+		return material;
+	} else if (emission_map.is_valid()) {
+		auto material = std::make_shared<volumetric::Emission_grid>(sampler_settings, emission_map);
+		material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+		material->set_anisotropy(anisotropy);
+		return material;
+	} else if (a > 0.f && b > 0.f) {
+		auto material = std::make_shared<volumetric::Height>(sampler_settings);
+		material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+		material->set_anisotropy(anisotropy);
+		material->set_a_b(a, b);
+		return material;
+	}
+
+	auto material = std::make_shared<volumetric::Homogeneous>(sampler_settings);
+	material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+	material->set_anisotropy(anisotropy);
+	return material;
+}
+
 Sampler_settings::Address read_address(const json::Value& address_value) {
 	std::string address = json::read_string(address_value);
 
@@ -1140,6 +1229,7 @@ uint32_t Provider::max_sample_size() {
 	num_bytes = std::max(sizeof(substitute::Sample_subsurface), num_bytes);
 	num_bytes = std::max(sizeof(substitute::Sample_thinfilm), num_bytes);
 	num_bytes = std::max(sizeof(substitute::Sample_translucent), num_bytes);
+	num_bytes = std::max(sizeof(volumetric::Sample), num_bytes);
 
 	return static_cast<uint32_t>(num_bytes);
 }

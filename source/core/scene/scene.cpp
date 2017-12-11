@@ -5,14 +5,12 @@
 #include "animation/animation.hpp"
 #include "animation/animation_stage.hpp"
 #include "entity/dummy.hpp"
+#include "light/prop_light.hpp"
+#include "light/prop_image_light.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "shape/shape.hpp"
-#include "light/prop_light.hpp"
-#include "light/prop_image_light.hpp"
-#include "volume/grid.hpp"
-#include "volume/height.hpp"
-#include "volume/homogeneous.hpp"
+#include "volume/volume.hpp"
 #include "image/texture/texture.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
@@ -340,12 +338,20 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 }
 
 prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials& materials) {
-	prop::Prop* prop = new prop::Prop;
+	prop::Prop* prop;
 
-	if (shape->is_finite()) {
-		finite_props_.push_back(prop);
+	if (1 == materials.size() && materials[0]->is_volumetric()) {
+		volume::Volume* volume = new volume::Volume;
+		volumes_.push_back(volume);
+		prop = volume;
 	} else {
-		infinite_props_.push_back(prop);
+		prop = new prop::Prop;
+
+		if (shape->is_finite()) {
+			finite_props_.push_back(prop);
+		} else {
+			infinite_props_.push_back(prop);
+		}
 	}
 
 	prop->set_shape_and_materials(shape, materials);
@@ -382,45 +388,6 @@ light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32
 	light->init(prop, part);
 
 	return light;
-}
-
-volume::Volume* Scene::create_height_volume(const Shape_ptr& shape) {
-	volume::Volume* volume = new volume::Height;
-
-	volume->set_shape(shape);
-
-	volumes_.push_back(volume);
-	entities_.push_back(volume);
-
-	return volume;
-}
-
-volume::Volume* Scene::create_homogenous_volume(const Shape_ptr& shape) {
-	volume::Volume* volume = new volume::Homogeneous;
-
-	volume->set_shape(shape);
-
-	volumes_.push_back(volume);
-	entities_.push_back(volume);
-
-	return volume;
-}
-
-volume::Volume* Scene::create_grid_volume(const Shape_ptr& shape, const Texture_ptr& grid) {
-	volume::Volume* volume;
-
-	if (3 == grid->num_channels()) {
-		volume = new volume::Emission_grid(grid);
-	} else {
-		volume = new volume::Grid(grid);
-	}
-
-	volume->set_shape(shape);
-
-	volumes_.push_back(volume);
-	entities_.push_back(volume);
-
-	return volume;
 }
 
 void Scene::add_extension(entity::Entity* extension) {

@@ -1,35 +1,22 @@
 #include "volume.hpp"
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
+#include "base/math/ray.inl"
 #include "base/math/vector3.inl"
 
 namespace scene::volume {
 
-Volume::Volume() :
-	absorption_(0.f), scattering_(0.f), anisotropy_(0.f),
-	match_scene_scale_(false) {}
-
-float Volume::phase(const float3& w, const float3& wp) const {
-	const float g = anisotropy_;
-	const float k = 1.55f * g - (0.55f * g) * (g * g);
-	return phase_schlick(w, wp, k);
-}
+Volume::Volume() : match_scene_scale_(false) {}
 
 void Volume::set_parameters(const json::Value& parameters) {
 	for (auto& n : parameters.GetObject()) {
-		if ("absorption" == n.name) {
-			absorption_ = json::read_float3(n.value);
-		} else if ("scattering" == n.name) {
-			scattering_ = json::read_float3(n.value);
-		} else if ("anisotropy" == n.name) {
-			anisotropy_ = json::read_float(n.value);
-		} else if ("match_scene_scale" == n.name) {
+		if ("match_scene_scale" == n.name) {
 			match_scene_scale_ = json::read_bool(n.value);
-		} else {
-			set_parameter(n.name.GetString(), n.value);
 		}
 	}
 }
+
+void Volume::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
 void Volume::set_scene_aabb(const math::AABB& aabb) {
 	if (match_scene_scale_) {
@@ -39,11 +26,6 @@ void Volume::set_scene_aabb(const math::AABB& aabb) {
 			math::quaternion::create(world_transformation_.rotation)
 		});
 	}
-}
-
-float Volume::phase_schlick(const float3& w, const float3& wp, float k) {
-	const float d = 1.f - (k * math::dot(w, wp));
-	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
 }
 
 }

@@ -9,6 +9,10 @@
 #include <memory>
 #include <vector>
 
+namespace math { struct Ray; class AABB; }
+
+namespace rnd { class Generator; }
+
 namespace thread { class Pool; }
 
 namespace scene {
@@ -61,6 +65,19 @@ public:
 	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
 								   Sampler_filter filter, const Worker& worker) const;
 
+	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
+							float step_size, rnd::Generator& rng,
+							Sampler_filter filter, const Worker& worker) const;
+
+	virtual float3 optical_depth(const Transformation& transformation, const math::AABB& aabb,
+								 const math::Ray& ray,float step_size, rnd::Generator& rng,
+								 Sampler_filter filter, const Worker& worker) const;
+
+	virtual float3 scattering(const Transformation& transformation, const float3& p,
+							  Sampler_filter filter, const Worker& worker) const;
+
+	virtual float phase(const float3& w, const float3& wp) const;
+
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation, float area,
 								  bool importance_sampling, thread::Pool& pool);
@@ -68,6 +85,8 @@ public:
 	virtual bool is_animated() const;
 
 	virtual bool has_tinted_shadow() const;
+
+	virtual bool is_volumetric() const;
 
 	virtual size_t num_bytes() const = 0;
 

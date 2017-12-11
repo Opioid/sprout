@@ -4,7 +4,7 @@
 
 namespace scene::material::glass {
 
-class Sample : public material::Sample {
+class Sample final : public material::Sample {
 
 public:
 

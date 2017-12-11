@@ -32,8 +32,11 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-	const float3 tau = volume.optical_depth(transformation, ray, settings_.step_size, rng_,
-											Sampler_filter::Nearest, worker);
+	const auto& material = *volume.material(0);
+
+	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
@@ -67,6 +70,8 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
 	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
 
+	const auto& material = *volume.material(0);
+
 	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
 		// This happens sometimes when the range is very small compared to the world coordinates.
 		if (float3::identity() == tau_ray.direction) {
@@ -76,8 +81,12 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 			continue;
 		}
 
-		const float3 tau = volume.optical_depth(transformation, tau_ray, settings_.step_size,
-												rng_, Sampler_filter::Undefined, worker);
+//		const float3 tau = volume.optical_depth(transformation, tau_ray, settings_.step_size,
+//												rng_, Sampler_filter::Undefined, worker);
+		const float3 tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
+												  settings_.step_size, rng_,
+												  Sampler_filter::Undefined, worker);
+
 		tr *= math::exp(-tau);
 
 		const float3 current = ray.point(min_t);
@@ -89,15 +98,18 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Direct incoming light
-		float3 local_radiance = estimate_direct_light(w, current, ray.time, volume, worker);
+		float3 local_radiance = estimate_direct_light(w, current, ray.time, material, worker);
 
 		if (ray.depth < settings_.max_indirect_bounces) {
 			// Indirect incoming light
-			local_radiance += estimate_indirect_light(w, current, ray, volume, worker);
+			local_radiance += estimate_indirect_light(w, current, ray, material, worker);
 		}
 
-		const float3 scattering = volume.scattering(transformation, current,
-													Sampler_filter::Undefined, worker);
+//		const float3 scattering = volume.scattering(transformation, current,
+//													Sampler_filter::Undefined, worker);
+
+		const float3 scattering = material.scattering(transformation, current,
+													  Sampler_filter::Undefined, worker);
 
 		radiance += tr * scattering * local_radiance;
 	}
@@ -114,7 +126,7 @@ size_t Single_scattering::num_bytes() const {
 }
 
 float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p, float time,
-												const Volume& volume, Worker& worker) {
+												const Material& material, Worker& worker) {
 	const uint32_t num_samples = settings_.light_sampling.num_samples;
 
 	float3 result(0.f);
@@ -123,7 +135,7 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 		for (uint32_t i = num_samples; i > 0; --i) {
 			const auto light = worker.scene().random_light(rng_.random_float());
 
-			result += evaluate_light(light.ref, light.pdf, w, p, time, 0, volume, worker);
+			result += evaluate_light(light.ref, light.pdf, w, p, time, 0, material, worker);
 		}
 
 		result /= static_cast<float>(num_samples);
@@ -136,7 +148,7 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 			const auto& light = *lights[l];
 
 			for (uint32_t i = num_samples; i > 0; --i) {
-				result += evaluate_light(light, light_weight, w, p, time, l, volume, worker);
+				result += evaluate_light(light, light_weight, w, p, time, l, material, worker);
 			}
 		}
 	}
@@ -147,7 +159,7 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 										 const float3& w, const float3& p,
 										 float time, uint32_t sampler_dimension,
-										 const Volume& volume, Worker& worker) {
+										 const Material& material, Worker& worker) {
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;
@@ -160,7 +172,7 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 	if (math::any_greater_zero(tv)) {
-		const float phase = volume.phase(w, -light_sample.shape.wi);
+		const float phase = material.phase(w, -light_sample.shape.wi);
 
 		const float3 tr = worker.transmittance(shadow_ray);
 
@@ -173,12 +185,12 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 }
 
 float3 Single_scattering::estimate_indirect_light(const float3& w, const float3& p,
-												  const Ray& history, const Volume& volume,
+												  const Ray& history, const Material& material,
 												  Worker& worker) {
 	const float2 uv(rng_.random_float(), rng_.random_float());
 	const float3 dir = math::sample_sphere_uniform(uv);
 
-	const float phase = volume.phase(w, -dir);
+	const float phase = material.phase(w, -dir);
 
 	Ray secondary_ray(p, dir, 0.f, scene::Ray_max_t, history.time,
 					  history.depth + 1, Ray::Property::Within_volume);

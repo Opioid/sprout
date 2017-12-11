@@ -64,6 +64,28 @@ float3 Material::thin_absorption(const float3& /*wo*/, const float3& /*n*/, floa
 	return float3(opacity(uv, time, filter, worker));
 }
 
+float3 Material::emission(const Transformation& /*transformation*/, const math::Ray& /*ray*/,
+						  float /*step_size*/, rnd::Generator& /*rng*/,
+						  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return float3::identity();
+}
+
+float3 Material::optical_depth(const Transformation& /*transformation*/, const math::AABB& /*aabb*/,
+							   const math::Ray& /*ray*/, float /*step_size*/,
+							   rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
+							   const Worker& /*worker*/) const {
+	return float3::identity();
+}
+
+float3 Material::scattering(const Transformation& /*transformation*/, const float3& /*p*/,
+							Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return float3::identity();
+}
+
+float Material::phase(const float3& w, const float3& wp) const {
+	return 1.f;
+}
+
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 								const Transformation& /*transformation*/, float /*area*/,
 								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
@@ -73,6 +95,10 @@ bool Material::is_animated() const {
 }
 
 bool Material::has_tinted_shadow() const {
+	return false;
+}
+
+bool Material::is_volumetric() const {
 	return false;
 }
 

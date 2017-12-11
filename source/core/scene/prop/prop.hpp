@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_PROP_PROP_HPP
 #define SU_CORE_SCENE_PROP_PROP_HPP
 
-#include "scene/body/body.hpp"
+#include "scene/entity/entity.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/aabb.hpp"
 #include <memory>
@@ -24,7 +24,7 @@ class Node_stack;
 
 namespace prop {
 
-class Prop final : public body::Body {
+class Prop : public entity::Entity {
 
 public:
 
@@ -32,10 +32,30 @@ public:
 
 	virtual ~Prop();
 
+	void morph(thread::Pool& pool);
+
+	bool intersect(Ray& ray, shape::Node_stack& node_stack,
+				   shape::Intersection& intersection) const;
+
+	bool intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon, bool& inside) const;
+
+	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
+
+//	bool intersect_p(VVector ray_origin, VVector ray_direction,
+//					 VVector ray_inv_direction, VVector ray_mint_, VVector ray_max_t,
+//					 float ray_time, shape::Node_stack& node_stack) const;
+
+	const shape::Shape* shape() const;
+	shape::Shape* shape();
+
+	const math::AABB& aabb() const;
+
+	void set_shape(const std::shared_ptr<shape::Shape>& shape);
+
 	void set_shape_and_materials(const std::shared_ptr<shape::Shape>& shape,
 								 const material::Materials& materials);
 
-	virtual void set_parameters(const json::Value& parameters) override final;
+	virtual void set_parameters(const json::Value& parameters) override;
 
 	void prepare_sampling(uint32_t part, uint32_t light_id,
 						  bool material_importance_sampling, thread::Pool& pool);
@@ -56,7 +76,17 @@ public:
 
 	size_t num_bytes() const;
 
-private:
+protected:
+
+	bool visible(uint32_t ray_depth) const;
+
+	virtual void on_set_transformation() override final;
+
+	// Pre-transformed AABB in world space.
+	// For moving objects it must cover the entire area occupied by the object during the tick.
+	math::AABB aabb_;
+
+	std::shared_ptr<shape::Shape> shape_;
 
 	struct Part {
 		float    area;

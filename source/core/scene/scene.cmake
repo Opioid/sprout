@@ -1,5 +1,4 @@
 include("${CMAKE_CURRENT_LIST_DIR}/animation/animation.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/body/body.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/bvh/bvh.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/camera/camera.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/entity/entity.cmake")

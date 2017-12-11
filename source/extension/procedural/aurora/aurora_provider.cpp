@@ -4,11 +4,13 @@
 #include "volume_filter.hpp"
 #include "volume_rasterizer.hpp"
 #include "core/image/typed_image.inl"
+#include "core/image/texture/texture_adapter.inl"
 #include "core/image/texture/texture_byte_3_srgb.hpp"
 #include "core/resource/resource_manager.hpp"
+#include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
-#include "core/scene/volume/height.hpp"
+#include "core/scene/material/volumetric/volumetric_grid.hpp"
 #include "base/json/json.hpp"
 #include "base/math/sampling/sampling.hpp"
 #include "base/math/sampling/sample_distribution.hpp"
@@ -23,6 +25,7 @@
 namespace procedural::aurora {
 
 using namespace scene;
+using namespace scene::material;
 
 Provider provider;
 
@@ -60,13 +63,16 @@ entity::Entity* Provider::create_extension(const json::Value& /*extension_value*
 
 	auto texture = std::make_shared<texture::Byte3_sRGB>(target);
 
-	volume::Volume* volume = scene.create_grid_volume(scene_loader_->box(), texture);
+	std::shared_ptr<Material> material =
+			std::make_shared<volumetric::Emission_grid>(Sampler_settings(),
+														Texture_adapter(texture));
+
+	Materials materials(1);
+	materials[0] = material;
+
+	prop::Prop* volume = scene.create_prop(scene_loader_->box(), materials);
 	//volume::Volume* volume = scene.create_height_volume();
 
-	constexpr char const* parameters =
-		"{ \"scattering\": [1.0, 1.0, 1.0] }";
-
-	volume->set_parameters(*json::parse(parameters));
 
 	math::Transformation transformation {
 		float3::identity(),

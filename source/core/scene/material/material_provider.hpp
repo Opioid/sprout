@@ -59,6 +59,8 @@ private:
 
 	Material_ptr load_substitute(const json::Value& substitute_value, resource::Manager& manager);
 
+	Material_ptr load_volumetric(const json::Value& volumetric_value, resource::Manager& manager);
+
 	struct Texture_description {
 		std::string		filename;
 		std::string		usage;

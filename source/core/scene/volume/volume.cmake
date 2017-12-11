@@ -1,13 +1,5 @@
 target_sources(core
 	PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/density.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/density.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/grid.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/grid.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/height.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/height.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/homogeneous.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/homogeneous.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volume.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volume.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volume_bvh_wrapper.cpp"

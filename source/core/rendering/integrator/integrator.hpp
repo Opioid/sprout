@@ -16,6 +16,7 @@ namespace material {
 
 namespace bxdf { struct Sample; enum class Type; }
 
+class Material;
 class Sample;
 
 }
@@ -49,6 +50,7 @@ public:
 	using Scene			  = scene::Scene;
 	using Transformation  = scene::entity::Composed_transformation;
 	using Light			  = scene::light::Light;
+	using Material		  = scene::material::Material;
 	using Material_sample = scene::material::Sample;
 	using Sampler_filter  = scene::material::Sampler_settings::Filter;
 	using Bxdf_sample	  = scene::material::bxdf::Sample;
