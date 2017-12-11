@@ -81,8 +81,6 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 			continue;
 		}
 
-//		const float3 tau = volume.optical_depth(transformation, tau_ray, settings_.step_size,
-//												rng_, Sampler_filter::Undefined, worker);
 		const float3 tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
 												  settings_.step_size, rng_,
 												  Sampler_filter::Undefined, worker);
@@ -104,9 +102,6 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 			// Indirect incoming light
 			local_radiance += estimate_indirect_light(w, current, ray, material, worker);
 		}
-
-//		const float3 scattering = volume.scattering(transformation, current,
-//													Sampler_filter::Undefined, worker);
 
 		const float3 scattering = material.scattering(transformation, current,
 													  Sampler_filter::Undefined, worker);
