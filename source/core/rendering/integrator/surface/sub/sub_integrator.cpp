@@ -17,7 +17,7 @@ Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 
 Integrator::~Integrator() {}
 
-float3 Integrator::estimate_direct_light(const float3& position, const scene::prop::Prop* prop,
+float3 Integrator::estimate_direct_light(const float3& position, const Prop* prop,
 										 const scene::material::BSSRDF& bssrdf,
 										 float time, uint32_t depth,
 										 sampler::Sampler& sampler, Worker& worker) {
@@ -65,7 +65,7 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::pr
 	return float3(0.f);
 }
 
-float3 Integrator::estimate_indirect_light(const float3& position, const scene::prop::Prop* prop,
+float3 Integrator::estimate_indirect_light(const float3& position, const Prop* prop,
 										   const scene::material::BSSRDF& bssrdf,
 										   float time, uint32_t depth,
 										   sampler::Sampler& /*sampler*/, Worker& worker) {
@@ -73,12 +73,12 @@ float3 Integrator::estimate_indirect_light(const float3& position, const scene::
 	const float3 dir = math::sample_sphere_uniform(uv);
 
 	// const float phase = volume.phase(w, -dir);
-	constexpr float phase = 1.f / (4.f * math::Pi);
+//	constexpr float phase = 1.f / (4.f * math::Pi);
 
 	const float3 scattering = bssrdf.scattering();
 
-	scene::Ray secondary_ray(position, dir, 0.f, scene::Ray_max_t, time,
-							 depth + 1, Ray::Property::Within_volume);
+	Ray secondary_ray(position, dir, 0.f, scene::Ray_max_t, time,
+					  depth + 1, Ray::Property::Within_volume);
 
 
 	Intersection intersection;
@@ -98,7 +98,7 @@ float3 Integrator::estimate_indirect_light(const float3& position, const scene::
 
 	const float3 li = worker.li(secondary_ray).xyz();
 
-	return (phase * scattering) * (transmittance * li);
+	return (/*phase **/ scattering) * (transmittance * li);
 }
 
 Factory::Factory(const take::Settings& settings) :

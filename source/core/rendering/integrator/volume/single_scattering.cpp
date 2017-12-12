@@ -115,27 +115,22 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		radiance += tr * scattering * local_radiance;
 		*/
 
-//		if (ray.depth < settings_.max_indirect_bounces) {
-			Ray secondary_ray = ray;
-			secondary_ray.properties.set(Ray::Property::Within_volume);
+		// Lighting
+		Ray secondary_ray = ray;
+		secondary_ray.properties.set(Ray::Property::Within_volume);
 
-//			if (ray.depth > 1) {
-//				secondary_ray.properties.set(Ray::Property::Direct_only);
-//			}
+		scene::prop::Intersection secondary_intersection;
+		secondary_intersection.geo.p = current;
+		secondary_intersection.geo.part = 0;
+		secondary_intersection.geo.epsilon = 0.0005f;
+		secondary_intersection.prop = &volume;
 
-			scene::prop::Intersection secondary_intersection;
-			secondary_intersection.geo.p = current;
-			secondary_intersection.geo.part = 0;
-			secondary_intersection.geo.epsilon = 0.0005f;
-			secondary_intersection.prop = &volume;
+		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
 
-			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
+		const float3 scattering = material.scattering(transformation, current,
+													  Sampler_filter::Undefined, worker);
 
-			const float3 scattering = material.scattering(transformation, current,
-														  Sampler_filter::Undefined, worker);
-
-			radiance += tr * scattering * local_radiance;
-//		}
+		radiance += tr * scattering * local_radiance;
 
 	}
 

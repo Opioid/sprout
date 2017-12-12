@@ -33,12 +33,12 @@ public:
 
 protected:
 
-	float3 estimate_direct_light(const float3& position, const scene::prop::Prop* prop,
+	float3 estimate_direct_light(const float3& position, const Prop* prop,
 								 const scene::material::BSSRDF& bssrdf,
 								 float time, uint32_t depth,
 								 sampler::Sampler& sampler, Worker& worker);
 
-	float3 estimate_indirect_light(const float3& position, const scene::prop::Prop* prop,
+	float3 estimate_indirect_light(const float3& position, const Prop* prop,
 								   const scene::material::BSSRDF& bssrdf,
 								   float time, uint32_t depth,
 								   sampler::Sampler& sampler, Worker& worker);
