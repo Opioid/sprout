@@ -51,17 +51,6 @@ float4 Worker::li(Ray& ray) {
 	}
 }
 
-float4 Worker::surface_li(Ray& ray) {
-	scene::prop::Intersection intersection;
-	const bool hit = intersect(ray, intersection);
-
-	if (hit) {
-		return surface_integrator_->li(ray, intersection, *this);
-	} else {
-		return float4::identity();
-	}
-}
-
 float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance) {
 	float3 tr(1.f);
 	float3 radiance(0.f);
