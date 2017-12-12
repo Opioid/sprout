@@ -82,6 +82,24 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 				radiance += tr * estimate_indirect_light(current, intersection.prop, bssrdf,
 														 ray.time, ray.depth, sampler_, worker);
 			}
+
+//			if (ray.depth < 1) {
+//				Ray secondary_ray = ray;
+//				secondary_ray.properties.set(Ray::Property::Within_volume);
+
+//				scene::prop::Intersection secondary_intersection;
+//				secondary_intersection.geo.p = current;
+//				secondary_intersection.geo.part = 0;
+//				secondary_intersection.geo.epsilon = 0.0005f;
+//				secondary_intersection.prop = &volume;
+
+//				const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
+
+//				const float3 scattering = material.scattering(transformation, current,
+//															  Sampler_filter::Undefined, worker);
+
+//				radiance += tr * scattering * local_radiance;
+//			}
 		}
 
 		result += step * radiance;

@@ -5,6 +5,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
+#include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
@@ -28,7 +29,7 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
-										Worker& worker) {
+										const Worker& worker) {
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
@@ -96,17 +97,39 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Direct incoming light
-		float3 local_radiance = estimate_direct_light(w, current, ray.time, material, worker);
+//		float3 local_radiance = estimate_direct_light(w, current, ray.time, material, worker);
+
+//		if (ray.depth < settings_.max_indirect_bounces) {
+//			// Indirect incoming light
+//			local_radiance += estimate_indirect_light(w, current, ray, material, worker);
+//		}
+
+//		const float3 scattering = material.scattering(transformation, current,
+//													  Sampler_filter::Undefined, worker);
+
+//		radiance += tr * scattering * local_radiance;
 
 		if (ray.depth < settings_.max_indirect_bounces) {
-			// Indirect incoming light
-			local_radiance += estimate_indirect_light(w, current, ray, material, worker);
+			Ray secondary_ray = ray;
+			secondary_ray.properties.set(Ray::Property::Within_volume);
+
+//			if (ray.depth > 1) {
+//				secondary_ray.properties.set(Ray::Property::Direct_only);
+//			}
+
+			scene::prop::Intersection secondary_intersection;
+			secondary_intersection.geo.p = current;
+			secondary_intersection.geo.part = 0;
+			secondary_intersection.geo.epsilon = 0.0005f;
+			secondary_intersection.prop = &volume;
+
+			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
+
+			const float3 scattering = material.scattering(transformation, current,
+														  Sampler_filter::Undefined, worker);
+
+			radiance += tr * scattering * local_radiance;
 		}
-
-		const float3 scattering = material.scattering(transformation, current,
-													  Sampler_filter::Undefined, worker);
-
-		radiance += tr * scattering * local_radiance;
 	}
 
 	transmittance = tr;

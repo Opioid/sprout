@@ -32,8 +32,9 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		vector = intersection.geo.geo_n;
 		break;
 	case Settings::Vector::Shading_normal: {
-		float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(wo, ray.time, Sampler_filter::Undefined, worker);
+		const float3 wo = -ray.direction;
+		auto& material_sample = intersection.sample(wo, ray.time, Sampler_filter::Undefined,
+													worker);
 
 		if (!material_sample.same_hemisphere(wo)) {
 			return float4(0.f, 0.f, 0.f, 1.f);

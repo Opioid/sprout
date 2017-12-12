@@ -27,10 +27,6 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float result = 0.f;
 
-	if (!worker.resolve_mask(ray, intersection, Sampler_filter::Undefined)) {
-		return float4(result, result, result, 1.f);
-	}
-
 	Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t	 = take_settings_.ray_offset_factor * intersection.geo.epsilon;

@@ -110,7 +110,8 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		if (!intersection.hit()
 		||  (requires_bounce ? i == settings_.max_bounces : i >= settings_.max_bounces - 1)
-		||  (0.f == sample_result.pdf)) {
+		||  (0.f == sample_result.pdf)
+		/*||   ray.properties.test(Ray::Property::Direct_only)*/) {
 			opacity = 1.f; // I am not really happy with this being here
 			break;
 		}

@@ -46,9 +46,10 @@ public:
 	void prepare(uint32_t num_samples_per_pixel);
 
 	float4 li(Ray& ray);
+	float4 li(Ray& ray, scene::prop::Intersection& intersection);
 	float3 volume_li(const Ray& ray, bool primary_ray, float3& transmittance);
 
-	float3 transmittance(const Ray& ray);
+	float3 transmittance(const Ray& ray) const;
 
 	sampler::Sampler* sampler();
 

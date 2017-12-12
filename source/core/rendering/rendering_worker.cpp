@@ -54,6 +54,10 @@ float4 Worker::li(Ray& ray) {
 	}
 }
 
+float4 Worker::li(Ray& ray, scene::prop::Intersection& intersection) {
+	return surface_integrator_->li(ray, intersection, *this);
+}
+
 float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance) {
 	float3 tr(1.f);
 	float3 radiance(0.f);
@@ -89,7 +93,7 @@ float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance
 	return radiance;
 }
 
-float3 Worker::transmittance(const Ray& ray) {
+float3 Worker::transmittance(const Ray& ray) const {
 	float3 transmittance(1.f);
 
 //	if (ray.properties.test(Ray::Property::Within_volume)) {

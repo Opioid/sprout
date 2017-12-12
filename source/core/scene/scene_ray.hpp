@@ -9,7 +9,8 @@ namespace scene {
 struct Ray : public math::Ray {
 	enum class Property {
 		Null			= 0,
-		Within_volume	= 1 << 0
+		Within_volume	= 1 << 0,
+		Direct_only		= 1 << 1
 	};
 
 	using Properties = flags::Flags<Property>;

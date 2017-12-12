@@ -1,9 +1,9 @@
 #include "glass_rough_sample.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
-#include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
 

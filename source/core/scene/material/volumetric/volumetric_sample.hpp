@@ -17,15 +17,23 @@ public:
 
 	virtual float ior() const override final;
 
+	virtual bool is_translucent() const override final;
+
 public:
 
 	struct Layer : public material::Sample::Layer {
+		float phase(const float3& w, const float3& wp) const;
+
 		void set(float anisotropy);
 
 		float anisotropy_;
 	};
 
 	Layer layer_;
+
+private:
+
+	static float phase_schlick(const float3& w, const float3& wp, float k);
 };
 
 }
