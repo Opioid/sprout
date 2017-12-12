@@ -43,6 +43,11 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 
 float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
 							 Worker& worker, float3& transmittance) {
+	if (ray.properties.test(Ray::Property::Within_volume)) {
+		transmittance = Single_scattering::transmittance(ray, volume, worker);
+		return float3::identity();
+	}
+
 	float min_t = ray.min_t;
 	const float range = ray.max_t - min_t;
 
@@ -97,19 +102,20 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Direct incoming light
-//		float3 local_radiance = estimate_direct_light(w, current, ray.time, material, worker);
+/*		float3 local_radiance = estimate_direct_light(w, current, ray.time, material, worker);
+
+	//	if (ray.depth < settings_.max_indirect_bounces) {
+			// Indirect incoming light
+			local_radiance += estimate_indirect_light(w, current, ray, material, worker);
+	//	}
+
+		const float3 scattering = material.scattering(transformation, current,
+													  Sampler_filter::Undefined, worker);
+
+		radiance += tr * scattering * local_radiance;
+		*/
 
 //		if (ray.depth < settings_.max_indirect_bounces) {
-//			// Indirect incoming light
-//			local_radiance += estimate_indirect_light(w, current, ray, material, worker);
-//		}
-
-//		const float3 scattering = material.scattering(transformation, current,
-//													  Sampler_filter::Undefined, worker);
-
-//		radiance += tr * scattering * local_radiance;
-
-		if (ray.depth < settings_.max_indirect_bounces) {
 			Ray secondary_ray = ray;
 			secondary_ray.properties.set(Ray::Property::Within_volume);
 
@@ -129,7 +135,8 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 														  Sampler_filter::Undefined, worker);
 
 			radiance += tr * scattering * local_radiance;
-		}
+//		}
+
 	}
 
 	transmittance = tr;
@@ -208,14 +215,14 @@ float3 Single_scattering::estimate_indirect_light(const float3& w, const float3&
 	const float2 uv(rng_.random_float(), rng_.random_float());
 	const float3 dir = math::sample_sphere_uniform(uv);
 
-	const float phase = material.phase(w, -dir);
+//	const float phase = material.phase(w, -dir);
 
 	Ray secondary_ray(p, dir, 0.f, scene::Ray_max_t, history.time,
 					  history.depth + 1, Ray::Property::Within_volume);
 
 	const float3 li = worker.li(secondary_ray).xyz();
 
-	return phase * li;
+	return /*phase **/ li;
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
