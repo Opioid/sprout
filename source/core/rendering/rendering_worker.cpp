@@ -41,13 +41,16 @@ void Worker::prepare(uint32_t num_samples_per_pixel) {
 
 float4 Worker::li(Ray& ray) {
 	scene::prop::Intersection intersection;
-	const bool hit = intersect(ray, intersection);
+	const bool hit = intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined);
+
+	float3 vtr(1.f);
+	const float3 vli = volume_li(ray, true, vtr);
 
 	if (hit) {
-		return surface_integrator_->li(ray, intersection, *this);
+		const float4 li = surface_integrator_->li(ray, intersection, *this);
+		return float4(vtr * li.xyz() + vli, li[3]);
 	} else {
-		float3 vtr;
-		return float4(volume_li(ray, true, vtr), 1.f);
+		return float4(vli, 1.f);
 	}
 }
 

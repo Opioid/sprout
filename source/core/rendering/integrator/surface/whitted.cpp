@@ -33,33 +33,35 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
-	float3 result(0.f);
+//	float3 result(0.f);
 
-	const float3 wo = -ray.direction;
+//	const float3 wo = -ray.direction;
 
-	float3 opacity = intersection.thin_absorption(wo, ray.time, Sampler_filter::Undefined, worker);
-	float3 throughput = opacity;
+//	float3 opacity = intersection.thin_absorption(wo, ray.time, Sampler_filter::Undefined, worker);
+//	float3 throughput = opacity;
 
-	while (math::any_lesser_one(opacity)) {
-		if (math::any_greater_zero(opacity)) {
-			result += throughput * shade(ray, intersection, worker);
-		}
+//	while (math::any_lesser_one(opacity)) {
+//		if (math::any_greater_zero(opacity)) {
+//			result += throughput * shade(ray, intersection, worker);
+//		}
 
-		ray.min_t = ray.max_t + take_settings_.ray_offset_factor * intersection.geo.epsilon;
-		ray.max_t = scene::Ray_max_t;
-		if (!worker.intersect(ray, intersection)) {
-			return float4(result, spectrum::luminance(opacity));
-		}
+//		ray.min_t = ray.max_t + take_settings_.ray_offset_factor * intersection.geo.epsilon;
+//		ray.max_t = scene::Ray_max_t;
+//		if (!worker.intersect(ray, intersection)) {
+//			return float4(result, spectrum::luminance(opacity));
+//		}
 
-		throughput = (1.f - opacity) * intersection.thin_absorption(wo, ray.time,
-																	Sampler_filter::Undefined,
-																	worker);
-		opacity += throughput;
-	}
+//		throughput = (1.f - opacity) * intersection.thin_absorption(wo, ray.time,
+//																	Sampler_filter::Undefined,
+//																	worker);
+//		opacity += throughput;
+//	}
 
-	result += throughput * shade(ray, intersection, worker);
+//	result += throughput * shade(ray, intersection, worker);
 
-	return float4(result, spectrum::luminance(opacity));
+//	return float4(result, spectrum::luminance(opacity));
+
+	return float4(shade(ray, intersection, worker), 1.f);
 }
 
 float3 Whitted::shade(const Ray& ray, const Intersection& intersection, Worker& worker) {
