@@ -17,13 +17,8 @@ class Driver_finalframe : public Driver {
 
 public:
 
-	Driver_finalframe(Surface_integrator_factory surface_integrator_factory,
-					  Volume_integrator_factory volume_integrator_factory,
-					  std::shared_ptr<sampler::Factory> sampler_factory,
-					  scene::Scene& scene,
-					  take::View& view,
-					  thread::Pool& thread_pool,
-					  uint32_t max_sample_size);
+	Driver_finalframe(take::Take& take, scene::Scene& scene,
+					  thread::Pool& thread_pool, uint32_t max_sample_size);
 
 	using Exporters = std::vector<std::unique_ptr<exporting::Sink>>;
 

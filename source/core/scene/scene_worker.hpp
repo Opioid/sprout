@@ -1,12 +1,11 @@
 #ifndef SU_CORE_SCENE_WORKER_HPP
 #define SU_CORE_SCENE_WORKER_HPP
 
+#include "take/take_settings.hpp"
 #include "shape/node_stack.hpp"
 #include "material/material_sample_cache.hpp"
 #include "material/sampler_cache.hpp"
-#include "base/math/vector3.hpp"
-
-namespace image::texture::sampler { class Sampler_2D; }
+#include "base/random/generator.hpp"
 
 namespace scene {
 
@@ -29,12 +28,19 @@ public:
 	Worker();
 	~Worker();
 
-	void init(uint32_t id, const Scene& scene, uint32_t max_sample_size);
+	void init(uint32_t id, const take::Settings& settings,
+			  const Scene& scene, uint32_t max_sample_size);
 
 	uint32_t id() const;
 
 	bool intersect(Ray& ray, prop::Intersection& intersection) const;
 	bool intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& intersection) const;
+
+	bool resolve_mask(Ray& ray, prop::Intersection& intersection, Sampler_filter filter);
+
+	bool intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
+									Sampler_filter filter);
+
 
 	bool visibility(const Ray& ray) const;
 
@@ -59,6 +65,10 @@ private:
 	uint32_t id_;
 
 protected:
+
+	rnd::Generator rng_;
+
+	take::Settings settings_;
 
 	const Scene* scene_;
 

@@ -10,7 +10,6 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.hpp"
 #include "base/memory/align.hpp"
-#include "base/random/generator.inl"
 
 #include "base/debug/assert.hpp"
 
@@ -22,13 +21,12 @@ Worker::~Worker() {
 	memory::safe_destruct(surface_integrator_);
 }
 
-void Worker::init(uint32_t id, const scene::Scene& scene, uint32_t max_sample_size,
+void Worker::init(uint32_t id, const take::Settings& settings,
+				  const scene::Scene& scene, uint32_t max_sample_size,
 				  integrator::surface::Factory& surface_integrator_factory,
 				  integrator::volume::Factory& volume_integrator_factory,
 				  sampler::Factory& sampler_factory) {
-	scene::Worker::init(id, scene, max_sample_size);
-
-	rng_ = rnd::Generator(0, id);
+	scene::Worker::init(id, settings, scene, max_sample_size);
 
 	surface_integrator_ = surface_integrator_factory.create(id, rng_);
 	volume_integrator_  = volume_integrator_factory.create(id, rng_);

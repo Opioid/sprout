@@ -5,7 +5,7 @@
 #include "image/typed_image.hpp"
 #include <memory>
 
-namespace take { struct View; }
+namespace take { struct Take; struct View; }
 
 namespace scene {
 
@@ -34,17 +34,8 @@ class Driver {
 
 public:
 
-	using Surface_integrator_factory = std::shared_ptr<integrator::surface::Factory>;
-	using Volume_integrator_factory  = std::shared_ptr<integrator::volume::Factory>;
-	using Sampler_factory			 = std::shared_ptr<sampler::Factory>;
-
-	Driver(const Surface_integrator_factory& surface_integrator_factory,
-		   const Volume_integrator_factory& volume_integrator_factory,
-		   const Sampler_factory& sampler_factory,
-		   scene::Scene& scene,
-		   take::View& view,
-		   thread::Pool& thread_pool,
-		   uint32_t max_sample_size);
+	Driver(take::Take& take, scene::Scene& scene,
+		   thread::Pool& thread_pool, uint32_t max_sample_size);
 
 	~Driver();
 
@@ -55,10 +46,6 @@ public:
 	size_t num_bytes() const;
 
 protected:
-
-	Surface_integrator_factory surface_integrator_factory_;
-	Volume_integrator_factory  volume_integrator_factory_;
-	Sampler_factory			   sampler_factory_;
 
 	scene::Scene& scene_;
 	take::View& view_;

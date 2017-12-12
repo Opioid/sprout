@@ -27,7 +27,7 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float result = 0.f;
 
-	if (!resolve_mask(ray, intersection, Sampler_filter::Undefined, worker)) {
+	if (!worker.resolve_mask(ray, intersection, Sampler_filter::Undefined)) {
 		return float4(result, result, result, 1.f);
 	}
 

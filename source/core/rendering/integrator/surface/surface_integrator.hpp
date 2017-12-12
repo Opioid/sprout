@@ -18,14 +18,6 @@ public:
 	virtual ~Integrator();
 
 	virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker) = 0;
-
-protected:
-
-	bool resolve_mask(Ray& ray, Intersection& intersection,
-					  Sampler_filter filter, Worker& worker);
-
-	bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
-									Sampler_filter filter, Worker& worker);
 };
 
 class Factory {

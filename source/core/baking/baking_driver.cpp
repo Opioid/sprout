@@ -21,17 +21,17 @@ Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_fa
 	volume_integrator_factory_(volume_integrator_factory),
 	sampler_factory_(sampler_factory) {}
 
-void Driver::render(scene::Scene& scene, const take::View& /*view*/,
-					thread::Pool& thread_pool, uint32_t max_sample_size,
+void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
+					thread::Pool& /*thread_pool*/, uint32_t /*max_sample_size*/,
 					exporting::Sink& /*exporter*/, progress::Sink& /*progressor*/) {
-	int2 dimensions(512, 512);
+/*	int2 dimensions(512, 512);
 
 	scene.tick(thread_pool);
 
 	image::Float4 target(image::Image::Description(image::Image::Type::Float4, dimensions));
 
 	baking::Baking_worker worker;
-	worker.init(0, scene, max_sample_size, *surface_integrator_factory_,
+	worker.init(0,  scene, max_sample_size, *surface_integrator_factory_,
 				*volume_integrator_factory_, *sampler_factory_);
 
 	scene::Ray ray;
@@ -93,7 +93,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/,
 
 	std::ofstream stream("pastry.png", std::ios::binary);
 
-	writer.write(stream, target, thread_pool);
+	writer.write(stream, target, thread_pool);*/
 }
 
 }

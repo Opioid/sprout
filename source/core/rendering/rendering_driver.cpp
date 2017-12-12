@@ -5,6 +5,7 @@
 #include "scene/scene.hpp"
 #include "scene/camera/camera.hpp"
 #include "rendering/sensor/sensor.hpp"
+#include "take/take.hpp"
 #include "take/take_view.hpp"
 #include "base/memory/align.hpp"
 #include "base/math/vector4.inl"
@@ -13,25 +14,19 @@
 
 namespace rendering {
 
-Driver::Driver(const Surface_integrator_factory& surface_integrator_factory,
-			   const Volume_integrator_factory& volume_integrator_factory,
-			   const Sampler_factory& sampler_factory,
-			   scene::Scene& scene,
-			   take::View& view,
-			   thread::Pool& thread_pool,
-			   uint32_t max_sample_size) :
-	surface_integrator_factory_(surface_integrator_factory),
-	volume_integrator_factory_(volume_integrator_factory),
-	sampler_factory_(sampler_factory),
-	scene_(scene), view_(view), thread_pool_(thread_pool),
+Driver::Driver(take::Take& take, scene::Scene& scene,
+			   thread::Pool& thread_pool, uint32_t max_sample_size) :
+	scene_(scene), view_(take.view), thread_pool_(thread_pool),
 	workers_(memory::construct_aligned<Camera_worker>(thread_pool.num_threads())),
-	tiles_(view.camera->resolution(), int2(32, 32),
-		   view.camera->sensor().filter_radius_int()),
+	tiles_(take.view.camera->resolution(), int2(32, 32),
+		   take.view.camera->sensor().filter_radius_int()),
 	target_(image::Image::Description(image::Image::Type::Float4,
-									  view.camera->sensor_dimensions())) {
+									  take.view.camera->sensor_dimensions())) {
 	for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-		workers_[i].init(i, scene, max_sample_size, *surface_integrator_factory,
-						 *volume_integrator_factory, *sampler_factory_);
+		workers_[i].init(i, take.settings, scene, max_sample_size,
+						 *take.surface_integrator_factory,
+						 *take.volume_integrator_factory,
+						 *take.sampler_factory);
 	}
 }
 

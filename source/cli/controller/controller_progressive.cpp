@@ -23,13 +23,7 @@ size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& res
 		return 0;
 	}
 
-	rendering::Driver_progressive driver(take.surface_integrator_factory,
-										 take.volume_integrator_factory,
-										 take.sampler_factory,
-										 scene,
-										 take.view,
-										 thread_pool,
-										 max_sample_size);
+	rendering::Driver_progressive driver(take, scene, thread_pool, max_sample_size);
 
 //	driver.set_force_statistics(true);
 

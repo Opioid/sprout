@@ -183,11 +183,7 @@ int main(int argc, char* argv[]) {
 		const auto rendering_start = std::chrono::high_resolution_clock::now();
 
 		if (take->view.camera) {
-			rendering::Driver_finalframe driver(take->surface_integrator_factory,
-												take->volume_integrator_factory,
-												take->sampler_factory,
-												scene, take->view,
-												thread_pool, max_sample_size);
+			rendering::Driver_finalframe driver(*take, scene, thread_pool, max_sample_size);
 
 			rendering_num_bytes += driver.num_bytes();
 

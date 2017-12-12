@@ -83,7 +83,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	bool primary_ray = 0 == ray.depth;
 	bool requires_bounce = false;
 
-	bool hit = resolve_mask(ray, intersection, filter, worker);
+	bool hit = worker.resolve_mask(ray, intersection, filter);
 
 	float3 throughput(1.f);
 	float3 result = worker.volume_li(ray, primary_ray, throughput);
@@ -172,7 +172,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		// For these cases we fall back to plain pathtracing
 		if (requires_bounce) {
-			hit = intersect_and_resolve_mask(ray, intersection, filter, worker);
+			hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
 			float3 tr;
 			const float3 vli = worker.volume_li(ray, primary_ray, tr);
@@ -252,7 +252,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset,
 					  scene::Ray_max_t, ray.time, ray.depth + 1, ray.properties);
 
-	const bool hit = intersect_and_resolve_mask(secondary_ray, intersection, filter, worker);
+	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection, filter);
 
 	const float3 weighted_reflection = sample_result.reflection / sample_result.pdf;
 

@@ -56,7 +56,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 	float opacity = 0.f;
 
-	bool hit = resolve_mask(ray, intersection, filter, worker);
+	bool hit = worker.resolve_mask(ray, intersection, filter);
 
 	float3 throughput(1.f);
 	float3 result = worker.volume_li(ray, true, throughput);
@@ -145,7 +145,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
-		hit = intersect_and_resolve_mask(ray, intersection, filter, worker);
+		hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
 		float3 tr;
 		const float3 vli = worker.volume_li(ray, primary_ray, tr);

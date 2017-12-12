@@ -58,7 +58,6 @@ public:
 	using Prop			  = scene::prop::Prop;
 	using Intersection	  = scene::prop::Intersection;
 
-
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
