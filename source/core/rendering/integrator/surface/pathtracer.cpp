@@ -105,13 +105,14 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (material_sample.is_sss()) {
-				result += throughput * subsurface_.li(worker, ray, intersection, material_sample,
-													  Sampler_filter::Nearest, sample_result);
+				result += throughput * subsurface_.li(ray, primary_ray, intersection,
+													  material_sample, Sampler_filter::Nearest,
+													  worker, sample_result);
 				if (0.f == sample_result.pdf) {
 					break;
 				}
 
-				throughput *= sample_result.reflection / sample_result.pdf;
+				throughput *= sample_result.reflection;
 			} else {
 				const float3 tr = transmittance_.resolve(ray, intersection,
 														 material_sample.absorption_coeffecient(),

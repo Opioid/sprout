@@ -29,9 +29,9 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 li(Worker& worker, const Ray& ray, Intersection& intersection,
+	virtual float3 li(const Ray& ray, bool primary_ray, Intersection& intersection,
 					  const Material_sample& sample, Sampler_filter filter,
-					  Bxdf_sample& sample_result) override final;
+					  Worker& worker, Bxdf_sample& sample_result) override final;
 
 	virtual size_t num_bytes() const override final;
 

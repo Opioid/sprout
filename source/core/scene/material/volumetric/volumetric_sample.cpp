@@ -25,6 +25,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	result.reflection = float3(phase);
 	result.wi = dir;
 	result.pdf = phase;
+	result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 
 float Sample::ior() const {

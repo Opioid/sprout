@@ -27,11 +27,18 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float3 li(Worker& worker, const Ray& ray, Intersection& intersection,
+	virtual float3 li(const Ray& ray, bool primary_ray, Intersection& intersection,
 					  const Material_sample& sample, Sampler_filter filter,
-					  Bxdf_sample& sample_result) = 0;
+					  Worker& worker, Bxdf_sample& sample_result) = 0;
 
 protected:
+
+	float3 estimate_light(const float3& position, const Prop* prop,
+						  const scene::material::BSSRDF& bssrdf,
+						  float time, uint32_t depth,
+						  sampler::Sampler& sampler, Worker& worker);
+
+private:
 
 	float3 estimate_direct_light(const float3& position, const Prop* prop,
 								 const scene::material::BSSRDF& bssrdf,

@@ -25,9 +25,9 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t /*num_samples_p
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& intersection,
+float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection& intersection,
 							 const Material_sample& sample, Sampler_filter filter,
-							 Bxdf_sample& sample_result) {
+							 Worker& worker, Bxdf_sample& sample_result) {
 	float3 result(0.f);
 	float3 tr(sample_result.reflection / sample_result.pdf);
 
@@ -56,7 +56,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 		const auto& bssrdf = sample.bssrdf(worker);
 
 		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-		const uint32_t num_samples = 0 == i ? max_samples : 1;
+		const uint32_t num_samples = (0 == i && 0 == ray.depth) ? max_samples : 1;
 		const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
 		const float step = range * num_samples_reciprocal;
 
@@ -75,31 +75,8 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 			const float3 current = tray.point(min_t);
 
 			// Direct light scattering
-			radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
-												   ray.time, ray.depth, sampler_, worker);
-
-			if (ray.depth < 1) {
-				radiance += tr * estimate_indirect_light(current, intersection.prop, bssrdf,
-														 ray.time, ray.depth, sampler_, worker);
-			}
-
-//			if (ray.depth < 1) {
-//				Ray secondary_ray = ray;
-//				secondary_ray.properties.set(Ray::Property::Within_volume);
-
-//				scene::prop::Intersection secondary_intersection;
-//				secondary_intersection.geo.p = current;
-//				secondary_intersection.geo.part = 0;
-//				secondary_intersection.geo.epsilon = 0.0005f;
-//				secondary_intersection.prop = &volume;
-
-//				const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
-
-//				const float3 scattering = material.scattering(transformation, current,
-//															  Sampler_filter::Undefined, worker);
-
-//				radiance += tr * scattering * local_radiance;
-//			}
+			radiance += tr * estimate_light(current, intersection.prop, bssrdf,
+											ray.time, ray.depth, sampler_, worker);
 		}
 
 		result += step * radiance;
@@ -114,15 +91,9 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 
 		tr *= sample_result.reflection / sample_result.pdf;
 
-//		if (math::all_lesser(tr, 1.0f)) {
-//			break;
-//		}
-
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			break;
-		} /*else {
-			sample_result.pdf = 0.f;
-		}*/
+		}
 	}
 
 	sample_result.reflection = tr;

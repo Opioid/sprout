@@ -24,9 +24,9 @@ void Bruteforce::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixe
 
 void Bruteforce::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Bruteforce::li(Worker& /*worker*/, const Ray& /*ray*/, Intersection& /*intersection*/,
+float3 Bruteforce::li(const Ray& /*ray*/, bool /*primary_ray*/, Intersection& /*intersection*/,
 					  const Material_sample& /*sample*/, Sampler_filter /*filter*/,
-					  Bxdf_sample& /*sample_result*/) {
+					  Worker& /*worker*/, Bxdf_sample& /*sample_result*/) {
 	return float3(0.f);
 }
 
