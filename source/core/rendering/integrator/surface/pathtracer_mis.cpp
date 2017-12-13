@@ -76,6 +76,8 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) {
+	const uint32_t max_bounces = settings_.max_bounces;
+
 	Sampler_filter filter = Sampler_filter::Undefined;
 	Bxdf_sample sample_result;
 
@@ -86,14 +88,14 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	float3 throughput(1.f);
 	float3 result(0.f);
 
-	for (uint32_t i = 0; ; ++i) {
+	for (uint32_t i = ray.depth; ; ++i) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
 		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 
-			if (requires_bounce ? i == settings_.max_bounces + 1 : i == settings_.max_bounces) {
+			if (i == (requires_bounce ? max_bounces + 1: max_bounces)) {
 				break;
 			}
 		}
@@ -109,9 +111,8 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		result += throughput * direct_light;
 
 		if (!intersection.hit()
-		||  (requires_bounce ? i == settings_.max_bounces : i >= settings_.max_bounces - 1)
-		||  (0.f == sample_result.pdf)
-		/*||   ray.properties.test(Ray::Property::Direct_only)*/) {
+		||  (i >= (requires_bounce ? max_bounces : max_bounces - 1))
+		||  (0.f == sample_result.pdf)) {
 			opacity = 1.f; // I am not really happy with this being here
 			break;
 		}

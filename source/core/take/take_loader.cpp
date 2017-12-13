@@ -148,11 +148,10 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 	if (!take->volume_integrator_factory) {
 		const float step_size = 1.f;
-		const uint32_t max_indirect_bounces = 0;
-		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
+		const bool indirect_light = false;
 		take->volume_integrator_factory = std::make_shared<
-			volume::Single_scattering_factory>(take->settings, num_threads, step_size,
-											   max_indirect_bounces, light_sampling);
+			volume::Single_scattering_factory>(take->settings, num_threads,
+											   step_size, indirect_light);
 
 		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
@@ -547,8 +546,6 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 	using namespace rendering::integrator;
 	using namespace rendering::integrator::volume;
 
-	Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
-
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Attenuation" == n.name) {
 			return std::make_shared<Attenuation_factory>(settings, num_workers);
@@ -558,14 +555,10 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			const uint32_t max_indirect_bounces = json::read_uint(n.value,
-																  "max_indirect_bounces", 0);
-
-			load_light_sampling(n.value, light_sampling);
+			const bool indirect_light = json::read_bool(n.value, "indirect_light", false);
 
 			return std::make_shared<Single_scattering_factory>(settings, num_workers,
-															   step_size, max_indirect_bounces,
-															   light_sampling);
+															   step_size, indirect_light);
 		}
 	}
 

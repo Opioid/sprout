@@ -15,9 +15,7 @@ public:
 	struct Settings {
 		float step_size;
 
-		uint32_t max_indirect_bounces;
-
-		Light_sampling light_sampling;
+		bool direct_light_only;
 	};
 
 	Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -37,16 +35,6 @@ public:
 
 private:
 
-	float3 estimate_direct_light(const float3& w, const float3& p, float time,
-								 const Material& material, Worker& worker);
-
-	float3 evaluate_light(const Light& light, float light_weight, const float3& w, const float3& p,
-						  float time, uint32_t sampler_dimension,
-						  const Material& material, Worker& worker);
-
-	float3 estimate_indirect_light(const float3& w, const float3& p, const Ray& history,
-								   const Material& material, Worker& worker);
-
 	const Settings settings_;
 
 	sampler::Random sampler_;
@@ -57,8 +45,7 @@ class Single_scattering_factory : public Factory {
 public:
 
 	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size, uint32_t max_indirect_bounces,
-							  Light_sampling light_sampling);
+							  float step_size, bool indirect_light);
 
 	~Single_scattering_factory();
 

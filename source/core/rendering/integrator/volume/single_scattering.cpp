@@ -59,8 +59,6 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 
 	const float step = range / static_cast<float>(num_samples);
 
-	const float3 w = -ray.direction;
-
 	float3 radiance(0.f);
 	float3 tr(1.f);
 
@@ -101,23 +99,13 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		tau_ray.direction = tau_ray_direction;
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
-		// Direct incoming light
-/*		float3 local_radiance = estimate_direct_light(w, current, ray.time, material, worker);
-
-	//	if (ray.depth < settings_.max_indirect_bounces) {
-			// Indirect incoming light
-			local_radiance += estimate_indirect_light(w, current, ray, material, worker);
-	//	}
-
-		const float3 scattering = material.scattering(transformation, current,
-													  Sampler_filter::Undefined, worker);
-
-		radiance += tr * scattering * local_radiance;
-		*/
-
 		// Lighting
 		Ray secondary_ray = ray;
 		secondary_ray.properties.set(Ray::Property::Within_volume);
+
+		if (settings_.direct_light_only) {
+			secondary_ray.depth = 0xFFFFFFFF;
+		}
 
 		scene::prop::Intersection secondary_intersection;
 		secondary_intersection.geo.p = current;
@@ -131,7 +119,6 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 													  Sampler_filter::Undefined, worker);
 
 		radiance += tr * scattering * local_radiance;
-
 	}
 
 	transmittance = tr;
@@ -145,88 +132,12 @@ size_t Single_scattering::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p, float time,
-												const Material& material, Worker& worker) {
-	const uint32_t num_samples = settings_.light_sampling.num_samples;
-
-	float3 result(0.f);
-
-	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
-		for (uint32_t i = num_samples; i > 0; --i) {
-			const auto light = worker.scene().random_light(rng_.random_float());
-
-			result += evaluate_light(light.ref, light.pdf, w, p, time, 0, material, worker);
-		}
-
-		result /= static_cast<float>(num_samples);
-	} else {
-		const auto& lights = worker.scene().lights();
-
-		const float light_weight = static_cast<float>(num_samples);
-
-		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
-			const auto& light = *lights[l];
-
-			for (uint32_t i = num_samples; i > 0; --i) {
-				result += evaluate_light(light, light_weight, w, p, time, l, material, worker);
-			}
-		}
-	}
-
-	return result;
-}
-
-float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
-										 const float3& w, const float3& p,
-										 float time, uint32_t sampler_dimension,
-										 const Material& material, Worker& worker) {
-	constexpr float epsilon = 5e-5f;
-
-	scene::light::Sample light_sample;
-	if (!light.sample(p, time, sampler_, sampler_dimension, Sampler_filter::Nearest,
-					  worker, light_sample)) {
-		return float3::identity();
-	}
-
-	const Ray shadow_ray(p, light_sample.shape.wi, 0.f, light_sample.shape.t - epsilon, time);
-
-	const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
-	if (math::any_greater_zero(tv)) {
-		const float phase = material.phase(w, -light_sample.shape.wi);
-
-		const float3 tr = worker.transmittance(shadow_ray);
-
-		const float3 l = tr * light_sample.radiance;
-
-		return (phase * tv * l) / (light_weight * light_sample.shape.pdf);
-	}
-
-	return float3(0.f);
-}
-
-float3 Single_scattering::estimate_indirect_light(const float3& w, const float3& p,
-												  const Ray& history, const Material& material,
-												  Worker& worker) {
-	const float2 uv(rng_.random_float(), rng_.random_float());
-	const float3 dir = math::sample_sphere_uniform(uv);
-
-//	const float phase = material.phase(w, -dir);
-
-	Ray secondary_ray(p, dir, 0.f, scene::Ray_max_t, history.time,
-					  history.depth + 1, Ray::Property::Within_volume);
-
-	const float3 li = worker.li(secondary_ray).xyz();
-
-	return /*phase **/ li;
-}
-
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
 													 uint32_t num_integrators, float step_size,
-													 uint32_t max_indirect_bounces,
-													 Light_sampling light_sampling) :
+													 bool indirect_light) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{step_size, max_indirect_bounces, light_sampling} {}
+	settings_{step_size, !indirect_light} {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::free_aligned(integrators_);

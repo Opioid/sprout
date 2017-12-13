@@ -60,7 +60,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 result(0.f);
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
-	for (uint32_t i = 0;; ++i) {
+	for (uint32_t i = ray.depth;; ++i) {
 		bool primary_ray = 0 == i || previous_sample_type.test(Bxdf_type::Specular);
 
 		if (primary_ray) {
@@ -78,7 +78,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			result += throughput * material_sample.radiance();
 		}
 
-		if (i == settings_.max_bounces) {
+		if (i >= settings_.max_bounces) {
 			break;
 		}
 
