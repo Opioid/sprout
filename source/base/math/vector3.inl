@@ -633,6 +633,12 @@ static inline bool all_finite(const Vector3f_a& v) {
 	return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
 }
 
+static inline bool all_finite_and_positive(const Vector3f_a& v) {
+	return std::isfinite(v[0]) && v[0] >= 0.f
+		&& std::isfinite(v[1]) && v[1] >= 0.f
+		&& std::isfinite(v[2]) && v[2] >= 0.f;
+}
+
 }
 
 #endif

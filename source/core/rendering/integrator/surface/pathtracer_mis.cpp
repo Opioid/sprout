@@ -240,7 +240,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 
 	if (requires_bounce || 0.f == sample_result.pdf) {
-		SOFT_ASSERT(math::all_finite(result));
+		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
@@ -259,13 +259,13 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	sample_result.reflection *= tr;
 
 	if (!hit) {
-		SOFT_ASSERT(math::all_finite(result));
+		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
 	const uint32_t light_id = intersection.light_id();
 	if (!Light::is_light(light_id)) {
-		SOFT_ASSERT(math::all_finite(result));
+		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
@@ -279,7 +279,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 									   Sampler_filter::Nearest, worker);
 
 	if (0.f == ls_pdf) {
-		SOFT_ASSERT(math::all_finite(result));
+		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
@@ -298,7 +298,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		result += weight * (ls_energy * weighted_reflection);
 	}
 
-	SOFT_ASSERT(math::all_finite(result));
+	SOFT_ASSERT(math::all_finite_and_positive(result));
 
 	return result;
 }

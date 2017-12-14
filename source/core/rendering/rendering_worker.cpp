@@ -46,8 +46,13 @@ float4 Worker::li(Ray& ray) {
 	float3 vtr(1.f);
 	const float3 vli = volume_li(ray, true, vtr);
 
+	SOFT_ASSERT(math::all_finite_and_positive(vli));
+
 	if (hit) {
 		const float4 li = surface_integrator_->li(ray, intersection, *this);
+
+		SOFT_ASSERT(math::all_finite_and_positive(li.xyz()));
+
 		return float4(vtr * li.xyz() + vli, li[3]);
 	} else {
 		return float4(vli, 1.f);

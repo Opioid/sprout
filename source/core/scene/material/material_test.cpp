@@ -12,7 +12,7 @@ bool check(const float3& result, const float3& h,
 		   float n_dot_wi, float n_dot_wo, float wo_dot_h, float pdf,
 		   const Sample::Layer& layer) {
 	if (!std::isfinite(pdf)
-	||  !math::all_finite(result)) {
+	||  !math::all_finite_and_positive(result)) {
 		std::cout << "h: "; print_vector(h);
 		std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
 		std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
@@ -32,7 +32,7 @@ bool check(const float3& result,
 		   float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h, float pdf,
 		   const Sample::Layer& layer) {
 	if (!std::isfinite(pdf)
-	||  !math::all_finite(result)) {
+	||  !math::all_finite_and_positive(result)) {
 		std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
 		std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
 		std::cout << "wo_dot_h: " << wo_dot_h << std::endl;

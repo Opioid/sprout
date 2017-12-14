@@ -10,6 +10,8 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/random/generator.inl"
 
+#include "base/debug/assert.hpp"
+
 namespace rendering::integrator::surface::sub {
 
 Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
@@ -24,7 +26,12 @@ float3 Integrator::estimate_light(const float3& position, const Prop* prop,
 	const float3 scattering = bssrdf.scattering();
 
 	float3 radiance = estimate_direct_light(position, prop, bssrdf, time, depth, sampler, worker);
+
+	SOFT_ASSERT(math::all_finite_and_positive(radiance));
+
 	radiance += estimate_indirect_light(position, prop, bssrdf, time, depth, sampler, worker);
+
+	SOFT_ASSERT(math::all_finite_and_positive(radiance));
 
 	return scattering * radiance;
 }
@@ -98,11 +105,15 @@ float3 Integrator::estimate_indirect_light(const float3& position, const Prop* p
 	const float3 tau = bssrdf.optical_depth(prop_length);
 	const float3 transmittance = math::exp(-tau);
 
+	SOFT_ASSERT(math::all_finite_and_positive(transmittance));
+
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	secondary_ray.min_t = secondary_ray.max_t + ray_offset;
 	secondary_ray.max_t = scene::Ray_max_t;
 
 	const float3 li = worker.li(secondary_ray).xyz();
+
+	SOFT_ASSERT(math::all_finite_and_positive(li));
 
 	return /*phase **/ (transmittance * li);
 }

@@ -390,6 +390,10 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear(bxdf::Type::Glossy_transmission);
 
+//	if (!math::all_finite_and_positive(result.reflection)) {
+//		return 1.f;
+//	}
+
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
 	return n_dot_wi;
