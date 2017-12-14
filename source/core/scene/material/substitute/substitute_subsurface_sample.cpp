@@ -22,35 +22,6 @@ bxdf::Result Sample_subsurface::evaluate(const float3& wi) const {
 }
 
 void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
-/*
-	const bool same_side = same_hemisphere(wo_);
-
-	const float p = sampler.generate_sample_1D();
-
-	if (same_side) {
-		if (p < 0.5f) {
-			refract(same_side, layer_, sampler, result);
-		} else {
-			if (p < 0.75f) {
-				layer_.diffuse_sample(wo_, sampler, result);
-			} else {
-				layer_.specular_sample(wo_, sampler, result);
-			}
-		}
-	} else {
-		Layer tmp_layer = layer_;
-		tmp_layer.n_ *= -1.f;
-
-		if (p < 0.5f) {
-			refract(same_side, tmp_layer, sampler, result);
-		} else {
-			tmp_layer.pure_specular_sample(wo_, sampler, result);
-		}
-	}
-
-	result.pdf *= 0.5f;
-	*/
-
 	const bool same_side = same_hemisphere(wo_);
 
 	const float p = sampler.generate_sample_1D();

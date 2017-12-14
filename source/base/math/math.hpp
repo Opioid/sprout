@@ -56,6 +56,11 @@ static T exp2(T x) {
 }
 
 template<typename T>
+static constexpr T pow2(T x) {
+	return x * x;
+}
+
+template<typename T>
 static constexpr T pow4(T x) {
 	const T x2 = x * x;
 	return x2 * x2;

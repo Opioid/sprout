@@ -51,7 +51,7 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 	ior_.eta_i_ = eta_i;
 	ior_.eta_t_ = eta_t;
 	ior_.sqrt_eta_i = fresnel::schlick_sqrt_eta(eta_i);
-	ior_.sqrt_eta_i = fresnel::schlick_sqrt_eta(eta_t);
+	ior_.sqrt_eta_t = fresnel::schlick_sqrt_eta(eta_t);
 }
 
 }
