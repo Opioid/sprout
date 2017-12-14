@@ -32,7 +32,9 @@ static inline float3 schlick(float wo_dot_h, const float3& f0) {
 
 static inline float3 schlick(float wo_dot_h, const float3& f0, float sqrt_eta) {
 //	return f0 + math::pow5(1.f - ((wo_dot_h - sqrt_eta) / (1.f - sqrt_eta))) * (1.f - f0);
-	return f0 + math::pow5(1.f - (std::max(wo_dot_h - sqrt_eta, 0.f) / (1.f - sqrt_eta))) * (1.f - f0);
+
+	const float a = std::max((wo_dot_h - sqrt_eta), 0.f) / (1.f - sqrt_eta);
+	return f0 + math::pow5(1.f - a) * (1.f - f0);
 }
 
 static inline float3 conductor(float wo_dot_h, const float3& eta, const float3& k) {

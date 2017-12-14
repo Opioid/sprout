@@ -18,7 +18,10 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
-	sample.set(material::absorption_coefficient(absorption_color_, attenuation_distance_),
+	const float lambert_scale = 0.2f;
+
+	sample.set(lambert_scale,
+			   material::absorption_coefficient(absorption_color_, attenuation_distance_),
 			   material::scattering_coefficient(scattering_color_, attenuation_distance_),
 			   ior_);
 

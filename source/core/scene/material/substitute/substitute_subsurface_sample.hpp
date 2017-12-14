@@ -5,7 +5,9 @@
 
 namespace scene::material::substitute {
 
-class Sample_subsurface : public Sample_base<disney::Isotropic_no_lambert> {
+class Sample_subsurface :
+		public Sample_base<disney::Isotropic_scaled_lambert,
+						   disney::Isotropic_scaled_lambert::Data> {
 
 public:
 
@@ -26,7 +28,8 @@ public:
 		float sqrt_eta_t;
 	};
 
-	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
+	void set(float lambert_scale,
+			 const float3& absorption_coefficient, const float3& scattering_coefficient,
 			 const IOR& ior);
 
 	virtual bool is_sss() const override final;

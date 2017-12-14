@@ -62,9 +62,11 @@ const BSSRDF& Sample_subsurface::bssrdf(const Worker& worker) const {
 	return bssrdf;
 }
 
-void Sample_subsurface::set(const float3& absorption_coefficient,
+void Sample_subsurface::set(float lambert_scale,
+							const float3& absorption_coefficient,
 							const float3& scattering_coefficient,
 							const IOR& ior) {
+	layer_.lambert_scale = lambert_scale;
 	absorption_coefficient_ = absorption_coefficient;
 	scattering_coefficient_ = scattering_coefficient;
 	ior_ = ior;

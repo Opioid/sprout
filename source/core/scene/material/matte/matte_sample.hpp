@@ -21,6 +21,7 @@ public:
 
 		float3 diffuse_color_;
 		float  roughness_;
+		float  alpha_;
 		float  alpha2_;
 	};
 

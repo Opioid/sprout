@@ -4,7 +4,7 @@
 
 namespace scene::material::substitute {
 
-template<typename Diffuse>
+template<typename Diffuse, class... Layer_data>
 class Sample_base : public material::Sample {
 
 public:
@@ -38,7 +38,7 @@ protected:
 
 public:
 
-	struct Layer : material::Sample::Layer {
+	struct Layer : material::Sample::Layer, Layer_data... {
 		void set(const float3& color, const float3& radiance, float ior,
 				 float constant_f0, float roughness, float metallic);
 
