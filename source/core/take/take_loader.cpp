@@ -555,10 +555,10 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			const bool indirect_light = json::read_bool(n.value, "indirect_light", false);
+			const bool indirect_lighting = json::read_bool(n.value, "indirect_lighting", false);
 
 			return std::make_shared<Single_scattering_factory>(settings, num_workers,
-															   step_size, indirect_light);
+															   step_size, indirect_lighting);
 		}
 	}
 

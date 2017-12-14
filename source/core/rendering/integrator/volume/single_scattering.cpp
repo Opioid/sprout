@@ -103,8 +103,13 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		Ray secondary_ray = ray;
 		secondary_ray.properties.set(Ray::Property::Within_volume);
 
-		if (settings_.direct_light_only) {
-			secondary_ray.depth = 0xFFFFFFFF;
+		if (settings_.direct_lighting_only) {
+			// Make the surface integrator stop after gather direct lighting
+			// by selecting a very high ray depth.
+			// Don't take 0xFFFFFFFF because that will cause a wraparound in the MIS integrator,
+			// causing us to miss direct lighting from light sources wich are marked as
+			// invisible in the camera
+			secondary_ray.depth = 0xFFFFFFFE;
 		}
 
 		scene::prop::Intersection secondary_intersection;
@@ -134,10 +139,10 @@ size_t Single_scattering::num_bytes() const {
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
 													 uint32_t num_integrators, float step_size,
-													 bool indirect_light) :
+													 bool indirect_lighting) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{step_size, !indirect_light} {}
+	settings_{step_size, !indirect_lighting} {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::free_aligned(integrators_);

@@ -15,7 +15,7 @@ public:
 	struct Settings {
 		float step_size;
 
-		bool direct_light_only;
+		bool direct_lighting_only;
 	};
 
 	Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -45,7 +45,7 @@ class Single_scattering_factory : public Factory {
 public:
 
 	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size, bool indirect_light);
+							  float step_size, bool indirect_lighting);
 
 	~Single_scattering_factory();
 
