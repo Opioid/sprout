@@ -71,14 +71,12 @@ static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_do
 	return 0.5f / (g_wo + g_wi);
 }
 
-static inline float optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float n_dot_wo,
-														  float alpha2, float& og1_wo) {
+static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float n_dot_wo,
+														   float alpha2) {
 	const float t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
 	const float t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
 
-	og1_wo = t_wo + n_dot_wo;
-
-	return 0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi);
+	return { 0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi), t_wo + n_dot_wo };
 }
 
 static inline float3 microfacet(float d, float g, const float3& f, float n_dot_wi, float n_dot_wo) {
@@ -135,8 +133,7 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 
 	const float alpha2 = layer.alpha2_;
 	const float d = distribution_isotropic(n_dot_h, alpha2);
-		  float og1_wo;
-	const float g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
+	const float2 g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -144,9 +141,9 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 	// Legacy GGX
 	// pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 
-	const float3 reflection = d * g * f;
+	const float3 reflection = d * g[0] * f;
 
-	const float pdf = pdf_visible(d, og1_wo);
+	const float pdf = pdf_visible(d, g[1]);
 
 	SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
 
@@ -268,16 +265,15 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
-		  float og1_wo;
-	const float g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
+	const float2 g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
 
-	result.reflection = d * g * f;
+	result.reflection = d * g[0] * f;
 	result.wi = wi;
 	result.h = h;
-	result.pdf = pdf_visible(d, og1_wo);
+	result.pdf = pdf_visible(d, g[1]);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear(bxdf::Type::Glossy_reflection);
 
@@ -316,6 +312,9 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t, const 
 	return refract(wo, n_dot_wo, n_dot_t, layer, layer, fresnel, sampler, result);
 }
 
+// Refraction details according to
+// https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
+
 template<typename Layer, typename IOR, typename Fresnel>
 float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 						 const Layer& layer, const IOR& ior, const Fresnel& fresnel,
@@ -324,21 +323,6 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
 	const float2 xi = sampler.generate_sample_2D();
-/*
-	const float alpha2 = layer.alpha2_;
-	const float n_dot_h_squared = (1.f - xi[1]) / ((alpha2 - 1.f) * xi[1] + 1.f);
-	const float sin_theta = std::sqrt(1.f - n_dot_h_squared);
-	const float n_dot_h   = std::sqrt(n_dot_h_squared);
-	const float phi = (2.f * math::Pi) * xi[0];
-//	const float sin_phi = std::sin(phi);
-//	const float cos_phi = std::cos(phi);
-	float sin_phi;
-	float cos_phi;
-	math::sincos(phi, sin_phi, cos_phi);
-
-	const float3 lh = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalize(layer.tangent_to_world(lh));
-*/
 
 	const float alpha  = layer.alpha_;
 	const float alpha2 = layer.alpha2_;
@@ -376,10 +360,12 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 
 	const float3 h = layer.tangent_to_world(m);
 
-
 	const float wo_dot_h = clamp_dot(wo, h);
 
 	const float3 wi = math::normalize((ior.eta_i_ * wo_dot_h - n_dot_t) * h - ior.eta_i_ * wo);
+
+	// not the same as wo_dot_h, because of IoR!
+	const float wi_dot_h = clamp_reverse_dot(wi, h);
 
 	const float n_dot_wi = layer.clamp_reverse_n_dot(wi);
 
@@ -391,13 +377,12 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 
 	const float3 refraction = d * g * f;
 
-	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
+	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	float denom = (ior.ior_i_ + ior.ior_o_) * wo_dot_h;
-	denom = denom * denom;
+	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
 
-	const float ior_o_2 = ior.ior_o_ * ior.ior_o_;
-	result.reflection = factor * ((ior_o_2 * refraction) / denom);
+	const float ior_i_2 = ior.ior_i_ * ior.ior_i_;
+	result.reflection = factor * ((ior_i_2 * refraction) / denom);
 	result.wi = wi;
 	result.h = h;
 //	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
