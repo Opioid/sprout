@@ -18,12 +18,9 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
-	const float lambert_scale = 0.2f;
+	const float lambert_scale = 0.396f;
 
-	sample.set(lambert_scale,
-			   material::absorption_coefficient(absorption_color_, attenuation_distance_),
-			   material::scattering_coefficient(scattering_color_, attenuation_distance_),
-			   ior_);
+	sample.set(lambert_scale, absorption_coefficient_, scattering_coefficient_, ior_);
 
 	return sample;
 }
@@ -32,16 +29,12 @@ size_t Material_subsurface::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_subsurface::set_absorption_color(const float3& color) {
-	absorption_color_ = color;
-}
-
-void Material_subsurface::set_scattering_color(const float3& color) {
-	scattering_color_ = color;
-}
-
-void Material_subsurface::set_attenuation_distance(float attenuation_distance) {
-	attenuation_distance_ = attenuation_distance;
+void Material_subsurface::set_attenuation(const float3& absorption_color,
+										  const float3& scattering_color,
+										  float distance) {
+	absorption_coefficient_ = absorption_coefficient(absorption_color, distance);
+	scattering_coefficient_ = scattering_coefficient(scattering_color, distance);
+	attenuation_distance_   = distance;
 }
 
 void Material_subsurface::set_ior(float ior, float external_ior) {

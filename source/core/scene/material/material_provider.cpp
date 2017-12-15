@@ -918,9 +918,9 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 		material->set_emission_map(emission_map);
 
 		material->set_color(color);
-		material->set_absorption_color(use_absorption_color ? absorption_color : color);
-		material->set_scattering_color(use_scattering_color ? scattering_color : color);
-		material->set_attenuation_distance(attenuation_distance);
+		material->set_attenuation(use_absorption_color ? absorption_color : color,
+								  use_scattering_color ? scattering_color : color,
+								  attenuation_distance);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
 		material->set_metallic(metallic);
