@@ -163,7 +163,7 @@ inline Schlick_conditional::Schlick_conditional(const float3& f0, bool full) :
 
 inline float3 Schlick_conditional::operator()(float wo_dot_h) const {
 	if (full_) {
-		return float3::identity();
+		return float3(1.f);
 	}
 
 	return schlick(wo_dot_h, f0_);
