@@ -18,7 +18,7 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
-	const float lambert_scale = 0.396f;
+	const float lambert_scale = roughness_ * std::exp(-attenuation_distance_);
 
 	sample.set(lambert_scale, absorption_coefficient_, scattering_coefficient_, ior_);
 

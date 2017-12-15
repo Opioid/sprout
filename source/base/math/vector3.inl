@@ -589,6 +589,14 @@ static inline Vector3f_a cos(const Vector3f_a& v) {
 	return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 
+static inline Vector3f_a sqrt(const Vector3f_a& v) {
+	return Vector3f_a(std::sqrt(v[0]), std::sqrt(v[1]), std::sqrt(v[2]));
+}
+
+static inline Vector3f_a log(const Vector3f_a& v) {
+	return Vector3f_a(std::log(v[0]), std::log(v[1]), std::log(v[2]));
+}
+
 static inline constexpr bool operator==(const Vector3f_a& a, const Vector3f_a& b) {
 	return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
 }
