@@ -11,7 +11,6 @@ Material::Material(const Sampler_settings& sampler_settings) :
 
 Material::~Material() {}
 
-
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
 										 Sampler_filter /*filter*/, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
@@ -21,12 +20,6 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 	sample.layer_.set(anisotropy_);
 
 	return sample;
-}
-
-float Material::phase(const float3& w, const float3& wp) const {
-	const float g = anisotropy_;
-	const float k = 1.55f * g - (0.55f * g) * (g * g);
-	return phase_schlick(w, wp, k);
 }
 
 bool Material::is_volumetric() const {
@@ -41,11 +34,6 @@ void Material::set_attenuation(const float3& absorption_color, const float3& sca
 
 void Material::set_anisotropy(float anisotropy) {
 	anisotropy_ = anisotropy;
-}
-
-float Material::phase_schlick(const float3& w, const float3& wp, float k) {
-	const float d = 1.f - (k * math::dot(w, wp));
-	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
 }
 
 }

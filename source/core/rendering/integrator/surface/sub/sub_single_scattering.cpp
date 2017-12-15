@@ -73,11 +73,12 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 			tr *= math::exp(-tau);
 
 			const float average = spectrum::average(tr);
-			if (average < 0.0001f) {
-				if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
+			if (average < 0.0000001f) {
+			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
 					sample_result.pdf = 0.f;
+					result += step * radiance;
 					return result;
-				}
+			//	}
 			}
 
 			tau_ray_length = step;

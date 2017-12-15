@@ -55,6 +55,7 @@ inline const material::Sample& Intersection::sample(const float3& wo, float time
 	rs.area = area();
 	rs.time = time;
 	rs.ior  = 1.f;
+	rs.inside_volume = inside_volume;
 
 	return material->sample(wo, rs, filter, worker);
 }

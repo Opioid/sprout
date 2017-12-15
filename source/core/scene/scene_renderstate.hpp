@@ -25,6 +25,7 @@ struct Renderstate {
 	float area;
 	float time;
 	float ior;
+	bool  inside_volume;
 };
 
 }

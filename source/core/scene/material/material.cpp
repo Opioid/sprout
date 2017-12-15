@@ -82,10 +82,6 @@ float3 Material::scattering(const Transformation& /*transformation*/, const floa
 	return float3::identity();
 }
 
-float Material::phase(const float3& w, const float3& wp) const {
-	return 1.f;
-}
-
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 								const Transformation& /*transformation*/, float /*area*/,
 								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}

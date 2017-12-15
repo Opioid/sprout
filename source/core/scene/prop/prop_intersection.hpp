@@ -42,8 +42,9 @@ struct Intersection {
 
 	bool same_hemisphere(const float3& v) const;
 
-	shape::Intersection geo;
 	const Prop* prop;
+	shape::Intersection geo;
+	bool inside_volume;
 };
 
 }}

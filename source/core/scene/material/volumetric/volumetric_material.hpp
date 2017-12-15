@@ -16,8 +16,6 @@ public:
 										   Sampler_filter filter,
 										   const Worker& worker) override final;
 
-	virtual float phase(const float3& w, const float3& wp) const override final;
-
 	virtual bool is_volumetric() const override final;
 
 	void set_attenuation(const float3& absorption_color, const float3& scattering_color,

@@ -76,8 +76,6 @@ public:
 	virtual float3 scattering(const Transformation& transformation, const float3& p,
 							  Sampler_filter filter, const Worker& worker) const;
 
-	virtual float phase(const float3& w, const float3& wp) const;
-
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation, float area,
 								  bool importance_sampling, thread::Pool& pool);
