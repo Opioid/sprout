@@ -1,6 +1,6 @@
 #include "pathtracer_dl.hpp"
-#include "integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "image/texture/sampler/sampler_linear_2d.inl"
 #include "image/texture/sampler/sampler_nearest_2d.inl"
 #include "scene/scene.hpp"
@@ -67,8 +67,9 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		if (i > settings_.min_bounces) {
-			if (rendering::russian_roulette(throughput, settings_.path_continuation_probability,
-											sampler_.generate_sample_1D())) {
+			const float q = std::max(spectrum::luminance(throughput),
+									 settings_.path_continuation_probability);
+			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
 				break;
 			}
 		}

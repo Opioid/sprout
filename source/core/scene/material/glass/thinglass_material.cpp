@@ -1,7 +1,7 @@
 #include "thinglass_material.hpp"
 #include "thinglass_sample.hpp"
 #include "image/texture/texture_adapter.inl"
-#include "rendering/integrator/surface/integrator_helper.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/material_helper.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"

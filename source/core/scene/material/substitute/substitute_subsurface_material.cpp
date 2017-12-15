@@ -34,6 +34,9 @@ void Material_subsurface::set_attenuation(const float3& absorption_color,
 										  float distance) {
 	absorption_coefficient_ = absorption_coefficient(absorption_color, distance);
 	scattering_coefficient_ = scattering_coefficient(scattering_color, distance);
+//	attenuation(absorption_color, scattering_color, distance,
+//				absorption_coefficient_, scattering_coefficient_);
+
 	attenuation_distance_   = distance;
 }
 

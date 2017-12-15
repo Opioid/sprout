@@ -581,6 +581,10 @@ static inline constexpr float max_element(const Vector3f_a& v) {
 	return std::max(std::max(v[0], v[1]), v[2]);
 }
 
+static inline constexpr float checksum(const Vector3f_a& v) {
+	return v[0] + v[1] + v[2];
+}
+
 static inline Vector3f_a abs(const Vector3f_a& v) {
 	return Vector3f_a(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]));
 }

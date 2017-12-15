@@ -2,7 +2,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
-#include "rendering/integrator/surface/integrator_helper.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"

@@ -1,5 +1,5 @@
 #include "transmittance_open.hpp"
-#include "rendering/integrator/surface/integrator_helper.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"

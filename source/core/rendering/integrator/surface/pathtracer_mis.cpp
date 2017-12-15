@@ -1,7 +1,7 @@
 #include "pathtracer_mis.hpp"
-#include "integrator_helper.hpp"
 #include "sub/sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -118,8 +118,9 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		if (i > settings_.min_bounces) {
-			if (rendering::russian_roulette(throughput, settings_.path_continuation_probability,
-											sampler_.generate_sample_1D())) {
+			const float q = std::max(spectrum::luminance(throughput),
+									 settings_.path_continuation_probability);
+			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
 				break;
 			}
 		}

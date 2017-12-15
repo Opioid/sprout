@@ -2,7 +2,6 @@
 #define SU_CORE_RENDERING_INTEGRATOR_HELPER_HPP
 
 #include "base/math/vector3.inl"
-#include "base/spectrum/rgb.hpp"
 #include <cmath>
 
 namespace rendering {
@@ -29,13 +28,11 @@ static inline float power_heuristic(float f_pdf, float g_pdf) {
 }
 
 static inline bool russian_roulette(float3& throughput, float continuation_probability, float r) {
-	const float q = std::max(spectrum::luminance(throughput), continuation_probability);
-
-	if (r > q) {
+	if (r > continuation_probability) {
 		return true;
 	}
 
-	throughput /= q;
+	throughput /= continuation_probability;
 
 	return false;
 }

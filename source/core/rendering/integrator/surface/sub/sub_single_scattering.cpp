@@ -1,5 +1,6 @@
 #include "sub_single_scattering.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -12,6 +13,7 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::surface::sub {
 
@@ -69,6 +71,14 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 		for (uint32_t j = num_samples; j > 0; --j, min_t += step) {
 			const float3 tau = bssrdf.optical_depth(tau_ray_length);
 			tr *= math::exp(-tau);
+
+			const float average = spectrum::average(tr);
+			if (average < 0.0001f) {
+				if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
+					sample_result.pdf = 0.f;
+					return result;
+				}
+			}
 
 			tau_ray_length = step;
 
