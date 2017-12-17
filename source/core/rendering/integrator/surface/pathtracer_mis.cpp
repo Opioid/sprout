@@ -146,7 +146,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 				throughput *= sample_result.reflection;
 			} else {
 				const float3 tr = resolve_transmission(ray, intersection,
-													   material_sample.absorption_coeffecient(),
+													   material_sample.absorption_coefficient(),
 													   Sampler_filter::Nearest,
 													   worker, sample_result);
 				if (0.f == sample_result.pdf) {
@@ -234,6 +234,8 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		result *= settings_.num_light_samples_reciprocal * light_weight;
 	}
 
+	SOFT_ASSERT(math::all_finite_and_positive(result));
+
 	// Material BSDF importance sample
 	material_sample.sample(material_sampler(ray.depth, ray.properties), sample_result);
 
@@ -241,7 +243,6 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 
 	if (requires_bounce || 0.f == sample_result.pdf) {
-		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
@@ -250,23 +251,31 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset,
 					  scene::Ray_max_t, ray.time, ray.depth + 1, ray.properties);
 
-	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection, filter);
+//	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection, filter);
+
+	float3 ssstr;
+	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection,
+													   material_sample, filter, ssstr);
 
 	const float3 weighted_reflection = sample_result.reflection / sample_result.pdf;
 
-	float3 tr;
-	const float3 vli = worker.volume_li(secondary_ray, primary_ray, tr);
+	// This might invalidate the contents of material_sample,
+	// so we must not use it after this point (e.g. in the calling function)!
+	// Important exceptions are the Specular and Transmission cases, which never come here.
+	float3 vtr;
+	const float3 vli = worker.volume_li(secondary_ray, primary_ray, vtr);
+	vtr *= ssstr;
 	result += weighted_reflection * vli;
-	sample_result.reflection *= tr;
+	sample_result.reflection *= vtr;
+
+	SOFT_ASSERT(math::all_finite_and_positive(result));
 
 	if (!hit) {
-		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
 	const uint32_t light_id = intersection.light_id();
 	if (!Light::is_light(light_id)) {
-		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
@@ -280,19 +289,17 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 									   Sampler_filter::Nearest, worker);
 
 	if (0.f == ls_pdf) {
-		SOFT_ASSERT(math::all_finite_and_positive(result));
 		return result;
 	}
 
 	const float3 wo = -sample_result.wi;
-	// This will invalidate the contents of material_sample,
-	// so we must not use it after this point (e.g. in the calling function)!
-	// Important exceptions are the Specular and Transmission cases, which never come here.
+
+	// This will invalidate the contents of material_sample. See comment above.
 	const auto& light_material_sample = intersection.sample(wo, ray.time, Sampler_filter::Nearest,
 															worker);
 
 	if (light_material_sample.same_hemisphere(wo)) {
-		const float3 ls_energy = tr * light_material_sample.radiance();
+		const float3 ls_energy = vtr * light_material_sample.radiance();
 
 		const float weight = power_heuristic(sample_result.pdf, ls_pdf * light.pdf);
 
@@ -318,11 +325,12 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 		return float3(0.f);
 	}
 
-	const Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
-						 light_sample.shape.t - ray_offset, history.time,
-						 history.depth, history.properties);
+	 Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
+					light_sample.shape.t - ray_offset, history.time,
+					history.depth, history.properties);
 
-	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
+//	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
+	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, material_sample, filter);
 	if (math::any_greater_zero(tv)) {
 		const float3 tr = worker.transmittance(shadow_ray);
 

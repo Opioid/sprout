@@ -20,7 +20,7 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-	virtual float3 absorption_coeffecient() const override final;
+	virtual float3 absorption_coefficient() const override final;
 
 	virtual float ior() const override final;
 
@@ -31,7 +31,7 @@ public:
 				 float attenuation_distance, float ior, float ior_outside, float alpha);
 
 		float3 color_;
-		float3 absorption_coeffecient_;
+		float3 absorption_coefficient_;
 		float ior_i_;
 		float ior_o_;
 		float eta_i_;

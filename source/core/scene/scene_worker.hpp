@@ -5,12 +5,15 @@
 #include "shape/node_stack.hpp"
 #include "material/material_sample_cache.hpp"
 #include "material/sampler_cache.hpp"
+#include "base/math/vector3.hpp"
 #include "base/random/generator.hpp"
 
 namespace scene {
 
 class Scene;
 struct Ray;
+
+namespace material { class Sample; }
 
 namespace prop {
 	class Prop;
@@ -35,18 +38,25 @@ public:
 
 	bool intersect(Ray& ray, prop::Intersection& intersection) const;
 	bool intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& intersection) const;
+	bool intersect(const prop::Prop* prop, Ray& ray, float& epsilon) const;
 
 	bool resolve_mask(Ray& ray, prop::Intersection& intersection, Sampler_filter filter);
 
 	bool intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
 									Sampler_filter filter);
 
+	bool intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
+									const material::Sample& sample, Sampler_filter filter,
+									float3& transmission);
 
 	bool visibility(const Ray& ray) const;
 
 	float masked_visibility(const Ray& ray, Sampler_filter filter) const;
 
 	float3 tinted_visibility(const Ray& ray, Sampler_filter filter) const;
+
+	float3 tinted_visibility(Ray& ray, const prop::Intersection& intersection,
+							 const material::Sample& sample, Sampler_filter filter) const;
 
 	const Scene& scene() const;
 

@@ -30,6 +30,7 @@ if (LINUX)
 	# linux stuff here
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse3")
 	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 	#strip debug symbols

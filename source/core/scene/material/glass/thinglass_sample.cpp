@@ -20,7 +20,7 @@ bxdf::Result Sample_thin::evaluate(const float3& /*wi*/) const {
 	return { float3::identity(), 0.f };
 }
 
-float3 Sample_thin::absorption_coeffecient() const {
+float3 Sample_thin::absorption_coefficient() const {
 	return layer_.attenuation_;
 }
 

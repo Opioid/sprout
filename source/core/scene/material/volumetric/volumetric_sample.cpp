@@ -20,12 +20,17 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float2 uv = sampler.generate_sample_2D();
 	const float3 dir = math::sample_sphere_uniform(uv);
 
-	const float phase = layer_.phase(wo_, -dir);
+	const float phase = layer_.phase(wo_, dir);
 
 	result.reflection = float3(phase);
 	result.wi = dir;
 	result.pdf = phase;
 	result.type.clear(bxdf::Type::Diffuse_reflection);
+}
+
+BSSRDF Sample::bssrdf() const {
+	return BSSRDF(layer_.absorption_coefficient_, layer_.scattering_coefficient_,
+				  layer_.anisotropy_);
 }
 
 float Sample::ior() const {
@@ -36,7 +41,11 @@ bool Sample::is_translucent() const {
 	return true;
 }
 
-void Sample::Layer::set(float anisotropy) {
+void Sample::Layer::set(const float3& absorption_coefficient,
+						const float3& scattering_coefficient,
+						float anisotropy) {
+	absorption_coefficient_ = absorption_coefficient;
+	scattering_coefficient_ = scattering_coefficient;
 	anisotropy_ = anisotropy;
 }
 

@@ -116,7 +116,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 				throughput *= sample_result.reflection;
 			} else {
 				const float3 tr = transmittance_.resolve(ray, intersection,
-														 material_sample.absorption_coeffecient(),
+														 material_sample.absorption_coefficient(),
 														 sampler_, Sampler_filter::Nearest,
 														 worker, sample_result);
 

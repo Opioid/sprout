@@ -3,17 +3,23 @@
 
 namespace scene::material {
 
+BSSRDF::BSSRDF(const float3& absorption_coefficient, const float3& scattering_coefficient,
+			   float anisotropy) :
+	absorption_coefficient_(absorption_coefficient),
+	scattering_coefficient_(scattering_coefficient),
+	anisotropy_(anisotropy) {}
+
 float3 BSSRDF::optical_depth(float length) const {
-	return length * (absorption_ + scattering_);
+	return length * (absorption_coefficient_ + scattering_coefficient_);
 }
 
 const float3& BSSRDF::scattering() const {
-	return scattering_;
+	return scattering_coefficient_;
 }
 
-void BSSRDF::set(const float3& absorption, const float3& scattering) {
-	absorption_ = absorption;
-	scattering_ = scattering;
+void BSSRDF::set(const float3& absorption_coefficient, const float3& scattering_coefficient) {
+	absorption_coefficient_ = absorption_coefficient;
+	scattering_coefficient_ = scattering_coefficient;
 }
 
 }

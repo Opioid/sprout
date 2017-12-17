@@ -43,7 +43,7 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 
 float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
 							 Worker& worker, float3& transmittance) {
-	if (ray.properties.test(Ray::Property::Within_volume)) {
+	if (ray.properties.test(Ray::Property::Recursive)) {
 		transmittance = Single_scattering::transmittance(ray, volume, worker);
 		return float3::identity();
 	}
@@ -101,7 +101,7 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 
 		// Lighting
 		Ray secondary_ray = ray;
-		secondary_ray.properties.set(Ray::Property::Within_volume);
+		secondary_ray.properties.set(Ray::Property::Recursive);
 
 		if (settings_.direct_lighting_only) {
 			// Make the surface integrator stop after gather direct lighting
@@ -113,10 +113,10 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		}
 
 		scene::prop::Intersection secondary_intersection;
+		secondary_intersection.prop = &volume;
 		secondary_intersection.geo.p = current;
 		secondary_intersection.geo.part = 0;
 		secondary_intersection.geo.epsilon = 0.0005f;
-		secondary_intersection.prop = &volume;
 
 		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
 

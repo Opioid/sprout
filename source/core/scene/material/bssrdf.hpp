@@ -9,16 +9,22 @@ class BSSRDF {
 
 public:
 
+	BSSRDF() = default;
+
+	BSSRDF(const float3& absorption_coefficient, const float3& scattering_coefficient,
+		   float anisotropy);
+
 	float3 optical_depth(float length) const;
 
 	const float3& scattering() const;
 
-	void set(const float3& absorption, const float3& scattering);
+	void set(const float3& absorption_coefficient, const float3& scattering_coefficient);
 
 private:
 
-	float3 absorption_;
-	float3 scattering_;
+	float3 absorption_coefficient_;
+	float3 scattering_coefficient_;
+	float  anisotropy_;
 };
 
 }

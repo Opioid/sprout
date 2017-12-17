@@ -1,6 +1,7 @@
 #ifndef SU_SCENE_MATERIAL_SAMPLE_HPP
 #define SU_SCENE_MATERIAL_SAMPLE_HPP
 
+#include "bssrdf.hpp"
 #include "base/math/vector3.hpp"
 
 namespace sampler { class Sampler; }
@@ -12,8 +13,6 @@ class Worker;
 namespace material {
 
 namespace bxdf { struct Result; struct Sample; }
-
-class BSSRDF;
 
 class Sample {
 
@@ -44,11 +43,11 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const = 0;
 
-	virtual const BSSRDF& bssrdf(const Worker& worker) const;
+	virtual BSSRDF bssrdf() const;
 
 	virtual float3 radiance() const;
 
-	virtual float3 absorption_coeffecient() const;
+	virtual float3 absorption_coefficient() const;
 
 	virtual float ior() const = 0;
 

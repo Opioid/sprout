@@ -4,6 +4,7 @@
 #include "scene_ray.inl"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.inl"
+#include "material/material_sample.hpp"
 #include "material/sampler_cache.hpp"
 #include "shape/node_stack.inl"
 #include "base/math/vector4.inl"
@@ -51,6 +52,11 @@ bool Worker::intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& int
 	return hit;
 }
 
+bool Worker::intersect(const prop::Prop* prop, Ray& ray, float& epsilon) const {
+	bool inside;
+	return prop->intersect(ray, node_stack_, epsilon, inside);
+}
+
 bool Worker::resolve_mask(Ray& ray, prop::Intersection& intersection, Sampler_filter filter) {
 	const float ray_offset_factor = settings_.ray_offset_factor;
 
@@ -88,6 +94,30 @@ bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersecti
 	return resolve_mask(ray, intersection, filter);
 }
 
+bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
+										const material::Sample& sample, Sampler_filter filter,
+										float3& transmission) {
+	transmission = float3(1.f);
+
+	if (intersection.inside_volume) {
+		const float ray_max_t = ray.max_t;
+
+		float epsilon;
+		if (intersect(intersection.prop, ray, epsilon)) {
+			const float prop_length = ray.max_t - ray.min_t;
+
+			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
+			ray.max_t = ray_max_t;
+
+			const float3 tau = sample.bssrdf().optical_depth(prop_length);
+
+			transmission = math::exp(-tau);
+		}
+	}
+
+	return intersect_and_resolve_mask(ray, intersection, filter);
+}
+
 bool Worker::visibility(const Ray& ray) const {
 	return !scene_->intersect_p(ray, node_stack_);
 }
@@ -98,6 +128,27 @@ float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) const {
 
 float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
 	return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
+}
+
+float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersection,
+								 const material::Sample& sample, Sampler_filter filter) const {
+	if (intersection.inside_volume) {
+		const float ray_max_t = ray.max_t;
+
+		float epsilon;
+		if (intersect(intersection.prop, ray, epsilon)) {
+			const float prop_length = ray.max_t - ray.min_t;
+
+			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
+			ray.max_t = ray_max_t;
+
+			const float3 tau = sample.bssrdf().optical_depth(prop_length);
+
+			return math::exp(-tau) * tinted_visibility(ray, filter);
+		}
+	}
+
+	return tinted_visibility(ray, filter);
 }
 
 const scene::Scene& Worker::scene() const {

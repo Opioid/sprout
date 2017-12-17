@@ -50,16 +50,12 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 	result.pdf *= 0.5f;
 }
 
-float3 Sample_subsurface::absorption_coeffecient() const {
+float3 Sample_subsurface::absorption_coefficient() const {
 	return absorption_coefficient_;
 }
 
-const BSSRDF& Sample_subsurface::bssrdf(const Worker& worker) const {
-	auto& bssrdf = worker.sample_cache().bssrdf();
-
-	bssrdf.set(absorption_coefficient_, scattering_coefficient_);
-
-	return bssrdf;
+BSSRDF Sample_subsurface::bssrdf() const {
+	return BSSRDF(absorption_coefficient_, scattering_coefficient_, 0.f);
 }
 
 void Sample_subsurface::set(float lambert_scale,

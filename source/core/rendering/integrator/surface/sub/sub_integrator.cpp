@@ -51,17 +51,16 @@ float3 Integrator::estimate_direct_light(const float3& position, const Prop* pro
 
 	Ray shadow_ray(position, light_sample.shape.wi, 0.f, light_sample.shape.t, time, ++depth);
 
-	Intersection intersection;
-	if (!worker.intersect(prop, shadow_ray, intersection)) {
-		return float3(0.f);
+	float prop_length = 0.f;
+
+	float epsilon;
+	if (worker.intersect(prop, shadow_ray, epsilon)) {
+		prop_length = shadow_ray.max_t;//shadow_ray.length();
+
+		const float ray_offset = take_settings_.ray_offset_factor * epsilon;
+		shadow_ray.min_t = shadow_ray.max_t + ray_offset;
+		shadow_ray.max_t = light_sample.shape.t - ray_offset;
 	}
-
-	// Travel distance inside prop
-	const float prop_length = shadow_ray.max_t;//shadow_ray.length();
-
-	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	shadow_ray.min_t = shadow_ray.max_t + ray_offset;
-	shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 	if (math::any_greater_zero(tv)) {
@@ -93,23 +92,22 @@ float3 Integrator::estimate_indirect_light(const float3& position, const Prop* p
 //	constexpr float phase = 1.f / (4.f * math::Pi);
 
 	Ray secondary_ray(position, dir, 0.f, scene::Ray_max_t, time,
-					  depth + 1, Ray::Property::Within_volume);
+					  depth + 1, Ray::Property::Recursive);
 
-	Intersection intersection;
-	if (!worker.intersect(prop, secondary_ray, intersection)) {
-		return float3(0.f);
+	float prop_length = 0.f;
+	float epsilon;
+	if (worker.intersect(prop, secondary_ray, epsilon)) {
+		prop_length = secondary_ray.max_t;
+
+		const float ray_offset = take_settings_.ray_offset_factor * epsilon;
+		secondary_ray.min_t = secondary_ray.max_t + ray_offset;
+		secondary_ray.max_t = scene::Ray_max_t;
 	}
 
-	// Travel distance inside prop
-	const float prop_length = secondary_ray.max_t;//shadow_ray.length();
 	const float3 tau = bssrdf.optical_depth(prop_length);
 	const float3 transmittance = math::exp(-tau);
 
 	SOFT_ASSERT(math::all_finite_and_positive(transmittance));
-
-	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	secondary_ray.min_t = secondary_ray.max_t + ray_offset;
-	secondary_ray.max_t = scene::Ray_max_t;
 
 	const float3 li = worker.li(secondary_ray).xyz();
 

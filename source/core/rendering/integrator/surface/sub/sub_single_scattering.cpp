@@ -15,6 +15,8 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::surface::sub {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -33,9 +35,12 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 	float3 result(0.f);
 	float3 tr(sample_result.reflection / sample_result.pdf);
 
+	const auto bssrdf = sample.bssrdf();
+	const float3 scattering = bssrdf.scattering();
+
 	Ray tray;
 	tray.time  = ray.time;
-	tray.depth = ray.depth;
+	tray.depth = ray.depth + 1;
 
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
@@ -55,8 +60,6 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 			break;
 		}
 
-		const auto& bssrdf = sample.bssrdf(worker);
-
 		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 		const uint32_t num_samples = (0 == i && 0 == ray.depth) ? max_samples : 1;
 		const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
@@ -72,22 +75,34 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 			const float3 tau = bssrdf.optical_depth(tau_ray_length);
 			tr *= math::exp(-tau);
 
-			const float average = spectrum::average(tr);
-			if (average < 0.0000001f) {
-			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
-					sample_result.pdf = 0.f;
-					result += step * radiance;
-					return result;
-			//	}
-			}
+//			const float average = spectrum::average(tr);
+//			if (average < 0.0000001f) {
+//			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
+//					sample_result.pdf = 0.f;
+//					result += step * radiance;
+//					return result;
+//			//	}
+//			}
 
 			tau_ray_length = step;
 
 			const float3 current = tray.point(min_t);
 
 			// Direct light scattering
-			radiance += tr * estimate_light(current, intersection.prop, bssrdf,
-											ray.time, ray.depth, sampler_, worker);
+//			radiance += tr * estimate_light(current, intersection.prop, bssrdf,
+//											ray.time, ray.depth, sampler_, worker);
+
+			// Lighting
+			Ray secondary_ray = tray;
+			secondary_ray.properties.set(Ray::Property::Recursive);
+
+			scene::prop::Intersection secondary_intersection = intersection;
+			secondary_intersection.geo.p = current;
+			secondary_intersection.inside_volume = true;
+
+			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
+
+			radiance += tr * scattering * local_radiance;
 		}
 
 		result += step * radiance;

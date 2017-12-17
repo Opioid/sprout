@@ -15,6 +15,8 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
+	virtual BSSRDF bssrdf() const override final;
+
 	virtual float ior() const override final;
 
 	virtual bool is_translucent() const override final;
@@ -24,8 +26,12 @@ public:
 	struct Layer : public material::Sample::Layer {
 		float phase(const float3& w, const float3& wp) const;
 
-		void set(float anisotropy);
+		void set(const float3& absorption_coefficient,
+				 const float3& scattering_coefficient,
+				 float anisotropy);
 
+		float3 absorption_coefficient_;
+		float3 scattering_coefficient_;
 		float anisotropy_;
 	};
 

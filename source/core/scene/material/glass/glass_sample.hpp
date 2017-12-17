@@ -12,7 +12,7 @@ public:
 
 	virtual bxdf::Result evaluate(const float3& wi) const override final;
 
-	virtual float3 absorption_coeffecient() const override final;
+	virtual float3 absorption_coefficient() const override final;
 
 	virtual float ior() const override final;
 
@@ -25,7 +25,7 @@ public:
 				 float attenuation_distance, float ior, float ior_outside);
 
 		float3 color_;
-		float3 absorption_coeffecient_;
+		float3 absorption_coefficient_;
 		float ior_;
 		float ior_outside_;
 	};

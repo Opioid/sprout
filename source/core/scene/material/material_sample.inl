@@ -51,15 +51,15 @@ inline float3 Sample::Layer::world_to_tangent(const float3& v) const {
 				  v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline const BSSRDF& Sample::bssrdf(const Worker& worker) const {
-	return worker.sample_cache().bssrdf();
+inline BSSRDF Sample::bssrdf() const {
+	return BSSRDF();
 }
 
 inline float3 Sample::radiance() const {
 	return float3::identity();
 }
 
-inline float3 Sample::absorption_coeffecient() const {
+inline float3 Sample::absorption_coefficient() const {
 	return float3::identity();
 }
 

@@ -12,7 +12,7 @@ public:
 
 	virtual bxdf::Result evaluate(const float3& wi) const override final;
 
-	virtual float3 absorption_coeffecient() const override final;
+	virtual float3 absorption_coefficient() const override final;
 
 	virtual float ior() const override final;
 

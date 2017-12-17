@@ -1,5 +1,4 @@
 #include "material_sample_cache.hpp"
-#include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
 namespace scene::material {
@@ -9,13 +8,8 @@ Sample_cache::~Sample_cache() {
 }
 
 void Sample_cache::init(uint32_t max_sample_size) {
-	uint32_t buffer_size = max_sample_size;
-	buffer_size_ = buffer_size;
-	buffer_ = memory::allocate_aligned<char>(buffer_size);
-}
-
-BSSRDF& Sample_cache::bssrdf() {
-	return bssrdf_;
+	buffer_size_ = max_sample_size;
+	buffer_ = memory::allocate_aligned<char>(max_sample_size);
 }
 
 size_t Sample_cache::num_bytes() const {

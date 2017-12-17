@@ -67,7 +67,7 @@ float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance
 	float3 tr(1.f);
 	float3 radiance(0.f);
 
-//	if (ray.properties.test(Ray::Property::Within_volume)) {
+//	if (ray.properties.test(Ray::Property::Recursive)) {
 //		transmittance = Worker::transmittance(ray);
 //		return radiance;
 //	}
@@ -101,7 +101,7 @@ float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance
 float3 Worker::transmittance(const Ray& ray) const {
 	float3 transmittance(1.f);
 
-//	if (ray.properties.test(Ray::Property::Within_volume)) {
+//	if (ray.properties.test(Ray::Property::Recursive)) {
 //		return transmittance;
 //	}
 
