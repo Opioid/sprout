@@ -41,10 +41,9 @@ static inline void attenuation(const float3& absorption_color,
 
 	const float3 sigma_t = -a / distance;
 
-//	const float3 pss = 1.f - scattering_color;
-//	const float3 sigma_a = sigma_t * (1.f - pss);
-
 	const float3 sigma_a = sigma_t * (1.f - scattering_color);
+
+//	const float3 sigma_a = sigma_t * (1.f - scattering_color);
 
 	absorption_coefficient = sigma_a;
 	scattering_coefficient = sigma_t - sigma_a;
