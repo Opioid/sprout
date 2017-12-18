@@ -22,7 +22,7 @@ public:
 		uint32_t max_bounces;
 		float    path_continuation_probability;
 
-		bool enable_caustics;
+		bool disable_caustics;
 	};
 
 	Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,

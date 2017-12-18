@@ -32,7 +32,7 @@ public:
 		Light_sampling light_sampling;
 
 		float num_light_samples_reciprocal;
-		bool  enable_caustics;
+		bool  disable_caustics;
 	};
 
 	Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,

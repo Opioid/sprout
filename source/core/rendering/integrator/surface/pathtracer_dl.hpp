@@ -23,7 +23,7 @@ public:
 
 		uint32_t num_light_samples;
 		float    num_light_samples_reciprocal;
-		bool	 enable_caustics;
+		bool	 disable_caustics;
 	};
 
 	Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_settings,

@@ -81,8 +81,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 
-		if (sample_result.type.test(Bxdf_type::Specular)) {
-			if (!settings_.enable_caustics && !primary_ray) {
+		if (requires_bounce) {
+			if (settings_.disable_caustics && !primary_ray) {
 				break;
 			}
 		} else {
@@ -181,7 +181,7 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings
 	settings_.path_continuation_probability = 1.f - path_termination_probability;
 	settings_.num_light_samples = num_light_samples;
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
-	settings_.enable_caustics = enable_caustics;
+	settings_.disable_caustics = !enable_caustics;
 }
 
 Pathtracer_DL_factory::~Pathtracer_DL_factory() {

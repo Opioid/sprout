@@ -125,8 +125,8 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			}
 		}
 
-		if (sample_result.type.test(Bxdf_type::Specular)) {
-			if (!settings_.enable_caustics && !primary_ray) {
+		if (requires_bounce) {
+			if (settings_.disable_caustics && !primary_ray) {
 				break;
 			}
 		} else {
@@ -389,7 +389,7 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 		1.f - path_termination_probability,
 		light_sampling,
 		1.f / static_cast<float>(light_sampling.num_samples),
-		enable_caustics
+		!enable_caustics
 	} {}
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() {
