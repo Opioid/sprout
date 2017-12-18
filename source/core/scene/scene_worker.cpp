@@ -104,7 +104,7 @@ bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersecti
 
 		float epsilon;
 		if (intersect(intersection.prop, ray, epsilon)) {
-			const float prop_length = ray.max_t - ray.min_t;
+			const float prop_length = ray.max_t;
 
 			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
 			ray.max_t = ray_max_t;
@@ -137,7 +137,7 @@ float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersectio
 
 		float epsilon;
 		if (intersect(intersection.prop, ray, epsilon)) {
-			const float prop_length = ray.max_t - ray.min_t;
+			const float prop_length = ray.max_t;
 
 			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
 			ray.max_t = ray_max_t;

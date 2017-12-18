@@ -1,10 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_MATERIAL_HPP
 
 #include "substitute_base_material.hpp"
 
 namespace scene::material::substitute {
-
-class Sample;
 
 class Material : public Material_base {
 
@@ -20,3 +19,5 @@ public:
 };
 
 }
+
+#endif

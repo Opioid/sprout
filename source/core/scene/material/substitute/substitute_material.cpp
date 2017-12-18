@@ -6,6 +6,8 @@
 #include "scene/scene_worker.inl"
 #include "base/math/vector4.inl"
 
+#include "base/debug/assert.hpp"
+
 namespace scene::material::substitute {
 
 Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
@@ -13,6 +15,8 @@ Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
 										 Sampler_filter filter, const Worker& worker) {
+	SOFT_ASSERT(!rs.inside_volume);
+
 	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);

@@ -38,13 +38,15 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 	const auto bssrdf = sample.bssrdf();
 	const float3 scattering = bssrdf.scattering();
 
+	const uint32_t part = intersection.geo.part;
+
 	Ray tray;
 	tray.time  = ray.time;
 	tray.depth = ray.depth + 1;
 
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
-	for (uint32_t i = 0; /*i < 1*/; ++i) {
+	for (uint32_t i = 0; /*i < 256*/; ++i) {
 		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
@@ -61,7 +63,7 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 		}
 
 		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-		const uint32_t num_samples = (0 == i && 0 == ray.depth) ? max_samples : 1;
+		const uint32_t num_samples = (0 == ray.depth && 0 == i) ? max_samples : 1;
 		const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
 		const float step = range * num_samples_reciprocal;
 
@@ -75,34 +77,29 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 			const float3 tau = bssrdf.optical_depth(tau_ray_length);
 			tr *= math::exp(-tau);
 
-//			const float average = spectrum::average(tr);
-//			if (average < 0.0000001f) {
-//			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
-//					sample_result.pdf = 0.f;
-//					result += step * radiance;
-//					return result;
-//			//	}
-//			}
-
-			tau_ray_length = step;
-
-			const float3 current = tray.point(min_t);
-
-			// Direct light scattering
-//			radiance += tr * estimate_light(current, intersection.prop, bssrdf,
-//											ray.time, ray.depth, sampler_, worker);
+			const float average = spectrum::average(tr);
+			if (average < 0.01f) {
+			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
+					sample_result.pdf = 0.f;
+					result += step * radiance;
+					return result;
+			//	}
+			}
 
 			// Lighting
 			Ray secondary_ray = tray;
 			secondary_ray.properties.set(Ray::Property::Recursive);
 
 			scene::prop::Intersection secondary_intersection = intersection;
-			secondary_intersection.geo.p = current;
+			secondary_intersection.geo.p = tray.point(min_t);
+			secondary_intersection.geo.part = part;
 			secondary_intersection.inside_volume = true;
 
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
 
 			radiance += tr * scattering * local_radiance;
+
+			tau_ray_length = step;
 		}
 
 		result += step * radiance;
