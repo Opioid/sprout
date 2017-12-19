@@ -573,6 +573,12 @@ static inline constexpr Vector3f_a max(const Vector3f_a& a, float s) {
 	return Vector3f_a(std::max(a[0], s), std::max(a[1], s), std::max(a[2], s));
 }
 
+static inline constexpr Vector3f_a clamp(const Vector3f_a& v, float mi, float ma) {
+	return Vector3f_a(std::min(std::max(v[0], mi), ma),
+					  std::min(std::max(v[1], mi), ma),
+					  std::min(std::max(v[2], mi), ma));
+}
+
 static inline constexpr Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }

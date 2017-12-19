@@ -59,6 +59,7 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 
 		const float range = tray.max_t - tray.min_t;
 		if (range < 0.0001f) {
+		//	sample_result.pdf = 0.f;
 			break;
 		}
 

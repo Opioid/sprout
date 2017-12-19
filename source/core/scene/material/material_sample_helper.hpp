@@ -34,10 +34,9 @@ static inline void attenuation(const float3& absorption_color,
 							   float distance,
 							   float3& absorption_coefficient,
 							   float3& scattering_coefficient) {
-	const float3 a(absorption_color[0] > 0.f ? std::log(absorption_color[0]) : -10.f,
-				   absorption_color[1] > 0.f ? std::log(absorption_color[1]) : -10.f,
-				   absorption_color[2] > 0.f ? std::log(absorption_color[2]) : -10.f);
+	const float3 ca = math::clamp(absorption_color, 0.0001f, 0.999999f);
 
+	const float3 a = math::log(ca);
 
 	const float3 sigma_t = -a / distance;
 

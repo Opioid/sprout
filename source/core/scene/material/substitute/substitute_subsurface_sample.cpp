@@ -69,7 +69,7 @@ void Sample_subsurface::set(float lambert_scale,
 }
 
 bool Sample_subsurface::is_sss() const {
-	return true;
+	return math::any_greater_zero(scattering_coefficient_);
 }
 
 void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
