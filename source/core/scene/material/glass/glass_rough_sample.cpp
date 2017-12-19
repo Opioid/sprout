@@ -1,6 +1,7 @@
 #include "glass_rough_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/material_attenuation.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"

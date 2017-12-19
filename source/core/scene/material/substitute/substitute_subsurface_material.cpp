@@ -1,6 +1,7 @@
 #include "substitute_subsurface_material.hpp"
 #include "substitute_base_sample.inl"
 #include "substitute_base_material.inl"
+#include "scene/material/material_attenuation.hpp"
 #include "scene/material/volumetric/volumetric_sample.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
@@ -19,7 +20,7 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 		sample.set_basis(rs.geo_n, wo);
 
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-		sample.layer_.set(absorption_coefficient_, scattering_coefficient_, 0.f);
+		sample.layer_.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
 
 		return sample;
 	}
@@ -30,9 +31,7 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
-	const float lambert_scale = 0.f;//roughness_ * std::exp(-attenuation_distance_);
-
-	sample.set(lambert_scale, absorption_coefficient_, scattering_coefficient_, ior_);
+	sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_, ior_);
 
 	return sample;
 }
@@ -44,12 +43,11 @@ size_t Material_subsurface::num_bytes() const {
 void Material_subsurface::set_attenuation(const float3& absorption_color,
 										  const float3& scattering_color,
 										  float distance) {
-//	absorption_coefficient_ = absorption_coefficient(absorption_color, distance);
-//	scattering_coefficient_ = scattering_coefficient(scattering_color, distance);
 	attenuation(absorption_color, scattering_color, distance,
 				absorption_coefficient_, scattering_coefficient_);
 
-	attenuation_distance_   = distance;
+	attenuation_distance_ = distance;
+	anisotropy_ = 0.f;
 }
 
 void Material_subsurface::set_ior(float ior, float external_ior) {

@@ -2,6 +2,7 @@
 #include "volumetric_sample.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
+#include "scene/material/material_attenuation.hpp"
 #include "scene/material/material_sample.inl"
 
 namespace scene::material::volumetric {

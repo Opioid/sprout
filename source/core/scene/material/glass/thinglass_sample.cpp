@@ -1,5 +1,6 @@
 #include "thinglass_sample.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/material_attenuation.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "rendering/integrator/integrator_helper.hpp"

@@ -36,7 +36,7 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 	float3 tr(sample_result.reflection / sample_result.pdf);
 
 	const auto bssrdf = sample.bssrdf();
-	const float3 scattering = bssrdf.scattering();
+	const float3 scattering = bssrdf.scattering_coefficient();
 
 	const uint32_t part = intersection.geo.part;
 

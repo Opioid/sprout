@@ -51,25 +51,23 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 }
 
 float3 Sample_subsurface::absorption_coefficient() const {
-	return absorption_coefficient_;
+	return bssrdf_.absorption_coefficient();
 }
 
 BSSRDF Sample_subsurface::bssrdf() const {
-	return BSSRDF(absorption_coefficient_, scattering_coefficient_, 0.f);
+	return bssrdf_;
 }
 
-void Sample_subsurface::set(float lambert_scale,
-							const float3& absorption_coefficient,
+void Sample_subsurface::set(const float3& absorption_coefficient,
 							const float3& scattering_coefficient,
+							float anisotropy,
 							const IOR& ior) {
-	layer_.lambert_scale = lambert_scale;
-	absorption_coefficient_ = absorption_coefficient;
-	scattering_coefficient_ = scattering_coefficient;
+	bssrdf_.set(absorption_coefficient, scattering_coefficient, anisotropy);
 	ior_ = ior;
 }
 
 bool Sample_subsurface::is_sss() const {
-	return math::any_greater_zero(scattering_coefficient_);
+	return bssrdf_.is_scattering();
 }
 
 void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,

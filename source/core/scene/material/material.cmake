@@ -21,6 +21,7 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/bssrdf.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/bssrdf.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/bxdf.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/material_attenuation.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_helper.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_print.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_provider.cpp"

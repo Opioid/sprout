@@ -16,9 +16,13 @@ public:
 
 	float3 optical_depth(float length) const;
 
-	const float3& scattering() const;
+	const float3& absorption_coefficient() const;
+	const float3& scattering_coefficient() const;
 
-	void set(const float3& absorption_coefficient, const float3& scattering_coefficient);
+	bool is_scattering() const;
+
+	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
+			 float anisotropy);
 
 private:
 

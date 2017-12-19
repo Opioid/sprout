@@ -5,9 +5,7 @@
 
 namespace scene::material::substitute {
 
-class Sample_subsurface :
-		public Sample_base<disney::Isotropic_scaled_lambert,
-						   disney::Isotropic_scaled_lambert::Data> {
+class Sample_subsurface : public Sample_base<disney::Isotropic_no_lambert> {
 
 public:
 
@@ -28,9 +26,8 @@ public:
 		float sqrt_eta_t;
 	};
 
-	void set(float lambert_scale,
-			 const float3& absorption_coefficient, const float3& scattering_coefficient,
-			 const IOR& ior);
+	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
+			 float anisotropy, const IOR& ior);
 
 	virtual bool is_sss() const override final;
 
@@ -40,10 +37,9 @@ private:
 				 bxdf::Sample& result) const;
 
 	void reflect_internally(bool same_side, const Layer& layer, sampler::Sampler& sampler,
-						   bxdf::Sample& result) const;
+							bxdf::Sample& result) const;
 
-	float3 absorption_coefficient_;
-	float3 scattering_coefficient_;
+	BSSRDF bssrdf_;
 
 	IOR ior_;
 };
