@@ -57,11 +57,13 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 			break;
 		}
 
-		const float range = tray.max_t - tray.min_t;
+		float range = tray.max_t - tray.min_t;
 		if (range < 0.0001f) {
 		//	sample_result.pdf = 0.f;
 			break;
 		}
+
+	//	range = std::max(range, 0.01f);
 
 		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 		const uint32_t num_samples = (0 == ray.depth && 0 == i) ? max_samples : 1;
@@ -70,7 +72,10 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 
 		float3 radiance(0.f);
 
-		float tau_ray_length = rng_.random_float() * step;
+		const float r = rng_.random_float();
+		float tau_ray_length = r * step;
+
+	//	tau_ray_length = std::max(tau_ray_length, 0.001f);
 
 		float min_t = tray.min_t + tau_ray_length;
 

@@ -9,10 +9,10 @@
 
 ** Integrators [0/1]
 
-*** TODO Subsurface scattering [0/2]
-- [-] Implement single scattering
+*** TODO Subsurface scattering [1/2]
+- [X] Implement single scattering
   - [X] Direct light only
-  - [ ] Indirect illumination
+  - [X] Indirect illumination
 - [ ] Implement multiple scattering
   - [ ] Monte-carlo integrator
   - [ ] Next event estimation
@@ -36,7 +36,7 @@ I'm not sure what this means for the subsurface scattering case, but I tried to 
 - [ ] Evaluate difference to existing thin-film Fresnel
 
 *** TODO Cloth material
-Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
+Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin, or Hanrahan-Krueger)
 
 *** TODO Separate samplers
 Consider adding support for separate samplers per different textures in a single material.
