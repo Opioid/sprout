@@ -87,7 +87,7 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 			if (average < 0.01f) {
 			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
 					sample_result.pdf = 0.f;
-					result += step * radiance;
+					result += /*step **/ radiance;
 					return result;
 			//	}
 			}
@@ -103,12 +103,12 @@ float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection&
 
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
 
-			radiance += tr * scattering * local_radiance;
+			radiance += step * tr * scattering * local_radiance;
 
 			tau_ray_length = step;
 		}
 
-		result += step * radiance;
+		result += /*step **/ radiance;
 
 		const float3 wo = -tray.direction;
 		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
