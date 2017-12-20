@@ -56,6 +56,7 @@ const Volume* BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_st
 				const auto v = volumes[i];
 				if (v->intersect(ray, node_stack, epsilon, inside)) {
 					volume = v;
+					ray_max_t = simd::load_float(&ray.max_t);
 				}
 			}
 		}

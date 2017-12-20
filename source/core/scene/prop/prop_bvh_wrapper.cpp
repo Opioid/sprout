@@ -64,6 +64,8 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 				if (p->intersect(ray, node_stack, intersection.geo)) {
 					prop = p;
 					hit = true;
+
+					ray_max_t = simd::load_float(&ray.max_t);
 				}
 			}
 		}
