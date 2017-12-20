@@ -12,13 +12,22 @@
 
 namespace scene::material {
 
-static inline float3 sample_normal(const image::texture::Adapter& map,
-								   const image::texture::sampler::Sampler_2D& sampler,
-								   const Renderstate& rs) {
+static inline float3 sample_normal(const float3& wo,
+								   const Renderstate& rs,
+								   const image::texture::Adapter& map,
+								   const image::texture::sampler::Sampler_2D& sampler) {
 	const float3 nm = map.sample_3(sampler, rs.uv);
 	const float3 n  = math::normalize(rs.tangent_to_world(nm));
 
 	SOFT_ASSERT(testing::check_normal_map(n, nm, rs.uv));
+
+	// Normal mapping can lead to normals facing away from the view direction.
+	// I believe the following is the (imperfect) fix referred to as "flipping" by
+	// "Microfacet-based Normal Mapping for Robust Monte Carlo Path Tracing"
+	// https://drive.google.com/file/d/0BzvWIdpUpRx_ZHI1X2Z4czhqclk/view
+	if (math::dot(n, wo) < 0.f) {
+		return math::reflect(rs.geo_n, n);
+	}
 
 	return n;
 }

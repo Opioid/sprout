@@ -21,7 +21,7 @@ const material::Sample& Material_isotropic::sample(const float3& wo, const Rende
 
 	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-		const float3 n = sample_normal(normal_map_, sampler, rs);
+		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

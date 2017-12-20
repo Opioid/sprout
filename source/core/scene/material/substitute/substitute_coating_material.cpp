@@ -18,7 +18,7 @@ const material::Sample& Material_clearcoat::sample(const float3& wo, const Rende
 
 	set_sample(wo, rs, sampler, sample);
 
-	set_coating_basis(rs, sampler, sample);
+	set_coating_basis(wo, rs, sampler, sample);
 
 	sample.coating_.set(coating_.f0_, coating_.alpha_, coating_.alpha2_);
 
@@ -44,7 +44,7 @@ const material::Sample& Material_thinfilm::sample(const float3& wo, const Render
 
 	set_sample(wo, rs, sampler, sample);
 
-	set_coating_basis(rs, sampler, sample);
+	set_coating_basis(wo, rs, sampler, sample);
 
 	sample.coating_.set(coating_.ior_, coating_.alpha_, coating_.alpha2_, coating_.thickness_);
 

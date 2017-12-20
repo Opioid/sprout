@@ -23,7 +23,8 @@ public:
 protected:
 
 	template<typename Sample>
-	void set_coating_basis(const Renderstate& rs, const Texture_sampler_2D& sampler,
+	void set_coating_basis(const float3& wo, const Renderstate& rs,
+						   const Texture_sampler_2D& sampler,
 						   Sample& sample);
 
 	Texture_adapter coating_weight_map_;

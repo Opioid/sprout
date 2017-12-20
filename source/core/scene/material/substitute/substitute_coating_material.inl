@@ -40,13 +40,13 @@ void Material_coating<Coating>::set_coating_color(const float3& color) {
 
 template<typename Coating>
 template<typename Sample>
-void Material_coating<Coating>::set_coating_basis(const Renderstate& rs,
+void Material_coating<Coating>::set_coating_basis(const float3& wo, const Renderstate& rs,
 												  const Texture_sampler_2D& sampler,
 												  Sample& sample) {
 	if (Material_base::normal_map_ == coating_normal_map_) {
 		sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
 	} else if (coating_normal_map_.is_valid()) {
-		const float3 n = sample_normal(coating_normal_map_, sampler, rs);
+		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.coating_.set_tangent_frame(n);
 	} else {
 		sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);

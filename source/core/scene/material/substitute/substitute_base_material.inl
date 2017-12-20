@@ -18,7 +18,7 @@ void Material_base::set_sample(const float3& wo, const Renderstate& rs,
 	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_.is_valid()) {
-		const float3 n = sample_normal(normal_map_, sampler, rs);
+		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -46,6 +46,8 @@ void Material_base::set_sample(const float3& wo, const Renderstate& rs,
 	} else {
 		radiance = float3::identity();
 	}
+
+
 
 	sample.layer_.set(color, radiance, ior_, constant_f0_, surface[0], surface[1]);
 }
