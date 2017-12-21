@@ -53,7 +53,7 @@ void Sample_thin::Layer::set(const float3& refraction_color, const float3& absor
 							 float attenuation_distance, float ior, float ior_outside,
 							 float thickness) {
 	color_ = refraction_color;
-	attenuation_ = material::absorption_coefficient(absorption_color, attenuation_distance);
+	attenuation_ = material::extinction_coefficient(absorption_color, attenuation_distance);
 	ior_ = ior;
 	ior_outside_ = ior_outside;
 	thickness_ = thickness;

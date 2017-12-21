@@ -96,7 +96,7 @@ void Sample_translucent::set(const float3& diffuse_color, float thickness,
 	thickness_ = thickness;
 
 	if (thickness > 0.f) {
-		attenuation_ = material::absorption_coefficient(diffuse_color, attenuation_distance);
+		attenuation_ = material::extinction_coefficient(diffuse_color, attenuation_distance);
 	}
 }
 

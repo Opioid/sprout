@@ -47,7 +47,7 @@ bool Sample::is_transmissive() const {
 void Sample::Layer::set(const float3& refraction_color, const float3& absorption_color,
 						float attenuation_distance, float ior, float ior_outside) {
 	color_ = refraction_color;
-	absorption_coefficient_ = material::absorption_coefficient(absorption_color,
+	absorption_coefficient_ = material::extinction_coefficient(absorption_color,
 															   attenuation_distance);
 	ior_ = ior;
 	ior_outside_ = ior_outside;

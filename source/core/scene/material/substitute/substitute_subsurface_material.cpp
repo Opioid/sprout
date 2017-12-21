@@ -46,7 +46,6 @@ void Material_subsurface::set_attenuation(const float3& absorption_color,
 	attenuation(absorption_color, scattering_color, distance,
 				absorption_coefficient_, scattering_coefficient_);
 
-	attenuation_distance_ = distance;
 	anisotropy_ = 0.f;
 }
 

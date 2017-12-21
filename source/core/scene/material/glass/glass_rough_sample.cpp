@@ -80,7 +80,7 @@ void Sample_rough::Layer::set(const float3& refraction_color, const float3& abso
 							  float attenuation_distance, float ior,
 							  float ior_outside, float alpha) {
 	color_ = refraction_color;
-	absorption_coefficient_ = material::absorption_coefficient(absorption_color,
+	absorption_coefficient_ = material::extinction_coefficient(absorption_color,
 															   attenuation_distance);
 	ior_i_ = ior;
 	ior_o_ = ior_outside;
