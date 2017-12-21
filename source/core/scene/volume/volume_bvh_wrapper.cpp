@@ -12,6 +12,11 @@ bvh::Tree<Volume>& BVH_wrapper::tree() {
 	return tree_;
 }
 
+void BVH_wrapper::set_infinite_props(const std::vector<Volume*>& infite_props) {
+	num_infinite_props_ = static_cast<uint32_t>(infite_props.size());
+	infinite_props_	 = infite_props.data();
+}
+
 const math::AABB& BVH_wrapper::aabb() const {
 	return tree_.aabb_;
 }
@@ -62,6 +67,13 @@ const Volume* BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_st
 		}
 
 		n = node_stack.pop();
+	}
+
+	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
+		const auto v = infinite_props_[i];
+		if (v->intersect(ray, node_stack, epsilon, inside)) {
+			volume = v;
+		}
 	}
 
 	return volume;

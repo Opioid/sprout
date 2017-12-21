@@ -20,6 +20,8 @@ public:
 
 	bvh::Tree<Volume>& tree();
 
+	void set_infinite_props(const std::vector<Volume*>& infite_props);
+
 	const math::AABB& aabb() const;
 
 	const Volume* intersect(scene::Ray& ray, shape::Node_stack& node_stack,
@@ -28,6 +30,9 @@ public:
 private:
 
 	bvh::Tree<Volume> tree_;
+
+	uint32_t num_infinite_props_;
+	Volume* const* infinite_props_;
 };
 
 }}

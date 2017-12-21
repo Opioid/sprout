@@ -15,7 +15,7 @@ public:
 	struct Settings {
 		float step_size;
 
-		bool direct_lighting_only;
+		bool disable_indirect_lighting;
 	};
 
 	Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,

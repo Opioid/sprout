@@ -26,9 +26,10 @@ namespace scene {
 Scene::Scene(const take::Settings& settings) : take_settings_(settings) {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
-	infinite_props_.reserve(16);
+	infinite_props_.reserve(2);
 	lights_.reserve(16);
 	volumes_.reserve(16);
+	infinite_volumes_.reserve(1);
 	extensions_.reserve(16);
 	entities_.reserve(16);
 	light_powers_.reserve(16);
@@ -43,6 +44,10 @@ Scene::~Scene() {
 	}
 
 	for (auto v : volumes_) {
+		delete v;
+	}
+
+	for (auto v : infinite_volumes_) {
 		delete v;
 	}
 
@@ -296,12 +301,17 @@ void Scene::compile(thread::Pool& pool) {
 		v->calculate_world_transformation();
 	}
 
+	for (auto v : infinite_volumes_) {
+		v->calculate_world_transformation();
+	}
+
 	// rebuild prop BVH
 	prop_builder_.build(prop_bvh_.tree(), finite_props_);
 	prop_bvh_.set_infinite_props(infinite_props_);
 
-	// rebbuild volume BVH
+	// rebuild volume BVH
 	volume_builder_.build(volume_bvh_.tree(), volumes_);
+	volume_bvh_.set_infinite_props(infinite_volumes_);
 
 	for (auto v : volumes_) {
 		v->set_scene_aabb(prop_bvh_.aabb());
@@ -342,7 +352,13 @@ prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials
 
 	if (1 == materials.size() && materials[0]->is_volumetric()) {
 		volume::Volume* volume = new volume::Volume;
-		volumes_.push_back(volume);
+
+		if (shape->is_finite()) {
+			volumes_.push_back(volume);
+		} else {
+			infinite_volumes_.push_back(volume);
+		}
+
 		prop = volume;
 	} else {
 		prop = new prop::Prop;

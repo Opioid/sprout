@@ -103,7 +103,7 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		Ray secondary_ray = ray;
 		secondary_ray.properties.set(Ray::Property::Recursive);
 
-		if (settings_.direct_lighting_only) {
+		if (settings_.disable_indirect_lighting) {
 			// Make the surface integrator stop after gather direct lighting
 			// by selecting a very high ray depth.
 			// Don't take 0xFFFFFFFF because that will cause a wraparound in the MIS integrator,

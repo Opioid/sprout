@@ -1,5 +1,8 @@
 target_sources(core
 	PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/volumetric_atmosphere.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/volumetric_atmosphere.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/volumetric_density.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_density.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_density.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_grid.cpp"

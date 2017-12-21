@@ -55,9 +55,19 @@ bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Canopy::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
-					   Node_stack& /*node_stack*/, float& /*epsilon*/, bool& /*inside*/) const {
-	return false;
+bool Canopy::intersect(const Transformation& transformation, Ray& ray,
+					   Node_stack& /*node_stack*/, float& epsilon, bool& inside) const {
+	if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
+		return false;
+	}
+
+	ray.max_t = Ray_max_t;
+
+	epsilon = 5e-4f;
+
+	inside = true;
+
+	return true;
 }
 
 bool Canopy::intersect_p(const Transformation& /*transformation*/,

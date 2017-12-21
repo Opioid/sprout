@@ -146,6 +146,7 @@ private:
 	std::vector<light::Light*> lights_;
 
 	std::vector<volume::Volume*> volumes_;
+	std::vector<volume::Volume*> infinite_volumes_;
 
 	std::vector<entity::Entity*> extensions_;
 
