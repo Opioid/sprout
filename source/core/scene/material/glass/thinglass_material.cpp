@@ -15,7 +15,7 @@ Thinglass::Thinglass(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, true) {}
 
 const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& rs,
-										  Sampler_filter filter, const Worker& worker) {
+										  Sampler_filter filter, const Worker& worker) const {
 	auto& sample = worker.sample<Sample_thin>();
 
 	sample.set_basis(rs.geo_n, wo);

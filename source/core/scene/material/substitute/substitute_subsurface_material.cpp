@@ -13,7 +13,8 @@ Material_subsurface::Material_subsurface(const Sampler_settings& sampler_setting
 	Material_base(sampler_settings, false) {}
 
 const material::Sample& Material_subsurface::sample(const float3& wo, const Renderstate& rs,
-													Sampler_filter filter, const Worker& worker) {
+													Sampler_filter filter,
+													const Worker& worker) const {
 	if (rs.inside_volume) {
 		auto& sample = worker.sample<volumetric::Sample>();
 

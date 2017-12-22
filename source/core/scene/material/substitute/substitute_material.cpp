@@ -14,7 +14,7 @@ Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_base(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
-										 Sampler_filter filter, const Worker& worker) {
+										 Sampler_filter filter, const Worker& worker) const {
 	SOFT_ASSERT(!rs.inside_volume);
 
 	auto& sample = worker.sample<Sample>();

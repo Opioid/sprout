@@ -42,7 +42,7 @@ template<typename Coating>
 template<typename Sample>
 void Material_coating<Coating>::set_coating_basis(const float3& wo, const Renderstate& rs,
 												  const Texture_sampler_2D& sampler,
-												  Sample& sample) {
+												  Sample& sample) const {
 	if (Material_base::normal_map_ == coating_normal_map_) {
 		sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
 	} else if (coating_normal_map_.is_valid()) {

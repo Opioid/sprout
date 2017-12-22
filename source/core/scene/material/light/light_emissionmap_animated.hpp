@@ -19,7 +19,8 @@ public:
 	virtual void tick(float absolute_time, float time_slice) override final;
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, const Worker& worker) override;
+										   Sampler_filter filter,
+										   const Worker& worker) const override;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
 								   Sampler_filter filter,

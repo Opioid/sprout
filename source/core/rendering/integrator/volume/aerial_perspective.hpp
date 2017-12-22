@@ -14,6 +14,8 @@ public:
 
 	struct Settings {
 		float step_size;
+
+		bool disable_shadows;
 	};
 
 	Aerial_perspective(rnd::Generator& rng, const take::Settings& take_settings,
@@ -33,6 +35,15 @@ public:
 
 private:
 
+	float3 integrate_with_shadows(const Ray& ray, bool primary_ray, const Volume& volume,
+								  Worker& worker, float3& transmittance);
+
+	float3 integrate_without_shadows(const Ray& ray, bool primary_ray, const Volume& volume,
+									 Worker& worker, float3& transmittance);
+
+	static const Material_sample& sample(const float3& wo, float time, const Material& material,
+										 Sampler_filter filter, Worker& worker);
+
 	const Settings settings_;
 
 	sampler::Random sampler_;
@@ -43,7 +54,7 @@ class Aerial_perspective_factory : public Factory {
 public:
 
 	Aerial_perspective_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							   float step_size);
+							   float step_size, bool shadows);
 
 	~Aerial_perspective_factory();
 

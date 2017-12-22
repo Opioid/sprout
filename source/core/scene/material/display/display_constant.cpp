@@ -17,7 +17,7 @@ Constant::Constant(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Constant::sample(const float3& wo, const Renderstate& rs,
-										 Sampler_filter /*filter*/, const Worker& worker) {
+										 Sampler_filter /*filter*/, const Worker& worker) const {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);

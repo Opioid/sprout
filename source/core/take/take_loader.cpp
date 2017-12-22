@@ -550,8 +550,10 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Aerial_perspective" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			const bool shadows = json::read_bool(n.value, "shadows", true);
 
-			return std::make_shared<Aerial_perspective_factory>(settings, num_workers, step_size);
+			return std::make_shared<Aerial_perspective_factory>(settings, num_workers,
+																step_size, shadows);
 		} else if ("Attenuation" == n.name) {
 			return std::make_shared<Attenuation_factory>(settings, num_workers);
 		} else if ("Emission" == n.name) {

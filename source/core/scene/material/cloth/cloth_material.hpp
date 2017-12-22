@@ -12,7 +12,7 @@ public:
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   Sampler_filter filter,
-										   const Worker& worker) override final;
+										   const Worker& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
 

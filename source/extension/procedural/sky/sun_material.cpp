@@ -17,7 +17,7 @@ Sun_material::Sun_material(Model& model) : Material(model) {}
 
 const scene::material::Sample& Sun_material::sample(const float3& wo, const Renderstate& rs,
 													Sampler_filter /*filter*/,
-													const scene::Worker& worker) {
+													const scene::Worker& worker) const {
 	auto& sample = worker.sample<material::light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);

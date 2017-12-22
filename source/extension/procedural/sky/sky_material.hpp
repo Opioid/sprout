@@ -13,7 +13,7 @@ public:
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  Sampler_filter filter,
-												  const scene::Worker& worker) override final;
+												  const scene::Worker& worker) const override final;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
 								   float time, Sampler_filter filter,
@@ -38,7 +38,7 @@ public:
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  Sampler_filter filter,
-												  const scene::Worker& worker) override final;
+												  const scene::Worker& worker) const override final;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
 								   float time, Sampler_filter filter,

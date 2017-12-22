@@ -4,8 +4,6 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/light/light.hpp"
-#include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/bssrdf.hpp"
 #include "scene/material/material_sample.inl"

@@ -14,7 +14,7 @@ public:
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   Sampler_filter filter,
-										   const Worker& worker) override final;
+										   const Worker& worker) const override final;
 
 	virtual bool is_volumetric() const override final;
 
