@@ -106,7 +106,7 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 			// by selecting a very high ray depth.
 			// Don't take 0xFFFFFFFF because that will cause a wraparound in the MIS integrator,
 			// causing us to miss direct lighting from light sources wich are marked as
-			// invisible in the camera
+			// invisible in the camera.
 			secondary_ray.depth = 0xFFFFFFFE;
 		}
 

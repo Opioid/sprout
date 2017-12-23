@@ -260,7 +260,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	const float3 weighted_reflection = sample_result.reflection / sample_result.pdf;
 
 	// This might invalidate the contents of material_sample,
-	// so we must not use it after this point (e.g. in the calling function)!
+	// so we must not use the sample after this point (e.g. in the calling function)!
 	// Important exceptions are the Specular and Transmission cases, which never come here.
 	float3 vtr;
 	const float3 vli = worker.volume_li(secondary_ray, primary_ray, vtr);
