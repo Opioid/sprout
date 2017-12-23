@@ -10,7 +10,8 @@ struct Ray : public math::Ray {
 	enum class Property {
 		Null		= 0,
 		Recursive	= 1 << 0,
-		Direct_only	= 1 << 1
+		Direct_only	= 1 << 1,
+		Shadow      = 1 << 2
 	};
 
 	using Properties = flags::Flags<Property>;

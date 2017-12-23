@@ -76,7 +76,11 @@ bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack,
 }
 
 bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon, bool& inside) const {
-	if (!visible(ray.depth)) {
+	if (ray.properties.test(Ray::Property::Shadow)) {
+		if (!visible_in_shadow()) {
+			return false;
+		}
+	} else if (!visible(ray.depth)) {
 		return false;
 	}
 
