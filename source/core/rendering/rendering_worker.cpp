@@ -107,9 +107,7 @@ float3 Worker::transmittance(const Ray& ray) const {
 
 	Ray tray = ray;
 
-	if (!tray.properties.test(Ray::Property::Recursive)) {
-		tray.properties.set(Ray::Property::Shadow);
-	}
+	tray.properties.set(Ray::Property::Shadow);
 
 	for (; tray.min_t < tray.max_t;) {
 		float epsilon;

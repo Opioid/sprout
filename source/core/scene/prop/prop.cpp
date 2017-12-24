@@ -76,12 +76,14 @@ bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack,
 }
 
 bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon, bool& inside) const {
-	if (ray.properties.test(Ray::Property::Shadow)) {
-		if (!visible_in_shadow()) {
+	if (!ray.properties.test(Ray::Property::Recursive)) {
+		if (ray.properties.test(Ray::Property::Shadow)) {
+			if (!visible_in_shadow()) {
+				return false;
+			}
+		} else if (!visible(ray.depth)) {
 			return false;
 		}
-	} else if (!visible(ray.depth)) {
-		return false;
 	}
 
 	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
