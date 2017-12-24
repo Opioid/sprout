@@ -3,6 +3,7 @@
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
 #include "scene/prop/prop.hpp"
@@ -67,17 +68,14 @@ float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance
 	float3 tr(1.f);
 	float3 radiance(0.f);
 
-//	if (ray.properties.test(Ray::Property::Recursive)) {
-//		transmittance = Worker::transmittance(ray);
-//		return radiance;
-//	}
-
 	Ray tray = ray;
 
 	for (; tray.min_t < tray.max_t;) {
 		float epsilon;
 		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
-		if (!volume) {
+		if (!volume || tray.max_t >= scene::Almost_ray_max_t_minus_epsilon) {
+			// By convention don't integrate infinite volumes,
+			// as the result should be pre-computed in the surrounding infinite shape alredy.
 			break;
 		}
 
@@ -101,10 +99,6 @@ float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance
 float3 Worker::transmittance(const Ray& ray) const {
 	float3 transmittance(1.f);
 
-//	if (ray.properties.test(Ray::Property::Recursive)) {
-//		return transmittance;
-//	}
-
 	Ray tray = ray;
 
 	tray.properties.set(Ray::Property::Shadow);
@@ -112,11 +106,13 @@ float3 Worker::transmittance(const Ray& ray) const {
 	for (; tray.min_t < tray.max_t;) {
 		float epsilon;
 		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
-		if (!volume) {
+		if (!volume || tray.max_t >= scene::Almost_ray_max_t_minus_epsilon) {
+			// By convention don't integrate infinite volumes,
+			// as the result should be pre-computed in the surrounding infinite shape alredy.
 			break;
 		}
 
-		// Otherwise too small to handle meaningfully, but we still want to continue raymarching
+		// Otherwise too small to handle meaningfully, but we still want to continue raymarching.
 		if (tray.max_t - tray.min_t > 0.0005f) {
 			transmittance *= volume_integrator_->transmittance(tray, *volume, *this);
 		}

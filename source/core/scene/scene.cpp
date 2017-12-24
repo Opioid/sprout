@@ -115,13 +115,19 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 
 	float local_epsilon;
 	bool inside;
-	const volume::Volume* volume = volume_bvh_.intersect(ray, node_stack, local_epsilon, inside);
+	const volume::Volume* volume = volume_bvh_.intersect(ray, node_stack, true, 
+														 local_epsilon, inside);
 
 	if (!volume) {
 		return nullptr;
 	}
 
 	if (inside) {
+		if (!volume->shape()->is_finite()) {
+			volume_bvh_.intersect(ray, node_stack, false,
+								  local_epsilon, inside);
+		}
+
 		if (ray.max_t > original_max_t) {
 			ray.max_t = original_max_t;
 		}

@@ -31,30 +31,23 @@ void Aerial_perspective::prepare(const Scene& /*scene*/, uint32_t num_samples_pe
 
 void Aerial_perspective::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Aerial_perspective::transmittance(const Ray& /*ray*/, const Volume& /*volume*/,
-										 const Worker& /*worker*/) {
-//	Transformation temp;
-//	const auto& transformation = volume.transformation_at(ray.time, temp);
+float3 Aerial_perspective::transmittance(const Ray& ray, const Volume& volume,
+										 const Worker& worker) {
+	Transformation temp;
+	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-//	const auto& material = *volume.material(0);
+	const auto& material = *volume.material(0);
 
-//	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-//											  settings_.step_size, rng_,
-//											  Sampler_filter::Nearest, worker);
-//	return math::exp(-tau);
-
-	return float3(1.f);
+	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
+	return math::exp(-tau);
 }
 
 float3 Aerial_perspective::li(const Ray& ray, bool primary_ray, const Volume& volume,
 							  Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
 		transmittance = Aerial_perspective::transmittance(ray, volume, worker);
-		return float3::identity();
-	}
-
-	if (ray.max_t >= scene::Almost_ray_max_t) {
-		transmittance = float3(1.f);
 		return float3::identity();
 	}
 
@@ -210,7 +203,7 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, bool primar
 
 		// Lighting
 		const uint32_t num_light_samples = 1;
-		for (uint32_t i = num_light_samples; i > 0; --i) {
+		for (uint32_t j = num_light_samples; j > 0; --j) {
 			const auto light = worker.scene().random_light(rng_.random_float());
 
 			scene::light::Sample light_sample;

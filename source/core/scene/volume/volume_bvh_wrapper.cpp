@@ -22,8 +22,9 @@ const math::AABB& BVH_wrapper::aabb() const {
 }
 
 const Volume* BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-									 float& epsilon, bool& inside) const {
+									 bool include_infinite, float& epsilon, bool& inside) const {
 	const Volume* volume = nullptr;
+	inside = false;
 
 	node_stack.clear();
 	if (0 != tree_.num_nodes_) {
@@ -69,10 +70,12 @@ const Volume* BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_st
 		n = node_stack.pop();
 	}
 
-	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-		const auto v = infinite_props_[i];
-		if (v->intersect(ray, node_stack, epsilon, inside)) {
-			volume = v;
+	if (!inside && include_infinite) {
+		for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
+			const auto v = infinite_props_[i];
+			if (v->intersect(ray, node_stack, epsilon, inside)) {
+				volume = v;
+			}
 		}
 	}
 
