@@ -50,9 +50,9 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
-	Sampler_filter filter = Sampler_filter::Undefined;
+	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined
+											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
-	Bxdf_sample::Type_flag previous_sample_type;
 
 	float opacity = 0.f;
 
@@ -61,14 +61,6 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = ray.depth;; ++i) {
-		bool primary_ray = 0 == i || previous_sample_type.test(Bxdf_type::Specular);
-
-		if (primary_ray) {
-			filter = Sampler_filter::Undefined;
-		} else {
-			filter = Sampler_filter::Nearest;
-		}
-
 		opacity = 1.f;
 
 		const float3 wo = -ray.direction;
@@ -99,15 +91,22 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		if (settings_.disable_caustics && ray.depth > 0
-		&&  sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
-			break;
+		const bool requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, 
+																 Bxdf_type::Transmission);
+
+		if (requires_bounce) {
+			if (settings_.disable_caustics && !ray.is_primary()) {
+				break;
+			}
+		} else {
+			ray.set_primary(false);
+			filter = Sampler_filter::Nearest;
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (material_sample.is_sss()) {
 				result += throughput * subsurface_.li(ray, intersection, material_sample, 
-													  Sampler_filter::Nearest, primary_ray,
+													  Sampler_filter::Nearest,
 													  worker, sample_result);
 				if (0.f == sample_result.pdf) {
 					break;
@@ -132,8 +131,6 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			opacity = 1.f;
 		}
 
-		previous_sample_type = sample_result.type;
-
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
@@ -144,7 +141,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
 		float3 tr;
-		const float3 vli = worker.volume_li(ray, primary_ray, tr);
+		const float3 vli = worker.volume_li(ray, tr);
 		result += throughput * vli;
 		throughput *= tr;
 

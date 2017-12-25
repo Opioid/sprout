@@ -93,6 +93,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample,
 	ray.max_t = Ray_max_t;
 	ray.time  = sample.time;
 	ray.depth = 0;
+	ray.properties.clear(scene::Ray::Property::Primary);
 
 	return true;
 }

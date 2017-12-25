@@ -12,4 +12,12 @@ inline Ray::Ray(const float3& origin, const float3& direction, float min_t, floa
 				time(time), depth(depth), properties(properties), ior(ior) {}
 }
 
+inline bool scene::Ray::is_primary() const {
+	return properties.test(Property::Primary);
+}
+
+inline void scene::Ray::set_primary(bool primary) {
+	properties.set(Property::Primary, primary);
+}
+
 #endif

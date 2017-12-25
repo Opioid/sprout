@@ -39,7 +39,7 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 	return math::exp(-tau);
 }
 
-float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
+float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 							 Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
 		transmittance = Single_scattering::transmittance(ray, volume, worker);
@@ -53,7 +53,7 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-	const uint32_t num_samples = primary_ray ? max_samples : 1;
+	const uint32_t num_samples = ray.is_primary() ? max_samples : 1;
 
 	const float step = range / static_cast<float>(num_samples);
 
@@ -100,9 +100,10 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		// Lighting
 		Ray secondary_ray = ray;
 		secondary_ray.properties.set(Ray::Property::Recursive);
+		secondary_ray.set_primary(false);
 
 		if (settings_.disable_indirect_lighting) {
-			// Make the surface integrator stop after gather direct lighting
+			// Make the surface integrator stop after gathering direct lighting
 			// by selecting a very high ray depth.
 			// Don't take 0xFFFFFFFF because that will cause a wraparound in the MIS integrator,
 			// causing us to miss direct lighting from light sources wich are marked as

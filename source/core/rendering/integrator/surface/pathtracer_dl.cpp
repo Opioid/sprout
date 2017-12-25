@@ -36,11 +36,11 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
-	Sampler_filter filter = Sampler_filter::Undefined;
+	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined
+											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
 	float opacity = 0.f;
-	bool primary_ray = 0 == ray.depth;
 	bool requires_bounce = false;
 
 	float3 throughput(1.f);
@@ -50,7 +50,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
-		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
+		if ((ray.is_primary() || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -82,11 +82,11 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 
 		if (requires_bounce) {
-			if (settings_.disable_caustics && !primary_ray) {
+			if (settings_.disable_caustics && !ray.is_primary()) {
 				break;
 			}
 		} else {
-			primary_ray = false;
+			ray.set_primary(false);
 			filter = Sampler_filter::Nearest;
 		}
 
@@ -116,7 +116,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
 		float3 tr;
-		const float3 vli = worker.volume_li(ray, primary_ray, tr);
+		const float3 vli = worker.volume_li(ray, tr);
 		result += throughput * vli;
 		throughput *= tr;
 

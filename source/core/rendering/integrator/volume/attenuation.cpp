@@ -28,7 +28,7 @@ float3 Attenuation::transmittance(const Ray& ray, const Volume& volume, const Wo
 	return math::exp(-tau);
 }
 
-float3 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
+float3 Attenuation::li(const Ray& ray, const Volume& volume,
 					   Worker& worker, float3& transmittance) {
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);

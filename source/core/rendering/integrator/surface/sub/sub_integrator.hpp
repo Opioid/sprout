@@ -29,7 +29,7 @@ public:
 
 	virtual float3 li(const Ray& ray, Intersection& intersection,
 					  const Material_sample& sample, Sampler_filter filter, 
-					  bool primary_ray, Worker& worker, Bxdf_sample& sample_result) = 0;
+					  Worker& worker, Bxdf_sample& sample_result) = 0;
 };
 
 class Factory {

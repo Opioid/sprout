@@ -29,8 +29,6 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 	sampler::Camera_sample sample;
 	scene::Ray ray;
 
-	ray.properties = scene::Ray::Property::Null;
-
 	// Actually, we just need a unique number (>= #workers) per tile here.
 	// Maybe we can come up with a more elegant solution sometime...
 	const uint64_t sequence = 0xFFFFFFFFFFFFFFFF - ((static_cast<uint64_t>(tile[2]) << 32) +

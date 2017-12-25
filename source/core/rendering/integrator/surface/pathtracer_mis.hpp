@@ -52,7 +52,7 @@ private:
 
 	float3 estimate_direct_light(const Ray& ray, Intersection& intersection,
 								 const Material_sample& material_sample,
-								 Sampler_filter filter, bool primary_ray, Worker& worker,
+								 Sampler_filter filter, Worker& worker,
 								 Bxdf_sample& sample_result, bool& requires_bounce);
 
 	float3 evaluate_light(const Light& light, float light_weight, const Ray& history,
@@ -63,8 +63,7 @@ private:
 
 	float3 resolve_transmission(const Ray& ray, Intersection& intersection,
 								const Material_sample& sample, Sampler_filter filter, 
-								bool primary_ray, Worker& worker, 
-								Bxdf_sample& sample_result);
+								Worker& worker,  Bxdf_sample& sample_result);
 
 	sampler::Sampler& material_sampler(uint32_t bounce, Ray::Properties properties);
 	sampler::Sampler& light_sampler(uint32_t bounce, Ray::Properties properties);

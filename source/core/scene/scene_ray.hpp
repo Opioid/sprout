@@ -9,9 +9,10 @@ namespace scene {
 struct Ray : public math::Ray {
 	enum class Property {
 		Null		= 0,
-		Recursive	= 1 << 0,
-		Direct_only	= 1 << 1,
-		Shadow      = 1 << 2
+		Primary     = 1 << 0,
+		Recursive	= 1 << 1,
+		Direct_only	= 1 << 2,
+		Shadow      = 1 << 3
 	};
 
 	using Properties = flags::Flags<Property>;
@@ -22,6 +23,9 @@ struct Ray : public math::Ray {
 		float time = 0.f, uint32_t depth = 0,
 		Properties properties = Property::Null,
 		float ior = 1.f);
+
+	bool is_primary() const;
+	void set_primary(bool primary);
 
 	float	 time;
 	uint32_t depth;

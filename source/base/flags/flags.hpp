@@ -13,12 +13,12 @@ struct Flags {
 
 	Flags(T flag) : values(static_cast<impl_type>(flag)) {}
 
-	constexpr bool equal(T flag) const {
-		return static_cast<impl_type>(flag) == values;
-	}
-
 	constexpr bool test(T flag) const {
 		return static_cast<impl_type>(flag) == (values & static_cast<impl_type>(flag));
+	}
+
+	constexpr bool test_not(T flag) const {
+		return 0 == (values & static_cast<impl_type>(flag));
 	}
 
 	constexpr bool test_any(T a, T b) const {

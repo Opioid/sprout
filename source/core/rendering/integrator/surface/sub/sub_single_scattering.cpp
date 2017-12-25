@@ -27,7 +27,7 @@ void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scra
 
 float3 Single_scattering::li(const Ray& ray, Intersection& intersection, 
 							 const Material_sample& sample, Sampler_filter filter, 
-							 bool /*primary_ray*/, Worker& worker, Bxdf_sample& sample_result) {
+							 Worker& worker, Bxdf_sample& sample_result) {
 	float3 result(0.f);
 	float3 tr(sample_result.reflection / sample_result.pdf);
 
@@ -39,6 +39,9 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 	Ray tray;
 	tray.time  = ray.time;
 	tray.depth = ray.depth + 1;
+	tray.properties = ray.properties;
+	tray.properties.set(Ray::Property::Recursive);
+	tray.set_primary(false);
 
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
@@ -62,7 +65,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 	//	range = std::max(range, 0.01f);
 
 		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-		const uint32_t num_samples = (0 == ray.depth && 0 == i) ? max_samples : 1;
+		const uint32_t num_samples = (ray.is_primary() && 0 == i) ? max_samples : 1;
 		const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
 		const float step = range * num_samples_reciprocal;
 
@@ -90,7 +93,6 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 
 			// Lighting
 			Ray secondary_ray = tray;
-			secondary_ray.properties.set(Ray::Property::Recursive);
 
 			scene::prop::Intersection secondary_intersection = intersection;
 			secondary_intersection.geo.p = tray.point(min_t);

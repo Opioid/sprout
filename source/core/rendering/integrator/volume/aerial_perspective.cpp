@@ -44,7 +44,7 @@ float3 Aerial_perspective::transmittance(const Ray& ray, const Volume& volume,
 	return math::exp(-tau);
 }
 
-float3 Aerial_perspective::li(const Ray& ray, bool primary_ray, const Volume& volume,
+float3 Aerial_perspective::li(const Ray& ray, const Volume& volume,
 							  Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
 		transmittance = Aerial_perspective::transmittance(ray, volume, worker);
@@ -52,19 +52,18 @@ float3 Aerial_perspective::li(const Ray& ray, bool primary_ray, const Volume& vo
 	}
 
 	if (settings_.disable_shadows) {
-		return integrate_without_shadows(ray, primary_ray, volume, worker, transmittance);
+		return integrate_without_shadows(ray, volume, worker, transmittance);
 	}
 
-	return integrate_with_shadows(ray, primary_ray, volume, worker, transmittance);
+	return integrate_with_shadows(ray, volume, worker, transmittance);
 }
 
 size_t Aerial_perspective::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, bool primary_ray,
-												  const Volume& volume, Worker& worker,
-												  float3& transmittance) {
+float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& volume, 
+												  Worker& worker, float3& transmittance) {
 	float min_t = ray.min_t;
 	const float range = ray.max_t - min_t;
 
@@ -72,7 +71,7 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, bool primary_r
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-	const uint32_t num_samples = primary_ray ? max_samples : 1;
+	const uint32_t num_samples = ray.is_primary() ? max_samples : 1;
 
 	const float step = range / static_cast<float>(num_samples);
 
@@ -119,6 +118,7 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, bool primary_r
 		// Lighting
 		Ray secondary_ray = ray;
 		secondary_ray.properties.set(Ray::Property::Recursive);
+		secondary_ray.set_primary(false);
 		secondary_ray.depth = 0xFFFFFFFE;
 
 		scene::prop::Intersection secondary_intersection;
@@ -142,9 +142,8 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, bool primary_r
 	return color;
 }
 
-float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, bool primary_ray,
-													 const Volume& volume, Worker& worker,
-													 float3& transmittance) {
+float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volume& volume, 
+													 Worker& worker, float3& transmittance) {
 	float min_t = ray.min_t;
 	const float range = ray.max_t - min_t;
 
@@ -152,7 +151,7 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, bool primar
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-	const uint32_t num_samples = primary_ray ? max_samples : 1;
+	const uint32_t num_samples = ray.is_primary() ? max_samples : 1;
 
 	const float step = range / static_cast<float>(num_samples);
 

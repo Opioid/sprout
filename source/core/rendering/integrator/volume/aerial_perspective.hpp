@@ -28,17 +28,17 @@ public:
 	virtual float3 transmittance(const Ray& ray, const Volume& volume,
 								 const Worker& worker) override final;
 
-	virtual float3 li(const Ray& ray, bool primary_ray, const Volume& volume,
+	virtual float3 li(const Ray& ray, const Volume& volume,
 					  Worker& worker, float3& transmittance) override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float3 integrate_with_shadows(const Ray& ray, bool primary_ray, const Volume& volume,
+	float3 integrate_with_shadows(const Ray& ray, const Volume& volume,
 								  Worker& worker, float3& transmittance);
 
-	float3 integrate_without_shadows(const Ray& ray, bool primary_ray, const Volume& volume,
+	float3 integrate_without_shadows(const Ray& ray, const Volume& volume,
 									 Worker& worker, float3& transmittance);
 
 	static const Material_sample& sample(const float3& wo, float time, const Material& material,

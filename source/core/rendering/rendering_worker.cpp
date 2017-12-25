@@ -45,7 +45,7 @@ float4 Worker::li(Ray& ray) {
 	const bool hit = intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined);
 
 	float3 vtr(1.f);
-	const float3 vli = volume_li(ray, true, vtr);
+	const float3 vli = volume_li(ray, vtr);
 
 	SOFT_ASSERT(math::all_finite_and_positive(vli));
 
@@ -64,7 +64,7 @@ float4 Worker::li(Ray& ray, scene::prop::Intersection& intersection) {
 	return surface_integrator_->li(ray, intersection, *this);
 }
 
-float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance) {
+float3 Worker::volume_li(const Ray& ray, float3& transmittance) {
 	float3 tr(1.f);
 	float3 radiance(0.f);
 
@@ -82,7 +82,7 @@ float3 Worker::volume_li(const Ray& ray, bool primary_ray, float3& transmittance
 		// Otherwise too small to handle meaningfully, but we still want to continue raymarching
 		if (tray.max_t - tray.min_t > 0.0005f) {
 			float3 temp;
-			radiance += tr * volume_integrator_->li(tray, primary_ray, *volume, *this, temp);
+			radiance += tr * volume_integrator_->li(tray, *volume, *this, temp);
 			tr *= temp;
 		}
 
