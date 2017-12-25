@@ -14,7 +14,6 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
-#include "rendering/integrator/surface/sub/sub_bruteforce.hpp"
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/aerial_perspective.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
@@ -529,10 +528,7 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 	using namespace rendering::integrator::surface::sub;
 
 	for (auto& n : integrator_value.GetObject()) {
-		if ("Bruteforce" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			return std::make_unique<Bruteforce_factory>(settings, num_workers, step_size);
-		} else if ("Single_scattering" == n.name) {
+		if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			return std::make_unique<Single_scattering_factory>(settings, num_workers, step_size);
 		}

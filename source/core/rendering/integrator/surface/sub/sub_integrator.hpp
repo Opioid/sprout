@@ -27,9 +27,9 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float3 li(const Ray& ray, bool primary_ray, Intersection& intersection,
-					  const Material_sample& sample, Sampler_filter filter,
-					  Worker& worker, Bxdf_sample& sample_result) = 0;
+	virtual float3 li(const Ray& ray, Intersection& intersection,
+					  const Material_sample& sample, Sampler_filter filter, 
+					  bool primary_ray, Worker& worker, Bxdf_sample& sample_result) = 0;
 };
 
 class Factory {

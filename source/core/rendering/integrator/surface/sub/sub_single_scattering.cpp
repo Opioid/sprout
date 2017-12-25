@@ -13,8 +13,6 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
-#include <iostream>
-
 namespace rendering::integrator::surface::sub {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -27,9 +25,9 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t /*num_samples_p
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering::li(const Ray& ray, bool /*primary_ray*/, Intersection& intersection,
-							 const Material_sample& sample, Sampler_filter filter,
-							 Worker& worker, Bxdf_sample& sample_result) {
+float3 Single_scattering::li(const Ray& ray, Intersection& intersection, 
+							 const Material_sample& sample, Sampler_filter filter, 
+							 bool /*primary_ray*/, Worker& worker, Bxdf_sample& sample_result) {
 	float3 result(0.f);
 	float3 tr(sample_result.reflection / sample_result.pdf);
 

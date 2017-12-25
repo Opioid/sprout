@@ -27,9 +27,9 @@ void Closed::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {
 //	}
 }
 
-float3 Closed::resolve(const Ray& ray, Intersection& intersection,
-					   const float3& absorption_coefficient, sampler::Sampler& sampler,
-					   Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) {
+void Closed::resolve(const Ray& ray, Intersection& intersection,
+					 const float3& absorption_coefficient, sampler::Sampler& sampler,
+					 Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_absorption_coefficient = absorption_coefficient;
 
@@ -54,12 +54,8 @@ float3 Closed::resolve(const Ray& ray, Intersection& intersection,
 		auto& material_sample = intersection.sample(wo, tray.time, filter, worker);
 
 		material_sample.sample(sampler, sample_result);
-		if (0.f == sample_result.pdf || float3::identity() == sample_result.reflection) {
+		if (0.f == sample_result.pdf) {
 			break;
-		}
-
-		if (material_sample.is_transmissive()) {
-			used_absorption_coefficient = material_sample.absorption_coefficient();
 		}
 
 		throughput *= rendering::attenuation(tray.max_t, used_absorption_coefficient)
@@ -71,7 +67,7 @@ float3 Closed::resolve(const Ray& ray, Intersection& intersection,
 		}
 	}
 
-	return throughput;
+	sample_result.reflection = throughput;
 }
 
 size_t Closed::num_bytes() const {

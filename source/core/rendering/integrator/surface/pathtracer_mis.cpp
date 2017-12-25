@@ -135,27 +135,19 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			if (material_sample.is_sss()) {
-				result += throughput * subsurface_.li(ray, primary_ray, intersection,
-													  material_sample, Sampler_filter::Nearest,
-													  worker, sample_result);
-				if (0.f == sample_result.pdf) {
-					break;
-				}
+			const float3 tli = resolve_transmission(ray, intersection,
+													material_sample,
+													Sampler_filter::Nearest,
+													primary_ray, worker,
+													sample_result);
 
-				throughput *= sample_result.reflection;
-			} else {
-				const float3 tr = resolve_transmission(ray, intersection,
-													   material_sample.absorption_coefficient(),
-													   Sampler_filter::Nearest,
-													   worker, sample_result);
-				if (0.f == sample_result.pdf) {
-					break;
-				}
-
-				throughput *= tr;
-				opacity += spectrum::luminance(tr);
+			result += throughput * tli;
+			if (0.f == sample_result.pdf) {
+				break;
 			}
+
+			throughput *= sample_result.reflection;
+		//	opacity += spectrum::luminance(tr);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;
@@ -345,15 +337,25 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 	return float3(0.f);
 }
 
-float3 Pathtracer_MIS::resolve_transmission(const Ray& ray, Intersection& intersection,
-											const float3& attenuation, Sampler_filter filter,
-											Worker& worker, Bxdf_sample& sample_result) {
-	if (intersection.prop->is_open()) {
-		return transmittance_open_.resolve(ray, intersection, attenuation,
-										   sampler_, filter, worker, sample_result);
+float3 Pathtracer_MIS::resolve_transmission(const Ray& ray, Intersection& intersection, 
+											const Material_sample& sample, Sampler_filter filter, 
+											bool primary_ray, Worker& worker,
+											Bxdf_sample& sample_result) {
+	if (sample.is_sss()) {
+		return subsurface_.li(ray, intersection, sample, filter, 
+							  primary_ray, worker, sample_result);
 	} else {
-		return transmittance_closed_.resolve(ray, intersection, attenuation,
-											 sampler_, filter, worker, sample_result);
+		const auto& attenuation = sample.absorption_coefficient();
+
+		if (intersection.prop->is_open()) {
+			transmittance_open_.resolve(ray, intersection, attenuation,
+										sampler_, filter, worker, sample_result);
+		} else {
+			transmittance_closed_.resolve(ray, intersection, attenuation,
+										  sampler_, filter, worker, sample_result);
+		}
+
+		return float3::identity();
 	}
 }
 

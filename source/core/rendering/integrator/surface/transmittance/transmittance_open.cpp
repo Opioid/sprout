@@ -19,9 +19,9 @@ void Open::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pix
 
 void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Open::resolve(const Ray& ray, Intersection& intersection,
-					 const float3& absorption_coefficient, sampler::Sampler& sampler,
-					 Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) const {
+void Open::resolve(const Ray& ray, Intersection& intersection,
+				   const float3& absorption_coefficient, sampler::Sampler& sampler,
+				   Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) const {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_absorption_coefficient = absorption_coefficient;
 
@@ -46,7 +46,7 @@ float3 Open::resolve(const Ray& ray, Intersection& intersection,
 		auto& material_sample = intersection.sample(wo, tray.time, filter, worker);
 
 		material_sample.sample(sampler, sample_result);
-		if (0.f == sample_result.pdf || float3::identity() == sample_result.reflection) {
+		if (0.f == sample_result.pdf) {
 			break;
 		}
 
@@ -66,7 +66,7 @@ float3 Open::resolve(const Ray& ray, Intersection& intersection,
 		}
 	}
 
-	return throughput;
+	sample_result.reflection = throughput;
 }
 
 size_t Open::num_bytes() const {

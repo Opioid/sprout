@@ -31,9 +31,9 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	float3 resolve(const Ray& ray, Intersection& intersection,
-				   const float3& absorption_coefficient, sampler::Sampler& sampler,
-				   Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) const;
+	void resolve(const Ray& ray, Intersection& intersection,
+				 const float3& absorption_coefficient, sampler::Sampler& sampler,
+				 Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) const;
 
 	virtual size_t num_bytes() const override final;
 
