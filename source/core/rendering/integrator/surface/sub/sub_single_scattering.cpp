@@ -66,8 +66,8 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 
 		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 		const uint32_t num_samples = (ray.is_primary() && 0 == i) ? max_samples : 1;
-		const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
-		const float step = range * num_samples_reciprocal;
+	
+		const float step = range / static_cast<float>(num_samples);
 
 		float3 radiance(0.f);
 
