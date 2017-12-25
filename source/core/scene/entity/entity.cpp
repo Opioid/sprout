@@ -12,7 +12,7 @@ const math::Transformation& Entity::local_frame_a() const {
 
 const Composed_transformation& Entity::transformation_at(float tick_delta,
 														 Transformation& transformation) const {
-	if (!properties_.test(Properties::Animated)) {
+	if (!properties_.test(Property::Animated)) {
 		return world_transformation_;
 	}
 
@@ -30,7 +30,7 @@ void Entity::set_transformation(const math::Transformation& t) {
 	world_frame_a_ = t;
 	world_frame_b_ = t;
 
-	properties_.unset(Properties::Animated);
+	properties_.unset(Property::Animated);
 
 	propagate_transformation();
 
@@ -43,10 +43,9 @@ void Entity::tick(const Keyframe& frame) {
 
 	// In the current implementation
 	// "animation" means "transformation changes during simulation frame"
-	const bool changed_transformation =
-			local_frame_a_.transformation != local_frame_b_.transformation;
+	const bool changed = local_frame_a_.transformation != local_frame_b_.transformation;
 
-	properties_.set(Properties::Animated, changed_transformation);
+	properties_.set(Property::Animated, changed);
 }
 
 void Entity::calculate_world_transformation() {
@@ -61,23 +60,23 @@ void Entity::calculate_world_transformation() {
 }
 
 bool Entity::visible_in_camera() const {
-	return properties_.test(Properties::Visible_in_camera);
+	return properties_.test(Property::Visible_in_camera);
 }
 
 bool Entity::visible_in_reflection() const {
-	return properties_.test(Properties::Visible_in_reflection);
+	return properties_.test(Property::Visible_in_reflection);
 }
 
 bool Entity::visible_in_shadow() const {
-	return properties_.test(Properties::Visible_in_shadow);
+	return properties_.test(Property::Visible_in_shadow);
 }
 
 void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
-	properties_.set(Properties::Visible_in_camera,		in_camera);
-	properties_.set(Properties::Visible_in_reflection,	in_reflection);
-	properties_.set(Properties::Visible_in_shadow,		in_shadow);
+	properties_.set(Property::Visible_in_camera,	 in_camera);
+	properties_.set(Property::Visible_in_reflection, in_reflection);
+	properties_.set(Property::Visible_in_shadow,	 in_shadow);
 
-	if (properties_.test(Properties::Propagate_visibility)) {
+	if (properties_.test(Property::Propagate_visibility)) {
 		if (next_) {
 			next_->set_visibility(in_camera, in_reflection, in_shadow);
 		}
@@ -89,7 +88,7 @@ void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) 
 }
 
 void Entity::set_propagate_visibility(bool enable) {
-	properties_.set(Properties::Propagate_visibility, enable);
+	properties_.set(Property::Propagate_visibility, enable);
 }
 
 void Entity::attach(Entity* node) {
@@ -117,7 +116,7 @@ const Entity* Entity::parent() const {
 void Entity::propagate_transformation() const {
 	if (child_) {
 		child_->inherit_transformation(world_frame_a_, world_frame_b_,
-									   properties_.test(Properties::Animated));
+									   properties_.test(Property::Animated));
 	}
 }
 
@@ -129,7 +128,7 @@ void Entity::inherit_transformation(const math::Transformation& a,
 	}
 
 	if (animated) {
-		properties_.set(Properties::Animated);
+		properties_.set(Property::Animated);
 	}
 
 	world_frame_a_.position = math::transform_point(local_frame_a_.transformation.position,
@@ -145,7 +144,7 @@ void Entity::inherit_transformation(const math::Transformation& a,
 													b.rotation);
 	world_frame_b_.scale = local_frame_b_.transformation.scale;
 
-	if (!properties_.test(Properties::Animated)) {
+	if (!properties_.test(Property::Animated)) {
 		world_transformation_.set(world_frame_a_);
 	}
 

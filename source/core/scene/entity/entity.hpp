@@ -61,7 +61,7 @@ protected:
 
 	virtual void on_set_transformation() = 0;
 
-	enum class Properties {
+	enum class Property {
 		Animated				= 1 << 0,
 		Visible_in_camera		= 1 << 1,
 		Visible_in_reflection	= 1 << 2,
@@ -72,7 +72,7 @@ protected:
 		Open					= 1 << 7
 	};
 
-	flags::Flags<Properties> properties_;
+	flags::Flags<Property> properties_;
 
 	Composed_transformation world_transformation_;
 

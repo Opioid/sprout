@@ -18,9 +18,9 @@ void Prop::set_shape(const std::shared_ptr<shape::Shape>& shape) {
 	shape_ = shape;
 
 	properties_.clear();
-	properties_.set(Properties::Visible_in_camera);
-	properties_.set(Properties::Visible_in_reflection);
-	properties_.set(Properties::Visible_in_shadow);
+	properties_.set(Property::Visible_in_camera);
+	properties_.set(Property::Visible_in_reflection);
+	properties_.set(Property::Visible_in_shadow);
 }
 
 
@@ -38,18 +38,18 @@ void Prop::set_shape_and_materials(const std::shared_ptr<shape::Shape>& shape,
 
 	for (auto m : materials_) {
 		if (m->is_masked()) {
-			properties_.set(Properties::Masked_material);
+			properties_.set(Property::Masked_material);
 		}
 
 		if (m->has_tinted_shadow()) {
-			properties_.set(Properties::Tinted_shadow);
+			properties_.set(Property::Tinted_shadow);
 		}
 	}
 }
 
 
 void Prop::morph(thread::Pool& pool) {
-	/*if (properties_.test(Properties::Animated))*/ {
+	/*if (properties_.test(Property::Animated))*/ {
 		shape::Morphable_shape* morphable = shape_->morphable_shape();
 		if (morphable) {
 			morphable->morph(local_frame_a_.morphing.targets[0],
@@ -144,11 +144,11 @@ const math::AABB& Prop::aabb() const {
 
 bool Prop::visible(uint32_t ray_depth) const {
 	if (0 == ray_depth) {
-		if (!properties_.test(Properties::Visible_in_camera)) {
+		if (!properties_.test(Property::Visible_in_camera)) {
 			return false;
 		}
 	} else {
-		if (!properties_.test(Properties::Visible_in_reflection)) {
+		if (!properties_.test(Property::Visible_in_reflection)) {
 			return false;
 		}
 	}
@@ -157,7 +157,7 @@ bool Prop::visible(uint32_t ray_depth) const {
 }
 
 void Prop::on_set_transformation() {
-	if (properties_.test(Properties::Animated)) {
+	if (properties_.test(Property::Animated)) {
 		math::AABB aabb = shape_->transformed_aabb(world_frame_a_);
 
 		constexpr uint32_t num_steps = 3;
@@ -245,19 +245,19 @@ material::Material* Prop::material(uint32_t part) const {
 }
 
 bool Prop::has_masked_material() const {
-	return properties_.test(Properties::Masked_material);
+	return properties_.test(Property::Masked_material);
 }
 
 bool Prop::has_tinted_shadow() const {
-	return properties_.test(Properties::Tinted_shadow);
+	return properties_.test(Property::Tinted_shadow);
 }
 
 bool Prop::is_open() const {
-	return properties_.test(Properties::Open);
+	return properties_.test(Property::Open);
 }
 
 void Prop::set_open(bool open) {
-	properties_.set(Properties::Open, open);
+	properties_.set(Property::Open, open);
 }
 
 size_t Prop::num_bytes() const {
