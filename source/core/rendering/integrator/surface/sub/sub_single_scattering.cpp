@@ -56,13 +56,10 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 			break;
 		}
 
-		float range = tray.max_t - tray.min_t;
+		const float range = tray.max_t - tray.min_t;
 		if (range < 0.0001f) {
-		//	sample_result.pdf = 0.f;
 			break;
 		}
-
-	//	range = std::max(range, 0.01f);
 
 		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 		const uint32_t num_samples = (ray.is_primary() && 0 == i) ? max_samples : 1;
@@ -72,15 +69,18 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 		float3 radiance(0.f);
 
 		const float r = rng_.random_float();
-		float tau_ray_length = r * step;
+		const float tau_ray_length = r * step;
 
-	//	tau_ray_length = std::max(tau_ray_length, 0.001f);
+		float3 attenuation = math::exp(-bssrdf.optical_depth(tau_ray_length));
 
 		float min_t = tray.min_t + tau_ray_length;
 
 		for (uint32_t j = num_samples; j > 0; --j, min_t += step) {
-			const float3 tau = bssrdf.optical_depth(tau_ray_length);
-			tr *= math::exp(-tau);
+			if (num_samples - 1 == j) {
+				attenuation = math::exp(-bssrdf.optical_depth(step));
+			}
+
+			tr *= attenuation;
 
 			const float average = spectrum::average(tr);
 			if (average < 0.01f) {
@@ -101,9 +101,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
 
-			radiance += step * tr * scattering * local_radiance;
-
-			tau_ray_length = step;
+			radiance += (step * tr) * (scattering * local_radiance);
 		}
 
 		result += /*step **/ radiance;
