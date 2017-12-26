@@ -29,4 +29,3 @@ static inline void attenuation(const float3& absorption_color,
 }
 
 #endif
-

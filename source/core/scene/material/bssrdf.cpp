@@ -13,6 +13,10 @@ float3 BSSRDF::optical_depth(float length) const {
 	return length * (absorption_coefficient_ + scattering_coefficient_);
 }
 
+float3 BSSRDF::extinction_coefficient() const {
+	return absorption_coefficient_ + scattering_coefficient_;
+}
+
 const float3& BSSRDF::absorption_coefficient() const {
 	return absorption_coefficient_;
 }

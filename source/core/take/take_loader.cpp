@@ -14,6 +14,7 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
+#include "rendering/integrator/surface/sub/sub_multiple_scattering.hpp"
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/aerial_perspective.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
@@ -385,13 +386,11 @@ void Loader::load_integrator_factories(const json::Value& integrator_value,
 									   uint32_t num_workers, Take& take) {
 	for (auto& n : integrator_value.GetObject()) {
 		if ("surface" == n.name) {
-			take.surface_integrator_factory = load_surface_integrator_factory(n.value,
-																			  take.settings,
-																			  num_workers);
+			take.surface_integrator_factory = load_surface_integrator_factory(
+				n.value, take.settings, num_workers);
 		} else if ("volume" == n.name) {
-			take.volume_integrator_factory = load_volume_integrator_factory(n.value,
-																			take.settings,
-																			num_workers);
+			take.volume_integrator_factory = load_volume_integrator_factory(
+				n.value, take.settings, num_workers);
 		}
 	}
 }
@@ -426,8 +425,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 														 default_max_bounces);
 
 			const float path_termination_probability = json::read_float(
-						n.value, "path_termination_probability",
-						default_path_termination_probability);
+				n.value, "path_termination_probability", default_path_termination_probability);
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
@@ -444,8 +442,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 														 default_max_bounces);
 
 			const float path_termination_probability = json::read_float(
-							n.value, "path_termination_probability",
-							default_path_termination_probability);
+				n.value, "path_termination_probability", default_path_termination_probability);
 
 			const uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
 															   light_sampling.num_samples);
@@ -453,8 +450,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_DL_factory>(
-						settings, num_workers, min_bounces, max_bounces,
-						path_termination_probability, num_light_samples, enable_caustics);
+				settings, num_workers, min_bounces, max_bounces, path_termination_probability, 
+				num_light_samples, enable_caustics);
 		} else if ("PTMIS" == n.name) {
 			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
 														 default_min_bounces);
@@ -463,8 +460,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 														 default_max_bounces);
 
 			const float path_termination_probability = json::read_float(
-						n.value, "path_termination_probability",
-						default_path_termination_probability);
+				n.value, "path_termination_probability", default_path_termination_probability);
 
 			load_light_sampling(n.value, light_sampling);
 
@@ -473,8 +469,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
 			return std::make_shared<Pathtracer_MIS_factory>(
-						settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
-						path_termination_probability, light_sampling, enable_caustics);
+				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
+				path_termination_probability, light_sampling, enable_caustics);
 		} else if ("Debug" == n.name) {
 			auto vector = Debug::Settings::Vector::Shading_normal;
 
@@ -528,7 +524,10 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 	using namespace rendering::integrator::surface::sub;
 
 	for (auto& n : integrator_value.GetObject()) {
-		if ("Single_scattering" == n.name) {
+		if ("Multiple_scattering" == n.name) {
+			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			return std::make_unique<Multiple_scattering_factory>(settings, num_workers, step_size);
+		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			return std::make_unique<Single_scattering_factory>(settings, num_workers, step_size);
 		}

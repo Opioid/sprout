@@ -16,6 +16,8 @@ public:
 
 	float3 optical_depth(float length) const;
 
+	float3 extinction_coefficient() const;
+
 	const float3& absorption_coefficient() const;
 	const float3& scattering_coefficient() const;
 
