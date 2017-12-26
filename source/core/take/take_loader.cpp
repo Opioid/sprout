@@ -127,10 +127,10 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	using namespace rendering::integrator;
 
 	if (!take->surface_integrator_factory) {
-		const float step_size = 1.f;
+		const float step_probability = 0.9f;
 		auto sub_factory = std::make_unique<
 			surface::sub::Single_scattering_factory>(take->settings, num_threads,
-													 step_size);
+													 step_probability);
 
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		const uint32_t min_bounces = 4;
@@ -149,10 +149,11 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 	if (!take->volume_integrator_factory) {
 		const float step_size = 1.f;
+		const float step_probability = 0.9f;
 		const bool indirect_light = false;
 		take->volume_integrator_factory = std::make_shared<
 			volume::Single_scattering_factory>(take->settings, num_threads,
-											   step_size, indirect_light);
+											   step_size, step_probability, indirect_light);
 
 		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
@@ -508,8 +509,9 @@ Loader::find_subsurface_integrator_factory(const json::Value& parent_value,
 	}
 
 	if (!factory) {
-		const float step_size = 1.f;
-		factory = std::make_unique<Single_scattering_factory>(settings, num_workers, step_size);
+		const float step_probability = 0.9f;
+		factory = std::make_unique<Single_scattering_factory>(settings, num_workers, 
+															  step_probability);
 
 		logging::warning("No valid subsurface integrator specified, "
 						 "defaulting to Single Scattering.");
@@ -528,8 +530,9 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			return std::make_unique<Multiple_scattering_factory>(settings, num_workers, step_size);
 		} else if ("Single_scattering" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			return std::make_unique<Single_scattering_factory>(settings, num_workers, step_size);
+			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
+			return std::make_unique<Single_scattering_factory>(settings, num_workers, 
+															   step_probability);
 		}
 	}
 
@@ -557,10 +560,12 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
 			const bool indirect_lighting = json::read_bool(n.value, "indirect_lighting", false);
 
 			return std::make_shared<Single_scattering_factory>(settings, num_workers,
-															   step_size, indirect_lighting);
+															   step_size, step_probability,
+															   indirect_lighting);
 		}
 	}
 

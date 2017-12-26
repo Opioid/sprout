@@ -11,7 +11,7 @@ class alignas(64) Single_scattering : public Integrator {
 public:
 
 	struct Settings {
-		float step_size;
+		float step_probability;
 	};
 
 	Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -39,7 +39,7 @@ class Single_scattering_factory : public Factory {
 public:
 
 	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size);
+							  float step_probability);
 
 	~Single_scattering_factory();
 

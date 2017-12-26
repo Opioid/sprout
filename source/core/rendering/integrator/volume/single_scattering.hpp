@@ -14,6 +14,7 @@ public:
 
 	struct Settings {
 		float step_size;
+		float step_probability;
 
 		bool disable_indirect_lighting;
 	};
@@ -45,7 +46,7 @@ class Single_scattering_factory : public Factory {
 public:
 
 	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size, bool indirect_lighting);
+							  float step_size, float step_probability, bool indirect_lighting);
 
 	~Single_scattering_factory();
 

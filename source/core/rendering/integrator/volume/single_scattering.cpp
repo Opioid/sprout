@@ -52,6 +52,8 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
+//	const float step_size = -std::log(settings_.step_probability) / spectrum::average(sigma);
+
 	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 	const uint32_t num_samples = ray.is_primary() ? max_samples : 1;
 
@@ -137,11 +139,12 @@ size_t Single_scattering::num_bytes() const {
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
-													 uint32_t num_integrators, float step_size,
+													 uint32_t num_integrators, float step_size, 
+													 float step_probability,
 													 bool indirect_lighting) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{step_size, !indirect_lighting} {}
+	settings_{step_size, step_probability, !indirect_lighting} {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::free_aligned(integrators_);

@@ -31,10 +31,13 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 	float3 result(0.f);
 	float3 tr(sample_result.reflection / sample_result.pdf);
 
+	const uint32_t part = intersection.geo.part;
+
 	const auto bssrdf = sample.bssrdf();
 	const float3 scattering = bssrdf.scattering_coefficient();
 
-	const uint32_t part = intersection.geo.part;
+	const float sigma_t = spectrum::average(bssrdf.extinction_coefficient());
+	const float step_size = -std::log(settings_.step_probability) / sigma_t;
 
 	Ray tray;
 	tray.time  = ray.time;
@@ -61,10 +64,10 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 			break;
 		}
 
-		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-		const uint32_t num_samples = (ray.is_primary() && 0 == i) ? max_samples : 1;
+		const float max_samples = std::ceil(range / step_size);
+		const float num_samples = (ray.is_primary() && 0 == i) ? max_samples : 1.f;
 	
-		const float step = range / static_cast<float>(num_samples);
+		const float step = range / num_samples;
 
 		float3 radiance(0.f);
 
@@ -75,7 +78,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 
 		float min_t = tray.min_t + tau_ray_length;
 
-		for (uint32_t j = num_samples; j > 0; --j, min_t += step) {
+		for (uint32_t j = static_cast<uint32_t>(num_samples); j > 0; --j, min_t += step) {
 			if (num_samples - 1 == j) {
 				attenuation = math::exp(-bssrdf.optical_depth(step));
 			}
@@ -131,10 +134,11 @@ size_t Single_scattering::num_bytes() const {
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
-													 uint32_t num_integrators, float step_size) :
+													 uint32_t num_integrators,
+													 float step_probability) :
 	Factory(take_settings),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{ step_size } {}
+	settings_{step_probability} {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::free_aligned(integrators_);
