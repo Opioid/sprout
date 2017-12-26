@@ -6,7 +6,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 Sky::~Sky() {}
 
@@ -14,8 +14,8 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) {
 	sky_ = sky;
 	sun_ = sun;
 
-//	attach(sky_);
-//	attach(sun_);
+	attach(sky_);
+	attach(sun_);
 
 	update();
 
@@ -70,4 +70,4 @@ void Sky::on_set_transformation() {
 	}
 }
 
-}}
+}

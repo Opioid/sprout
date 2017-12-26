@@ -71,19 +71,18 @@ bool Entity::visible_in_shadow() const {
 	return properties_.test(Property::Visible_in_shadow);
 }
 
-void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
+void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow,
+							bool propagate) {
 	properties_.set(Property::Visible_in_camera,	 in_camera);
 	properties_.set(Property::Visible_in_reflection, in_reflection);
 	properties_.set(Property::Visible_in_shadow,	 in_shadow);
 
-	if (properties_.test(Property::Propagate_visibility)) {
-		if (next_) {
-			next_->set_visibility(in_camera, in_reflection, in_shadow);
-		}
+	if (next_ && propagate) {
+		next_->set_visibility(in_camera, in_reflection, in_shadow, true);
+	}
 
-		if (child_) {
-			child_->set_visibility(in_camera, in_reflection, in_shadow);
-		}
+	if (child_ && properties_.test(Property::Propagate_visibility)) {
+		child_->set_visibility(in_camera, in_reflection, in_shadow, true);
 	}
 }
 
