@@ -127,7 +127,7 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& 
 		secondary_intersection.geo.part = 0;
 		secondary_intersection.geo.epsilon = 0.0005f;
 
-		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
+		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 
 		const float3 scattering = material.scattering(transformation, current,
 													  Sampler_filter::Undefined, worker);

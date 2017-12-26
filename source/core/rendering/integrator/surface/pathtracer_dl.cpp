@@ -1,8 +1,6 @@
 #include "pathtracer_dl.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "image/texture/sampler/sampler_linear_2d.inl"
-#include "image/texture/sampler/sampler_nearest_2d.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -12,10 +10,10 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
-#include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::surface {
 
@@ -35,12 +33,11 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
-	float opacity = 0.f;
 	bool requires_bounce = false;
 
 	float3 throughput(1.f);
@@ -55,7 +52,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		if (material_sample.is_pure_emissive()) {
-			opacity = 1.f;
 			break;
 		}
 
@@ -100,10 +96,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 
 			throughput *= sample_result.reflection;
-		//	opacity += 1.f - sample_result.pdf * spectrum::luminance(tr);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
-			opacity = 1.f;
 		}
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -125,7 +119,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 	}
 
-	return float4(result, opacity);
+	return result;
 }
 
 float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& intersection,

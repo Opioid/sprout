@@ -107,7 +107,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			secondary_intersection.geo.part = part;
 			secondary_intersection.inside_volume = true;
 
-			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection).xyz();
+			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 
 			radiance += step * tr * scattering * local_radiance;
 

@@ -75,14 +75,13 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	transmittance_closed_.resume_pixel(sample, scramble);
 }
 
-float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	const uint32_t max_bounces = settings_.max_bounces;
 
 	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined 
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
-	float opacity = 0.f;
 	bool requires_bounce = false;
 
 	float3 throughput(1.f);
@@ -101,7 +100,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		if (material_sample.is_pure_emissive()) {
-			opacity = 1.f;
 			break;
 		}
 
@@ -113,7 +111,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		if (!intersection.hit()
 		||  i >= (requires_bounce ? max_bounces : max_bounces - 1)
 		||  0.f == sample_result.pdf) {
-			opacity = 1.f; // I am not really happy with this being here
 			break;
 		}
 
@@ -150,7 +147,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		//	opacity += spectrum::luminance(tr);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
-			opacity = 1.f;
 		}
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -175,7 +171,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 	}
 
-	return float4(result, opacity);
+	return result;
 }
 
 size_t Pathtracer_MIS::num_bytes() const {

@@ -11,6 +11,7 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.hpp"
 #include "base/memory/align.hpp"
+#include "base/spectrum/rgb.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -50,17 +51,17 @@ float4 Worker::li(Ray& ray) {
 	SOFT_ASSERT(math::all_finite_and_positive(vli));
 
 	if (hit) {
-		const float4 li = surface_integrator_->li(ray, intersection, *this);
+		const float3 li = surface_integrator_->li(ray, intersection, *this);
 
-		SOFT_ASSERT(math::all_finite_and_positive(li.xyz()));
+		SOFT_ASSERT(math::all_finite_and_positive(li));
 
-		return float4(vtr * li.xyz() + vli, li[3]);
+		return float4(vtr * li + vli, 1.f);
 	} else {
-		return float4(vli, 1.f);
+		return float4(vli, spectrum::luminance(vli));
 	}
 }
 
-float4 Worker::li(Ray& ray, scene::prop::Intersection& intersection) {
+float3 Worker::li(Ray& ray, scene::prop::Intersection& intersection) {
 	return surface_integrator_->li(ray, intersection, *this);
 }
 

@@ -18,7 +18,7 @@ void Debug::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pi
 
 void Debug::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 vector;
 
 	switch (settings_.vector) {
@@ -37,7 +37,7 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
 													worker);
 
 		if (!material_sample.same_hemisphere(wo)) {
-			return float4(0.f, 0.f, 0.f, 1.f);
+			return float3(0.f);
 		}
 
 		vector = material_sample.base_layer().shading_normal();
@@ -47,11 +47,11 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		vector = float3(0.5f * intersection.geo.uv, -1.f);
 		break;
 	default:
-		return float4(0.f, 0.f, 0.f, 1.f);
+		return float3(0.f);
 		break;
 	}
 
-	return float4(0.5f * (vector + float3(1.f)), 1.f);
+	return float3(0.5f * (vector + float3(1.f)));
 }
 
 size_t Debug::num_bytes() const {

@@ -2,8 +2,6 @@
 #include "sub/sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "image/texture/sampler/sampler_linear_2d.inl"
-#include "image/texture/sampler/sampler_nearest_2d.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -13,10 +11,10 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
-#include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::surface {
 
@@ -49,20 +47,16 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	}
 }
 
-float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
-
-	float opacity = 0.f;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = ray.depth;; ++i) {
-		opacity = 1.f;
-
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
@@ -128,7 +122,6 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
-			opacity = 1.f;
 		}
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -150,7 +143,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 	}
 
-	return float4(result, opacity);
+	return result;
 }
 
 sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {

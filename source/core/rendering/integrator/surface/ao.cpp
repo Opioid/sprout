@@ -24,7 +24,7 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float result = 0.f;
 
 	Ray occlusion_ray;
@@ -50,7 +50,7 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 	}
 
-	return float4(result, result, result, 1.f);
+	return float3(result);
 }
 
 size_t AO::num_bytes() const {

@@ -13,7 +13,6 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::surface {
 
@@ -32,7 +31,7 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
 //	float3 result(0.f);
 
 //	const float3 wo = -ray.direction;
@@ -61,7 +60,7 @@ float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 //	return float4(result, spectrum::luminance(opacity));
 
-	return float4(shade(ray, intersection, worker), 1.f);
+	return shade(ray, intersection, worker);
 }
 
 float3 Whitted::shade(const Ray& ray, const Intersection& intersection, Worker& worker) {

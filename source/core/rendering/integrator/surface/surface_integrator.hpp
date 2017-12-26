@@ -17,7 +17,7 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker) = 0;
+	virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) = 0;
 };
 
 class Factory {
