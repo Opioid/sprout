@@ -8,6 +8,7 @@
 #include "scene/material/bssrdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
+#include "base/math/math.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
@@ -34,13 +35,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 	const auto bssrdf = sample.bssrdf();
 	const float3 scattering = bssrdf.scattering_coefficient();
 
-
-
-	const float3 st = bssrdf.extinction_coefficient();
-
-	const float thing = 0.01f / std::exp(-spectrum::average(st));
-
-
+	const float sigma_t = spectrum::average(bssrdf.extinction_coefficient());
 
 	const uint32_t part = intersection.geo.part;
 
@@ -58,10 +53,71 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
 		tray.min_t = ray_offset;
-		tray.max_t = scene::Ray_max_t;
+
+		const float r = math::clamp(rng_.random_float(), 0.001f, 0.999f);
+
+		tray.max_t = -std::log(r) / sigma_t;
 
 		if (!worker.intersect(intersection.prop, tray, intersection)) {
-			break;
+
+			const float3 tau = bssrdf.optical_depth(tray.max_t);
+			tr *= math::exp(-tau);
+
+			const float average = spectrum::average(tr);
+			if (average < 0.01f) {
+				//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
+				sample_result.pdf = 0.f;
+			//	result += /*step **/ radiance;
+				return result;
+				//	}
+			}
+
+			// Lighting
+			Ray secondary_ray = tray;
+
+			intersection.geo.p = tray.point(tray.max_t);
+
+			scene::prop::Intersection secondary_intersection = intersection;
+			secondary_intersection.geo.part = part;
+			secondary_intersection.inside_volume = true;
+
+			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
+
+			const float range = tray.max_t - tray.min_t;
+
+			result += range * tr * scattering * local_radiance;
+
+
+
+			const float3 wo = -tray.direction;
+			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
+
+			material_sample.sample(sampler_, sample_result);
+			if (0.f == sample_result.pdf) {
+				break;
+			}
+
+			tr *= scattering * (sample_result.reflection / sample_result.pdf);
+
+			continue;
+		//	break;
+		} else {
+			const float3 tau = bssrdf.optical_depth(tray.max_t);
+			tr *= math::exp(-tau);
+
+			const float3 wo = -tray.direction;
+			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
+
+			material_sample.sample(sampler_, sample_result);
+			if (0.f == sample_result.pdf) {
+				break;
+			}
+
+			tr *= sample_result.reflection / sample_result.pdf;
+
+			if (sample_result.type.test(Bxdf_type::Transmission)) {
+				break;
+			}
 		}
 
 		float range = tray.max_t - tray.min_t;
@@ -70,65 +126,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			break;
 		}
 
-	//	range = std::max(range, 0.01f);
 
-		const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-		const uint32_t num_samples = (ray.is_primary() && 0 == i) ? max_samples : 1;
-	
-		const float step = range / static_cast<float>(num_samples);
-
-		float3 radiance(0.f);
-
-		const float r = rng_.random_float();
-		float tau_ray_length = r * step;
-
-	//	tau_ray_length = std::max(tau_ray_length, 0.001f);
-
-		float min_t = tray.min_t + tau_ray_length;
-
-		for (uint32_t j = num_samples; j > 0; --j, min_t += step) {
-			const float3 tau = bssrdf.optical_depth(tau_ray_length);
-			tr *= math::exp(-tau);
-
-			const float average = spectrum::average(tr);
-			if (average < 0.01f) {
-			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
-					sample_result.pdf = 0.f;
-					result += /*step **/ radiance;
-					return result;
-			//	}
-			}
-
-			// Lighting
-			Ray secondary_ray = tray;
-
-			scene::prop::Intersection secondary_intersection = intersection;
-			secondary_intersection.geo.p = tray.point(min_t);
-			secondary_intersection.geo.part = part;
-			secondary_intersection.inside_volume = true;
-
-			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
-
-			radiance += step * tr * scattering * local_radiance;
-
-			tau_ray_length = step;
-		}
-
-		result += /*step **/ radiance;
-
-		const float3 wo = -tray.direction;
-		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
-
-		material_sample.sample(sampler_, sample_result);
-		if (0.f == sample_result.pdf) {
-			break;
-		}
-
-		tr *= sample_result.reflection / sample_result.pdf;
-
-		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			break;
-		}
 	}
 
 	sample_result.reflection = tr;
@@ -141,10 +139,9 @@ size_t Multiple_scattering::num_bytes() const {
 }
 
 Multiple_scattering_factory::Multiple_scattering_factory(const take::Settings& take_settings,
-														 uint32_t num_integrators, float step_size) :
+														 uint32_t num_integrators) :
 	Factory(take_settings),
-	integrators_(memory::allocate_aligned<Multiple_scattering>(num_integrators)),
-	settings_{ step_size } {}
+	integrators_(memory::allocate_aligned<Multiple_scattering>(num_integrators)) {}
 
 Multiple_scattering_factory::~Multiple_scattering_factory() {
 	memory::free_aligned(integrators_);

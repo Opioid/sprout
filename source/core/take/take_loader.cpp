@@ -527,8 +527,7 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Multiple_scattering" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			return std::make_unique<Multiple_scattering_factory>(settings, num_workers, step_size);
+			return std::make_unique<Multiple_scattering_factory>(settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
 			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
 			return std::make_unique<Single_scattering_factory>(settings, num_workers, 

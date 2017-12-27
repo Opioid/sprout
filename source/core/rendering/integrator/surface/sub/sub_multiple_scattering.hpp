@@ -11,7 +11,6 @@ class alignas(64) Multiple_scattering : public Integrator {
 public:
 
 	struct Settings {
-		float step_size;
 	};
 
 	Multiple_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -38,8 +37,7 @@ class Multiple_scattering_factory : public Factory {
 
 public:
 
-	Multiple_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							    float step_size);
+	Multiple_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators);
 
 	~Multiple_scattering_factory();
 

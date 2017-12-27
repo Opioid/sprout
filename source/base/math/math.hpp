@@ -45,6 +45,11 @@ static T saturate(T a) {
 }
 
 template<typename T>
+static T clamp(T a, T mi, T ma) {
+	return std::min(std::max(a, mi), ma);
+}
+
+template<typename T>
 static constexpr T lerp(T a, T b, T t) {
 	T u = T(1) - t;
 	return u * a + t * b;
