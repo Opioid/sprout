@@ -54,7 +54,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 		tray.set_direction(sample_result.wi);
 		tray.min_t = ray_offset;
 
-		const float r = math::clamp(rng_.random_float(), 0.001f, 0.999f);
+		const float r = std::max(rng_.random_float(), 0.00001f);
 
 		tray.max_t = -std::log(r) / sigma_t;
 
@@ -76,31 +76,48 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			Ray secondary_ray = tray;
 
 			intersection.geo.p = tray.point(tray.max_t);
+			intersection.geo.epsilon = 0.f;
 
 			scene::prop::Intersection secondary_intersection = intersection;
 			secondary_intersection.geo.part = part;
 			secondary_intersection.inside_volume = true;
 
+
+			// next step
+
+
+			const float3 wo = -tray.direction;
+			auto& material_sample = secondary_intersection.sample(wo, ray.time, filter, worker);
+
+			material_sample.sample(sampler_, sample_result);
+
+
+	//		tr *= scattering * (sample_result.reflection / sample_result.pdf);
+
+		//	const float3 next_step = (sample_result.reflection / sample_result.pdf);
+
+			// ....
+
+
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 
-			const float range = tray.max_t - tray.min_t;
+			const float range = tray.max_t;// - tray.min_t;
 
 			result += range * tr * scattering * local_radiance;
 
 
 
-			const float3 wo = -tray.direction;
-			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
+//			const float3 wo = -tray.direction;
+//			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
-			material_sample.sample(sampler_, sample_result);
+	//		material_sample.sample(sampler_, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
 
-			tr *= scattering * (sample_result.reflection / sample_result.pdf);
+			tr *= (sample_result.reflection / sample_result.pdf);;
 
-			continue;
-		//	break;
+//			wi = sample_result.wi;
 		} else {
 			const float3 tau = bssrdf.optical_depth(tray.max_t);
 			tr *= math::exp(-tau);
@@ -119,14 +136,6 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 				break;
 			}
 		}
-
-		float range = tray.max_t - tray.min_t;
-		if (range < 0.0001f) {
-		//	sample_result.pdf = 0.f;
-			break;
-		}
-
-
 	}
 
 	sample_result.reflection = tr;
