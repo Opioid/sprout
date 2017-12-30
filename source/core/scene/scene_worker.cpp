@@ -41,13 +41,6 @@ bool Worker::intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& int
 	if (hit) {
 		intersection.prop = prop;
 	}
-	// The following is problematic for our resolving of transmission in closed shapes.
-	// It can happen that we don't get an intersection in corner cases,
-	// and the calling code (somewhat reasonably) does not expect prop suddenly becoming null.
-	// Probably there is a more elegant way of solving this
-//	else {
-//		intersection.prop = nullptr;
-//	}
 
 	return hit;
 }

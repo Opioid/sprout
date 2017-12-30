@@ -14,6 +14,8 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace rendering::integrator::surface::sub {
 
 Multiple_scattering::Multiple_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -49,30 +51,29 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
 	for (uint32_t i = 0; /*i < 256*/; ++i) {
-		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
-		tray.min_t = ray_offset;
+		tray.min_t = ray_offset_factor * intersection.geo.epsilon;
 
-		const float r = std::max(rng_.random_float(), 0.00001f);
-
+		const float r = std::max(rng_.random_float(), 0.0000001f);
 		tray.max_t = -std::log(r) / sigma_t;
 
-		if (!worker.intersect(intersection.prop, tray, intersection)) {
+		const bool hit = worker.intersect(intersection.prop, tray, intersection);
 
-			const float3 tau = bssrdf.optical_depth(tray.max_t);
-			tr *= math::exp(-tau);
+		const float3 tau = bssrdf.optical_depth(tray.max_t);
+		tr *= math::exp(-tau);
 
-			const float average = spectrum::average(tr);
-			if (average < 0.01f) {
-				//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
-				sample_result.pdf = 0.f;
-			//	result += /*step **/ radiance;
-				return result;
-				//	}
-			}
+		const float average = spectrum::average(tr);
+		if (average < 0.01f) {
+			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
+			sample_result.pdf = 0.f;
+		//	result += /*step **/ radiance;
+			return result;
+			//	}
+		}
 
-			// Lighting
+		if (!hit) {
+			// Scattering
 			Ray secondary_ray = tray;
 
 			intersection.geo.p = tray.point(tray.max_t);
@@ -82,52 +83,30 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			secondary_intersection.geo.part = part;
 			secondary_intersection.inside_volume = true;
 
-
-			// next step
-
-
+			// Prepare the next scattering event...
 			const float3 wo = -tray.direction;
 			auto& material_sample = secondary_intersection.sample(wo, ray.time, filter, worker);
 
 			material_sample.sample(sampler_, sample_result);
 
-
-	//		tr *= scattering * (sample_result.reflection / sample_result.pdf);
-
-		//	const float3 next_step = (sample_result.reflection / sample_result.pdf);
-
-			// ....
-
-
+			// ...before gathering the lighting at the current point
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 
-			const float range = tray.max_t;// - tray.min_t;
+			const float range = tray.max_t;
 
 			result += range * tr * scattering * local_radiance;
 
+			// This should never happen for volumetric sample
+			SOFT_ASSERT(sample_result.pdf > 0.f);
 
-
-//			const float3 wo = -tray.direction;
-//			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
-
-	//		material_sample.sample(sampler_, sample_result);
-			if (0.f == sample_result.pdf) {
-				break;
-			}
-
-			tr *= (sample_result.reflection / sample_result.pdf);;
-
-//			wi = sample_result.wi;
+			tr *= sample_result.reflection / sample_result.pdf;
 		} else {
-			const float3 tau = bssrdf.optical_depth(tray.max_t);
-			tr *= math::exp(-tau);
-
 			const float3 wo = -tray.direction;
 			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
 			material_sample.sample(sampler_, sample_result);
 			if (0.f == sample_result.pdf) {
-				break;
+				return result;
 			}
 
 			tr *= sample_result.reflection / sample_result.pdf;

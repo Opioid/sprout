@@ -5,6 +5,7 @@
 #include "transmittance/transmittance_closed.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
+#include "scene/scene_ray.hpp"
 #include <memory>
 
 namespace scene::light { struct Sample; }
@@ -34,13 +35,13 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 li(scene::Ray& ray, Intersection& intersection, Worker& worker) override final;
+	virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	sampler::Sampler& material_sampler(uint32_t bounce);
+	sampler::Sampler& material_sampler(uint32_t bounce, Ray::Properties properties);
 
 	const Settings settings_;
 

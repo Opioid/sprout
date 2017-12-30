@@ -80,7 +80,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 		}
 
-		material_sample.sample(material_sampler(i), sample_result);
+		material_sample.sample(material_sampler(i, ray.properties), sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
 		}
@@ -108,17 +108,13 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 				throughput *= sample_result.reflection;
 			} else {
-				transmittance_.resolve(ray, intersection,
-									   material_sample.absorption_coefficient(),
-									   sampler_, Sampler_filter::Nearest,
-									   worker, sample_result);
-
+				transmittance_.resolve(ray, intersection, material_sample.absorption_coefficient(),
+									   sampler_, Sampler_filter::Nearest, worker, sample_result);
 				if (0.f == sample_result.pdf) {
 					break;
 				}
 
 				throughput *= sample_result.reflection;
-			//	opacity += spectrum::luminance(tr);
 			}
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
@@ -131,12 +127,14 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
-		const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
+		float3 ssstr;
+		const bool hit = worker.intersect_and_resolve_mask(ray, intersection, material_sample,
+														   filter, ssstr);
 
-		float3 tr;
-		const float3 vli = worker.volume_li(ray, tr);
+		float3 vtr;
+		const float3 vli = worker.volume_li(ray, vtr);
 		result += throughput * vli;
-		throughput *= tr;
+		throughput *= ssstr * vtr;
 
 		if (!hit) {
 			break;
@@ -146,8 +144,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	return result;
 }
 
-sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {
-	if (Num_material_samplers > bounce) {
+sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce, Ray::Properties properties) {
+	if (Num_material_samplers > bounce && properties.test_not(Ray::Property::Recursive)) {
 		return material_samplers_[bounce];
 	}
 

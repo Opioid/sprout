@@ -49,20 +49,16 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
 	for (uint32_t i = 0; /*i < 256*/; ++i) {
-		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
-		tray.min_t = ray_offset;
+		tray.min_t = ray_offset_factor * intersection.geo.epsilon;;
 		tray.max_t = scene::Ray_max_t;
 
 		if (!worker.intersect(intersection.prop, tray, intersection)) {
 			break;
 		}
 
-		const float range = tray.max_t - tray.min_t;
-		if (range < 0.0001f) {
-			break;
-		}
+		const float range = tray.max_t;
 
 		const float max_samples = std::ceil(range / step_size);
 		const float num_samples = (ray.is_primary() && 0 == i) ? max_samples : 1.f;
@@ -100,6 +96,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 			scene::prop::Intersection secondary_intersection = intersection;
 			secondary_intersection.geo.p = tray.point(min_t);
 			secondary_intersection.geo.part = part;
+			secondary_intersection.geo.epsilon = 0.f;
 			secondary_intersection.inside_volume = true;
 
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
@@ -114,7 +111,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 
 		material_sample.sample(sampler_, sample_result);
 		if (0.f == sample_result.pdf) {
-			break;
+			return result;
 		}
 
 		tr *= sample_result.reflection / sample_result.pdf;
