@@ -45,12 +45,12 @@ private:
 
 	const Settings settings_;
 
-	sub::Integrator& subsurface_;
-
 	sampler::Random sampler_;
 
 	static constexpr uint32_t Num_material_samplers = 3;
 	sampler::Golden_ratio material_samplers_[Num_material_samplers];
+
+	sub::Integrator& subsurface_;
 
 	transmittance::Closed transmittance_;
 };

@@ -24,10 +24,10 @@ Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_s
 							   const Settings& settings, sub::Integrator& subsurface) :
 	Integrator(rng, take_settings),
 	settings_(settings),
-	subsurface_(subsurface),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
 	light_samplers_{rng, rng, rng},
+	subsurface_(subsurface),
 	transmittance_open_(rng, take_settings, settings.max_bounces),
 	transmittance_closed_(rng, take_settings) {}
 
@@ -58,6 +58,8 @@ void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel)
 		}
 	}
 
+	subsurface_.prepare(scene, num_samples_per_pixel);
+
 	transmittance_closed_.prepare(scene, num_samples_per_pixel);
 }
 
@@ -71,6 +73,8 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	for (auto& s : light_samplers_) {
 		s.resume_pixel(sample, scramble);
 	}
+
+	subsurface_.resume_pixel(sample, scramble);
 
 	transmittance_closed_.resume_pixel(sample, scramble);
 }

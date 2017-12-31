@@ -72,8 +72,6 @@ private:
 
 	float num_lights_reciprocal_;
 
-	sub::Integrator& subsurface_;
-
 	sampler::Random sampler_;
 
 	static constexpr uint32_t Num_material_samplers = 3;
@@ -81,6 +79,8 @@ private:
 
 	static constexpr uint32_t Num_light_samplers = 3;
 	sampler::Golden_ratio light_samplers_[Num_light_samplers];
+
+	sub::Integrator& subsurface_;
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;

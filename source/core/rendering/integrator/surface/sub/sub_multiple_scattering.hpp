@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_INTEGRATOR_SURFACE_SUB_MULTIPLE_SCATTERING_HPP
 
 #include "sub_integrator.hpp"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 
 namespace rendering::integrator::surface::sub {
@@ -28,9 +29,14 @@ public:
 
 private:
 
+	sampler::Sampler& material_sampler(uint32_t bounce, uint32_t iteration);
+
 	const Settings settings_;
 
 	sampler::Random sampler_;
+
+	static constexpr uint32_t Num_material_samplers = 2;
+	sampler::Golden_ratio material_samplers_[Num_material_samplers];
 };
 
 class Multiple_scattering_factory : public Factory {

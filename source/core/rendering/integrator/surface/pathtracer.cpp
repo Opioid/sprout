@@ -22,21 +22,23 @@ Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
 					   const Settings& settings, sub::Integrator& subsurface) :
 	Integrator(rng, take_settings),
 	settings_(settings),
-	subsurface_(subsurface),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
+	subsurface_(subsurface),
 	transmittance_(rng, take_settings) {}
 
 Pathtracer::~Pathtracer() {
 	memory::safe_destruct(subsurface_);
 }
 
-void Pathtracer::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Pathtracer::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
 	for (auto& s : material_samplers_) {
 		s.resize(num_samples_per_pixel, 1, 1, 1);
 	}
+
+	subsurface_.prepare(scene, num_samples_per_pixel);
 }
 
 void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -45,6 +47,8 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	for (auto& s : material_samplers_) {
 		s.resume_pixel(sample, scramble);
 	}
+
+	subsurface_.resume_pixel(sample, scramble);
 }
 
 float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {

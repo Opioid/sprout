@@ -22,11 +22,24 @@ Multiple_scattering::Multiple_scattering(rnd::Generator& rng, const take::Settin
 										 const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
-	sampler_(rng) {}
+	sampler_(rng),
+	material_samplers_{rng, rng} {}
 
-void Multiple_scattering::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Multiple_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
-void Multiple_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+	for (auto& s : material_samplers_) {
+		s.resize(num_samples_per_pixel, 1, 1, 2);
+	}
+}
+
+void Multiple_scattering::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+	sampler_.resume_pixel(sample, scramble);
+
+	for (auto& s : material_samplers_) {
+		s.resume_pixel(sample, scramble);
+	}
+}
 
 float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 							   const Material_sample& sample, Sampler_filter filter, 
@@ -52,11 +65,13 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
 	for (uint32_t i = 0; /*i < 256*/; ++i) {
+		auto& sampler = material_sampler(ray.depth, i);
+
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
 		tray.min_t = ray_offset_factor * intersection.geo.epsilon;
 
-		const float r = std::max(rng_.random_float(), 0.0000001f);
+		const float r = std::max(sampler.generate_sample_1D(1), 0.0000001f);
 		tray.max_t = -std::log(r) / sigma_t;
 
 		const bool hit = worker.intersect(intersection.prop, tray, intersection);
@@ -88,7 +103,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			const float3 wo = -tray.direction;
 			auto& material_sample = secondary_intersection.sample(wo, ray.time, filter, worker);
 
-			material_sample.sample(sampler_, sample_result);
+			material_sample.sample(sampler, sample_result);
 
 			// ...before gathering the lighting at the current point
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
@@ -105,7 +120,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			const float3 wo = -tray.direction;
 			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
-			material_sample.sample(sampler_, sample_result);
+			material_sample.sample(sampler, sample_result);
 			if (0.f == sample_result.pdf) {
 				return result;
 			}
@@ -124,7 +139,21 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 }
 
 size_t Multiple_scattering::num_bytes() const {
-	return sizeof(*this) + sampler_.num_bytes();
+	size_t sampler_bytes = 0;
+
+	for (const auto& s : material_samplers_) {
+		sampler_bytes += s.num_bytes();
+	}
+
+	return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
+}
+
+sampler::Sampler& Multiple_scattering::material_sampler(uint32_t bounce, uint32_t iteration) {
+	if (0 == bounce && Num_material_samplers > iteration) {
+		return material_samplers_[iteration];
+	}
+
+	return sampler_;
 }
 
 Multiple_scattering_factory::Multiple_scattering_factory(const take::Settings& take_settings,

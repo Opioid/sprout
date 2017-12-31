@@ -45,7 +45,7 @@ uint32_t Sampler::num_samples() const {
 }
 
 void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) {
-	uint32_t sample = iteration * num_samples_per_iteration_;
+	const uint32_t sample = iteration * num_samples_per_iteration_;
 
 	for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
 		current_sample_2D_[i] = sample;
