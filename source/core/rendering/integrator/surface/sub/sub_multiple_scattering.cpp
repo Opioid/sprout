@@ -37,7 +37,8 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 	const auto bssrdf = sample.bssrdf();
 	const float3 scattering = bssrdf.scattering_coefficient();
 
-	const float sigma_t = spectrum::average(bssrdf.extinction_coefficient());
+//	const float sigma_t = spectrum::average(bssrdf.extinction_coefficient());
+	const float sigma_t = spectrum::average(scattering);
 
 	const uint32_t part = intersection.geo.part;
 
@@ -94,12 +95,12 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 
 			const float range = tray.max_t;
 
-			result += range * tr * scattering * local_radiance;
+			result += /*range **/ tr * (scattering / sigma_t) * local_radiance;
 
-			// This should never happen for volumetric sample
+			// This should never happen for volumetric samples
 			SOFT_ASSERT(sample_result.pdf > 0.f);
 
-			tr *= sample_result.reflection / sample_result.pdf;
+			tr *= (sample_result.reflection / sample_result.pdf);
 		} else {
 			const float3 wo = -tray.direction;
 			auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
