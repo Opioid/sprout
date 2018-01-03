@@ -25,6 +25,10 @@ const float3& BSSRDF::scattering_coefficient() const {
 	return scattering_coefficient_;
 }
 
+float BSSRDF::anisotropy() const {
+	return anisotropy_;
+}
+
 bool BSSRDF::is_scattering() const {
 	return math::any_greater_zero(scattering_coefficient_);
 }

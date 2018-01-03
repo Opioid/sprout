@@ -336,16 +336,13 @@ float3 Pathtracer_MIS::resolve_transmission(const Ray& ray, Intersection& inters
 											const Material_sample& sample, Sampler_filter filter, 
 											Worker& worker, Bxdf_sample& sample_result) {
 	if (sample.is_sss()) {
-		return subsurface_.li(ray, intersection, sample, filter, 
-							  worker, sample_result);
+		return subsurface_.li(ray, intersection, sample, filter, worker, sample_result);
 	} else {
-		const auto& attenuation = sample.absorption_coefficient();
-
 		if (intersection.prop->is_open()) {
-			transmittance_open_.resolve(ray, intersection, attenuation,
+			transmittance_open_.resolve(ray, intersection, sample.absorption_coefficient(),
 										sampler_, filter, worker, sample_result);
 		} else {
-			transmittance_closed_.resolve(ray, intersection, attenuation,
+			transmittance_closed_.resolve(ray, intersection, sample.absorption_coefficient(),
 										  sampler_, filter, worker, sample_result);
 		}
 

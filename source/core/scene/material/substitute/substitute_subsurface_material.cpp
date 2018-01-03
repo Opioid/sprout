@@ -21,7 +21,8 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 		sample.set_basis(rs.geo_n, wo);
 
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-		sample.layer_.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
+		sample.layer_.bssrdf.set(absorption_coefficient_, scattering_coefficient_,
+								 anisotropy_);
 
 		return sample;
 	}

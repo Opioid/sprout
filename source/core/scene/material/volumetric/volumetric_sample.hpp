@@ -26,13 +26,7 @@ public:
 	struct Layer : public material::Sample::Layer {
 		float phase(const float3& w, const float3& wp) const;
 
-		void set(const float3& absorption_coefficient,
-				 const float3& scattering_coefficient,
-				 float anisotropy);
-
-		float3 absorption_coefficient_;
-		float3 scattering_coefficient_;
-		float anisotropy_;
+		BSSRDF bssrdf;
 	};
 
 	Layer layer_;

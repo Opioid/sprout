@@ -14,8 +14,8 @@ public:
 	struct Settings {
 	};
 
-	Multiple_scattering(rnd::Generator& rng, const take::Settings& take_settings,
-						const Settings& settings);
+	Multiple_scattering(rnd::Generator& rng, const take::Settings& take_settings/*,
+						const Settings& settings*/);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -31,7 +31,7 @@ private:
 
 	sampler::Sampler& material_sampler(uint32_t bounce, uint32_t iteration);
 
-	const Settings settings_;
+	// const Settings settings_;
 
 	sampler::Random sampler_;
 
@@ -53,7 +53,7 @@ private:
 
 	Multiple_scattering* integrators_;
 
-	Multiple_scattering::Settings settings_;
+//	Multiple_scattering::Settings settings_;
 };
 
 }

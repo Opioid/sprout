@@ -39,10 +39,10 @@ void Closed::resolve(const Ray& ray, Intersection& intersection,
 
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
-	for (uint32_t i = ray.depth;; ++i) {
-		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
+	for (;;) {
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
+		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.min_t = ray_offset;
 		tray.max_t = scene::Ray_max_t;
 

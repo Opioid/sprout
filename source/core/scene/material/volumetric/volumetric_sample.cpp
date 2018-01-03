@@ -29,8 +29,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 }
 
 BSSRDF Sample::bssrdf() const {
-	return BSSRDF(layer_.absorption_coefficient_, layer_.scattering_coefficient_,
-				  layer_.anisotropy_);
+	return layer_.bssrdf;
 }
 
 float Sample::ior() const {
@@ -41,16 +40,8 @@ bool Sample::is_translucent() const {
 	return true;
 }
 
-void Sample::Layer::set(const float3& absorption_coefficient,
-						const float3& scattering_coefficient,
-						float anisotropy) {
-	absorption_coefficient_ = absorption_coefficient;
-	scattering_coefficient_ = scattering_coefficient;
-	anisotropy_ = anisotropy;
-}
-
 float Sample::Layer::phase(const float3& w, const float3& wp) const {
-	const float g = anisotropy_;
+	const float g = bssrdf.anisotropy();
 	const float k = 1.55f * g - (0.55f * g) * (g * g);
 	return phase_schlick(w, wp, k);
 }

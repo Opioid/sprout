@@ -45,9 +45,9 @@ public:
 
 	virtual BSSRDF bssrdf() const;
 
-	virtual float3 radiance() const;
-
 	virtual float3 absorption_coefficient() const;
+
+	virtual float3 radiance() const;
 
 	virtual float ior() const = 0;
 

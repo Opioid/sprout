@@ -18,10 +18,10 @@
 
 namespace rendering::integrator::surface::sub {
 
-Multiple_scattering::Multiple_scattering(rnd::Generator& rng, const take::Settings& take_settings,
-										 const Settings& settings) :
+Multiple_scattering::Multiple_scattering(rnd::Generator& rng, const take::Settings& take_settings/*,
+										 const Settings& settings*/) :
 	Integrator(rng, take_settings),
-	settings_(settings),
+	// settings_(settings),
 	sampler_(rng),
 	material_samplers_{rng, rng} {}
 
@@ -49,9 +49,8 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 
 	const auto bssrdf = sample.bssrdf();
 	const float3 scattering = bssrdf.scattering_coefficient();
-
-//	const float sigma_t = spectrum::average(bssrdf.extinction_coefficient());
-	const float sigma_t = spectrum::average(scattering);
+	const float average_scattering = spectrum::average(scattering);
+	const float3 adjusted_scattering = scattering / average_scattering;
 
 	const uint32_t part = intersection.geo.part;
 
@@ -64,6 +63,8 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
+	bool scattered = false;
+
 	for (uint32_t i = 0; /*i < 256*/; ++i) {
 		auto& sampler = material_sampler(ray.depth, i);
 
@@ -72,7 +73,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 		tray.min_t = ray_offset_factor * intersection.geo.epsilon;
 
 		const float r = std::max(sampler.generate_sample_1D(1), 0.0000001f);
-		tray.max_t = -std::log(r) / sigma_t;
+		tray.max_t = -std::log(r) / average_scattering;
 
 		const bool hit = worker.intersect(intersection.prop, tray, intersection);
 
@@ -89,6 +90,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 		}
 
 		if (!hit) {
+			scattered = true;
 			// Scattering
 			Ray secondary_ray = tray;
 
@@ -108,9 +110,10 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			// ...before gathering the lighting at the current point
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 
-			const float range = tray.max_t;
+//			const float range = tray.max_t;
+//			result += range * tr * scattering * local_radiance;
 
-			result += /*range **/ tr * (scattering / sigma_t) * local_radiance;
+			result += tr * adjusted_scattering * local_radiance;
 
 			// This should never happen for volumetric samples
 			SOFT_ASSERT(sample_result.pdf > 0.f);
@@ -131,6 +134,10 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 				break;
 			}
 		}
+	}
+
+	if (scattered) {
+		sample_result.pdf = 0.f;
 	}
 
 	sample_result.reflection = tr;
@@ -166,7 +173,7 @@ Multiple_scattering_factory::~Multiple_scattering_factory() {
 }
 
 Integrator* Multiple_scattering_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Multiple_scattering(rng, take_settings_, settings_);
+	return new(&integrators_[id]) Multiple_scattering(rng, take_settings_/*, settings_*/);
 }
 
 }

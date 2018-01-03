@@ -21,6 +21,8 @@ public:
 	const float3& absorption_coefficient() const;
 	const float3& scattering_coefficient() const;
 
+	float anisotropy() const;
+
 	bool is_scattering() const;
 
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
