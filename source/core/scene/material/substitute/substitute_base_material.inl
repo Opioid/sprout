@@ -47,8 +47,6 @@ void Material_base::set_sample(const float3& wo, const Renderstate& rs,
 		radiance = float3::identity();
 	}
 
-
-
 	sample.layer_.set(color, radiance, ior_, constant_f0_, surface[0], surface[1]);
 }
 

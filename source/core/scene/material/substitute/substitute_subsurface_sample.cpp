@@ -18,7 +18,9 @@ bxdf::Result Sample_subsurface::evaluate(const float3& wi) const {
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
 
-	return layer_.base_evaluate(wi, wo_, h, wo_dot_h);
+	auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
+	result.pdf *= 0.5f;
+	return result;
 }
 
 void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
