@@ -44,7 +44,6 @@ struct Intersection {
 
 	const Prop* prop;
 	shape::Intersection geo;
-	bool inside_volume;
 };
 
 }}

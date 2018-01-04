@@ -37,8 +37,7 @@ bool Model::init() {
 	*/
 
 	for (uint32_t i = 0; i < Num_bands; ++i) {
-		skymodel_states_[i] = arhosekskymodelstate_alloc_init(elevation,
-															  turbidity_,
+		skymodel_states_[i] = arhosekskymodelstate_alloc_init(elevation, turbidity_,
 															  ground_albedo_[0]);
 	}
 
@@ -113,12 +112,9 @@ float3 Model::evaluate_sky_and_sun(const float3& wi) const {
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {
 		const float wl_center = Spectrum::wavelength_center(i);
-		radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(skymodel_states_[i],
-																			  &temp,
-																			  wi_dot_z,
-																			  sqrt_cos_theta,
-																			  gamma, wi_dot_s,
-																			  wl_center)));
+		radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(
+												   skymodel_states_[i], &temp, wi_dot_z,
+												   sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
 	}
 
 	return spectrum::XYZ_to_linear_RGB(radiance.XYZ());

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH2_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH2_INL
 
 #include "triangle_bvh_builder_sah2.hpp"
 #include "triangle_bvh_builder_base.inl"
@@ -90,3 +91,5 @@ void Builder_SAH2::serialize(Build_node* node, const Triangles& triangles,
 }
 
 }
+
+#endif

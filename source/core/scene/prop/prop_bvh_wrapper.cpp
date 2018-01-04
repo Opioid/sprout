@@ -81,7 +81,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	}
 
 	intersection.prop = prop;
-	intersection.inside_volume = false;
+	intersection.geo.inside_volume = false;
 	return hit;
 }
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_INL
 
 #include "triangle_bvh_indexed_data.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
@@ -130,12 +131,12 @@ template<typename IV, typename SV>
 float Indexed_data<IV, SV>::bitangent_sign(uint32_t index) const {
 	constexpr float signs[2] = { 1.f, -1.f };
 
-	return signs[(Index_triangle::BTS_mask & triangles_[index].bts_material_index) >> 31];
+	return signs[triangles_[index].bts];
 }
 
 template<typename IV, typename SV>
 uint32_t Indexed_data<IV, SV>::material_index(uint32_t index) const {
-	return Index_triangle::Material_index_mask & triangles_[index].bts_material_index;
+	return triangles_[index].material_index;
 }
 
 template<typename IV, typename SV>
@@ -209,7 +210,7 @@ void Indexed_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& 
 
 template<typename IV, typename SV>
 void Indexed_data<IV, SV>::allocate_triangles(uint32_t num_triangles, const Vertices& vertices) {
-	uint32_t num_vertices = static_cast<uint32_t>(vertices.size());
+	const uint32_t num_vertices = static_cast<uint32_t>(vertices.size());
 
 	if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
 		num_triangles_ = num_triangles;
@@ -260,7 +261,8 @@ Indexed_data<IV, SV>::
 Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
 							   float bitangent_sign, uint32_t material_index) :
 	a(a), b(b), c(c),
-	bts_material_index(bitangent_sign < 0.f ? BTS_mask | material_index : material_index) {}
+	bts(bitangent_sign < 0.f ? 1 : 0),
+	material_index(material_index) {}
 
 template<typename V>
 Indexed_data_interleaved<V>::Indexed_data_interleaved() :
@@ -430,3 +432,5 @@ Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
 	bts_material_index(bitangent_sign < 0.f ? BTS_mask | material_index : material_index) {}
 
 }
+
+#endif

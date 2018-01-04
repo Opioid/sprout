@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_BVH_NODE_HPP
+#define SU_CORE_SCENE_BVH_NODE_HPP
 
 #include "base/math/vector3.hpp"
 //#include "base/math/ray.hpp"
 #include "base/simd/simd.hpp"
 
-namespace scene { namespace bvh {
+namespace scene::bvh {
 
 class Node {
 
@@ -68,4 +69,6 @@ private:
 	Max max_;
 };
 
-}}
+}
+
+#endif

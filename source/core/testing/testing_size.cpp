@@ -15,6 +15,8 @@
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
+#include "scene/shape/triangle/triangle_type.hpp"
+#include "scene/shape/triangle/bvh/triangle_bvh_indexed_data.hpp"
 #include "base/math/vector3.inl"
 #include <string>
 #include <iostream>
@@ -64,6 +66,11 @@ void size() {
 	print_size<scene::bvh::Node>("scene::bvh::Node", 32);
 
 	print_size<scene::shape::triangle::Intersection_vertex_MT>("Intersection_vertex_MT", 16);
+
+	print_size<scene::shape::triangle::bvh::Indexed_data<
+					scene::shape::triangle::Intersection_vertex_type,
+					scene::shape::triangle::Shading_vertex_type>::Index_triangle>(
+		"Index_triangle", 16);
 
 //	print_size<scene::shape::triangle::Shading_vertex_MT>("Shading_vertex_MT", 48);
 

@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_BVH_NODE_INL
+#define SU_CORE_SCENE_BVH_NODE_INL
 
 #include "scene_bvh_node.hpp"
 #include "base/math/vector.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace bvh {
+namespace scene::bvh {
 
 inline void Node::set_aabb(const float* min, const float* max) {
 	min_.v[0] = min[0];
@@ -106,4 +107,6 @@ inline bool Node::intersect_p(VVector ray_origin, VVector ray_inv_direction,
 				 _mm_comige_ss(max_t, min_t));
 }
 
-}}
+}
+
+#endif

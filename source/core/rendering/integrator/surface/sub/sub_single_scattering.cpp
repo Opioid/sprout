@@ -97,7 +97,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 			secondary_intersection.geo.p = tray.point(min_t);
 			secondary_intersection.geo.part = part;
 			secondary_intersection.geo.epsilon = 0.f;
-			secondary_intersection.inside_volume = true;
+			secondary_intersection.geo.inside_volume = true;
 
 			const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 

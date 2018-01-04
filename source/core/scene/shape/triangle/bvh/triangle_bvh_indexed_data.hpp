@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_HPP
 
 #include "base/math/vector3.hpp"
 #include "base/simd/simd.hpp"
@@ -40,7 +41,6 @@ public:
 	void interpolate_data(VVector u, VVector v, uint32_t index,
 						  Vector& n, Vector& t, float2& tc) const;
 
-
 	float2 interpolate_uv(uint32_t index, float2 uv) const;
 	float2 interpolate_uv(VVector u, VVector v, uint32_t index) const;
 
@@ -62,22 +62,20 @@ public:
 
 	size_t num_bytes() const;
 
-private:
-
-	uint32_t num_triangles_;
-	uint32_t current_triangle_;
-	uint32_t num_vertices_;
-
 	struct alignas(16) Index_triangle {
 		Index_triangle(uint32_t a, uint32_t b, uint32_t c,
 					   float bitangent_sign, uint32_t material_index);
 
 		uint32_t a, b, c;
-		uint32_t bts_material_index;
-
-		static constexpr uint32_t Material_index_mask = 0x7FFFFFFF;
-		static constexpr uint32_t BTS_mask = ~Material_index_mask;
+		uint32_t bts : 1;
+		uint32_t material_index : 31;
 	};
+
+private:
+
+	uint32_t num_triangles_;
+	uint32_t current_triangle_;
+	uint32_t num_vertices_;
 
 	Index_triangle* triangles_;
 	IV*				intersection_vertices_;
@@ -145,3 +143,5 @@ private:
 };
 
 }}
+
+#endif

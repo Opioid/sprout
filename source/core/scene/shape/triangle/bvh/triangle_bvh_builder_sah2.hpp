@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH2_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH2_HPP
 
 //#include "triangle_bvh_builder_base.hpp"
 #include "base/math/aabb.hpp"
@@ -44,8 +45,7 @@ private:
 
 		uint32_t primitive() const;
 
-		void set_min_max_primitive(VVector min, VVector max,
-								   uint32_t primitive);
+		void set_min_max_primitive(VVector min, VVector max, uint32_t primitive);
 
 		void clip_min(float d, uint8_t axis);
 		void clip_max(float d, uint8_t axis);
@@ -151,3 +151,5 @@ private:
 };
 
 }}}}
+
+#endif

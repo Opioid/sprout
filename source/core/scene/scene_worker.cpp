@@ -92,7 +92,7 @@ bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersecti
 										float3& transmission) {
 	transmission = float3(1.f);
 
-	if (intersection.inside_volume) {
+	if (intersection.geo.inside_volume) {
 		const float ray_max_t = ray.max_t;
 
 		float epsilon;
@@ -125,7 +125,7 @@ float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
 
 float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersection,
 								 const material::Sample& sample, Sampler_filter filter) const {
-	if (intersection.inside_volume) {
+	if (intersection.geo.inside_volume) {
 		const float ray_max_t = ray.max_t;
 
 		float epsilon;
