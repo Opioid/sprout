@@ -53,6 +53,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 	const float3 adjusted_scattering = scattering / average_scattering;
 
 	const uint32_t part = intersection.geo.part;
+	const float2 uv = intersection.geo.uv;
 
 	Ray tray;
 	tray.time  = ray.time;
@@ -98,6 +99,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			intersection.geo.epsilon = 0.f;
 
 			scene::prop::Intersection secondary_intersection = intersection;
+			secondary_intersection.geo.uv = uv;
 			secondary_intersection.geo.part = part;
 			secondary_intersection.geo.inside_volume = true;
 

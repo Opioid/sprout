@@ -51,5 +51,4 @@ float Sample::phase_schlick(const float3& w, const float3& wp, float k) {
 	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
 }
 
-
 }

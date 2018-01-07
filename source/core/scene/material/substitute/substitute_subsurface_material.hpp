@@ -25,9 +25,11 @@ public:
 
 private:
 
+	float3 absorption_color_;
 	float3 absorption_coefficient_;
 	float3 scattering_coefficient_;
 	float anisotropy_;
+	float attenuation_distance_;
 
 	Sample_subsurface::IOR ior_;
 };

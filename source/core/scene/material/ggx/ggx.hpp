@@ -26,9 +26,8 @@ public:
 								   float3& fresnel_result);
 
 	template<typename Layer, typename Fresnel>
-	static float reflect(const float3& wo, float n_dot_wo,
-						 const Layer& layer, const Fresnel& fresnel,
-						 sampler::Sampler& sampler, bxdf::Sample& result);
+	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename Fresnel>
 	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
@@ -59,9 +58,8 @@ public:
 								   const Layer& layer, const Fresnel& fresnel);
 
 	template<typename Layer, typename Fresnel>
-	static float reflect(const float3& wo, float n_dot_wo,
-						 const Layer& layer, const Fresnel& fresnel,
-						 sampler::Sampler& sampler, bxdf::Sample& result);
+	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 };
 
 }}

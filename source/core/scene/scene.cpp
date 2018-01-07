@@ -124,8 +124,7 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 
 	if (inside) {
 		if (!volume->shape()->is_finite()) {
-			volume_bvh_.intersect(ray, node_stack, false,
-								  local_epsilon, inside);
+			volume_bvh_.intersect(ray, node_stack, false, local_epsilon, inside);
 		}
 
 		if (ray.max_t > original_max_t) {

@@ -21,8 +21,27 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 		sample.set_basis(rs.geo_n, wo);
 
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-		sample.layer_.bssrdf.set(absorption_coefficient_, scattering_coefficient_,
-								 anisotropy_);
+
+
+		if (color_map_.is_valid()) {
+			auto& sampler = worker.sampler_2D(sampler_key(), filter);
+			float3 color = color_map_.sample_3(sampler, rs.uv);
+
+			float3 absorption_coefficient;
+			float3 scattering_coefficient;
+
+			attenuation(color, /*absorption_color_*/color, attenuation_distance_,
+						absorption_coefficient, scattering_coefficient);
+
+			sample.layer_.bssrdf.set(absorption_coefficient, scattering_coefficient,
+									 anisotropy_);
+		} else {
+			sample.layer_.bssrdf.set(absorption_coefficient_, scattering_coefficient_,
+									 anisotropy_);
+		}
+
+//		sample.layer_.bssrdf.set(absorption_coefficient_, scattering_coefficient_,
+//								 anisotropy_);
 
 		return sample;
 	}
@@ -33,7 +52,20 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
-	sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_, ior_);
+	if (color_map_.is_valid()) {
+		float3 absorption_coefficient;
+		float3 scattering_coefficient;
+
+		attenuation(sample.layer_.diffuse_color_, /*absorption_color_*/sample.layer_.diffuse_color_, attenuation_distance_,
+					absorption_coefficient, scattering_coefficient);
+
+		sample.set(absorption_coefficient, scattering_coefficient, anisotropy_, ior_);
+
+	} else {
+		sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_, ior_);
+	}
+
+//	sample.set(absorption_coefficient_, /*scattering_coefficient_*/sample.layer_.diffuse_color_, anisotropy_, ior_);
 
 	return sample;
 }
@@ -45,10 +77,14 @@ size_t Material_subsurface::num_bytes() const {
 void Material_subsurface::set_attenuation(const float3& absorption_color,
 										  const float3& scattering_color,
 										  float distance) {
+	absorption_color_ = absorption_color;
+
 	attenuation(absorption_color, scattering_color, distance,
 				absorption_coefficient_, scattering_coefficient_);
 
 	anisotropy_ = 0.f;
+
+	attenuation_distance_ = distance;
 }
 
 void Material_subsurface::set_ior(float ior, float external_ior) {
