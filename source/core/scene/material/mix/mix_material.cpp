@@ -2,7 +2,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_adapter.inl"
 
 namespace scene::material::mix {
 

@@ -716,7 +716,7 @@ Material_ptr Provider::load_mix(const json::Value& mix_value, resource::Manager&
 	for (auto& n : mix_value.GetObject()) {
 		if ("materials" == n.name) {
 			for (auto& m : n.value.GetArray()) {
-				materials.emplace_back(load(m, "", manager));
+				materials.push_back(load(m, "", manager));
 			}
 		} else if ("textures" == n.name) {
 			for (auto& tn : n.value.GetArray()) {
@@ -740,6 +740,10 @@ Material_ptr Provider::load_mix(const json::Value& mix_value, resource::Manager&
 
 	if (materials.size() < 2) {
 		throw std::runtime_error("Mix material needs 2 child materials");
+	}
+
+	if (!mask.is_valid()) {
+		return materials[0];
 	}
 
 	auto material = std::make_shared<mix::Material>(sampler_settings, two_sided);
