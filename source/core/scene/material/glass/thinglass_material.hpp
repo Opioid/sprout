@@ -11,7 +11,7 @@ public:
 	Thinglass(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter,
+										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 
 	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,

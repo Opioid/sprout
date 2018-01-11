@@ -35,7 +35,7 @@ float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 	const float3 wo = -ray.direction;
 	const auto& material_sample = intersection.sample(wo, ray.time, Sampler_filter::Undefined,
-													  worker);
+													  sampler_, worker);
 
 	for (uint32_t i = settings_.num_samples; i > 0; --i) {
 		const float2 sample = sampler_.generate_sample_2D();

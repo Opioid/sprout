@@ -4,6 +4,8 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/material/sampler_settings.hpp"
 
+namespace sampler { class Sampler; }
+
 namespace scene {
 
 class Worker;
@@ -37,8 +39,8 @@ struct Intersection {
 	float3 thin_absorption(const float3& wo, float time,
 						   Sampler_filter filter, Worker& worker) const;
 
-	const material::Sample& sample(const float3& wo, float time,
-								   Sampler_filter filter, Worker& worker) const;
+	const material::Sample& sample(const float3& wo, float time, Sampler_filter filter,
+								   sampler::Sampler& sampler, Worker& worker) const;
 
 	bool same_hemisphere(const float3& v) const;
 

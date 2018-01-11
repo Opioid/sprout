@@ -14,7 +14,8 @@ Glass_rough::Glass_rough(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, false) {}
 
 const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate& rs,
-											Sampler_filter filter, const Worker& worker) const {
+											Sampler_filter filter, sampler::Sampler& /*sampler*/,
+											const Worker& worker) const {
 	auto& sample = worker.sample<Sample_rough>();
 
 	sample.set_basis(rs.geo_n, wo);

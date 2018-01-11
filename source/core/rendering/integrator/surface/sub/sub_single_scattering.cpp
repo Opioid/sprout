@@ -107,7 +107,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 		result += /*step **/ radiance;
 
 		const float3 wo = -tray.direction;
-		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
+		auto& material_sample = intersection.sample(wo, ray.time, filter, sampler_, worker);
 
 		material_sample.sample(sampler_, sample_result);
 		if (0.f == sample_result.pdf) {

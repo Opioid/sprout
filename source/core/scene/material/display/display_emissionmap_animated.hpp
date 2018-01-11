@@ -15,7 +15,7 @@ public:
 						 float emission_factor, float animation_duration);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter,
+										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 
 	virtual size_t num_bytes() const override final;

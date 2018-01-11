@@ -30,6 +30,7 @@
 #include "metal/metal_sample.hpp"
 #include "metallic_paint/metallic_paint_material.hpp"
 #include "metallic_paint/metallic_paint_sample.hpp"
+#include "mix/mix_material.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_coating_material.inl"
 #include "substitute/substitute_coating_sample.hpp"
@@ -116,6 +117,8 @@ Material_ptr Provider::load(const json::Value& value, const std::string& mount_f
 			material = load_metal(n.value, manager);
 		} else if ("Metallic_paint" == n.name) {
 			material = load_metallic_paint(n.value, manager);
+		} else if ("Mix" == n.name) {
+			material = load_mix(n.value, manager);
 		} else if ("Sky" == n.name) {
 			material = load_sky(n.value, manager);
 		} else if ("Substitute" == n.name) {
@@ -698,6 +701,52 @@ Material_ptr Provider::load_metallic_paint(const json::Value& paint_value,
 	material->set_coating_weight(coating.weight);
 	material->set_coating_color(coating.color);
 	material->set_clearcoat(coating.ior, coating.roughness);
+
+	return material;
+}
+
+Material_ptr Provider::load_mix(const json::Value& mix_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
+
+	Texture_adapter mask;
+	bool two_sided = false;
+
+	Materials materials;
+
+	for (auto& n : mix_value.GetObject()) {
+		if ("materials" == n.name) {
+			for (auto& m : n.value.GetArray()) {
+				materials.emplace_back(load(m, "", manager));
+			}
+		} else if ("textures" == n.name) {
+			for (auto& tn : n.value.GetArray()) {
+				Texture_description texture_description;
+				read_texture_description(tn, texture_description);
+
+				if (texture_description.filename.empty()) {
+					continue;
+				}
+
+				memory::Variant_map options;
+				if ("Mask" == texture_description.usage) {
+					options.set("usage", image::texture::Provider::Usage::Mask);
+					mask = create_texture(texture_description, options, manager);
+				}
+			}
+		} else if ("sampler" == n.name) {
+			read_sampler_settings(n.value, sampler_settings);
+		}
+	}
+
+	if (materials.size() < 2) {
+		throw std::runtime_error("Mix material needs 2 child materials");
+	}
+
+	auto material = std::make_shared<mix::Material>(sampler_settings, two_sided);
+
+	material->set_mask(mask);
+
+	material->set_materials(materials[0], materials[1]);
 
 	return material;
 }

@@ -41,8 +41,8 @@ private:
 	float3 integrate_without_shadows(const Ray& ray, const Volume& volume,
 									 Worker& worker, float3& transmittance);
 
-	static const Material_sample& sample(const float3& wo, float time, const Material& material,
-										 Sampler_filter filter, Worker& worker);
+	const Material_sample& sample(const float3& wo, float time, const Material& material,
+								  Sampler_filter filter, Worker& worker);
 
 	const Settings settings_;
 

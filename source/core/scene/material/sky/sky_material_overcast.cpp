@@ -12,6 +12,7 @@ Material_overcast::Material_overcast(const Sampler_settings& sampler_settings,
 
 const material::Sample& Material_overcast::sample(const float3& wo, const Renderstate& rs,
 												  Sampler_filter /*filter*/,
+												  sampler::Sampler& /*sampler*/,
 												  const Worker& worker) const {
 	auto& sample = worker.sample<light::Sample>();
 

@@ -12,7 +12,8 @@ namespace rendering::integrator::surface {
 
 Debug::Debug(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings) :
 	Integrator(rng, take_settings),
-	settings_(settings) {}
+	settings_(settings),
+	sampler_(rng) {}
 
 void Debug::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
@@ -34,7 +35,7 @@ float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	case Settings::Vector::Shading_normal: {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray.time, Sampler_filter::Undefined,
-													worker);
+													sampler_, worker);
 
 		if (!material_sample.same_hemisphere(wo)) {
 			return float3(0.f);

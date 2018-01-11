@@ -34,7 +34,9 @@ inline float3 Intersection::thin_absorption(const float3& wo, float time,
 }
 
 inline const material::Sample& Intersection::sample(const float3& wo, float time,
-													Sampler_filter filter, Worker& worker) const {
+													Sampler_filter filter,
+													sampler::Sampler& sampler,
+													Worker& worker) const {
 	material::Material* material = Intersection::material();
 
 	Renderstate rs;
@@ -57,7 +59,7 @@ inline const material::Sample& Intersection::sample(const float3& wo, float time
 	rs.ior  = 1.f;
 	rs.inside_volume = geo.inside_volume;
 
-	return material->sample(wo, rs, filter, worker);
+	return material->sample(wo, rs, filter, sampler, worker);
 }
 
 inline bool Intersection::same_hemisphere(const float3& v) const {

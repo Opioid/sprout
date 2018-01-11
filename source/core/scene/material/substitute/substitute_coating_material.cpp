@@ -12,6 +12,7 @@ Material_clearcoat::Material_clearcoat(const Sampler_settings& sampler_settings,
 
 const material::Sample& Material_clearcoat::sample(const float3& wo, const Renderstate& rs,
 												   Sampler_filter filter,
+												   sampler::Sampler& /*sampler*/,
 												   const Worker& worker) const{
 	auto& sample = worker.sample<Sample_clearcoat>();
 
@@ -39,6 +40,7 @@ Material_thinfilm::Material_thinfilm(const Sampler_settings& sampler_settings, b
 
 const material::Sample& Material_thinfilm::sample(const float3& wo, const Renderstate& rs,
 												  Sampler_filter filter,
+												  sampler::Sampler& /*sampler*/,
 												  const Worker& worker) const {
 	auto& sample = worker.sample<Sample_thinfilm>();
 

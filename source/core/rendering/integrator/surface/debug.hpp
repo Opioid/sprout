@@ -1,6 +1,7 @@
 #pragma once
 
 #include "surface_integrator.hpp"
+#include "sampler/sampler_random.hpp"
 
 namespace rendering::integrator::surface {
 
@@ -33,6 +34,8 @@ public:
 private:
 
 	Settings settings_;
+
+	sampler::Random sampler_;
 };
 
 class Debug_factory : public Factory {

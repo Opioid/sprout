@@ -33,7 +33,7 @@ void System::push_mount(const std::string& folder) {
 	std::stringstream stream;
 	stream << folder;
 
-	if (folder.back() != '/') {
+	if (!folder.empty() && folder.back() != '/') {
 		stream << "/";
 	}
 

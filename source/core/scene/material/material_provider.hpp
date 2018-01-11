@@ -49,11 +49,13 @@ private:
 
 	Material_ptr load_light(const json::Value& light_value, resource::Manager& manager);
 
-	Material_ptr load_matte(const json::Value& metal_value, resource::Manager& manager);
+	Material_ptr load_matte(const json::Value& matte_value, resource::Manager& manager);
 
 	Material_ptr load_metal(const json::Value& metal_value, resource::Manager& manager);
 
 	Material_ptr load_metallic_paint(const json::Value& paint_value, resource::Manager& manager);
+
+	Material_ptr load_mix(const json::Value& mix_value, resource::Manager& manager);
 
 	Material_ptr load_sky(const json::Value& sky_value, resource::Manager& manager);
 

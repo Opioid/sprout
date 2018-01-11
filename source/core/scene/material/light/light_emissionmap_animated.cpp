@@ -36,6 +36,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 
 const material::Sample& Emissionmap_animated::sample(const float3& wo, const Renderstate& rs,
 													 Sampler_filter filter,
+													 sampler::Sampler& /*sampler*/,
 													 const Worker& worker) const {
 	auto& sample = worker.sample<Sample>();
 

@@ -13,6 +13,8 @@ namespace math { struct Ray; class AABB; }
 
 namespace rnd { class Generator; }
 
+namespace sampler { class Sampler; }
+
 namespace thread { class Pool; }
 
 namespace scene {
@@ -45,8 +47,8 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice);
 
-	virtual const Sample& sample(const float3& wo, const Renderstate& rs,
-								 Sampler_filter filter, const Worker& worker) const = 0;
+	virtual const Sample& sample(const float3& wo, const Renderstate& rs, Sampler_filter filter,
+								 sampler::Sampler& sampler, const Worker& worker) const = 0;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
 								   Sampler_filter filter, const Worker& worker) const;
@@ -86,13 +88,13 @@ public:
 
 	virtual bool is_volumetric() const;
 
-	virtual size_t num_bytes() const = 0;
-
 	uint32_t sampler_key() const;
 
-	bool is_masked() const;
+	virtual bool is_masked() const;
 	bool is_emissive() const;
 	bool is_two_sided() const;
+
+	virtual size_t num_bytes() const = 0;
 
 protected:
 

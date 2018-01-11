@@ -11,7 +11,7 @@ public:
 	Sun_material(Model& model);
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
-												  Sampler_filter filter,
+												  Sampler_filter filter, sampler::Sampler& sampler,
 												  const scene::Worker& worker) const override final;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,

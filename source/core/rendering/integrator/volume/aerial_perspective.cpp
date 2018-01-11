@@ -237,7 +237,7 @@ const scene::material::Sample& Aerial_perspective::sample(const float3& wo, floa
 
 	rs.time = time;
 
-	return material.sample(wo, rs, filter, worker);
+	return material.sample(wo, rs, filter, sampler_, worker);
 }
 
 Aerial_perspective_factory::Aerial_perspective_factory(const take::Settings& take_settings,
