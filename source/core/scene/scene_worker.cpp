@@ -95,17 +95,18 @@ bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersecti
 	if (intersection.geo.inside_volume) {
 		const float ray_max_t = ray.max_t;
 
+		float prop_length = 0.00033f;
 		float epsilon;
 		if (intersect(intersection.prop, ray, epsilon)) {
-			const float prop_length = ray.max_t;
+			prop_length = ray.max_t;
 
 			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
 			ray.max_t = ray_max_t;
-
-			const float3 tau = sample.bssrdf().optical_depth(prop_length);
-
-			transmission = math::exp(-tau);
 		}
+
+		const float3 tau = sample.bssrdf().optical_depth(prop_length);
+
+		transmission = math::exp(-tau);
 	}
 
 	return intersect_and_resolve_mask(ray, intersection, filter);
@@ -128,17 +129,18 @@ float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersectio
 	if (intersection.geo.inside_volume) {
 		const float ray_max_t = ray.max_t;
 
+		float prop_length = 0.00033f;
 		float epsilon;
 		if (intersect(intersection.prop, ray, epsilon)) {
-			const float prop_length = ray.max_t;
+			prop_length = ray.max_t;
 
 			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
 			ray.max_t = ray_max_t;
-
-			const float3 tau = sample.bssrdf().optical_depth(prop_length);
-
-			return math::exp(-tau) * tinted_visibility(ray, filter);
 		}
+
+		const float3 tau = sample.bssrdf().optical_depth(prop_length);
+
+		return math::exp(-tau) * tinted_visibility(ray, filter);
 	}
 
 	return tinted_visibility(ray, filter);
