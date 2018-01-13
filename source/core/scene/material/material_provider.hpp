@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_PROVIDER_HPP
+#define SU_CORE_SCENE_MATERIAL_PROVIDER_HPP
 
 #include "resource/resource_provider.hpp"
 #include "material_sample_cache.hpp"
@@ -8,7 +9,7 @@
 #include "base/math/vector3.hpp"
 #include <vector>
 
-namespace scene { namespace material {
+namespace scene::material {
 
 class Material;
 
@@ -107,4 +108,6 @@ public:
 	static uint32_t max_sample_size();
 };
 
-}}
+}
+
+#endif

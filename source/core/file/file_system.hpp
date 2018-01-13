@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_FILE_SYSTEM_HPP
+#define SU_CORE_FILE_SYSTEM_HPP
 
 #include <istream>
 #include <memory>
@@ -21,10 +22,11 @@ public:
 
 private:
 
-	std::istream* open_read_stream(const std::string& name,
-								   std::string& resolved_name) const;
+	std::istream* open_read_stream(const std::string& name, std::string& resolved_name) const;
 
 	std::vector<std::string> mount_folders_;
 };
 
 }
+
+#endif

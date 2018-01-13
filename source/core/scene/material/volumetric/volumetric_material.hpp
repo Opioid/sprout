@@ -25,8 +25,6 @@ public:
 
 protected:
 
-	static float phase_schlick(const float3& w, const float3& wp, float k);
-
 	float3 absorption_coefficient_;
 	float3 scattering_coefficient_;
 	float anisotropy_;

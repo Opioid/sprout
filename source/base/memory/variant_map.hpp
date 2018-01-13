@@ -27,7 +27,7 @@ public:
 	void set(const std::string& key, float value);
 
 	void inherit(const Variant_map& other, const std::string& key);
-	void inherit_except(const Variant_map& other, const std::string& key);
+	void inherit_except(const Variant_map& other, std::string_view key);
 
 	bool operator<(const Variant_map& other) const;
 

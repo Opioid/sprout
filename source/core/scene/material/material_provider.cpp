@@ -52,7 +52,7 @@
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 Provider::Provider() :
 	resource::Provider<Material>("Material"),
@@ -716,7 +716,13 @@ Material_ptr Provider::load_mix(const json::Value& mix_value, resource::Manager&
 	for (auto& n : mix_value.GetObject()) {
 		if ("materials" == n.name) {
 			for (auto& m : n.value.GetArray()) {
-				materials.push_back(load(m, "", manager));
+				const std::string filename = json::read_string(m, "file");
+
+				if (!filename.empty()) {
+					materials.push_back(manager.load<Material>(filename));
+				} else {
+					materials.push_back(load(m, "", manager));
+				}
 			}
 		} else if ("textures" == n.name) {
 			for (auto& tn : n.value.GetArray()) {
@@ -1287,4 +1293,4 @@ uint32_t Provider::max_sample_size() {
 	return static_cast<uint32_t>(num_bytes);
 }
 
-}}
+}

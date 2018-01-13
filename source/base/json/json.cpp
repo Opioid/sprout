@@ -4,8 +4,8 @@
 #include "math/matrix3x3.inl"
 #include "math/quaternion.inl"
 //#include "rapidjson/document.h"
-#include "rapidjson/istreamwrapper.h"
 #include "rapidjson/error/en.h"
+#include "rapidjson/istreamwrapper.h"
 #include <sstream>
 
 namespace json {
@@ -212,7 +212,7 @@ float3x3 create_rotation_matrix(const float3& xyz) {
 }
 
 float3x3 read_rotation_matrix(const rapidjson::Value& value) {
-	float3 rot = read_float3(value);
+	const float3 rot = read_float3(value);
 
 	return create_rotation_matrix(rot);
 }

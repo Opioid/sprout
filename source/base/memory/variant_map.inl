@@ -127,7 +127,7 @@ inline void Variant_map::inherit(const Variant_map& other, const std::string& ke
 	map_[key] = i->second;
 }
 
-inline void Variant_map::inherit_except(const Variant_map& other, const std::string& key) {
+inline void Variant_map::inherit_except(const Variant_map& other, std::string_view key) {
 	for (auto i : other.map_) {
 		if (i.first != key) {
 			map_.insert(map_.end(), i);
