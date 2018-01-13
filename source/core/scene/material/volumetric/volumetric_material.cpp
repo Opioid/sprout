@@ -19,7 +19,7 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 
 	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.bssrdf.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
+	sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
 
 	return sample;
 }

@@ -26,23 +26,18 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 		if (color_map_.is_valid()) {
 			auto& sampler = worker.sampler_2D(sampler_key(), filter);
-			float3 color = color_map_.sample_3(sampler, rs.uv);
+			const float3 color = color_map_.sample_3(sampler, rs.uv);
 
 			float3 absorption_coefficient;
 			float3 scattering_coefficient;
 
-			attenuation(color, /*absorption_color_*/color, attenuation_distance_,
+			attenuation(color, attenuation_distance_,
 						absorption_coefficient, scattering_coefficient);
 
-			sample.layer_.bssrdf.set(absorption_coefficient, scattering_coefficient,
-									 anisotropy_);
+			sample.set(absorption_coefficient, scattering_coefficient, anisotropy_);
 		} else {
-			sample.layer_.bssrdf.set(absorption_coefficient_, scattering_coefficient_,
-									 anisotropy_);
+			sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
 		}
-
-//		sample.layer_.bssrdf.set(absorption_coefficient_, scattering_coefficient_,
-//								 anisotropy_);
 
 		return sample;
 	}
@@ -57,16 +52,13 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 		float3 absorption_coefficient;
 		float3 scattering_coefficient;
 
-		attenuation(sample.layer_.diffuse_color_, /*absorption_color_*/sample.layer_.diffuse_color_, attenuation_distance_,
+		attenuation(sample.layer_.diffuse_color_, attenuation_distance_,
 					absorption_coefficient, scattering_coefficient);
 
 		sample.set(absorption_coefficient, scattering_coefficient, anisotropy_, ior_);
-
 	} else {
 		sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_, ior_);
 	}
-
-//	sample.set(absorption_coefficient_, /*scattering_coefficient_*/sample.layer_.diffuse_color_, anisotropy_, ior_);
 
 	return sample;
 }

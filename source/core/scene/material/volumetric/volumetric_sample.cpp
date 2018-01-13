@@ -40,6 +40,12 @@ bool Sample::is_translucent() const {
 	return true;
 }
 
+void Sample::set(const float3& absorption_coefficient,
+				 const float3& scattering_coefficient,
+				 float anisotropy) {
+	layer_.bssrdf.set(absorption_coefficient, scattering_coefficient, anisotropy);
+}
+
 float Sample::Layer::phase(const float3& w, const float3& wp) const {
 	const float g = bssrdf.anisotropy();
 	const float k = 1.55f * g - (0.55f * g) * (g * g);
