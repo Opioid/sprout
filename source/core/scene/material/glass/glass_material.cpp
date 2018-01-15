@@ -3,6 +3,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
+#include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "base/math/vector4.inl"
 
@@ -20,10 +21,7 @@ const material::Sample& Glass::sample(const float3& wo, const Renderstate& rs,
 
 	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-
-		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n  = math::normalize(rs.tangent_to_world(nm));
-
+		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

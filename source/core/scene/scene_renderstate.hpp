@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_RENDERSTATE_HPP
+#define SU_CORE_SCENE_RENDERSTATE_HPP
 
 #include "base/math/vector3.inl"
 
@@ -29,3 +30,5 @@ struct Renderstate {
 };
 
 }
+
+#endif
