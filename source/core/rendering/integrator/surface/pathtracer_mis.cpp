@@ -86,7 +86,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
-	bool requires_bounce = false;
+	bool requires_bounce = ray.is_primary();
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -95,16 +95,12 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-		if ((ray.is_primary() || requires_bounce) && material_sample.same_hemisphere(wo)) {
+		if (requires_bounce && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 
-			if (i == (requires_bounce ? max_bounces + 1: max_bounces)) {
+			if (i >= max_bounces || material_sample.is_pure_emissive()) {
 				break;
 			}
-		}
-
-		if (material_sample.is_pure_emissive()) {
-			break;
 		}
 
 		const float3 direct_light = estimate_direct_light(ray, intersection, material_sample,
@@ -112,9 +108,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 														  sample_result, requires_bounce);
 		result += throughput * direct_light;
 
-		if (!intersection.hit()
-		||  i >= (requires_bounce ? max_bounces : max_bounces - 1)
-		||  0.f == sample_result.pdf) {
+		if (!intersection.hit() || 0.f == sample_result.pdf
+		||  i >= (requires_bounce ? max_bounces : max_bounces - 1)) {
 			break;
 		}
 
@@ -294,6 +289,10 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	}
 
 	SOFT_ASSERT(math::all_finite_and_positive(result));
+
+	if (light_material_sample.is_pure_emissive()) {
+		sample_result.pdf = 0.f;
+	}
 
 	return result;
 }
