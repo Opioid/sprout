@@ -19,18 +19,17 @@ struct Ray : public math::Ray {
 
 	Ray() = default;
 	Ray(const float3& origin, const float3& direction,
-		float min_t = 0.f, float max_t = 1.f,
-		float time = 0.f, uint32_t depth = 0,
-		Properties properties = Property::Null,
-		float ior = 1.f);
+		float min_t = 0.f, float max_t = 1.f, uint32_t depth = 0,
+		float time = 0.f, float wavelength = 0.f, float ior = 1.f,
+		Properties properties = Property::Null);
 
 	bool is_primary() const;
 	void set_primary(bool primary);
 
-	float	 time;
-	uint32_t depth;
+	float time;
+	float wavelength;
+	float ior;
 	Properties properties;
-	float    ior;
 };
 
 }

@@ -87,13 +87,9 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample,
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(0.f, temp);
 
-	ray.origin = math::transform_point(float3(0.f), transformation.object_to_world);
-	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
-	ray.min_t = 0.f;
-	ray.max_t = Ray_max_t;
-	ray.time  = sample.time;
-	ray.depth = 0;
-	ray.properties.clear(scene::Ray::Property::Primary);
+	ray = create_ray(math::transform_point(float3(0.f), transformation.object_to_world),
+					 math::transform_vector(direction, transformation.object_to_world),
+					 sample.time);
 
 	return true;
 }

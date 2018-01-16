@@ -11,11 +11,25 @@ inline Ray::Ray(const float3& origin, const float3& direction, float min_t, floa
 	direction(direction),
 	inv_direction(reciprocal(direction)),
 	min_t(min_t),
-	max_t(max_t) {
-	signs[0] = inv_direction[0] < 0.f ? 1u : 0u;
-	signs[1] = inv_direction[1] < 0.f ? 1u : 0u;
-	signs[2] = inv_direction[2] < 0.f ? 1u : 0u;
-}
+	max_t(max_t),
+	signs {
+		inv_direction[0] < 0.f ? 1u : 0u,
+		inv_direction[1] < 0.f ? 1u : 0u,
+		inv_direction[2] < 0.f ? 1u : 0u}
+	{}
+
+inline Ray::Ray(const float3& origin, const float3& direction,
+				float min_t, float max_t, uint32_t depth) :
+	origin(origin),
+	direction(direction),
+	inv_direction(reciprocal(direction)),
+	min_t(min_t),
+	max_t(max_t),
+	signs {
+		inv_direction[0] < 0.f ? 1u : 0u,
+		inv_direction[1] < 0.f ? 1u : 0u,
+		inv_direction[2] < 0.f ? 1u : 0u},
+	depth(depth) {}
 
 inline Ray::Ray(const float3& origin, const float3& direction, const float3& inv_direction,
 				float min_t, float max_t, uint8_t sign_x, uint8_t sign_y, uint8_t sign_z) :

@@ -95,13 +95,9 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(sample.time, temp);
 
-	ray.origin = math::transform_point(eye_offset, transformation.object_to_world);
-	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
-	ray.min_t = 0.f;
-	ray.max_t = Ray_max_t;
-	ray.time  = sample.time;
-	ray.depth = 0;
-	ray.properties.clear(scene::Ray::Property::Primary);
+	ray = create_ray(math::transform_point(eye_offset, transformation.object_to_world),
+					 math::transform_vector(direction, transformation.object_to_world),
+					 sample.time);
 
 	return true;
 }

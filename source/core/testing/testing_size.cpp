@@ -11,6 +11,7 @@
 #include "scene/entity/entity.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/material/bxdf.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/shape_intersection.hpp"
@@ -53,9 +54,11 @@ void size() {
 	print_size<math::Ray>("math::Ray", 64);
 	print_size<scene::Ray>("scene::Ray", 80);
 
-	print_size<scene::shape::Intersection>("shape::Intersection", 96);
+	print_size<scene::shape::Intersection>("shape::Intersection", 112);
 
-	print_size<scene::prop::Intersection>("prop::Intersection", 112);
+	print_size<scene::prop::Intersection>("prop::Intersection", 128);
+
+	print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
 	print_size<scene::prop::Prop>("prop::Prop", 592);
 
@@ -80,7 +83,7 @@ void size() {
 
 	print_size<scene::bvh::Split_candidate<scene::prop::Prop>>("Split_candidate", 32);
 
-	print_size<scene::Worker>("scene::Worker", 208);
+	print_size<scene::Worker>("scene::Worker", 200);
 	print_size<rendering::Camera_worker>("rendering::Camera_worker", 256);
 
 	print_size<rendering::integrator::surface::Whitted>("Whitted", 128);

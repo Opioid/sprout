@@ -63,13 +63,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	direction = math::normalize(direction);
 	const float3 direction_w = math::transform_vector(direction, transformation.object_to_world);
 
-	ray.origin = origin_w;
-	ray.set_direction(direction_w);
-	ray.min_t = 0.f;
-	ray.max_t = Ray_max_t;
-	ray.time  = sample.time;
-	ray.depth = 0;
-	ray.properties.clear(scene::Ray::Property::Primary);
+	ray = create_ray(origin_w, direction_w, sample.time);
 
 	return true;
 }
@@ -137,7 +131,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 
 		scene::Ray ray(transformation.position,
 					   math::transform_vector(direction, transformation.object_to_world),
-					   0.f, Ray_max_t, 0.f, 0);
+					   0.f, Ray_max_t, 0, 0.f);
 
 		prop::Intersection intersection;
 		if (worker.intersect(ray, intersection)) {

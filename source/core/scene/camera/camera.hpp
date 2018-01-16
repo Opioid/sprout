@@ -41,7 +41,7 @@ public:
 	void update(rendering::Worker& worker);
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample,
-							  uint32_t view, scene::Ray& ray) const = 0;
+							  uint32_t view, Ray& ray) const = 0;
 
 	virtual void set_parameters(const json::Value& parameters) override final;
 
@@ -63,6 +63,8 @@ protected:
 	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;
 
 	virtual void on_set_transformation() override final;
+
+	static Ray create_ray(const float3& origin, const float3& direction, float time);
 
 	int2 resolution_;
 	std::unique_ptr<rendering::sensor::Sensor> sensor_;

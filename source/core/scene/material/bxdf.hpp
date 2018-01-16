@@ -29,6 +29,7 @@ struct Sample {
 	float3 wi;
 	float3 h;			// intermediate result, convenient to store here
 	float  pdf;
+	float  wavelength;
 	float  h_dot_wi;	// intermediate result, convenient to store here
 
 	using Type_flag = flags::Flags<Type>;

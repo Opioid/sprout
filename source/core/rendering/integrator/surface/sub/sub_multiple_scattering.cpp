@@ -56,8 +56,9 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 	const float2 uv = intersection.geo.uv;
 
 	Ray tray;
-	tray.time  = ray.time;
 	tray.depth = ray.depth + 1;
+	tray.time  = ray.time;
+	tray.wavelength = ray.wavelength;
 	tray.properties = ray.properties;
 	tray.properties.set(Ray::Property::Recursive);
 	tray.set_primary(false);

@@ -1,5 +1,7 @@
 #include "camera.hpp"
 #include "rendering/sensor/sensor.hpp"
+#include "scene/scene_constants.hpp"
+#include "scene/scene_ray.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
@@ -66,5 +68,9 @@ void Camera::set_motion_blur(bool motion_blur) {
 }
 
 void Camera::on_set_transformation() {}
+
+Ray Camera::create_ray(const float3& origin, const float3& direction, float time) {
+	return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f, 1.f, Ray::Property::Primary);
+}
 
 }

@@ -85,7 +85,7 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& 
 	min_t += r * step;
 
 	const float3 next = ray.point(min_t);
-	Ray tau_ray(start, next - start, 0.f, 1.f, ray.time);
+	Ray tau_ray(start, next - start, 0.f, 1.f, 0, ray.time);
 
 	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
 	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
@@ -165,7 +165,7 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volum
 	min_t += r * step;
 
 	const float3 next = ray.point(min_t);
-	Ray tau_ray(start, next - start, 0.f, 1.f, ray.time);
+	Ray tau_ray(start, next - start, 0.f, 1.f, 0, ray.time);
 
 	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
 	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
