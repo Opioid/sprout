@@ -93,8 +93,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 	for (uint32_t i = ray.depth; ; ++i) {
 		const float3 wo = -ray.direction;
-		// auto& sampler = material_sampler(ray.depth, ray.properties);
-		const auto& material_sample = intersection.sample(wo, ray.time, filter, sampler_, worker);
+		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
 		if ((ray.is_primary() || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
@@ -283,7 +282,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	const float3 wo = -sample_result.wi;
 
 	// This will invalidate the contents of material_sample. See comment above.
-	const auto& light_material_sample = intersection.sample(wo, ray.time, Sampler_filter::Nearest,
+	const auto& light_material_sample = intersection.sample(wo, ray, Sampler_filter::Nearest,
 															sampler_, worker);
 
 	if (light_material_sample.same_hemisphere(wo)) {

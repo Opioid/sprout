@@ -33,7 +33,7 @@ inline float3 Intersection::thin_absorption(const float3& wo, float time,
 	return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
 }
 
-inline const material::Sample& Intersection::sample(const float3& wo, float time,
+inline const material::Sample& Intersection::sample(const float3& wo, const Ray& ray,
 													Sampler_filter filter,
 													sampler::Sampler& sampler,
 													Worker& worker) const {
@@ -55,7 +55,7 @@ inline const material::Sample& Intersection::sample(const float3& wo, float time
 	rs.uv = geo.uv;
 
 	rs.area = area();
-	rs.time = time;
+	rs.time = ray.time;
 	rs.ior  = 1.f;
 	rs.inside_volume = geo.inside_volume;
 

@@ -106,7 +106,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 
 			// Prepare the next scattering event...
 			const float3 wo = -tray.direction;
-			auto& material_sample = secondary_intersection.sample(wo, ray.time, filter,
+			auto& material_sample = secondary_intersection.sample(wo, ray, filter,
 																  sampler, worker);
 
 			material_sample.sample(sampler, sample_result);
@@ -125,7 +125,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			tr *= (sample_result.reflection / sample_result.pdf);
 		} else {
 			const float3 wo = -tray.direction;
-			auto& material_sample = intersection.sample(wo, ray.time, filter, sampler, worker);
+			auto& material_sample = intersection.sample(wo, ray, filter, sampler, worker);
 
 			material_sample.sample(sampler, sample_result);
 			if (0.f == sample_result.pdf) {
