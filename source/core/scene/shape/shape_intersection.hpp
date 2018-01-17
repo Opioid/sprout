@@ -13,7 +13,7 @@ struct Intersection {
 
 	float epsilon;
 	uint32_t part;
-	bool inside_volume;
+	bool subsurface;
 };
 
 }

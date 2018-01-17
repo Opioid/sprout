@@ -137,6 +137,15 @@ static inline float3 sample_sphere_uniform(float2 uv) {
 	return float3(cos_phi * r, sin_phi * r, z);
 }
 
+static inline float3 sphere_direction(float sin_theta, float cos_theta, float phi,
+									  const float3& x, const float3& y, const float3& z) {
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
+
+	return sin_theta * cos_phi * x + sin_theta * sin_phi * y + cos_theta * z;
+}
+
 static inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max,
 												  const float3& x,
 												  const float3& y,

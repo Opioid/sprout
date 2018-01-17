@@ -29,6 +29,8 @@ public:
 	struct Layer : public material::Sample::Layer {
 		float phase(const float3& w, const float3& wp) const;
 
+		float3 sample(const float3& w, float2 r2) const;
+
 		BSSRDF bssrdf;
 	};
 

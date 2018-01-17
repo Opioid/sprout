@@ -118,7 +118,8 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 		secondary_intersection.prop = &volume;
 		secondary_intersection.geo.p = current;
 		secondary_intersection.geo.part = 0;
-		secondary_intersection.geo.epsilon = 0.0005f;
+		secondary_intersection.geo.epsilon = 0.f;
+		secondary_intersection.geo.subsurface = false;
 
 		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 

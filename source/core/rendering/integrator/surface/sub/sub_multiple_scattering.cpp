@@ -102,7 +102,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			scene::prop::Intersection secondary_intersection = intersection;
 			secondary_intersection.geo.uv = uv;
 			secondary_intersection.geo.part = part;
-			secondary_intersection.geo.inside_volume = true;
+			secondary_intersection.geo.subsurface = true;
 
 			// Prepare the next scattering event...
 			const float3 wo = -tray.direction;
