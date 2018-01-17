@@ -11,6 +11,7 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+// #include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::volume {
 

@@ -48,8 +48,15 @@ void Sample::set(const float3& absorption_coefficient,
 
 float Sample::Layer::phase(const float3& w, const float3& wp) const {
 	const float g = bssrdf.anisotropy();
-	const float k = 1.55f * g - (0.55f * g) * (g * g);
-	return phase_schlick(w, wp, k);
+	return phase_hg(w, wp, g);
+//	const float k = 1.55f * g - (0.55f * g) * (g * g);
+//	return phase_schlick(w, wp, k);
+}
+
+float Sample::phase_hg(const float3& w, const float3& wp, float g) {
+	const float costheta = math::dot(w, wp);
+	const float gg = g * g;
+	return (1.f / (4.f * math::Pi)) * (1.f - gg) / math::pow1_5(1.f + gg - 2.f * g * costheta);
 }
 
 float Sample::phase_schlick(const float3& w, const float3& wp, float k) {

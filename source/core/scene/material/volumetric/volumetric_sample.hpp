@@ -36,6 +36,8 @@ public:
 
 private:
 
+	static float phase_hg(const float3& w, const float3& wp, float g);
+
 	static float phase_schlick(const float3& w, const float3& wp, float k);
 };
 
