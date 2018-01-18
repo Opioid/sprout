@@ -1,4 +1,5 @@
 #include "pathtracer_dl.hpp"
+#include "sub/sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
@@ -18,10 +19,11 @@
 namespace rendering::integrator::surface {
 
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_settings,
-							 const Settings& settings) :
+							 const Settings& settings, sub::Integrator& subsurface) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
+	subsurface_(subsurface),
 	transmittance_(rng, take_settings)
 {}
 
@@ -165,10 +167,12 @@ size_t Pathtracer_DL::num_bytes() const {
 
 Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings,
 											 uint32_t num_integrators,
+											 std::unique_ptr<sub::Factory> sub_factory,
 											 uint32_t min_bounces, uint32_t max_bounces,
 											 float path_termination_probability,
 											 uint32_t num_light_samples, bool enable_caustics) :
 	Factory(take_settings),
+	sub_factory_(std::move(sub_factory)),
 	integrators_(memory::allocate_aligned<Pathtracer_DL>(num_integrators)) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
@@ -183,7 +187,8 @@ Pathtracer_DL_factory::~Pathtracer_DL_factory() {
 }
 
 Integrator* Pathtracer_DL_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Pathtracer_DL(rng, take_settings_, settings_);
+	return new(&integrators_[id]) Pathtracer_DL(rng, take_settings_, settings_,
+												*sub_factory_->create(id, rng));
 }
 
 }

@@ -433,8 +433,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
 			return std::make_shared<Pathtracer_factory>(
-						settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
-						path_termination_probability, enable_caustics);
+				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
+				path_termination_probability, enable_caustics);
 		} else if ("PTDL" == n.name) {
 			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
 														 default_min_bounces);
@@ -450,9 +450,11 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
+			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
+
 			return std::make_shared<Pathtracer_DL_factory>(
-				settings, num_workers, min_bounces, max_bounces, path_termination_probability, 
-				num_light_samples, enable_caustics);
+				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
+				path_termination_probability, num_light_samples, enable_caustics);
 		} else if ("PTMIS" == n.name) {
 			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
 														 default_min_bounces);
