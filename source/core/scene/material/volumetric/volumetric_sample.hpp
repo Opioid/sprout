@@ -27,9 +27,9 @@ public:
 public:
 
 	struct Layer : public material::Sample::Layer {
-		float phase(const float3& w, const float3& wp) const;
+		float phase(const float3& wo, const float3& wi) const;
 
-		float3 sample(const float3& w, float2 r2) const;
+		float sample(const float3& wo, float2 r2, float3& wi) const;
 
 		BSSRDF bssrdf;
 	};
@@ -38,9 +38,9 @@ public:
 
 private:
 
-	static float phase_hg(const float3& w, const float3& wp, float g);
+	static float phase_hg(float cos_theta, float g);
 
-	static float phase_schlick(const float3& w, const float3& wp, float k);
+	static float phase_schlick(float cos_theta, float k);
 };
 
 }
