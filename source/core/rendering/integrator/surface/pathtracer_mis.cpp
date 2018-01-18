@@ -311,9 +311,9 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 		return float3(0.f);
 	}
 
-	 Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
-					light_sample.shape.t - ray_offset, history.depth, history.time,
-					history.wavelength, history.ior, history.properties);
+	Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
+				   light_sample.shape.t - ray_offset, history.depth, history.time,
+				   history.wavelength, history.ior, history.properties);
 
 //	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
 	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, material_sample, filter);

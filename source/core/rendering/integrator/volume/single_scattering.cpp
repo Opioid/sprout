@@ -118,6 +118,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 		scene::prop::Intersection secondary_intersection;
 		secondary_intersection.prop = &volume;
 		secondary_intersection.geo.p = current;
+		secondary_intersection.geo.geo_n = float3(0.f, 1.f, 0.f); // Value shouldn't matter
 		secondary_intersection.geo.part = 0;
 		secondary_intersection.geo.epsilon = 0.f;
 		secondary_intersection.geo.subsurface = false;
