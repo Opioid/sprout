@@ -16,7 +16,7 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 													Sampler_filter filter,
 													sampler::Sampler& /*sampler*/,
 													const Worker& worker) const {
-	if (rs.inside_volume) {
+	if (rs.subsurface) {
 		auto& sample = worker.sample<volumetric::Sample>();
 
 		sample.set_basis(rs.geo_n, wo);

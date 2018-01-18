@@ -61,6 +61,11 @@ static T exp2(T x) {
 }
 
 template<typename T>
+static T pow1_5(T x) {
+	return x * std::sqrt(x);
+}
+
+template<typename T>
 static constexpr T pow2(T x) {
 	return x * x;
 }
