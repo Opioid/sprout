@@ -111,10 +111,10 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
-		float3 tr;
-		const float3 vli = worker.volume_li(ray, tr);
+		float3 vtr;
+		const float3 vli = worker.volume_li(ray, vtr);
 		result += throughput * vli;
-		throughput *= tr;
+		throughput *= vtr;
 
 		if (!hit) {
 			break;
