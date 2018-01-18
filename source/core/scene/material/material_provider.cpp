@@ -824,6 +824,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
+	float volumetric_anisotropy = 0.f;
 	Coating_description coating;
 
 	for (auto& n : substitute_value.GetObject()) {
@@ -847,6 +848,8 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 			thickness = json::read_float(n.value);
 		} else if ("attenuation_distance" == n.name) {
 			attenuation_distance = json::read_float(n.value);
+		} else if ("volumetric_anisotropy" == n.name) {
+			volumetric_anisotropy = json::read_float(n.value);
 		} else if ("two_sided" == n.name) {
 			two_sided = json::read_bool(n.value);
 		} else if ("coating" == n.name) {
@@ -980,6 +983,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 		material->set_attenuation(use_absorption_color ? absorption_color : color,
 								  use_scattering_color ? scattering_color : color,
 								  attenuation_distance);
+		material->set_volumetric_anisotropy(volumetric_anisotropy);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
 		material->set_metallic(metallic);

@@ -23,7 +23,6 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-
 		if (color_map_.is_valid()) {
 			auto& sampler = worker.sampler_2D(sampler_key(), filter);
 			const float3 color = color_map_.sample_3(sampler, rs.uv);
@@ -75,9 +74,11 @@ void Material_subsurface::set_attenuation(const float3& absorption_color,
 	attenuation(absorption_color, scattering_color, distance,
 				absorption_coefficient_, scattering_coefficient_);
 
-	anisotropy_ = 0.f;
-
 	attenuation_distance_ = distance;
+}
+
+void Material_subsurface::set_volumetric_anisotropy(float anisotropy) {
+	anisotropy_ = anisotropy;
 }
 
 void Material_subsurface::set_ior(float ior, float external_ior) {

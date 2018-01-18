@@ -21,6 +21,8 @@ public:
 	void set_attenuation(const float3& absorption_color, const float3& scattering_color,
 						 float distance);
 
+	void set_volumetric_anisotropy(float anisotropy);
+
 	virtual void set_ior(float ior, float external_ior = 1.f) final override;
 
 private:
