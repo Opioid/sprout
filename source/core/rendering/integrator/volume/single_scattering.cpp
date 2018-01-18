@@ -65,7 +65,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 
 	const float3 start = ray.point(min_t);
 
-	const float r = std::max(rng_.random_float(), 0.0001f);
+	const float r = rng_.random_float();
 
 	min_t += r * step;
 
@@ -106,6 +106,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 		secondary_ray.set_primary(false);
 
 		if (settings_.disable_indirect_lighting) {
+			// TODO: All of this doesn't work with Pathtracer...
 			// Make the surface integrator stop after gathering direct lighting
 			// by selecting a very high ray depth.
 			// Don't take 0xFFFFFFFF because that will cause a wraparound in the MIS integrator,
@@ -128,6 +129,13 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 
 		radiance += tr * scattering * local_radiance;
 	}
+
+	tau_ray.set_direction(ray.point(ray.max_t) - tau_ray.origin);
+	const float3 tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Undefined, worker);
+
+	tr *= math::exp(-tau);
 
 	transmittance = tr;
 
