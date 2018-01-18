@@ -97,8 +97,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
 	sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
-	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
+	sample.t   = Ray_max_t;
+	sample.epsilon = 5e-4f;
 
 	SOFT_ASSERT(testing::check(sample));
 
@@ -119,8 +120,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
 	sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
-	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (4.f * math::Pi);
+	sample.t   = Ray_max_t;
+	sample.epsilon = 5e-4f;
 
 	SOFT_ASSERT(testing::check(sample));
 

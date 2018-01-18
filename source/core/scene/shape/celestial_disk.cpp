@@ -112,8 +112,9 @@ bool Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 
 	sample.wi = math::normalize(ws - transformation.rotation.r[2]);
 
-	sample.t = Almost_ray_max_t;
 	sample.pdf = 1.f / area;
+	sample.t = Almost_ray_max_t;
+	sample.epsilon = 5e-4f;
 
 	return true;
 }

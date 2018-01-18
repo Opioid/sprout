@@ -122,7 +122,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 			// This should never happen for volumetric samples
 			SOFT_ASSERT(sample_result.pdf > 0.f);
 
-			tr *= (sample_result.reflection / sample_result.pdf);
+			tr *= sample_result.reflection / sample_result.pdf;
 		} else {
 			const float3 wo = -tray.direction;
 			auto& material_sample = intersection.sample(wo, ray, filter, sampler, worker);

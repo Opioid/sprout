@@ -40,7 +40,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
-	bool requires_bounce = false;
+	bool requires_bounce = ray.is_primary();
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -49,7 +49,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-		if ((ray.is_primary() || requires_bounce) && material_sample.same_hemisphere(wo)) {
+		if (requires_bounce && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -89,10 +89,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			transmittance_.resolve(ray, intersection,
-								   material_sample.absorption_coefficient(),
-								   sampler_, Sampler_filter::Nearest,
-								   worker, sample_result);
+			transmittance_.resolve(ray, intersection, material_sample.absorption_coefficient(),
+								   sampler_, Sampler_filter::Nearest, worker, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
@@ -129,10 +127,9 @@ float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& 
 											Sampler_filter filter, Worker& worker) {
 	float3 result = float3::identity();
 
-	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
-	shadow_ray.min_t  = ray_offset;
+	shadow_ray.min_t  = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	shadow_ray.depth  = ray.depth + 1;
 	shadow_ray.time   = ray.time;
 
@@ -144,7 +141,8 @@ float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& 
 							 material_sample.is_translucent(), sampler_, 0,
 							 Sampler_filter::Nearest, worker, light_sample)) {
 			shadow_ray.set_direction(light_sample.shape.wi);
-			shadow_ray.max_t = light_sample.shape.t - ray_offset;
+			const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+			shadow_ray.max_t = light_sample.shape.t - offset;
 
 			const float3 tv = worker.tinted_visibility(shadow_ray, filter);
 			if (math::any_greater_zero(tv)) {

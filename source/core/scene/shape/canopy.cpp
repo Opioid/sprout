@@ -112,8 +112,9 @@ bool Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	const float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 	sample.uv[0] = 0.5f * disk[0] + 0.5f;
 	sample.uv[1] = 0.5f * disk[1] + 0.5f;
-	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
+	sample.t   = Ray_max_t;
+	sample.epsilon = 5e-4f;
 
 	SOFT_ASSERT(testing::check(sample));
 

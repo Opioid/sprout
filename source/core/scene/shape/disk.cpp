@@ -191,8 +191,9 @@ bool Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 
 	sample.wi = wi;
-	sample.t = t;
 	sample.pdf = pdf;
+	sample.t = t;
+	sample.epsilon = 5e-4f * t;
 
 	return true;
 }

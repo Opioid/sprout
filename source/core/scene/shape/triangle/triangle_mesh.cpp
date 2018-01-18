@@ -272,54 +272,14 @@ bool Mesh::sample(uint32_t part, const Transformation& transformation,
 	}
 
 	if (c <= 0.f) {
-/*		float ump_lump = std::abs(c);//sl / (std::abs(c) * area);
-
-		const float3 op = math::transform_point(p, transformation.world_to_object);
-
-		math::Ray ray(op, math::normalize(sv - op), 0.f, 1000.f);
-
-		Intersection intersection;
-		if (tree_.intersect(ray, node_stack, intersection)) {
-//			tree_.sample(intersection.index, float2(intersection.u, intersection.v), sv, tc);
-
-			const float3 sv1 = ray.point(ray.max_t);
-
-			const float3 v1 = math::transform_point(sv1, transformation.object_to_world);
-
-			const float3 sn1 = tree_.triangle_normal(intersection.index);
-			const float3 wn1 = math::transform_vector(sn1, transformation.rotation);
-
-			const float3 axis1 = v1 - p;
-			const float sl1 = math::squared_length(axis1);
-			const float d1  = std::sqrt(sl1);
-
-			c = -math::dot(wn1, dir);
-
-			if (two_sided) {
-				c = std::abs(c);
-			}
-
-			if (c <= 0.f) {
-				return false;
-			}
-
-//			std::cout << "potato" << std::endl;
-
-			sample.wi = dir;
-			sample.uv = float2(0.f, 0.f);
-			sample.t = d1;
-			sample.pdf = sl1 / (c * area);
-			sample.pdf /= ump_lump;
-			return true;
-		}
-*/
 		return false;
 	}
 
 	sample.wi = dir;
 	sample.uv = tc;
-	sample.t = d;
 	sample.pdf = sl / (c * area);
+	sample.t = d;
+	sample.epsilon = 3e-3f * d;
 
 	return true;
 }

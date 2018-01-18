@@ -254,8 +254,11 @@ bool Box::sample(uint32_t /*part*/, const Transformation& transformation,
 	const float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
 	sample.wi = dir;
-	sample.t = axis_length - radius; // this is not accurate
+
 	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
+	const float d = axis_length - radius; // this is not accurate
+	sample.t = d;
+	sample.epsilon = 5e-4f * d;
 
 	return true;
 }
