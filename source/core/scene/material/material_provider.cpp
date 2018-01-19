@@ -1011,7 +1011,9 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 
 Material_ptr Provider::load_volumetric(const json::Value& volumetric_value,
 									   resource::Manager& manager) {
-	Sampler_settings sampler_settings;
+	Sampler_settings sampler_settings(Sampler_settings::Filter::Linear,
+									  Sampler_settings::Address::Clamp,
+									  Sampler_settings::Address::Clamp);
 
 	Texture_adapter density_map;
 	Texture_adapter emission_map;

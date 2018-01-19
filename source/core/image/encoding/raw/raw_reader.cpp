@@ -4,8 +4,7 @@
 #include <istream>
 #include <string>
 
-namespace image { namespace encoding { namespace raw {
-
+namespace image::encoding::raw {
 
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	int3 dimensions(512, 512, 32);
@@ -14,32 +13,39 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
 	auto volume = std::make_shared<Byte1>(description);
 
-	size_t num_bytes = dimensions[0] * dimensions[1] * dimensions[2];
+	const size_t num_bytes = dimensions[0] * dimensions[1] * dimensions[2];
 	stream.read(reinterpret_cast<char*>(volume->data()), num_bytes);
 
 	return volume;
 
-	/*
-	int3 dimensions(3, 3, 3);
+/*
+	const int3 dimensions(3, 3, 3);
 
 	Image::Description description(Image::Type::Float1, dimensions);
 
 	auto volume = std::make_shared<Float1>(description);
 
-	volume->at(0, 0, 0) = 0.1f; volume->at(1, 0, 0) = 0.2f; volume->at(2, 0, 0) = 0.3f;
-	volume->at(0, 1, 0) = 2.25f;  volume->at(1, 1, 0) = 2.f;  volume->at(2, 0, 0) = 1.75f;
+//	volume->at(0, 0, 0) = 0.1f; volume->at(1, 0, 0) = 0.1f;
+//	volume->at(0, 1, 0) = 0.1f; volume->at(1, 1, 0) = 0.9f;
+
+//	volume->at(0, 0, 1) = 0.1f; volume->at(1, 0, 1) = 0.1f;
+//	volume->at(0, 1, 1) = 0.1f; volume->at(1, 1, 1) = 0.1f;
+
+
+	volume->at(0, 0, 0) = 0.1f;   volume->at(1, 0, 0) = 0.2f;  volume->at(2, 0, 0) = 0.3f;
+	volume->at(0, 1, 0) = 0.25f;  volume->at(1, 1, 0) = 0.f;   volume->at(2, 1, 0) = 0.75f;
 	volume->at(0, 2, 0) = 0.25f;  volume->at(1, 2, 0) = 0.5f;  volume->at(2, 2, 0) = 0.75f;
 
-	volume->at(0, 0, 1) = 0.4f; volume->at(1, 0, 1) = 0.5f; volume->at(2, 0, 1) = 0.6f;
-	volume->at(0, 1, 1) = 1.5f;  volume->at(1, 1, 1) = 1.25f;  volume->at(2, 1, 1) = 1.f;
-	volume->at(0, 2, 1) = 1.f;  volume->at(1, 2, 1) = 1.25f;  volume->at(2, 2, 1) = 1.5f;
+	volume->at(0, 0, 1) = 0.4f;  volume->at(1, 0, 1) = 0.5f;   volume->at(2, 0, 1) = 0.6f;
+	volume->at(0, 1, 1) = 0.5f;  volume->at(1, 1, 1) = 0.25f;  volume->at(2, 1, 1) = 0.f;
+	volume->at(0, 2, 1) = 0.f;   volume->at(1, 2, 1) = 0.25f;  volume->at(2, 2, 1) = 0.5f;
 
-	volume->at(0, 0, 2) = 0.7f; volume->at(1, 0, 2) = 0.8f; volume->at(2, 0, 2) = 0.9f;
+	volume->at(0, 0, 2) = 0.7f;   volume->at(1, 0, 2) = 0.8f;  volume->at(2, 0, 2) = 0.9f;
 	volume->at(0, 1, 2) = 0.75f;  volume->at(1, 1, 2) = 0.5f;  volume->at(2, 1, 2) = 0.25f;
-	volume->at(0, 2, 2) = 1.75f;  volume->at(1, 2, 2) = 2.f;  volume->at(2, 2, 2) = 2.25f;
+	volume->at(0, 2, 2) = 0.75f;  volume->at(1, 2, 2) = 0.f;   volume->at(2, 2, 2) = 0.25f;
 
 	return volume;
 	*/
 }
 
-}}}
+}
