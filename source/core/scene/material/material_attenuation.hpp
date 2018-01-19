@@ -13,13 +13,24 @@ static inline float3 extinction_coefficient(const float3& color, float distance)
 	return -a / distance;
 }
 
-static inline void attenuation(const float3& absorption_color, const float3& scattering_color,
-							   float distance,
+static inline void attenuation(const float3& ac, const float3& ssc, float distance,
 							   float3& absorption_coefficient, float3& scattering_coefficient) {
-	const float3 sigma_t = extinction_coefficient(absorption_color, distance);
+/*	const float3 sigma_t = extinction_coefficient(absorption_color, distance);
 
 	const float3 sigma_a = sigma_t * (1.f - scattering_color);
 
+	absorption_coefficient = sigma_a;
+	scattering_coefficient = sigma_t - sigma_a;*/
+
+	const float3 sigma_t = extinction_coefficient(ac, distance);
+
+	const float3 root = math::sqrt(9.59217f + 41.6898f * ssc + 17.71226f * ssc * ssc);
+
+	const float3 factor = 4.09712f + 4.20863f * ssc - root;
+
+	const float3 pss = 1.f - (factor * factor);
+
+	const float3 sigma_a = sigma_t * (1.f - pss);
 	absorption_coefficient = sigma_a;
 	scattering_coefficient = sigma_t - sigma_a;
 }

@@ -5,6 +5,7 @@
 #include "vector2.inl"
 #include "math.hpp"
 #include "exp.hpp"
+#include "vector.inl"
 #include "simd/simd.inl"
 
 namespace math {
@@ -600,11 +601,25 @@ static inline Vector3f_a cos(const Vector3f_a& v) {
 }
 
 static inline Vector3f_a sqrt(const Vector3f_a& v) {
-	return Vector3f_a(std::sqrt(v[0]), std::sqrt(v[1]), std::sqrt(v[2]));
+//	return Vector3f_a(std::sqrt(v[0]), std::sqrt(v[1]), std::sqrt(v[2]));
+
+	Vector x = simd::load_float3(v.v);
+	x = sqrt(x);
+
+	Vector3f_a r;
+	simd::store_float4(r.v, x);
+	return r;
 }
 
 static inline Vector3f_a log(const Vector3f_a& v) {
-	return Vector3f_a(std::log(v[0]), std::log(v[1]), std::log(v[2]));
+//	return Vector3f_a(std::log(v[0]), std::log(v[1]), std::log(v[2]));
+
+	Vector x = simd::load_float4(v.v);
+	x = log(x);
+
+	Vector3f_a r;
+	simd::store_float4(r.v, x);
+	return r;
 }
 
 static inline constexpr bool operator==(const Vector3f_a& a, const Vector3f_a& b) {

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_LOGGING_LOG_HPP
+#define SU_CORE_LOGGING_LOG_HPP
 
 #include <string>
 
@@ -21,3 +22,5 @@ public:
 };
 
 }
+
+#endif

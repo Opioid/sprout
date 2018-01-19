@@ -111,8 +111,8 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 	const Vector filtered_l1a = math::min(l1, simd::Infinity);
 	const Vector filtered_l2a = math::min(l2, simd::Infinity);
 
-	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
-	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
+	const Vector filtered_l1b = math::max(l1, simd::Neg_infinity);
+	const Vector filtered_l2b = math::max(l2, simd::Neg_infinity);
 
 	// now that we're back on our feet, test those slabs.
 	Vector max_t = math::max(filtered_l1a, filtered_l2a);
@@ -144,8 +144,8 @@ inline bool AABB::intersect_p(VVector ray_origin, VVector ray_inv_direction,
 	const Vector filtered_l1a = math::min(l1, simd::Infinity);
 	const Vector filtered_l2a = math::min(l2, simd::Infinity);
 
-	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
-	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
+	const Vector filtered_l1b = math::max(l1, simd::Neg_infinity);
+	const Vector filtered_l2b = math::max(l2, simd::Neg_infinity);
 
 	// now that we're back on our feet, test those slabs.
 	Vector max_t = math::max(filtered_l1a, filtered_l2a);
@@ -231,8 +231,8 @@ inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) co
 	const Vector filtered_l1a = math::min(l1, simd::Infinity);
 	const Vector filtered_l2a = math::min(l2, simd::Infinity);
 
-	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
-	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
+	const Vector filtered_l1b = math::max(l1, simd::Neg_infinity);
+	const Vector filtered_l2b = math::max(l2, simd::Neg_infinity);
 
 	// now that we're back on our feet, test those slabs.
 	Vector max_t = math::max(filtered_l1a, filtered_l2a);
@@ -279,8 +279,8 @@ inline bool AABB::intersect_p(const Ray& ray, float& hit_t, bool& inside) const 
 	const Vector filtered_l1a = math::min(l1, simd::Infinity);
 	const Vector filtered_l2a = math::min(l2, simd::Infinity);
 
-	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
-	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
+	const Vector filtered_l1b = math::max(l1, simd::Neg_infinity);
+	const Vector filtered_l2b = math::max(l2, simd::Neg_infinity);
 
 	// now that we're back on our feet, test those slabs.
 	Vector max_t = math::max(filtered_l1a, filtered_l2a);
