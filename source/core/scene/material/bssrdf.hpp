@@ -14,7 +14,7 @@ public:
 	BSSRDF(const float3& absorption_coefficient, const float3& scattering_coefficient,
 		   float anisotropy);
 
-	float3 optical_depth(float length) const;
+	float3 transmittance(float length) const;
 
 	float3 extinction_coefficient() const;
 

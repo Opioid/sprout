@@ -9,8 +9,10 @@ BSSRDF::BSSRDF(const float3& absorption_coefficient, const float3& scattering_co
 	scattering_coefficient_(scattering_coefficient),
 	anisotropy_(anisotropy) {}
 
-float3 BSSRDF::optical_depth(float length) const {
-	return length * (absorption_coefficient_ + scattering_coefficient_);
+float3 BSSRDF::transmittance(float length) const {
+	const float3 minus_tau = -length * (absorption_coefficient_ + scattering_coefficient_);
+
+	return math::exp(minus_tau);
 }
 
 float3 BSSRDF::extinction_coefficient() const {

@@ -104,9 +104,7 @@ bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersecti
 			ray.max_t = ray_max_t;
 		}
 
-		const float3 tau = sample.bssrdf().optical_depth(prop_length);
-
-		transmission = math::exp(-tau);
+		transmission = sample.bssrdf().transmittance(prop_length);
 	}
 
 	return intersect_and_resolve_mask(ray, intersection, filter);
@@ -138,9 +136,7 @@ float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersectio
 			ray.max_t = ray_max_t;
 		}
 
-		const float3 tau = sample.bssrdf().optical_depth(prop_length);
-
-		return math::exp(-tau) * tinted_visibility(ray, filter);
+		return sample.bssrdf().transmittance(prop_length) * tinted_visibility(ray, filter);
 	}
 
 	return tinted_visibility(ray, filter);

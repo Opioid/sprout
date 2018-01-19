@@ -70,13 +70,13 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 		const float r = rng_.random_float();
 		const float tau_ray_length = r * step;
 
-		float3 attenuation = math::exp(-bssrdf.optical_depth(tau_ray_length));
+		float3 attenuation = bssrdf.transmittance(tau_ray_length);
 
 		float min_t = tray.min_t + tau_ray_length;
 
 		for (uint32_t j = static_cast<uint32_t>(num_samples); j > 0; --j, min_t += step) {
 			if (num_samples - 1 == j) {
-				attenuation = math::exp(-bssrdf.optical_depth(step));
+				attenuation = bssrdf.transmittance(step);
 			}
 
 			tr *= attenuation;

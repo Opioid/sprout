@@ -79,8 +79,7 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 
 		const bool hit = worker.intersect(intersection.prop, tray, intersection);
 
-		const float3 tau = bssrdf.optical_depth(tray.max_t);
-		tr *= math::exp(-tau);
+		tr *= bssrdf.transmittance(tray.max_t);
 
 		const float average = spectrum::average(tr);
 		if (average < 0.01f) {
