@@ -13,6 +13,8 @@
 #include "display/display_emissionmap.hpp"
 #include "display/display_emissionmap_animated.hpp"
 #include "display/display_sample.hpp"
+#include "glass/glass_dispersion_material.hpp"
+#include "glass/glass_dispersion_sample.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_sample.hpp"
 #include "glass/glass_rough_material.hpp"

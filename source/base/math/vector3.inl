@@ -470,9 +470,9 @@ static inline constexpr float squared_distance(const Vector3f_a& a, const Vector
 }
 
 static inline constexpr Vector3f_a saturate(const Vector3f_a& v) {
-	return Vector3f_a(std::min(std::max(v[0], 0.f), 1.f),
-					  std::min(std::max(v[1], 0.f), 1.f),
-					  std::min(std::max(v[2], 0.f), 1.f));
+	return Vector3f_a(std::clamp(v[0], 0.f, 1.f),
+					  std::clamp(v[1], 0.f, 1.f),
+					  std::clamp(v[2], 0.f, 1.f));
 }
 
 static inline Vector3f_a exp(const Vector3f_a& v) {

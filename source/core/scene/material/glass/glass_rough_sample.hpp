@@ -1,14 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_GLASS_ROUGH_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_GLASS_ROUGH_SAMPLE_HPP
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene::material {
-
-namespace bxdf { struct Result; }
-
-namespace glass {
-
-class Sample_rough;
+namespace scene::material::glass {
 
 class Sample_rough : public material::Sample {
 
@@ -54,4 +49,6 @@ public:
 	};
 };
 
-}}
+}
+
+#endif

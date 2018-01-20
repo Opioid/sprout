@@ -82,12 +82,11 @@ float3 Multiple_scattering::li(const Ray& ray, Intersection& intersection,
 		tr *= bssrdf.transmittance(tray.max_t);
 
 		const float average = spectrum::average(tr);
-		if (average < 0.01f) {
-			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
-			sample_result.pdf = 0.f;
-		//	result += /*step **/ radiance;
-			return result;
-			//	}
+		if (average < 0.1f) {
+			if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
+				sample_result.pdf = 0.f;
+				return result;
+			}
 		}
 
 		if (!hit) {

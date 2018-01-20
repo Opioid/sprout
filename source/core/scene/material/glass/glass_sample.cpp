@@ -65,7 +65,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = math::saturate(std::abs(math::dot(n, sample.wo_))); //math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f); //math::saturate(math::dot(n, sample.wo_));
 
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -101,7 +101,7 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = math::saturate(std::abs(math::dot(n, sample.wo_))); //math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f); //math::saturate(math::dot(n, sample.wo_));
 
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 

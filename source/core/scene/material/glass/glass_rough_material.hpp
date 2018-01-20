@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_GLASS_ROUGH_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_GLASS_ROUGH_MATERIAL_HPP
 
 #include "scene/material/material.hpp"
 
@@ -39,3 +40,4 @@ protected:
 
 }
 
+#endif
