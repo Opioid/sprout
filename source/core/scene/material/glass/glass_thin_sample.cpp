@@ -1,4 +1,4 @@
-#include "thinglass_sample.hpp"
+#include "glass_thin_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_attenuation.hpp"
 #include "scene/material/material_sample.inl"

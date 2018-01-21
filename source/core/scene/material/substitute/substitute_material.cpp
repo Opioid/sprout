@@ -31,4 +31,8 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
+size_t Material::sample_size() {
+	return sizeof(Sample);
+}
+
 }

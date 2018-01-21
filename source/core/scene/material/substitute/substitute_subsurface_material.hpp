@@ -25,6 +25,8 @@ public:
 
 	virtual void set_ior(float ior, float external_ior = 1.f) final override;
 
+	static size_t sample_size();
+
 private:
 
 	float3 absorption_color_;

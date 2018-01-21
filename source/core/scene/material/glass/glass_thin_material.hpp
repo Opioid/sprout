@@ -4,11 +4,11 @@
 
 namespace scene::material::glass {
 
-class Thinglass : public Material {
+class Glass_thin : public Material {
 
 public:
 
-	Thinglass(const Sampler_settings& sampler_settings);
+	Glass_thin(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
@@ -29,6 +29,8 @@ public:
 	void set_attenuation_distance(float attenuation_distance);
 	void set_ior(float ior);
 	void set_thickness(float thickness);
+
+	static size_t sample_size();
 
 private:
 

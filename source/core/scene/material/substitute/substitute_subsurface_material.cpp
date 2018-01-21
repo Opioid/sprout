@@ -94,4 +94,9 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 	ior_.sqrt_eta_t = fresnel::schlick_sqrt_eta(eta_t);
 }
 
+size_t Material_subsurface::sample_size() {
+	return sizeof(Sample_subsurface);
+}
+
+
 }

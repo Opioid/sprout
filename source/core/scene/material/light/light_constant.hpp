@@ -27,6 +27,8 @@ public:
 
 	::light::Emittance& emittance();
 
+	static size_t sample_size();
+
 private:
 
 	::light::Emittance emittance_;

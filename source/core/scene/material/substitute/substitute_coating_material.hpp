@@ -43,6 +43,8 @@ public:
 										   const Worker& worker) const override final;
 
 	void set_clearcoat(float ior, float roughness);
+
+	static size_t sample_size();
 };
 
 class Material_thinfilm : public Material_coating<coating::Thinfilm> {
@@ -56,6 +58,8 @@ public:
 										   const Worker& worker) const override final;
 
 	void set_thinfilm(float ior, float roughness, float thickness);
+
+	static size_t sample_size();
 };
 
 }

@@ -24,6 +24,8 @@ public:
 	void set_attenuation_distance(float attenuation_distance);
 	void set_ior(float ior);
 
+	static size_t sample_size();
+
 private:
 
 	Texture_adapter normal_map_;

@@ -35,6 +35,11 @@ void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	coating_.alpha2_ = alpha * alpha;
 }
 
+size_t Material_clearcoat::sample_size() {
+	return sizeof(Sample_clearcoat);
+}
+
+
 Material_thinfilm::Material_thinfilm(const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_coating<coating::Thinfilm>(sampler_settings, two_sided) {}
 
@@ -62,6 +67,10 @@ void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness
 	coating_.alpha_  = alpha;
 	coating_.alpha2_ = alpha * alpha;
 	coating_.thickness_ = thickness;
+}
+
+size_t Material_thinfilm::sample_size() {
+	return sizeof(Sample_thinfilm);
 }
 
 }

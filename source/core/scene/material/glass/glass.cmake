@@ -14,8 +14,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/glass_sample.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/glass_test.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/glass_test.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/thinglass_material.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/thinglass_material.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/thinglass_sample.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/thinglass_sample.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/glass_thin_material.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/glass_thin_material.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/glass_thin_sample.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/glass_thin_sample.hpp"
 	) 

@@ -57,5 +57,8 @@ void Glass_dispersion::set_ior(float ior) {
 	ior_ = ior;
 }
 
+size_t Glass_dispersion::sample_size() {
+	return sizeof(Sample_dispersion);
 }
 
+}

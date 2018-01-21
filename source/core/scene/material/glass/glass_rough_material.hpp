@@ -26,6 +26,8 @@ public:
 	void set_ior(float ior);
 	void set_roughness(float roughness);
 
+	static size_t sample_size();
+
 protected:
 
 	Texture_adapter normal_map_;

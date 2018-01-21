@@ -22,6 +22,8 @@ public:
 	void set_absorption(const float3& absorption);
 	void set_roughness(float roughness);
 
+	static size_t sample_size();
+
 protected:
 
 	Texture_adapter normal_map_;
@@ -50,6 +52,8 @@ public:
 	void set_ior(const float3& ior);
 	void set_absorption(const float3& absorption);
 	void set_roughness(float2 roughness);
+
+	static size_t sample_size();
 
 protected:
 

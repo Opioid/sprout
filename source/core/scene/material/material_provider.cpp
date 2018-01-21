@@ -7,45 +7,30 @@
 #include "image/texture/texture_adapter.inl"
 #include "image/texture/texture_provider.hpp"
 #include "cloth/cloth_material.hpp"
-#include "cloth/cloth_sample.hpp"
 #include "debug/debug_material.hpp"
 #include "display/display_constant.hpp"
 #include "display/display_emissionmap.hpp"
 #include "display/display_emissionmap_animated.hpp"
-#include "display/display_sample.hpp"
 #include "glass/glass_dispersion_material.hpp"
-#include "glass/glass_dispersion_sample.hpp"
 #include "glass/glass_material.hpp"
-#include "glass/glass_sample.hpp"
 #include "glass/glass_rough_material.hpp"
-#include "glass/glass_rough_sample.hpp"
-#include "glass/thinglass_material.hpp"
-#include "glass/thinglass_sample.hpp"
+#include "glass/glass_thin_material.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
 #include "light/light_emissionmap_animated.hpp"
-#include "light/light_material_sample.hpp"
 #include "matte/matte_material.hpp"
-#include "matte/matte_sample.hpp"
 #include "metal/metal_material.hpp"
 #include "metal/metal_presets.hpp"
-#include "metal/metal_sample.hpp"
 #include "metallic_paint/metallic_paint_material.hpp"
-#include "metallic_paint/metallic_paint_sample.hpp"
 #include "mix/mix_material.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_coating_material.inl"
-#include "substitute/substitute_coating_sample.hpp"
 #include "substitute/substitute_material.hpp"
-#include "substitute/substitute_sample.hpp"
 #include "substitute/substitute_subsurface_material.hpp"
-#include "substitute/substitute_subsurface_sample.hpp"
 #include "substitute/substitute_translucent_material.hpp"
-#include "substitute/substitute_translucent_sample.hpp"
 #include "volumetric/volumetric_height.hpp"
 #include "volumetric/volumetric_homogeneous.hpp"
 #include "volumetric/volumetric_grid.hpp"
-#include "volumetric/volumetric_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
@@ -362,7 +347,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 		return material;
 	} else {
 		if (thickness > 0.f) {
-			auto material = std::make_shared<glass::Thinglass>(sampler_settings);
+			auto material = std::make_shared<glass::Glass_thin>(sampler_settings);
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
 			material->set_absorption_color(absorption_color);
@@ -1281,22 +1266,23 @@ float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 uint32_t Provider::max_sample_size() {
 	size_t num_bytes = 0;
 
-	num_bytes = std::max(sizeof(cloth::Sample), num_bytes);
-	num_bytes = std::max(sizeof(display::Sample), num_bytes);
-	num_bytes = std::max(sizeof(glass::Sample), num_bytes);
-	num_bytes = std::max(sizeof(glass::Sample_rough), num_bytes);
-	num_bytes = std::max(sizeof(glass::Sample_thin), num_bytes);
-	num_bytes = std::max(sizeof(light::Sample), num_bytes);
-	num_bytes = std::max(sizeof(matte::Sample), num_bytes);
-	num_bytes = std::max(sizeof(metal::Sample_anisotropic), num_bytes);
-	num_bytes = std::max(sizeof(metal::Sample_isotropic), num_bytes);
-	num_bytes = std::max(sizeof(metallic_paint::Sample), num_bytes);
-	num_bytes = std::max(sizeof(substitute::Sample), num_bytes);
-	num_bytes = std::max(sizeof(substitute::Sample_clearcoat), num_bytes);
-	num_bytes = std::max(sizeof(substitute::Sample_subsurface), num_bytes);
-	num_bytes = std::max(sizeof(substitute::Sample_thinfilm), num_bytes);
-	num_bytes = std::max(sizeof(substitute::Sample_translucent), num_bytes);
-	num_bytes = std::max(sizeof(volumetric::Sample), num_bytes);
+	num_bytes = std::max(cloth::Material::sample_size(), num_bytes);
+	num_bytes = std::max(display::Constant::sample_size(), num_bytes);
+	num_bytes = std::max(glass::Glass::sample_size(), num_bytes);
+	num_bytes = std::max(glass::Glass_dispersion::sample_size(), num_bytes);
+	num_bytes = std::max(glass::Glass_rough::sample_size(), num_bytes);
+	num_bytes = std::max(glass::Glass_thin::sample_size(), num_bytes);
+	num_bytes = std::max(light::Constant::sample_size(), num_bytes);
+	num_bytes = std::max(matte::Material::sample_size(), num_bytes);
+	num_bytes = std::max(metal::Material_anisotropic::sample_size(), num_bytes);
+	num_bytes = std::max(metal::Material_isotropic::sample_size(), num_bytes);
+	num_bytes = std::max(metallic_paint::Material::sample_size(), num_bytes);
+	num_bytes = std::max(substitute::Material::sample_size(), num_bytes);
+	num_bytes = std::max(substitute::Material_clearcoat::sample_size(), num_bytes);
+	num_bytes = std::max(substitute::Material_subsurface::sample_size(), num_bytes);
+	num_bytes = std::max(substitute::Material_thinfilm::sample_size(), num_bytes);
+	num_bytes = std::max(substitute::Material_translucent::sample_size(), num_bytes);
+	num_bytes = std::max(volumetric::Material::sample_size(), num_bytes);
 
 	return static_cast<uint32_t>(num_bytes);
 }

@@ -23,6 +23,8 @@ public:
 
 	void set_anisotropy(float anisotropy);
 
+	static size_t sample_size();
+
 protected:
 
 	float3 absorption_coefficient_;

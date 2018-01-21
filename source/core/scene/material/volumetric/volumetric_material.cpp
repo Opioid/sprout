@@ -38,4 +38,8 @@ void Material::set_anisotropy(float anisotropy) {
 	anisotropy_ = anisotropy;
 }
 
+size_t Material::sample_size() {
+	return sizeof(Sample);
+}
+
 }

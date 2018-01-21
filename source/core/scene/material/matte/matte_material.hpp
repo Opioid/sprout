@@ -18,6 +18,8 @@ public:
 
 	void set_color(const float3& color);
 
+	static size_t sample_size();
+
 private:
 
 	float3 color_;

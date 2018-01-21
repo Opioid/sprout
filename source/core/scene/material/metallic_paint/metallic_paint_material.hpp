@@ -31,6 +31,8 @@ public:
 
 	void set_clearcoat(float ior, float roughness);
 
+	static size_t sample_size();
+
 protected:
 
 	Texture_adapter flakes_mask_;

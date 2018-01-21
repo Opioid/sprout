@@ -76,4 +76,8 @@ void Glass_rough::set_roughness(float roughness) {
 	alpha_ = roughness * roughness;
 }
 
+size_t Glass_rough::sample_size() {
+	return sizeof(Sample_rough);
+}
+
 }

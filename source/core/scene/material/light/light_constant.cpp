@@ -52,4 +52,8 @@ size_t Constant::num_bytes() const {
 	return emittance_;
 }
 
+size_t Constant::sample_size() {
+	return sizeof(Sample);
+}
+
 }

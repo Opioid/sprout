@@ -56,4 +56,8 @@ void Material::set_color(const float3& color) {
 	color_ = color;
 }
 
+size_t Material::sample_size() {
+	return sizeof(Sample);
+}
+
 }

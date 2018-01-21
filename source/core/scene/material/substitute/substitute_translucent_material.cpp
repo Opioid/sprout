@@ -42,4 +42,8 @@ void Material_translucent::set_attenuation_distance(float attenuation_distance) 
 	attenuation_distance_ = attenuation_distance;
 }
 
+size_t Material_translucent::sample_size() {
+	return sizeof(Sample_translucent);
+}
+
 }

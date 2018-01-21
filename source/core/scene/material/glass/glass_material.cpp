@@ -56,4 +56,8 @@ void Glass::set_ior(float ior) {
 	ior_ = ior;
 }
 
+size_t Glass::sample_size() {
+	return sizeof(Sample);
+}
+
 }

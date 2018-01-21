@@ -116,4 +116,8 @@ void Material::set_clearcoat(float ior, float roughness) {
 	coating_.alpha2_ = alpha * alpha;
 }
 
+size_t Material::sample_size() {
+	return sizeof(Sample);
+}
+
 }

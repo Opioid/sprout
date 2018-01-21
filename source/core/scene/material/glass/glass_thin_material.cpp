@@ -1,5 +1,5 @@
-#include "thinglass_material.hpp"
-#include "thinglass_sample.hpp"
+#include "glass_thin_material.hpp"
+#include "glass_thin_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/material_attenuation.hpp"
@@ -11,10 +11,10 @@
 
 namespace scene::material::glass {
 
-Thinglass::Thinglass(const Sampler_settings& sampler_settings) :
+Glass_thin::Glass_thin(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, true) {}
 
-const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Glass_thin::sample(const float3& wo, const Renderstate& rs,
 										  Sampler_filter filter, sampler::Sampler& /*sampler*/,
 										  const Worker& worker) const {
 	auto& sample = worker.sample<Sample_thin>();
@@ -35,7 +35,7 @@ const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& r
 	return sample;
 }
 
-float3 Thinglass::thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
+float3 Glass_thin::thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
 								  Sampler_filter filter, const Worker& worker) const {
 	const float3 a = material::extinction_coefficient(absorption_color_, attenuation_distance_);
 
@@ -46,36 +46,40 @@ float3 Thinglass::thin_absorption(const float3& wo, const float3& n, float2 uv, 
 	return opacity(uv, time, filter, worker) * (1.f - refraction_color_ * attenuation);
 }
 
-bool Thinglass::has_tinted_shadow() const {
+bool Glass_thin::has_tinted_shadow() const {
 	return true;
 }
 
-size_t Thinglass::num_bytes() const {
+size_t Glass_thin::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Thinglass::set_normal_map(const Texture_adapter& normal_map) {
+void Glass_thin::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Thinglass::set_refraction_color(const float3& color) {
+void Glass_thin::set_refraction_color(const float3& color) {
 	refraction_color_ = color;
 }
 
-void Thinglass::set_absorption_color(const float3& color) {
+void Glass_thin::set_absorption_color(const float3& color) {
 	absorption_color_ = color;
 }
 
-void Thinglass::set_attenuation_distance(float attenuation_distance) {
+void Glass_thin::set_attenuation_distance(float attenuation_distance) {
 	attenuation_distance_ = attenuation_distance;
 }
 
-void Thinglass::set_ior(float ior) {
+void Glass_thin::set_ior(float ior) {
 	ior_ = ior;
 }
 
-void Thinglass::set_thickness(float thickness) {
+void Glass_thin::set_thickness(float thickness) {
 	thickness_ = thickness;
+}
+
+size_t Glass_thin::sample_size() {
+	return sizeof(Sample_thin);
 }
 
 }

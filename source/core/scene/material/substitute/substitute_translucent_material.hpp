@@ -19,6 +19,8 @@ public:
 	void set_thickness(float thickness);
 	void set_attenuation_distance(float attenuation_distance);
 
+	static size_t sample_size();
+
 private:
 
 	float thickness_;

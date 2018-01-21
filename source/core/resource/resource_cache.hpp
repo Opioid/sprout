@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RESOURCE_CACHE_HPP
+#define SU_CORE_RESOURCE_CACHE_HPP
 
 #include "resource_provider.hpp"
 #include <string>
@@ -45,3 +46,5 @@ private:
 };
 
 }
+
+#endif

@@ -26,6 +26,8 @@ public:
 	void set_roughness(float roughness);
 	void set_ior(float ior);
 
+	static size_t sample_size();
+
 private:
 
 	Texture_adapter emission_map_;

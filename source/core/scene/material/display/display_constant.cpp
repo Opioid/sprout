@@ -56,4 +56,8 @@ void Constant::set_ior(float ior) {
 	f0_ = fresnel::schlick_f0(1.f, ior);
 }
 
+size_t Constant::sample_size() {
+	return sizeof(Sample);
+}
+
 }

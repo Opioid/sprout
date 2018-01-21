@@ -54,6 +54,10 @@ void Material_isotropic::set_roughness(float roughness) {
 	roughness_ = ggx::clamp_roughness(roughness);
 }
 
+size_t Material_isotropic::sample_size() {
+	return sizeof(Sample_isotropic);
+}
+
 Material_anisotropic::Material_anisotropic(const Sampler_settings& sampler_settings,
 										   bool two_sided) :
 	Material(sampler_settings, two_sided) {}
@@ -111,6 +115,10 @@ void Material_anisotropic::set_absorption(const float3& absorption) {
 void Material_anisotropic::set_roughness(float2 roughness) {
 	roughness_ = float2(ggx::clamp_roughness(roughness[0]),
 						ggx::clamp_roughness(roughness[1]));
+}
+
+size_t Material_anisotropic::sample_size() {
+	return sizeof(Sample_anisotropic);
 }
 
 }

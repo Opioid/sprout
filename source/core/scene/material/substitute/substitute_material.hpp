@@ -16,6 +16,8 @@ public:
 										   const Worker& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
+
+	static size_t sample_size();
 };
 
 }
