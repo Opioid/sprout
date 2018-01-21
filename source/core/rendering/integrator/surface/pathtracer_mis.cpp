@@ -130,6 +130,10 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			filter = Sampler_filter::Nearest;
 		}
 
+		if (0.f == ray.wavelength) {
+			ray.wavelength = sample_result.wavelength;
+		}
+
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			const float3 tli = resolve_transmission(ray, intersection, material_sample,
 													Sampler_filter::Nearest, worker, sample_result);

@@ -83,6 +83,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 		result.reflection = coating.reflection + coating.attenuation * bottom;
 		result.pdf = (result.pdf + base.pdf + coating.pdf) / 3.f;
 	}
+
+	result.wavelength = 0.f;
 }
 
 float Sample::ior() const {

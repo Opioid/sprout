@@ -62,6 +62,8 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 		result.pdf *= 0.5f;
 		result.reflection *= n_dot_wi;
 	}
+
+	result.wavelength = 0.f;
 }
 
 float3 Sample_rough::absorption_coefficient() const {

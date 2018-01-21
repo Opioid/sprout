@@ -47,6 +47,8 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
 	const float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, conductor,
 												   sampler, result);
 	result.reflection *= n_dot_wi;
+
+	result.wavelength = 0.f;
 }
 
 void Sample_isotropic::Layer::set(const float3& ior, const float3& absorption, float roughness) {
@@ -95,6 +97,8 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
 	const float n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor,
 													 sampler, result);
 	result.reflection *= n_dot_wi;
+
+	result.wavelength = 0.f;
 }
 
 void Sample_anisotropic::Layer::set(const float3& ior, const float3& absorption, float2 roughness) {

@@ -37,6 +37,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 			layer_.specular_sample(wo_, sampler, result);
 		}
 	}
+
+	result.wavelength = 0.f;
 }
 
 }

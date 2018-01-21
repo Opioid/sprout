@@ -24,6 +24,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	result.reflection = float3(phase);
 	result.wi = dir;
 	result.pdf = phase;
+	result.wavelength = 0.f;
 	result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 

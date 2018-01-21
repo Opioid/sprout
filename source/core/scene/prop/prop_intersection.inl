@@ -57,6 +57,7 @@ inline const material::Sample& Intersection::sample(const float3& wo, const Ray&
 	rs.area = area();
 	rs.time = ray.time;
 	rs.ior  = 1.f;
+	rs.wavelength = ray.wavelength;
 	rs.subsurface = geo.subsurface;
 
 	return material->sample(wo, rs, filter, sampler, worker);

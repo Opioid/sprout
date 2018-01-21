@@ -34,8 +34,9 @@ void Closed::resolve(const Ray& ray, Intersection& intersection,
 	float3 used_absorption_coefficient = absorption_coefficient;
 
 	Ray tray;
-	tray.time  = ray.time;
 	tray.depth = ray.depth;
+	tray.time  = ray.time;
+	tray.wavelength = ray.wavelength;
 
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 

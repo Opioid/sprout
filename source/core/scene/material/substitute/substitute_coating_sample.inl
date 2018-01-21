@@ -25,6 +25,8 @@ void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler, bxdf::Samp
 	}
 
 	base_and_coating_sample(coating_, sampler, result);
+
+	result.wavelength = 0.f;
 }
 
 }

@@ -26,6 +26,7 @@ struct Renderstate {
 	float area;
 	float time;
 	float ior;
+	float wavelength;
 	bool  subsurface;
 };
 

@@ -40,10 +40,6 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
 	}
 }
 
-uint32_t Sampler::num_samples() const {
-	return num_samples_;
-}
-
 void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) {
 	const uint32_t sample = iteration * num_samples_per_iteration_;
 
@@ -52,6 +48,14 @@ void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) {
 	}
 
 	on_resume_pixel(scramble);
+}
+
+rnd::Generator& Sampler::rng() {
+	return rng_;
+}
+
+uint32_t Sampler::num_samples() const {
+	return num_samples_;
 }
 
 Factory::Factory(uint32_t num_samplers) : num_samplers_(num_samplers) {}

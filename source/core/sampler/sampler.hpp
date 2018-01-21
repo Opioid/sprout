@@ -21,6 +21,8 @@ public:
 
 	void resume_pixel(uint32_t iteration, rnd::Generator& scramble);
 
+	rnd::Generator& rng();
+
 	uint32_t num_samples() const;
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) = 0;

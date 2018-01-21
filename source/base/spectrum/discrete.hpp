@@ -31,10 +31,10 @@ public:
 
 	static constexpr float wavelength_center(int32_t bin);
 
-private:
-
 	static constexpr float start_wavelength();
 	static constexpr float end_wavelength();
+
+private:
 
 	alignas(16) float values_[N];
 

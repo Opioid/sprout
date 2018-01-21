@@ -51,6 +51,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 												   schlick, sampler, result);
 
 	result.reflection *= n_dot_wi;
+
+	result.wavelength = 0.f;
 }
 
 void Sample::Layer::set(const float3& radiance, float f0, float roughness) {

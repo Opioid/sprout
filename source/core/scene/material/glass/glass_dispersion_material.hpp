@@ -23,6 +23,7 @@ public:
 	void set_absorption_color(const float3& color);
 	void set_attenuation_distance(float attenuation_distance);
 	void set_ior(float ior);
+	void set_abbe(float abbe);
 
 	static size_t sample_size();
 
@@ -34,6 +35,7 @@ private:
 	float3 absorption_color_;
 	float attenuation_distance_;
 	float ior_;
+	float abbe_;
 };
 
 }

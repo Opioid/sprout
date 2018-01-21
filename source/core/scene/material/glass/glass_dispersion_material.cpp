@@ -28,6 +28,7 @@ const material::Sample& Glass_dispersion::sample(const float3& wo, const Renders
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
+	sample.set(abbe_, rs.wavelength);
 	sample.layer_.set(refraction_color_, absorption_color_, attenuation_distance_, ior_, rs.ior);
 
 	return sample;
@@ -55,6 +56,10 @@ void Glass_dispersion::set_attenuation_distance(float attenuation_distance) {
 
 void Glass_dispersion::set_ior(float ior) {
 	ior_ = ior;
+}
+
+void Glass_dispersion::set_abbe(float abbe) {
+	abbe_ = abbe;
 }
 
 size_t Glass_dispersion::sample_size() {

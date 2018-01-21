@@ -38,6 +38,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 		BSDF::refract(*this, layer_, sampler, result);
 		result.pdf *= 0.5f;
 	}
+
+	result.wavelength = 0.f;
 }
 
 bool Sample::is_transmissive() const {

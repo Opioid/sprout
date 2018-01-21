@@ -6,6 +6,7 @@
 #include "image/texture/texture_types.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
+#include "base/spectrum/discrete.hpp"
 #include <memory>
 #include <vector>
 
@@ -109,6 +110,20 @@ private:
 protected:
 
 	Texture_adapter mask_;
+
+public:
+
+	static void init_rainbow();
+
+	static float3 spectrum_at_wavelength(float lambda, float value = 1.f);
+
+	static constexpr uint32_t Num_bands = 16;
+
+	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
+
+private:
+
+	static float3 rainbow_[Num_bands];
 };
 
 using Material_ptr = std::shared_ptr<material::Material>;

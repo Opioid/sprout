@@ -40,6 +40,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float n_dot_wi = disney::Isotropic::reflect(wo_, n_dot_wo, layer_, sampler, result);
 
 	result.reflection *= n_dot_wi;
+
+	result.wavelength = 0.f;
 }
 
 float Sample::ior() const {

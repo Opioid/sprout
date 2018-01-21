@@ -44,8 +44,9 @@ namespace scene::material {
 Provider::Provider() :
 	resource::Provider<Material>("Material"),
 	fallback_material_(std::make_shared<debug::Material>(
-		Sampler_settings(Sampler_settings::Filter::Linear)))
-{}
+		Sampler_settings(Sampler_settings::Filter::Linear))) {
+	Material::init_rainbow();
+}
 
 Provider::~Provider() {}
 
@@ -296,6 +297,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	float3 absorption_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
+	float abbe = 0.f;
 	float roughness = 0.f;
 	float thickness = 0.f;
 
@@ -308,6 +310,8 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			attenuation_distance = json::read_float(n.value);
 		} else if ("ior" == n.name) {
 			ior = json::read_float(n.value);
+		} else if ("abbe" == n.name) {
+			abbe = json::read_float(n.value);
 		} else if ("roughness" == n.name) {
 			roughness = json::read_float(n.value);
 		} else if ("thickness" == n.name) {
@@ -354,6 +358,15 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			material->set_attenuation_distance(attenuation_distance);
 			material->set_ior(ior);
 			material->set_thickness(thickness);
+			return material;
+		} else if (abbe > 0.f) {
+			auto material = std::make_shared<glass::Glass_dispersion>(sampler_settings);
+			material->set_normal_map(normal_map);
+			material->set_refraction_color(refraction_color);
+			material->set_absorption_color(absorption_color);
+			material->set_attenuation_distance(attenuation_distance);
+			material->set_ior(ior);
+			material->set_abbe(abbe);
 			return material;
 		} else {
 			auto material = std::make_shared<glass::Glass>(sampler_settings);
