@@ -28,6 +28,18 @@ void Discrete_spectral_power_distribution<N>::set_bin(int32_t bin, float value) 
 }
 
 template<int32_t N>
+void Discrete_spectral_power_distribution<N>::set_at_wavelength(float lambda, float value) {
+	if (lambda < wavelengths_[0] || lambda > wavelengths_[N]) {
+		return;
+	}
+
+	uint32_t idx = 0;
+	for (idx = 0; lambda > wavelengths_[idx + 1]; idx++) {}
+
+	values_[idx] = value;
+}
+
+template<int32_t N>
 void Discrete_spectral_power_distribution<N>::clear(float s) {
 	for (uint32_t i = 0; i < N; ++i) {
 		values_[i] = s;

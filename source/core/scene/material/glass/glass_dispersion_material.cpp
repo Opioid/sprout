@@ -10,7 +10,7 @@
 namespace scene::material::glass {
 
 Glass_dispersion::Glass_dispersion(const Sampler_settings& sampler_settings) :
-	Material(sampler_settings, false) {}
+	Glass(sampler_settings) {}
 
 const material::Sample& Glass_dispersion::sample(const float3& wo, const Renderstate& rs,
 												 Sampler_filter filter,
@@ -28,7 +28,7 @@ const material::Sample& Glass_dispersion::sample(const float3& wo, const Renders
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
-	sample.set(abbe_, rs.wavelength);
+	sample.set(ior_, abbe_, rs.wavelength);
 	sample.layer_.set(refraction_color_, absorption_color_, attenuation_distance_, ior_, rs.ior);
 
 	return sample;
@@ -36,26 +36,6 @@ const material::Sample& Glass_dispersion::sample(const float3& wo, const Renders
 
 size_t Glass_dispersion::num_bytes() const {
 	return sizeof(*this);
-}
-
-void Glass_dispersion::set_normal_map(const Texture_adapter& normal_map) {
-	normal_map_ = normal_map;
-}
-
-void Glass_dispersion::set_refraction_color(const float3& color) {
-	refraction_color_ = color;
-}
-
-void Glass_dispersion::set_absorption_color(const float3& color) {
-	absorption_color_ = color;
-}
-
-void Glass_dispersion::set_attenuation_distance(float attenuation_distance) {
-	attenuation_distance_ = attenuation_distance;
-}
-
-void Glass_dispersion::set_ior(float ior) {
-	ior_ = ior;
 }
 
 void Glass_dispersion::set_abbe(float abbe) {

@@ -13,9 +13,9 @@ public:
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   const Worker& worker) const override;
 
-	virtual size_t num_bytes() const override final;
+	virtual size_t num_bytes() const override;
 
 	void set_normal_map(const Texture_adapter& normal_map);
 
@@ -26,7 +26,7 @@ public:
 
 	static size_t sample_size();
 
-private:
+protected:
 
 	Texture_adapter normal_map_;
 

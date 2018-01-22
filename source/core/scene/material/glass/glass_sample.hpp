@@ -5,7 +5,7 @@
 
 namespace scene::material::glass {
 
-class Sample final : public material::Sample {
+class Sample : public material::Sample {
 
 public:
 
@@ -17,7 +17,7 @@ public:
 
 	virtual float ior() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
 
 	virtual bool is_transmissive() const override final;
 
@@ -27,7 +27,7 @@ public:
 
 		float3 color_;
 		float3 absorption_coefficient_;
-		float ior_;
+		mutable float ior_;
 		float ior_outside_;
 	};
 

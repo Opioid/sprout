@@ -128,43 +128,42 @@ float3 Material::rainbow_[Num_bands];
 void Material::init_rainbow() {
 	Spectrum::init(380.f, 720.f);
 
-	const float start = Spectrum::start_wavelength();
-	const float end   = Spectrum::end_wavelength();
-	const float nb    = static_cast<float>(Num_bands);
+//	const float start = Spectrum::start_wavelength();
+//	const float end   = Spectrum::end_wavelength();
 
-	float3 sum_rgb(0.0f);
+	float3 sum_rgb(0.f);
 	for (uint32_t i = 0; i < Num_bands; ++i) {
-		const float wl = start + (end - start) * ((static_cast<float>(i) + 0.5f) / nb);
+	//	const float wl = start + (end - start) * ((static_cast<float>(i) + 0.5f) / nb);
 		Spectrum temp;
-//		temp.hack_SetAtWavelength(wl, 1.f);
-		temp.clear(0.f); temp.set_bin(i, 1.f);
+		temp.clear(0.f);
+	//	temp.set_at_wavelength(wl, 1.f);
+		temp.set_bin(i, 1.f);
 		const float3 rgb = spectrum::XYZ_to_linear_RGB(temp.normalized_XYZ());
 		rainbow_[i] = math::saturate(rgb);
 		sum_rgb += rgb;
 	}
 
+	constexpr float nb = static_cast<float>(Num_bands);
+
 	// now we hack-normalize it
 	for (uint32_t i = 0; i < Num_bands; ++i) {
-		rainbow_[i][0] *= (nb / sum_rgb[0]);
-		rainbow_[i][1] *= (nb / sum_rgb[1]);
-		rainbow_[i][2] *= (nb / sum_rgb[2]);
+		rainbow_[i][0] *= nb / sum_rgb[0];
+		rainbow_[i][1] *= nb / sum_rgb[1];
+		rainbow_[i][2] *= nb / sum_rgb[2];
 	}
 }
 
 float3 Material::spectrum_at_wavelength(float lambda, float value) {
 	const float start = Spectrum::start_wavelength();
 	const float end   = Spectrum::end_wavelength();
-	const float nb	  = static_cast<float>(Num_bands);
+	const float nb    = static_cast<float>(Num_bands);
 
-	const uint32_t idx = uint32_t(((lambda - start) / (end - start)) * nb);
+	const uint32_t idx = static_cast<uint32_t>(((lambda - start) / (end - start)) * nb);
 	if (idx >= Num_bands) {
 		return float3::identity();
 	} else {
-		return float3(
-			rainbow_[idx][0] * value * (1.f / 3.f),
-			rainbow_[idx][1] * value * (1.f / 3.f),
-			rainbow_[idx][2] * value * (1.f / 3.f)
-		);
+		const float weight = value * (1.f / 3.f);
+		return weight * rainbow_[idx];
 	}
 }
 

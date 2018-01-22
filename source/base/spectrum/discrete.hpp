@@ -19,6 +19,8 @@ public:
 
 	void set_bin(int32_t bin, float value);
 
+	void set_at_wavelength(float lambda, float value);
+
 	void clear(float s);
 
 	constexpr float3 XYZ() const;
