@@ -159,10 +159,10 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		if (requires_bounce) {
 			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
-			float3 tr;
-			const float3 vli = worker.volume_li(ray, tr);
+			float3 vtr;
+			const float3 vli = worker.volume_li(ray, vtr);
 			result += throughput * vli;
-			throughput *= tr;
+			throughput *= vtr;
 
 			if (!hit) {
 				break;
@@ -250,8 +250,8 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	// Important exceptions are the Specular and Transmission cases, which never come here.
 	float3 vtr;
 	const float3 vli = worker.volume_li(secondary_ray, vtr);
-	vtr *= ssstr;
 	result += weighted_reflection * vli;
+	vtr *= ssstr;
 	sample_result.reflection *= vtr;
 
 	SOFT_ASSERT(math::all_finite_and_positive(result));

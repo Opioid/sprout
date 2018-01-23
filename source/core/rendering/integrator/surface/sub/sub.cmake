@@ -4,6 +4,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/sub_integrator.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/sub_multiple_scattering.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/sub_multiple_scattering.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/sub_multiple_scattering2.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/sub_multiple_scattering2.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/sub_single_scattering.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/sub_single_scattering.hpp"
 	)

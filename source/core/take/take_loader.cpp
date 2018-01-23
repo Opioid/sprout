@@ -15,6 +15,7 @@
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/sub/sub_multiple_scattering.hpp"
+#include "rendering/integrator/surface/sub/sub_multiple_scattering2.hpp"
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/aerial_perspective.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
@@ -530,6 +531,8 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Multiple_scattering" == n.name) {
 			return std::make_unique<Multiple_scattering_factory>(settings, num_workers);
+		} else if ("Multiple_scattering2" == n.name) {
+			return std::make_unique<Multiple_scattering2_factory>(settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
 			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
 			return std::make_unique<Single_scattering_factory>(settings, num_workers, 
