@@ -50,10 +50,14 @@ public:
 
 private:
 
-	float3 estimate_direct_light(const Ray& ray, Intersection& intersection,
-								 const Material_sample& material_sample,
-								 Sampler_filter filter, Worker& worker,
-								 Bxdf_sample& sample_result, bool& requires_bounce);
+	float3 next_event(const Ray& ray, Intersection& intersection,
+					  const Material_sample& material_sample,
+					  Sampler_filter filter, Worker& worker,
+					  Bxdf_sample& sample_result, bool& requires_bounce);
+
+	float3 sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
+						 const Material_sample& material_sample,
+						 Sampler_filter filter, Worker& worker);
 
 	float3 evaluate_light(const Light& light, float light_weight, const Ray& history,
 						  float ray_offset, uint32_t sampler_dimension,

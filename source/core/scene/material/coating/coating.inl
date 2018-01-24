@@ -22,7 +22,7 @@ template<typename Layer>
 Result Clearcoat::evaluate(const float3& wi, const float3& wo, const float3& h,
 						   float wo_dot_h, float /*internal_ior*/, const Layer& layer) const {
 	const float n_dot_wi = layer.clamp_n_dot(wi);
-	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
+	const float n_dot_wo = layer.clamp_abs_n_dot(wo);
 
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
@@ -40,7 +40,7 @@ template<typename Layer>
 void Clearcoat::sample(const float3& wo, float /*internal_ior*/,
 					   const Layer& layer, sampler::Sampler& sampler,
 					   float3& attenuation, bxdf::Sample& result) const {
-	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
+	const float n_dot_wo = layer.clamp_abs_n_dot(wo);
 
 	const fresnel::Schlick_weighted schlick(f0_, weight_);
 
@@ -63,7 +63,7 @@ template<typename Layer>
 Result Thinfilm::evaluate(const float3& wi, const float3& wo, const float3& h,
 						  float wo_dot_h, float internal_ior, const Layer& layer) const {
 	const float n_dot_wi = layer.clamp_n_dot(wi);
-	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
+	const float n_dot_wo = layer.clamp_abs_n_dot(wo);
 
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
@@ -80,7 +80,7 @@ Result Thinfilm::evaluate(const float3& wi, const float3& wo, const float3& h,
 template<typename Layer>
 void Thinfilm::sample(const float3& wo, float internal_ior, const Layer& layer,
 					  sampler::Sampler& sampler, float3& attenuation, bxdf::Sample& result) const {
-	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
+	const float n_dot_wo = layer.clamp_abs_n_dot(wo);
 
 	const fresnel::Thinfilm_weighted thinfilm({ 1.f, ior_, internal_ior, thickness_ }, weight_);
 
