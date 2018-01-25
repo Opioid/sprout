@@ -11,6 +11,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_mis.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_mis.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_ng.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_ng.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/surface_integrator.cpp"

@@ -20,11 +20,18 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
 bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
 		// only handling reflection for now
-		return { float3::identity(), 0.f };
+	//	return { float3::identity(), 0.f };
+
+		const float n_dot_wi = layer_.clamp_reverse_n_dot(wi);
+
+	//	const float3 reflection = math::Pi_inv * color;
+		const float  pdf = n_dot_wi * math::Pi_inv;
+
+		return { float3(math::Pi_inv), pdf };
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
-	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_); //layer_.clamp_n_dot(wo_);
+	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
 	const float sint2 = (layer_.eta_i_ * layer_.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
