@@ -62,7 +62,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 	float eta_t = layer.ior_;
 
 	if (!sample.same_hemisphere(sample.wo_)) {
-		n *= -1.f;
+		n = -n;
 		eta_t = eta_i;
 		eta_i = layer.ior_;
 	}
@@ -98,7 +98,7 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 	float eta_t = layer.ior_;
 
 	if (!sample.same_hemisphere(sample.wo_)) {
-		n *= -1.f;
+		n = -n;
 		eta_t = eta_i;
 		eta_i = layer.ior_;
 	}

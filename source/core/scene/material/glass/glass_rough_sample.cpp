@@ -19,15 +19,52 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
 
 bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
-		// only handling reflection for now
-	//	return { float3::identity(), 0.f };
+		Layer tmp = layer_;
+		tmp.n_     = -layer_.n_;
+		tmp.ior_i_ = layer_.ior_o_;
+		tmp.ior_o_ = layer_.ior_i_;
+		tmp.eta_i_ = layer_.eta_t_;
+		tmp.eta_t_ = layer_.eta_i_;
 
-		const float n_dot_wi = layer_.clamp_reverse_n_dot(wi);
+		const float n_dot_wi = tmp.clamp_reverse_n_dot(wi);
 
-	//	const float3 reflection = math::Pi_inv * color;
-		const float  pdf = n_dot_wi * math::Pi_inv;
+		const float n_dot_wo = tmp.clamp_abs_n_dot(wo_);
 
-		return { float3(math::Pi_inv), pdf };
+		const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+
+		if (sint2 >= 1.f) {
+			return { float3::identity(), 0.f };
+		}
+
+		const float n_dot_t = std::sqrt(1.f - sint2);
+
+			// fresnel has to be the same value that would have been computed by BRDF
+		float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
+
+
+	//	const float3 wi = math::normalize((ior.eta_i_ * wo_dot_h - n_dot_t) * h - ior.eta_i_ * wo);
+
+		const float3 rwi = math::normalize((tmp.eta_t_ * -n_dot_wi - -n_dot_t) * tmp.n_ - tmp.eta_t_ * wi);
+
+		const float3 rwo = math::normalize((tmp.eta_i_ * n_dot_wo - n_dot_t) * tmp.n_ - tmp.eta_i_ * wo_);
+
+		const float3 thing = math::reflect(tmp.n_, rwo);
+
+		const float3 h = math::normalize(-wo_ + rwo);
+		const float3 h2 = math::normalize(rwo + wi);
+
+		const float wo_dot_h = clamp_dot(wo_, h);
+
+		const float wi_dot_h = clamp_reverse_dot(wi, h);
+
+		const float n_dot_h = math::saturate(math::dot(tmp.n_, h));
+
+		const fresnel::Constant constant(f);
+		const auto ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
+													tmp, constant);
+
+		return { n_dot_wi * ggx.reflection, 0.5f * ggx.pdf };
+
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
@@ -104,7 +141,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo())) {
-		tmp.n_	  *= -1.f;
+		tmp.n_	   = -layer.n_;
 		tmp.ior_i_ = layer.ior_o_;
 		tmp.ior_o_ = layer.ior_i_;
 		tmp.eta_i_ = layer.eta_t_;
@@ -139,7 +176,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo())) {
-		tmp.n_	  *= -1.f;
+		tmp.n_	   = -layer.n_;
 		tmp.ior_i_ = layer.ior_o_;
 		tmp.ior_o_ = layer.ior_i_;
 		tmp.eta_i_ = layer.eta_t_;

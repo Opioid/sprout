@@ -26,6 +26,8 @@ public:
 	void set_ior(float ior);
 	void set_roughness(float roughness);
 
+	bool has_absorption() const override final;
+
 	static size_t sample_size();
 
 protected:

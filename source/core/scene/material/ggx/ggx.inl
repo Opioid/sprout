@@ -283,27 +283,30 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 }
 
 template<typename Layer, typename Fresnel>
-bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
-								   float n_dot_wo, float /*n_dot_t*/, const Layer& layer,
-								   const Fresnel& fresnel) {
+bxdf::Result Isotropic::refraction(float n_dot_wi,
+								   float n_dot_wo, float wi_dot_h, float wo_dot_h, float n_dot_h,
+								   const Layer& layer, const Fresnel& fresnel) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
-	const float3 h = math::normalize(wo + wi);
-	const float wo_dot_h = clamp_dot(wo, h);
-	const float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
 	const float alpha2 = layer.alpha2_;
 	const float d = distribution_isotropic(n_dot_h, alpha2);
-	const float g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, alpha2);
-	const float3 f = fresnel(wo_dot_h);
+	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
+	const float3 f = float3(1.f) - fresnel(wo_dot_h);
 
-	const float3 reflection = (d * g) * (f * layer.color);
-	const float  pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+	const float3 refraction = d * g * f;
+	const float  pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);//(d * n_dot_h) / (4.f * wo_dot_h);
+
+	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
+
+	const float denom = math::pow2(layer.ior_o_ * wi_dot_h + layer.ior_i_ * wo_dot_h);
+
+	const float ior_i_2 = layer.ior_i_ * layer.ior_i_;
 
 	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
-	return { reflection, pdf };
+	return { factor * ((ior_i_2 * refraction) / denom), pdf };
 }
 
 template<typename Layer, typename Fresnel>

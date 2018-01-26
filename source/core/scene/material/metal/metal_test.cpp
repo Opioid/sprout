@@ -117,7 +117,7 @@ void Setup::test(const float3& wi, const float3& wo,
 
 	{
 		const auto result = sample.evaluate(wi);
-		print(result.reflection, result.pdf);
+		print(result);
 	}
 
 	bxdf::Sample result;

@@ -100,6 +100,10 @@ bool Material::is_volumetric() const {
 	return false;
 }
 
+bool Material::has_absorption() const {
+	return false;
+}
+
 uint32_t Material::sampler_key() const {
 	return sampler_key_;
 }

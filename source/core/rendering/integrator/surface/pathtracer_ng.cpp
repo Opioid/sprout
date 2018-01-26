@@ -160,10 +160,14 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (requires_bounce) {
 			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
-			float3 vtr;
-			const float3 vli = worker.volume_li(ray, vtr);
-			result += throughput * vli;
-			throughput *= vtr;
+		//	if (intersection.material()->has_absorption()) {
+		//		throughput *= rendering::attenuation(ray.max_t, material_sample.absorption_coefficient());
+		//	} else {
+				float3 vtr;
+				const float3 vli = worker.volume_li(ray, vtr);
+				result += throughput * vli;
+				throughput *= vtr;
+		//	}
 
 			if (!hit) {
 				break;
@@ -202,14 +206,18 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	material_sample.sample(material_sampler(ray.depth, ray.properties), sample_result);
 
 	// Those cases are handled outside
-	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
-//	requires_bounce = sample_result.type.test(Bxdf_type::Specular);
+//	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
+	requires_bounce = false;//sample_result.type.test(Bxdf_type::Specular);
 
 	if (requires_bounce || 0.f == sample_result.pdf) {
 		return result;
 	}
 
 	const bool is_translucent = material_sample.is_translucent();
+
+
+	const bool is_absorbing = intersection.material()->has_absorption()
+							&& !intersection.same_hemisphere(sample_result.wi);
 
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset, scene::Ray_max_t,
 					  ray.depth + 1, ray.time, ray.wavelength, ray.ior, ray.properties);
@@ -223,11 +231,18 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	// This might invalidate the contents of material_sample,
 	// so we must not use the sample after this point (e.g. in the calling function)!
 	// Important exceptions are the Specular and Transmission cases, which never come here.
-	float3 vtr;
-	const float3 vli = worker.volume_li(secondary_ray, vtr);
-	result += weighted_reflection * vli;
-	vtr *= ssstr;
-	sample_result.reflection *= vtr;
+	float3 vtr(1.f);
+
+	if (is_absorbing) {
+	//	if ((sample_result.type.test(Bxdf_type::Transmission) && math::dot(sample_result.wi, intersection.geo.geo_n) >= 0.f)
+		vtr = rendering::attenuation(secondary_ray.max_t, material_sample.absorption_coefficient());
+		sample_result.reflection *= vtr;
+	} else {
+		const float3 vli = worker.volume_li(secondary_ray, vtr);
+		result += weighted_reflection * vli;
+		vtr *= ssstr;
+		sample_result.reflection *= vtr;
+	}
 
 	SOFT_ASSERT(math::all_finite_and_positive(result));
 
@@ -240,17 +255,23 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 		return result;
 	}
 
-	auto light = worker.scene().light(light_id);
+	float light_pdf = 0.f;
 
-	if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
-		light.pdf = num_lights_reciprocal_;
-	}
+	if (!sample_result.type.test(Bxdf_type::Specular)) {
+		auto light = worker.scene().light(light_id);
 
-	const float ls_pdf = light.ref.pdf(secondary_ray, intersection.geo, is_translucent,
-									   Sampler_filter::Nearest, worker);
+		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
+			light.pdf = num_lights_reciprocal_;
+		}
 
-	if (0.f == ls_pdf) {
-		return result;
+		const float ls_pdf = light.ref.pdf(secondary_ray, intersection.geo, is_translucent,
+										   Sampler_filter::Nearest, worker);
+
+		if (0.f == ls_pdf) {
+			return result;
+		}
+
+		light_pdf = ls_pdf * light.pdf;
 	}
 
 	const float3 wo = -sample_result.wi;
@@ -262,7 +283,7 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	if (light_material_sample.same_hemisphere(wo)) {
 		const float3 ls_energy = vtr * light_material_sample.radiance();
 
-		const float weight = power_heuristic(sample_result.pdf, ls_pdf * light.pdf);
+		const float weight = power_heuristic(sample_result.pdf, light_pdf);
 
 		result += weight * (ls_energy * weighted_reflection);
 	}

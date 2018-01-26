@@ -76,6 +76,10 @@ void Glass_rough::set_roughness(float roughness) {
 	alpha_ = roughness * roughness;
 }
 
+bool Glass_rough::has_absorption() const {
+	return true;
+}
+
 size_t Glass_rough::sample_size() {
 	return sizeof(Sample_rough);
 }
