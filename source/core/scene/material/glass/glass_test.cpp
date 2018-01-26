@@ -3,9 +3,10 @@
 #include "glass_rough_sample.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_print.hpp"
+#include "scene/material/material_sample.inl"
 #include "sampler/sampler_random.hpp"
 #include "base/math/vector3.inl"
-#include "base/random/generator.hpp"
+#include "base/random/generator.inl"
 
 namespace scene::material::glass::testing {
 
