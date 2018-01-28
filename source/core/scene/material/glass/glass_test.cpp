@@ -25,7 +25,7 @@ void test() {
 
 	float3 wo;
 
-	wo = t;
+	wo = math::normalize(float3(0.25f, 0.25f, -0.5f));;
 	sample.set_basis(n, wo);
 	sample.layer_.set_tangent_frame(t, b, n);
 
@@ -87,7 +87,7 @@ void rough_refraction() {
 	float3 absorption_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
-	float roughness = ggx::Min_roughness;
+	float roughness = 0.9f;//ggx::Min_roughness;
 	float alpha = roughness * roughness;
 
 	sample.layer_.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f, alpha);

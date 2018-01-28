@@ -119,6 +119,10 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 
 	result.reflection = (1.f - f) * layer.color_;
 	result.wi = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
+
+
+	const float n_dot_wi = math::dot(result.wi, n);
+
 	result.pdf = 1.f;
 	result.type.clear(bxdf::Type::Specular_transmission);
 

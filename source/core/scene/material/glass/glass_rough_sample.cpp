@@ -11,6 +11,9 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene::material::glass {
 
 const material::Sample::Layer& Sample_rough::base_layer() const {
@@ -41,23 +44,33 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 			// fresnel has to be the same value that would have been computed by BRDF
 		float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
 
-
 	//	const float3 wi = math::normalize((ior.eta_i_ * wo_dot_h - n_dot_t) * h - ior.eta_i_ * wo);
 
-		const float3 rwi = math::normalize((tmp.eta_t_ * -n_dot_wi - -n_dot_t) * tmp.n_ - tmp.eta_t_ * wi);
 
-		const float3 rwo = math::normalize((tmp.eta_i_ * n_dot_wo - n_dot_t) * tmp.n_ - tmp.eta_i_ * wo_);
+		const float3 swi = math::normalize((tmp.eta_i_ * n_dot_wo - n_dot_t) * tmp.n_ - tmp.eta_i_ * wo_);
 
-		const float3 thing = math::reflect(tmp.n_, rwo);
+		const float wi_dot_swi = math::dot(wi, swi);
 
-		const float3 h = math::normalize(-wo_ + rwo);
-		const float3 h2 = math::normalize(rwo + wi);
+		const float3 swo = math::normalize((tmp.eta_i_ * -n_dot_wi - n_dot_t) * -tmp.n_ - tmp.eta_i_ * wi);
+
+		const float wo_dot_swo = math::dot(wo_, swo);
+
+		const float pre_calc_wo_dot_h = 0.817036331f;
+
+
+		const float3 h = math::normalize((wi + tmp.eta_i_ * wo_) / (tmp.eta_i_ * n_dot_wo - n_dot_t));
+	//	const float3 h = math::normalize((wi + tmp.eta_i_ * wo_) / (tmp.eta_i_ * pre_calc_wo_dot_h - n_dot_t));
+	//	const float3 h = float3(0.00700425f, -0.00560187f, -0.99996f);
+
 
 		const float wo_dot_h = clamp_dot(wo_, h);
 
 		const float wi_dot_h = clamp_reverse_dot(wi, h);
 
 		const float n_dot_h = math::saturate(math::dot(tmp.n_, h));
+
+		std::cout << "evaluate:" << std::endl;
+		std::cout << "h: " << h << std::endl;
 
 		const fresnel::Constant constant(f);
 		const auto ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,

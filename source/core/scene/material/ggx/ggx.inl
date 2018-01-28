@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_GGX_INL
+#define SU_CORE_SCENE_MATERIAL_GGX_INL
 
 #include "ggx.hpp"
 #include "ggx_test.hpp"
@@ -12,6 +13,9 @@
 
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
+
+#include <iostream>
+#include "base/math/print.hpp"
 
 namespace scene::material::ggx {
 
@@ -304,6 +308,16 @@ bxdf::Result Isotropic::refraction(float n_dot_wi,
 
 	const float ior_i_2 = layer.ior_i_ * layer.ior_i_;
 
+
+	std::cout << "evaluate:" << std::endl;
+//	std::cout << "h: " << h << std::endl;
+	std::cout << "d: " << d << std::endl;
+	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+	std::cout << "n_dot_h: " << n_dot_h << std::endl;
+	std::cout << "alpha2: " << alpha2 << std::endl;
+
+
 	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
 	return { factor * ((ior_i_2 * refraction) / denom), pdf };
@@ -384,6 +398,14 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 
 	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
 
+	std::cout << "sample:" << std::endl;
+	std::cout << "h: " << h << std::endl;
+	std::cout << "d: " << d << std::endl;
+	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+	std::cout << "n_dot_h: " << n_dot_h << std::endl;
+	std::cout << "alpha2: " << alpha2 << std::endl;
+
 	const float ior_i_2 = ior.ior_i_ * ior.ior_i_;
 	result.reflection = factor * ((ior_i_2 * refraction) / denom);
 	result.wi = wi;
@@ -460,3 +482,5 @@ float Anisotropic::reflect(const float3& wo, float n_dot_wo,
 }
 
 }
+
+#endif
