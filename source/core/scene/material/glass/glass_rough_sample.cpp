@@ -11,9 +11,6 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace scene::material::glass {
 
 const material::Sample::Layer& Sample_rough::base_layer() const {
@@ -22,8 +19,6 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
 
 bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
-	//	s
-	//	return { float3::identity(), 0.f };
 		Layer tmp = layer_;
 		tmp.n_     = -layer_.n_;
 		tmp.ior_i_ = layer_.ior_o_;
@@ -32,64 +27,25 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 		tmp.eta_t_ = layer_.eta_i_;
 
 		const float n_dot_wi = tmp.clamp_reverse_n_dot(wi);
-
 		const float n_dot_wo = tmp.clamp_abs_n_dot(wo_);
 
-		const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
-
-		if (sint2 >= 1.f) {
-			return { float3::identity(), 0.f };
-		}
-
-		const float n_dot_t = std::sqrt(1.f - sint2);
-
-			// fresnel has to be the same value that would have been computed by BRDF
-		float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
-
-		const float3 h = math::normalize(tmp.ior_o_ * wo_ + tmp.ior_i_ * wi);
-
-		const float wo_dot_h = clamp_dot(wo_, h);
-
-		const float wi_dot_h = clamp_reverse_dot(wi, h);
-
-		const float n_dot_h = math::saturate(math::dot(tmp.n_, h));
-
-	//	std::cout << "evaluate:" << std::endl;
-	//	std::cout << "h: " << h << std::endl;
-
-		const fresnel::Constant constant(f);
-		const auto ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
-													tmp, constant);
+		const fresnel::Schlick schlick(layer_.f0_);
+		const auto ggx = ggx::Isotropic::refraction(wi, wo_, n_dot_wi, n_dot_wo,
+													tmp, schlick);
 
 		return { n_dot_wi * ggx.reflection, 0.5f * ggx.pdf };
-
-	//	return { n_dot_wi * float3(1.f, 1.f, 1.f), 0.5f * ggx.pdf };
-
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
 	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-	const float sint2 = (layer_.eta_i_ * layer_.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
-
-	float f;
-	if (sint2 >= 1.f) {
-		f = 1.f;
-	} else {
-		const float n_dot_t = std::sqrt(1.f - sint2);
-
-		// fresnel has to be the same value that would have been computed by BRDF
-		f = fresnel::dielectric(n_dot_wo, n_dot_t, layer_.eta_i_, layer_.eta_t_);
-	}
-
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
-
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
-	const fresnel::Constant constant(f);
+	const fresnel::Schlick schlick(layer_.f0_);
 	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-												layer_, constant);
+												layer_, schlick);
 
 	return { n_dot_wi * ggx.reflection, 0.5f * ggx.pdf };
 }
@@ -134,7 +90,6 @@ void Sample_rough::Layer::set(const float3& refraction_color, const float3& abso
 							  float attenuation_distance, float ior,
 							  float ior_outside, float alpha) {
 	color_ = refraction_color;
-	f0_ = float3(fresnel::schlick_f0(ior_outside, ior));
 	absorption_coefficient_ = material::extinction_coefficient(absorption_color,
 															   attenuation_distance);
 	ior_i_ = ior;
@@ -143,6 +98,7 @@ void Sample_rough::Layer::set(const float3& refraction_color, const float3& abso
 	eta_t_ = ior / ior_outside;
 	sqrt_eta_i = std::sqrt(eta_i_);
 	sqrt_eta_t = std::sqrt(eta_t_);
+	f0_ = fresnel::schlick_f0(ior_outside, ior);
 	alpha_ = alpha;
 	alpha2_ = alpha * alpha;
 }
@@ -179,7 +135,8 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 												   constant, sampler, result);
 */
 
-	const fresnel::Schlick_refract schlick(layer.f0_, tmp.sqrt_eta_t);
+	//const fresnel::Schlick_refract schlick(f0, tmp.sqrt_eta_t);
+	const fresnel::Schlick schlick(layer.f0_);
 	const float n_dot_wi = ggx::Isotropic::reflect_internally(sample.wo(), n_dot_wo, tmp, tmp,
 															  schlick, sampler, result);
 
@@ -226,6 +183,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo());
 
 //	const fresnel::Schlick_refract schlick(layer.f0_, tmp.sqrt_eta_t);
+
 	const fresnel::Schlick schlick(layer.f0_);
 	const float n_dot_wi = ggx::Isotropic::refract(sample.wo(), n_dot_wo, tmp,
 												   schlick, sampler, result);

@@ -30,12 +30,12 @@ public:
 				 float attenuation_distance, float ior, float ior_outside, float alpha);
 
 		float3 color_;
-		float3 f0_;
 		float3 absorption_coefficient_;
 		float ior_i_;
 		float ior_o_;
 		float eta_i_;
 		float eta_t_;
+		float f0_;
 		float sqrt_eta_i;
 		float sqrt_eta_t;
 		float alpha_;

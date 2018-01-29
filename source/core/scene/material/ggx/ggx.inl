@@ -348,7 +348,8 @@ float Isotropic::reflect_internally(const float3& wo, float n_dot_wo, const Laye
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 	const float2 g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
-	const float3 f = (sint2 >= 1.f) ? float3(1.f) : fresnel(ior.ior_i_ > ior.ior_o_ ? n_dot_t : wo_dot_h);
+	const float cos_x = ior.ior_o_ > ior.ior_i_ ? n_dot_t : wo_dot_h;
+	const float3 f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
 
 	result.reflection = d * g[0] * f;
 	result.wi = wi;
@@ -360,6 +361,64 @@ float Isotropic::reflect_internally(const float3& wo, float n_dot_wo, const Laye
 	SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
 
 	return n_dot_wi;
+}
+
+template<typename Layer, typename Fresnel>
+bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo,
+								   float n_dot_wi, float n_dot_wo,
+								   const Layer& layer, const Fresnel& fresnel) {
+	// Roughness zero will always have zero specular term (or worse NaN)
+	SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
+
+	const float3 h = math::normalize(layer.ior_o_ * wo + layer.ior_i_ * wi);
+
+	const float wo_dot_h = clamp_dot(wo, h);
+
+	const float sint2 = (layer.eta_i_ * layer.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
+
+	if (sint2 >= 1.f) {
+		return { float3::identity(), 0.f };
+	}
+
+	const float n_dot_t = std::sqrt(1.f - sint2);
+
+	const float wi_dot_h = clamp_reverse_dot(wi, h);
+
+	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
+
+	const float alpha2 = layer.alpha2_;
+	const float d = distribution_isotropic(n_dot_h, alpha2);
+	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
+	const float cos_x = layer.ior_o_ > layer.ior_i_ ? n_dot_t : wo_dot_h;
+	const float3 f = float3(1.f) - fresnel(cos_x);
+
+	const float3 refraction = d * g * f;
+	const float  pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
+
+	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
+
+	const float denom = math::pow2(layer.ior_o_ * wi_dot_h + layer.ior_i_ * wo_dot_h);
+
+	const float ior_i_2 = layer.ior_i_ * layer.ior_i_;
+
+	const float3 reflection = factor * ((ior_i_2 * refraction) / denom);
+
+//	std::cout << "evaluate:" << std::endl;
+//	std::cout << "h: " << h << std::endl;
+//	std::cout << "d: " << d << std::endl;
+//	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+//	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+//	std::cout << "n_dot_h: " << n_dot_h << std::endl;
+//	std::cout << "alpha2: " << alpha2 << std::endl;
+//	std::cout << "fresnel: " << f << std::endl;
+//	std::cout << "factor: " << factor << std::endl;
+//	std::cout << "ior_i_2: " << ior_i_2 << std::endl;
+//	std::cout << "refraction: " << refraction << std::endl;
+//	std::cout << "denom: " << denom << std::endl;
+
+	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
+
+	return { reflection, pdf };
 }
 
 template<typename Layer, typename Fresnel>
@@ -385,13 +444,13 @@ bxdf::Result Isotropic::refraction(float n_dot_wi,
 	const float ior_i_2 = layer.ior_i_ * layer.ior_i_;
 
 
-	std::cout << "evaluate:" << std::endl;
+//	std::cout << "evaluate:" << std::endl;
 //	std::cout << "h: " << h << std::endl;
-	std::cout << "d: " << d << std::endl;
-	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
-	std::cout << "n_dot_h: " << n_dot_h << std::endl;
-	std::cout << "alpha2: " << alpha2 << std::endl;
+//	std::cout << "d: " << d << std::endl;
+//	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+//	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+//	std::cout << "n_dot_h: " << n_dot_h << std::endl;
+//	std::cout << "alpha2: " << alpha2 << std::endl;
 
 
 	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
@@ -486,13 +545,29 @@ float Isotropic::refract(const float3& wo, float n_dot_wo,
 	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 //	const float og1_wo = G_ggx(n_dot_wo, alpha2);
 //	const float g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
-	const float3 f = float3(1.f) - fresnel(ior.ior_i_ > ior.ior_o_ ? n_dot_t : wo_dot_h);
+	const float3 f = float3(1.f) - fresnel(ior.ior_o_ > ior.ior_i_ ? n_dot_t : wo_dot_h);
+
+//	const float3 f = float3(1.f) - fresnel(n_dot_t);
 
 	const float3 refraction = d * g * f;
 
 	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
 	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
+
+	const float ior_i_2 = ior.ior_i_ * ior.ior_i_;
+	result.reflection = factor * ((ior_i_2 * refraction) / denom);
+	result.wi = wi;
+	result.h = h;
+	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
+	result.h_dot_wi = wo_dot_h;
+	result.type.clear(bxdf::Type::Glossy_transmission);
+
+	SOFT_ASSERT(testing::check(result, wo, layer));
+
+
+
+
 
 //	std::cout << "sample:" << std::endl;
 //	std::cout << "h: " << h << std::endl;
@@ -501,17 +576,14 @@ float Isotropic::refract(const float3& wo, float n_dot_wo,
 //	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
 //	std::cout << "n_dot_h: " << n_dot_h << std::endl;
 //	std::cout << "alpha2: " << alpha2 << std::endl;
+//	std::cout << "fresnel: " << f << std::endl;
+//	std::cout << "factor: " << factor << std::endl;
+//	std::cout << "ior_i_2: " << ior_i_2 << std::endl;
+//	std::cout << "refraction: " << refraction << std::endl;
+//	std::cout << "denom: " << denom << std::endl;
 
-	const float ior_i_2 = ior.ior_i_ * ior.ior_i_;
-	result.reflection = factor * ((ior_i_2 * refraction) / denom);
-	result.wi = wi;
-	result.h = h;
-//	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
-	result.h_dot_wi = wo_dot_h;
-	result.type.clear(bxdf::Type::Glossy_transmission);
 
-	SOFT_ASSERT(testing::check(result, wo, layer));
+
 
 	return n_dot_wi;
 }
@@ -582,9 +654,9 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 
 	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
 
-//	std::cout << "sample:" << std::endl;
-//	std::cout << "h: " << h << std::endl;
-//	std::cout << "d: " << d << std::endl;
+	std::cout << "sample:" << std::endl;
+	std::cout << "h: " << h << std::endl;
+	std::cout << "d: " << d << std::endl;
 //	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
 //	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
 //	std::cout << "n_dot_h: " << n_dot_h << std::endl;

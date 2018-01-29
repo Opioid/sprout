@@ -87,7 +87,7 @@ void rough_refraction() {
 	float3 absorption_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
-	float roughness = 1.f;//ggx::Min_roughness;
+	float roughness = 0.5f;//ggx::Min_roughness;
 	float alpha = roughness * roughness;
 
 	sample.layer_.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f, alpha);
@@ -96,7 +96,8 @@ void rough_refraction() {
 	result.wi = float3::identity();
 	result.reflection = float3::identity();
 
-	Sample_rough::BSDF::refract(sample, sample.layer_, sampler, result);
+	float n_dot_wi = Sample_rough::BSDF::refract(sample, sample.layer_, sampler, result);
+	result.reflection *= n_dot_wi;
 	print(result);
 
 
