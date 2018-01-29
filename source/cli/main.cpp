@@ -48,7 +48,7 @@ static bool is_json(const std::string& text);
 int main(int argc, char* argv[]) {
 //	scene::material::substitute::testing::test();
 //	scene::material::glass::testing::test();
-	scene::material::glass::testing::rough_refraction();
+//	scene::material::glass::testing::rough_refraction();
 //	testing::size();
 //	testing::simd::rsqrt();
 //	testing::simd::rcp();
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 //	testing::spectrum();
 //	testing::cdf::test_1D();
 
-	return 1;
+//	return 1;
 
 	logging::init(logging::Type::Std_out);
 

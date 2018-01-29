@@ -56,10 +56,6 @@ void Glass::set_ior(float ior) {
 	ior_ = ior;
 }
 
-bool Glass::has_absorption() const {
-	return true;
-}
-
 size_t Glass::sample_size() {
 	return sizeof(Sample);
 }

@@ -89,8 +89,6 @@ public:
 
 	virtual bool is_volumetric() const;
 
-	virtual bool has_absorption() const;
-
 	uint32_t sampler_key() const;
 
 	virtual bool is_masked() const;

@@ -24,8 +24,6 @@ public:
 	void set_attenuation_distance(float attenuation_distance);
 	void set_ior(float ior);
 
-	bool has_absorption() const override final;
-
 	static size_t sample_size();
 
 protected:

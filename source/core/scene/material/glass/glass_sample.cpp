@@ -46,6 +46,10 @@ bool Sample::is_transmissive() const {
 	return true;
 }
 
+bool Sample::is_absorbing() const {
+	return true;
+}
+
 void Sample::Layer::set(const float3& refraction_color, const float3& absorption_color,
 						float attenuation_distance, float ior, float ior_outside) {
 	color_ = refraction_color;

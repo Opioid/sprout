@@ -215,8 +215,7 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	const bool is_translucent = material_sample.is_translucent();
 
-
-	const bool is_absorbing = intersection.material()->has_absorption()
+	const bool is_absorbing = material_sample.is_absorbing()
 							&& !intersection.same_hemisphere(sample_result.wi);
 
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset, scene::Ray_max_t,
@@ -234,7 +233,6 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	float3 vtr(1.f);
 
 	if (is_absorbing) {
-	//	if ((sample_result.type.test(Bxdf_type::Transmission) && math::dot(sample_result.wi, intersection.geo.geo_n) >= 0.f)
 		vtr = rendering::attenuation(secondary_ray.max_t, material_sample.absorption_coefficient());
 		sample_result.reflection *= vtr;
 	} else {
@@ -257,7 +255,9 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	float light_pdf = 0.f;
 
-	if (!sample_result.type.test(Bxdf_type::Specular)) {
+	const bool no_mis = sample_result.type.test(Bxdf_type::Specular/*, Bxdf_type::Transmission*/);
+
+	if (!no_mis) {
 		auto light = worker.scene().light(light_id);
 
 		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {

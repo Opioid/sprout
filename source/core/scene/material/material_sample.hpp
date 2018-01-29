@@ -59,6 +59,8 @@ public:
 
 	virtual bool is_sss() const;
 
+	virtual bool is_absorbing() const;
+
 	const float3& wo() const;
 
 	float clamp_geo_n_dot(const float3& v) const;

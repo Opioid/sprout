@@ -79,6 +79,10 @@ inline bool Sample::is_sss() const {
 	return false;
 }
 
+inline bool Sample::is_absorbing() const {
+	return false;
+}
+
 inline const float3& Sample::wo() const {
 	return wo_;
 }
