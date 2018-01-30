@@ -71,8 +71,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f); //math::saturate(math::dot(n, sample.wo_));
-
+	const float n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f);
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
@@ -107,7 +106,7 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f); //math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f);
 
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -123,9 +122,6 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 
 	result.reflection = (1.f - f) * layer.color_;
 	result.wi = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
-
-
-	const float n_dot_wi = math::dot(result.wi, n);
 
 	result.pdf = 1.f;
 	result.type.clear(bxdf::Type::Specular_transmission);

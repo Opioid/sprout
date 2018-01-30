@@ -140,6 +140,9 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 	const float n_dot_wi = ggx::Isotropic::reflect_internally(sample.wo(), n_dot_wo, tmp, tmp,
 															  schlick, sampler, result);
 
+//	const float n_dot_wi = ggx::Isotropic::reflect(sample.wo(), n_dot_wo, tmp,
+//												   schlick, sampler, result);
+
 	SOFT_ASSERT(testing::check(result, sample.wo(), layer));
 
 	return n_dot_wi;
