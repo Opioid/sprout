@@ -18,52 +18,6 @@ private:
 	const float3 f0_;
 };
 
-class Schlick_refract {
-
-public:
-
-	Schlick_refract(float f0, float sqrt_eta);
-	Schlick_refract(const float3& f0, float sqrt_eta);
-
-	float3 operator()(float wo_dot_h) const;
-
-private:
-
-	const float3 f0_;
-	const float sqrt_eta_;
-};
-
-class Schlick_conditional {
-
-public:
-
-	Schlick_conditional(float f0, bool full);
-	Schlick_conditional(const float3& f0, bool full);
-
-	float3 operator()(float wo_dot_h) const;
-
-private:
-
-	const float3 f0_;
-	const bool full_;
-};
-
-class Schlick_refract_conditional {
-
-public:
-
-	Schlick_refract_conditional(float f0, float sqrt_eta, bool full);
-	Schlick_refract_conditional(const float3& f0, float sqrt_eta, bool full);
-
-	float3 operator()(float wo_dot_h) const;
-
-private:
-
-	const float3 f0_;
-	const float sqrt_eta_;
-	const bool full_;
-};
-
 class Schlick_blending {
 
 public:

@@ -40,7 +40,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 		}
 	} else {
 		Layer tmp_layer = layer_;
-		tmp_layer.n_ *= -1.f;
+		tmp_layer.n_ = -layer_.n_;
 
 		if (p < 0.5f) {
 			refract(same_side, tmp_layer, sampler, result);
@@ -80,30 +80,16 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 		tmp_ior.ior_i_ = ior_.ior_i_;
 		tmp_ior.ior_o_ = ior_.ior_o_;
 		tmp_ior.eta_i_ = ior_.eta_i_;
-	//	tmp_ior.eta_t_ = ior_.eta_t_;
-		tmp_ior.sqrt_eta_t = ior_.sqrt_eta_t;
 	} else {
 		tmp_ior.ior_i_ = ior_.ior_o_;
 		tmp_ior.ior_o_ = ior_.ior_i_;
 		tmp_ior.eta_i_ = ior_.eta_t_;
-	//	tmp_ior.eta_t_ = ior_.eta_i_;
-		tmp_ior.sqrt_eta_t = ior_.sqrt_eta_i;
 	}
 
 	const float n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-	const float sint2 = (tmp_ior.eta_i_ * tmp_ior.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
-
-	if (sint2 >= 1.f) {
-		result.pdf = 0.f;
-		return;
-	}
-
-	const float n_dot_t = std::sqrt(1.f - sint2);
-
-	// fresnel has to be the same value that would have been computed by BRDF
-	const fresnel::Schlick_refract schlick(layer.f0_, tmp_ior.sqrt_eta_t);
-	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, n_dot_t, layer, tmp_ior,
+	const fresnel::Schlick schlick(layer.f0_);
+	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, tmp_ior,
 												   schlick, sampler, result);
 
 	result.reflection *= n_dot_wi;
@@ -111,25 +97,23 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 
 void Sample_subsurface::reflect_internally(bool same_side, const Layer& layer,
 										   sampler::Sampler& sampler, bxdf::Sample& result) const {
-	float eta_i;
-	float sqrt_eta_t;
+	IOR tmp_ior;
 
 	if (same_side) {
-		eta_i = ior_.eta_i_;
-		sqrt_eta_t = ior_.sqrt_eta_t;
+		tmp_ior.ior_i_ = ior_.ior_i_;
+		tmp_ior.ior_o_ = ior_.ior_o_;
+		tmp_ior.eta_i_ = ior_.eta_i_;
 	} else {
-		eta_i = ior_.eta_t_;
-		sqrt_eta_t = ior_.sqrt_eta_i;
+		tmp_ior.ior_i_ = ior_.ior_o_;
+		tmp_ior.ior_o_ = ior_.ior_i_;
+		tmp_ior.eta_i_ = ior_.eta_t_;
 	}
 
 	const float n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
-
-	const fresnel::Schlick_refract_conditional schlick(layer.f0_, sqrt_eta_t, sint2 > 1.f);
-
-	const float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer,
-												   schlick, sampler, result);
+	const fresnel::Schlick schlick(layer.f0_);
+	const float n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, tmp_ior,
+															  schlick, sampler, result);
 
 	SOFT_ASSERT(testing::check(result, wo_, layer));
 

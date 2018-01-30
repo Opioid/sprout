@@ -36,8 +36,6 @@ public:
 		float eta_i_;
 		float eta_t_;
 		float f0_;
-		float sqrt_eta_i;
-		float sqrt_eta_t;
 		float alpha_;
 		float alpha2_;
 	};

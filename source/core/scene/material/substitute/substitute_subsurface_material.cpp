@@ -86,12 +86,8 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 
 	ior_.ior_i_ = ior;
 	ior_.ior_o_ = external_ior;
-	const float eta_i = external_ior / ior;
-	const float eta_t = ior / external_ior;
-	ior_.eta_i_ = eta_i;
-	ior_.eta_t_ = eta_t;
-	ior_.sqrt_eta_i = fresnel::schlick_sqrt_eta(eta_i);
-	ior_.sqrt_eta_t = fresnel::schlick_sqrt_eta(eta_t);
+	ior_.eta_i_ = external_ior / ior;
+	ior_.eta_t_ = ior / external_ior;
 }
 
 size_t Material_subsurface::sample_size() {

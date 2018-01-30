@@ -539,7 +539,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo,
 	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 //	const float2 g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 
-	const float cos_x = layer.ior_o_ > layer.ior_i_ ? wi_dot_h : wo_dot_h;
+	const float cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
 	const float3 f = float3(1.f) - fresnel(cos_x);
 
 	const float3 refraction = d * g * f;
@@ -648,9 +648,9 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 
 	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
 
-	std::cout << "sample:" << std::endl;
-	std::cout << "h: " << h << std::endl;
-	std::cout << "d: " << d << std::endl;
+//	std::cout << "sample:" << std::endl;
+//	std::cout << "h: " << h << std::endl;
+//	std::cout << "d: " << d << std::endl;
 //	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
 //	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
 //	std::cout << "n_dot_h: " << n_dot_h << std::endl;

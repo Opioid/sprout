@@ -96,8 +96,6 @@ void Sample_rough::Layer::set(const float3& refraction_color, const float3& abso
 	ior_o_ = ior_outside;
 	eta_i_ = ior_outside / ior;
 	eta_t_ = ior / ior_outside;
-	sqrt_eta_i = std::sqrt(eta_i_);
-	sqrt_eta_t = std::sqrt(eta_t_);
 	f0_ = fresnel::schlick_f0(ior_outside, ior);
 	alpha_ = alpha;
 	alpha2_ = alpha * alpha;
@@ -113,35 +111,13 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 		tmp.ior_o_ = layer.ior_i_;
 		tmp.eta_i_ = layer.eta_t_;
 		tmp.eta_t_ = layer.eta_i_;
-		tmp.sqrt_eta_t = layer.sqrt_eta_i;
 	}
 
 	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo()); //tmp.clamp_n_dot(sample.wo());
-/*
-	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
-	float f;
-	if (sint2 >= 1.f) {
-		f = 1.f;
-	} else {
-		const float n_dot_t = std::sqrt(1.f - sint2);
-
-		// fresnel has to be the same value that would have been computed by BRDF
-		f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
-	}
-
-	const fresnel::Constant constant(f);
-	const float n_dot_wi = ggx::Isotropic::reflect(sample.wo(), n_dot_wo, tmp,
-												   constant, sampler, result);
-*/
-
-	//const fresnel::Schlick_refract schlick(f0, tmp.sqrt_eta_t);
 	const fresnel::Schlick schlick(layer.f0_);
 	const float n_dot_wi = ggx::Isotropic::reflect_internally(sample.wo(), n_dot_wo, tmp, tmp,
 															  schlick, sampler, result);
-
-//	const float n_dot_wi = ggx::Isotropic::reflect(sample.wo(), n_dot_wo, tmp,
-//												   schlick, sampler, result);
 
 	SOFT_ASSERT(testing::check(result, sample.wo(), layer));
 
@@ -158,40 +134,14 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 		tmp.ior_o_ = layer.ior_i_;
 		tmp.eta_i_ = layer.eta_t_;
 		tmp.eta_t_ = layer.eta_i_;
-		tmp.sqrt_eta_t = layer.sqrt_eta_i;
 	}
-/*
-	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo()); //tmp.clamp_n_dot(sample.wo());
-
-	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
-
-	if (sint2 >= 1.f) {
-		result.pdf = 0.f;
-		return 0.f;
-	}
-
-	const float n_dot_t = std::sqrt(1.f - sint2);
-
-	// fresnel has to be the same value that would have been computed by BRDF
-	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
-
-	const fresnel::Constant constant(f);
-	const float n_dot_wi = ggx::Isotropic::refract(sample.wo(), n_dot_wo, n_dot_t, tmp,
-												   constant, sampler, result);
-*/
-
-
-
 
 	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo());
-
-//	const fresnel::Schlick_refract schlick(layer.f0_, tmp.sqrt_eta_t);
 
 	const fresnel::Schlick schlick(layer.f0_);
 	const float n_dot_wi = ggx::Isotropic::refract(sample.wo(), n_dot_wo, tmp,
 												   schlick, sampler, result);
-
-
+\
 	result.reflection *= layer.color_;
 
 	SOFT_ASSERT(testing::check(result, sample.wo(), layer));

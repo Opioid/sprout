@@ -22,8 +22,6 @@ public:
 		float ior_o_;
 		float eta_i_;
 		float eta_t_;
-		float sqrt_eta_i;
-		float sqrt_eta_t;
 	};
 
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
