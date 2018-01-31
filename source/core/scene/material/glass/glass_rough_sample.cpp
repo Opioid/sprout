@@ -30,8 +30,7 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 		const float n_dot_wo = tmp.clamp_abs_n_dot(wo_);
 
 		const fresnel::Schlick schlick(layer_.f0_);
-		const auto ggx = ggx::Isotropic::refraction(wi, wo_, n_dot_wi, n_dot_wo,
-													tmp, schlick);
+		const auto ggx = ggx::Isotropic::refraction(wi, wo_, n_dot_wi, n_dot_wo, tmp, schlick);
 
 		return { n_dot_wi * ggx.reflection, 0.5f * ggx.pdf };
 	}
@@ -113,7 +112,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 		tmp.eta_t_ = layer.eta_i_;
 	}
 
-	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo()); //tmp.clamp_n_dot(sample.wo());
+	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo());
 
 	const fresnel::Schlick schlick(layer.f0_);
 	const float n_dot_wi = ggx::Isotropic::reflect_internally(sample.wo(), n_dot_wo, tmp, tmp,
