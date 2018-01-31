@@ -141,7 +141,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	const fresnel::Schlick schlick(layer.f0_);
 	const float n_dot_wi = ggx::Isotropic::refract(sample.wo(), n_dot_wo, tmp,
 												   schlick, sampler, result);
-\
+
 	result.reflection *= layer.color_;
 
 	SOFT_ASSERT(testing::check(result, sample.wo(), layer));
