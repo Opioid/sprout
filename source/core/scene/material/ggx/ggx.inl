@@ -115,10 +115,16 @@ static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float a
 	return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
 }
 
-static inline float pdf_visible(float d, float og1_wo) {
+static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d, float alpha2) {
+	const float g1 = G_ggx(n_dot_wo, alpha2);
+
+	return (g1 * wo_dot_h * d / n_dot_wo);
+}
+
+static inline float pdf_visible(float d, float g1_wo) {
 //	return (0.25f * g1_wo * d) / n_dot_wo;
 
-	return (0.5f * d) / og1_wo;
+	return (0.5f * d) / g1_wo;
 }
 
 template<typename Layer, typename Fresnel>
@@ -340,7 +346,7 @@ float Isotropic::reflect_internally(const float3& wo, float n_dot_wo, const Laye
 
 	const float sint2 = (ior.eta_i_ * ior.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
 
-	const float n_dot_t = std::sqrt(1.f - sint2);
+	const float wi_dot_h = std::sqrt(1.f - sint2);
 
 	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
 
@@ -348,14 +354,14 @@ float Isotropic::reflect_internally(const float3& wo, float n_dot_wo, const Laye
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 	const float2 g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
-	const float cos_x = ior.ior_o_ > ior.ior_i_ ? n_dot_t : wo_dot_h;
+	const float cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
 	const float3 f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
 
 	result.reflection = d * g[0] * f;
 	result.wi = wi;
 	result.h = h;
 	result.pdf = pdf_visible(d, g[1]);
-	result.h_dot_wi = wo_dot_h;
+	result.h_dot_wi = wi_dot_h;
 	result.type.clear(bxdf::Type::Glossy_reflection);
 
 	SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
@@ -381,8 +387,8 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float wi_dot_h = std::sqrt(1.f - sint2);
 
-//	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
-	const float n_dot_h = std::abs(math::dot(layer.n_, h));
+	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
+//	const float n_dot_h = std::abs(math::dot(layer.n_, h));
 
 
 
@@ -393,15 +399,19 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 	const float3 f = float3(1.f) - fresnel(cos_x);
 
 	const float3 refraction = d * g * f;
-	const float  pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
+//	const float  pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
 
 	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	const float denom = math::pow2(layer.ior_o_ * wi_dot_h + layer.ior_i_ * wo_dot_h);
+	const float denom = math::pow2(layer.ior_i_ * wi_dot_h + layer.ior_o_ * wo_dot_h);
 
-	const float ior_i_2 = layer.ior_i_ * layer.ior_i_;
+	const float sqr_ior_i = layer.ior_i_ * layer.ior_i_;
 
-	const float3 reflection = (layer.eta_i_ * layer.eta_i_) * factor * ((ior_i_2 * refraction) / denom);
+	const float3 reflection = factor * ((sqr_ior_i * refraction) / denom);
+
+
+	const float  pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_ior_i / denom);
+
 
 //	std::cout << "evaluate:" << std::endl;
 //	std::cout << "h: " << h << std::endl;
@@ -497,17 +507,19 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 	const float3 f = float3(1.f) - fresnel(cos_x);
 
 	const float3 refraction = d * g * f;
+//	const float3 refraction = d * g[0] * f;
 
 	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
+	const float denom = math::pow2(ior.ior_i_ * wi_dot_h + ior.ior_o_ * wo_dot_h);
 
 	const float sqr_ior_i = ior.ior_i_ * ior.ior_i_;
 
 	result.reflection = (ior.eta_i_ * ior.eta_i_) * factor * sqr_ior_i * refraction / denom;
 	result.wi = wi;
 	result.h = h;
-	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
+//	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
+	result.pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_ior_i / denom);
 	result.h_dot_wi = wi_dot_h;
 	result.type.clear(bxdf::Type::Glossy_transmission);
 
