@@ -79,7 +79,7 @@ void rough_refraction() {
 
 	float3 wo;
 
-	wo = math::normalize(float3(0.25f, 0.25f, -0.5f));
+	wo = math::normalize(float3(0.25f, 0.1f, -0.5f));
 	sample.set_basis(n, wo);
 	sample.layer_.set_tangent_frame(t, b, n);
 
@@ -98,11 +98,13 @@ void rough_refraction() {
 
 	float n_dot_wi = Sample_rough::BSDF::refract(sample, sample.layer_, sampler, result);
 	result.reflection *= n_dot_wi;
+	result.pdf *= 0.5f;
 	print(result);
 
-
-	bxdf::Result eval = sample.evaluate(result.wi);
-	print(eval);
+	if (result.pdf > 0.f) {
+		bxdf::Result eval = sample.evaluate(result.wi);
+		print(eval);
+	}
 }
 
 }

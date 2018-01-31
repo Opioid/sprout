@@ -27,12 +27,13 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 		tmp.eta_t_ = layer_.eta_i_;
 
 		const float n_dot_wi = tmp.clamp_reverse_n_dot(wi);
+//		const float n_dot_wi = tmp.clamp_abs_n_dot(wi);
 		const float n_dot_wo = tmp.clamp_abs_n_dot(wo_);
 
 		const fresnel::Schlick schlick(layer_.f0_);
 		const auto ggx = ggx::Isotropic::refraction(wi, wo_, n_dot_wi, n_dot_wo, tmp, schlick);
 
-		return { n_dot_wi * ggx.reflection, 0.5f * ggx.pdf };
+		return { n_dot_wi * ggx.reflection * layer_.color_, 0.5f * ggx.pdf };
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);

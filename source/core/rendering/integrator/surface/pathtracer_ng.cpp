@@ -233,8 +233,8 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	float3 vtr(1.f);
 
 	if (is_absorbing) {
-		vtr = rendering::attenuation(secondary_ray.max_t, material_sample.absorption_coefficient());
-		sample_result.reflection *= vtr;
+	//	vtr = rendering::attenuation(secondary_ray.max_t, material_sample.absorption_coefficient());
+	//	sample_result.reflection *= vtr;
 	} else {
 		const float3 vli = worker.volume_li(secondary_ray, vtr);
 		result += weighted_reflection * vli;

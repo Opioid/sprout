@@ -377,7 +377,8 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float3 h = math::normalize(layer.ior_o_ * wo + layer.ior_i_ * wi);
 
-	const float wo_dot_h = clamp_dot(wo, h);
+//	const float wo_dot_h = clamp_dot(wo, h);
+	const float wo_dot_h = std::abs(math::dot(wo, h));
 
 	const float sint2 = (layer.eta_i_ * layer.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
 
@@ -387,8 +388,8 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float wi_dot_h = std::sqrt(1.f - sint2);
 
-	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
-//	const float n_dot_h = std::abs(math::dot(layer.n_, h));
+//	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
+	const float n_dot_h = std::abs(math::dot(layer.n_, h));
 
 
 
@@ -403,14 +404,14 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	const float denom = math::pow2(layer.ior_i_ * wi_dot_h + layer.ior_o_ * wo_dot_h);
+	const float denom = math::pow2(layer.ior_o_ * wi_dot_h + layer.ior_i_ * wo_dot_h);
 
 	const float sqr_ior_i = layer.ior_i_ * layer.ior_i_;
 
-	const float3 reflection = factor * ((sqr_ior_i * refraction) / denom);
+	const float3 reflection = (factor * sqr_ior_i / denom) * refraction;
 
 
-	const float  pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_ior_i / denom);
+	const float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_ior_i / denom);
 
 
 //	std::cout << "evaluate:" << std::endl;
@@ -501,21 +502,19 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
-//	const float2 g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 
 	const float cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
 	const float3 f = float3(1.f) - fresnel(cos_x);
 
 	const float3 refraction = d * g * f;
-//	const float3 refraction = d * g[0] * f;
 
 	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	const float denom = math::pow2(ior.ior_i_ * wi_dot_h + ior.ior_o_ * wo_dot_h);
+	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
 
 	const float sqr_ior_i = ior.ior_i_ * ior.ior_i_;
 
-	result.reflection = (ior.eta_i_ * ior.eta_i_) * factor * sqr_ior_i * refraction / denom;
+	result.reflection = (factor * sqr_ior_i / denom) * refraction;
 	result.wi = wi;
 	result.h = h;
 //	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
