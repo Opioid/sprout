@@ -34,7 +34,10 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 		const auto ggx = ggx::Isotropic::refraction(wi, wo_, n_dot_wi, n_dot_wo, tmp, schlick);
 
 		return { n_dot_wi * ggx.reflection * layer_.color_, 0.5f * ggx.pdf };
+	//	return { n_dot_wi * ggx.reflection * layer_.color_, ggx.pdf };
 	}
+
+//	return { float3(0.f), 0.f };
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
 	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_);

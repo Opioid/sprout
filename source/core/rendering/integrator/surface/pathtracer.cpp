@@ -101,7 +101,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			filter = Sampler_filter::Nearest;
 		}
 
-		if (sample_result.type.test(Bxdf_type::Transmission)) {
+/*		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (material_sample.is_sss()) {
 				result += throughput * subsurface_.li(ray, intersection, material_sample, 
 													  Sampler_filter::Nearest,
@@ -120,7 +120,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 				throughput *= sample_result.reflection;
 			}
-		} else {
+		} else*/ {
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}
 
