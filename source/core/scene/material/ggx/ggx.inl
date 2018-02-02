@@ -11,6 +11,13 @@
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
 
+
+
+#include "base/math/sampling/sampling.hpp"
+
+
+
+
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
@@ -126,6 +133,70 @@ static inline float pdf_visible(float d, float g1_wo) {
 
 	return (0.5f * d) / g1_wo;
 }
+
+static inline float stellar_pdf(float3 wi, float3 wh, float3 n, float alpha) {
+	float dot_wi_wh = std::abs(math::dot(wi,wh));
+	float3 wh_inv_scaled = wh / alpha;
+	float dot_wh_wh_inv_scaled = math::dot(wh_inv_scaled, wh_inv_scaled);
+	float3 wi_scaled = alpha * wi;
+	float dot_wi_wi_scaled = math::dot(wi_scaled, wi_scaled);
+	return dot_wi_wh / ((0.5f*math::Pi)*alpha* dot_wh_wh_inv_scaled * dot_wh_wh_inv_scaled * (std::abs(math::dot(wi, n)) + std::sqrt(dot_wi_wi_scaled)));
+}
+
+
+static inline float G1(const float3& lw, float alpha) {
+//	return 1.f / (1.f + Lambda(w, n, alpha2));
+
+	const float3 alpha1(alpha, alpha, 1.f);
+
+	const float n_dot_w = std::abs(lw[2]);
+	return 2.f * n_dot_w / (math::length(alpha1 * lw) + n_dot_w);
+
+}
+
+
+static inline float G(const float3& view, const float3& light, const float3& half,
+					  const float3& lview, const float3& llight,
+					  const float3& n, float alpha) {
+	const float dotLH = math::dot(light, half);
+	const float dotVH = math::dot(view , half);
+
+
+	bool rstuff = true;
+	if (dotLH <= 0.f || dotVH <= 0.f) {
+		rstuff = false;
+	};
+
+
+
+	const float abs_lvz = std::abs(lview[2]);
+	const float abs_llz = std::abs(llight[2]);
+
+	const float3 alpha1(alpha, alpha, 1.f);
+
+	const float ra = (2.f * abs_lvz * abs_llz) / (math::length(alpha1 * lview) * abs_llz + math::length(alpha1 * llight) * abs_lvz);
+
+	const float abs_vz = std::abs(math::dot(view, n));
+	const float abs_lz = std::abs(math::dot(light, n));
+
+	const float alpha2 = alpha * alpha;
+	const float a = abs_vz * std::sqrt(alpha2 + (1.f - alpha2) * (abs_lz * abs_lz));
+	const float b = abs_lz * std::sqrt(alpha2 + (1.f - alpha2) * (abs_vz * abs_vz));
+
+	const float rb = (2.f * abs_vz * abs_lz) / (a + b);
+
+	return ra;
+}
+
+static inline float pdf_visible_refractly(const float3& lw, const float3& h, float d, float alpha) {
+	const float g1 = G1(lw, alpha);
+
+	const float w_dot_h = std::abs(math::dot(lw, h));
+	const float n_dot_w = std::abs(lw[2]);
+
+	return (g1 * w_dot_h * d / n_dot_w);
+}
+
 
 template<typename Layer, typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
@@ -357,6 +428,8 @@ float Isotropic::reflect_internally(const float3& wo, float n_dot_wo, const Laye
 	const float cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
 	const float3 f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
 
+	const float gg = G(wo, wi, h, lwo, layer.world_to_tangent(wi), layer.n_, alpha);
+
 	result.reflection = d * g[0] * f;
 	result.wi = wi;
 	result.h = h;
@@ -377,8 +450,9 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float3 h = math::normalize(layer.ior_o_ * wo + layer.ior_i_ * wi);
 
-//	const float wo_dot_h = clamp_dot(wo, h);
-	const float wo_dot_h = std::abs(math::dot(wo, h));
+	const float wo_dot_h = clamp_dot(wo, h);
+//	const float wo_dot_h = std::abs(math::dot(wo, h));
+//	const float wo_dot_h = std::abs(math::dot(wo, h));
 
 	const float sint2 = (layer.eta_i_ * layer.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
 
@@ -388,14 +462,15 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float wi_dot_h = std::sqrt(1.f - sint2);
 
-//	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
-	const float n_dot_h = std::abs(math::dot(layer.n_, h));
+	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
+//	const float n_dot_h = std::abs(math::dot(layer.n_, h));
 
 
-
+	const float alpha = layer.alpha_;
 	const float alpha2 = layer.alpha2_;
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
+//	const float g = G(wo, wi, h, layer.n_, alpha);
 	const float cos_x = layer.ior_o_ > layer.ior_i_ ? wi_dot_h : wo_dot_h;
 	const float3 f = float3(1.f) - fresnel(cos_x);
 
@@ -403,16 +478,22 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	const float denom = math::pow2(layer.ior_i_ * wi_dot_h + layer.ior_o_ * wo_dot_h);
+	const float denom = math::pow2(layer.ior_o_ * wi_dot_h + layer.ior_i_ * wo_dot_h);
 
-	const float sqr_ior_i = layer.ior_o_ * layer.ior_o_;
+	const float cosBeta = math::dot(h, wo);
+	const float cosAlpha = math::dot(h, wi);
+
+	const float denomili = math::pow2(layer.ior_o_ * cosBeta + layer.ior_i_ * cosAlpha);
+
+	const float sqr_ior_i = layer.ior_i_ * layer.ior_i_;
 
 	const float sqr_eta = layer.eta_i_ * layer.eta_i_;
 
-	const float3 reflection = sqr_eta * (factor * sqr_ior_i / denom) * refraction;
+	const float3 reflection = /*sqr_eta **/ (factor * sqr_ior_i / denomili) * refraction;
 
+	const float pdf1 = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
 
-	const float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_ior_i / denom);
+	const float pdf = pdf1 * (wi_dot_h * sqr_ior_i / denomili);
 
 
 //	std::cout << "evaluate:" << std::endl;
@@ -445,6 +526,111 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer,
 template<typename Layer, typename IOR, typename Fresnel>
 float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, const IOR& ior,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
+
+
+	// Roughness zero will always have zero specular term (or worse NaN)
+		SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
+
+		const float2 xi = sampler.generate_sample_2D();
+
+		const float alpha  = layer.alpha_;
+		const float alpha2 = layer.alpha2_;
+
+		const float3 lwo = layer.world_to_tangent(wo);
+
+		// stretch view
+		const float3 v = math::normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
+
+		// orthonormal basis
+		const float3 cross_v_z = float3(v[1], -v[0], 0.f); // == cross(v, [0, 0, 1])
+		const float3 t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
+		// cross(t1, v);
+		const float3 t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
+
+		// sample point with polar coordinates (r, phi)
+		const float a = 1.f / (1.f + v[2]);
+		const float r = std::sqrt(xi[0]);
+		const float phi = (xi[1] < a) ? xi[1] / a * math::Pi
+									  : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
+
+		float sin_phi;
+		float cos_phi;
+		math::sincos(phi, sin_phi, cos_phi);
+		const float p1 = r * cos_phi;
+		const float p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
+
+		// compute normal
+		float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
+
+		// unstretch
+		m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
+
+		const float n_dot_h = clamp(m[2]);
+
+		const float3 h = layer.tangent_to_world(m);
+
+		const float wo_dot_h = clamp_dot(wo, h);
+
+		const float sint2 = (ior.eta_i_ * ior.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
+
+		if (sint2 >= 1.f) {
+			result.pdf = 0.f;
+			return 0.f;
+		}
+
+		const float wi_dot_h = std::sqrt(1.f - sint2);
+
+		const float3 wi = math::normalize((ior.eta_i_ * wo_dot_h - wi_dot_h) * h - ior.eta_i_ * wo);
+
+		const float n_dot_wi = layer.clamp_reverse_n_dot(wi);
+	//	const float n_dot_wi = std::abs(math::dot(layer.n_, wi));
+
+		const float d = distribution_isotropic(n_dot_h, alpha2);
+		const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
+
+
+	//	const float g = G(wo, wi, h, lwo, -layer.world_to_tangent(wi), layer.n_, alpha);
+	//	const float glx = G(wo, -wi, h, layer.n_, alpha);
+
+		const float cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
+		const float3 f = float3(1.f) - fresnel(cos_x);
+
+		const float3 refraction = d * g * f;
+
+		const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
+
+		const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
+
+		const float sqr_ior_i = ior.ior_i_ * ior.ior_i_;
+
+		const float sqr_eta = ior.eta_i_ * ior.eta_i_;
+
+
+		const float cosBeta = math::dot(h, wo);
+		const float cosAlpha = math::dot(h, wi);
+
+		const float denomili = math::pow2(ior.ior_o_ * cosBeta + ior.ior_i_ * cosAlpha);
+
+		float g1a = G_ggx(n_dot_wi, alpha2);
+		float g1c = G1(-layer.world_to_tangent(wi), alpha);
+
+		const float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
+		const float pdf1 = pdf_visible_refractly(lwo, m, d, alpha);
+
+
+		result.reflection = /*sqr_eta **/ (factor * sqr_ior_i / denomili) * refraction;
+		result.wi = wi;
+		result.h = h;
+		result.pdf = pdf * (wi_dot_h * sqr_ior_i / denomili);
+		result.h_dot_wi = wi_dot_h;
+		result.type.clear(bxdf::Type::Glossy_transmission);
+
+		SOFT_ASSERT(testing::check(result, wo, layer));
+
+		return n_dot_wi;
+/*
+
+
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
@@ -511,9 +697,9 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 
 	const float factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	const float denom = math::pow2(ior.ior_i_ * wi_dot_h + ior.ior_o_ * wo_dot_h);
+	const float denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
 
-	const float sqr_ior_i = ior.ior_o_ * ior.ior_o_;
+	const float sqr_ior_i = ior.ior_i_ * ior.ior_i_;
 
 	const float sqr_eta = ior.eta_i_ * ior.eta_i_;
 
@@ -548,6 +734,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 
 
 	return n_dot_wi;
+	*/
 }
 
 template<typename Layer, typename Fresnel>

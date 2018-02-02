@@ -33,11 +33,11 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 		const fresnel::Schlick schlick(layer_.f0_);
 		const auto ggx = ggx::Isotropic::refraction(wi, wo_, n_dot_wi, n_dot_wo, tmp, schlick);
 
-		return { n_dot_wi * ggx.reflection * layer_.color_, 0.5f * ggx.pdf };
-	//	return { n_dot_wi * ggx.reflection * layer_.color_, ggx.pdf };
+	//	return { n_dot_wi * ggx.reflection * layer_.color_, 0.5f * ggx.pdf };
+		return { n_dot_wi * ggx.reflection * layer_.color_, ggx.pdf };
 	}
 
-//	return { float3(0.f), 0.f };
+	return { float3(0.f), 0.f };
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
 	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_);
@@ -56,15 +56,15 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float p = sampler.generate_sample_1D();
 
-	if (p < 0.5f) {
-		const float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
-		result.pdf *= 0.5f;
-		result.reflection *= n_dot_wi;
-	} else {
+//	if (p < 0.5f) {
+//		const float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
+//		result.pdf *= 0.5f;
+//		result.reflection *= n_dot_wi;
+//	} else {
 		const float n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
-		result.pdf *= 0.5f;
+//		result.pdf *= 0.5f;
 		result.reflection *= n_dot_wi;
-	}
+//	}
 
 	result.wavelength = 0.f;
 }
