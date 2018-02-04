@@ -77,9 +77,12 @@ void rough_refraction() {
 	float3 b(0.f, 1.f, 0.f);
 	float3 n(0.f, 0.f, 1.f);
 
+	n = math::normalize(float3(0.5f, 0.5f, 0.5f));
+	math::orthonormal_basis(n, t,  b);
+
 	float3 wo;
 
-	wo = math::normalize(float3(0.25f, 0.1f, -0.5f));
+	wo = math::normalize(float3(-0.25f, -0.1f, -0.5f));
 	sample.set_basis(n, wo);
 	sample.layer_.set_tangent_frame(t, b, n);
 
@@ -87,7 +90,7 @@ void rough_refraction() {
 	float3 absorption_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
-	float roughness = 0.5f;//ggx::Min_roughness;
+	float roughness = 0.03f;//ggx::Min_roughness;
 	float alpha = roughness * roughness;
 
 	sample.layer_.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f, alpha);
@@ -98,7 +101,7 @@ void rough_refraction() {
 
 	float n_dot_wi = Sample_rough::BSDF::refract(sample, sample.layer_, sampler, result);
 	result.reflection *= n_dot_wi;
-	result.pdf *= 0.5f;
+//	result.pdf *= 0.5f;
 	print(result);
 
 	if (result.pdf > 0.f) {
