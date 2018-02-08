@@ -89,8 +89,10 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		const bool requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, 
-																 Bxdf_type::Transmission);
+//		const bool requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
+//																 Bxdf_type::Transmission);
+
+		const bool requires_bounce = sample_result.type.test(Bxdf_type::Specular);
 
 		if (requires_bounce) {
 			if (settings_.disable_caustics && !ray.is_primary()) {
