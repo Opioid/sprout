@@ -1,4 +1,4 @@
-#include "Single_scattering_tracking.hpp"
+#include "single_scattering_tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -56,8 +56,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	const auto& material = *volume.material(0);
 
-	const float3 sigma_a = material.absorption(transformation,
-											   float3::identity(),
+	const float3 sigma_a = material.absorption(transformation, float3::identity(),
 											   Sampler_filter::Undefined, worker);
 
 	const float3 sigma_s = material.scattering(transformation, float3::identity(),
@@ -76,8 +75,10 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 
 	const float r = rng_.random_float();
-	const float scatter_distance = ray.max_t * 0.5f;// -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
+	const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
 
+	const float range = ray.max_t - ray.min_t;
+//	const float scatter_distance = r * (ray.max_t - ray.min_t);
 
 	// Lighting
 	/*
@@ -105,11 +106,15 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 	*/
-	const float3 local_radiance = estimate_direct_light(ray, ray.point(scatter_distance), worker);
+
+	const float3 p = ray.point(ray.min_t + scatter_distance);
+
+	const float3 local_radiance = estimate_direct_light(ray, p, worker);
 
 	const float3 scatter_tr = math::exp(-scatter_distance * extinction);
 
-	radiance += scatter_tr * extinction * scattering_albedo * local_radiance;
+	radiance += range * scatter_tr * extinction * scattering_albedo * local_radiance;
+//	radiance += scatter_tr * sigma_s * local_radiance;
 
 	transmittance = tr;
 
@@ -142,10 +147,6 @@ float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const f
 		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 		if (math::any_greater_zero(tv)) {
 			const float3 tr = worker.transmittance(shadow_ray);
-
-			if (math::any_lesser_one(tr)) {
-				std::cout << tr << std::endl;
-			}
 
 			const float phase = 1.f / (4.f * math::Pi);
 

@@ -166,16 +166,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	SOFT_ASSERT(testing::check(result, sample.wo(), layer));
 
 
-//	if (!sample.same_hemisphere(sample.wo()) && result.pdf > 0.f) {
-//		const auto eva = ggx::Isotropic::refraction(result.wi, sample.wo(), n_dot_wi, n_dot_wo, tmp, schlick);
 
-//		const float dpdf = std::abs(result.pdf - eva.pdf);
-
-//		if (dpdf > 100.f) {
-//			std::cout << result.pdf << " vs. " << eva.pdf << std::endl;
-//			std::cout << (n_dot_wi * result.reflection) << " vs. " << (n_dot_wi * eva.reflection) << std::endl;
-//		}
-//	}
 
 
 	return n_dot_wi;
