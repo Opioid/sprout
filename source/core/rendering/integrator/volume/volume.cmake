@@ -8,6 +8,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/emission.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/single_scattering.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/single_scattering.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/single_scattering_tracking.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/single_scattering_tracking.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volume_integrator.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volume_integrator.hpp"
 	)

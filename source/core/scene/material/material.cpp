@@ -79,6 +79,11 @@ float3 Material::optical_depth(const Transformation& /*transformation*/, const m
 	return float3::identity();
 }
 
+float3 Material::absorption(const Transformation& /*transformation*/, const float3& /*p*/,
+							Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return float3::identity();
+}
+
 float3 Material::scattering(const Transformation& /*transformation*/, const float3& /*p*/,
 							Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	return float3::identity();

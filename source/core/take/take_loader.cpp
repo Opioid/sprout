@@ -22,6 +22,7 @@
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
+#include "rendering/integrator/volume/single_scattering_tracking.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
 #include "rendering/postprocessor/postprocessor_glare.hpp"
@@ -590,6 +591,13 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Single_scattering_factory>(settings, num_workers,
 															   step_size, step_probability,
 															   indirect_lighting);
+		} else if ("Single_scattering_tracking" == n.name) {
+			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
+			const bool indirect_lighting = json::read_bool(n.value, "indirect_lighting", false);
+
+			return std::make_shared<Single_scattering_tracking_factory>(
+						settings, num_workers, step_size, step_probability, indirect_lighting);
 		}
 	}
 

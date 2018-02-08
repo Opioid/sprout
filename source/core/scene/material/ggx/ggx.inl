@@ -480,7 +480,7 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float denom = math::pow2(layer.ior_o_ * wi_dot_h + layer.ior_i_ * wo_dot_h);
 
-	const float cosBeta = math::dot(h, wo);
+	const float cosBeta  = math::dot(h, wo);
 	const float cosAlpha = math::dot(h, wi);
 
 	const float denomili = math::pow2(layer.ior_o_ * cosBeta + layer.ior_i_ * cosAlpha);
