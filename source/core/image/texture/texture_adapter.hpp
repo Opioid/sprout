@@ -1,7 +1,7 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_ADAPTER_HPP
 #define SU_CORE_IMAGE_TEXTURE_ADAPTER_HPP
 
-#include "base/math/vector3.hpp"
+#include "base/math/vector2.hpp"
 #include <memory>
 
 namespace image::texture {
@@ -15,8 +15,8 @@ class Adapter {
 public:
 
 	Adapter();
-	Adapter(std::shared_ptr<Texture> texture);
-	Adapter(std::shared_ptr<Texture> texture, float2 scale);
+	Adapter(const std::shared_ptr<Texture>& texture);
+	Adapter(const std::shared_ptr<Texture>& texture, float2 scale);
 	~Adapter();
 
 	bool operator==(const Adapter& other) const;

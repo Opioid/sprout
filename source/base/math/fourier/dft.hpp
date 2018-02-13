@@ -1,7 +1,7 @@
 #ifndef SU_BASE_MATH_FOURIER_DFT_HPP
 #define SU_BASE_MATH_FOURIER_DFT_HPP
 
-#include "math/vector2.hpp"
+#include "math/vector.hpp"
 
 namespace thread { class Pool; }
 

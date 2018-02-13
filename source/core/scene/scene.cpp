@@ -1,6 +1,7 @@
 #include "scene.hpp"
 #include "scene_constants.hpp"
 #include "scene_ray.hpp"
+#include "scene_worker.hpp"
 #include "bvh/scene_bvh_builder.inl"
 #include "animation/animation.hpp"
 #include "animation/animation_stage.hpp"

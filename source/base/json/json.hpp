@@ -2,7 +2,7 @@
 #define SU_BASE_JSON_JSON_HPP
 
 #include "json_types.hpp"
-#include "math/vector4.hpp"
+#include "math/vector.hpp"
 #include "math/matrix3x3.hpp"
 #include "math/quaternion.hpp"
 #include "math/transformation.hpp"

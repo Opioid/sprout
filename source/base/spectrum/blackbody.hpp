@@ -1,7 +1,7 @@
 #ifndef SU_BASE_SPECTRUM_BLACKBODY_HPP
 #define SU_BASE_SPECTRUM_BLACKBODY_HPP
 
-#include "math/vector3.hpp"
+#include "math/vector.hpp"
 
 namespace spectrum {
 

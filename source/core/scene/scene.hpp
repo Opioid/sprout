@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_SCENE_HPP
 #define SU_CORE_SCENE_SCENE_HPP
 
-#include "scene_worker.hpp"
 #include "material/material.hpp"
 #include "light/null_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
@@ -49,6 +48,8 @@ class Prop;
 }
 
 namespace volume { class Volume; }
+
+class Worker;
 
 struct Ray;
 

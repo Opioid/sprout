@@ -2,7 +2,7 @@
 #define SU_RENDERING_INTEGRATOR_SURFACE_INTEGRATOR_HPP
 
 #include "rendering/integrator/integrator.hpp"
-#include "base/math/vector4.hpp"
+#include "base/math/vector.hpp"
 
 namespace rendering {
 

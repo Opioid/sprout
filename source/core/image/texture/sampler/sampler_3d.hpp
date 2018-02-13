@@ -1,6 +1,7 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_3D
+#define SU_CORE_IMAGE_TEXTURE_SAMPLER_3D
 
-#include "base/math/vector3.hpp"
+#include "base/math/vector.hpp"
 
 namespace image::texture {
 
@@ -22,3 +23,5 @@ public:
 };
 
 }}
+
+#endif

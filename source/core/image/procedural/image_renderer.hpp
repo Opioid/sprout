@@ -2,6 +2,8 @@
 #define SU_CORE_IMAGE_PROCEDURAL_RENDERER_HPP
 
 #include "image/typed_image.hpp"
+#include "base/math/vector2.hpp"
+#include "base/math/vector4.hpp"
 
 namespace image::procedural {
 

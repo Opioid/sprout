@@ -5,7 +5,7 @@
 #include "shape/node_stack.hpp"
 #include "material/material_sample_cache.hpp"
 #include "material/sampler_cache.hpp"
-#include "base/math/vector3.hpp"
+#include "base/math/vector.hpp"
 #include "base/random/generator.hpp"
 
 namespace scene {

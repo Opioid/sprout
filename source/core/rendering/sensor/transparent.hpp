@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_SENSOR_TRANSPARENT_HPP
 
 #include "sensor.hpp"
+#include "base/math/vector4.hpp"
 
 namespace rendering::sensor {
 

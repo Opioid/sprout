@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/material/material_sample.hpp"
+#include "base/math/vector2.hpp"
 
 namespace scene::material::metal {
 

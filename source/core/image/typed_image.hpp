@@ -2,7 +2,7 @@
 #define SU_CORE_IMAGE_TYPED_IMAGE_HPP
 
 #include "image.hpp"
-#include "base/math/vector4.hpp"
+#include "base/math/vector.hpp"
 
 namespace image {
 

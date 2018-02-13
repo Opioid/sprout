@@ -11,10 +11,10 @@ namespace image::texture {
 
 inline Adapter::Adapter() {}
 
-inline Adapter::Adapter(std::shared_ptr<Texture> texture) :
+inline Adapter::Adapter(const std::shared_ptr<Texture>& texture) :
 	texture_(texture), scale_(float2(1.f, 1.f)) {}
 
-inline Adapter::Adapter(std::shared_ptr<Texture> texture, float2 scale) :
+inline Adapter::Adapter(const std::shared_ptr<Texture>& texture, float2 scale) :
 	texture_(texture), scale_(scale) {}
 
 inline Adapter::~Adapter() {}

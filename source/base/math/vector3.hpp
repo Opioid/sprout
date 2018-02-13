@@ -1,7 +1,7 @@
 #ifndef SU_BASE_MATH_VECTOR3_HPP
 #define SU_BASE_MATH_VECTOR3_HPP
 
-#include "vector2.hpp"
+#include "vector.hpp"
 #include <cstdint>
 #include <algorithm>
 #include <cmath>
@@ -105,11 +105,6 @@ struct alignas(16) Vector3f_a {
 
 }
 
-using byte3  = math::Vector3<uint8_t>;
-// using float3 = Vector3<float>;
-using float3 = math::Vector3f_a;
-using int3   = math::Vector3<int32_t>;
-using uint3  = math::Vector3<uint32_t>;
-using packed_float3 = math::Vector3<float>;
+
 
 #endif
