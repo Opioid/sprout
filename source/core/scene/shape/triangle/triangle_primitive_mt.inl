@@ -4,7 +4,7 @@
 #include "triangle_primitive_mt.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/ray.hpp"
-#include "base/math/vector.inl"
+#include "base/math/simd_vector.inl"
 
 namespace scene::shape::triangle {
 

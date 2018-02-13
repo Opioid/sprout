@@ -2,7 +2,7 @@
 #include "image/typed_image.inl"
 #include "base/memory/align.hpp"
 #include "base/math/exp.hpp"
-#include "base/math/vector.inl"
+#include "base/math/simd_vector.inl"
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
 #include "base/spectrum/interpolated.hpp"

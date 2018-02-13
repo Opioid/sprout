@@ -2,9 +2,11 @@
 #define SU_BASE_MATH_AABB_INL
 
 #include "aabb.hpp"
-#include "math/vector.inl"
-#include "math/vector3.inl"
-#include "math/matrix4x4.inl"
+#include "matrix4x4.inl"
+#include "ray.hpp"
+#include "simd_vector.inl"
+#include "vector3.inl"
+
 #include <limits>
 
 namespace math {

@@ -2,8 +2,9 @@
 #define SU_SCENE_LIGHT_LIGHT_HPP
 
 #include "scene/material/sampler_settings.hpp"
-#include "base/math/aabb.hpp"
-#include "base/math/vector3.hpp"
+#include "base/math/vector.hpp"
+
+namespace math { class AABB; }
 
 namespace image::texture::sampler { class Sampler_2D; }
 

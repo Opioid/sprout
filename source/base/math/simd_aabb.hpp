@@ -1,10 +1,11 @@
 #ifndef SU_BASE_MATH_SIMD_AABB_HPP
 #define SU_BASE_MATH_SIMD_AABB_HPP
 
-#include "math/aabb.hpp"
 #include "simd/simd.hpp"
 
 namespace math {
+
+class AABB;
 
 struct Simd_AABB {
 	Simd_AABB() = default;

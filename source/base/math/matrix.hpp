@@ -1,21 +1,15 @@
 #ifndef SU_BASE_MATH_MATRIX_HPP
 #define SU_BASE_MATH_MATRIX_HPP
 
-#include "simd/simd.hpp"
+namespace math {
 
-struct alignas(16) Matrix3 {
-	Vector r[3];
-};
+struct alignas(16) Matrix3x3f_a;
+struct alignas(16) Matrix4x4f_a;
+	
+}
 
-struct alignas(16) Matrix4 {
-	Vector r[4];
-};
-
-// Fix-up for (1st) XMMATRIX parameter to pass in-register on vector call; by reference otherwise
-using VMatrix3 = const Matrix3;
-using VMatrix4 = const Matrix4;
-
-using RMatrix3 = const Matrix3&;
-using RMatrix4 = const Matrix4&;
+// using float3x3 = Matrix3x3<float>;
+using float3x3 = math::Matrix3x3f_a;
+using float4x4 = math::Matrix4x4f_a;
 
 #endif

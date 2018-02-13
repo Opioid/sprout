@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_ENTITY_KEYFRAME_HPP
+#define SU_CORE_SCENE_ENTITY_KEYFRAME_HPP
 
 #include "base/math/transformation.hpp"
 
@@ -20,3 +21,5 @@ struct alignas(16) Keyframe {
 };
 
 }
+
+#endif

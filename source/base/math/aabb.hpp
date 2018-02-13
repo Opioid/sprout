@@ -2,12 +2,13 @@
 #define SU_BASE_MATH_AABB_HPP
 
 #include "math/vector3.hpp"
-#include "math/matrix4x4.hpp"
-#include "math/ray.hpp"
+#include "math/matrix.hpp"
 #include "simd/simd.hpp"
 
 namespace math {
 
+struct Ray;
+	
 class AABB {
 
 public:

@@ -1,9 +1,9 @@
-#ifndef SU_BASE_MATH_MATRIX_INL
-#define SU_BASE_MATH_MATRIX_INL
+#ifndef SU_BASE_MATH_SIMD_MATRIX_INL
+#define SU_BASE_MATH_SIMD_MATRIX_INL
 
-#include "matrix.hpp"
-#include "vector.inl"
-#include "math/matrix4x4.inl"
+#include "simd_matrix.hpp"
+#include "simd_vector.inl"
+#include "matrix4x4.inl"
 
 namespace math {
 

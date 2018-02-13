@@ -3,7 +3,7 @@
 
 #include "json_types.hpp"
 #include "math/vector.hpp"
-#include "math/matrix3x3.hpp"
+#include "math/matrix.hpp"
 #include "math/quaternion.hpp"
 #include "math/transformation.hpp"
 

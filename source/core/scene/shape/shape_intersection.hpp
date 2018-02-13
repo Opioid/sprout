@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_SHAPE_INTERSECTION_HPP
 #define SU_CORE_SCENE_SHAPE_INTERSECTION_HPP
 
+#include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
 
 namespace scene::shape {

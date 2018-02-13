@@ -2,7 +2,7 @@
 #include "memory/align.hpp"
 #include "math/sincos.hpp"
 #include "math/math.hpp"
-#include "math/vector.inl"
+#include "math/simd_vector.inl"
 #include "math/vector4.inl"
 #include "thread/thread_pool.hpp"
 

@@ -2,7 +2,7 @@
 #define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_2D_HPP
 
 #include "distribution_1d.hpp"
-#include "math/vector3.hpp"
+#include "math/vector2.hpp"
 
 namespace thread { class Pool; }
 

@@ -5,7 +5,7 @@
 #include "vector2.inl"
 #include "math.hpp"
 #include "exp.hpp"
-#include "vector.inl"
+#include "simd_vector.inl"
 #include "simd/simd.inl"
 
 namespace math {

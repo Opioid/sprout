@@ -5,7 +5,6 @@
 #include "keyframe.hpp"
 #include "base/flags/flags.hpp"
 #include "base/json/json_types.hpp"
-#include "base/math/quaternion.hpp"
 #include "base/math/transformation.hpp"
 
 namespace scene::entity {

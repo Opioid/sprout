@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_BVH_NODE_INL
 
 #include "scene_bvh_node.hpp"
-#include "base/math/vector.inl"
+#include "base/math/simd_vector.inl"
 #include "base/math/vector3.inl"
 
 namespace scene::bvh {

@@ -3,7 +3,7 @@
 
 #include "scene/material/material.hpp"
 #include "base/math/aabb.hpp"
-#include "base/math/matrix4x4.hpp"
+#include "base/math/matrix.hpp"
 #include "base/math/transformation.hpp"
 
 namespace sampler { class Sampler; }

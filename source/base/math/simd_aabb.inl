@@ -2,7 +2,8 @@
 #define SU_BASE_SIMD_AABB_INL
 
 #include "simd_aabb.hpp"
-#include "math/vector.inl"
+#include "aabb.hpp"
+#include "simd_vector.inl"
 #include "simd/simd.inl"
 
 namespace math {
