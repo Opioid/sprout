@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_POSTPROCESSOR_BLOOM_HPP
 
 #include "postprocessor.hpp"
+#include "image/typed_image.hpp"
 #include <vector>
 
 namespace rendering::postprocessor {

@@ -1,8 +1,9 @@
 #include "composed_transformation.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
+#include "base/math/transformation.inl"
 
-namespace scene { namespace entity {
+namespace scene::entity {
 
 void Composed_transformation::set(const math::Transformation& t) {
 	rotation = math::quaternion::create_matrix3x3(t.rotation);
@@ -12,4 +13,4 @@ void Composed_transformation::set(const math::Transformation& t) {
 	world_to_object = math::affine_inverted(object_to_world);
 }
 
-}}
+}

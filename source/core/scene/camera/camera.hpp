@@ -3,7 +3,6 @@
 
 #include "scene/entity/entity.hpp"
 #include "base/math/vector2.hpp"
-#include "base/math/vector4.hpp"
 #include <memory>
 #include <string>
 

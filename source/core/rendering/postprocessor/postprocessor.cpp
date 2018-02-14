@@ -1,4 +1,5 @@
 #include "postprocessor.hpp"
+#include "image/typed_image.inl"
 #include "base/math/vector4.inl"
 #include "base/thread/thread_pool.hpp"
 

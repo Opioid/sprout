@@ -2,6 +2,7 @@
 #include "client.hpp"
 #include "message_handler.hpp"
 #include "core/logging/logging.hpp"
+#include "core/image/typed_image.hpp"
 #include "base/math/vector4.inl"
 #include "base/thread/thread_pool.hpp"
 

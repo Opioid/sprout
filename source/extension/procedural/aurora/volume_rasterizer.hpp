@@ -1,7 +1,8 @@
 #ifndef SU_EXTENSION_PROCEDURAL_AURORA_VOLUME_RASTERIZER_HPP
 #define SU_EXTENSION_PROCEDURAL_AURORA_VOLUME_RASTERIZER_HPP
 
-#include "image/typed_image.hpp"
+#include "image/typed_image_fwd.hpp"
+#include "base/math/vector3.hpp"
 
 namespace procedural::aurora {
 

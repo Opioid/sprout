@@ -1,8 +1,9 @@
 #ifndef SU_EXTENSION_PROCEDURAL_AURORA_PROVIDER_HPP
 #define SU_EXTENSION_PROCEDURAL_AURORA_PROVIDER_HPP
 
-#include "core/image/typed_image.hpp"
+#include "core/image/typed_image_fwd.hpp"
 #include "core/scene/entity/entity_extension_provider.hpp"
+#include "base/math/vector3.hpp"
 
 namespace rnd { class Generator; }
 

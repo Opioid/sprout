@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typed_image.hpp"
+#include "typed_image_fwd.hpp"
 #include <ostream>
 
 namespace thread { class Pool; }

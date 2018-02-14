@@ -2,7 +2,7 @@
 #define SU_CORE_IMAGE_TEXTURE_FLOAT3_HPP
 
 #include "texture.hpp"
-#include "image/typed_image.hpp"
+#include "image/typed_image_fwd.hpp"
 
 namespace image::texture {
 

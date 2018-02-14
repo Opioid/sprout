@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_SENSOR_HPP
 #define SU_CORE_RENDERING_SENSOR_SENSOR_HPP
 
-#include "image/typed_image.hpp"
+#include "image/typed_image_fwd.hpp"
 #include "base/math/vector2.hpp"
 
 namespace thread { class Pool; }

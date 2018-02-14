@@ -4,7 +4,8 @@
 #include "base/math/vector3.hpp"
 #include "base/math/matrix3x3.hpp"
 #include "base/math/matrix4x4.hpp"
-#include "base/math/transformation.hpp"
+
+namespace math { struct Transformation; }
 
 namespace scene::entity {
 

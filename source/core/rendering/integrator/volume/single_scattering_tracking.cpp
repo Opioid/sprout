@@ -68,8 +68,8 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 
 	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-													  settings_.step_size, rng_,
-													  Sampler_filter::Undefined, worker);
+											  settings_.step_size, rng_,
+											  Sampler_filter::Undefined, worker);
 
 	const float3 tr = math::exp(-tau);
 
@@ -78,35 +78,8 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
 
 	const float range = ray.max_t - ray.min_t;
-//	const float scatter_distance = r * (ray.max_t - ray.min_t);
 
 	// Lighting
-	/*
-	Ray secondary_ray = ray;
-	secondary_ray.properties.set(Ray::Property::Recursive);
-	secondary_ray.set_primary(false);
-
-	if (settings_.disable_indirect_lighting) {
-		// TODO: All of this doesn't work with Pathtracer...
-		// Make the surface integrator stop after gathering direct lighting
-		// by selecting a very high ray depth.
-		// Don't take 0xFFFFFFFF because that will cause a wraparound in the MIS integrator,
-		// causing us to miss direct lighting from light sources wich are marked as
-		// invisible in the camera.
-		secondary_ray.depth = 0xFFFFFFFE;
-	}
-
-	scene::prop::Intersection secondary_intersection;
-	secondary_intersection.prop = &volume;
-	secondary_intersection.geo.p = ray.point(scatter_distance);
-	secondary_intersection.geo.geo_n = float3(0.f, 1.f, 0.f); // Value shouldn't matter
-	secondary_intersection.geo.part = 0;
-	secondary_intersection.geo.epsilon = 0.f;
-	secondary_intersection.geo.subsurface = false;
-
-	const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
-	*/
-
 	const float3 p = ray.point(ray.min_t + scatter_distance);
 
 	const float3 local_radiance = estimate_direct_light(ray, p, worker);

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_ENCODING_PNG_READER_HPP
+#define SU_CORE_IMAGE_ENCODING_PNG_READER_HPP
 
 // based on
 // https://github.com/jansol/LuPng
@@ -15,7 +16,7 @@ namespace image {
 
 class Image;
 
-namespace encoding { namespace png {
+namespace encoding::png {
 
 class Reader {
 
@@ -100,4 +101,6 @@ private:
 	static const std::array<uint8_t, Signature_size> Signature;
 };
 
-}}}
+}}
+
+#endif

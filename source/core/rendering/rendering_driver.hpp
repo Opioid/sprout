@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_DRIVER_HPP
 
 #include "tile_queue.hpp"
+#include "image/typed_image_fwd.hpp"
 #include "image/typed_image.hpp"
 #include <memory>
 

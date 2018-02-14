@@ -1,12 +1,13 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_ENCODING_RGBE_READER_HPP
+#define SU_CORE_IMAGE_ENCODING_RGBE_READER_HPP
 
-#include "image/typed_image.hpp"
+#include "image/typed_image_fwd.hpp"
 #include "base/math/vector3.hpp"
 #include <cstdint>
 #include <iosfwd>
 #include <memory>
 
-namespace image { namespace encoding { namespace rgbe {
+namespace image::encoding::rgbe {
 
 class Reader {
 
@@ -35,4 +36,6 @@ private:
 	static image_float3 rgbe_to_float3(uint8_t rgbe[4]);
 };
 
-}}}
+}
+
+#endif
