@@ -4,7 +4,8 @@
 #include "scene/material/material.hpp"
 #include "base/math/aabb.hpp"
 #include "base/math/matrix.hpp"
-#include "base/math/transformation.hpp"
+
+namespace math { struct Transformation; }
 
 namespace sampler { class Sampler; }
 

@@ -1,7 +1,7 @@
 #ifndef SU_CORE_FILE_SYSTEM_HPP
 #define SU_CORE_FILE_SYSTEM_HPP
 
-#include <istream>
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <vector>

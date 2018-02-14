@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RESOURCE_PROVIDER_HPP
+#define SU_CORE_RESOURCE_PROVIDER_HPP
 
 #include "identifiable.hpp"
 #include <memory>
@@ -30,3 +31,5 @@ public:
 };
 
 }
+
+#endif

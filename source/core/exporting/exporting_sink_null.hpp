@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_EXPORTING_SINK_NULL_HPP
+#define SU_CORE_EXPORTING_SINK_NULL_HPP
 
 #include "exporting_sink.hpp"
 
@@ -16,3 +17,5 @@ public:
 };
 
 }
+
+#endif

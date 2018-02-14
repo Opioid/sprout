@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_EXPORTING_SINK_STATISTICS_HPP
+#define SU_CORE_EXPORTING_SINK_STATISTICS_HPP
 
 #include "exporting_sink.hpp"
 
@@ -18,3 +19,5 @@ public:
 };
 
 }
+
+#endif

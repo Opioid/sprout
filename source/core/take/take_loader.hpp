@@ -1,10 +1,9 @@
 #ifndef SU_CORE_TAKE_LOADER_HPP
 #define SU_CORE_TAKE_LOADER_HPP
 
-#include "rendering/integrator/integrator.hpp"
 #include "base/json/json_types.hpp"
-#include "base/math/vector3.hpp"
-#include <istream>
+#include "base/math/vector.hpp"
+#include <iosfwd>
 #include <string>
 #include <memory>
 #include <vector>
@@ -36,6 +35,8 @@ namespace rendering {
 		}
 
 		namespace volume  { class Factory; }
+
+		struct Light_sampling;
 	}
 
 	namespace postprocessor { class Postprocessor; }

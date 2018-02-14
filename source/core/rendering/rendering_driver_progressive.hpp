@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_DRIVER_PROGRESSIVE_HPP
+#define SU_CORE_RENDERING_DRIVER_PROGRESSIVE_HPP
 
 #include "rendering_driver.hpp"
 #include "exporting/exporting_sink_statistics.hpp"
@@ -58,3 +59,5 @@ private:
 };
 
 }
+
+#endif
