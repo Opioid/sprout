@@ -3,6 +3,7 @@
 
 #include "image/typed_image_fwd.hpp"
 #include "base/math/vector2.hpp"
+#include <cstddef>
 
 namespace thread { class Pool; }
 
