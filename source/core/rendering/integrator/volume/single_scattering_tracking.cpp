@@ -66,18 +66,16 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	const float3 scattering_albedo = sigma_s / extinction;
 
-
 	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
 											  settings_.step_size, rng_,
 											  Sampler_filter::Undefined, worker);
 
 	const float3 tr = math::exp(-tau);
 
-
+/*
 	const float r = rng_.random_float();
-	const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
 
-	const float range = ray.max_t - ray.min_t;
+	const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
 
 	// Lighting
 	const float3 p = ray.point(ray.min_t + scatter_distance);
@@ -86,8 +84,25 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	const float3 scatter_tr = math::exp(-scatter_distance * extinction);
 
-	radiance += range * scatter_tr * extinction * scattering_albedo * local_radiance;
-//	radiance += scatter_tr * sigma_s * local_radiance;
+	radiance += scatter_tr * extinction * scattering_albedo * local_radiance;
+	*/
+
+	const float r = rng_.random_float();
+
+	const float scatter_distance = -std::log(1.f - r) / spectrum::average(extinction);
+
+	const float d = ray.max_t - ray.min_t;
+	if (scatter_distance > d) {
+		transmittance = tr;
+		return float3(0.f);
+	}
+
+	const float r2 = rng_.random_float();
+
+	if (r2 > spectrum::average(sigma_a) / spectrum::average(extinction)) {
+		const float3 p = ray.point(ray.min_t + scatter_distance);
+		radiance += estimate_direct_light(ray, p, worker);
+	}
 
 	transmittance = tr;
 
