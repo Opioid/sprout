@@ -20,6 +20,13 @@
 
 namespace rendering::integrator::volume {
 
+enum class Algorithm {
+	PBRT,
+	Algorithm_1,
+	Listing_10,
+	Experiment
+};
+
 Single_scattering_tracking::Single_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings,
 									 const Settings& settings) :
 	Integrator(rng, take_settings),
@@ -50,9 +57,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-
 	float3 radiance(0.f);
-
 
 	const auto& material = *volume.material(0);
 
@@ -66,45 +71,61 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	const float3 scattering_albedo = sigma_s / extinction;
 
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Undefined, worker);
-
-	const float3 tr = math::exp(-tau);
-
-/*
-	const float r = rng_.random_float();
-
-	const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
-
-	// Lighting
-	const float3 p = ray.point(ray.min_t + scatter_distance);
-
-	const float3 local_radiance = estimate_direct_light(ray, p, worker);
-
-	const float3 scatter_tr = math::exp(-scatter_distance * extinction);
-
-	radiance += scatter_tr * extinction * scattering_albedo * local_radiance;
-	*/
-
-	const float r = rng_.random_float();
-
-	const float scatter_distance = -std::log(1.f - r) / spectrum::average(extinction);
-
 	const float d = ray.max_t - ray.min_t;
-	if (scatter_distance > d) {
-		transmittance = tr;
-		return float3(0.f);
-	}
 
-	const float r2 = rng_.random_float();
+	transmittance = math::exp(-d * extinction);
 
-	if (r2 > spectrum::average(sigma_a) / spectrum::average(extinction)) {
+	constexpr Algorithm algorithm = Algorithm::Listing_10;
+
+	if (Algorithm::PBRT == algorithm) {
+		// PBRT style raymarching
+	} else if (Algorithm::Algorithm_1 == algorithm) {
+		const float r = rng_.random_float();
+		const float scatter_distance = -std::log(1.f - r) / spectrum::average(extinction);
+
+		if (scatter_distance > d) {
+			// boundary
+			return float3(0.f);
+		}
+
+		const float r2 = rng_.random_float();
+		if (r2 < spectrum::average(sigma_a) / spectrum::average(extinction)) {
+			// absorption/emission
+			return float3(0.f);
+		}
+
 		const float3 p = ray.point(ray.min_t + scatter_distance);
-		radiance += estimate_direct_light(ray, p, worker);
-	}
 
-	transmittance = tr;
+		const float3 l = estimate_direct_light(ray, p, worker);
+
+		radiance += l;
+	} else if (Algorithm::Listing_10 == algorithm) {
+		const float r = rng_.random_float();
+		const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(transmittance))) / spectrum::average(extinction);
+
+		const float3 tr = math::exp(-scatter_distance * extinction);
+
+		const float3 p = ray.point(ray.min_t + scatter_distance);
+
+		float3 l = estimate_direct_light(ray, p, worker);
+
+		l *= extinction * scattering_albedo * tr;
+
+		radiance += l;
+	} else if (Algorithm::Experiment == algorithm) {
+		const float r = rng_.random_float();
+		const float scatter_distance = r * d;
+
+		const float3 tr = math::exp(-scatter_distance * extinction);
+
+		const float3 p = ray.point(ray.min_t + scatter_distance);
+
+		float3 l = estimate_direct_light(ray, p, worker);
+
+		l *= d * extinction * scattering_albedo * tr;
+
+		radiance += l;
+	}
 
 	return radiance;
 }
