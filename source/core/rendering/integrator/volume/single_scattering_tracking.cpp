@@ -103,13 +103,17 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		const float r = rng_.random_float();
 		const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(transmittance))) / spectrum::average(extinction);
 
-		const float3 tr = math::exp(-scatter_distance * extinction);
+	//	const float3 tr = math::exp(-scatter_distance * extinction);
 
 		const float3 p = ray.point(ray.min_t + scatter_distance);
 
 		float3 l = estimate_direct_light(ray, p, worker);
 
-		l *= extinction * scattering_albedo * tr;
+	//	l *= (1.f - transmittance) / (extinction * tr);
+
+	//	l *= extinction * scattering_albedo * tr;
+
+		l *= (1.f - transmittance) * scattering_albedo;
 
 		radiance += l;
 	} else if (Algorithm::Experiment == algorithm) {
