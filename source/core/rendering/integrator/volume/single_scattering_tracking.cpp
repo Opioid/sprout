@@ -5,7 +5,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 #include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
@@ -76,7 +76,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	transmittance = math::exp(-d * extinction);
 
 	constexpr Algorithm algorithm = Algorithm::Listing_10;
-
+/*
 	if (Algorithm::PBRT == algorithm) {
 		// PBRT style raymarching
 	} else if (Algorithm::Algorithm_1 == algorithm) {
@@ -130,8 +130,58 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 		radiance += l;
 	}
-
+*/
 	return radiance;
+}
+
+bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
+										   const Material_sample& material_sample,
+										   Worker& worker, float3& li, float3& transmittance) {
+	Transformation temp;
+	const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
+
+	const auto material = intersection.material();
+
+	const float3 sigma_a = material->absorption(transformation, float3::identity(),
+											   Sampler_filter::Undefined, worker);
+
+	const float3 sigma_s = material->scattering(transformation, float3::identity(),
+											   Sampler_filter::Undefined, worker);
+
+	const float3 extinction = sigma_a + sigma_s;
+
+	const float3 scattering_albedo = sigma_s / extinction;
+
+	const bool hit = worker.intersect_and_resolve_mask(ray, intersection, Sampler_filter::Nearest);
+	if (!hit) {
+		li = float3(0.f);
+		transmittance = float3(1.f);
+		return false;
+	}
+
+	const float d = ray.max_t;
+
+	transmittance = math::exp(-d * extinction);
+
+
+	const float r = rng_.random_float();
+	const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(transmittance))) / spectrum::average(extinction);
+
+//	const float3 tr = math::exp(-scatter_distance * extinction);
+
+	const float3 p = ray.point(scatter_distance);
+
+	float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
+
+//	l *= (1.f - transmittance) / (extinction * tr);
+
+//	l *= extinction * scattering_albedo * tr;
+
+	l *= (1.f - transmittance) * scattering_albedo;
+
+	li = l;
+
+	return true;
 }
 
 size_t Single_scattering_tracking::num_bytes() const {
@@ -139,7 +189,9 @@ size_t Single_scattering_tracking::num_bytes() const {
 }
 
 float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const float3& position,
-											 Worker& worker) {
+														 const Intersection& intersection,
+														 const Material_sample& material_sample,
+														 Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;
@@ -157,7 +209,11 @@ float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const f
 		const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 		shadow_ray.max_t = light_sample.shape.t - offset;
 
-		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+	//	const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+
+		Intersection tintersection = intersection;
+		tintersection.geo.subsurface = true;
+		const float3 tv = worker.tinted_visibility(shadow_ray, tintersection, material_sample, Sampler_filter::Nearest);
 		if (math::any_greater_zero(tv)) {
 			const float3 tr = worker.transmittance(shadow_ray);
 

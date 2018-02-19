@@ -4,6 +4,7 @@
 #include "scene/scene_worker.inl"
 #include "scene/material/material_attenuation.hpp"
 #include "scene/material/material_sample.inl"
+#include "scene/material/null/null_sample.hpp"
 
 namespace scene::material::volumetric {
 
@@ -15,7 +16,17 @@ Material::~Material() {}
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
 										 Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
 										 const Worker& worker) const {
-	auto& sample = worker.sample<Sample>();
+	if (rs.subsurface) {
+		auto& sample = worker.sample<Sample>();
+
+		sample.set_basis(rs.geo_n, wo);
+
+		sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
+
+		return sample;
+	}
+
+	auto& sample = worker.sample<null::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -25,7 +36,7 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 }
 
 bool Material::is_volumetric() const {
-	return true;
+	return false;
 }
 
 void Material::set_attenuation(const float3& absorption_color, const float3& scattering_color,

@@ -32,11 +32,18 @@ public:
 	virtual float3 li(const Ray& ray, const Volume& volume,
 					  Worker& worker, float3& transmittance) override final;
 
+	virtual bool integrate(Ray& ray, Intersection& intersection,
+						   const Material_sample& material_sample,
+						   Worker& worker, float3& li, float3& transmittance) override final;
+
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float3 estimate_direct_light(const Ray& ray, const float3& position, Worker& worker);
+	float3 estimate_direct_light(const Ray& ray, const float3& position,
+								 const Intersection& intersection,
+								 const Material_sample& material_sample,
+								 Worker& worker);
 
 	const Settings settings_;
 

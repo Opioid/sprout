@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_BXDF_HPP
+#define SU_CORE_SCENE_MATERIAL_BXDF_HPP
 
 #include "base/math/vector3.hpp"
 #include "base/flags/flags.hpp"
@@ -37,3 +38,5 @@ struct Sample {
 };
 
 }
+
+#endif

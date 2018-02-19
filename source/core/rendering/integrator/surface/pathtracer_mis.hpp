@@ -12,7 +12,6 @@
 namespace scene {
 
 namespace light { class Light; }
-namespace material { class Sample; }
 
 }
 

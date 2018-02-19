@@ -10,6 +10,8 @@ class Factory;
 
 }
 
+namespace scene::material { class Sample; }
+
 namespace rendering {
 
 namespace integrator {
@@ -47,6 +49,11 @@ public:
 	float4 li(Ray& ray);
 	float3 li(Ray& ray, scene::prop::Intersection& intersection);
 	float3 volume_li(const Ray& ray, float3& transmittance);
+
+	using Material_sample = scene::material::Sample;
+
+	bool volume(Ray& ray, scene::prop::Intersection& intersection,
+				const Material_sample& material_sample, float3& li, float3& transmittance);
 
 	float3 transmittance(const Ray& ray) const;
 

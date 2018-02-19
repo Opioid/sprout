@@ -9,6 +9,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/debug.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl1.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl1.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_mis.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_mis.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_ng.cpp"

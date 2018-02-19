@@ -97,6 +97,13 @@ float3 Worker::volume_li(const Ray& ray, float3& transmittance) {
 	return radiance;
 }
 
+bool Worker::volume(Ray& ray, scene::prop::Intersection& intersection,
+					const Material_sample& material_sample,
+					float3& li, float3& transmittance) {
+	return volume_integrator_->integrate(ray, intersection, material_sample,
+										 *this, li, transmittance);
+}
+
 float3 Worker::transmittance(const Ray& ray) const {
 	float3 transmittance(1.f);
 
