@@ -159,7 +159,8 @@ float3 Pathtracer_DL1::estimate_direct_light(const Ray& ray, const Intersection&
 			const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 			shadow_ray.max_t = light_sample.shape.t - offset;
 
-			const float3 tv = worker.tinted_visibility(shadow_ray, filter);
+		//	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
+			const float3 tv = worker.tinted_visibility(shadow_ray, intersection, material_sample, filter);
 			if (math::any_greater_zero(tv)) {
 				const float3 tr = worker.transmittance(shadow_ray);
 

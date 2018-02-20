@@ -161,27 +161,41 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 	const float d = ray.max_t;
 
-	transmittance = math::exp(-d * extinction);
+	const bool multiple_scattering = true;
 
+	if (multiple_scattering) {
 
-	const float r = rng_.random_float();
-	const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(transmittance))) / spectrum::average(extinction);
+		const float r = rng_.random_float();
+		const float scatter_distance = -std::log(1.f - r) / spectrum::average(extinction);
 
-//	const float3 tr = math::exp(-scatter_distance * extinction);
+		if (scatter_distance < d) {
+			const float3 p = ray.point(scatter_distance);
 
-	const float3 p = ray.point(scatter_distance);
+			intersection.geo.p = p;
+			intersection.geo.subsurface = true;
 
-	float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
+		} else {
+			transmittance = math::exp(-d * extinction);
+			li = float3(0.f);
+		}
 
-//	l *= (1.f - transmittance) / (extinction * tr);
+		return true;
+	} else {
+		transmittance = math::exp(-d * extinction);
 
-//	l *= extinction * scattering_albedo * tr;
+		const float r = rng_.random_float();
+		const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(transmittance))) / spectrum::average(extinction);
 
-	l *= (1.f - transmittance) * scattering_albedo;
+		const float3 p = ray.point(scatter_distance);
 
-	li = l;
+		float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
 
-	return true;
+		l *= (1.f - transmittance) * scattering_albedo;
+
+		li = l;
+
+		return true;
+	}
 }
 
 size_t Single_scattering_tracking::num_bytes() const {
