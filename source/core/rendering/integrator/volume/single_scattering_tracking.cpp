@@ -164,7 +164,6 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 	const bool multiple_scattering = true;
 
 	if (multiple_scattering) {
-
 		const float r = rng_.random_float();
 		const float scatter_distance = -std::log(1.f - r) / spectrum::average(extinction);
 
@@ -172,13 +171,15 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			const float3 p = ray.point(scatter_distance);
 
 			intersection.geo.p = p;
+			intersection.geo.epsilon = 0.f;
 			intersection.geo.subsurface = true;
 
+			transmittance = math::exp(-scatter_distance * extinction);
 		} else {
 			transmittance = math::exp(-d * extinction);
-			li = float3(0.f);
 		}
 
+		li = float3(0.f);
 		return true;
 	} else {
 		transmittance = math::exp(-d * extinction);

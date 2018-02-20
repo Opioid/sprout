@@ -108,8 +108,10 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
-		if (sample_result.type.test(Bxdf_type::Transmission)
-		&& !intersection.same_hemisphere(sample_result.wi)) {
+		const bool entering = sample_result.type.test(Bxdf_type::Transmission)
+							&& !intersection.same_hemisphere(sample_result.wi);
+
+		if (entering || intersection.geo.subsurface) {
 			float3 vli;
 			float3 vtr;
 			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr);
