@@ -333,7 +333,6 @@ void Scene::compile(thread::Pool& pool) {
 	}
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());
-
 }
 
 entity::Dummy* Scene::create_dummy() {
@@ -423,7 +422,6 @@ void Scene::add_extension(entity::Entity* extension, const std::string& name) {
 
 	add_named_entity(extension, name);
 }
-
 
 void Scene::add_material(const material::Material_ptr& material) {
 	materials_.push_back(material);

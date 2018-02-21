@@ -73,7 +73,7 @@ public:
 							Sampler_filter filter, const Worker& worker) const;
 
 	virtual float3 optical_depth(const Transformation& transformation, const math::AABB& aabb,
-								 const math::Ray& ray,float step_size, rnd::Generator& rng,
+								 const math::Ray& ray, float step_size, rnd::Generator& rng,
 								 Sampler_filter filter, const Worker& worker) const;
 
 	virtual float3 absorption(const Transformation& transformation, const float3& p,
@@ -81,6 +81,9 @@ public:
 
 	virtual float3 scattering(const Transformation& transformation, const float3& p,
 							  Sampler_filter filter, const Worker& worker) const;
+
+	virtual float max_extinction() const;
+	virtual bool  is_heterogeneous_volume() const;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation, float area,

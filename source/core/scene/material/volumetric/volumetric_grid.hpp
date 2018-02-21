@@ -14,6 +14,9 @@ public:
 
 	~Grid();
 
+	virtual float max_extinction() const override final;
+	virtual bool  is_heterogeneous_volume() const override final;
+
 	virtual size_t num_bytes() const override final;
 
 private:
@@ -21,7 +24,11 @@ private:
 	virtual float density(const Transformation& transformation, const float3& p,
 						  Sampler_filter filter, const Worker& worker) const override final;
 
+	void calculate_max_extinction();
+
 	Texture_adapter grid_;
+
+	float max_density_;
 };
 
 class Emission_grid final : public Material {
@@ -55,4 +62,3 @@ private:
 }
 
 #endif
-

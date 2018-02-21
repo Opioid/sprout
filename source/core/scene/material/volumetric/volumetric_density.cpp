@@ -44,4 +44,3 @@ float3 Density::scattering(const Transformation& transformation, const float3& p
 }
 
 }
-

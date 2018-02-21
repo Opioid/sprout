@@ -11,6 +11,7 @@ public:
 
 	Byte2_unorm(std::shared_ptr<Image> image);
 
+	virtual float  at_1(int32_t i) const override final;
 	virtual float3 at_3(int32_t i) const override final;
 
 	virtual float  at_1(int32_t x, int32_t y) const override final;

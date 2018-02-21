@@ -9,6 +9,11 @@ Byte3_sRGB::Byte3_sRGB(const std::shared_ptr<Image>& image) :
 	Texture(image),
 	image_(*static_cast<const Byte3*>(image.get())) {}
 
+float Byte3_sRGB::at_1(int32_t i) const {
+	const auto value = image_.load(i);
+	return encoding::cached_srgb_to_float(value[0]);
+}
+
 float3 Byte3_sRGB::at_3(int32_t i) const {
 	const auto value = image_.load(i);
 	return float3(encoding::cached_srgb_to_float(value[0]),

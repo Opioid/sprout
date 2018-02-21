@@ -82,5 +82,3 @@ float Height::density(const Transformation& transformation, const float3& p,
 }
 
 }
-
-

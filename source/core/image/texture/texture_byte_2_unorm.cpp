@@ -9,6 +9,11 @@ Byte2_unorm::Byte2_unorm(std::shared_ptr<Image> image) :
 	Texture(image),
 	image_(*static_cast<const Byte2*>(image.get())) {}
 
+float Byte2_unorm::at_1(int32_t i) const {
+	auto value = image_.load(i);
+	return encoding::cached_unorm_to_float(value[0]);
+}
+
 float3 Byte2_unorm::at_3(int32_t i) const {
 	auto value = image_.load(i);
 	return float3(encoding::cached_unorm_to_float(value[0]),

@@ -89,6 +89,14 @@ float3 Material::scattering(const Transformation& /*transformation*/, const floa
 	return float3::identity();
 }
 
+float Material::max_extinction() const {
+	return 0.f;
+}
+
+bool Material::is_heterogeneous_volume() const {
+	return false;
+}
+
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 								const Transformation& /*transformation*/, float /*area*/,
 								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}

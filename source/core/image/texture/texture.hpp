@@ -29,6 +29,7 @@ public:
 	const float3& dimensions_float3() const;
 	int32_t num_elements() const;
 
+	virtual float  at_1(int32_t i) const = 0;
 	virtual float3 at_3(int32_t i) const = 0;
 
 	virtual float  at_1(int32_t x, int32_t y) const = 0;

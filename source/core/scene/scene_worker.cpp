@@ -8,6 +8,7 @@
 #include "material/sampler_cache.hpp"
 #include "shape/node_stack.inl"
 #include "base/math/vector4.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/random/generator.inl"
 
 namespace scene {
@@ -123,7 +124,7 @@ float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
 }
 
 float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersection,
-								 const material::Sample& sample, Sampler_filter filter) const {
+								 const material::Sample& sample, Sampler_filter filter) {
 	if (intersection.geo.subsurface) {
 		const float ray_max_t = ray.max_t;
 
@@ -132,11 +133,35 @@ float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersectio
 		if (intersect(intersection.prop, ray, epsilon)) {
 			prop_length = ray.max_t;
 
+			const auto material = intersection.material();
+
+			const auto prop = intersection.prop;
+
+			entity::Composed_transformation temp;
+			const auto& transformation = prop->transformation_at(ray.time, temp);
+
+			const float3 tau = material->optical_depth(transformation, prop->aabb(), ray,
+														/*settings_.step_size*/0.01f, rng_,
+														Sampler_filter::Nearest, *this);
+			return math::exp(-tau) * tinted_visibility(ray, filter);
+
 			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
 			ray.max_t = ray_max_t;
 		}
 
-		return sample.bssrdf().transmittance(prop_length) * tinted_visibility(ray, filter);
+	//	return sample.bssrdf().transmittance(prop_length) * tinted_visibility(ray, filter);
+
+//		const auto material = intersection.material();
+
+//		const auto prop = intersection.prop;
+
+//		entity::Composed_transformation temp;
+//		const auto& transformation = prop->transformation_at(ray.time, temp);
+
+//		const float3 tau = material->optical_depth(transformation, prop->aabb(), ray,
+//												  /*settings_.step_size*/0.01f, rng_,
+//												  Sampler_filter::Nearest, *this);
+//		return math::exp(-tau) * tinted_visibility(ray, filter);
 	}
 
 	return tinted_visibility(ray, filter);
