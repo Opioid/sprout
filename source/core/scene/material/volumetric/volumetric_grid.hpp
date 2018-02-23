@@ -14,6 +14,7 @@ public:
 
 	~Grid();
 
+	virtual float max_absorption() const override final;
 	virtual float max_extinction() const override final;
 	virtual bool  is_heterogeneous_volume() const override final;
 
@@ -24,7 +25,7 @@ private:
 	virtual float density(const Transformation& transformation, const float3& p,
 						  Sampler_filter filter, const Worker& worker) const override final;
 
-	void calculate_max_extinction();
+	void calculate_max_density();
 
 	Texture_adapter grid_;
 

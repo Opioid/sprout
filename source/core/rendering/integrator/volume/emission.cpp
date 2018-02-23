@@ -2,6 +2,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
@@ -44,6 +45,21 @@ float3 Emission::li(const Ray& ray, const Volume& volume,
 	transmittance = float3(1.f);
 
 	return emission;
+}
+
+float3 Emission::transmittance(const Ray& ray, const Intersection& intersection,
+							   const Worker& worker) {
+	const auto& prop = *intersection.prop;
+
+	Transformation temp;
+	const auto& transformation = prop.transformation_at(ray.time, temp);
+
+	const auto& material = *intersection.material();
+
+	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
+	return math::exp(-tau);
 }
 
 size_t Emission::num_bytes() const {

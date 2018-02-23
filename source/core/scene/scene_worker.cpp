@@ -119,54 +119,6 @@ float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) const {
 	return 1.f - scene_->opacity(ray, filter, *this);
 }
 
-float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
-	return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
-}
-
-float3 Worker::tinted_visibility(Ray& ray, const prop::Intersection& intersection,
-								 const material::Sample& sample, Sampler_filter filter) {
-	if (intersection.geo.subsurface) {
-		const float ray_max_t = ray.max_t;
-
-		float prop_length = 0.00033f;
-		float epsilon;
-		if (intersect(intersection.prop, ray, epsilon)) {
-			prop_length = ray.max_t;
-
-			const auto material = intersection.material();
-
-			const auto prop = intersection.prop;
-
-			entity::Composed_transformation temp;
-			const auto& transformation = prop->transformation_at(ray.time, temp);
-
-			const float3 tau = material->optical_depth(transformation, prop->aabb(), ray,
-														/*settings_.step_size*/0.01f, rng_,
-														Sampler_filter::Nearest, *this);
-			return math::exp(-tau) * tinted_visibility(ray, filter);
-
-			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
-			ray.max_t = ray_max_t;
-		}
-
-	//	return sample.bssrdf().transmittance(prop_length) * tinted_visibility(ray, filter);
-
-//		const auto material = intersection.material();
-
-//		const auto prop = intersection.prop;
-
-//		entity::Composed_transformation temp;
-//		const auto& transformation = prop->transformation_at(ray.time, temp);
-
-//		const float3 tau = material->optical_depth(transformation, prop->aabb(), ray,
-//												  /*settings_.step_size*/0.01f, rng_,
-//												  Sampler_filter::Nearest, *this);
-//		return math::exp(-tau) * tinted_visibility(ray, filter);
-	}
-
-	return tinted_visibility(ray, filter);
-}
-
 const scene::Scene& Worker::scene() const {
 	return *scene_;
 }

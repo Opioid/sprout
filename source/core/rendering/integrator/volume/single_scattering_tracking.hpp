@@ -32,6 +32,9 @@ public:
 	virtual float3 li(const Ray& ray, const Volume& volume,
 					  Worker& worker, float3& transmittance) override final;
 
+	virtual float3 transmittance(const Ray& ray, const Intersection& intersection,
+								 const Worker& worker) override final;
+
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   const Material_sample& material_sample,
 						   Worker& worker, float3& li, float3& transmittance) override final;

@@ -57,6 +57,11 @@ public:
 
 	float3 transmittance(const Ray& ray) const;
 
+	float3 tinted_visibility(const Ray& ray, Sampler_filter filter) const;
+
+	float3 tinted_visibility(Ray& ray, const scene::prop::Intersection& intersection,
+							 const Material_sample& sample, Sampler_filter filter);
+
 	sampler::Sampler* sampler();
 
 protected:

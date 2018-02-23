@@ -1,6 +1,5 @@
 #include "volume_integrator.hpp"
-#include "base/math/vector4.inl"
-#include "base/random/generator.inl"
+#include "base/math/vector3.inl"
 
 namespace rendering::integrator::volume {
 

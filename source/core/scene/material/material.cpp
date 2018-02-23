@@ -89,6 +89,10 @@ float3 Material::scattering(const Transformation& /*transformation*/, const floa
 	return float3::identity();
 }
 
+float Material::max_absorption() const {
+	return 0.f;
+}
+
 float Material::max_extinction() const {
 	return 0.f;
 }

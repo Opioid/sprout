@@ -53,11 +53,6 @@ public:
 
 	float masked_visibility(const Ray& ray, Sampler_filter filter) const;
 
-	float3 tinted_visibility(const Ray& ray, Sampler_filter filter) const;
-
-	float3 tinted_visibility(Ray& ray, const prop::Intersection& intersection,
-							 const material::Sample& sample, Sampler_filter filter);
-
 	const Scene& scene() const;
 
 	shape::Node_stack& node_stack() const;

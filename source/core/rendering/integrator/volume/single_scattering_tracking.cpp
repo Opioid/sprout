@@ -134,6 +134,52 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	return radiance;
 }
 
+float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
+												 const Worker& worker) {
+	const auto& prop = *intersection.prop;
+
+	Transformation temp;
+	const auto& transformation = prop.transformation_at(ray.time, temp);
+
+	const auto& material = *intersection.material();
+
+	const float d = ray.max_t - ray.min_t;
+
+	if (material.is_heterogeneous_volume()) {
+		bool terminated = false;
+		float t = 0.f;
+
+		do {
+			const float r = rng_.random_float();
+			t = t -std::log(1.f - r) / material.max_absorption();
+			if (t > d) {
+				break;
+			}
+
+			const float3 p = ray.point(ray.min_t + t);
+
+			const float3 sigma_a = material.absorption(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float r2 = rng_.random_float();
+			if (r2 < spectrum::average(sigma_a) / material.max_absorption()) {
+				terminated = true;
+			}
+		} while (!terminated);
+
+		if (terminated) {
+			return float3(0.f);
+		} else {
+			return float3(1.f);
+		}
+	}
+
+	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
+	return math::exp(-tau);
+}
+
 bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 										   const Material_sample& material_sample,
 										   Worker& worker, float3& li, float3& transmittance) {

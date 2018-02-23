@@ -11,10 +11,14 @@ namespace scene::material::volumetric {
 
 Grid::Grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid) :
 	Density(sampler_settings), grid_(grid) {
-	calculate_max_extinction();
+	calculate_max_density();
 }
 
 Grid::~Grid() {}
+
+float Grid::max_absorption() const {
+	return max_density_ * spectrum::average(absorption_coefficient_);
+}
 
 float Grid::max_extinction() const {
 	return max_density_ * spectrum::average(absorption_coefficient_ + scattering_coefficient_);
@@ -40,7 +44,7 @@ float Grid::density(const Transformation& /*transformation*/, const float3& p,
 	return grid_.sample_1(sampler, p_g);
 }
 
-void Grid::calculate_max_extinction() {
+void Grid::calculate_max_density() {
 	float max_density = 0.f;
 
 	const auto texture = grid_.texture();

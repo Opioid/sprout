@@ -134,6 +134,44 @@ float3 Worker::transmittance(const Ray& ray) const {
 	return transmittance;
 }
 
+
+float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
+	return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
+}
+
+float3 Worker::tinted_visibility(Ray& ray, const scene::prop::Intersection& intersection,
+								 const Material_sample& sample, Sampler_filter filter) {
+	if (intersection.geo.subsurface) {
+		const float ray_max_t = ray.max_t;
+
+		float epsilon;
+		if (intersect(intersection.prop, ray, epsilon)) {
+			const float3 tr = volume_integrator_->transmittance(ray, intersection, *this);
+
+			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
+			ray.max_t = ray_max_t;
+
+			return tr * tinted_visibility(ray, filter);
+		}
+
+	//	return sample.bssrdf().transmittance(prop_length) * tinted_visibility(ray, filter);
+
+//		const auto material = intersection.material();
+
+//		const auto prop = intersection.prop;
+
+//		entity::Composed_transformation temp;
+//		const auto& transformation = prop->transformation_at(ray.time, temp);
+
+//		const float3 tau = material->optical_depth(transformation, prop->aabb(), ray,
+//												  /*settings_.step_size*/0.01f, rng_,
+//												  Sampler_filter::Nearest, *this);
+//		return math::exp(-tau) * tinted_visibility(ray, filter);
+	}
+
+	return tinted_visibility(ray, filter);
+}
+
 sampler::Sampler* Worker::sampler() {
 	return sampler_;
 }

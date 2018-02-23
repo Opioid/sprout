@@ -20,7 +20,6 @@
 #include "rendering/integrator/surface/sub/sub_multiple_scattering2.hpp"
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/aerial_perspective.hpp"
-#include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/integrator/volume/single_scattering_tracking.hpp"
@@ -598,8 +597,6 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 
 			return std::make_shared<Aerial_perspective_factory>(settings, num_workers,
 																step_size, shadows);
-		} else if ("Attenuation" == n.name) {
-			return std::make_shared<Attenuation_factory>(settings, num_workers);
 		} else if ("Emission" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 

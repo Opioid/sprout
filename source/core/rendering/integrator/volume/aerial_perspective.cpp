@@ -58,6 +58,22 @@ float3 Aerial_perspective::li(const Ray& ray, const Volume& volume,
 	return integrate_with_shadows(ray, volume, worker, transmittance);
 }
 
+
+float3 Aerial_perspective::transmittance(const Ray& ray, const Intersection& intersection,
+										 const Worker& worker) {
+	const auto& prop = *intersection.prop;
+
+	Transformation temp;
+	const auto& transformation = prop.transformation_at(ray.time, temp);
+
+	const auto& material = *intersection.material();
+
+	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
+	return math::exp(-tau);
+}
+
 size_t Aerial_perspective::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }

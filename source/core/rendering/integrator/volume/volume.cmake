@@ -2,8 +2,6 @@ target_sources(core
 	PRIVATE
 	"${CMAKE_CURRENT_LIST_DIR}/aerial_perspective.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/aerial_perspective.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/attenuation.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/attenuation.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/emission.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/emission.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/single_scattering.cpp"
