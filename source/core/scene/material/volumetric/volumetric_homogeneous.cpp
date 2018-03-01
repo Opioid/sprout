@@ -1,6 +1,7 @@
 #include "volumetric_homogeneous.hpp"
 #include "scene/material/material_sample_helper.hpp"
 #include "base/math/ray.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace scene::material::volumetric {
 
@@ -27,6 +28,10 @@ float3 Homogeneous::absorption(const Transformation& /*transformation*/, const f
 float3 Homogeneous::scattering(const Transformation& /*transformation*/, const float3& /*p*/,
 							   Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	return scattering_coefficient_;
+}
+
+float Homogeneous::max_extinction() const {
+	return spectrum::average(absorption_coefficient_ + scattering_coefficient_);
 }
 
 size_t Homogeneous::num_bytes() const {
