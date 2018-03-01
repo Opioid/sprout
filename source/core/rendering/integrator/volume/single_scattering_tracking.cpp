@@ -151,7 +151,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 
 		do {
 			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / material.max_absorption();
+			t = t -std::log(1.f - r) / material.max_extinction();
 			if (t > d) {
 				break;
 			}
@@ -161,8 +161,13 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 			const float3 sigma_a = material.absorption(transformation, p,
 													   Sampler_filter::Undefined, worker);
 
+			const float3 sigma_s = material.scattering(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 extinction = sigma_a + sigma_s;
+
 			const float r2 = rng_.random_float();
-			if (r2 < spectrum::average(sigma_a) / material.max_absorption()) {
+			if (r2 < spectrum::average(extinction) / material.max_extinction()) {
 				terminated = true;
 			}
 		} while (!terminated);
@@ -270,7 +275,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				transmittance = float3(0.f);
 			} else {
 				transmittance = float3(1.f);
-				li = float3(0.f, 0.f, 0.f);
+				li = float3(0.f);
 			}
 		} else {
 			transmittance = math::exp(-d * extinction);

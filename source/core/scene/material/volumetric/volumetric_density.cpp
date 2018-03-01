@@ -36,6 +36,13 @@ float3 Density::optical_depth(const Transformation& transformation, const math::
 	return step_size * tau * attenuation;
 }
 
+float3 Density::absorption(const Transformation& transformation, const float3& p,
+						   Sampler_filter filter, const Worker& worker) const {
+	const float3 p_o = math::transform_point(p, transformation.world_to_object);
+
+	return density(transformation, p_o, filter, worker) * absorption_coefficient_;
+}
+
 float3 Density::scattering(const Transformation& transformation, const float3& p,
 						   Sampler_filter filter, const Worker& worker) const {
 	const float3 p_o = math::transform_point(p, transformation.world_to_object);

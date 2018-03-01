@@ -16,10 +16,6 @@ Grid::Grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid
 
 Grid::~Grid() {}
 
-float Grid::max_absorption() const {
-	return max_density_ * spectrum::average(absorption_coefficient_);
-}
-
 float Grid::max_extinction() const {
 	return max_density_ * spectrum::average(absorption_coefficient_ + scattering_coefficient_);
 }

@@ -170,7 +170,6 @@ void Loader::load_entities(const json::Value& entities_value,
 		}
 
 		if (!entity) {
-			logging::error("Cannot create entity \"" + type_name + "\": Undefined type.");
 			continue;
 		}
 
@@ -356,10 +355,10 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 			try {
 				return g->second->create_mesh(shape_value, resource_manager_);
 			} catch (const std::exception& e) {
-				logging::error("Cannot create shape \"" + type + "\": " + e.what() + ".");
+				logging::error("Cannot create shape of type \"" + type + "\": " + e.what() + ".");
 			}
 		} else {
-			logging::error("Cannot create shape \"" + type + "\": Undefined type.");
+			logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
 		}
 	}
 

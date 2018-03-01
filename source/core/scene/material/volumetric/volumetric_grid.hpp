@@ -14,7 +14,6 @@ public:
 
 	~Grid();
 
-	virtual float max_absorption() const override final;
 	virtual float max_extinction() const override final;
 	virtual bool  is_heterogeneous_volume() const override final;
 
