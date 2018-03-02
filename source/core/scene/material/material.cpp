@@ -26,6 +26,8 @@ void Material::set_parameters(const json::Value& parameters) {
 	}
 }
 
+void Material::compile() {}
+
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
 float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,

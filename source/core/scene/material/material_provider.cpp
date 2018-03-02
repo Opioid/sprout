@@ -122,6 +122,8 @@ Material_ptr Provider::load(const json::Value& value, const std::string& mount_f
 		throw std::runtime_error("Material is of unknown type");
 	}
 
+	material->compile();
+
 	return material;
 }
 

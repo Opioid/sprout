@@ -11,13 +11,28 @@ namespace scene::material::volumetric {
 
 Grid::Grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid) :
 	Density(sampler_settings), grid_(grid) {
-	calculate_max_density();
 }
 
 Grid::~Grid() {}
 
+void Grid::compile() {
+	float max_density = 0.f;
+
+	const auto texture = grid_.texture();
+
+	const int3 d = texture->dimensions_3();
+
+	for (uint32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
+		max_density = std::max(texture->at_1(i), max_density);
+	}
+
+	const float3 extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
+
+	max_extinction_ = max_density * spectrum::average(extinction_coefficient);
+}
+
 float Grid::max_extinction() const {
-	return max_density_ * spectrum::average(absorption_coefficient_ + scattering_coefficient_);
+	return max_extinction_;
 }
 
 bool Grid::is_heterogeneous_volume() const {
@@ -38,20 +53,6 @@ float Grid::density(const Transformation& /*transformation*/, const float3& p,
 	const auto& sampler = worker.sampler_3D(sampler_key(), filter);
 
 	return grid_.sample_1(sampler, p_g);
-}
-
-void Grid::calculate_max_density() {
-	float max_density = 0.f;
-
-	const auto texture = grid_.texture();
-
-	const int3 d = texture->dimensions_3();
-
-	for (uint32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
-		max_density = std::max(texture->at_1(i), max_density);
-	}
-
-	max_density_ = max_density;
 }
 
 Emission_grid::Emission_grid(const Sampler_settings& sampler_settings,

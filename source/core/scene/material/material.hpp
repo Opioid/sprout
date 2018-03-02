@@ -46,6 +46,8 @@ public:
 
 	void set_parameters(const json::Value& parameters);
 
+	virtual void compile();
+
 	virtual void tick(float absolute_time, float time_slice);
 
 	virtual const Sample& sample(const float3& wo, const Renderstate& rs, Sampler_filter filter,
