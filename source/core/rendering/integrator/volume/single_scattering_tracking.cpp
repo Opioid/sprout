@@ -146,7 +146,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 	const float d = ray.max_t - ray.min_t;
 
 	if (material.is_heterogeneous_volume()) {
-		/*
+
 		bool terminated = false;
 		float t = 0.f;
 
@@ -178,35 +178,6 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 		} else {
 			return float3(1.f);
 		}
-		*/
-		float t = 0.f;
-		while (true) {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / material.max_extinction();
-			if (t > d) {
-				return float3(1.f);
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			const float3 sigma_a = material.absorption(transformation, p,
-													   Sampler_filter::Undefined, worker);
-
-			const float3 sigma_s = material.scattering(transformation, p,
-													   Sampler_filter::Undefined, worker);
-
-			const float3 extinction = sigma_a + sigma_s;
-
-			const float3 sigma_n = material.max_extinction() - extinction;
-
-			const float r2 = rng_.random_float();
-
-			if (r2 < spectrum::average(sigma_a) / material.max_extinction()) {
-				return float3(0.f);
-			} else if (r2 < 1.f - spectrum::average(sigma_n) / material.max_extinction()) {
-				return float3(0.f);
-			}
-		}
 	}
 
 	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
@@ -223,16 +194,6 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 	const auto& material = *intersection.material();
 
-	const float3 sigma_a = material.absorption(transformation, float3::identity(),
-											   Sampler_filter::Undefined, worker);
-
-	const float3 sigma_s = material.scattering(transformation, float3::identity(),
-											   Sampler_filter::Undefined, worker);
-
-	const float3 extinction = sigma_a + sigma_s;
-
-	const float3 scattering_albedo = sigma_s / extinction;
-
 	const bool hit = worker.intersect_and_resolve_mask(ray, intersection, Sampler_filter::Nearest);
 	if (!hit) {
 		li = float3(0.f);
@@ -245,6 +206,14 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 	const bool multiple_scattering = false;
 
 	if (multiple_scattering) {
+		const float3 sigma_a = material.absorption(transformation, float3::identity(),
+												   Sampler_filter::Undefined, worker);
+
+		const float3 sigma_s = material.scattering(transformation, float3::identity(),
+												   Sampler_filter::Undefined, worker);
+
+		const float3 extinction = sigma_a + sigma_s;
+
 		const float r = rng_.random_float();
 		const float scatter_distance = -std::log(1.f - r) / spectrum::average(extinction);
 
@@ -264,7 +233,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		return true;
 	} else {
 		if (material.is_heterogeneous_volume()) {
-			/*
+
 			bool terminated = false;
 			float t = 0.f;
 
@@ -299,7 +268,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			if (terminated) {
 				float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
 
-				l *= h_scattering_albedo * h_extinction;
+			//	l *= h_scattering_albedo * h_extinction;
 
 				li = l;
 
@@ -308,8 +277,8 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				transmittance = float3(1.f);
 				li = float3(0.f);
 			}
-			*/
 
+			/*
 			float t = 0.f;
 			while (true) {
 				const float r = rng_.random_float();
@@ -341,16 +310,27 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				} else if (r2 < 1.f - spectrum::average(sigma_n) / material.max_extinction()) {
 					float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
 
-					l *= sigma_s;
+				//	l *= sigma_s;
 
 					li = l;
 
 					transmittance = float3(0.f);
 					return true;
 				}
-			}
 
+			}
+			*/
 		} else {
+			const float3 sigma_a = material.absorption(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_s = material.scattering(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
+
+			const float3 extinction = sigma_a + sigma_s;
+
+			const float3 scattering_albedo = sigma_s / extinction;
+
 			transmittance = math::exp(-d * extinction);
 
 			const float r = rng_.random_float();
