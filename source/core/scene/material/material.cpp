@@ -91,8 +91,8 @@ float3 Material::scattering(const Transformation& /*transformation*/, const floa
 	return float3::identity();
 }
 
-float Material::max_extinction() const {
-	return 0.f;
+float3 Material::max_extinction() const {
+	return float3::identity();
 }
 
 bool Material::is_heterogeneous_volume() const {

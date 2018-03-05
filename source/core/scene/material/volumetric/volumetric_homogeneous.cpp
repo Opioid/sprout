@@ -30,8 +30,8 @@ float3 Homogeneous::scattering(const Transformation& /*transformation*/, const f
 	return scattering_coefficient_;
 }
 
-float Homogeneous::max_extinction() const {
-	return spectrum::average(absorption_coefficient_ + scattering_coefficient_);
+float3 Homogeneous::max_extinction() const {
+	return absorption_coefficient_ + scattering_coefficient_;
 }
 
 size_t Homogeneous::num_bytes() const {

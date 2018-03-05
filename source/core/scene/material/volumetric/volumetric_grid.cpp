@@ -28,10 +28,10 @@ void Grid::compile() {
 
 	const float3 extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-	max_extinction_ = max_density * spectrum::average(extinction_coefficient);
+	max_extinction_ = max_density * extinction_coefficient;
 }
 
-float Grid::max_extinction() const {
+float3 Grid::max_extinction() const {
 	return max_extinction_;
 }
 
