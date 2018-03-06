@@ -10,9 +10,10 @@ Integrator::~Integrator() {}
 
 bool Integrator::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
 						   const Material_sample& /*material_sample*/,
-						   Worker& /*worker*/, float3& li, float3& transmittance) {
+						   Worker& /*worker*/, float3& li, float3& transmittance, float3& weight) {
 	li = float3(0.f);
 	transmittance = float3(1.f);
+	weight = float3(1.f);
 	return false;
 }
 

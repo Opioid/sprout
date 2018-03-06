@@ -114,7 +114,8 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		if (entering || intersection.geo.subsurface) {
 			float3 vli;
 			float3 vtr;
-			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr);
+			float3 weight;
+			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr, weight);
 
 			result += throughput * vli;
 			throughput *= vtr;

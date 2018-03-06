@@ -186,8 +186,8 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 }
 
 bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
-										   const Material_sample& material_sample,
-										   Worker& worker, float3& li, float3& transmittance) {
+										   const Material_sample& material_sample, Worker& worker,
+										   float3& li, float3& transmittance, float3& weight) {
 	Transformation temp;
 	const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
 

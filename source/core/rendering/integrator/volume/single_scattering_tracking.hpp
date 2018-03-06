@@ -36,8 +36,8 @@ public:
 								 const Worker& worker) override final;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
-						   const Material_sample& material_sample,
-						   Worker& worker, float3& li, float3& transmittance) override final;
+						   const Material_sample& material_sample, Worker& worker,
+						   float3& li, float3& transmittance, float3& weight) override final;
 
 	virtual size_t num_bytes() const override final;
 
