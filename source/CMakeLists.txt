@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 3.1)
 project(sprout)
 
-
 if (CMAKE_VERSION VERSION_LESS 3.3)
 	# This only exists to keep travis cmake version from complaining
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 else ()
 	set(CMAKE_CXX_STANDARD 17)
 endif()
-
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
