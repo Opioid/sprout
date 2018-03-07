@@ -3,6 +3,7 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/light/light_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 #include "scene/volume/volume.hpp"
@@ -11,7 +12,7 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-// #include "base/spectrum/rgb.hpp"
+#include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::volume {
 
@@ -29,6 +30,7 @@ void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scra
 
 float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 										const Worker& worker) {
+/*
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
@@ -38,6 +40,55 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 											  settings_.step_size, rng_,
 											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
+*/
+
+	Transformation temp;
+	const auto& transformation = volume.transformation_at(ray.time, temp);
+
+	const auto& material = *volume.material(0);
+
+	const float d = ray.max_t - ray.min_t;
+
+	if (material.is_heterogeneous_volume()) {
+		const float max_extinction = spectrum::average(material.max_extinction());
+		bool terminated = false;
+		float t = 0.f;
+
+		do {
+			const float r = rng_.random_float();
+			t = t -std::log(1.f - r) / max_extinction;
+			if (t > d) {
+				break;
+			}
+
+			const float3 p = ray.point(ray.min_t + t);
+
+			const float3 sigma_a = material.absorption(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_s = material.scattering(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 extinction = sigma_a + sigma_s;
+
+			const float r2 = rng_.random_float();
+			if (r2 < spectrum::average(extinction) / max_extinction) {
+				terminated = true;
+			}
+		} while (!terminated);
+
+		if (terminated) {
+			return float3(0.f);
+		} else {
+			return float3(1.f);
+		}
+	}
+
+	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
+	return math::exp(-tau);
+
 }
 
 float3 Single_scattering::li(const Ray& ray, const Volume& volume,
@@ -64,7 +115,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	float3 tr(1.f);
 
 	const float3 start = ray.point(min_t);
-
+/*
 	const float r = rng_.random_float();
 
 	min_t += r * step;
@@ -143,11 +194,79 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	const float3 color = step * radiance;
 
 	return color;
+	*/
+
+	const auto& material = *volume.material(0);
+
+	const float max_extinction = spectrum::average(material.max_extinction());
+	bool terminated = false;
+	float t = 0.f;
+
+	float3 p;
+	float3 extinction;
+	float3 scattering_albedo;
+
+	do {
+		const float r = rng_.random_float();
+		t = t -std::log(1.f - r) / max_extinction;
+		if (t > range) {
+			break;
+		}
+
+		p = ray.point(ray.min_t + t);
+
+		const float3 sigma_a = material.absorption(transformation, p,
+												   Sampler_filter::Undefined, worker);
+
+		const float3 sigma_s = material.scattering(transformation, p,
+												   Sampler_filter::Undefined, worker);
+
+		extinction = sigma_a + sigma_s;
+		const float r2 = rng_.random_float();
+		if (r2 < spectrum::average(extinction) / max_extinction) {
+			terminated = true;
+
+			scattering_albedo = sigma_s / extinction;
+		}
+	} while (!terminated);
+
+	if (terminated) {
+	//	float3 l = estimate_direct_light(ray, p, worker);
+
+		// Lighting
+		Ray secondary_ray = ray;
+		secondary_ray.properties.set(Ray::Property::Recursive);
+		secondary_ray.set_primary(false);
+
+		secondary_ray.depth = 0xFFFFFFFE;
+
+
+		scene::prop::Intersection secondary_intersection;
+		secondary_intersection.prop = &volume;
+		secondary_intersection.geo.p = p;
+		secondary_intersection.geo.geo_n = float3(0.f, 1.f, 0.f); // Value shouldn't matter
+		secondary_intersection.geo.part = 0;
+		secondary_intersection.geo.epsilon = 0.f;
+		secondary_intersection.geo.subsurface = false;
+
+		float3 l = worker.li(secondary_ray, secondary_intersection);
+
+		l *= scattering_albedo;// * extinction;
+
+		radiance = l;
+
+		transmittance = float3(0.f);
+	} else {
+		radiance = float3(0.f);
+		transmittance = float3(1.f);
+	}
+
+	return radiance;
 }
 
 float3 Single_scattering::transmittance(const Ray& ray, const Intersection& intersection,
 										const Worker& worker) {
-	const auto& prop = *intersection.prop;
+/*	const auto& prop = *intersection.prop;
 
 	Transformation temp;
 	const auto& transformation = prop.transformation_at(ray.time, temp);
@@ -158,10 +277,93 @@ float3 Single_scattering::transmittance(const Ray& ray, const Intersection& inte
 											  settings_.step_size, rng_,
 											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
+	*/
+	const auto& prop = *intersection.prop;
+
+	Transformation temp;
+	const auto& transformation = prop.transformation_at(ray.time, temp);
+
+	const auto& material = *intersection.material();
+
+	const float d = ray.max_t - ray.min_t;
+
+	if (material.is_heterogeneous_volume()) {
+		const float max_extinction = spectrum::average(material.max_extinction());
+		bool terminated = false;
+		float t = 0.f;
+
+		do {
+			const float r = rng_.random_float();
+			t = t -std::log(1.f - r) / max_extinction;
+			if (t > d) {
+				break;
+			}
+
+			const float3 p = ray.point(ray.min_t + t);
+
+			const float3 sigma_a = material.absorption(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_s = material.scattering(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 extinction = sigma_a + sigma_s;
+
+			const float r2 = rng_.random_float();
+			if (r2 < spectrum::average(extinction) / max_extinction) {
+				terminated = true;
+			}
+		} while (!terminated);
+
+		if (terminated) {
+			return float3(0.f);
+		} else {
+			return float3(1.f);
+		}
+	}
+
+	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
+	return math::exp(-tau);
 }
 
 size_t Single_scattering::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
+}
+
+float3 Single_scattering::estimate_direct_light(const Ray& ray, const float3& position,
+												Worker& worker) {
+	float3 result = float3::identity();
+
+	Ray shadow_ray;
+	shadow_ray.origin = position;
+	shadow_ray.min_t  = 0.f;
+	shadow_ray.depth  = ray.depth + 1;
+	shadow_ray.time   = ray.time;
+
+	const auto light = worker.scene().random_light(rng_.random_float());
+
+	scene::light::Sample light_sample;
+	if (light.ref.sample(position, float3(0.f, 0.f, 1.f), ray.time,
+						 true, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
+		shadow_ray.set_direction(light_sample.shape.wi);
+		const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+		shadow_ray.max_t = light_sample.shape.t - offset;
+
+		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+
+		if (math::any_greater_zero(tv)) {
+			const float3 tr = worker.transmittance(shadow_ray);
+
+			const float phase = 1.f / (4.f * math::Pi);
+
+			result += (tv * tr) * (phase * light_sample.radiance)
+					/ (light.pdf * light_sample.shape.pdf);
+		}
+	}
+
+	return result;
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,

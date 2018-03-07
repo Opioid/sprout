@@ -36,7 +36,7 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 }
 
 bool Material::is_volumetric() const {
-	return false;
+	return true;
 }
 
 void Material::set_attenuation(const float3& absorption_color, const float3& scattering_color,

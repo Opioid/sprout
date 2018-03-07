@@ -39,6 +39,8 @@ public:
 
 private:
 
+	float3 estimate_direct_light(const Ray& ray, const float3& position, Worker& worker);
+
 	const Settings settings_;
 
 	sampler::Random sampler_;
