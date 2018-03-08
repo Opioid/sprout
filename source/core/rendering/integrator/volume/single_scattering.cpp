@@ -231,25 +231,22 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	} while (!terminated);
 
 	if (terminated) {
-	//	float3 l = estimate_direct_light(ray, p, worker);
+		float3 l = estimate_direct_light(ray, p, worker);
 
 		// Lighting
-		Ray secondary_ray = ray;
-		secondary_ray.properties.set(Ray::Property::Recursive);
-		secondary_ray.set_primary(false);
+//		Ray secondary_ray = ray;
+//		secondary_ray.properties.set(Ray::Property::Recursive);
+//		secondary_ray.set_primary(false);
 
-		secondary_ray.depth = 0xFFFFFFFE;
+//		scene::prop::Intersection secondary_intersection;
+//		secondary_intersection.prop = &volume;
+//		secondary_intersection.geo.p = p;
+//		secondary_intersection.geo.geo_n = float3(0.f, 1.f, 0.f); // Value shouldn't matter
+//		secondary_intersection.geo.part = 0;
+//		secondary_intersection.geo.epsilon = 0.f;
+//		secondary_intersection.geo.subsurface = false;
 
-
-		scene::prop::Intersection secondary_intersection;
-		secondary_intersection.prop = &volume;
-		secondary_intersection.geo.p = p;
-		secondary_intersection.geo.geo_n = float3(0.f, 1.f, 0.f); // Value shouldn't matter
-		secondary_intersection.geo.part = 0;
-		secondary_intersection.geo.epsilon = 0.f;
-		secondary_intersection.geo.subsurface = false;
-
-		float3 l = worker.li(secondary_ray, secondary_intersection);
+//		float3 l = worker.li(secondary_ray, secondary_intersection);
 
 		l *= scattering_albedo;// * extinction;
 
