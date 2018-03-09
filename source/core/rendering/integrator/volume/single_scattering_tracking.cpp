@@ -179,12 +179,13 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 	if (!hit) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
+		weight = float3(1.f);
 		return false;
 	}
 
 	const float d = ray.max_t;
 
-	const bool multiple_scattering = false;
+	const bool multiple_scattering = true;
 
 	if (multiple_scattering) {
 		const float3 sigma_a = material.absorption(transformation, float3::identity(),
@@ -206,8 +207,12 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			intersection.geo.subsurface = true;
 
 			transmittance = math::exp(-scatter_distance * extinction);
+			const float3 pdf = extinction * transmittance;
+			const float3 scattering_albedo = sigma_s / extinction;
+			weight = scattering_albedo * extinction / pdf;
 		} else {
 			transmittance = math::exp(-d * extinction);
+			weight = 1.f / transmittance;
 		}
 
 		li = float3(0.f);
@@ -227,6 +232,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 					if (t > d) {
 						transmittance = float3(1.f);
 						li = float3(0.f);
+						weight = float3(1.f);
 						return true;
 					}
 
@@ -255,6 +261,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 					if (r2 < pa) {
 						transmittance = float3(0.f);
 						li = float3(0.f);
+						weight = float3(1.f);
 						return true;
 					} else if (r2 < 1.f - pn) {
 						float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
@@ -262,6 +269,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 						li = w * l;
 
 						transmittance = float3(0.f);
+						weight = float3(1.f);
 						return true;
 					} else {
 						w *= (sigma_n / (mt * pn));
@@ -309,9 +317,11 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 					li = l;
 
 					transmittance = float3(0.f);
+					weight = float3(1.f);
 				} else {
 					li = float3(0.f);
 					transmittance = float3(1.f);
+					weight = float3(1.f);
 				}
 			}
 		} else {
@@ -340,6 +350,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				l *= (1.f - transmittance) * scattering_albedo;
 
 				li = l;
+				weight = float3(1.f);
 			} else if (Algorithm::Delta_tracking == algorithm) {
 				const float max_extinction = spectrum::average(material.max_extinction());
 				bool terminated = false;
@@ -381,9 +392,11 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 					li = l;
 
 					transmittance = float3(0.f);
+					weight = float3(1.f);
 				} else {
 					transmittance = float3(1.f);
 					li = float3(0.f);
+					weight = float3(1.f);
 				}
 			} else {
 				const float max_extinction = spectrum::average(material.max_extinction());
@@ -425,9 +438,11 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 					li = l;
 
 					transmittance = float3(0.f);
+					weight = float3(1.f);
 				} else {
 					transmittance = float3(1.f);
 					li = float3(0.f);
+					weight = float3(1.f);
 				}
 			}
 		}
