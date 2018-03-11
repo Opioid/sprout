@@ -43,6 +43,8 @@ public:
 
 private:
 
+	float3 estimate_direct_light(const Ray& ray, const float3& position, Worker& worker);
+
 	float3 estimate_direct_light(const Ray& ray, const float3& position,
 								 const Intersection& intersection,
 								 const Material_sample& material_sample,

@@ -160,7 +160,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr, weight);
 
 			result += throughput * vli;
-			throughput *= vtr;
+			throughput *= vtr * weight;
 
 			if (!hit) {
 				break;

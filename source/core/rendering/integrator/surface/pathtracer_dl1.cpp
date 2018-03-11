@@ -59,7 +59,7 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			break;
 		}
 
-		result += throughput * weight * estimate_direct_light(ray, intersection, material_sample,
+		result += throughput * estimate_direct_light(ray, intersection, material_sample,
 													 filter, worker);
 	//	throughput *= weight;
 
@@ -121,7 +121,7 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr, weight);
 
 			result += throughput * vli;
-			throughput *= vtr;
+			throughput *= vtr * weight;
 
 			if (!hit) {
 				break;

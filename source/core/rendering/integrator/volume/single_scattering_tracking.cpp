@@ -39,7 +39,7 @@ void Single_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_sa
 void Single_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& volume,
-										const Worker& worker) {
+												 const Worker& worker) {
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
@@ -53,66 +53,87 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 
 float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 									  Worker& worker, float3& transmittance) {
-	return float3(0.f);
-	/*
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const auto& material = *volume.material(0);
 
-	const float d = ray.max_t - ray.min_t;
+	constexpr bool spectral = true;
 
-	float3 li;
+	if (spectral) {
+		const float d = ray.max_t - ray.min_t;
 
-	if (material.is_heterogeneous_volume()) {
-		const float max_extinction = spectrum::average(material.max_extinction());
-		bool terminated = false;
+		float3 w(1.f);
 		float t = 0.f;
 
-		float3 p;
-		float3 extinction;
-		float3 scattering_albedo;
-
-		do {
+		const float mt = math::max_element(material.max_extinction());
+	//	const float mt = spectrum::average(material.max_extinction());
+		while (true) {
 			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / max_extinction;
+			t = t -std::log(1.f - r) / mt;
 			if (t > d) {
-				break;
+				transmittance = float3(1.f);
+				return float3(0.f);
 			}
 
-			p = ray.point(t);
+			const float3 p = ray.point(ray.min_t + t);
 
 			const float3 sigma_a = material.absorption(transformation, p,
-																   Sampler_filter::Undefined, worker);
+													   Sampler_filter::Undefined, worker);
 
 			const float3 sigma_s = material.scattering(transformation, p,
-																   Sampler_filter::Undefined, worker);
+													   Sampler_filter::Undefined, worker);
 
-			extinction = sigma_a + sigma_s;
+			const float3 extinction = sigma_a + sigma_s;
+
+			const float msa = math::max_element(sigma_a);
+			const float mss = math::max_element(sigma_s);
+		//	const float msa = spectrum::average(sigma_a);
+		//	const float mss = spectrum::average(sigma_s);
+			const float c = 1.f / (msa + mss);
+
+			const float pa = msa * c;
+			const float ps = mss * c;
+
 			const float r2 = rng_.random_float();
-			if (r2 < spectrum::average(extinction) / max_extinction) {
-				terminated = true;
+			if (r2 < pa) {
+				transmittance = float3(0.f);
+			//	const float3 lw = (sigma_a / (mt * pa));
+				return float3(0.f);
+			} else {
+				const float3 l = estimate_direct_light(ray, p, worker);
+				w *= (sigma_s / (mt * ps));
+				transmittance = float3(0.f);
+				const float3 scattering_albedo = sigma_s / extinction;
 
-				scattering_albedo = sigma_s / extinction;
+				return scattering_albedo * extinction * l;
 			}
-		} while (!terminated);
-
-		if (terminated) {
-			float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
-
-			l *= scattering_albedo;// * extinction;
-
-			li = l;
-
-			transmittance = float3(0.f);
-		} else {
-			li = float3(0.f);
-			transmittance = float3(1.f);
 		}
-	}
+	} else {
+		const float d = ray.max_t - ray.min_t;
 
-	return li;
-	*/
+		const float3 sigma_a = material.absorption(transformation, float3::identity(),
+												   Sampler_filter::Undefined, worker);
+
+		const float3 sigma_s = material.scattering(transformation, float3::identity(),
+												   Sampler_filter::Undefined, worker);
+
+		const float3 extinction = sigma_a + sigma_s;
+
+		const float3 scattering_albedo = sigma_s / extinction;
+
+		const float3 tr = math::exp(-d * extinction);
+
+		const float r = rng_.random_float();
+		const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
+
+		const float3 p = ray.point(ray.min_t + scatter_distance);
+
+		const float3 l = estimate_direct_light(ray, p, worker);
+
+		transmittance = tr;
+		return l * (1.f - tr) * scattering_albedo;
+	}
 }
 
 float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
@@ -124,9 +145,8 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 
 	const auto& material = *intersection.material();
 
-	const float d = ray.max_t - ray.min_t;
-
 	if (material.is_heterogeneous_volume()) {
+		const float d = ray.max_t - ray.min_t;
 		const float max_extinction = spectrum::average(material.max_extinction());
 		bool terminated = false;
 		float t = 0.f;
@@ -453,6 +473,39 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 size_t Single_scattering_tracking::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
+}
+
+float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const float3& position,
+														 Worker& worker) {
+	float3 result = float3::identity();
+
+	Ray shadow_ray;
+	shadow_ray.origin = position;
+	shadow_ray.min_t  = 0.f;
+	shadow_ray.depth  = ray.depth + 1;
+	shadow_ray.time   = ray.time;
+
+	const auto light = worker.scene().random_light(rng_.random_float());
+
+	scene::light::Sample light_sample;
+	if (light.ref.sample(position, float3(0.f, 0.f, 1.f), ray.time,
+						 true, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
+		shadow_ray.set_direction(light_sample.shape.wi);
+		const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+		shadow_ray.max_t = light_sample.shape.t - offset;
+
+		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+		if (math::any_greater_zero(tv)) {
+			const float3 tr = worker.transmittance(shadow_ray);
+
+			const float phase = 1.f / (4.f * math::Pi);
+
+			result += (tv * tr) * (phase * light_sample.radiance)
+					/ (light.pdf * light_sample.shape.pdf);
+		}
+	}
+
+	return result;
 }
 
 float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const float3& position,

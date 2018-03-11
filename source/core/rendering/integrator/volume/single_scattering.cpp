@@ -30,7 +30,6 @@ void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scra
 
 float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 										const Worker& worker) {
-/*
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
@@ -40,55 +39,6 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 											  settings_.step_size, rng_,
 											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
-*/
-
-	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
-	const auto& material = *volume.material(0);
-
-	const float d = ray.max_t - ray.min_t;
-
-	if (material.is_heterogeneous_volume()) {
-		const float max_extinction = spectrum::average(material.max_extinction());
-		bool terminated = false;
-		float t = 0.f;
-
-		do {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / max_extinction;
-			if (t > d) {
-				break;
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			const float3 sigma_a = material.absorption(transformation, p,
-													   Sampler_filter::Undefined, worker);
-
-			const float3 sigma_s = material.scattering(transformation, p,
-													   Sampler_filter::Undefined, worker);
-
-			const float3 extinction = sigma_a + sigma_s;
-
-			const float r2 = rng_.random_float();
-			if (r2 < spectrum::average(extinction) / max_extinction) {
-				terminated = true;
-			}
-		} while (!terminated);
-
-		if (terminated) {
-			return float3(0.f);
-		} else {
-			return float3(1.f);
-		}
-	}
-
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
-
 }
 
 float3 Single_scattering::li(const Ray& ray, const Volume& volume,
@@ -115,7 +65,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	float3 tr(1.f);
 
 	const float3 start = ray.point(min_t);
-/*
+
 	const float r = rng_.random_float();
 
 	min_t += r * step;
@@ -152,7 +102,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Lighting
-		Ray secondary_ray = ray;
+	/*	Ray secondary_ray = ray;
 		secondary_ray.properties.set(Ray::Property::Recursive);
 		secondary_ray.set_primary(false);
 
@@ -173,8 +123,9 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 		secondary_intersection.geo.part = 0;
 		secondary_intersection.geo.epsilon = 0.f;
 		secondary_intersection.geo.subsurface = false;
-
-		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
+	*/
+	//	const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
+		const float3 local_radiance = estimate_direct_light(ray, current, worker);
 
 		const float3 scattering = material.scattering(transformation, current,
 													  Sampler_filter::Undefined, worker);
@@ -194,71 +145,6 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	const float3 color = step * radiance;
 
 	return color;
-	*/
-
-	const auto& material = *volume.material(0);
-
-	const float max_extinction = spectrum::average(material.max_extinction());
-	bool terminated = false;
-	float t = 0.f;
-
-	float3 p;
-	float3 extinction;
-	float3 scattering_albedo;
-
-	do {
-		const float r = rng_.random_float();
-		t = t -std::log(1.f - r) / max_extinction;
-		if (t > range) {
-			break;
-		}
-
-		p = ray.point(ray.min_t + t);
-
-		const float3 sigma_a = material.absorption(transformation, p,
-												   Sampler_filter::Undefined, worker);
-
-		const float3 sigma_s = material.scattering(transformation, p,
-												   Sampler_filter::Undefined, worker);
-
-		extinction = sigma_a + sigma_s;
-		const float r2 = rng_.random_float();
-		if (r2 < spectrum::average(extinction) / max_extinction) {
-			terminated = true;
-
-			scattering_albedo = sigma_s / extinction;
-		}
-	} while (!terminated);
-
-	if (terminated) {
-		float3 l = estimate_direct_light(ray, p, worker);
-
-		// Lighting
-//		Ray secondary_ray = ray;
-//		secondary_ray.properties.set(Ray::Property::Recursive);
-//		secondary_ray.set_primary(false);
-
-//		scene::prop::Intersection secondary_intersection;
-//		secondary_intersection.prop = &volume;
-//		secondary_intersection.geo.p = p;
-//		secondary_intersection.geo.geo_n = float3(0.f, 1.f, 0.f); // Value shouldn't matter
-//		secondary_intersection.geo.part = 0;
-//		secondary_intersection.geo.epsilon = 0.f;
-//		secondary_intersection.geo.subsurface = false;
-
-//		float3 l = worker.li(secondary_ray, secondary_intersection);
-
-		l *= scattering_albedo;// * extinction;
-
-		radiance = l;
-
-		transmittance = float3(0.f);
-	} else {
-		radiance = float3(0.f);
-		transmittance = float3(1.f);
-	}
-
-	return radiance;
 }
 
 float3 Single_scattering::transmittance(const Ray& ray, const Intersection& intersection,
