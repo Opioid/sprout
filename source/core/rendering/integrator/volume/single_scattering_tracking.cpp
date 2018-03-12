@@ -67,7 +67,6 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		float t = 0.f;
 
 		const float mt = math::max_element(material.max_extinction());
-	//	const float mt = spectrum::average(material.max_extinction());
 		while (true) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -88,8 +87,6 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 			const float msa = math::max_element(sigma_a);
 			const float mss = math::max_element(sigma_s);
-		//	const float msa = spectrum::average(sigma_a);
-		//	const float mss = spectrum::average(sigma_s);
 			const float c = 1.f / (msa + mss);
 
 			const float pa = msa * c;
@@ -99,14 +96,16 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			if (r2 < pa) {
 				transmittance = float3(0.f);
 			//	const float3 lw = (sigma_a / (mt * pa));
+			//	transmittance = 1.f - lw;
+			//	return 1.f - lw;
 				return float3(0.f);
 			} else {
 				const float3 l = estimate_direct_light(ray, p, worker);
 				w *= (sigma_s / (mt * ps));
 				transmittance = float3(0.f);
-				const float3 scattering_albedo = sigma_s / extinction;
+			//	const float3 scattering_albedo = sigma_s / extinction;
 
-				return scattering_albedo * extinction * l;
+				return l;
 			}
 		}
 	} else {
