@@ -68,12 +68,12 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 		const float mt = math::max_element(material.max_extinction());
 		while (true) {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
-			if (t > d) {
-				transmittance = float3(1.f);
-				return float3(0.f);
-			}
+//			const float r = rng_.random_float();
+//			t = t -std::log(1.f - r) / mt;
+//			if (t > d) {
+//				transmittance = float3(1.f);
+//				return float3(0.f);
+//			}
 
 			const float3 p = ray.point(ray.min_t + t);
 
@@ -92,6 +92,23 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			const float pa = msa * c;
 			const float ps = mss * c;
 
+			const float3 wa = (sigma_a / (mt * pa));
+			const float3 ws = (sigma_s / (mt * ps));
+
+
+
+
+			const float r = rng_.random_float();
+			t = t -std::log(1.f - r) / mt;
+			if (t > d) {
+				transmittance = float3(1.f);
+				return float3(0.f);
+			}
+
+
+
+
+
 			const float r2 = rng_.random_float();
 			if (r2 < pa) {
 				transmittance = float3(0.f);
@@ -102,7 +119,11 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			} else {
 				const float3 l = estimate_direct_light(ray, p, worker);
 				w *= (sigma_s / (mt * ps));
+
+
 				transmittance = float3(0.f);
+
+
 			//	const float3 scattering_albedo = sigma_s / extinction;
 
 				return l;
