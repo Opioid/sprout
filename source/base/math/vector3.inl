@@ -584,7 +584,11 @@ static inline constexpr Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b)
 	return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
-static inline constexpr float max_element(const Vector3f_a& v) {
+static inline constexpr float min_component(const Vector3f_a& v) {
+	return std::min(std::min(v[0], v[1]), v[2]);
+}
+
+static inline constexpr float max_component(const Vector3f_a& v) {
 	return std::max(std::max(v[0], v[1]), v[2]);
 }
 

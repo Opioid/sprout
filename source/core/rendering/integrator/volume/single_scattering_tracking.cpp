@@ -66,7 +66,8 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_element(material.max_extinction());
+		const float mt = math::max_component(material.max_extinction());
+		const float mit = math::min_component(material.max_extinction());
 		while (true) {
 //			const float r = rng_.random_float();
 //			t = t -std::log(1.f - r) / mt;
@@ -85,36 +86,28 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 			const float3 extinction = sigma_a + sigma_s;
 
-			const float msa = math::max_element(sigma_a);
-			const float mss = math::max_element(sigma_s);
+			const float msa = math::max_component(sigma_a);
+			const float mss = math::max_component(sigma_s);
 			const float c = 1.f / (msa + mss);
 
 			const float pa = msa * c;
 			const float ps = mss * c;
 
-			const float3 wa = (sigma_a / (mt * pa));
+			const float3 wa = (sigma_a / (mit * pa));
 			const float3 ws = (sigma_s / (mt * ps));
 
-
-
-
 			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
+			t = t -std::log(1.f - r) / mit;
 			if (t > d) {
-				transmittance = float3(1.f);
+				transmittance = 1.f / wa;//float3(1.f);
 				return float3(0.f);
 			}
-
-
-
-
 
 			const float r2 = rng_.random_float();
 			if (r2 < pa) {
 				transmittance = float3(0.f);
-			//	const float3 lw = (sigma_a / (mt * pa));
-			//	transmittance = 1.f - lw;
-			//	return 1.f - lw;
+			//	transmittance = 1.f - wa;
+
 				return float3(0.f);
 			} else {
 				const float3 l = estimate_direct_light(ray, p, worker);
@@ -265,7 +258,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				float3 w(1.f);
 				float t = 0.f;
 
-				const float mt = math::max_element(material.max_extinction());
+				const float mt = math::max_component(material.max_extinction());
 				while (true) {
 					const float r = rng_.random_float();
 					t = t -std::log(1.f - r) / mt;
@@ -288,9 +281,9 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 					const float3 sigma_n = material.max_extinction() - extinction;
 
-					const float msa = math::max_element(sigma_a);
-					const float mss = math::max_element(sigma_s);
-					const float msn = math::max_element(sigma_n);
+					const float msa = math::max_component(sigma_a);
+					const float mss = math::max_component(sigma_s);
+					const float msn = math::max_component(sigma_n);
 					const float c = 1.f / (msa + mss + msn);
 
 					const float pa = msa * c;
