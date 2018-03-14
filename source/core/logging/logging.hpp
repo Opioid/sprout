@@ -12,10 +12,10 @@ enum class Type {
 
 void init(Type type, bool verbose = false);
 
-void info(const std::string& text);
-void warning(const std::string& text);
-void error(const std::string& text);
-void verbose(const std::string& text);
+void info(std::string_view text);
+void warning(std::string_view text);
+void error(std::string_view text);
+void verbose(std::string_view text);
 
 void set_verbose(bool verbose);
 bool is_verbose();
