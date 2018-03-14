@@ -43,6 +43,10 @@ public:
 
 private:
 
+	float3 spectral_stuff(const Ray& ray, const Transformation& transformation,
+						  const Material& material, uint32_t channel, float2 rr,
+						  Worker& worker, float3& transmittance);
+
 	float3 estimate_direct_light(const Ray& ray, const float3& position, Worker& worker);
 
 	float3 estimate_direct_light(const Ray& ray, const float3& position,
