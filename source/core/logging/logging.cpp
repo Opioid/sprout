@@ -22,6 +22,10 @@ void init(Type type, bool verbose) {
 	log_verbose = verbose;
 }
 
+void post(Log::Type type, const std::string& text) {
+	log->post(type, text);
+}
+
 void info(const std::string& text) {
 	log->post(Log::Type::Info, text);
 }

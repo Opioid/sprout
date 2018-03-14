@@ -16,6 +16,7 @@
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/camera/camera.hpp"
+#include "core/scripting/scripting.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
 #include "extension/procedural/aurora/aurora_provider.hpp"
@@ -99,8 +100,10 @@ int main(int argc, char* argv[]) {
 
 	thread::Pool thread_pool(num_workers);
 
+	scripting::init();
 
 
+	scripting::test();
 
 //	auto starburst_start = std::chrono::high_resolution_clock::now();
 //	procedural::starburst::create(thread_pool);
@@ -139,6 +142,7 @@ int main(int argc, char* argv[]) {
 		take = take::Loader::load(*stream, resource_manager);
 	} catch (const std::exception& e) {
 		logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
+		scripting::close();
 		return 1;
 	}
 
@@ -165,6 +169,7 @@ int main(int argc, char* argv[]) {
 			scene.create_animation_stage(take->view.camera.get(), take->camera_animation.get());
 		}
 	} else {
+		scripting::close();
 		return 1;
 	}
 
@@ -208,6 +213,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	log_memory_consumption(resource_manager, *take, scene_loader, scene, rendering_num_bytes);
+
+	scripting::close();
 
 	return 0;
 }

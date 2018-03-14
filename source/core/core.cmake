@@ -17,10 +17,12 @@ include("${CMAKE_CURRENT_LIST_DIR}/rendering/rendering.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/resource/resource.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/sampler/sampler.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/scene/scene.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/scripting/scripting.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/take/take.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/testing/testing.cmake")
 
 target_sources(core
 	PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/../../thirdparty/include/duktape/duktape.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/../../thirdparty/include/miniz/miniz.cpp"
 )
