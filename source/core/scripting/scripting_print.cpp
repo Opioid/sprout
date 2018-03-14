@@ -63,11 +63,11 @@ duk_ret_t duk__print_alert_helper(duk_context* context, logging::Log::Type type)
 }
 
 duk_ret_t duk__print(duk_context* context) {
-	return duk__print_alert_helper(context, logging::Log::Type::Info);
+	return duk__print_alert_helper(context, logging::Log::Type::Script_print);
 }
 
 duk_ret_t duk__alert(duk_context* context) {
-	return duk__print_alert_helper(context, logging::Log::Type::Warning);
+	return duk__print_alert_helper(context, logging::Log::Type::Script_error);
 }
 
 void duk_print_init(duk_context* context) {

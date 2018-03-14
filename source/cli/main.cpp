@@ -110,7 +110,8 @@ int main(int argc, char* argv[]) {
 //	logging::info("Starburst time " +
 //				  string::to_string(chrono::seconds_since(starburst_start)) + " s");
 
-//	return 0;
+	logging::info("bye");
+	return 0;
 
 
 

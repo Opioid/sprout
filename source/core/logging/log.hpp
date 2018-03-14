@@ -13,7 +13,9 @@ public:
 		Info,
 		Warning,
 		Error,
-		Verbose
+		Verbose,
+		Script_print,
+		Script_error
 	};
 
 	virtual ~Log() {}

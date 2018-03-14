@@ -18,6 +18,12 @@ void Std_out::post(Type type, std::string_view text) {
 	case Type::Verbose:
 		std::cout << text << std::endl;
 		break;
+	case Type::Script_print:
+		std::cout << "$: " << text << std::endl;
+		break;
+	case Type::Script_error:
+		std::cout << "$!: " << text << std::endl;
+		break;
 	}
 }
 
