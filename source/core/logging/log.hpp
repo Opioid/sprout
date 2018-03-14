@@ -18,7 +18,7 @@ public:
 
 	virtual ~Log() {}
 
-	virtual void post(Type type, const std::string& text) = 0;
+	virtual void post(Type type, std::string_view text) = 0;
 };
 
 }

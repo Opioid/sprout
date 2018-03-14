@@ -2,6 +2,6 @@
 
 namespace logging {
 
-void Null::post(Type /*type*/, const std::string& /*text*/) {}
+void Null::post(Type /*type*/, std::string_view /*text*/) {}
 
 }

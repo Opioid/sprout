@@ -22,23 +22,23 @@ void init(Type type, bool verbose) {
 	log_verbose = verbose;
 }
 
-void post(Log::Type type, const std::string& text) {
+void post(Log::Type type, std::string_view text) {
 	log->post(type, text);
 }
 
-void info(const std::string& text) {
+void info(std::string_view text) {
 	log->post(Log::Type::Info, text);
 }
 
-void warning(const std::string& text) {
+void warning(std::string_view text) {
 	log->post(Log::Type::Warning, text);
 }
 
-void error(const std::string& text) {
+void error(std::string_view text) {
 	log->post(Log::Type::Error, text);
 }
 
-void verbose(const std::string& text) {
+void verbose(std::string_view text) {
 	if (log_verbose) {
 		log->post(Log::Type::Verbose, text);
 	}

@@ -3,7 +3,7 @@
 
 namespace logging {
 
-void Std_out::post(Type type, const std::string& text) {
+void Std_out::post(Type type, std::string_view text) {
 	switch (type) {
 	case Type::Info:
 	default:
