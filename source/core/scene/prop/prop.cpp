@@ -14,7 +14,7 @@ namespace scene::prop {
 
 Prop::~Prop() {}
 
-void Prop::set_shape(const std::shared_ptr<shape::Shape>& shape) {
+void Prop::set_shape(const Shape_ptr& shape) {
 	shape_ = shape;
 
 	properties_.clear();
@@ -23,9 +23,7 @@ void Prop::set_shape(const std::shared_ptr<shape::Shape>& shape) {
 	properties_.set(Property::Visible_in_shadow);
 }
 
-
-void Prop::set_shape_and_materials(const std::shared_ptr<shape::Shape>& shape,
-								   const Materials& materials) {
+void Prop::set_shape_and_materials(const Shape_ptr& shape, const Materials& materials) {
 	set_shape(shape);
 
 	parts_.resize(shape->num_parts());
@@ -59,7 +57,7 @@ void Prop::morph(thread::Pool& pool) {
 	}
 }
 
-bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack,
+bool Prop::intersect(Ray& ray, Node_stack& node_stack,
 					 shape::Intersection& intersection) const {
 	if (!visible(ray.depth)) {
 		return false;
@@ -75,7 +73,7 @@ bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack,
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
 
-bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon, bool& inside) const {
+bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon, bool& inside) const {
 	if (!ray.properties.test(Ray::Property::Recursive)) {
 		if (ray.properties.test(Ray::Property::Shadow)) {
 			if (!visible_in_shadow()) {
@@ -96,7 +94,7 @@ bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon, bo
 	return shape_->intersect(transformation, ray, node_stack, epsilon, inside);
 }
 
-bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
+bool Prop::intersect_p(const Ray& ray, Node_stack& node_stack) const {
 	if (!visible_in_shadow()) {
 		return false;
 	}

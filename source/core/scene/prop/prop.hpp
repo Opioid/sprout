@@ -28,16 +28,17 @@ class Prop : public entity::Entity {
 
 public:
 
+	using Node_stack = shape::Node_stack;
 	using Sampler_filter = material::Sampler_settings::Filter;
+	using Shape_ptr = std::shared_ptr<shape::Shape>;
 
 	virtual ~Prop();
 
 	void morph(thread::Pool& pool);
 
-	bool intersect(Ray& ray, shape::Node_stack& node_stack,
-				   shape::Intersection& intersection) const;
+	bool intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const;
 
-	bool intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon, bool& inside) const;
+	bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon, bool& inside) const;
 
 	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
 
@@ -50,10 +51,9 @@ public:
 
 	const math::AABB& aabb() const;
 
-	void set_shape(const std::shared_ptr<shape::Shape>& shape);
+	void set_shape(const Shape_ptr& shape);
 
-	void set_shape_and_materials(const std::shared_ptr<shape::Shape>& shape,
-								 const Materials& materials);
+	void set_shape_and_materials(const Shape_ptr& shape, const Materials& materials);
 
 	virtual void set_parameters(const json::Value& parameters) override;
 
@@ -86,7 +86,7 @@ protected:
 	// For moving objects it must cover the entire area occupied by the object during the tick.
 	math::AABB aabb_;
 
-	std::shared_ptr<shape::Shape> shape_;
+	Shape_ptr shape_;
 
 	struct Part {
 		float    area;
@@ -98,6 +98,10 @@ protected:
 	Materials materials_;
 };
 
-}}
+}
+
+using Prop = prop::Prop;
+
+}
 
 #endif

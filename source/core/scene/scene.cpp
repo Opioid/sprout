@@ -175,6 +175,10 @@ float Scene::simulation_time() const {
 	return static_cast<float>(simulation_time_);
 }
 
+uint64_t Scene::current_tick() const {
+	return current_tick_;
+}
+
 entity::Entity* Scene::entity(size_t index) const {
 	if (index >= entities_.size()) {
 		return nullptr;
@@ -248,6 +252,8 @@ void Scene::tick(thread::Pool& thread_pool) {
 	compile(thread_pool);
 
 	simulation_time_ += tick_duration_;
+
+	++current_tick_;
 }
 
 float Scene::seek(float time, thread::Pool& thread_pool) {
@@ -278,6 +284,8 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 	}
 
 	simulation_time_ = first_tick_d;
+
+	current_tick_ = static_cast<uint64_t>(first_tick_d / tick_duration_);
 
 	tick(thread_pool);
 
@@ -358,7 +366,7 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 	return dummy;
 }
 
-prop::Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
+Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
 	prop::Prop* prop;
 
 	if (1 == materials.size() && materials[0]->is_volumetric()) {
@@ -397,7 +405,7 @@ prop::Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& material
 	return prop;
 }
 
-light::Prop_light* Scene::create_prop_light(prop::Prop* prop, uint32_t part) {
+light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) {
 	light::Prop_light* light = new light::Prop_light;
 
 	lights_.push_back(light);
@@ -407,7 +415,7 @@ light::Prop_light* Scene::create_prop_light(prop::Prop* prop, uint32_t part) {
 	return light;
 }
 
-light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32_t part) {
+light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t part) {
 	light::Prop_image_light* light = new light::Prop_image_light;
 
 	lights_.push_back(light);
@@ -417,13 +425,13 @@ light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32
 	return light;
 }
 
-void Scene::add_extension(entity::Entity* extension) {
+void Scene::add_extension(Entity* extension) {
 	extensions_.push_back(extension);
 
 	entities_.push_back(extension);
 }
 
-void Scene::add_extension(entity::Entity* extension, const std::string& name) {
+void Scene::add_extension(Entity* extension, const std::string& name) {
 	add_extension(extension);
 
 	add_named_entity(extension, name);
@@ -437,7 +445,7 @@ void Scene::add_animation(const std::shared_ptr<animation::Animation>& animation
     animations_.push_back(animation);
 }
 
-void Scene::create_animation_stage(entity::Entity* entity, animation::Animation* animation) {
+void Scene::create_animation_stage(Entity* entity, animation::Animation* animation) {
     animation_stages_.push_back(animation::Stage(entity, animation));
 }
 
@@ -459,7 +467,7 @@ size_t Scene::num_bytes() const {
 	return num_bytes + sizeof(*this);
 }
 
-void Scene::add_named_entity(entity::Entity* entity, const std::string& name) {
+void Scene::add_named_entity(Entity* entity, const std::string& name) {
 	if (!entity || name.empty()) {
 		return;
 	}
