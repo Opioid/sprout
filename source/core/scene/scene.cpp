@@ -171,6 +171,10 @@ float Scene::simulation_time() const {
 	return static_cast<float>(simulation_time_);
 }
 
+uint64_t Scene::current_tick() const {
+	return current_tick_;
+}
+
 entity::Entity* Scene::entity(size_t index) const {
 	if (index >= entities_.size()) {
 		return nullptr;
@@ -242,6 +246,8 @@ void Scene::tick(thread::Pool& thread_pool) {
 	compile(thread_pool);
 
 	simulation_time_ += tick_duration_;
+
+	++current_tick_;
 }
 
 float Scene::seek(float time, thread::Pool& thread_pool) {
@@ -272,6 +278,8 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 	}
 
 	simulation_time_ = first_tick_d;
+
+	current_tick_ = static_cast<uint64_t>(first_tick_d / tick_duration_);
 
 	tick(thread_pool);
 

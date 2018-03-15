@@ -83,6 +83,7 @@ public:
 
 	float tick_duration() const;
 	float simulation_time() const;
+	uint64_t current_tick() const;
 
 	Entity* entity(size_t index) const;
 	Entity* entity(std::string_view name) const;
@@ -129,6 +130,7 @@ private:
 
 	double tick_duration_ = 1.0 / 60.0;
 	double simulation_time_ = 0.0;
+	uint64_t current_tick_ = 0;
 
 	bvh::Builder<prop::Prop> prop_builder_;
 	prop::BVH_wrapper		 prop_bvh_;
