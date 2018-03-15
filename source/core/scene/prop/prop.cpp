@@ -25,7 +25,7 @@ void Prop::set_shape(const std::shared_ptr<shape::Shape>& shape) {
 
 
 void Prop::set_shape_and_materials(const std::shared_ptr<shape::Shape>& shape,
-								   const material::Materials& materials) {
+								   const Materials& materials) {
 	set_shape(shape);
 
 	parts_.resize(shape->num_parts());

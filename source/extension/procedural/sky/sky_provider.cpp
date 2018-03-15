@@ -54,7 +54,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	manager.store<material::Material>("proc:sun", sun_material);
 
-	material::Materials materials(1);
+	Materials materials(1);
 
 	materials[0] = sky_material;
 	prop::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);

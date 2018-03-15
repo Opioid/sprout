@@ -358,7 +358,7 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 	return dummy;
 }
 
-prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials& materials) {
+prop::Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
 	prop::Prop* prop;
 
 	if (1 == materials.size() && materials[0]->is_volumetric()) {
@@ -388,7 +388,7 @@ prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials
 	return prop;
 }
 
-prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials& materials,
+prop::Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials,
 							   const std::string& name) {
 	prop::Prop* prop = create_prop(shape, materials);
 
@@ -429,7 +429,7 @@ void Scene::add_extension(entity::Entity* extension, const std::string& name) {
 	add_named_entity(extension, name);
 }
 
-void Scene::add_material(const material::Material_ptr& material) {
+void Scene::add_material(const Material_ptr& material) {
 	materials_.push_back(material);
 }
 
@@ -439,6 +439,10 @@ void Scene::add_animation(const std::shared_ptr<animation::Animation>& animation
 
 void Scene::create_animation_stage(entity::Entity* entity, animation::Animation* animation) {
     animation_stages_.push_back(animation::Stage(entity, animation));
+}
+
+void Scene::set_on_tick_program(const std::string& source) {
+	on_tick_program_ = source;
 }
 
 size_t Scene::num_bytes() const {

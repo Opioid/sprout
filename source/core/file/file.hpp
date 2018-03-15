@@ -16,4 +16,6 @@ enum class Type {
 
 Type query_type(std::istream& stream);
 
+std::string read_text(std::istream& stream);
+
 }

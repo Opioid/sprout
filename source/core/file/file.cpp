@@ -24,4 +24,18 @@ Type query_type(std::istream& stream) {
 	return type;
 }
 
+std::string read_text(std::istream& stream) {
+	std::string text;
+
+	char buffer[4096];
+
+	while (stream.read(buffer, sizeof(buffer))) {
+		text.append(buffer, sizeof(buffer));
+	}
+
+	text.append(buffer, stream.gcount());
+
+	return text;
+}
+
 }

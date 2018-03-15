@@ -53,7 +53,7 @@ public:
 	void set_shape(const std::shared_ptr<shape::Shape>& shape);
 
 	void set_shape_and_materials(const std::shared_ptr<shape::Shape>& shape,
-								 const material::Materials& materials);
+								 const Materials& materials);
 
 	virtual void set_parameters(const json::Value& parameters) override;
 
@@ -95,7 +95,7 @@ protected:
 
 	std::vector<Part> parts_;
 
-	material::Materials materials_;
+	Materials materials_;
 };
 
 }}

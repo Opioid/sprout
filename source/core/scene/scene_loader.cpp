@@ -6,6 +6,7 @@
 #include "animation/animation_loader.hpp"
 #include "entity/dummy.hpp"
 #include "entity/entity_extension_provider.hpp"
+#include "file/file.hpp"
 #include "light/prop_light.hpp"
 #include "light/prop_image_light.hpp"
 #include "prop/prop.hpp"
@@ -31,7 +32,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, const material::Material_ptr& fallback_material) :
+Loader::Loader(resource::Manager& manager, const Material_ptr& fallback_material) :
 	resource_manager_(manager),
 	box_(std::make_shared<shape::Box>()),
 	canopy_(std::make_shared<shape::Canopy>()),
@@ -73,6 +74,8 @@ bool Loader::load(const std::string& filename, const std::string& take_name, Sce
 		for (auto& n : root->GetObject()) {
 			if ("entities" == n.name) {
 				load_entities(n.value, nullptr, scene);
+			} else if ("script" == n.name) {
+				load_script(n.value, scene);
 			}
 		}
 
@@ -243,7 +246,7 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 prop::Prop* Loader::load_prop(const json::Value& prop_value,
 							  const std::string& name, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
-	material::Materials materials;
+	Materials materials;
 	const json::Value* visibility = nullptr;
 	bool open = false;
 
@@ -366,7 +369,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 }
 
 void Loader::load_materials(const json::Value& materials_value, Scene& scene,
-							material::Materials& materials) {
+							Materials& materials) {
 	if (!materials_value.IsArray()) {
 		return;
 	}
@@ -378,7 +381,7 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 	}
 }
 
-material::Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
+Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
 	// First, check if we maybe already have cached the material.
 	if (auto material = resource_manager_.get<material::Material>(name); material) {
 		return material;
@@ -412,6 +415,19 @@ material::Material_ptr Loader::load_material(const std::string& name, Scene& sce
 	}
 
 	return fallback_material_;
+}
+
+void Loader::load_script(const json::Value& script_value, Scene& scene) {
+	for (auto& n : script_value.GetObject()) {
+		if ("on_tick" == n.name) {
+			if (const std::string source = json::read_string(n.value, "source"); !source.empty()) {
+				scene.set_on_tick_program(source);
+			} else if (const std::string file = json::read_string(n.value, "file"); !file.empty()) {
+				auto stream_pointer = resource_manager_.filesystem().read_stream(file);
+				scene.set_on_tick_program(file::read_text(*stream_pointer));
+			}
+		}
+	}
 }
 
 }

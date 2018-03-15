@@ -103,9 +103,9 @@ public:
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(const std::string& name);
 
-	prop::Prop* create_prop(const Shape_ptr& shape, const material::Materials& materials);
+	prop::Prop* create_prop(const Shape_ptr& shape, const Materials& materials);
 
-	prop::Prop* create_prop(const Shape_ptr& shape, const material::Materials& materials,
+	prop::Prop* create_prop(const Shape_ptr& shape, const Materials& materials,
 							const std::string& name);
 
 	light::Prop_light* create_prop_light(prop::Prop* prop, uint32_t part);
@@ -114,10 +114,12 @@ public:
 	void add_extension(entity::Entity* extension);
 	void add_extension(entity::Entity* extension, const std::string& name);
 
-	void add_material(const material::Material_ptr& material);
+	void add_material(const Material_ptr& material);
 	void add_animation(const std::shared_ptr<animation::Animation>& animation);
 
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
+
+	void set_on_tick_program(const std::string& source);
 
 	size_t num_bytes() const;
 
@@ -163,7 +165,7 @@ private:
 
 	math::Distribution_1D light_distribution_;
 
-	std::vector<material::Material_ptr> materials_;
+	std::vector<Material_ptr> materials_;
 
     std::vector<std::shared_ptr<animation::Animation>> animations_;
 

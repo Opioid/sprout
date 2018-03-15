@@ -134,9 +134,11 @@ private:
 	static float3 rainbow_[Num_bands];
 };
 
+}
+
 using Material_ptr = std::shared_ptr<material::Material>;
 using Materials = std::vector<Material_ptr>;
 
-}}
+}
 
 #endif

@@ -59,10 +59,10 @@ public:
 					 VVector ray_min_t, VVector ray_max_t, uint32_t ray_signs[4],
 					 Node_stack& node_stack) const;
 
-	float opacity(math::Ray& ray, float time, const material::Materials& materials,
+	float opacity(math::Ray& ray, float time, const Materials& materials,
 				  material::Sampler_settings::Filter filter, const Worker& worker) const;
 
-	float3 absorption(math::Ray& ray, float time, const material::Materials& materials,
+	float3 absorption(math::Ray& ray, float time, const Materials& materials,
 					  material::Sampler_settings::Filter filter, const Worker& worker) const;
 
 	void interpolate_triangle_data(uint32_t index, float2 uv,
