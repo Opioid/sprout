@@ -53,6 +53,12 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 
 float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 									  Worker& worker, float3& transmittance) {
+	enum class Algorithm {
+		Delta_tracking,
+		Spectral_tracking,
+		Separated_delta_tracking
+	};
+
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
@@ -61,9 +67,9 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	constexpr bool spectral = true;
 
 	if (spectral) {
-		const bool separation = true;
+		constexpr Algorithm algorithm = Algorithm::Spectral_tracking;
 
-		if (separation) {
+		if (Algorithm::Separated_delta_tracking == algorithm) {
 			const float2 rr(rng_.random_float(), rng_.random_float());
 
 			float3 transmittance_r;
@@ -77,70 +83,116 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 			transmittance = str;
 			return float3(0.f);
-		}
+		} else if (Algorithm::Spectral_tracking == algorithm) {
+			const float d = ray.max_t - ray.min_t;
 
-		const float d = ray.max_t - ray.min_t;
+			float3 w(1.f);
+			float t = 0.f;
 
-		float3 w(1.f);
-		float t = 0.f;
+			const float mt = math::max_component(material.max_extinction());
+			const float mit = spectrum::average(material.max_extinction());
+			while (true) {
+	//			const float r = rng_.random_float();
+	//			t = t -std::log(1.f - r) / mt;
+	//			if (t > d) {
+	//				transmittance = float3(1.f);
+	//				return float3(0.f);
+	//			}
 
-		const float mt = math::min_component(material.max_extinction());
-		const float mit = spectrum::average(material.max_extinction());
-		while (true) {
-//			const float r = rng_.random_float();
-//			t = t -std::log(1.f - r) / mt;
-//			if (t > d) {
-//				transmittance = float3(1.f);
-//				return float3(0.f);
-//			}
+				const float3 p = ray.point(ray.min_t + t);
 
-			const float3 p = ray.point(ray.min_t + t);
+				const float3 sigma_a = material.absorption(transformation, p,
+														   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_a = material.absorption(transformation, p,
-													   Sampler_filter::Undefined, worker);
+				const float3 sigma_s = material.scattering(transformation, p,
+														   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
-													   Sampler_filter::Undefined, worker);
+				const float3 extinction = sigma_a + sigma_s;
 
-			const float3 extinction = sigma_a + sigma_s;
+				const float msa = math::max_component(sigma_a);
+				const float mss = math::max_component(sigma_s);
+			//	const float msa = spectrum::average(sigma_a);
+			//	const float mss = spectrum::average(sigma_s);
+				const float c = 1.f / (msa + mss);
 
-			const float msa = math::min_component(sigma_a);
-			const float mss = math::min_component(sigma_s);
-		//	const float msa = spectrum::average(sigma_a);
-		//	const float mss = spectrum::average(sigma_s);
-			const float c = 1.f / (msa + mss);
+				const float pa = msa * c;
+				const float ps = mss * c;
 
-			const float pa = msa * c;
-			const float ps = mss * c;
+				const float3 wa = (sigma_a / (mt * pa));
+				const float3 ws = (sigma_s / (mt * ps));
 
-			const float3 wa = (sigma_a / (mt * pa));
-			const float3 ws = (sigma_s / (mt * ps));
+				const float r = rng_.random_float();
+				t = t -std::log(1.f - r) / mt;
+				if (t > d) {
+				//	transmittance = float3(1.f);
+					transmittance = float3(1.f);
+					return float3(0.f);
+				}
 
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
-			if (t > d) {
-			//	transmittance = float3(1.f);
-				transmittance = 1.f / wa;//float3(1.f);
-				return float3(0.f);
+				const float r2 = rng_.random_float();
+				if (r2 < pa) {
+					transmittance = float3(0.f);
+				//	transmittance = wa;//1.f / wa;
+
+					return float3(0.f);
+				} else {
+					const float3 l = estimate_direct_light(ray, p, worker);
+					w *= (sigma_s / (mt * ps));
+
+
+					transmittance = float3(0.f);
+
+
+				//	const float3 scattering_albedo = sigma_s / extinction;
+
+					return l;
+				}
 			}
+		} else if (Algorithm::Delta_tracking == algorithm) {
+			const float d = ray.max_t - ray.min_t;
 
-			const float r2 = rng_.random_float();
-			if (r2 < pa) {
+			const float max_extinction = spectrum::average(material.max_extinction());
+			bool terminated = false;
+			float t = 0.f;
+
+			float3 p;
+			float3 extinction;
+			float3 scattering_albedo;
+
+			do {
+				const float r = rng_.random_float();
+				t = t -std::log(1.f - r) / max_extinction;
+				if (t > d) {
+					break;
+				}
+
+				p = ray.point(ray.min_t + t);
+
+				const float3 sigma_a = material.absorption(transformation, p,
+														   Sampler_filter::Undefined, worker);
+
+				const float3 sigma_s = material.scattering(transformation, p,
+														   Sampler_filter::Undefined, worker);
+
+				extinction = sigma_a + sigma_s;
+				const float r2 = rng_.random_float();
+				if (r2 < spectrum::average(extinction) / max_extinction) {
+					terminated = true;
+
+					scattering_albedo = sigma_s / extinction;
+				}
+			} while (!terminated);
+
+			if (terminated) {
+				float3 l = estimate_direct_light(ray, p, worker);
+
+				l *= scattering_albedo;
+
 				transmittance = float3(0.f);
-				transmittance = wa;//1.f / wa;
-
-				return float3(0.f);
-			} else {
-				const float3 l = estimate_direct_light(ray, p, worker);
-				w *= (sigma_s / (mt * ps));
-
-
-				transmittance = float3(0.f);
-
-
-			//	const float3 scattering_albedo = sigma_s / extinction;
-
 				return l;
+			} else {
+				transmittance = float3(1.f);
+				return float3(0.f);
 			}
 		}
 	} else {
