@@ -65,6 +65,7 @@ public:
 	using Entity = entity::Entity;
 	using Prop = prop::Prop;
 
+//	Scene();
 	Scene(const take::Settings& settings, scripting::Engine& scripting_engine);
 	~Scene();
 
@@ -175,7 +176,7 @@ private:
 
     std::vector<animation::Stage> animation_stages_;
 
-	std::string on_tick_program_ = "print('happy happy')";
+	std::string on_tick_program_;
 };
 
 }

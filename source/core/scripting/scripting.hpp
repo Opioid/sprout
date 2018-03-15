@@ -3,6 +3,10 @@
 
 namespace scripting {
 
+class Engine;
+
+void register_types(Engine& engine);
+
 }
 
 #endif

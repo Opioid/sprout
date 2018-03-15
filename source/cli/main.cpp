@@ -16,6 +16,7 @@
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/camera/camera.hpp"
+#include "core/scripting/scripting.hpp"
 #include "core/scripting/scripting_engine.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
@@ -102,7 +103,7 @@ int main(int argc, char* argv[]) {
 
 
 	scripting::Engine scripting_engine;
-
+	scripting::register_types(scripting_engine);
 
 	scripting_engine.eval("print('hello')");
 

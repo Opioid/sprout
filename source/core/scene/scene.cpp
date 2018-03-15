@@ -20,10 +20,13 @@
 #include "base/math/quaternion.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/spectrum/rgb.hpp"
+#include "dukglue/dukglue.h"
 
 #include "base/debug/assert.hpp"
 
 namespace scene {
+
+//Scene::Scene() {}
 
 Scene::Scene(const take::Settings& settings,
 			 scripting::Engine& scripting_engine) :
@@ -41,6 +44,8 @@ Scene::Scene(const take::Settings& settings,
 	materials_.reserve(16);
 	animations_.reserve(16);
 	animation_stages_.reserve(16);
+
+	dukglue_register_global(scripting_engine.context(), this, "scene");
 }
 
 Scene::~Scene() {
