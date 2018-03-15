@@ -90,7 +90,7 @@ bool Disk::intersect_p(const Transformation& transformation,
 }
 
 float Disk::opacity(const Transformation& transformation, const Ray& ray,
-					const material::Materials& materials,
+					const Materials& materials,
 					Sampler_filter filter, const Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -119,7 +119,7 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 }
 
 float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ray,
-							 const material::Materials& materials,
+							 const Materials& materials,
 							 Sampler_filter filter, const Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);

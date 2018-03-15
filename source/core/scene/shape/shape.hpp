@@ -54,11 +54,11 @@ public:
 //							 Node_stack& node_stack) const;
 
 	virtual float opacity(const Transformation& transformation, const Ray& ray,
-						  const material::Materials& materials,
+						  const Materials& materials,
 						  Sampler_filter filter, const Worker& worker) const = 0;
 
 	virtual float3 thin_absorption(const Transformation& transformation, const Ray& ray,
-								   const material::Materials& materials,
+								   const Materials& materials,
 								   Sampler_filter filter, const Worker& worker) const = 0;
 
 	virtual bool sample(uint32_t part, const Transformation& transformation,

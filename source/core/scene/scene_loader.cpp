@@ -31,7 +31,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, const material::Material_ptr& fallback_material) :
+Loader::Loader(resource::Manager& manager, const Material_ptr& fallback_material) :
 	resource_manager_(manager),
 	box_(std::make_shared<shape::Box>()),
 	canopy_(std::make_shared<shape::Canopy>()),
@@ -243,7 +243,7 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 prop::Prop* Loader::load_prop(const json::Value& prop_value,
 							  const std::string& name, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
-	material::Materials materials;
+	Materials materials;
 	const json::Value* visibility = nullptr;
 	bool open = false;
 
@@ -366,7 +366,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 }
 
 void Loader::load_materials(const json::Value& materials_value, Scene& scene,
-							material::Materials& materials) {
+							Materials& materials) {
 	if (!materials_value.IsArray()) {
 		return;
 	}
@@ -378,7 +378,7 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 	}
 }
 
-material::Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
+Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
 	// First, check if we maybe already have cached the material.
 	if (auto material = resource_manager_.get<material::Material>(name); material) {
 		return material;

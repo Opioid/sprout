@@ -352,7 +352,7 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 	return dummy;
 }
 
-prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials& materials) {
+Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
 	prop::Prop* prop;
 
 	if (1 == materials.size() && materials[0]->is_volumetric()) {
@@ -382,7 +382,7 @@ prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials
 	return prop;
 }
 
-prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials& materials,
+prop::Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials,
 							   const std::string& name) {
 	prop::Prop* prop = create_prop(shape, materials);
 
@@ -391,7 +391,7 @@ prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials
 	return prop;
 }
 
-light::Prop_light* Scene::create_prop_light(prop::Prop* prop, uint32_t part) {
+light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) {
 	light::Prop_light* light = new light::Prop_light;
 
 	lights_.push_back(light);
@@ -401,7 +401,7 @@ light::Prop_light* Scene::create_prop_light(prop::Prop* prop, uint32_t part) {
 	return light;
 }
 
-light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32_t part) {
+light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t part) {
 	light::Prop_image_light* light = new light::Prop_image_light;
 
 	lights_.push_back(light);
@@ -411,19 +411,19 @@ light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32
 	return light;
 }
 
-void Scene::add_extension(entity::Entity* extension) {
+void Scene::add_extension(Entity* extension) {
 	extensions_.push_back(extension);
 
 	entities_.push_back(extension);
 }
 
-void Scene::add_extension(entity::Entity* extension, const std::string& name) {
+void Scene::add_extension(Entity* extension, const std::string& name) {
 	add_extension(extension);
 
 	add_named_entity(extension, name);
 }
 
-void Scene::add_material(const material::Material_ptr& material) {
+void Scene::add_material(const Material_ptr& material) {
 	materials_.push_back(material);
 }
 
@@ -431,7 +431,7 @@ void Scene::add_animation(const std::shared_ptr<animation::Animation>& animation
     animations_.push_back(animation);
 }
 
-void Scene::create_animation_stage(entity::Entity* entity, animation::Animation* animation) {
+void Scene::create_animation_stage(Entity* entity, animation::Animation* animation) {
     animation_stages_.push_back(animation::Stage(entity, animation));
 }
 
@@ -449,7 +449,7 @@ size_t Scene::num_bytes() const {
 	return num_bytes + sizeof(*this);
 }
 
-void Scene::add_named_entity(entity::Entity* entity, const std::string& name) {
+void Scene::add_named_entity(Entity* entity, const std::string& name) {
 	if (!entity || name.empty()) {
 		return;
 	}

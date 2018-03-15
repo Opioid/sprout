@@ -46,7 +46,7 @@ class Loader {
 
 public:
 
-	Loader(resource::Manager& manager, const material::Material_ptr& fallback_material);
+	Loader(resource::Manager& manager, const Material_ptr& fallback_material);
     ~Loader();
 
 	bool load(const std::string& filename, const std::string& take_name, Scene& scene);
@@ -81,9 +81,9 @@ private:
 										const json::Value& shape_value) const;
 
 	void load_materials(const json::Value& materials_value, Scene& scene,
-						material::Materials& materials);
+						Materials& materials);
 
-	material::Material_ptr load_material(const std::string& name, Scene& scene);
+	Material_ptr load_material(const std::string& name, Scene& scene);
 
 	resource::Manager& resource_manager_;
 
@@ -96,7 +96,7 @@ private:
 	std::shared_ptr<shape::Shape> rectangle_;
 	std::shared_ptr<shape::Shape> sphere_;
 
-	material::Material_ptr fallback_material_;
+	Material_ptr fallback_material_;
 
 	std::map<std::string, const json::Value*> local_materials_;
 	std::string mount_folder_;

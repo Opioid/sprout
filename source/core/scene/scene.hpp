@@ -60,6 +60,8 @@ public:
 	using Node_stack = shape::Node_stack;
 	using Sampler_filter = material::Sampler_settings::Filter;
 	using Shape_ptr = std::shared_ptr<shape::Shape>;
+	using Entity = entity::Entity;
+	using Prop = prop::Prop;
 
 	Scene(const take::Settings& settings);
 	~Scene();
@@ -82,8 +84,8 @@ public:
 	float tick_duration() const;
 	float simulation_time() const;
 
-	entity::Entity* entity(size_t index) const;
-	entity::Entity* entity(std::string_view name) const;
+	Entity* entity(size_t index) const;
+	Entity* entity(std::string_view name) const;
 
 	const std::vector<light::Light*>& lights() const;
 
@@ -101,27 +103,27 @@ public:
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(const std::string& name);
 
-	prop::Prop* create_prop(const Shape_ptr& shape, const material::Materials& materials);
+	Prop* create_prop(const Shape_ptr& shape, const Materials& materials);
 
-	prop::Prop* create_prop(const Shape_ptr& shape, const material::Materials& materials,
-							const std::string& name);
+	Prop* create_prop(const Shape_ptr& shape, const Materials& materials,
+					  const std::string& name);
 
-	light::Prop_light* create_prop_light(prop::Prop* prop, uint32_t part);
-	light::Prop_image_light* create_prop_image_light(prop::Prop* prop, uint32_t part);
+	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
+	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
 
-	void add_extension(entity::Entity* extension);
-	void add_extension(entity::Entity* extension, const std::string& name);
+	void add_extension(Entity* extension);
+	void add_extension(Entity* extension, const std::string& name);
 
-	void add_material(const material::Material_ptr& material);
+	void add_material(const Material_ptr& material);
 	void add_animation(const std::shared_ptr<animation::Animation>& animation);
 
-    void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
+	void create_animation_stage(Entity* entity, animation::Animation* animation);
 
 	size_t num_bytes() const;
 
 private:
 
-	void add_named_entity(entity::Entity* entity, const std::string& name);
+	void add_named_entity(Entity* entity, const std::string& name);
 
 	const take::Settings take_settings_;
 
@@ -159,7 +161,7 @@ private:
 
 	math::Distribution_1D light_distribution_;
 
-	std::vector<material::Material_ptr> materials_;
+	std::vector<Material_ptr> materials_;
 
     std::vector<std::shared_ptr<animation::Animation>> animations_;
 
