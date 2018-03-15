@@ -10,6 +10,7 @@
 #include "light/prop_image_light.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
+#include "scripting/scripting_engine.hpp"
 #include "shape/shape.hpp"
 #include "volume/volume.hpp"
 #include "image/texture/texture.hpp"
@@ -24,7 +25,10 @@
 
 namespace scene {
 
-Scene::Scene(const take::Settings& settings) : take_settings_(settings) {
+Scene::Scene(const take::Settings& settings,
+			 scripting::Engine& scripting_engine) :
+	take_settings_(settings),
+	scripting_engine_(scripting_engine) {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
 	infinite_props_.reserve(2);
@@ -222,6 +226,8 @@ const volume::Volume* Scene::volume_region() const {
 void Scene::tick(thread::Pool& thread_pool) {
 	const float simulation_time = static_cast<float>(simulation_time_);
 	const float tick_duration	= static_cast<float>(tick_duration_);
+
+	scripting_engine_.eval(on_tick_program_);
 
 	for (auto m : materials_) {
 		m->tick(simulation_time, tick_duration);

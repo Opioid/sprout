@@ -1,4 +1,5 @@
 #include "log_std_out.hpp"
+#include <string_view>
 #include <iostream>
 
 namespace logging {

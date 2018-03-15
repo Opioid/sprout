@@ -12,6 +12,8 @@
 #include <vector>
 #include <memory>
 
+namespace scripting { class Engine; }
+
 namespace thread { class Pool; }
 
 namespace scene {
@@ -61,7 +63,7 @@ public:
 	using Sampler_filter = material::Sampler_settings::Filter;
 	using Shape_ptr = std::shared_ptr<shape::Shape>;
 
-	Scene(const take::Settings& settings);
+	Scene(const take::Settings& settings, scripting::Engine& scripting_engine);
 	~Scene();
 
 	void finish();
@@ -134,6 +136,8 @@ private:
 	bvh::Builder<volume::Volume> volume_builder_;
 	volume::BVH_wrapper          volume_bvh_;
 
+	scripting::Engine& scripting_engine_;
+
 	light::Null_light null_light_;
 
 	bool has_masked_material_;
@@ -164,6 +168,8 @@ private:
     std::vector<std::shared_ptr<animation::Animation>> animations_;
 
     std::vector<animation::Stage> animation_stages_;
+
+	std::string on_tick_program_ = "print('happy happy')";
 };
 
 }
