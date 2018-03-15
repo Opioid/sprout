@@ -18,6 +18,9 @@
 #include <iostream>
 #include "math/print.hpp"
 
+// Irakli ompf tip
+// http://ompf2.com/viewtopic.php?f=3&t=2119
+
 namespace rendering::integrator::volume {
 
 enum class Algorithm {
