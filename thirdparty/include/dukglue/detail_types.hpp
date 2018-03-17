@@ -1,10 +1,10 @@
 #pragma once
 
-#include <type_traits>
+#include "detail_refs.hpp"
+#include "detail_typeinfo.hpp"
+#include "detail_class_proto.hpp"
 
-#include "detail_refs.h"
-#include "detail_typeinfo.h"
-#include "detail_class_proto.h"
+#include <type_traits>
 
 // TODO try adding a using namespace std in here if I can scope it to just this file
 
@@ -49,7 +49,7 @@ namespace dukglue {
 
 			// read pointer
 			template<typename FullT, typename = typename std::enable_if< std::is_pointer<FullT>::value>::type >
-			static T* read(duk_context* ctx, duk_idx_t arg_idx) {
+			static T* read(duk_context* ctx, duk_uint_t class_idx, duk_idx_t arg_idx) {
 				using namespace dukglue::detail;
 
 				if (duk_is_null(ctx, arg_idx))
@@ -66,7 +66,7 @@ namespace dukglue {
 
 				// make sure this object can be safely returned as a T*
 				TypeInfo* info = static_cast<TypeInfo*>(duk_get_pointer(ctx, -1));
-				if (!info->can_cast<T>())
+				if (!info->can_cast(class_idx))
 					duk_error(ctx, DUK_RET_TYPE_ERROR, "Argument %d: wrong type of native object", arg_idx);
 
 				duk_pop(ctx);  // pop type_info
@@ -84,8 +84,8 @@ namespace dukglue {
 
 			// read reference
 			template<typename FullT, typename = typename std::enable_if< std::is_reference<FullT>::value>::type >
-			static T& read(duk_context* ctx, duk_idx_t arg_idx) {
-				T* obj = read<T*>(ctx, arg_idx);
+			static T& read(duk_context* ctx, duk_uint_t class_idx, duk_idx_t arg_idx) {
+				T* obj = read<T*>(ctx, class_idx, arg_idx);
 				if (obj == nullptr)
 					duk_error(ctx, DUK_RET_TYPE_ERROR, "Argument %d: cannot be null (native function expects reference)", arg_idx);
 
@@ -106,23 +106,24 @@ namespace dukglue {
 
 			// Reference
 			template<typename FullT, typename = typename std::enable_if< std::is_reference<FullT>::value>::type >
-			static void push(duk_context* ctx, T& value) {
+			static void push(duk_context* ctx, duk_uint_t class_idx, T& value) {
 				using namespace dukglue::detail;
 
 				if (!RefManager::find_and_push_native_object(ctx, &value)) {
 					// need to create new script object
-					ProtoManager::make_script_object<T>(ctx, &value);
+					ProtoManager::make_script_object<T>(ctx, class_idx, &value);
 					RefManager::register_native_object(ctx, &value);
 				}
 			}
 
 			// Pointer
+			
 			template<typename FullT, typename = typename std::enable_if< std::is_pointer<FullT>::value>::type >
-			static void push(duk_context* ctx, T* value) {
+			static void push(duk_context* ctx, duk_uint_t class_idx, T* value) {
 				if (value == nullptr)
 					duk_push_null(ctx);
 				else
-					push<T&>(ctx, *value);
+					push<T&>(ctx, class_idx, *value);
 			}
 
 			// Value (create new instance on the heap)
@@ -157,4 +158,4 @@ namespace dukglue {
 	}
 }
 
-#include "detail_primitive_types.h"
+#include "detail_primitive_types.hpp"

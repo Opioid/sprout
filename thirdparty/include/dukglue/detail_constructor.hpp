@@ -1,7 +1,7 @@
 #pragma once
 
-#include "detail_stack.h"
-#include "detail_traits.h"
+#include "detail_stack.hpp"
+#include "detail_traits.hpp"
 
 namespace dukglue {
   namespace detail {

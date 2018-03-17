@@ -1,11 +1,10 @@
 #pragma once
 
+#include "duktape/duktape.h"
+#include "detail_traits.hpp"
+#include "detail_types.hpp"
+
 #include <string>
-
-#include "detail_traits.h"
-#include "detail_types.h"
-
-#include <duktape/duktape.h>
 
 namespace dukglue
 {

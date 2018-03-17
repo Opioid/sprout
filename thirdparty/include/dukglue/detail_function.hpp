@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detail_stack.h"
+#include "detail_stack.hpp"
 
 namespace dukglue
 {

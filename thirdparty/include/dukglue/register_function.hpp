@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detail_function.h"
+#include "detail_function.hpp"
 
 // Register a function, embedding the function address at compile time.
 // According to benchmarks, there's really not much reason to do this

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detail_typeinfo.h"
+#include "detail_typeinfo.hpp"
 #include <assert.h>
 
 namespace dukglue {
@@ -9,11 +9,10 @@ namespace dukglue {
 		struct ProtoManager
 		{
     public:
-			template <typename Cls>
-			static void push_prototype(duk_context* ctx)
+
+			static void push_prototype(duk_context* ctx, duk_uint_t class_idx)
 			{
-				push_prototype(ctx, TypeInfo(/*typeid(Cls)*/));
-				std::cout << "ProtoManager::push_prototype(): We cannot use this!" << std::endl;
+				push_prototype(ctx, TypeInfo(class_idx));
 			}
 
 			static void push_prototype(duk_context* ctx, const TypeInfo& check_info)
@@ -51,7 +50,7 @@ namespace dukglue {
 			}
 
 			template<typename Cls>
-			static void make_script_object(duk_context* ctx, Cls* obj)
+			static void make_script_object(duk_context* ctx, duk_uint_t class_idx, Cls* obj)
 			{
 				assert(obj != NULL);
 
@@ -80,15 +79,14 @@ namespace dukglue {
 				// dukglue_set_base_class() to be called, so it is opt-in via an ifdef.
 
 				// does a prototype exist for the run-time type? if so, push it
-//				if (!find_and_push_prototype(ctx, TypeInfo(typeid(*obj)))) {
+				if (!find_and_push_prototype(ctx, TypeInfo(class_idx))) {
 					// nope, find or create the prototype for the compile-time type
 					// and push that
-//					push_prototype<Cls>(ctx);
-//				}
+					push_prototype(ctx, class_idx);
+				}
 #else
 				// always use the prototype for the run-time type
-				push_prototype(ctx, TypeInfo(/*typeid(*obj)*/));
-				std::cout << "ProtoManager::make_script_object(): We cannot use this!" << std::endl;
+				push_prototype(ctx, TypeInfo(class_idx));
 #endif
 
 				duk_set_prototype(ctx, -2);

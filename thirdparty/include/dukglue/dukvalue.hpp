@@ -1,11 +1,10 @@
 #pragma once
 
-#include <duktape/duktape.h>
+#include "duktape/duktape.h"
+#include "dukexception.hpp"
 #include <stdint.h>
 #include <string>
 #include <vector>
-
-#include "dukexception.h"
 
 // A variant class for Duktape values.
 // This class is not really dependant on the rest of dukglue, but the rest of dukglue is integrated to support it.

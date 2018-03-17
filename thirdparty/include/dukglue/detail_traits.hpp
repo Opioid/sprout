@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <iostream>
 
 namespace dukglue
 {
@@ -107,8 +106,7 @@ namespace dukglue
         template<class Cls, typename... Args, size_t... Indexes >
         Cls* apply_constructor_helper(index_tuple< Indexes... >, std::tuple<Args...>&& tup)
         {
-			std::cout << "apply_constructor_helper(): We must not call this!" << std::endl;
-			return nullptr;//new Cls(std::forward<Args>(std::get<Indexes>(tup))...);
+            return new Cls(std::forward<Args>(std::get<Indexes>(tup))...);
         }
         
         template<class Cls, typename... Args>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detail_stack.h"
+#include "detail_stack.hpp"
 
 namespace dukglue
 {
@@ -18,6 +18,7 @@ namespace dukglue
 			struct MethodHolder
 			{
 				MethodType method;
+				duk_uint_t return_class_idx;
 			};
 
 			template<MethodType methodToCall>
@@ -111,13 +112,13 @@ namespace dukglue
 
 					// read arguments and call method
                     auto bakedArgs = dukglue::detail::get_stack_values<Ts...>(ctx);
-					actually_call(ctx, method_holder->method, obj, bakedArgs);
+					actually_call(ctx, method_holder->method, method_holder->return_class_idx, obj, bakedArgs);
 					return std::is_void<RetType>::value ? 0 : 1;
 				}
 
 				// this mess is to support functions with void return values
 				template<typename Dummy = RetType, typename... BakedTs>
-				static typename std::enable_if<!std::is_void<Dummy>::value>::type actually_call(duk_context* ctx, MethodType method, Cls* obj, const std::tuple<BakedTs...>& args)
+				static typename std::enable_if<!std::is_void<Dummy>::value>::type actually_call(duk_context* ctx, MethodType method, duk_uint_t return_class_idx, Cls* obj, const std::tuple<BakedTs...>& args)
 				{
 					// ArgStorage has some static_asserts in it that validate value types,
 					// so we typedef it to force ArgStorage<RetType> to compile and run the asserts
@@ -126,7 +127,7 @@ namespace dukglue
 					RetType return_val = dukglue::detail::apply_method<Cls, RetType, Ts...>(method, obj, args);
 
 					using namespace dukglue::types;
-					DukType<typename Bare<RetType>::type>::template push<RetType>(ctx, std::move(return_val));
+					DukType<typename Bare<RetType>::type>::template push<RetType>(ctx, return_class_idx, std::move(return_val));
 				}
 
 				template<typename Dummy = RetType, typename... BakedTs>

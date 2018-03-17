@@ -10,7 +10,7 @@
 #include "light/prop_image_light.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
-#include "scripting/scripting_engine.hpp"
+#include "scripting/scripting_types.inl"
 #include "shape/shape.hpp"
 #include "volume/volume.hpp"
 #include "image/texture/texture.hpp"
@@ -20,16 +20,12 @@
 #include "base/math/quaternion.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/spectrum/rgb.hpp"
-#include "dukglue/dukglue.h"
 
 #include "base/debug/assert.hpp"
 
 namespace scene {
 
-//Scene::Scene() {}
-
-Scene::Scene(const take::Settings& settings,
-			 scripting::Engine& scripting_engine) :
+Scene::Scene(const take::Settings& settings, scripting::Engine& scripting_engine) :
 	take_settings_(settings),
 	scripting_engine_(scripting_engine) {
 	dummies_.reserve(16);
@@ -45,7 +41,7 @@ Scene::Scene(const take::Settings& settings,
 	animations_.reserve(16);
 	animation_stages_.reserve(16);
 
-	dukglue_register_global(scripting_engine.context(), this, "scene");
+	scripting::register_global(scripting_engine, scripting::Type::Scene, this, "scene");
 }
 
 Scene::~Scene() {

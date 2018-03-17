@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dukexception.h"
-#include "detail_traits.h"  // for index_tuple/make_indexes
+#include "dukexception.hpp"
+#include "detail_traits.hpp"  // for index_tuple/make_indexes
 
 // This file has some useful utility functions for users.
 // Hopefully this saves you from wading through the implementation.
@@ -16,20 +16,20 @@
  * @param[in]  val    value to push
  */
 template <typename FullT>
-void dukglue_push(duk_context* ctx, const FullT& val) {
+void dukglue_push(duk_context* ctx, duk_uint_t class_idx, const FullT& val) {
 	// ArgStorage has some static_asserts in it that validate value types,
 	// so we typedef it to force ArgStorage<RetType> to compile and run the asserts
 	typedef typename dukglue::types::ArgStorage<FullT>::type ValidateReturnType;
 
 	using namespace dukglue::types;
-	DukType<typename Bare<FullT>::type>::template push<FullT>(ctx, std::move(val));
+	DukType<typename Bare<FullT>::type>::template push<FullT>(ctx, class_idx, std::move(val));
 }
 
 template <typename T, typename... ArgTs>
-void dukglue_push(duk_context* ctx, const T& arg, ArgTs... args)
+void dukglue_push(duk_context* ctx, duk_uint_t class_idx, const T& arg, ArgTs... args)
 {
-	dukglue_push(ctx, arg);
-	dukglue_push(ctx, args...);
+	dukglue_push(ctx, class_idx, arg);
+	dukglue_push(ctx, class_idx, args...);
 }
 
 inline void dukglue_push(duk_context* ctx)
@@ -44,14 +44,14 @@ inline void dukglue_push(duk_context* ctx)
  *          will probably abort.
  */
 template <typename RetT>
-void dukglue_read(duk_context* ctx, duk_idx_t arg_idx, RetT* out)
+void dukglue_read(duk_context* ctx, duk_uint_t class_idx, duk_idx_t arg_idx, RetT* out)
 {
 	// ArgStorage has some static_asserts in it that validate value types,
 	// so we typedef it to force ArgStorage<RetType> to compile and run the asserts
 	typedef typename dukglue::types::ArgStorage<RetT>::type ValidateReturnType;
 
 	using namespace dukglue::types;
-	*out = DukType<typename Bare<RetT>::type>::template read<RetT>(ctx, arg_idx);
+	*out = DukType<typename Bare<RetT>::type>::template read<RetT>(ctx, class_idx, arg_idx);
 }
 
 
@@ -59,9 +59,9 @@ void dukglue_read(duk_context* ctx, duk_idx_t arg_idx, RetT* out)
 
 // leaves return value on stack
 template <typename ObjT, typename... ArgTs>
-void dukglue_call_method(duk_context* ctx, const ObjT& obj, const char* method_name, ArgTs... args)
+void dukglue_call_method(duk_context* ctx, duk_uint_t class_idx, const ObjT& obj, const char* method_name, ArgTs... args)
 {
-	dukglue_push(ctx, obj);
+	dukglue_push(ctx, class_idx, obj);
 	duk_get_prop_string(ctx, -1, method_name);
 
 	if (duk_check_type(ctx, -1, DUK_TYPE_UNDEFINED)) {
@@ -75,7 +75,7 @@ void dukglue_call_method(duk_context* ctx, const ObjT& obj, const char* method_n
 	}
 
 	duk_swap_top(ctx, -2);
-	dukglue_push(ctx, args...);
+	dukglue_push(ctx, class_idx, args...);
 	duk_call_method(ctx, sizeof...(args));
 }
 
@@ -308,8 +308,8 @@ typename std::enable_if<!std::is_void<RetT>::value, RetT>::type dukglue_peval(du
 
 // register a global object (very simple helper, but very common for "Hello World"-ish applications)
 template <typename T>
-inline void dukglue_register_global(duk_context* ctx, const T& obj, const char* name)
+inline void dukglue_register_global(duk_context* ctx, duk_uint_t class_idx, const T& obj, const char* name)
 {
-	dukglue_push(ctx, obj);
+	dukglue_push(ctx, class_idx, obj);
 	duk_put_global_string(ctx, name);
 }
