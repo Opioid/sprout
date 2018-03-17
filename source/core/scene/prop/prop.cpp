@@ -46,7 +46,6 @@ void Prop::set_shape_and_materials(const Shape_ptr& shape, const Materials& mate
 	}
 }
 
-
 void Prop::morph(thread::Pool& pool) {
 	/*if (properties_.test(Property::Animated))*/ {
 		shape::Morphable_shape* morphable = shape_->morphable_shape();
