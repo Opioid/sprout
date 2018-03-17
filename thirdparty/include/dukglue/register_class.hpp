@@ -108,6 +108,18 @@ void dukglue_register_method_compiletime(duk_context* ctx, duk_uint_t class_idx,
 }
 
 template<class Cls, typename RetType, typename... Ts>
+void dukglue_register_method(duk_context* ctx, duk_uint_t class_idx, RetType(Cls::*method)(Ts...), const char* name)
+{
+	dukglue_register_method<false, Cls, RetType, Ts...>(ctx, class_idx, method, 0xFFFFFFFF, name);
+}
+
+template<class Cls, typename RetType, typename... Ts>
+void dukglue_register_method(duk_context* ctx, duk_uint_t class_idx, RetType(Cls::*method)(Ts...) const, const char* name)
+{
+	dukglue_register_method<true, Cls, RetType, Ts...>(ctx, class_idx, method, 0xFFFFFFFF, name);
+}
+
+template<class Cls, typename RetType, typename... Ts>
 void dukglue_register_method(duk_context* ctx, duk_uint_t class_idx, RetType(Cls::*method)(Ts...), duk_uint_t return_class_idx, const char* name)
 {
 	dukglue_register_method<false, Cls, RetType, Ts...>(ctx, class_idx, method, return_class_idx, name);

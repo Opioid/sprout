@@ -2,6 +2,8 @@ target_sources(core
 	PRIVATE
 	"${CMAKE_CURRENT_LIST_DIR}/scripting_engine.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scripting_engine.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/scripting_math.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/scripting_math.hpp"	
 	"${CMAKE_CURRENT_LIST_DIR}/scripting_print.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scripting_print.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scripting_types.cpp"

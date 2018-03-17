@@ -1,5 +1,5 @@
-#ifndef SU_CORE_SCRIPTING_SCRIPTING_TYPES_HPP
-#define SU_CORE_SCRIPTING_SCRIPTING_TYPES_HPP
+#ifndef SU_CORE_SCRIPTING_TYPES_HPP
+#define SU_CORE_SCRIPTING_TYPES_HPP
 
 #include <cstdint>
 
@@ -7,6 +7,7 @@ namespace scripting {
 
 enum class Type {
 	Entity,
+	Math,
 	Prop,
 	Scene
 };
