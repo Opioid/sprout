@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typeindex>
+#include "duktape/duktape.h"
 
 namespace dukglue
 {
