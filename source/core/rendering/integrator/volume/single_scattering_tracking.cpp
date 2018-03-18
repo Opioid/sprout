@@ -87,7 +87,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			transmittance = str;
 			return float3(0.f);
 		} else if (Algorithm::Spectral_tracking == algorithm) {
-			const float d = ray.max_t - ray.min_t;
+			float d = ray.max_t - ray.min_t;
 
 			float3 w(1.f);
 			float t = 0.f;
@@ -102,32 +102,41 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 				const float3 sigma_s = material.scattering(transformation, p,
 														   Sampler_filter::Undefined, worker);
 
+				const float3 sigma_t = sigma_a + sigma_s;
+
+				const float3 sigma_n = float3(mt) - sigma_t;
+
 				const float msa = math::max_component(sigma_a);
 				const float mss = math::max_component(sigma_s);
-				const float c = 1.f / (msa + mss);
+				const float msn = math::max_component(sigma_n);
+				const float c = 1.f / (msa + mss + msn);
 
 				const float pa = msa * c;
 				const float ps = mss * c;
+				const float pn = msn * c;
 
 				const float3 wa = (sigma_a / (mt * pa));
 				const float3 ws = (sigma_s / (mt * ps));
+				const float3 wn = (sigma_n / (mt * pn));
 
 				const float r = rng_.random_float();
 				t = t -std::log(1.f - r) / mt;
 				if (t > d) {
-					transmittance = float3(1.f);
+					transmittance = w;
 					return float3(0.f);
 				}
 
 				const float r2 = rng_.random_float();
 				if (r2 < pa) {
-					transmittance = float3(1.f) - wa;
-
+					transmittance = float3(0.f);
 					return float3(0.f);
+				} else if (r2 < 1.f - pn) {
+					transmittance = float3(0.f);
+					w *= ws;
+					return w * estimate_direct_light(ray, p, worker);
 				} else {
-					transmittance = float3(1.f) - ws;
-
-					return estimate_direct_light(ray, p, worker);
+				//	d = d - t;
+					w *= wn;
 				}
 			}
 		} else if (Algorithm::Delta_tracking == algorithm) {
