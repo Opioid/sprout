@@ -40,18 +40,6 @@ void Single_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_sa
 
 void Single_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& volume,
-												 const Worker& worker) {
-	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
-	const auto& material = *volume.material(0);
-
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
-}
 
 static inline void max_probabilities(float mt,
 									 const float3& sigma_a,
@@ -91,6 +79,22 @@ static inline void max_history_probabilities(float mt,
 
 	wa = (sigma_a / (mt * pa));
 	ws = (sigma_s / (mt * ps));
+	wn = (sigma_n / (mt * pn));
+}
+
+static inline void max_history_probabilities(float mt,
+											 const float3& sigma_a,
+											 const float3& sigma_s,
+											 const float3& sigma_n,
+											 const float3& w,
+											 float& pn, float3& wn) {
+	const float ma = math::max_component(sigma_a * w);
+	const float ms = math::max_component(sigma_s * w);
+	const float mn = math::max_component(sigma_n * w);
+	const float c = 1.f / (ma + ms + mn);
+
+	pn = mn * c;
+
 	wn = (sigma_n / (mt * pn));
 }
 
@@ -135,6 +139,115 @@ static inline void avg_history_probabilities(float mt,
 	wn = (sigma_n / (mt * pn));
 }
 
+static inline void avg_history_probabilities(float mt,
+											 const float3& sigma_a,
+											 const float3& sigma_s,
+											 const float3& sigma_n,
+											 const float3& w,
+											 float& pn,
+											 float3& wn) {
+	const float ma = math::average(sigma_a * w);
+	const float ms = math::average(sigma_s * w);
+	const float mn = math::average(sigma_n * w);
+	const float c = 1.f / (ma + ms + mn);
+
+	pn = mn * c;
+
+	wn = (sigma_n / (mt * pn));
+}
+
+float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& volume,
+												 const Worker& worker) {
+	Transformation temp;
+	const auto& transformation = volume.transformation_at(ray.time, temp);
+
+	const auto& material = *volume.material(0);
+
+	constexpr bool spectral = true;
+
+	if (spectral) {
+//	if (material.is_heterogeneous_volume()) {
+/*		const float d = ray.max_t - ray.min_t;
+		const float max_extinction = math::average(material.max_extinction());
+		bool terminated = false;
+		float t = 0.f;
+
+		do {
+			const float r = rng_.random_float();
+			t = t -std::log(1.f - r) / max_extinction;
+			if (t > d) {
+				break;
+			}
+
+			const float3 p = ray.point(ray.min_t + t);
+
+			const float3 sigma_a = material.absorption(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_s = material.scattering(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 extinction = sigma_a + sigma_s;
+
+			const float r2 = rng_.random_float();
+			if (r2 < math::average(extinction) / max_extinction) {
+				terminated = true;
+			}
+		} while (!terminated);
+
+		if (terminated) {
+			return float3(0.f);
+		} else {
+			return float3(1.f);
+		}
+		*/
+
+		const float d = ray.max_t - ray.min_t;
+
+		float3 w(1.f);
+		float t = 0.f;
+
+		const float mt = math::max_component(material.max_extinction());
+		for (;;) {
+			const float r = rng_.random_float();
+			t = t -std::log(1.f - r) / mt;
+			if (t > d) {
+				return w;
+			}
+
+			const float3 p = ray.point(ray.min_t + t);
+
+			const float3 sigma_a = material.absorption(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_s = material.scattering(transformation, p,
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_t = sigma_a + sigma_s;
+
+			const float3 sigma_n = float3(mt) - sigma_t;
+
+			float pn;
+			float3 wn;
+			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
+
+			avg_history_probabilities(mt, sigma_a, sigma_s, sigma_n, w, pn, wn);
+
+			const float r2 = rng_.random_float();
+			if (r2 < 1.f - pn) {
+				return float3(0.f);
+			} else {
+				w *= wn;
+			}
+		}
+	}
+
+	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
+											  settings_.step_size, rng_,
+											  Sampler_filter::Nearest, worker);
+	return math::exp(-tau);
+}
+
 float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 									  Worker& worker, float3& transmittance) {
 	enum class Algorithm {
@@ -168,7 +281,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			transmittance = str;
 			return float3(0.f);
 		} else if (Algorithm::Spectral_tracking == algorithm) {
-			float d = ray.max_t - ray.min_t;
+			const float d = ray.max_t - ray.min_t;
 
 			float3 w(1.f);
 			float t = 0.f;
@@ -209,7 +322,6 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 					w *= ws;
 					return w * estimate_direct_light(ray, p, worker);
 				} else {
-				//	d = d - t;
 					w *= wn;
 				}
 			}
