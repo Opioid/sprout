@@ -17,6 +17,8 @@
 #include <iostream>
 #include "math/print.hpp"
 
+#include "base/debug/assert.hpp"
+
 // Irakli ompf tip
 // http://ompf2.com/viewtopic.php?f=3&t=2119
 
@@ -125,7 +127,7 @@ static inline void avg_history_probabilities(float mt,
 											 const float3& w,
 											 float& pa, float& ps, float& pn,
 											 float3& wa, float3& ws, float3& wn) {
-	const float ma = math::average(sigma_a * w);
+	const float ma = 0.f;//math::average(sigma_a * w);
 	const float ms = math::average(sigma_s * w);
 	const float mn = math::average(sigma_n * w);
 	const float c = 1.f / (ma + ms + mn);
@@ -140,16 +142,31 @@ static inline void avg_history_probabilities(float mt,
 }
 
 static inline void avg_history_probabilities(float mt,
-											 const float3& sigma_a,
+											 const float3& sigma_s,
+											 const float3& sigma_n,
+											 const float3& w,
+											 float& ps, float& pn,
+											 float3& ws, float3& wn) {
+	const float ms = math::average(sigma_s * w);
+	const float mn = math::average(sigma_n * w);
+	const float c = 1.f / (ms + mn);
+
+	ps = ms * c;
+	pn = mn * c;
+
+	ws = (sigma_s / (mt * ps));
+	wn = (sigma_n / (mt * pn));
+}
+
+static inline void avg_history_probabilities(float mt,
 											 const float3& sigma_s,
 											 const float3& sigma_n,
 											 const float3& w,
 											 float& pn,
 											 float3& wn) {
-	const float ma = math::average(sigma_a * w);
 	const float ms = math::average(sigma_s * w);
 	const float mn = math::average(sigma_n * w);
-	const float c = 1.f / (ma + ms + mn);
+	const float c = 1.f / (ms + mn);
 
 	pn = mn * c;
 
@@ -231,12 +248,13 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 			float3 wn;
 			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
 
-			avg_history_probabilities(mt, sigma_a, sigma_s, sigma_n, w, pn, wn);
+			avg_history_probabilities(mt, sigma_s, sigma_n, w, pn, wn);
 
 			const float r2 = rng_.random_float();
 			if (r2 < 1.f - pn) {
 				return float3(0.f);
 			} else {
+				SOFT_ASSERT(math::all_finite(wn));
 				w *= wn;
 			}
 		}
@@ -307,21 +325,19 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 				const float3 sigma_n = float3(mt) - sigma_t;
 
-				float pa, ps, pn;
-				float3 wa, ws, wn;
+				float ps, pn;
+				float3 ws, wn;
 				//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
 
-				avg_history_probabilities(mt, sigma_a, sigma_s, sigma_n, w, pa, ps, pn, wa, ws, wn);
+				avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
 
 				const float r2 = rng_.random_float();
-				if (r2 < pa) {
+				if (r2 < 1.f - pn) {
 					transmittance = float3(0.f);
-					return float3(0.f);
-				} else if (r2 < 1.f - pn) {
-					transmittance = float3(0.f);
-					w *= ws;
-					return w * estimate_direct_light(ray, p, worker);
+					SOFT_ASSERT(math::all_finite(ws));
+					return w * ws * estimate_direct_light(ray, p, worker);
 				} else {
+					SOFT_ASSERT(math::all_finite(wn));
 					w *= wn;
 				}
 			}
