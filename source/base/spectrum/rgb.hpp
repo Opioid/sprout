@@ -87,10 +87,6 @@ static inline constexpr float luminance(const float3& c) {
 	return 0.212671f * c[0] + 0.715160f * c[1] + 0.072169f * c[2];
 }
 
-static inline constexpr float average(const float3& c) {
-	return (c[0] + c[1] + c[2]) / 3.f;
-}
-
 constexpr float CIE_constant = 683.002f;
 
 static inline constexpr float watt_to_lumen(const float3& c) {

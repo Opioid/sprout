@@ -11,7 +11,6 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::surface::sub {
 
@@ -36,7 +35,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 	const auto bssrdf = sample.bssrdf();
 	const float3 scattering = bssrdf.scattering_coefficient();
 
-	const float sigma_t = spectrum::average(bssrdf.extinction_coefficient());
+	const float sigma_t = math::average(bssrdf.extinction_coefficient());
 	const float step_size = -std::log(settings_.step_probability) / sigma_t;
 
 	Ray tray;
@@ -81,7 +80,7 @@ float3 Single_scattering::li(const Ray& ray, Intersection& intersection,
 
 			tr *= attenuation;
 
-			const float average = spectrum::average(tr);
+			const float average = math::average(tr);
 			if (average < 0.01f) {
 			//	if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
 					sample_result.pdf = 0.f;

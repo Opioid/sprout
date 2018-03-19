@@ -12,7 +12,6 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -51,11 +50,11 @@ float3 Multiple_scattering2::li(const Ray& ray, Intersection& intersection,
 
 	const auto bssrdf = sample.bssrdf();
 	const float3 scattering = bssrdf.scattering_coefficient();
-	const float average_scattering = spectrum::average(scattering);
+	const float average_scattering = math::average(scattering);
 	const float3 adjusted_scattering = scattering / average_scattering;
 
 	const float3 extinction = bssrdf.extinction_coefficient();
-	const float average_extinction = spectrum::average(extinction);
+	const float average_extinction = math::average(extinction);
 
 	const float3 scattering_albedo = scattering / extinction;
 
@@ -88,7 +87,7 @@ float3 Multiple_scattering2::li(const Ray& ray, Intersection& intersection,
 
 		tr *= bssrdf.transmittance(tray.max_t);
 
-		const float average = spectrum::average(tr);
+		const float average = math::average(tr);
 		if (average < 0.1f) {
 			if (rendering::russian_roulette(tr, 0.5f, rng_.random_float())) {
 				sample_result.pdf = 0.f;

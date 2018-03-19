@@ -592,6 +592,10 @@ static inline constexpr float max_component(const Vector3f_a& v) {
 	return std::max(std::max(v[0], v[1]), v[2]);
 }
 
+static inline constexpr float average(const float3& c) {
+	return (c[0] + c[1] + c[2]) / 3.f;
+}
+
 static inline constexpr float checksum(const Vector3f_a& v) {
 	return v[0] + v[1] + v[2];
 }

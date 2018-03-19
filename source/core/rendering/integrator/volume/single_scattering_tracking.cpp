@@ -13,7 +13,6 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.hpp"
 
 #include <iostream>
 #include "math/print.hpp"
@@ -52,6 +51,88 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 											  settings_.step_size, rng_,
 											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
+}
+
+static inline void max_probabilities(float mt,
+									 const float3& sigma_a,
+									 const float3& sigma_s,
+									 const float3& sigma_n,
+									 float& pa, float& ps, float& pn,
+									 float3& wa, float3& ws, float3& wn) {
+	const float ma = math::max_component(sigma_a);
+	const float ms = math::max_component(sigma_s);
+	const float mn = math::max_component(sigma_n);
+	const float c = 1.f / (ma + ms + mn);
+
+	pa = ma * c;
+	ps = ms * c;
+	pn = mn * c;
+
+	wa = (sigma_a / (mt * pa));
+	ws = (sigma_s / (mt * ps));
+	wn = (sigma_n / (mt * pn));
+}
+
+static inline void max_history_probabilities(float mt,
+											 const float3& sigma_a,
+											 const float3& sigma_s,
+											 const float3& sigma_n,
+											 const float3& w,
+											 float& pa, float& ps, float& pn,
+											 float3& wa, float3& ws, float3& wn) {
+	const float ma = math::max_component(sigma_a * w);
+	const float ms = math::max_component(sigma_s * w);
+	const float mn = math::max_component(sigma_n * w);
+	const float c = 1.f / (ma + ms + mn);
+
+	pa = ma * c;
+	ps = ms * c;
+	pn = mn * c;
+
+	wa = (sigma_a / (mt * pa));
+	ws = (sigma_s / (mt * ps));
+	wn = (sigma_n / (mt * pn));
+}
+
+static inline void avg_probabilities(float mt,
+									 const float3& sigma_a,
+									 const float3& sigma_s,
+									 const float3& sigma_n,
+									 float& pa, float& ps, float& pn,
+									 float3& wa, float3& ws, float3& wn) {
+	const float ma = math::average(sigma_a);
+	const float ms = math::average(sigma_s);
+	const float mn = math::average(sigma_n);
+	const float c = 1.f / (ma + ms + mn);
+
+	pa = ma * c;
+	ps = ms * c;
+	pn = mn * c;
+
+	wa = (sigma_a / (mt * pa));
+	ws = (sigma_s / (mt * ps));
+	wn = (sigma_n / (mt * pn));
+}
+
+static inline void avg_history_probabilities(float mt,
+											 const float3& sigma_a,
+											 const float3& sigma_s,
+											 const float3& sigma_n,
+											 const float3& w,
+											 float& pa, float& ps, float& pn,
+											 float3& wa, float3& ws, float3& wn) {
+	const float ma = math::average(sigma_a * w);
+	const float ms = math::average(sigma_s * w);
+	const float mn = math::average(sigma_n * w);
+	const float c = 1.f / (ma + ms + mn);
+
+	pa = ma * c;
+	ps = ms * c;
+	pn = mn * c;
+
+	wa = (sigma_a / (mt * pa));
+	ws = (sigma_s / (mt * ps));
+	wn = (sigma_n / (mt * pn));
 }
 
 float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
@@ -94,6 +175,13 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 			const float mt = math::max_component(material.max_extinction());
 			while (true) {
+				const float r = rng_.random_float();
+				t = t -std::log(1.f - r) / mt;
+				if (t > d) {
+					transmittance = w;
+					return float3(0.f);
+				}
+
 				const float3 p = ray.point(ray.min_t + t);
 
 				const float3 sigma_a = material.absorption(transformation, p,
@@ -106,25 +194,11 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 				const float3 sigma_n = float3(mt) - sigma_t;
 
-				const float msa = math::max_component(sigma_a);
-				const float mss = math::max_component(sigma_s);
-				const float msn = math::max_component(sigma_n);
-				const float c = 1.f / (msa + mss + msn);
+				float pa, ps, pn;
+				float3 wa, ws, wn;
+				//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
 
-				const float pa = msa * c;
-				const float ps = mss * c;
-				const float pn = msn * c;
-
-				const float3 wa = (sigma_a / (mt * pa));
-				const float3 ws = (sigma_s / (mt * ps));
-				const float3 wn = (sigma_n / (mt * pn));
-
-				const float r = rng_.random_float();
-				t = t -std::log(1.f - r) / mt;
-				if (t > d) {
-					transmittance = w;
-					return float3(0.f);
-				}
+				avg_history_probabilities(mt, sigma_a, sigma_s, sigma_n, w, pa, ps, pn, wa, ws, wn);
 
 				const float r2 = rng_.random_float();
 				if (r2 < pa) {
@@ -142,7 +216,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		} else if (Algorithm::Delta_tracking == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
-			const float max_extinction = spectrum::average(material.max_extinction());
+			const float max_extinction = math::average(material.max_extinction());
 			bool terminated = false;
 			float t = 0.f;
 
@@ -167,7 +241,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 				extinction = sigma_a + sigma_s;
 				const float r2 = rng_.random_float();
-				if (r2 < spectrum::average(extinction) / max_extinction) {
+				if (r2 < math::average(extinction) / max_extinction) {
 					terminated = true;
 
 					scattering_albedo = sigma_s / extinction;
@@ -202,7 +276,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		const float3 tr = math::exp(-d * extinction);
 
 		const float r = rng_.random_float();
-		const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(tr))) / spectrum::average(extinction);
+		const float scatter_distance = -std::log(1.f - r * (1.f - math::average(tr))) / math::average(extinction);
 
 		const float3 p = ray.point(ray.min_t + scatter_distance);
 
@@ -224,7 +298,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 
 	if (material.is_heterogeneous_volume()) {
 		const float d = ray.max_t - ray.min_t;
-		const float max_extinction = spectrum::average(material.max_extinction());
+		const float max_extinction = math::average(material.max_extinction());
 		bool terminated = false;
 		float t = 0.f;
 
@@ -246,7 +320,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 			const float3 extinction = sigma_a + sigma_s;
 
 			const float r2 = rng_.random_float();
-			if (r2 < spectrum::average(extinction) / max_extinction) {
+			if (r2 < math::average(extinction) / max_extinction) {
 				terminated = true;
 			}
 		} while (!terminated);
@@ -294,7 +368,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		const float3 extinction = sigma_a + sigma_s;
 
 		const float r = rng_.random_float();
-		const float scatter_distance = -std::log(1.f - r) / spectrum::average(extinction);
+		const float scatter_distance = -std::log(1.f - r) / math::average(extinction);
 
 		if (scatter_distance < d) {
 			const float3 p = ray.point(scatter_distance);
@@ -374,7 +448,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				}
 
 			} else {
-				const float max_extinction = spectrum::average(material.max_extinction());
+				const float max_extinction = math::average(material.max_extinction());
 				bool terminated = false;
 				float t = 0.f;
 
@@ -399,7 +473,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 					extinction = sigma_a + sigma_s;
 					const float r2 = rng_.random_float();
-					if (r2 < spectrum::average(extinction) / max_extinction) {
+					if (r2 < math::average(extinction) / max_extinction) {
 						terminated = true;
 
 						scattering_albedo = sigma_s / extinction;
@@ -435,7 +509,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			transmittance = math::exp(-d * extinction);
 
 			const float r = rng_.random_float();
-			const float scatter_distance = -std::log(1.f - r * (1.f - spectrum::average(transmittance))) / spectrum::average(extinction);
+			const float scatter_distance = -std::log(1.f - r * (1.f - math::average(transmittance))) / math::average(extinction);
 
 			const float3 p = ray.point(scatter_distance);
 

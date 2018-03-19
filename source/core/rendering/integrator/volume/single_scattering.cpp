@@ -12,7 +12,6 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.hpp"
 
 namespace rendering::integrator::volume {
 
@@ -171,7 +170,7 @@ float3 Single_scattering::transmittance(const Ray& ray, const Intersection& inte
 	const float d = ray.max_t - ray.min_t;
 
 	if (material.is_heterogeneous_volume()) {
-		const float max_extinction = spectrum::average(material.max_extinction());
+		const float max_extinction = math::average(material.max_extinction());
 		bool terminated = false;
 		float t = 0.f;
 
@@ -193,7 +192,7 @@ float3 Single_scattering::transmittance(const Ray& ray, const Intersection& inte
 			const float3 extinction = sigma_a + sigma_s;
 
 			const float r2 = rng_.random_float();
-			if (r2 < spectrum::average(extinction) / max_extinction) {
+			if (r2 < math::average(extinction) / max_extinction) {
 				terminated = true;
 			}
 		} while (!terminated);
