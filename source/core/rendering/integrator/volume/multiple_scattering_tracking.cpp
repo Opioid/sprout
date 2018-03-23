@@ -580,6 +580,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 	const auto& material = *intersection.material();
 
+	const bool was_subsurface = intersection.geo.subsurface;
+
 	const bool hit = worker.intersect_and_resolve_mask(ray, intersection, Sampler_filter::Nearest);
 	if (!hit) {
 		li = float3(0.f);
@@ -632,7 +634,6 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			//	transmittance = float3(0.f);
 			//	SOFT_ASSERT(math::all_finite(ws));
 			//	li = w * ws * direct_light(ray, p, intersection, material_sample, worker);
-
 
 				intersection.geo.p = p;
 				intersection.geo.epsilon = 0.f;

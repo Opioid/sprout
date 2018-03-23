@@ -25,6 +25,22 @@ public:
 
 	virtual void set_ior(float ior, float external_ior = 1.f) final override;
 
+	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
+							float step_size, rnd::Generator& rng,
+							Sampler_filter filter, const Worker& worker) const override final;
+
+	virtual float3 optical_depth(const Transformation& transformation, const math::AABB& aabb,
+								 const math::Ray& ray, float step_size, rnd::Generator& rng,
+								 Sampler_filter filter, const Worker& worker) const override final;
+
+	virtual float3 absorption(const Transformation& transformation, const float3& p,
+							  Sampler_filter filter, const Worker& worker) const override final;
+
+	virtual float3 scattering(const Transformation& transformation, const float3& p,
+							  Sampler_filter filter, const Worker& worker) const override final;
+
+	virtual float3 max_extinction() const override final;
+
 	static size_t sample_size();
 
 private:

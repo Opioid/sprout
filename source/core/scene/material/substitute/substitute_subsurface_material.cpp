@@ -5,7 +5,10 @@
 #include "scene/material/volumetric/volumetric_sample.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
+#include "base/math/ray.inl"
 #include "base/math/vector4.inl"
+
+#include "scene/material/null/null_sample.hpp"
 
 namespace scene::material::substitute {
 
@@ -21,22 +24,22 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 		sample.set_basis(rs.geo_n, wo);
 
-		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
+//		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-		if (color_map_.is_valid()) {
-			auto& sampler = worker.sampler_2D(sampler_key(), filter);
-			const float3 color = color_map_.sample_3(sampler, rs.uv);
+//		if (color_map_.is_valid()) {
+//			auto& sampler = worker.sampler_2D(sampler_key(), filter);
+//			const float3 color = color_map_.sample_3(sampler, rs.uv);
 
-			float3 absorption_coefficient;
-			float3 scattering_coefficient;
+//			float3 absorption_coefficient;
+//			float3 scattering_coefficient;
 
-			attenuation(color, attenuation_distance_,
-						absorption_coefficient, scattering_coefficient);
+//			attenuation(color, attenuation_distance_,
+//						absorption_coefficient, scattering_coefficient);
 
-			sample.set(absorption_coefficient, scattering_coefficient, anisotropy_);
-		} else {
+//			sample.set(absorption_coefficient, scattering_coefficient, anisotropy_);
+//		} else {
 			sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
-		}
+//		}
 
 		return sample;
 	}
@@ -60,6 +63,14 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 	}
 
 	return sample;
+
+//	auto& sample = worker.sample<null::Sample>();
+
+//	sample.set_basis(rs.geo_n, wo);
+
+//	sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
+
+//	return sample;
 }
 
 size_t Material_subsurface::num_bytes() const {
@@ -88,6 +99,33 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 	ior_.ior_o_ = external_ior;
 	ior_.eta_i_ = external_ior / ior;
 	ior_.eta_t_ = ior / external_ior;
+}
+
+float3 Material_subsurface::emission(const Transformation& /*transformation*/, const math::Ray& /*ray*/,
+							 float /*step_size*/, rnd::Generator& /*rng*/,
+							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return float3::identity();
+}
+
+float3 Material_subsurface::optical_depth(const Transformation& /*transformation*/,
+								  const math::AABB& /*aabb*/, const math::Ray& ray,
+								  float /*step_size*/, rnd::Generator& /*rng*/,
+								  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return ray.length() * (absorption_coefficient_ + scattering_coefficient_);
+}
+
+float3 Material_subsurface::absorption(const Transformation& /*transformation*/, const float3& /*p*/,
+							   Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return absorption_coefficient_;
+}
+
+float3 Material_subsurface::scattering(const Transformation& /*transformation*/, const float3& /*p*/,
+							   Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return scattering_coefficient_;
+}
+
+float3 Material_subsurface::max_extinction() const {
+	return absorption_coefficient_ + scattering_coefficient_;
 }
 
 size_t Material_subsurface::sample_size() {

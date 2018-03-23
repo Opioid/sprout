@@ -215,15 +215,8 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	const bool is_translucent = material_sample.is_translucent();
 
-	const bool is_absorbing = material_sample.is_absorbing()
-							&& !intersection.same_hemisphere(sample_result.wi);
-
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset, scene::Ray_max_t,
 					  ray.depth + 1, ray.time, ray.wavelength, ray.ior, ray.properties);
-
-	float3 ssstr;
-	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection,
-													   material_sample, filter, ssstr);
 
 	const float3 weighted_reflection = sample_result.reflection / sample_result.pdf;
 
@@ -232,13 +225,27 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	// Important exceptions are the Specular and Transmission cases, which never come here.
 	float3 vtr(1.f);
 
-	if (is_absorbing) {
-	//	vtr = rendering::attenuation(secondary_ray.max_t, material_sample.absorption_coefficient());
-	//	sample_result.reflection *= vtr;
-	} else {
-		const float3 vli = worker.volume_li(secondary_ray, vtr);
+	bool hit;
+
+	const bool entering = sample_result.type.test(Bxdf_type::Transmission)
+						&& !intersection.same_hemisphere(sample_result.wi);
+
+	if (entering || intersection.geo.subsurface) {
+		float3 vli;
+	//	float3 vtr;
+		float3 weight;
+		hit = worker.volume(secondary_ray, intersection, material_sample, vli, vtr, weight);
+
 		result += weighted_reflection * vli;
-		vtr *= ssstr;
+		vtr *= weight;
+		sample_result.reflection *= vtr;
+
+	} else {
+		hit = worker.intersect_and_resolve_mask(secondary_ray, intersection, filter);
+
+	//	float3 vtr;
+		const float3 vli = worker.volume_li(ray, vtr);
+		result += weighted_reflection * vli;
 		sample_result.reflection *= vtr;
 	}
 

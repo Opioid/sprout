@@ -1,7 +1,6 @@
 #include "volumetric_homogeneous.hpp"
 #include "scene/material/material_sample_helper.hpp"
 #include "base/math/ray.inl"
-#include "base/spectrum/rgb.hpp"
 
 namespace scene::material::volumetric {
 

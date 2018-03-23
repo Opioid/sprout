@@ -58,7 +58,6 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 	float3 throughput(1.f);
 	float3 result(0.f);
-	float3 weight(1.f);
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = ray.depth;; ++i) {
@@ -156,7 +155,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (entering || intersection.geo.subsurface) {
 			float3 vli;
 			float3 vtr;
-		//	float3 weight;
+			float3 weight;
 			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr, weight);
 
 			result += throughput * vli;
@@ -172,8 +171,6 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			const float3 vli = worker.volume_li(ray, vtr);
 			result += throughput * vli;
 			throughput *= vtr;
-
-			weight = float3(1.f);
 
 			if (!hit) {
 				break;
