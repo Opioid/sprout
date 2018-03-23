@@ -45,8 +45,6 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	float3 throughput(1.f);
 	float3 result(0.f);
 
-	float3 weight(1.f);
-
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
@@ -59,10 +57,8 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			break;
 		}
 
-		result += throughput * estimate_direct_light(ray, intersection, material_sample,
-													 filter, worker);
-	//	throughput *= weight;
-
+		result += throughput * direct_light(ray, intersection, material_sample,
+											filter, worker);
 		if (i >= settings_.max_bounces - 1) {
 			break;
 		}
@@ -117,7 +113,7 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		if (entering || intersection.geo.subsurface) {
 			float3 vli;
 			float3 vtr;
-		//	float3 weight;
+			float3 weight;
 			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr, weight);
 
 			result += throughput * vli;
@@ -134,8 +130,6 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			result += throughput * vli;
 			throughput *= vtr;
 
-			weight = float3(1.f);
-
 			if (!hit) {
 				break;
 			}
@@ -145,9 +139,9 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	return result;
 }
 
-float3 Pathtracer_DL1::estimate_direct_light(const Ray& ray, const Intersection& intersection,
-											const Material_sample& material_sample,
-											Sampler_filter filter, Worker& worker) {
+float3 Pathtracer_DL1::direct_light(const Ray& ray, const Intersection& intersection,
+									const Material_sample& material_sample,
+									Sampler_filter filter, Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;

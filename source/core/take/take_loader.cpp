@@ -21,6 +21,7 @@
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/aerial_perspective.hpp"
 #include "rendering/integrator/volume/emission.hpp"
+#include "rendering/integrator/volume/multiple_scattering_tracking.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/integrator/volume/single_scattering_tracking.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
@@ -601,6 +602,10 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 
 			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
+		} else if ("Multiple_scattering_tracking" == n.name) {
+
+			return std::make_shared<Multiple_scattering_tracking_factory>(
+						settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);

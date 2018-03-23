@@ -1,4 +1,4 @@
-#include "single_scattering_tracking.hpp"
+#include "multiple_scattering_tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -27,17 +27,17 @@ enum class Algorithm {
 	Experiment
 };
 
-Single_scattering_tracking::Single_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings,
+Multiple_scattering_tracking::Multiple_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings,
 									 const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
 
-void Single_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Multiple_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
-void Single_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Multiple_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 static inline void max_probabilities(float mt,
 									 const float3& sigma_a,
@@ -169,7 +169,7 @@ static inline void avg_history_probabilities(float mt,
 	wn = (sigma_n / (mt * pn));
 }
 
-float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& volume,
+float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Volume& volume,
 												 const Worker& worker) {
 	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
@@ -256,12 +256,12 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 	}
 
 	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  settings_.step_size, rng_,
+											  1.f, rng_,
 											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
-float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
+float3 Multiple_scattering_tracking::li(const Ray& ray, const Volume& volume,
 									  Worker& worker, float3& transmittance) {
 	enum class Homogeneous_algorithm {
 		Closed_form,
@@ -280,7 +280,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	const auto& material = *volume.material(0);
 
-	const bool use_heterogeneous_algorithm = true;//material.is_heterogeneous_volume();
+	const bool use_heterogeneous_algorithm = false;//material.is_heterogeneous_volume();
 
 	if (use_heterogeneous_algorithm) {
 		constexpr Heterogeneous_algorithm algorithm = Heterogeneous_algorithm::Spectral_tracking;
@@ -519,7 +519,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	}
 }
 
-float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
+float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
 												 const Worker& worker) {
 	const auto& prop = *intersection.prop;
 
@@ -565,12 +565,12 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 	}
 
 	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
-											  settings_.step_size, rng_,
+											  1.f, rng_,
 											  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
-bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
+bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 										   const Material_sample& material_sample, Worker& worker,
 										   float3& li, float3& transmittance, float3& weight) {
 	weight = float3(1.f);
@@ -586,6 +586,10 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		transmittance = float3(1.f);
 		return false;
 	}
+
+//	if (&material != intersection.material()) {
+//		std::cout << "too close" << std::endl;
+//	}
 
 	const float d = ray.max_t;
 
@@ -625,9 +629,20 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 			const float r2 = rng_.random_float();
 			if (r2 < 1.f - pn) {
-				transmittance = float3(0.f);
-				SOFT_ASSERT(math::all_finite(ws));
-				li = w * ws * direct_light(ray, p, intersection, material_sample, worker);
+			//	transmittance = float3(0.f);
+			//	SOFT_ASSERT(math::all_finite(ws));
+			//	li = w * ws * direct_light(ray, p, intersection, material_sample, worker);
+
+
+				intersection.geo.p = p;
+				intersection.geo.epsilon = 0.f;
+				intersection.geo.subsurface = true;
+
+				transmittance = float3(1.f);
+				weight = w * ws;
+
+				li = float3(0.f);
+
 				return true;
 			} else {
 				SOFT_ASSERT(math::all_finite(wn));
@@ -662,11 +677,11 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 	return true;
 }
 
-size_t Single_scattering_tracking::num_bytes() const {
+size_t Multiple_scattering_tracking::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Single_scattering_tracking::spectral_stuff(const Ray& ray, const Transformation& transformation,
+float3 Multiple_scattering_tracking::spectral_stuff(const Ray& ray, const Transformation& transformation,
 												  const Material& material, uint32_t channel, float2 rr,
 												  Worker& worker, float3& transmittance) {
 	const float d = ray.max_t - ray.min_t;
@@ -713,7 +728,7 @@ float3 Single_scattering_tracking::spectral_stuff(const Ray& ray, const Transfor
 	}
 }
 
-float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
+float3 Multiple_scattering_tracking::direct_light(const Ray& ray, const float3& position,
 												Worker& worker) {
 	float3 result = float3::identity();
 
@@ -746,7 +761,7 @@ float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& po
 	return result;
 }
 
-float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
+float3 Multiple_scattering_tracking::direct_light(const Ray& ray, const float3& position,
 												const Intersection& intersection,
 												const Material_sample& material_sample,
 												Worker& worker) {
@@ -785,20 +800,18 @@ float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& po
 	return result;
 }
 
-Single_scattering_tracking_factory::Single_scattering_tracking_factory(const take::Settings& take_settings,
-													 uint32_t num_integrators, float step_size, 
-													 float step_probability,
-													 bool indirect_lighting) :
+Multiple_scattering_tracking_factory::Multiple_scattering_tracking_factory(const take::Settings& take_settings,
+													 uint32_t num_integrators) :
 	Factory(take_settings, num_integrators),
-	integrators_(memory::allocate_aligned<Single_scattering_tracking>(num_integrators)),
-	settings_{step_size, step_probability, !indirect_lighting} {}
+	integrators_(memory::allocate_aligned<Multiple_scattering_tracking>(num_integrators)),
+	settings_{} {}
 
-Single_scattering_tracking_factory::~Single_scattering_tracking_factory() {
+Multiple_scattering_tracking_factory::~Multiple_scattering_tracking_factory() {
 	memory::free_aligned(integrators_);
 }
 
-Integrator* Single_scattering_tracking_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Single_scattering_tracking(rng, take_settings_, settings_);
+Integrator* Multiple_scattering_tracking_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Multiple_scattering_tracking(rng, take_settings_, settings_);
 }
 
 }
