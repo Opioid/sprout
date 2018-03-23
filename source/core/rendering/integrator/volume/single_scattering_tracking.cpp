@@ -19,9 +19,6 @@
 
 #include "base/debug/assert.hpp"
 
-// Irakli ompf tip
-// http://ompf2.com/viewtopic.php?f=3&t=2119
-
 namespace rendering::integrator::volume {
 
 enum class Algorithm {
@@ -41,7 +38,6 @@ void Single_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_sa
 }
 
 void Single_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
-
 
 static inline void max_probabilities(float mt,
 									 const float3& sigma_a,
@@ -180,10 +176,9 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 
 	const auto& material = *volume.material(0);
 
-	constexpr bool spectral = true;
+	const bool use_heterogeneous_algorithm = material.is_heterogeneous_volume();
 
-	if (spectral) {
-//	if (material.is_heterogeneous_volume()) {
+	if (use_heterogeneous_algorithm) {
 /*		const float d = ray.max_t - ray.min_t;
 		const float max_extinction = math::average(material.max_extinction());
 		bool terminated = false;
@@ -268,7 +263,13 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 
 float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 									  Worker& worker, float3& transmittance) {
-	enum class Algorithm {
+	enum class Homogeneous_algorithm {
+		Closed_form,
+		PBRT3,
+		Stuff
+	};
+
+	enum class Heterogeneous_algorithm {
 		Delta_tracking,
 		Spectral_tracking,
 		Separated_delta_tracking
@@ -279,12 +280,12 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	const auto& material = *volume.material(0);
 
-	constexpr bool spectral = true;
+	const bool use_heterogeneous_algorithm = false;//material.is_heterogeneous_volume();
 
-	if (spectral) {
-		constexpr Algorithm algorithm = Algorithm::Spectral_tracking;
+	if (use_heterogeneous_algorithm) {
+		constexpr Heterogeneous_algorithm algorithm = Heterogeneous_algorithm::Spectral_tracking;
 
-		if (Algorithm::Separated_delta_tracking == algorithm) {
+		if (Heterogeneous_algorithm::Separated_delta_tracking == algorithm) {
 			const float2 rr(rng_.random_float(), rng_.random_float());
 
 			float3 transmittance_r;
@@ -298,7 +299,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 			transmittance = str;
 			return float3(0.f);
-		} else if (Algorithm::Spectral_tracking == algorithm) {
+		} else if (Heterogeneous_algorithm::Spectral_tracking == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
 			float3 w(1.f);
@@ -335,13 +336,13 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 				if (r2 < 1.f - pn) {
 					transmittance = float3(0.f);
 					SOFT_ASSERT(math::all_finite(ws));
-					return w * ws * estimate_direct_light(ray, p, worker);
+					return w * ws * direct_light(ray, p, worker);
 				} else {
 					SOFT_ASSERT(math::all_finite(wn));
 					w *= wn;
 				}
 			}
-		} else if (Algorithm::Delta_tracking == algorithm) {
+		} else if (Heterogeneous_algorithm::Delta_tracking == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
 			const float max_extinction = math::average(material.max_extinction());
@@ -377,7 +378,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			} while (!terminated);
 
 			if (terminated) {
-				float3 l = estimate_direct_light(ray, p, worker);
+				float3 l = direct_light(ray, p, worker);
 
 				l *= scattering_albedo;
 
@@ -389,29 +390,132 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			}
 		}
 	} else {
-		const float d = ray.max_t - ray.min_t;
+		constexpr Homogeneous_algorithm algorithm = Homogeneous_algorithm::Stuff;
 
-		const float3 sigma_a = material.absorption(transformation, float3::identity(),
-												   Sampler_filter::Undefined, worker);
+		if (Homogeneous_algorithm::Closed_form == algorithm) {
+			const float d = ray.max_t - ray.min_t;
 
-		const float3 sigma_s = material.scattering(transformation, float3::identity(),
-												   Sampler_filter::Undefined, worker);
+			const float3 sigma_a = material.absorption(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
 
-		const float3 extinction = sigma_a + sigma_s;
+			const float3 sigma_s = material.scattering(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
 
-		const float3 scattering_albedo = sigma_s / extinction;
+			const float3 extinction = sigma_a + sigma_s;
 
-		const float3 tr = math::exp(-d * extinction);
+			const float3 scattering_albedo = sigma_s / extinction;
 
-		const float r = rng_.random_float();
-		const float scatter_distance = -std::log(1.f - r * (1.f - math::average(tr))) / math::average(extinction);
+			const float3 tr = math::exp(-d * extinction);
 
-		const float3 p = ray.point(ray.min_t + scatter_distance);
+			const float r = rng_.random_float();
+			const float scatter_distance = -std::log(1.f - r * (1.f - math::average(tr))) / math::average(extinction);
 
-		const float3 l = estimate_direct_light(ray, p, worker);
+			const float3 p = ray.point(ray.min_t + scatter_distance);
 
-		transmittance = tr;
-		return l * (1.f - tr) * scattering_albedo;
+			const float3 l = direct_light(ray, p, worker);
+
+			transmittance = tr;
+			return l * (1.f - tr) * scattering_albedo;
+		} else if (Homogeneous_algorithm::PBRT3 == algorithm) {
+			const float d = ray.max_t - ray.min_t;
+
+			const float r = rng_.random_float();
+
+			const uint32_t channel = std::min(static_cast<uint32_t>(r * 3.f), 2u);
+
+//			Float dist = -std::log(1 - sampler.Get1D()) / sigma_t[channel];
+//			Float t = std::min(dist / ray.d.Length(), ray.tMax);
+//			bool sampledMedium = t < ray.tMax;
+//			if (sampledMedium)
+//				*mi = MediumInteraction(ray(t), -ray.d, ray.time, this,
+//										ARENA_ALLOC(arena, HenyeyGreenstein)(g));
+
+//			// Compute the transmittance and sampling density
+//			Spectrum Tr = Exp(-sigma_t * std::min(t, MaxFloat) * ray.d.Length());
+
+//			// Return weighting factor for scattering from homogeneous medium
+//			Spectrum density = sampledMedium ? (sigma_t * Tr) : Tr;
+//			Float pdf = 0;
+//			for (int i = 0; i < Spectrum::nSamples; ++i) pdf += density[i];
+//			pdf *= 1 / (Float)Spectrum::nSamples;
+//			if (pdf == 0) {
+//				CHECK(Tr.IsBlack());
+//				pdf = 1;
+//			}
+//			return sampledMedium ? (Tr * sigma_s / pdf) : (Tr / pdf);
+
+			const float3 sigma_a = material.absorption(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_s = material.scattering(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_t = sigma_a + sigma_s;
+
+			const float r2 = rng_.random_float();
+			const float dist = -std::log(1.f - r2) / sigma_t[channel];
+
+			const float t = std::min(dist, d);
+
+			const bool scatter = t < d;
+
+			float3 l;
+			if (scatter) {
+				const float3 p = ray.point(ray.min_t + t);
+
+				l = direct_light(ray, p, worker);
+			}
+
+			const float3 tr = math::exp(-t * sigma_t);
+
+			const float3 density = scatter ? sigma_t * tr : tr;
+
+			const float pdf = math::average(density);
+
+			transmittance = scatter ? ((tr * sigma_s) / pdf) : tr / pdf;
+
+			const float3 scattering_albedo = sigma_s / sigma_t;
+
+			return l * (1.f - transmittance) * scattering_albedo;
+		} else {
+			const float d = ray.max_t - ray.min_t;
+
+			const float3 sigma_a = material.absorption(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_s = material.scattering(transformation, float3::identity(),
+													   Sampler_filter::Undefined, worker);
+
+			const float3 sigma_t = sigma_a + sigma_s;
+
+			const float3 scattering_albedo = sigma_s / sigma_t;
+
+			const float3 tr = math::exp(-d * sigma_t);
+
+			const float r = rng_.random_float();
+
+			const float max_tr = math::max_component(tr);
+			const float mt = math::max_component(sigma_t);
+
+			const float3 sigma_n = float3(mt) - sigma_t;
+
+			float ps, pn;
+			float3 ws, wn;
+			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
+
+			float3 w(1.f);
+			avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
+
+
+			const float scatter_distance = -std::log(1.f - r * (1.f - max_tr)) / mt;
+
+			const float3 p = ray.point(ray.min_t + scatter_distance);
+
+			const float3 l = direct_light(ray, p, worker);
+
+			transmittance = tr;
+			return l * (1.f - tr) * ws * scattering_albedo;
+		}
 	}
 }
 
@@ -563,7 +667,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 						weight = float3(1.f);
 						return true;
 					} else if (r2 < 1.f - pn) {
-						float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
+						float3 l = direct_light(ray, p, intersection, material_sample, worker);
 
 						li = w * l;
 
@@ -609,7 +713,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				} while (!terminated);
 
 				if (terminated) {
-					float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
+					float3 l = direct_light(ray, p, intersection, material_sample, worker);
 
 					l *= scattering_albedo;
 
@@ -641,7 +745,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 			const float3 p = ray.point(scatter_distance);
 
-			float3 l = estimate_direct_light(ray, p, intersection, material_sample, worker);
+			float3 l = direct_light(ray, p, intersection, material_sample, worker);
 
 			l *= (1.f - transmittance) * scattering_albedo;
 
@@ -695,7 +799,7 @@ float3 Single_scattering_tracking::spectral_stuff(const Ray& ray, const Transfor
 
 			return float3(0.f);
 		} else {
-			const float3 l = estimate_direct_light(ray, p, worker);
+			const float3 l = direct_light(ray, p, worker);
 
 			transmittance = float3(0.f);
 
@@ -704,8 +808,8 @@ float3 Single_scattering_tracking::spectral_stuff(const Ray& ray, const Transfor
 	}
 }
 
-float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const float3& position,
-														 Worker& worker) {
+float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
+												Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;
@@ -737,10 +841,10 @@ float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const f
 	return result;
 }
 
-float3 Single_scattering_tracking::estimate_direct_light(const Ray& ray, const float3& position,
-														 const Intersection& intersection,
-														 const Material_sample& material_sample,
-														 Worker& worker) {
+float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
+												const Intersection& intersection,
+												const Material_sample& material_sample,
+												Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;

@@ -47,12 +47,10 @@ private:
 						  const Material& material, uint32_t channel, float2 rr,
 						  Worker& worker, float3& transmittance);
 
-	float3 estimate_direct_light(const Ray& ray, const float3& position, Worker& worker);
+	float3 direct_light(const Ray& ray, const float3& position, Worker& worker);
 
-	float3 estimate_direct_light(const Ray& ray, const float3& position,
-								 const Intersection& intersection,
-								 const Material_sample& material_sample,
-								 Worker& worker);
+	float3 direct_light(const Ray& ray, const float3& position, const Intersection& intersection,
+						const Material_sample& material_sample, Worker& worker);
 
 	const Settings settings_;
 

@@ -31,9 +31,9 @@ float3 Density::optical_depth(const Transformation& transformation, const math::
 		tau += density(transformation, p_o, filter, worker);
 	}
 
-	const float3 attenuation = absorption_coefficient_ + scattering_coefficient_;
+	const float3 extinction = absorption_coefficient_ + scattering_coefficient_;
 
-	return step_size * tau * attenuation;
+	return step_size * tau * extinction;
 }
 
 float3 Density::absorption(const Transformation& transformation, const float3& p,
