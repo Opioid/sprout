@@ -16,6 +16,35 @@
 namespace scene::light {
 
 bool Prop_image_light::sample(const Transformation& transformation,
+							  const float3& p, float time,
+							  sampler::Sampler& sampler, uint32_t sampler_dimension,
+							  Sampler_filter filter, const Worker& worker, Sample& result) const {
+	const auto material = prop_->material(part_);
+
+	const float2 s2d = sampler.generate_sample_2D(sampler_dimension);
+
+	const auto rs = material->radiance_sample(s2d);
+	if (0.f == rs.pdf) {
+		return false;
+	}
+
+	const float area = prop_->area(part_);
+
+	const bool two_sided = material->is_two_sided();
+
+	// this pdf includes the uv weight which adjusts for texture distortion by the shape
+	if (!prop_->shape()->sample(part_, transformation, p, rs.uv, area, two_sided, result.shape)) {
+		return false;
+	}
+
+	result.shape.pdf *= rs.pdf;
+	result.radiance = material->sample_radiance(result.shape.wi, rs.uv, area,
+												time, filter, worker);
+
+	return true;
+}
+
+bool Prop_image_light::sample(const Transformation& transformation,
 							  const float3& p, const float3& n, float time, bool total_sphere,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Sampler_filter filter, const Worker& worker, Sample& result) const {

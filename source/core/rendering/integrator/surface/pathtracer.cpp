@@ -59,12 +59,17 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 throughput(1.f);
 	float3 result(0.f);
 
+	// This hack is currently used to keep PT in synch with PTDL.
+	// PTDL shadow rays cannot connect to lights through volume material.
+	bool was_transmission = false;
+	bool scattered = false;
+
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-		if (material_sample.same_hemisphere(wo)) {
+		if (material_sample.same_hemisphere(wo) && (!was_transmission || scattered)) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -147,7 +152,11 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 //		}
 
 
+		was_transmission = sample_result.type.test(Bxdf_type::Transmission);
 
+		if (intersection.geo.subsurface) {
+			scattered = true;
+		}
 
 		const bool entering = sample_result.type.test(Bxdf_type::Transmission)
 							&& !intersection.same_hemisphere(sample_result.wi);

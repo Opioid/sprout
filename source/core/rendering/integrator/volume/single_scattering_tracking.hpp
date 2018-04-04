@@ -64,7 +64,7 @@ public:
 	Single_scattering_tracking_factory(const take::Settings& take_settings, uint32_t num_integrators,
 							  float step_size, float step_probability, bool indirect_lighting);
 
-	~Single_scattering_tracking_factory();
+	~Single_scattering_tracking_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 

@@ -212,8 +212,11 @@ float3 Pathtracer_MIS::next_event(const Ray& ray, Intersection& intersection,
 					  ray.depth + 1, ray.time, ray.wavelength, ray.ior, ray.properties);
 
 	float3 ssstr;
-	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection,
-													   material_sample, filter, ssstr);
+//	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection,
+//													   material_sample, filter, ssstr);
+
+	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection, filter);
+	ssstr = float3(1.f);
 
 	const float3 weighted_reflection = sample_result.reflection / sample_result.pdf;
 
@@ -325,7 +328,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 				   light_sample.shape.t - shadow_offset, history.depth, history.time,
 				   history.wavelength, history.ior, history.properties);
 
-	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, material_sample, filter);
+	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 	if (math::any_greater_zero(tv)) {
 		const float3 tr = worker.transmittance(shadow_ray);
 

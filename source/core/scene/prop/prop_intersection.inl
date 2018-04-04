@@ -3,6 +3,7 @@
 
 #include "prop_intersection.hpp"
 #include "prop.hpp"
+#include "scene/scene_ray.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "base/math/vector3.inl"
 

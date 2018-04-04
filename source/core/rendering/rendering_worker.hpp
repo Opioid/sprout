@@ -47,12 +47,12 @@ public:
 	void prepare(uint32_t num_samples_per_pixel);
 
 	float4 li(Ray& ray);
-	float3 li(Ray& ray, scene::prop::Intersection& intersection);
+	float3 li(Ray& ray, Intersection& intersection);
 	float3 volume_li(const Ray& ray, float3& transmittance);
 
 	using Material_sample = scene::material::Sample;
 
-	bool volume(Ray& ray, scene::prop::Intersection& intersection,
+	bool volume(Ray& ray, Intersection& intersection,
 				const Material_sample& material_sample,
 				float3& li, float3& transmittance, float3& weight);
 
@@ -60,8 +60,7 @@ public:
 
 	float3 tinted_visibility(const Ray& ray, Sampler_filter filter) const;
 
-	float3 tinted_visibility(Ray& ray, const scene::prop::Intersection& intersection,
-							 const Material_sample& sample, Sampler_filter filter);
+	float3 tinted_visibility(Ray& ray, const Intersection& intersection, Sampler_filter filter);
 
 	sampler::Sampler* sampler();
 

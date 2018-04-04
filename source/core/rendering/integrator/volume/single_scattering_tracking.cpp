@@ -624,7 +624,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
 
 			const float r2 = rng_.random_float();
-			if (r2 < 1.f - pn) {
+			if (r2 <= 1.f - pn) {
 				transmittance = float3(0.f);
 				SOFT_ASSERT(math::all_finite(ws));
 				li = w * ws * direct_light(ray, p, intersection, material_sample, worker);
@@ -761,8 +761,8 @@ float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& po
 	const auto light = worker.scene().random_light(rng_.random_float());
 
 	scene::light::Sample light_sample;
-	if (light.ref.sample(position, float3(0.f, 0.f, 1.f), ray.time,
-						 true, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
+	if (light.ref.sample(position, ray.time, sampler_, 0,
+						 Sampler_filter::Nearest, worker, light_sample)) {
 		shadow_ray.set_direction(light_sample.shape.wi);
 		const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 		shadow_ray.max_t = light_sample.shape.t - offset;
@@ -771,7 +771,8 @@ float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& po
 
 		Intersection tintersection = intersection;
 		tintersection.geo.subsurface = true;
-		const float3 tv = worker.tinted_visibility(shadow_ray, tintersection, material_sample, Sampler_filter::Nearest);
+		const float3 tv = worker.tinted_visibility(shadow_ray, tintersection,
+												   Sampler_filter::Nearest);
 		if (math::any_greater_zero(tv)) {
 			const float3 tr = worker.transmittance(shadow_ray);
 

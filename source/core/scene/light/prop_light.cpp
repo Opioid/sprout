@@ -23,6 +23,27 @@ const Light::Transformation& Prop_light::transformation_at(
 }
 
 bool Prop_light::sample(const Transformation& transformation,
+						const float3& p, float time,
+						sampler::Sampler& sampler, uint32_t sampler_dimension,
+						Sampler_filter filter, const Worker& worker, Sample& result) const {
+	auto material = prop_->material(part_);
+
+	const float area = prop_->area(part_);
+
+	const bool two_sided = material->is_two_sided();
+
+	if (!prop_->shape()->sample(part_, transformation, p, area, two_sided, sampler,
+								sampler_dimension, worker.node_stack(), result.shape)) {
+		return false;
+	}
+
+	result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv,
+												area, time, filter, worker);
+
+	return true;
+}
+
+bool Prop_light::sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker, Sample& result) const {

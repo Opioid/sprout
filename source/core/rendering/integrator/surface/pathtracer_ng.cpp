@@ -356,7 +356,7 @@ float3 Pathtracer_NG::evaluate_light(const Light& light, float light_weight, con
 				   light_sample.shape.t - shadow_offset, history.depth, history.time,
 				   history.wavelength, history.ior, history.properties);
 
-	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, material_sample, filter);
+	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 	if (math::any_greater_zero(tv)) {
 		const float3 tr = worker.transmittance(shadow_ray);
 

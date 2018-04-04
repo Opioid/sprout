@@ -27,6 +27,7 @@ public:
 	using Sampler_filter = material::Sampler_settings::Filter;
 	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 	using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
+	using Intersection = prop::Intersection;
 
 	Worker();
 	~Worker();
@@ -36,18 +37,14 @@ public:
 
 	uint32_t id() const;
 
-	bool intersect(Ray& ray, prop::Intersection& intersection) const;
-	bool intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& intersection) const;
+	bool intersect(Ray& ray, Intersection& intersection) const;
+	bool intersect(const prop::Prop* prop, Ray& ray, Intersection& intersection) const;
 	bool intersect(const prop::Prop* prop, Ray& ray, float& epsilon) const;
 
-	bool resolve_mask(Ray& ray, prop::Intersection& intersection, Sampler_filter filter);
+	bool resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter);
 
-	bool intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
+	bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
 									Sampler_filter filter);
-
-	bool intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
-									const material::Sample& sample, Sampler_filter filter,
-									float3& transmission);
 
 	bool visibility(const Ray& ray) const;
 

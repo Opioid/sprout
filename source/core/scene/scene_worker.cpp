@@ -33,11 +33,11 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-bool Worker::intersect(Ray& ray, prop::Intersection& intersection) const {
+bool Worker::intersect(Ray& ray, Intersection& intersection) const {
 	return scene_->intersect(ray, node_stack_, intersection);
 }
 
-bool Worker::intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& intersection) const {
+bool Worker::intersect(const prop::Prop* prop, Ray& ray, Intersection& intersection) const {
 	const bool hit = prop->intersect(ray, node_stack_, intersection.geo);
 	if (hit) {
 		intersection.prop = prop;
@@ -51,7 +51,7 @@ bool Worker::intersect(const prop::Prop* prop, Ray& ray, float& epsilon) const {
 	return prop->intersect(ray, node_stack_, epsilon, inside);
 }
 
-bool Worker::resolve_mask(Ray& ray, prop::Intersection& intersection, Sampler_filter filter) {
+bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter) {
 	const float ray_offset_factor = settings_.ray_offset_factor;
 
 	const float start_min_t = ray.min_t;
@@ -79,36 +79,13 @@ bool Worker::resolve_mask(Ray& ray, prop::Intersection& intersection, Sampler_fi
 	return true;
 }
 
-bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
+bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
 										Sampler_filter filter) {
 	if (!intersect(ray, intersection)) {
 		return false;
 	}
 
 	return resolve_mask(ray, intersection, filter);
-}
-
-bool Worker::intersect_and_resolve_mask(Ray& ray, prop::Intersection& intersection,
-										const material::Sample& sample, Sampler_filter filter,
-										float3& transmission) {
-	transmission = float3(1.f);
-
-	if (intersection.geo.subsurface) {
-		const float ray_max_t = ray.max_t;
-
-		float prop_length = 0.00033f;
-		float epsilon;
-		if (intersect(intersection.prop, ray, epsilon)) {
-			prop_length = ray.max_t;
-
-			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
-			ray.max_t = ray_max_t;
-		}
-
-		transmission = sample.bssrdf().transmittance(prop_length);
-	}
-
-	return intersect_and_resolve_mask(ray, intersection, filter);
 }
 
 bool Worker::visibility(const Ray& ray) const {

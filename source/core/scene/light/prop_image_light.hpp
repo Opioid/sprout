@@ -10,6 +10,12 @@ class Prop_image_light : public Prop_light {
 public:
 
 	virtual bool sample(const Transformation& transformation,
+						const float3& p, float time,
+						sampler::Sampler& sampler, uint32_t sampler_dimension,
+						Sampler_filter filter, const Worker& worker,
+						Sample& result) const override final;
+
+	virtual bool sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker,

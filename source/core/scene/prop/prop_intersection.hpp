@@ -8,6 +8,7 @@ namespace sampler { class Sampler; }
 
 namespace scene {
 
+struct Ray;
 class Worker;
 
 namespace material {
