@@ -160,14 +160,10 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (requires_bounce) {
 			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
-		//	if (intersection.material()->has_absorption()) {
-		//		throughput *= rendering::attenuation(ray.max_t, material_sample.absorption_coefficient());
-		//	} else {
-				float3 vtr;
-				const float3 vli = worker.volume_li(ray, vtr);
-				result += throughput * vli;
-				throughput *= vtr;
-		//	}
+			float3 vtr;
+			const float3 vli = worker.volume_li(ray, vtr);
+			result += throughput * vli;
+			throughput *= vtr;
 
 			if (!hit) {
 				break;
@@ -251,7 +247,9 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	SOFT_ASSERT(math::all_finite_and_positive(result));
 
-	if (!hit) {
+	const bool no_light_sampling = sample_result.type.test(Bxdf_type::Transmission);
+
+	if (!hit || no_light_sampling) {
 		return result;
 	}
 
@@ -262,7 +260,7 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	float light_pdf = 0.f;
 
-	const bool no_mis = sample_result.type.test(Bxdf_type::Specular/*, Bxdf_type::Transmission*/);
+	const bool no_mis = sample_result.type.test(Bxdf_type::Specular);
 
 	if (!no_mis) {
 		auto light = worker.scene().light(light_id);
@@ -363,7 +361,11 @@ float3 Pathtracer_NG::evaluate_light(const Light& light, float light_weight, con
 		const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
 
 		const float light_pdf = light_sample.shape.pdf * light_weight;
-		const float weight = power_heuristic(light_pdf, bxdf.pdf);
+		/*const*/ float weight = power_heuristic(light_pdf, bxdf.pdf);
+
+		if (intersection.geo.subsurface) {
+			weight = 1.f;
+		}
 
 		return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * bxdf.reflection);
 	}
