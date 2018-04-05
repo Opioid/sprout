@@ -17,7 +17,7 @@ void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const {
 	result.wi = -wo_;
 	result.pdf = 1.f;
 	result.wavelength = 0.f;
-	result.type.clear(bxdf::Type::Transmission);
+	result.type.clear(bxdf::Type::SSS_transmission);
 }
 
 BSSRDF Sample::bssrdf() const {

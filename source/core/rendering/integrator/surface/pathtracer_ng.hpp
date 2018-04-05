@@ -60,7 +60,7 @@ private:
 						 Sampler_filter filter, Worker& worker);
 
 	float3 evaluate_light(const Light& light, float light_weight, const Ray& history,
-						  float ray_offset, uint32_t sampler_dimension,
+						  float ray_offset, uint32_t sampler_dimension, bool mis,
 						  const Intersection& intersection,
 						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
