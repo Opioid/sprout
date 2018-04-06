@@ -69,7 +69,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-		if (material_sample.same_hemisphere(wo) && (!sample_result.type.test(Bxdf_type::SSS) || scattered)) {
+		if (material_sample.same_hemisphere(wo)/* && (!sample_result.type.test(Bxdf_type::SSS) || scattered)*/) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -94,18 +94,17 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-//		const bool requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
-//																 Bxdf_type::Transmission);
-
-		const bool requires_bounce = sample_result.type.test(Bxdf_type::Specular);
-
-		if (requires_bounce) {
-			if (settings_.disable_caustics && !ray.is_primary()) {
-				break;
+		const bool sss_hack = sample_result.type.test(Bxdf_type::SSS);
+		if (!sss_hack) {
+			const bool requires_bounce = sample_result.type.test(Bxdf_type::Specular);
+			if (requires_bounce) {
+				if (settings_.disable_caustics && !ray.is_primary()) {
+					break;
+				}
+			} else {
+				ray.set_primary(false);
+				filter = Sampler_filter::Nearest;
 			}
-		} else {
-			ray.set_primary(false);
-			filter = Sampler_filter::Nearest;
 		}
 
 /*		if (sample_result.type.test(Bxdf_type::Transmission)) {

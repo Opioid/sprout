@@ -87,6 +87,7 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Bxdf_sample sample_result;
 
 	bool requires_bounce = ray.is_primary();
+	bool hack = false;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -95,16 +96,16 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-		if (requires_bounce && material_sample.same_hemisphere(wo)) {
-			result += throughput * material_sample.radiance();
+//		if (requires_bounce && material_sample.same_hemisphere(wo)) {
+//			result += throughput * material_sample.radiance();
 
-			if (i >= max_bounces || material_sample.is_pure_emissive()) {
-				break;
-			}
-		}
+//			if (i >= max_bounces || material_sample.is_pure_emissive()) {
+//				break;
+//			}
+//		}
 
 		const float3 direct_light = next_event(ray, intersection, material_sample, filter,
-											   worker, sample_result, requires_bounce);
+											   worker, sample_result, requires_bounce, hack);
 		result += throughput * direct_light;
 
 		if (!intersection.hit() || 0.f == sample_result.pdf
@@ -120,13 +121,19 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 		}
 
-		if (requires_bounce) {
-			if (settings_.disable_caustics && !ray.is_primary()) {
-				break;
+		const bool sss_hack = intersection.geo.subsurface;
+
+		if (!sss_hack) {
+			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
+		//	requires_bounce = sample_result.type.test(Bxdf_type::Specular);
+			if (requires_bounce) {
+				if (settings_.disable_caustics && !ray.is_primary()) {
+					break;
+				}
+			} else {
+				ray.set_primary(false);
+				filter = Sampler_filter::Nearest;
 			}
-		} else {
-			ray.set_primary(false);
-			filter = Sampler_filter::Nearest;
 		}
 
 		if (0.f == ray.wavelength) {
@@ -157,18 +164,18 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		++ray.depth;
 
 		// For these cases we fall back to plain pathtracing
-		if (requires_bounce) {
-			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
+//		if (requires_bounce) {
+//			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 
-			float3 vtr;
-			const float3 vli = worker.volume_li(ray, vtr);
-			result += throughput * vli;
-			throughput *= vtr;
+//			float3 vtr;
+//			const float3 vli = worker.volume_li(ray, vtr);
+//			result += throughput * vli;
+//			throughput *= vtr;
 
-			if (!hit) {
-				break;
-			}
-		}
+//			if (!hit) {
+//				break;
+//			}
+//		}
 	}
 
 	return result;
@@ -191,7 +198,7 @@ size_t Pathtracer_NG::num_bytes() const {
 float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 								 const Material_sample& material_sample,
 								 Sampler_filter filter, Worker& worker,
-								 Bxdf_sample& sample_result, bool& requires_bounce) {
+								 Bxdf_sample& sample_result, bool& requires_bounce, bool& hack) {
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 	float3 result = sample_lights(ray, ray_offset, intersection, material_sample, filter, worker);
@@ -221,6 +228,12 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	// Important exceptions are the Specular and Transmission cases, which never come here.
 	float3 vtr(1.f);
 
+	if (intersection.geo.subsurface) {
+		hack = true;
+	} else if (hack) {
+		hack = sample_result.type.test(Bxdf_type::SSS);
+	}
+
 	bool hit;
 
 	const bool entering = sample_result.type.test(Bxdf_type::Transmission)
@@ -235,7 +248,6 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 		result += weighted_reflection * vli;
 		vtr *= weight;
 		sample_result.reflection *= vtr;
-
 	} else {
 		hit = worker.intersect_and_resolve_mask(secondary_ray, intersection, filter);
 
@@ -247,7 +259,12 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	SOFT_ASSERT(math::all_finite_and_positive(result));
 
-	const bool no_light_sampling = sample_result.type.test(Bxdf_type::SSS);
+	const bool no_light_sampling = hack;//sample_result.type.test(Bxdf_type::SSS);
+
+//	if (hack) {
+//		hack = sample_result.type.test(Bxdf_type::SSS);
+//	}
+
 	if (!hit || no_light_sampling) {
 		return result;
 	}
@@ -303,7 +320,7 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 float3 Pathtracer_NG::sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
 									const Material_sample& material_sample,
 									Sampler_filter filter, Worker& worker) {
-	const bool mis = !intersection.geo.subsurface;
+	const bool do_mis = !intersection.geo.subsurface;
 
 	float3 result(0.f);
 
@@ -313,7 +330,7 @@ float3 Pathtracer_NG::sample_lights(const Ray& ray, float ray_offset, Intersecti
 
 			const auto light = worker.scene().random_light(select);
 
-			result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, mis,
+			result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis,
 									 intersection, material_sample, filter, worker);
 		}
 
@@ -324,7 +341,7 @@ float3 Pathtracer_NG::sample_lights(const Ray& ray, float ray_offset, Intersecti
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto& light = *lights[l];
 			for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
-				result += evaluate_light(light, light_weight, ray, ray_offset, l, mis,
+				result += evaluate_light(light, light_weight, ray, ray_offset, l, do_mis,
 										 intersection, material_sample, filter, worker);
 			}
 		}
@@ -336,7 +353,7 @@ float3 Pathtracer_NG::sample_lights(const Ray& ray, float ray_offset, Intersecti
 }
 
 float3 Pathtracer_NG::evaluate_light(const Light& light, float light_weight, const Ray& history,
-									 float ray_offset, uint32_t sampler_dimension, bool mis,
+									 float ray_offset, uint32_t sampler_dimension, bool do_mis,
 									 const Intersection& intersection,
 									 const Material_sample& material_sample,
 									 Sampler_filter filter, Worker& worker) {
@@ -361,7 +378,7 @@ float3 Pathtracer_NG::evaluate_light(const Light& light, float light_weight, con
 		const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
 
 		const float light_pdf = light_sample.shape.pdf * light_weight;
-		const float weight = mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
+		const float weight = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
 		return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * bxdf.reflection);
 	}

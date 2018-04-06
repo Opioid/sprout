@@ -38,7 +38,7 @@ public:
 	Pathtracer_NG(rnd::Generator& rng, const take::Settings& take_settings,
 				  const Settings& settings, sub::Integrator& subsurface);
 
-	~Pathtracer_NG();
+	virtual ~Pathtracer_NG() override final;
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -53,14 +53,14 @@ private:
 	float3 next_event(const Ray& ray, Intersection& intersection,
 					  const Material_sample& material_sample,
 					  Sampler_filter filter, Worker& worker,
-					  Bxdf_sample& sample_result, bool& requires_bounce);
+					  Bxdf_sample& sample_result, bool& requires_bounce, bool& hack);
 
 	float3 sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
 						 const Material_sample& material_sample,
 						 Sampler_filter filter, Worker& worker);
 
 	float3 evaluate_light(const Light& light, float light_weight, const Ray& history,
-						  float ray_offset, uint32_t sampler_dimension, bool mis,
+						  float ray_offset, uint32_t sampler_dimension, bool do_mis,
 						  const Intersection& intersection,
 						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
@@ -100,7 +100,7 @@ public:
 						  float path_termination_probability, Light_sampling light_sampling,
 						  bool enable_caustics);
 
-	~Pathtracer_NG_factory();
+	virtual ~Pathtracer_NG_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 

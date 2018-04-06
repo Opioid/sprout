@@ -631,7 +631,18 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 				return true;
 			} else {
 				SOFT_ASSERT(math::all_finite(wn));
+
+//				if (!math::all_finite(wn)) {
+//					std::cout << "problem" << std::endl;
+//				}
+
 				w *= wn;
+
+				if (math::average(w) == 0.f) {
+					transmittance = w;
+					li = float3(0.f);
+					return true;
+				}
 			}
 		}
 	} else {

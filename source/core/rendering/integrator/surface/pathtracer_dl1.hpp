@@ -65,7 +65,7 @@ public:
 						  float path_termination_probability,
 						  uint32_t num_light_samples, bool enable_caustics);
 
-	~Pathtracer_DL1_factory();
+	virtual ~Pathtracer_DL1_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
