@@ -59,17 +59,14 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 throughput(1.f);
 	float3 result(0.f);
 
-	// This hack is currently used to keep PT in synch with PTDL.
-	// PTDL shadow rays cannot connect to lights through volume material.
-//	bool was_sss = false;
-	bool scattered = false;
+	bool was_subsurface = false;
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-		if (material_sample.same_hemisphere(wo)/* && (!sample_result.type.test(Bxdf_type::SSS) || scattered)*/) {
+		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -94,9 +91,9 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		const bool sss_hack = sample_result.type.test(Bxdf_type::SSS);
-		if (!sss_hack) {
-			const bool requires_bounce = sample_result.type.test(Bxdf_type::Specular);
+		if (!was_subsurface) {
+			const bool requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
+																	 Bxdf_type::Transmission);
 			if (requires_bounce) {
 				if (settings_.disable_caustics && !ray.is_primary()) {
 					break;
@@ -107,28 +104,9 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 		}
 
-/*		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			if (material_sample.is_sss()) {
-				result += throughput * subsurface_.li(ray, intersection, material_sample, 
-													  Sampler_filter::Nearest,
-													  worker, sample_result);
-				if (0.f == sample_result.pdf) {
-					break;
-				}
+		was_subsurface = intersection.geo.subsurface;
 
-				throughput *= sample_result.reflection;
-			} else {
-				transmittance_.resolve(ray, intersection, material_sample.absorption_coefficient(),
-									   sampler_, Sampler_filter::Nearest, worker, sample_result);
-				if (0.f == sample_result.pdf) {
-					break;
-				}
-
-				throughput *= sample_result.reflection;
-			}
-		} else*/ {
-			throughput *= sample_result.reflection / sample_result.pdf;
-		}
+		throughput *= sample_result.reflection / sample_result.pdf;
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
@@ -136,26 +114,6 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.min_t = ray_offset;
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
-
-//		float3 ssstr;
-//		const bool hit = worker.intersect_and_resolve_mask(ray, intersection, material_sample,
-//														   filter, ssstr);
-
-//		float3 vtr;
-//		const float3 vli = worker.volume_li(ray, vtr);
-//		result += throughput * vli;
-//		throughput *= ssstr * vtr;
-
-//		if (!hit) {
-//			break;
-//		}
-
-
-	//	was_sss = sample_result.type.test(Bxdf_type::SSS);
-
-		if (intersection.geo.subsurface) {
-			scattered = true;
-		}
 
 		const bool entering = sample_result.type.test(Bxdf_type::Transmission)
 							&& !intersection.same_hemisphere(sample_result.wi);
@@ -184,10 +142,6 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 				break;
 			}
 		}
-
-
-
-
 	}
 
 	return result;

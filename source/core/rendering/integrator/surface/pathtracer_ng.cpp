@@ -87,7 +87,8 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Bxdf_sample sample_result;
 
 	bool requires_bounce = ray.is_primary();
-	bool hack = false;
+
+	bool was_subsurface = false;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -96,16 +97,18 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-//		if (requires_bounce && material_sample.same_hemisphere(wo)) {
-//			result += throughput * material_sample.radiance();
+		if (0 == ray.depth && material_sample.same_hemisphere(wo)) {
+			result += throughput * material_sample.radiance();
 
-//			if (i >= max_bounces || material_sample.is_pure_emissive()) {
-//				break;
-//			}
-//		}
+			if (i >= max_bounces || material_sample.is_pure_emissive()) {
+				break;
+			}
+		}
+
+
 
 		const float3 direct_light = next_event(ray, intersection, material_sample, filter,
-											   worker, sample_result, requires_bounce, hack);
+											   worker, sample_result, requires_bounce, was_subsurface);
 		result += throughput * direct_light;
 
 		if (!intersection.hit() || 0.f == sample_result.pdf
@@ -121,38 +124,24 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 		}
 
-		const bool sss_hack = intersection.geo.subsurface;
+//		if (!was_subsurface) {
+//			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
+//														  Bxdf_type::Transmission);
+//			if (requires_bounce) {
+//				if (settings_.disable_caustics && !ray.is_primary()) {
+//					break;
+//				}
+//			} else {
+//				ray.set_primary(false);
+//				filter = Sampler_filter::Nearest;
+//			}
+//		}
 
-		if (!sss_hack) {
-			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
-		//	requires_bounce = sample_result.type.test(Bxdf_type::Specular);
-			if (requires_bounce) {
-				if (settings_.disable_caustics && !ray.is_primary()) {
-					break;
-				}
-			} else {
-				ray.set_primary(false);
-				filter = Sampler_filter::Nearest;
-			}
-		}
+//		was_subsurface = intersection.geo.subsurface;
 
 		if (0.f == ray.wavelength) {
 			ray.wavelength = sample_result.wavelength;
 		}
-
-//		if (sample_result.type.test(Bxdf_type::Transmission)) {
-//			const float3 tli = resolve_transmission(ray, intersection, material_sample,
-//													Sampler_filter::Nearest, worker, sample_result);
-
-//			result += throughput * tli;
-//			if (0.f == sample_result.pdf) {
-//				break;
-//			}
-
-//			throughput *= sample_result.reflection;
-//		} else {
-//			throughput *= sample_result.reflection / sample_result.pdf;
-//		}
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
@@ -162,20 +151,6 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.min_t = ray_offset;
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
-
-		// For these cases we fall back to plain pathtracing
-//		if (requires_bounce) {
-//			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
-
-//			float3 vtr;
-//			const float3 vli = worker.volume_li(ray, vtr);
-//			result += throughput * vli;
-//			throughput *= vtr;
-
-//			if (!hit) {
-//				break;
-//			}
-//		}
 	}
 
 	return result;
@@ -195,10 +170,12 @@ size_t Pathtracer_NG::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
 }
 
-float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
+float3 Pathtracer_NG::next_event(Ray& ray, Intersection& intersection,
 								 const Material_sample& material_sample,
 								 Sampler_filter filter, Worker& worker,
-								 Bxdf_sample& sample_result, bool& requires_bounce, bool& hack) {
+								 Bxdf_sample& sample_result, bool& requires_bounce, bool& was_subsurface) {
+	const bool was_was_subsurface = was_subsurface;
+
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 	float3 result = sample_lights(ray, ray_offset, intersection, material_sample, filter, worker);
@@ -208,13 +185,24 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	// Material BSDF importance sample
 	material_sample.sample(material_sampler(ray.depth, ray.properties), sample_result);
 
-	// Those cases are handled outside
-//	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
-	requires_bounce = false;//sample_result.type.test(Bxdf_type::Specular);
-
-	if (requires_bounce || 0.f == sample_result.pdf) {
+	if (0.f == sample_result.pdf) {
 		return result;
 	}
+
+	if (!was_subsurface) {
+		requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
+													  Bxdf_type::Transmission);
+		if (requires_bounce) {
+			if (settings_.disable_caustics && !ray.is_primary()) {
+				sample_result.pdf = 0.f;
+				return result;
+			}
+		} else {
+			ray.set_primary(false);
+		}
+	}
+
+	was_subsurface = intersection.geo.subsurface;
 
 	const bool is_translucent = material_sample.is_translucent();
 
@@ -227,12 +215,6 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 	// so we must not use the sample after this point (e.g. in the calling function)!
 	// Important exceptions are the Specular and Transmission cases, which never come here.
 	float3 vtr(1.f);
-
-	if (intersection.geo.subsurface) {
-		hack = true;
-	} else if (hack) {
-		hack = sample_result.type.test(Bxdf_type::SSS);
-	}
 
 	bool hit;
 
@@ -259,13 +241,7 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	SOFT_ASSERT(math::all_finite_and_positive(result));
 
-	const bool no_light_sampling = hack;//sample_result.type.test(Bxdf_type::SSS);
-
-//	if (hack) {
-//		hack = sample_result.type.test(Bxdf_type::SSS);
-//	}
-
-	if (!hit || no_light_sampling) {
+	if (!hit || was_was_subsurface) {
 		return result;
 	}
 
@@ -276,7 +252,7 @@ float3 Pathtracer_NG::next_event(const Ray& ray, Intersection& intersection,
 
 	float light_pdf = 0.f;
 
-	const bool singular = sample_result.type.test(Bxdf_type::Specular);
+	const bool singular = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 	if (!singular) {
 		auto light = worker.scene().light(light_id);
 

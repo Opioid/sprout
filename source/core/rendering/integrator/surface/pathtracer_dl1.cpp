@@ -45,6 +45,8 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	float3 throughput(1.f);
 	float3 result(0.f);
 
+	bool was_subsurface = false;
+
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
@@ -76,10 +78,9 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			break;
 		}
 
-		const bool sss_hack = sample_result.type.test(Bxdf_type::SSS);
-		if (!sss_hack) {
-			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
-		//	requires_bounce = sample_result.type.test(Bxdf_type::Specular);
+		if (!was_subsurface) {
+			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
+														  Bxdf_type::Transmission);
 			if (requires_bounce) {
 				if (settings_.disable_caustics && !ray.is_primary()) {
 					break;
@@ -90,17 +91,9 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			}
 		}
 
-	/*	if (sample_result.type.test(Bxdf_type::Transmission)) {
-			transmittance_.resolve(ray, intersection, material_sample.absorption_coefficient(),
-								   sampler_, Sampler_filter::Nearest, worker, sample_result);
-			if (0.f == sample_result.pdf) {
-				break;
-			}
+		was_subsurface = intersection.geo.subsurface;
 
-			throughput *= sample_result.reflection;
-		} else*/ {
-			throughput *= sample_result.reflection / sample_result.pdf;
-		}
+		throughput *= sample_result.reflection / sample_result.pdf;
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;

@@ -547,7 +547,7 @@ template<typename Layer, typename IOR, typename Fresnel>
 float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, const IOR& ior,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
 
-
+/*
 	// Roughness zero will always have zero specular term (or worse NaN)
 		SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
@@ -585,7 +585,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 		// unstretch
 		m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
 
-		const float n_dot_h = /*clamp*/(m[2]);
+		const float n_dot_h = clamp(m[2]);
 
 		const float3 h = layer.tangent_to_world(m);
 
@@ -653,7 +653,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 
 		float thingus = (wi_dot_h * sqr_ior_i) / denomili;
 
-		result.reflection = sqr_eta * (factor /** sqr_ior_i*/ / denomili) * refraction;
+		result.reflection = sqr_eta * (factor * sqr_ior_i / denomili) * refraction;
 		result.wi = wi;
 		result.h = h;
 		result.pdf = pdf * (wi_dot_h * sqr_ior_i) / denomili;
@@ -689,7 +689,8 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 
 
 		return n_dot_wi;
-/*
+		*/
+
 
 
 	// Roughness zero will always have zero specular term (or worse NaN)
@@ -795,7 +796,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 
 
 	return n_dot_wi;
-	*/
+
 }
 
 
