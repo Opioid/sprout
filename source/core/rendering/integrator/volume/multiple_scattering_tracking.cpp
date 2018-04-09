@@ -370,11 +370,10 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p, initial_uv,
-													   Sampler_filter::Undefined, worker);
-
-			const float3 sigma_s = material.scattering(transformation, p, initial_uv,
-													   Sampler_filter::Undefined, worker);
+			float3 sigma_a;
+			float3 sigma_s;
+			material.extinction(transformation, p, initial_uv, Sampler_filter::Undefined, worker,
+								sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
 
