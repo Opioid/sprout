@@ -229,10 +229,10 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p,
+			const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
+			const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -316,10 +316,10 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 				const float3 p = ray.point(ray.min_t + t);
 
-				const float3 sigma_a = material.absorption(transformation, p,
+				const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 														   Sampler_filter::Undefined, worker);
 
-				const float3 sigma_s = material.scattering(transformation, p,
+				const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
 														   Sampler_filter::Undefined, worker);
 
 				const float3 sigma_t = sigma_a + sigma_s;
@@ -362,10 +362,10 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 				p = ray.point(ray.min_t + t);
 
-				const float3 sigma_a = material.absorption(transformation, p,
+				const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 														   Sampler_filter::Undefined, worker);
 
-				const float3 sigma_s = material.scattering(transformation, p,
+				const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
 														   Sampler_filter::Undefined, worker);
 
 				extinction = sigma_a + sigma_s;
@@ -395,10 +395,10 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		if (Homogeneous_algorithm::Closed_form == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
-			const float3 sigma_a = material.absorption(transformation, float3::identity(),
+			const float3 sigma_a = material.absorption(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, float3::identity(),
+			const float3 sigma_s = material.scattering(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 extinction = sigma_a + sigma_s;
@@ -444,10 +444,10 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 //			}
 //			return sampledMedium ? (Tr * sigma_s / pdf) : (Tr / pdf);
 
-			const float3 sigma_a = material.absorption(transformation, float3::identity(),
+			const float3 sigma_a = material.absorption(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, float3::identity(),
+			const float3 sigma_s = material.scattering(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -480,10 +480,10 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		} else {
 			const float d = ray.max_t - ray.min_t;
 
-			const float3 sigma_a = material.absorption(transformation, float3::identity(),
+			const float3 sigma_a = material.absorption(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, float3::identity(),
+			const float3 sigma_s = material.scattering(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -543,10 +543,10 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p,
+			const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
+			const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 extinction = sigma_a + sigma_s;
@@ -607,10 +607,10 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p,
+			const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
+			const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -646,10 +646,10 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			}
 		}
 	} else {
-		const float3 sigma_a = material.absorption(transformation, float3::identity(),
+		const float3 sigma_a = material.absorption(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-		const float3 sigma_s = material.scattering(transformation, float3::identity(),
+		const float3 sigma_s = material.scattering(transformation, float3::identity(), float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 		const float3 extinction = sigma_a + sigma_s;
@@ -695,7 +695,7 @@ float3 Single_scattering_tracking::spectral_stuff(const Ray& ray, const Transfor
 
 		const float3 p = ray.point(ray.min_t + t);
 
-		const float3 sigma_a = material.absorption(transformation, p,
+		const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 												   Sampler_filter::Undefined, worker);
 
 		const float msa = sigma_a[channel];

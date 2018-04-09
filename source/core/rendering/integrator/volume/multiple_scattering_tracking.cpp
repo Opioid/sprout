@@ -229,10 +229,10 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Volume&
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p,
+			const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
+			const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -292,10 +292,10 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p,
+			const float3 sigma_a = material.absorption(transformation, p, intersection.geo.uv,
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
+			const float3 sigma_s = material.scattering(transformation, p, intersection.geo.uv,
 													   Sampler_filter::Undefined, worker);
 
 			const float3 extinction = sigma_a + sigma_s;
@@ -322,6 +322,8 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 										   const Material_sample& material_sample, Worker& worker,
 										   float3& li, float3& transmittance, float3& weight) {
+	const float2 initial_uv = intersection.geo.uv;
+
 	weight = float3(1.f);
 
 	Transformation temp;
@@ -363,10 +365,10 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p,
+			const float3 sigma_a = material.absorption(transformation, p, initial_uv,
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
+			const float3 sigma_s = material.scattering(transformation, p, initial_uv,
 													   Sampler_filter::Undefined, worker);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -379,6 +381,10 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
 
+			if (!math::all_finite(wn)) {
+				std::cout << "alarm" << std::endl;
+			}
+
 			const float r2 = rng_.random_float();
 			if (r2 <= 1.f - pn) {
 			//	transmittance = float3(0.f);
@@ -386,6 +392,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			//	li = w * ws * direct_light(ray, p, intersection, material_sample, worker);
 
 				intersection.geo.p = p;
+				intersection.geo.uv = initial_uv;
 				intersection.geo.epsilon = 0.f;
 				intersection.geo.subsurface = true;
 

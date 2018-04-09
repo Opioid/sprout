@@ -61,7 +61,6 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 	bool was_subsurface = false;
 
-	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);

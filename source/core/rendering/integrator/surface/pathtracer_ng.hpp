@@ -50,11 +50,6 @@ public:
 
 private:
 
-	float3 next_event(Ray& ray, Intersection& intersection,
-					  const Material_sample& material_sample,
-					  Sampler_filter filter, Worker& worker,
-					  Bxdf_sample& sample_result, bool& requires_bounce, bool& was_subsurface);
-
 	float3 sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
 						 const Material_sample& material_sample,
 						 Sampler_filter filter, Worker& worker);
@@ -64,6 +59,10 @@ private:
 						  const Intersection& intersection,
 						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
+
+	bool evaluate_light(uint32_t light_id, const Ray& ray, const Intersection& intersection,
+						Bxdf_sample sample_result, bool is_translucent,
+						Sampler_filter filter, Worker& worker, float3& radiance);
 
 	float3 resolve_transmission(const Ray& ray, Intersection& intersection,
 								const Material_sample& sample, Sampler_filter filter, 

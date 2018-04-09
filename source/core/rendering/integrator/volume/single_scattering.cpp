@@ -126,7 +126,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	//	const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 		const float3 local_radiance = estimate_direct_light(ray, current, worker);
 
-		const float3 scattering = material.scattering(transformation, current,
+		const float3 scattering = material.scattering(transformation, current, float2(0.f),
 													  Sampler_filter::Undefined, worker);
 
 		radiance += tr * scattering * local_radiance;
@@ -183,10 +183,10 @@ float3 Single_scattering::transmittance(const Ray& ray, const Intersection& inte
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p,
+			const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
-			const float3 sigma_s = material.scattering(transformation, p,
+			const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
 													   Sampler_filter::Undefined, worker);
 
 			const float3 extinction = sigma_a + sigma_s;

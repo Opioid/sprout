@@ -114,18 +114,60 @@ float3 Material_subsurface::optical_depth(const Transformation& /*transformation
 	return ray.length() * (absorption_coefficient_ + scattering_coefficient_);
 }
 
-float3 Material_subsurface::absorption(const Transformation& /*transformation*/, const float3& /*p*/,
-							   Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+float3 Material_subsurface::absorption(const Transformation& /*transformation*/,
+									   const float3& /*p*/, float2 uv,
+									   Sampler_filter filter, const Worker& worker) const {
+	if (color_map_.is_valid()) {
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
+		const float3 color = color_map_.sample_3(sampler, uv);
+
+		float3 absorption_coefficient;
+		float3 scattering_coefficient;
+
+		attenuation(color, attenuation_distance_,
+					absorption_coefficient, scattering_coefficient);
+
+		return absorption_coefficient;
+	}
+
 	return absorption_coefficient_;
 }
 
-float3 Material_subsurface::scattering(const Transformation& /*transformation*/, const float3& /*p*/,
-							   Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+float3 Material_subsurface::scattering(const Transformation& /*transformation*/,
+									   const float3& /*p*/, float2 uv,
+									   Sampler_filter filter, const Worker& worker) const {
+	if (color_map_.is_valid()) {
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
+		const float3 color = color_map_.sample_3(sampler, uv);
+
+		float3 absorption_coefficient;
+		float3 scattering_coefficient;
+
+		attenuation(color, attenuation_distance_,
+					absorption_coefficient, scattering_coefficient);
+
+		return scattering_coefficient;
+	}
+
 	return scattering_coefficient_;
 }
 
 float3 Material_subsurface::max_extinction() const {
+	if (color_map_.is_valid()) {
+		float3 absorption_coefficient;
+		float3 scattering_coefficient;
+
+		attenuation(float3(1.f), attenuation_distance_,
+					absorption_coefficient, scattering_coefficient);
+
+		return absorption_coefficient + scattering_coefficient;
+	}
+
 	return absorption_coefficient_ + scattering_coefficient_;
+}
+
+bool Material_subsurface::is_heterogeneous_volume() const {
+	return color_map_.is_valid();
 }
 
 size_t Material_subsurface::sample_size() {
