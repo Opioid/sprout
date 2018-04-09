@@ -84,7 +84,12 @@ public:
 	virtual float3 scattering(const Transformation& transformation, const float3& p, float2 uv,
 							  Sampler_filter filter, const Worker& worker) const;
 
-	virtual float3 max_extinction() const;
+	virtual void extinction(const Transformation& transformation, const float3& p, float2 uv,
+							Sampler_filter filter, const Worker& worker,
+							float3& absorption, float3& scattering) const;
+
+	virtual float3 max_extinction(float2 uv, Sampler_filter filter, const Worker& worker) const;
+
 	virtual bool  is_heterogeneous_volume() const;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,

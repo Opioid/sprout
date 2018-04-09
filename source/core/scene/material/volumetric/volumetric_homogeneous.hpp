@@ -25,7 +25,12 @@ public:
 	virtual float3 scattering(const Transformation& transformation, const float3& p, float2 uv,
 							  Sampler_filter filter, const Worker& worker) const override final;
 
-	virtual float3 max_extinction() const override final;
+	virtual void extinction(const Transformation& transformation, const float3& p, float2 uv,
+							Sampler_filter filter, const Worker& worker,
+							float3& absorption, float3& scattering) const override final;
+
+	virtual float3 max_extinction(float2 uv, Sampler_filter filter,
+								  const Worker& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
 };

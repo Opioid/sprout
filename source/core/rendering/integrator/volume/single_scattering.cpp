@@ -170,7 +170,9 @@ float3 Single_scattering::transmittance(const Ray& ray, const Intersection& inte
 	const float d = ray.max_t - ray.min_t;
 
 	if (material.is_heterogeneous_volume()) {
-		const float max_extinction = math::average(material.max_extinction());
+		const float max_extinction = math::average(material.max_extinction(float2(0.f),
+																		   Sampler_filter::Nearest,
+																		   worker));
 		bool terminated = false;
 		float t = 0.f;
 
@@ -184,10 +186,10 @@ float3 Single_scattering::transmittance(const Ray& ray, const Intersection& inte
 			const float3 p = ray.point(ray.min_t + t);
 
 			const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
-													   Sampler_filter::Undefined, worker);
+													   Sampler_filter::Nearest, worker);
 
 			const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
-													   Sampler_filter::Undefined, worker);
+													   Sampler_filter::Nearest, worker);
 
 			const float3 extinction = sigma_a + sigma_s;
 

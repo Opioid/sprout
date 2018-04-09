@@ -219,7 +219,9 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_component(material.max_extinction());
+		const float mt = math::max_component(material.max_extinction(float2(0.f),
+																	 Sampler_filter::Undefined,
+																	 worker));
 		for (;;) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -305,7 +307,9 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			float3 w(1.f);
 			float t = 0.f;
 
-			const float mt = math::max_component(material.max_extinction());
+			const float mt = math::max_component(material.max_extinction(float2(0.f),
+																		 Sampler_filter::Undefined,
+																		 worker));
 			while (true) {
 				const float r = rng_.random_float();
 				t = t -std::log(1.f - r) / mt;
@@ -345,7 +349,9 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		} else if (Heterogeneous_algorithm::Delta_tracking == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
-			const float max_extinction = math::average(material.max_extinction());
+			const float max_extinction = math::average(material.max_extinction(float2(0.f),
+																			   Sampler_filter::Undefined,
+																			   worker));
 			bool terminated = false;
 			float t = 0.f;
 
@@ -530,7 +536,9 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 
 	if (material.is_heterogeneous_volume()) {
 		const float d = ray.max_t - ray.min_t;
-		const float max_extinction = math::average(material.max_extinction());
+		const float max_extinction = math::average(material.max_extinction(float2(0.f),
+																		   Sampler_filter::Undefined,
+																		   worker));
 		bool terminated = false;
 		float t = 0.f;
 
@@ -595,7 +603,9 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_component(material.max_extinction());
+		const float mt = math::max_component(material.max_extinction(float2(0.f),
+																	 Sampler_filter::Undefined,
+																	 worker));
 		while (true) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -684,7 +694,9 @@ float3 Single_scattering_tracking::spectral_stuff(const Ray& ray, const Transfor
 
 	float t = 0.f;
 
-	const float mt = material.max_extinction()[channel];
+	const float mt = material.max_extinction(float2(0.f),
+											 Sampler_filter::Undefined,
+											 worker)[channel];
 	while (true) {
 	//			const float r = rng_.random_float();
 	//			t = t -std::log(1.f - r) / mt;

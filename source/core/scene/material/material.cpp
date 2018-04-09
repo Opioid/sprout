@@ -93,7 +93,15 @@ float3 Material::scattering(const Transformation& /*transformation*/, const floa
 	return float3::identity();
 }
 
-float3 Material::max_extinction() const {
+void Material::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
+						  float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
+						  float3& absorption, float3& scattering) const {
+	absorption = float3::identity();
+	scattering = float3::identity();
+}
+
+float3 Material::max_extinction(float2 /*uv*/, Sampler_filter /*filter*/,
+								const Worker& /*worker*/) const {
 	return float3::identity();
 }
 

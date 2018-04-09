@@ -152,12 +152,32 @@ float3 Material_subsurface::scattering(const Transformation& /*transformation*/,
 	return scattering_coefficient_;
 }
 
-float3 Material_subsurface::max_extinction() const {
+void Material_subsurface::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
+									 float2 uv, Sampler_filter filter, const Worker& worker,
+									 float3& absorption, float3& scattering) const {
 	if (color_map_.is_valid()) {
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
+		const float3 color = color_map_.sample_3(sampler, uv);
+
+		attenuation(color, attenuation_distance_, absorption, scattering);
+
+		return;
+	}
+
+	absorption = absorption_coefficient_;
+	scattering = scattering_coefficient_;
+}
+
+float3 Material_subsurface::max_extinction(float2 uv, Sampler_filter filter,
+										   const Worker& worker) const {
+	if (color_map_.is_valid()) {
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
+		const float3 color = color_map_.sample_3(sampler, uv);
+
 		float3 absorption_coefficient;
 		float3 scattering_coefficient;
 
-		attenuation(float3(1.f), attenuation_distance_,
+		attenuation(color, attenuation_distance_,
 					absorption_coefficient, scattering_coefficient);
 
 		return absorption_coefficient + scattering_coefficient;
