@@ -59,8 +59,8 @@ void Closed::resolve(const Ray& ray, Intersection& intersection,
 			break;
 		}
 
-		throughput *= /*rendering::attenuation(tray.max_t, used_absorption_coefficient)
-					**/ (sample_result.reflection / sample_result.pdf);
+		throughput *= rendering::attenuation(tray.max_t, used_absorption_coefficient)
+					* (sample_result.reflection / sample_result.pdf);
 
 		// Only inner reflections are handled here
 		if (sample_result.type.test(Bxdf_type::Transmission)) {

@@ -34,6 +34,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/material_sample_helper.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_sample.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_sample.inl"
+	"${CMAKE_CURRENT_LIST_DIR}/material_stack.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/material_stack.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_test.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_test.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material.cpp"

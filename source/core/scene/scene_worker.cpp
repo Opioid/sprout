@@ -96,12 +96,16 @@ float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) const {
 	return 1.f - scene_->opacity(ray, filter, *this);
 }
 
-const scene::Scene& Worker::scene() const {
+const Scene& Worker::scene() const {
 	return *scene_;
 }
 
-scene::shape::Node_stack& Worker::node_stack() const {
+shape::Node_stack& Worker::node_stack() const {
 	return node_stack_;
+}
+
+material::Stack& Worker::material_stack() const {
+	return material_stack_;
 }
 
 material::Sample_cache& Worker::sample_cache() const {

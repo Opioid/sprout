@@ -156,13 +156,15 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
-		// This might invalidate the contents of material_sample,
-		// so we must not use the sample after this point (e.g. in the calling function)!
-		// Important exceptions are the Specular and Transmission cases, which never come here.
-		const bool entering = sample_result.type.test(Bxdf_type::Transmission)
-							&& !intersection.same_hemisphere(sample_result.wi);
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
+			if (intersection.same_hemisphere(sample_result.wi)) {
+				worker.material_stack().pop();
+			} else {
+				worker.material_stack().push(intersection.material());
+			}
+		}
 
-		if (entering || intersection.geo.subsurface) {
+		if (!worker.material_stack().empty()) {
 			float3 vli;
 			float3 vtr;
 			float3 weight;

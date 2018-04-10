@@ -42,6 +42,8 @@ void Worker::prepare(uint32_t num_samples_per_pixel) {
 }
 
 float4 Worker::li(Ray& ray) {
+	material_stack_.clear();
+
 	scene::prop::Intersection intersection;
 	const bool hit = intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined);
 

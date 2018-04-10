@@ -77,8 +77,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-	//	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
-		requires_bounce = sample_result.type.test(Bxdf_type::Specular);
+		requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 
 		if (requires_bounce) {
 			if (settings_.disable_caustics && !ray.is_primary()) {
@@ -89,7 +88,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			filter = Sampler_filter::Nearest;
 		}
 
-	/*	if (sample_result.type.test(Bxdf_type::Transmission)) {
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			transmittance_.resolve(ray, intersection, material_sample.absorption_coefficient(),
 								   sampler_, Sampler_filter::Nearest, worker, sample_result);
 			if (0.f == sample_result.pdf) {
@@ -97,7 +96,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 
 			throughput *= sample_result.reflection;
-		} else*/ {
+		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}
 

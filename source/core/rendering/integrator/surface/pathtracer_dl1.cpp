@@ -16,6 +16,8 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::surface {
 
 Pathtracer_DL1::Pathtracer_DL1(rnd::Generator& rng, const take::Settings& take_settings,
@@ -105,7 +107,16 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		const bool entering = sample_result.type.test(Bxdf_type::Transmission)
 							&& !intersection.same_hemisphere(sample_result.wi);
 
-		if (entering || intersection.geo.subsurface) {
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
+			if (intersection.same_hemisphere(sample_result.wi)) {
+				worker.material_stack().pop();
+			} else {
+				worker.material_stack().push(intersection.material());
+			}
+		}
+
+	//	if (entering || intersection.geo.subsurface) {
+		if (!worker.material_stack().empty()) {
 			float3 vli;
 			float3 vtr;
 			float3 weight;
