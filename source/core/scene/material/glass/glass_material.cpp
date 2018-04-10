@@ -33,6 +33,12 @@ const material::Sample& Glass::sample(const float3& wo, const Renderstate& rs,
 	return sample;
 }
 
+float3 Glass::absorption(const Transformation& /*transformation*/, const float3& /*p*/,
+						 float2 /*uv*/, Sampler_filter /*filter*/,
+						 const Worker& /*worker*/) const {
+	return absorption_coefficient_;
+}
+
 bool Glass::is_scattering_volume() const {
 	return false;
 }

@@ -1,5 +1,6 @@
 #include "multiple_scattering_tracking.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -349,6 +350,16 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 	}
 
 	const float d = ray.max_t;
+
+	if (!material.is_scattering_volume()) {
+		// Basically the "glass" case
+		const float3 sigma_a = material.absorption(transformation, float3(0.f), initial_uv,
+												   Sampler_filter::Nearest, worker);
+
+		li = float3(0.f);
+		transmittance = attenuation(d, sigma_a);
+		return true;
+	}
 
 	constexpr bool use_heterogeneous_algorithm = true;
 
