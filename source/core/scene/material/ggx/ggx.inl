@@ -412,9 +412,6 @@ float Isotropic::reflect_internally(const float3& wo, float n_dot_wo, const Laye
 
 	const float wo_dot_h = clamp_dot(wo, h);
 
-
-
-
 	const float sint2 = (ior.eta_i_ * ior.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
 
 	const float wi_dot_h = std::sqrt(1.f - sint2);
@@ -427,8 +424,6 @@ float Isotropic::reflect_internally(const float3& wo, float n_dot_wo, const Laye
 	const float2 g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 	const float cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
 	const float3 f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
-
-	const float gg = G(wo, wi, h, lwo, layer.world_to_tangent(wi), layer.n_, alpha);
 
 	result.reflection = d * g[0] * f;
 	result.wi = wi;
@@ -503,16 +498,14 @@ bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_d
 
 	const float sample_weight = (wi_dot_h * g) / (n_dot_wi * n_dot_h);
 
-
-
-//	const float3 reflection = sqr_eta * (factor * sqr_ior_i / denom) * refraction;
-	const float3 reflection = sqr_eta * factor * /*sqr_ior_i **/ refraction / denomili;
+	const float3 reflection = sqr_eta * (factor * sqr_ior_i / denom) * refraction;
+//	const float3 reflection = sqr_eta * factor * /*sqr_ior_i **/ refraction / denomili;
 
 	const float pdf1 = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
 
 //	const float pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
 
-	const float pdf = pdf1 * (wi_dot_h * sqr_ior_i / denomili);
+	const float pdf = pdf1 * (wi_dot_h * sqr_ior_i / denom);
 
 
 //	std::cout << "evaluate:" << std::endl;
@@ -769,15 +762,12 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 	result.wi = wi;
 	result.h = h;
 //	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
-	result.pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_ior_i / denom);
+	const float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
+	result.pdf = pdf * (wi_dot_h * sqr_ior_i / denom);
 	result.h_dot_wi = wi_dot_h;
 	result.type.clear(bxdf::Type::Glossy_transmission);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
-
-
-
-
 
 //	std::cout << "sample:" << std::endl;
 //	std::cout << "h: " << h << std::endl;
@@ -792,11 +782,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, const Layer& layer, c
 //	std::cout << "refraction: " << refraction << std::endl;
 //	std::cout << "denom: " << denom << std::endl;
 
-
-
-
 	return n_dot_wi;
-
 }
 
 

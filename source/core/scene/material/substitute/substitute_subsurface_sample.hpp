@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_SUBSURFACE_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_SUBSURFACE_SAMPLE_HPP
 
 #include "substitute_base_sample.hpp"
 #include "scene/material/disney/disney.hpp"
@@ -44,3 +45,4 @@ private:
 
 }
 
+#endif

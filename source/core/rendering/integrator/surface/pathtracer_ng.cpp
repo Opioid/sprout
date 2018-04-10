@@ -88,7 +88,7 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
-	bool requires_bounce = ray.is_primary();
+	bool treat_as_singular = ray.is_primary();
 
 	bool was_subsurface = false;
 
@@ -127,9 +127,9 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		if (!was_subsurface) {
-			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
-														  Bxdf_type::Transmission);
-			if (requires_bounce) {
+			treat_as_singular = sample_result.type.test_any(Bxdf_type::Specular,
+															Bxdf_type::Transmission);
+			if (treat_as_singular) {
 				if (settings_.disable_caustics && !ray.is_primary()) {
 					break;
 				}
@@ -137,8 +137,6 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 				ray.set_primary(false);
 				filter = Sampler_filter::Nearest;
 			}
-		} else {
-			requires_bounce = false;
 		}
 
 		const bool was_was_subsurface = was_subsurface;
@@ -195,7 +193,8 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (!was_was_subsurface) {
 			float3 radiance;
 			const bool pure_emissive = evaluate_light(ray, intersection, sample_result,
-													  is_translucent, filter, worker, radiance);
+													  treat_as_singular, is_translucent,
+													  filter, worker, radiance);
 
 			result += throughput * radiance;
 
@@ -304,8 +303,9 @@ float3 Pathtracer_NG::evaluate_light(const Light& light, float light_weight, con
 }
 
 bool Pathtracer_NG::evaluate_light(const Ray& ray, const Intersection& intersection,
-								   Bxdf_sample sample_result, bool is_translucent,
-								   Sampler_filter filter, Worker& worker, float3& radiance) {
+								   Bxdf_sample sample_result, bool treat_as_singular,
+								   bool is_translucent, Sampler_filter filter,
+								   Worker& worker, float3& radiance) {
 	const uint32_t light_id = intersection.light_id();
 	if (!Light::is_light(light_id)) {
 		radiance = float3::identity();
@@ -314,8 +314,7 @@ bool Pathtracer_NG::evaluate_light(const Ray& ray, const Intersection& intersect
 
 	float light_pdf = 0.f;
 
-	const bool singular = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
-	if (!singular) {
+	if (!treat_as_singular) {
 		auto light = worker.scene().light(light_id);
 
 		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {

@@ -61,7 +61,7 @@ private:
 						  Sampler_filter filter, Worker& worker);
 
 	bool evaluate_light(const Ray& ray, const Intersection& intersection,
-						Bxdf_sample sample_result, bool is_translucent,
+						Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
 						Sampler_filter filter, Worker& worker, float3& radiance);
 
 	float3 resolve_transmission(const Ray& ray, Intersection& intersection,

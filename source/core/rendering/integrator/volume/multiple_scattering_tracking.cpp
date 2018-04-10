@@ -289,8 +289,8 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 		float t = 0.f;
 
 		do {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
+			const float r0 = rng_.random_float();
+			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
 				break;
 			}
@@ -304,8 +304,8 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 
 			const float3 extinction = sigma_a + sigma_s;
 
-			const float r2 = rng_.random_float();
-			if (r2 < math::average(extinction) / mt) {
+			const float r1 = rng_.random_float();
+			if (r1 < math::average(extinction) / mt) {
 				terminated = true;
 			}
 		} while (!terminated);
@@ -341,7 +341,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 	}
 
 	if (&material != intersection.material()) {
-		// Suspicious case: Open geometry? Precision problem?
+		// We expect this to usually happen close to object edges,
+		// so just ignoring this should be OK.
 		li = float3(0.f);
 		transmittance = float3(1.f);
 		return true;
@@ -367,7 +368,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 				return true;
 			}
 
-			const float3 p = ray.point(ray.min_t + t);
+			const float3 p = ray.point(t);
 
 			float3 sigma_a;
 			float3 sigma_s;
