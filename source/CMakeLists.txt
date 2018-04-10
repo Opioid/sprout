@@ -6,7 +6,7 @@ if (CMAKE_VERSION VERSION_LESS 3.3)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 else ()
 	set(CMAKE_CXX_STANDARD 17)
-endif()
+endif ()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -15,6 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(NAN "Soft assert on NaN" OFF)
+option(Valgrind "Valgrind compatible build" OFF)
 
 if (${NAN})
 	add_definitions(-DSU_DEBUG)
@@ -22,13 +23,18 @@ endif ()
 
 if (UNIX AND NOT APPLE)
 	set(LINUX TRUE)
-endif()
+endif ()
 
 if (LINUX) 
 	# linux stuff here
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse3")
+
+	if (${Valgrind})
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse3")
+	else ()
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+	endif ()
+	
 	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 	#strip debug symbols
@@ -53,7 +59,7 @@ elseif (MSVC)
 		string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 	else ()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-	endif()
+	endif ()
 
 	# disable specific warnings
 	add_compile_options(/wd4201) # nameless struct/union extension
@@ -72,7 +78,7 @@ elseif (MSVC)
 
 	# To avoid warning spam originates from rapidjson
 	add_definitions(-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
-endif()
+endif ()
 
 include(base/base.cmake)
 include(core/core.cmake)
