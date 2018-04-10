@@ -168,7 +168,7 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			float3 vli;
 			float3 vtr;
 			float3 weight;
-			const bool hit = worker.volume(ray, intersection, material_sample, vli, vtr, weight);
+			const bool hit = worker.volume(ray, intersection, vli, vtr, weight);
 
 			result += throughput * vli;
 			vtr *= weight;
@@ -192,10 +192,9 @@ float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
-		const uint32_t light_id = intersection.light_id();
-		if (Light::is_light(light_id) && !was_was_subsurface) {
+		if (!was_was_subsurface) {
 			float3 radiance;
-			const bool pure_emissive = evaluate_light(light_id, ray, intersection, sample_result,
+			const bool pure_emissive = evaluate_light(ray, intersection, sample_result,
 													  is_translucent, filter, worker, radiance);
 
 			result += throughput * radiance;
@@ -304,10 +303,15 @@ float3 Pathtracer_NG::evaluate_light(const Light& light, float light_weight, con
 	return float3(0.f);
 }
 
-bool Pathtracer_NG::evaluate_light(uint32_t light_id, const Ray& ray,
-								   const Intersection& intersection,
+bool Pathtracer_NG::evaluate_light(const Ray& ray, const Intersection& intersection,
 								   Bxdf_sample sample_result, bool is_translucent,
 								   Sampler_filter filter, Worker& worker, float3& radiance) {
+	const uint32_t light_id = intersection.light_id();
+	if (!Light::is_light(light_id)) {
+		radiance = float3::identity();
+		return false;
+	}
+
 	float light_pdf = 0.f;
 
 	const bool singular = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
@@ -331,7 +335,7 @@ bool Pathtracer_NG::evaluate_light(uint32_t light_id, const Ray& ray,
 
 	const float3 wo = -sample_result.wi;
 
-	// This will invalidate the contents of material_sample. See comment above.
+	// This will invalidate the contents of previous previous material samples.
 	const auto& light_material_sample = intersection.sample(wo, ray, filter,
 															sampler_, worker);
 

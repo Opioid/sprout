@@ -32,8 +32,7 @@ public:
 	virtual float3 transmittance(const Ray& ray, const Intersection& intersection,
 								 const Worker& worker) override final;
 
-	virtual bool integrate(Ray& ray, Intersection& intersection,
-						   const Material_sample& material_sample, Worker& worker,
+	virtual bool integrate(Ray& ray, Intersection& intersection, Worker& worker,
 						   float3& li, float3& transmittance, float3& weight) override final;
 
 	virtual size_t num_bytes() const override final;

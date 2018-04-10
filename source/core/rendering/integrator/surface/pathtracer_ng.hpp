@@ -60,7 +60,7 @@ private:
 						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
 
-	bool evaluate_light(uint32_t light_id, const Ray& ray, const Intersection& intersection,
+	bool evaluate_light(const Ray& ray, const Intersection& intersection,
 						Bxdf_sample sample_result, bool is_translucent,
 						Sampler_filter filter, Worker& worker, float3& radiance);
 

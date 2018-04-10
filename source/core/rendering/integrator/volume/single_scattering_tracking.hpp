@@ -35,22 +35,17 @@ public:
 	virtual float3 transmittance(const Ray& ray, const Intersection& intersection,
 								 const Worker& worker) override final;
 
-	virtual bool integrate(Ray& ray, Intersection& intersection,
-						   const Material_sample& material_sample, Worker& worker,
+	virtual bool integrate(Ray& ray, Intersection& intersection, Worker& worker,
 						   float3& li, float3& transmittance, float3& weight) override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float3 spectral_stuff(const Ray& ray, const Transformation& transformation,
-						  const Material& material, uint32_t channel, float2 rr,
-						  Worker& worker, float3& transmittance);
-
 	float3 direct_light(const Ray& ray, const float3& position, Worker& worker);
 
-	float3 direct_light(const Ray& ray, const float3& position, const Intersection& intersection,
-						const Material_sample& material_sample, Worker& worker);
+	float3 direct_light(const Ray& ray, const float3& position,
+						const Intersection& intersection, Worker& worker);
 
 	const Settings settings_;
 

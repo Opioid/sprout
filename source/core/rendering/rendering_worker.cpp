@@ -98,10 +98,8 @@ float3 Worker::volume_li(const Ray& ray, float3& transmittance) {
 }
 
 bool Worker::volume(Ray& ray, Intersection& intersection,
-					const Material_sample& material_sample,
 					float3& li, float3& transmittance, float3& weight) {
-	return volume_integrator_->integrate(ray, intersection, material_sample,
-										 *this, li, transmittance, weight);
+	return volume_integrator_->integrate(ray, intersection, *this, li, transmittance, weight);
 }
 
 float3 Worker::transmittance(const Ray& ray) const {

@@ -31,9 +31,8 @@ public:
 	virtual float3 transmittance(const Ray& ray, const Intersection& intersection,
 								 const Worker& worker) = 0;
 
-	virtual bool integrate(Ray& ray, Intersection& intersection,
-						   const Material_sample& material_sample,
-						   Worker& worker, float3& li, float3& transmittance, float3& weight);
+	virtual bool integrate(Ray& ray, Intersection& intersection, Worker& worker,
+						   float3& li, float3& transmittance, float3& weight);
 };
 
 class Factory {

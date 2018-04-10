@@ -8,9 +8,8 @@ Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 
 Integrator::~Integrator() {}
 
-bool Integrator::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
-						   const Material_sample& /*material_sample*/,
-						   Worker& /*worker*/, float3& li, float3& transmittance, float3& weight) {
+bool Integrator::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Worker& /*worker*/,
+						   float3& li, float3& transmittance, float3& weight) {
 	li = float3(0.f);
 	transmittance = float3(1.f);
 	weight = float3(1.f);

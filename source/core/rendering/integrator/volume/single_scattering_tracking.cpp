@@ -273,8 +273,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 	enum class Heterogeneous_algorithm {
 		Delta_tracking,
-		Spectral_tracking,
-		Separated_delta_tracking
+		Spectral_tracking
 	};
 
 	Transformation temp;
@@ -287,21 +286,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	if (use_heterogeneous_algorithm) {
 		constexpr Heterogeneous_algorithm algorithm = Heterogeneous_algorithm::Spectral_tracking;
 
-		if (Heterogeneous_algorithm::Separated_delta_tracking == algorithm) {
-			const float2 rr(rng_.random_float(), rng_.random_float());
-
-			float3 transmittance_r;
-			const float3 r = spectral_stuff(ray, transformation, material, 0, rr, worker, transmittance_r);
-			float3 transmittance_g;
-			const float3 g = spectral_stuff(ray, transformation, material, 1, rr, worker, transmittance_g);
-			float3 transmittance_b;
-			const float3 b = spectral_stuff(ray, transformation, material, 2, rr, worker, transmittance_b);
-
-			const float3 str = float3(transmittance_r[0], transmittance_g[1], transmittance_b[2]);
-
-			transmittance = str;
-			return float3(0.f);
-		} else if (Heterogeneous_algorithm::Spectral_tracking == algorithm) {
+		if (Heterogeneous_algorithm::Spectral_tracking == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
 			float3 w(1.f);
@@ -578,8 +563,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 	return math::exp(-tau);
 }
 
-bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
-										   const Material_sample& material_sample, Worker& worker,
+bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
 										   float3& li, float3& transmittance, float3& weight) {
 	weight = float3(1.f);
 
@@ -637,7 +621,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			if (r2 <= 1.f - pn) {
 				transmittance = float3(0.f);
 				SOFT_ASSERT(math::all_finite(ws));
-				li = w * ws * direct_light(ray, p, intersection, material_sample, worker);
+				li = w * ws * direct_light(ray, p, intersection, worker);
 				return true;
 			} else {
 				SOFT_ASSERT(math::all_finite(wn));
@@ -673,7 +657,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 		const float3 p = ray.point(scatter_distance);
 
-		float3 l = direct_light(ray, p, intersection, material_sample, worker);
+		float3 l = direct_light(ray, p, intersection, worker);
 
 		l *= (1.f - transmittance) * scattering_albedo;
 
@@ -685,55 +669,6 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 size_t Single_scattering_tracking::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
-}
-
-float3 Single_scattering_tracking::spectral_stuff(const Ray& ray, const Transformation& transformation,
-												  const Material& material, uint32_t channel, float2 rr,
-												  Worker& worker, float3& transmittance) {
-	const float d = ray.max_t - ray.min_t;
-
-	float t = 0.f;
-
-	const float mt = material.max_extinction(float2(0.f),
-											 Sampler_filter::Undefined,
-											 worker)[channel];
-	while (true) {
-	//			const float r = rng_.random_float();
-	//			t = t -std::log(1.f - r) / mt;
-	//			if (t > d) {
-	//				transmittance = float3(1.f);
-	//				return float3(0.f);
-	//			}
-
-		const float3 p = ray.point(ray.min_t + t);
-
-		const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
-												   Sampler_filter::Undefined, worker);
-
-		const float msa = sigma_a[channel];
-
-		const float pa = msa * mt;
-
-		const float r = rr[0];//rng_.random_float();
-		t = t -std::log(1.f - r) / mt;
-		if (t > d) {
-			transmittance = float3(1.f);
-			return float3(0.f);
-		}
-
-		const float r2 = rr[1];//rng_.random_float();
-		if (r2 < pa) {
-			transmittance = float3(0.f);
-
-			return float3(0.f);
-		} else {
-			const float3 l = direct_light(ray, p, worker);
-
-			transmittance = float3(0.f);
-
-			return l;
-		}
-	}
 }
 
 float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
@@ -771,7 +706,6 @@ float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& po
 
 float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
 												const Intersection& intersection,
-												const Material_sample& material_sample,
 												Worker& worker) {
 	float3 result = float3::identity();
 

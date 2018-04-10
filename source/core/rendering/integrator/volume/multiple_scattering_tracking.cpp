@@ -281,31 +281,31 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 
 	if (material.is_heterogeneous_volume()) {
 		const float d = ray.max_t - ray.min_t;
-		const float max_extinction = math::average(material.max_extinction(intersection.geo.uv,
-																		   Sampler_filter::Nearest,
-																		   worker));
+
+		const float3 me = material.max_extinction(intersection.geo.uv, Sampler_filter::Nearest,
+												  worker);
+		const float mt = math::average(me);
 		bool terminated = false;
 		float t = 0.f;
 
 		do {
 			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / max_extinction;
+			t = t -std::log(1.f - r) / mt;
 			if (t > d) {
 				break;
 			}
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p, intersection.geo.uv,
-													   Sampler_filter::Nearest, worker);
-
-			const float3 sigma_s = material.scattering(transformation, p, intersection.geo.uv,
-													   Sampler_filter::Nearest, worker);
+			float3 sigma_a;
+			float3 sigma_s;
+			material.extinction(transformation, p, intersection.geo.uv,
+								Sampler_filter::Nearest, worker, sigma_a, sigma_s);
 
 			const float3 extinction = sigma_a + sigma_s;
 
 			const float r2 = rng_.random_float();
-			if (r2 < math::average(extinction) / max_extinction) {
+			if (r2 < math::average(extinction) / mt) {
 				terminated = true;
 			}
 		} while (!terminated);
@@ -323,8 +323,7 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 	return math::exp(-tau);
 }
 
-bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
-										   const Material_sample& material_sample, Worker& worker,
+bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
 										   float3& li, float3& transmittance, float3& weight) {
 	const float2 initial_uv = intersection.geo.uv;
 
