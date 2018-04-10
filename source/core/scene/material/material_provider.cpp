@@ -346,8 +346,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 		material->set_normal_map(normal_map);
 		material->set_roughness_map(roughness_map);
 		material->set_refraction_color(refraction_color);
-		material->set_absorption_color(absorption_color);
-		material->set_attenuation_distance(attenuation_distance);
+		material->set_attenuation(absorption_color, attenuation_distance);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
 		return material;
@@ -356,8 +355,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			auto material = std::make_shared<glass::Glass_thin>(sampler_settings);
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
-			material->set_absorption_color(absorption_color);
-			material->set_attenuation_distance(attenuation_distance);
+			material->set_attenuation(absorption_color, attenuation_distance);
 			material->set_ior(ior);
 			material->set_thickness(thickness);
 			return material;
@@ -365,8 +363,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			auto material = std::make_shared<glass::Glass_dispersion>(sampler_settings);
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
-			material->set_absorption_color(absorption_color);
-			material->set_attenuation_distance(attenuation_distance);
+			material->set_attenuation(absorption_color, attenuation_distance);
 			material->set_ior(ior);
 			material->set_abbe(abbe);
 			return material;
@@ -374,8 +371,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			auto material = std::make_shared<glass::Glass>(sampler_settings);
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
-			material->set_absorption_color(absorption_color);
-			material->set_attenuation_distance(attenuation_distance);
+			material->set_attenuation(absorption_color, attenuation_distance);
 			material->set_ior(ior);
 			return material;
 		}

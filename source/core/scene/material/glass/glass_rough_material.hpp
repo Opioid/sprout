@@ -15,14 +15,15 @@ public:
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 
+	virtual bool is_scattering_volume() const final override;
+
 	virtual size_t num_bytes() const override final;
 
 	void set_normal_map(const Texture_adapter& normal_map);
 	void set_roughness_map(const Texture_adapter& roughness_map);
 
 	void set_refraction_color(const float3& color);
-	void set_absorption_color(const float3& color);
-	void set_attenuation_distance(float attenuation_distance);
+	void set_attenuation(const float3& absorption_color, float distance);
 	void set_ior(float ior);
 	void set_roughness(float roughness);
 
@@ -34,6 +35,7 @@ protected:
 	Texture_adapter roughness_map_;
 
 	float3 refraction_color_;
+	float3 absorption_coefficient_;
 	float3 absorption_color_;
 	float attenuation_distance_;
 	float ior_;

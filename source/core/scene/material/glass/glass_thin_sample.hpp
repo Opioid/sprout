@@ -23,12 +23,11 @@ public:
 	virtual bool is_translucent() const override final;
 
 	struct Layer : public material::Sample::Layer {
-		void set(const float3& refraction_color, const float3& absorption_color,
-				 float attenuation_distance, float ior, float ior_outside,
-				 float thickess);
+		void set(const float3& refraction_color, const float3& absorption_coefficient,
+				 float ior, float ior_outside, float thickess);
 
 		float3 color_;
-		float3 attenuation_;
+		float3 absorption_coefficient_;
 		float ior_;
 		float ior_outside_;
 		float thickness_;

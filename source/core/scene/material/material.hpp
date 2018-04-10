@@ -90,7 +90,8 @@ public:
 
 	virtual float3 max_extinction(float2 uv, Sampler_filter filter, const Worker& worker) const;
 
-	virtual bool  is_heterogeneous_volume() const;
+	virtual bool is_heterogeneous_volume() const;
+	virtual bool is_scattering_volume() const;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation, float area,

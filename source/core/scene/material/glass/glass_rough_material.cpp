@@ -3,6 +3,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
+#include "scene/material/material_attenuation.hpp"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/ggx/ggx.inl"
@@ -43,6 +44,10 @@ const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate&
 	return sample;
 }
 
+bool Glass_rough::is_scattering_volume() const {
+	return false;
+}
+
 size_t Glass_rough::num_bytes() const {
 	return sizeof(*this);
 }
@@ -59,12 +64,12 @@ void Glass_rough::set_refraction_color(const float3& color) {
 	refraction_color_ = color;
 }
 
-void Glass_rough::set_absorption_color(const float3& color) {
-	absorption_color_ = color;
-}
+void Glass_rough::set_attenuation(const float3& absorption_color, float distance) {
+	absorption_color_ = absorption_color;
 
-void Glass_rough::set_attenuation_distance(float attenuation_distance) {
-	attenuation_distance_ = attenuation_distance;
+	absorption_coefficient_ = extinction_coefficient(absorption_color, distance);
+
+	attenuation_distance_ = distance;
 }
 
 void Glass_rough::set_ior(float ior) {

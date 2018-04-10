@@ -7,12 +7,6 @@
 namespace rendering {
 
 static inline float3 attenuation(float distance, const float3& c) {
-//	constexpr float e = 2.f;
-//	const float nd = -distance;
-//	return float3(std::pow(e, c[0] * nd),
-//				  std::pow(e, c[1] * nd),
-//				  std::pow(e, c[2] * nd));
-
 	return math::exp(-distance * c);
 }
 

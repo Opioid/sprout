@@ -1,6 +1,5 @@
 #include "glass_thin_sample.hpp"
 #include "scene/material/bxdf.hpp"
-#include "scene/material/material_attenuation.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -22,7 +21,7 @@ bxdf::Result Sample_thin::evaluate(const float3& /*wi*/) const {
 }
 
 float3 Sample_thin::absorption_coefficient() const {
-	return layer_.attenuation_;
+	return layer_.absorption_coefficient_;
 }
 
 float Sample_thin::ior() const {
@@ -49,11 +48,10 @@ bool Sample_thin::is_translucent() const {
 	return true;
 }
 
-void Sample_thin::Layer::set(const float3& refraction_color, const float3& absorption_color,
-							 float attenuation_distance, float ior, float ior_outside,
-							 float thickness) {
+void Sample_thin::Layer::set(const float3& refraction_color, const float3& absorption_coefficient,
+							 float ior, float ior_outside, float thickness) {
 	color_ = refraction_color;
-	attenuation_ = material::extinction_coefficient(absorption_color, attenuation_distance);
+	absorption_coefficient_ = absorption_coefficient;
 	ior_ = ior;
 	ior_outside_ = ior_outside;
 	thickness_ = thickness;
@@ -123,7 +121,8 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 
 	const float n_dot_wi = layer.clamp_n_dot(sample.wo_);
 	float approximated_distance = layer.thickness_ / n_dot_wi;
-	float3 attenuation = rendering::attenuation(approximated_distance, layer.attenuation_);
+	float3 attenuation = rendering::attenuation(approximated_distance,
+												layer.absorption_coefficient_);
 
 	result.reflection = (1.f - f) * layer.color_ * attenuation;
 	result.wi = -sample.wo_;

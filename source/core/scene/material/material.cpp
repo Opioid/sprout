@@ -109,6 +109,10 @@ bool Material::is_heterogeneous_volume() const {
 	return false;
 }
 
+bool Material::is_scattering_volume() const {
+	return true;
+}
+
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 								const Transformation& /*transformation*/, float /*area*/,
 								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}

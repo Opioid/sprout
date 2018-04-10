@@ -95,10 +95,6 @@ bool Sample_rough::is_transmissive() const {
 //	return true;
 //}
 
-bool Sample_rough::is_absorbing() const {
-	return true;
-}
-
 void Sample_rough::Layer::set(const float3& refraction_color, const float3& absorption_color,
 							  float attenuation_distance, float ior,
 							  float ior_outside, float alpha) {

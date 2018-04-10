@@ -29,25 +29,28 @@ const material::Sample& Glass_thin::sample(const float3& wo, const Renderstate& 
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
-	sample.layer_.set(refraction_color_, absorption_color_,
-					  attenuation_distance_, ior_, rs.ior, thickness_);
+	sample.layer_.set(refraction_color_, absorption_coefficient_,
+					  ior_, rs.ior, thickness_);
 
 	return sample;
 }
 
 float3 Glass_thin::thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
 								  Sampler_filter filter, const Worker& worker) const {
-	const float3 a = material::extinction_coefficient(absorption_color_, attenuation_distance_);
-
 	const float  n_dot_wi = clamp_abs_dot(wo, n);
 	const float  approximated_distance = thickness_ / n_dot_wi;
-	const float3 attenuation = rendering::attenuation(approximated_distance, a);
+	const float3 attenuation = rendering::attenuation(approximated_distance,
+													  absorption_coefficient_);
 
 	return opacity(uv, time, filter, worker) * (1.f - refraction_color_ * attenuation);
 }
 
 bool Glass_thin::has_tinted_shadow() const {
 	return true;
+}
+
+bool Glass_thin::is_scattering_volume() const {
+	return false;
 }
 
 size_t Glass_thin::num_bytes() const {
@@ -62,14 +65,9 @@ void Glass_thin::set_refraction_color(const float3& color) {
 	refraction_color_ = color;
 }
 
-void Glass_thin::set_absorption_color(const float3& color) {
-	absorption_color_ = color;
+void Glass_thin::set_attenuation(const float3& absorption_color, float distance) {
+	absorption_coefficient_ = extinction_coefficient(absorption_color, distance);
 }
-
-void Glass_thin::set_attenuation_distance(float attenuation_distance) {
-	attenuation_distance_ = attenuation_distance;
-}
-
 void Glass_thin::set_ior(float ior) {
 	ior_ = ior;
 }
