@@ -50,6 +50,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 	}
 
 	result.pdf *= 0.5f;
+	result.wavelength = 0.f;
 }
 
 float3 Sample_subsurface::absorption_coefficient() const {
