@@ -94,7 +94,6 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 												   schlick, sampler, result);
 
 	result.reflection *= n_dot_wi;
-	result.type.set(bxdf::Type::SSS);
 }
 
 void Sample_subsurface::reflect_internally(const Layer& layer, sampler::Sampler& sampler,
