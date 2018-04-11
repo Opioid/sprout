@@ -163,6 +163,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.t  = Ray_max_t;
 	// sin_theta because of the uv weight
 	sample.pdf = 1.f / ((4.f * math::Pi) * sin_theta);
+	sample.epsilon = 5e-4f;
 
 	SOFT_ASSERT(testing::check(sample, uv));
 
