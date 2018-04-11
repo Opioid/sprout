@@ -7,9 +7,9 @@
 namespace scene {
 
 inline Ray::Ray(const float3& origin, const float3& direction, float min_t, float max_t,
-				uint32_t depth, float time, float wavelength, float ior, Properties properties) :
+				uint32_t depth, float time, float wavelength, Properties properties) :
 	math::Ray(origin, direction, min_t, max_t, depth),
-	time(time), wavelength(wavelength), ior(ior), properties(properties) {}
+	time(time), wavelength(wavelength), properties(properties) {}
 }
 
 inline bool scene::Ray::is_primary() const {

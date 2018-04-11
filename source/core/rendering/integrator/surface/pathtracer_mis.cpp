@@ -208,7 +208,7 @@ float3 Pathtracer_MIS::next_event(const Ray& ray, Intersection& intersection,
 	const bool is_translucent = material_sample.is_translucent();
 
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset, scene::Ray_max_t,
-					  ray.depth + 1, ray.time, ray.wavelength, ray.ior, ray.properties);
+					  ray.depth + 1, ray.time, ray.wavelength, ray.properties);
 
 	float3 ssstr;
 //	const bool hit = worker.intersect_and_resolve_mask(secondary_ray, intersection,
@@ -325,7 +325,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 	const float shadow_offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 	Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
 				   light_sample.shape.t - shadow_offset, history.depth, history.time,
-				   history.wavelength, history.ior, history.properties);
+				   history.wavelength, history.properties);
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 	if (math::any_greater_zero(tv)) {
