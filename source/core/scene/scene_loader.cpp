@@ -245,7 +245,6 @@ prop::Prop* Loader::load_prop(const json::Value& prop_value,
 	std::shared_ptr<shape::Shape> shape;
 	Materials materials;
 	const json::Value* visibility = nullptr;
-	bool open = false;
 
 	for (auto& n : prop_value.GetObject()) {
 		if ("shape" == n.name) {
@@ -254,8 +253,6 @@ prop::Prop* Loader::load_prop(const json::Value& prop_value,
 			load_materials(n.value, scene, materials);
 		} else if ("visibility" == n.name) {
 			visibility = &n.value;
-		} else if ("open" == n.name) {
-			open = json::read_bool(n.value);
 		}
 	}
 
@@ -279,8 +276,6 @@ prop::Prop* Loader::load_prop(const json::Value& prop_value,
 	if (visibility) {
 		set_visibility(prop, *visibility);
 	}
-
-	prop->set_open(open);
 
 	return prop;
 }

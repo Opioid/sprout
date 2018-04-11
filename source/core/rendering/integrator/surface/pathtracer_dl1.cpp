@@ -25,9 +25,7 @@ Pathtracer_DL1::Pathtracer_DL1(rnd::Generator& rng, const take::Settings& take_s
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
-	subsurface_(subsurface),
-	transmittance_(rng, take_settings)
-{}
+	subsurface_(subsurface) {}
 
 void Pathtracer_DL1::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -112,9 +110,9 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			}
 		}
 
-//		if (sample_result.type.test(Bxdf_type::Transmission)) {
-//			break;
-//		}
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
+			break;
+		}
 
 		if (!worker.material_stack().empty()) {
 			float3 vli;

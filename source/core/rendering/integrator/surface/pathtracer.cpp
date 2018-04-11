@@ -24,8 +24,7 @@ Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
 	settings_(settings),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
-	subsurface_(subsurface),
-	transmittance_(rng, take_settings) {}
+	subsurface_(subsurface) {}
 
 Pathtracer::~Pathtracer() {
 	memory::safe_destruct(subsurface_);

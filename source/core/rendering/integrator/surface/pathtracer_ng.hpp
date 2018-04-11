@@ -2,8 +2,6 @@
 #define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_NG_HPP
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
-#include "transmittance/transmittance_closed.hpp"
-#include "transmittance/transmittance_open.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/scene_ray.hpp"
@@ -64,10 +62,6 @@ private:
 						Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
 						Sampler_filter filter, Worker& worker, float3& radiance);
 
-	float3 resolve_transmission(const Ray& ray, Intersection& intersection,
-								const Material_sample& sample, Sampler_filter filter, 
-								Worker& worker, Bxdf_sample& sample_result);
-
 	sampler::Sampler& material_sampler(uint32_t bounce, Ray::Properties properties);
 	sampler::Sampler& light_sampler(uint32_t bounce, Ray::Properties properties);
 
@@ -84,9 +78,6 @@ private:
 	sampler::Golden_ratio light_samplers_[Num_light_samplers];
 
 	sub::Integrator& subsurface_;
-
-	transmittance::Open   transmittance_open_;
-	transmittance::Closed transmittance_closed_;
 };
 
 class Pathtracer_NG_factory final : public Factory {

@@ -2,7 +2,6 @@
 #define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_HPP
 
 #include "surface_integrator.hpp"
-#include "transmittance/transmittance_closed.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/scene_ray.hpp"
@@ -29,7 +28,7 @@ public:
 	Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
 			   const Settings& settings, sub::Integrator& subsurface);
 
-	~Pathtracer();
+	virtual ~Pathtracer() override final;
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -51,8 +50,6 @@ private:
 	sampler::Golden_ratio material_samplers_[Num_material_samplers];
 
 	sub::Integrator& subsurface_;
-
-	transmittance::Closed transmittance_;
 };
 
 class Pathtracer_factory final : public Factory {
@@ -64,7 +61,7 @@ public:
 					   uint32_t min_bounces, uint32_t max_bounces,
 					   float path_termination_probability, bool enable_caustics);
 
-	~Pathtracer_factory();
+	virtual ~Pathtracer_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 

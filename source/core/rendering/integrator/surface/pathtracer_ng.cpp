@@ -29,9 +29,7 @@ Pathtracer_NG::Pathtracer_NG(rnd::Generator& rng, const take::Settings& take_set
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
 	light_samplers_{rng, rng, rng},
-	subsurface_(subsurface),
-	transmittance_open_(rng, take_settings, settings.max_bounces),
-	transmittance_closed_(rng, take_settings) {}
+	subsurface_(subsurface) {}
 
 Pathtracer_NG::~Pathtracer_NG() {
 	memory::safe_destruct(subsurface_);
@@ -61,8 +59,6 @@ void Pathtracer_NG::prepare(const Scene& scene, uint32_t num_samples_per_pixel) 
 	}
 
 	subsurface_.prepare(scene, num_samples_per_pixel);
-
-	transmittance_closed_.prepare(scene, num_samples_per_pixel);
 }
 
 void Pathtracer_NG::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -77,8 +73,6 @@ void Pathtracer_NG::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	}
 
 	subsurface_.resume_pixel(sample, scramble);
-
-	transmittance_closed_.resume_pixel(sample, scramble);
 }
 
 float3 Pathtracer_NG::li(Ray& ray, Intersection& intersection, Worker& worker) {
@@ -353,24 +347,6 @@ bool Pathtracer_NG::evaluate_light(const Ray& ray, const Intersection& intersect
 	SOFT_ASSERT(math::all_finite_and_positive(radiance));
 
 	return !light_material_sample.is_pure_emissive();
-}
-
-float3 Pathtracer_NG::resolve_transmission(const Ray& ray, Intersection& intersection,
-										   const Material_sample& sample, Sampler_filter filter,
-										   Worker& worker, Bxdf_sample& sample_result) {
-	if (sample.is_sss()) {
-		return subsurface_.li(ray, intersection, sample, filter, worker, sample_result);
-	} else {
-		if (intersection.prop->is_open()) {
-			transmittance_open_.resolve(ray, intersection, sample.absorption_coefficient(),
-										sampler_, filter, worker, sample_result);
-		} else {
-			transmittance_closed_.resolve(ray, intersection, sample.absorption_coefficient(),
-										  sampler_, filter, worker, sample_result);
-		}
-
-		return float3::identity();
-	}
 }
 
 sampler::Sampler& Pathtracer_NG::material_sampler(uint32_t bounce, Ray::Properties properties) {

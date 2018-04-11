@@ -250,14 +250,6 @@ bool Prop::has_tinted_shadow() const {
 	return properties_.test(Property::Tinted_shadow);
 }
 
-bool Prop::is_open() const {
-	return properties_.test(Property::Open);
-}
-
-void Prop::set_open(bool open) {
-	properties_.set(Property::Open, open);
-}
-
 size_t Prop::num_bytes() const {
 	return sizeof(*this);
 }

@@ -68,8 +68,7 @@ protected:
 		Visible_in_shadow		= 1 << 3,
 		Propagate_visibility	= 1 << 4,
 		Masked_material			= 1 << 5,
-		Tinted_shadow			= 1 << 6,
-		Open					= 1 << 7
+		Tinted_shadow			= 1 << 6
 	};
 
 	flags::Flags<Property> properties_;

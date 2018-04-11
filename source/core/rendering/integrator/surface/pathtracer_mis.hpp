@@ -3,7 +3,6 @@
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
-#include "transmittance/transmittance_open.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/scene_ray.hpp"
@@ -37,7 +36,7 @@ public:
 	Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
 				   const Settings& settings, sub::Integrator& subsurface);
 
-	~Pathtracer_MIS();
+	virtual ~Pathtracer_MIS() final override;
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -85,7 +84,6 @@ private:
 
 	sub::Integrator& subsurface_;
 
-	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;
 };
 

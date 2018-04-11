@@ -32,7 +32,7 @@ public:
 	using Sampler_filter = material::Sampler_settings::Filter;
 	using Shape_ptr = std::shared_ptr<shape::Shape>;
 
-	virtual ~Prop();
+	virtual ~Prop() override;
 
 	void morph(thread::Pool& pool);
 
@@ -70,9 +70,6 @@ public:
 
 	bool has_masked_material() const;
 	bool has_tinted_shadow() const;
-
-	bool is_open() const;
-	void set_open(bool open);
 
 	size_t num_bytes() const;
 

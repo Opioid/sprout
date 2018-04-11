@@ -28,7 +28,6 @@ Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_s
 	material_samplers_{rng, rng, rng},
 	light_samplers_{rng, rng, rng},
 	subsurface_(subsurface),
-	transmittance_open_(rng, take_settings, settings.max_bounces),
 	transmittance_closed_(rng, take_settings) {}
 
 Pathtracer_MIS::~Pathtracer_MIS() {
@@ -349,14 +348,8 @@ float3 Pathtracer_MIS::resolve_transmission(const Ray& ray, Intersection& inters
 	if (sample.is_sss()) {
 		return subsurface_.li(ray, intersection, sample, filter, worker, sample_result);
 	} else {
-		if (intersection.prop->is_open()) {
-			transmittance_open_.resolve(ray, intersection, sample.absorption_coefficient(),
-										sampler_, filter, worker, sample_result);
-		} else {
-			transmittance_closed_.resolve(ray, intersection, sample.absorption_coefficient(),
-										  sampler_, filter, worker, sample_result);
-		}
-
+		transmittance_closed_.resolve(ray, intersection, sample.absorption_coefficient(),
+									  sampler_, filter, worker, sample_result);
 		return float3::identity();
 	}
 }

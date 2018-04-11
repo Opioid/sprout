@@ -2,10 +2,7 @@
 #define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
 
 #include "surface_integrator.hpp"
-#include "transmittance/transmittance_closed.hpp"
-#include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_random.hpp"
-#include "sampler/sampler_hammersley.hpp"
 #include "scene/material/sampler_settings.hpp"
 #include <memory>
 
@@ -51,8 +48,6 @@ private:
 	sampler::Random sampler_;
 
 	sub::Integrator& subsurface_;
-
-	transmittance::Closed transmittance_;
 };
 
 class Pathtracer_DL1_factory final : public Factory {
