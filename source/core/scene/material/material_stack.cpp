@@ -10,7 +10,7 @@ void Stack::clear() {
 	index_ = 0;
 }
 
-Material* Stack::top() const {
+const Material* Stack::top() const {
 	if (index_ > 0) {
 		return stack_[index_ - 1];
 	}
@@ -18,7 +18,7 @@ Material* Stack::top() const {
 	return nullptr;
 }
 
-void Stack::push(Material* material) {
+void Stack::push(const Material* material) {
 	if (index_ < Num_entries - 1) {
 		stack_[index_] = material;
 		++index_;

@@ -15,9 +15,9 @@ public:
 
 	void clear();
 
-	Material* top() const;
+	const Material* top() const;
 
-	void push(Material* material);
+	void push(const Material* material);
 	void pop();
 
 private:
@@ -25,7 +25,7 @@ private:
 	static constexpr uint32_t Num_entries = 16;
 
 	uint32_t index_;
-	Material* stack_[Num_entries];
+	const Material* stack_[Num_entries];
 };
 
 }
