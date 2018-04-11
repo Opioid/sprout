@@ -45,7 +45,7 @@ static void log_memory_consumption(const resource::Manager& manager, const take:
 
 static bool is_json(const std::string& text);
 
-int main(int argc, char* argv[]) {
+int main(int argc, const char* argv[]) {
 //	scene::material::substitute::testing::test();
 //	scene::material::glass::testing::test();
 //	scene::material::glass::testing::rough_refraction();
