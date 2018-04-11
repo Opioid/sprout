@@ -871,6 +871,9 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 				} else if ("Surface" == texture_description.usage) {
 					options.set("usage", image::texture::Provider::Usage::Surface);
 					surface_map = create_texture(texture_description, options, manager);
+				} else if ("Roughness" == texture_description.usage) {
+					options.set("usage", image::texture::Provider::Usage::Roughness);
+					surface_map = create_texture(texture_description, options, manager);
 				} else if ("Specularity" == texture_description.usage) {
 					options.set("usage", image::texture::Provider::Usage::Specularity);
 					surface_map = create_texture(texture_description, options, manager);
