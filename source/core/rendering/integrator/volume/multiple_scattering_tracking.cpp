@@ -333,20 +333,13 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 	Transformation temp;
 	const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
 
-	const auto& material = *intersection.material();
+	// We rely on the material stack being not empty
+	const auto& material = *worker.material_stack().top();
 
 	if (!worker.intersect_and_resolve_mask(ray, intersection, Sampler_filter::Nearest)) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
 		return false;
-	}
-
-	if (&material != intersection.material()) {
-		// We expect this to usually happen close to object edges,
-		// so just ignoring this should be OK.
-		li = float3(0.f);
-		transmittance = float3(1.f);
-		return true;
 	}
 
 	const float d = ray.max_t;

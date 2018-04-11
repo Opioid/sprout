@@ -110,10 +110,6 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			}
 		}
 
-		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			break;
-		}
-
 		if (!worker.material_stack().empty()) {
 			float3 vli;
 			float3 vtr;
