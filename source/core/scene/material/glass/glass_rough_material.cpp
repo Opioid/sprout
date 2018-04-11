@@ -38,10 +38,16 @@ const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate&
 		alpha = alpha_;
 	}
 
-	sample.layer_.set(refraction_color_, absorption_color_,
-					  attenuation_distance_, ior_, rs.ior, alpha);
+	sample.set(refraction_color_, absorption_color_,
+			   attenuation_distance_, ior_, rs.ior, alpha);
 
 	return sample;
+}
+
+float3 Glass_rough::absorption(const Transformation& /*transformation*/, const float3& /*p*/,
+							   float2 /*uv*/, Sampler_filter /*filter*/,
+							   const Worker& /*worker*/) const {
+	return absorption_coefficient_;
 }
 
 bool Glass_rough::is_scattering_volume() const {

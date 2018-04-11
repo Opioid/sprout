@@ -6,7 +6,7 @@
 
 namespace scene::material::substitute {
 
-class Sample_subsurface : public Sample_base<disney::Isotropic_no_lambert> {
+class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert> {
 
 public:
 
@@ -35,7 +35,7 @@ private:
 	void refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
 				 bxdf::Sample& result) const;
 
-	void reflect_internally(bool same_side, const Layer& layer, sampler::Sampler& sampler,
+	void reflect_internally(const Layer& layer, sampler::Sampler& sampler,
 							bxdf::Sample& result) const;
 
 	BSSRDF bssrdf_;

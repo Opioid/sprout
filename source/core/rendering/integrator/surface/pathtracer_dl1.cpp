@@ -104,9 +104,6 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
-		const bool entering = sample_result.type.test(Bxdf_type::Transmission)
-							&& !intersection.same_hemisphere(sample_result.wi);
-
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (intersection.same_hemisphere(sample_result.wi)) {
 				worker.material_stack().pop();
@@ -115,7 +112,10 @@ float3 Pathtracer_DL1::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			}
 		}
 
-	//	if (entering || intersection.geo.subsurface) {
+//		if (sample_result.type.test(Bxdf_type::Transmission)) {
+//			break;
+//		}
+
 		if (!worker.material_stack().empty()) {
 			float3 vli;
 			float3 vtr;

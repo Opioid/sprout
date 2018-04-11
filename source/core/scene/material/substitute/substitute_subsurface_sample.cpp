@@ -45,7 +45,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 		if (p < 0.5f) {
 			refract(same_side, tmp_layer, sampler, result);
 		} else {
-			reflect_internally(same_side, tmp_layer, sampler, result);
+			reflect_internally(tmp_layer, sampler, result);
 		}
 	}
 
@@ -97,19 +97,13 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 	result.type.set(bxdf::Type::SSS);
 }
 
-void Sample_subsurface::reflect_internally(bool same_side, const Layer& layer,
-										   sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_subsurface::reflect_internally(const Layer& layer, sampler::Sampler& sampler,
+										   bxdf::Sample& result) const {
 	IOR tmp_ior;
 
-	if (same_side) {
-		tmp_ior.ior_i_ = ior_.ior_i_;
-		tmp_ior.ior_o_ = ior_.ior_o_;
-		tmp_ior.eta_i_ = ior_.eta_i_;
-	} else {
-		tmp_ior.ior_i_ = ior_.ior_o_;
-		tmp_ior.ior_o_ = ior_.ior_i_;
-		tmp_ior.eta_i_ = ior_.eta_t_;
-	}
+	tmp_ior.ior_i_ = ior_.ior_o_;
+	tmp_ior.ior_o_ = ior_.ior_i_;
+	tmp_ior.eta_i_ = ior_.eta_t_;
 
 	const float n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
