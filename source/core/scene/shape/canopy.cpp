@@ -144,6 +144,7 @@ bool Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.uv = uv;
 	sample.t  = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
+	sample.epsilon = 5e-4f;
 
 	return true;
 }
