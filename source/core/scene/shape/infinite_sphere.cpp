@@ -23,7 +23,7 @@ Infinite_sphere::Infinite_sphere() {
 bool Infinite_sphere::intersect(const Transformation& transformation,
 								Ray& ray, Node_stack& /*node_stack*/,
 								Intersection& intersection) const {
-	if (ray.max_t > Ray_max_t) {
+	if (ray.max_t >= Ray_max_t) {
 		intersection.epsilon = 5e-4f;
 
 		// This is nonsense
