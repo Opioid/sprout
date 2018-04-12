@@ -13,9 +13,7 @@
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
-#include "rendering/integrator/surface/pathtracer_dl1.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
-#include "rendering/integrator/surface/pathtracer_ng.hpp"
 #include "rendering/integrator/surface/sub/sub_multiple_scattering.hpp"
 #include "rendering/integrator/surface/sub/sub_multiple_scattering2.hpp"
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
@@ -459,26 +457,6 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Pathtracer_DL_factory>(
 				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
 				path_termination_probability, num_light_samples, enable_caustics);
-		} else if ("PTDL1" == n.name) {
-			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
-														 default_min_bounces);
-
-			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
-														 default_max_bounces);
-
-			const float path_termination_probability = json::read_float(
-				n.value, "path_termination_probability", default_path_termination_probability);
-
-			const uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
-															   light_sampling.num_samples);
-
-			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
-
-			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
-
-			return std::make_shared<Pathtracer_DL1_factory>(
-				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
-				path_termination_probability, num_light_samples, enable_caustics);
 		} else if ("PTMIS" == n.name) {
 			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
 														 default_min_bounces);
@@ -496,25 +474,6 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
 			return std::make_shared<Pathtracer_MIS_factory>(
-				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
-				path_termination_probability, light_sampling, enable_caustics);
-		} else if ("PTNG" == n.name) {
-			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
-														 default_min_bounces);
-
-			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
-														 default_max_bounces);
-
-			const float path_termination_probability = json::read_float(
-				n.value, "path_termination_probability", default_path_termination_probability);
-
-			load_light_sampling(n.value, light_sampling);
-
-			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
-
-			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
-
-			return std::make_shared<Pathtracer_NG_factory>(
 				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
 				path_termination_probability, light_sampling, enable_caustics);
 		} else if ("Debug" == n.name) {

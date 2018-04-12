@@ -16,6 +16,8 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::surface {
 
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_settings,
@@ -23,9 +25,7 @@ Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_set
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
-	subsurface_(subsurface),
-	transmittance_(rng, take_settings)
-{}
+	subsurface_(subsurface) {}
 
 void Pathtracer_DL::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -45,6 +45,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 throughput(1.f);
 	float3 result(0.f);
 
+	bool was_subsurface = false;
+
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
@@ -57,9 +59,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		result += throughput * estimate_direct_light(ray, intersection, material_sample,
-													 filter, worker);
-
+		result += throughput * direct_light(ray, intersection, material_sample,
+											filter, worker);
 		if (i >= settings_.max_bounces - 1) {
 			break;
 		}
@@ -77,28 +78,22 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
-
-		if (requires_bounce) {
-			if (settings_.disable_caustics && !ray.is_primary()) {
-				break;
+		if (!was_subsurface) {
+			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
+														  Bxdf_type::Transmission);
+			if (requires_bounce) {
+				if (settings_.disable_caustics && !ray.is_primary()) {
+					break;
+				}
+			} else {
+				ray.set_primary(false);
+				filter = Sampler_filter::Nearest;
 			}
-		} else {
-			ray.set_primary(false);
-			filter = Sampler_filter::Nearest;
 		}
 
-		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			transmittance_.resolve(ray, intersection, material_sample.absorption_coefficient(),
-								   sampler_, Sampler_filter::Nearest, worker, sample_result);
-			if (0.f == sample_result.pdf) {
-				break;
-			}
+		was_subsurface = intersection.geo.subsurface;
 
-			throughput *= sample_result.reflection;
-		} else {
-			throughput *= sample_result.reflection / sample_result.pdf;
-		}
+		throughput *= sample_result.reflection / sample_result.pdf;
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
@@ -107,24 +102,46 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
-		const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
+			if (intersection.same_hemisphere(sample_result.wi)) {
+				worker.material_stack().pop();
+			} else {
+				worker.material_stack().push(intersection.material());
+			}
+		}
 
-		float3 vtr;
-		const float3 vli = worker.volume_li(ray, vtr);
-		result += throughput * vli;
-		throughput *= vtr;
+		if (!worker.material_stack().empty()) {
+			float3 vli;
+			float3 vtr;
+			float3 weight;
+			const bool hit = worker.volume(ray, intersection, vli, vtr, weight);
 
-		if (!hit) {
-			break;
+			result += throughput * vli;
+			throughput *= vtr * weight;
+
+			if (!hit) {
+				break;
+			}
+		} else {
+			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
+
+			float3 vtr;
+			const float3 vli = worker.volume_li(ray, vtr);
+			result += throughput * vli;
+			throughput *= vtr;
+
+			if (!hit) {
+				break;
+			}
 		}
 	}
 
 	return result;
 }
 
-float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& intersection,
-											const Material_sample& material_sample,
-											Sampler_filter filter, Worker& worker) {
+float3 Pathtracer_DL::direct_light(const Ray& ray, const Intersection& intersection,
+								   const Material_sample& material_sample,
+								   Sampler_filter filter, Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;
@@ -144,7 +161,8 @@ float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& 
 			const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 			shadow_ray.max_t = light_sample.shape.t - offset;
 
-			const float3 tv = worker.tinted_visibility(shadow_ray, filter);
+		//	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
+			const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 			if (math::any_greater_zero(tv)) {
 				const float3 tr = worker.transmittance(shadow_ray);
 

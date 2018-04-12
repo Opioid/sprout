@@ -1,11 +1,8 @@
-#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL
-#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
 
 #include "surface_integrator.hpp"
-#include "transmittance/transmittance_closed.hpp"
-#include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_random.hpp"
-#include "sampler/sampler_hammersley.hpp"
 #include "scene/material/sampler_settings.hpp"
 #include <memory>
 
@@ -42,17 +39,15 @@ public:
 
 private:
 
-	float3 estimate_direct_light(const Ray& ray, const Intersection& intersection,
-								 const Material_sample& material_sample,
-								 Sampler_filter filter, Worker& worker);
+	float3 direct_light(const Ray& ray, const Intersection& intersection,
+						const Material_sample& material_sample,
+						Sampler_filter filter, Worker& worker);
 
 	const Settings settings_;
 
 	sampler::Random sampler_;
 
 	sub::Integrator& subsurface_;
-
-	transmittance::Closed transmittance_;
 };
 
 class Pathtracer_DL_factory final : public Factory {
@@ -65,7 +60,7 @@ public:
 						  float path_termination_probability,
 						  uint32_t num_light_samples, bool enable_caustics);
 
-	~Pathtracer_DL_factory();
+	virtual ~Pathtracer_DL_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
