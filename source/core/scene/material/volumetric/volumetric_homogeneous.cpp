@@ -19,15 +19,9 @@ float3 Homogeneous::optical_depth(const Transformation& /*transformation*/,
 	return ray.length() * (absorption_coefficient_ + scattering_coefficient_);
 }
 
-float3 Homogeneous::absorption(const Transformation& /*transformation*/, const float3& /*p*/,
-							   float2 /*uv*/, Sampler_filter /*filter*/,
+float3 Homogeneous::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
 							   const Worker& /*worker*/) const {
 	return absorption_coefficient_;
-}
-
-float3 Homogeneous::max_extinction(float2 /*uv*/, Sampler_filter /*filter*/,
-								   const Worker& /*worker*/) const {
-	return absorption_coefficient_ + scattering_coefficient_;
 }
 
 void Homogeneous::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
@@ -35,6 +29,11 @@ void Homogeneous::extinction(const Transformation& /*transformation*/, const flo
 							 float3& absorption, float3& scattering) const {
 	absorption = absorption_coefficient_;
 	scattering = scattering_coefficient_;
+}
+
+float3 Homogeneous::max_extinction(float2 /*uv*/, Sampler_filter /*filter*/,
+								   const Worker& /*worker*/) const {
+	return absorption_coefficient_ + scattering_coefficient_;
 }
 
 size_t Homogeneous::num_bytes() const {

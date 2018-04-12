@@ -28,10 +28,9 @@ enum class Algorithm {
 	Experiment
 };
 
-Multiple_scattering_tracking::Multiple_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings,
-									 const Settings& settings) :
+Multiple_scattering_tracking::Multiple_scattering_tracking(rnd::Generator& rng,
+														   const take::Settings& take_settings) :
 	Integrator(rng, take_settings),
-	settings_(settings),
 	sampler_(rng) {}
 
 void Multiple_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
@@ -278,9 +277,9 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 
 	const auto& material = *intersection.material();
 
-	if (material.is_heterogeneous_volume()) {
-		const float d = ray.max_t - ray.min_t;
+	const float d = ray.max_t - ray.min_t;
 
+	if (material.is_heterogeneous_volume()) {
 		const float3 me = material.max_extinction(intersection.geo.uv, Sampler_filter::Nearest,
 												  worker);
 		const float mt = math::average(me);
@@ -296,8 +295,7 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			float3 sigma_a;
-			float3 sigma_s;
+			float3 sigma_a, sigma_s;
 			material.extinction(transformation, p, intersection.geo.uv,
 								Sampler_filter::Nearest, worker, sigma_a, sigma_s);
 
@@ -316,20 +314,27 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 		}
 	}
 
-	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
-											  1.f, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
+//	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
+//											  1.f, rng_,
+//											  Sampler_filter::Nearest, worker);
+//	return math::exp(-tau);
+
+	float3 sigma_a, sigma_s;
+	material.extinction(transformation, float3::identity(), intersection.geo.uv,
+						Sampler_filter::Nearest, worker, sigma_a, sigma_s);
+
+	const float3 extinction = sigma_a + sigma_s;
+
+	return attenuation(d, extinction);
 }
 
 bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
 										   float3& li, float3& transmittance, float3& weight) {
-	const float2 initial_uv = intersection.geo.uv;
+	const Prop*    initial_prop = intersection.prop;
+	const uint32_t initial_part = intersection.geo.part;
+	const float2   initial_uv   = intersection.geo.uv;
 
 	weight = float3(1.f);
-
-	Transformation temp;
-	const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
 
 	// We rely on the material stack being not empty
 	const auto& material = *worker.material_stack().top();
@@ -344,13 +349,15 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 	if (!material.is_scattering_volume()) {
 		// Basically the "glass" case
-		const float3 sigma_a = material.absorption(transformation, float3(0.f), initial_uv,
-												   Sampler_filter::Nearest, worker);
+		const float3 sigma_a = material.absorption(initial_uv, Sampler_filter::Nearest, worker);
 
 		li = float3(0.f);
 		transmittance = attenuation(d, sigma_a);
 		return true;
 	}
+
+	Transformation temp;
+	const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
 
 	constexpr bool use_heterogeneous_algorithm = true;
 
@@ -389,9 +396,11 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			const float r2 = rng_.random_float();
 			if (r2 <= 1.f - pn) {
+				intersection.prop = initial_prop;
 				intersection.geo.p = p;
 				intersection.geo.uv = initial_uv;
 				intersection.geo.epsilon = 0.f;
+				intersection.geo.part = initial_part;
 				intersection.geo.subsurface = true;
 
 				transmittance = float3(1.f);
@@ -423,15 +432,14 @@ size_t Multiple_scattering_tracking::num_bytes() const {
 Multiple_scattering_tracking_factory::Multiple_scattering_tracking_factory(const take::Settings& take_settings,
 													 uint32_t num_integrators) :
 	Factory(take_settings, num_integrators),
-	integrators_(memory::allocate_aligned<Multiple_scattering_tracking>(num_integrators)),
-	settings_{} {}
+	integrators_(memory::allocate_aligned<Multiple_scattering_tracking>(num_integrators)) {}
 
 Multiple_scattering_tracking_factory::~Multiple_scattering_tracking_factory() {
 	memory::free_aligned(integrators_);
 }
 
 Integrator* Multiple_scattering_tracking_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Multiple_scattering_tracking(rng, take_settings_, settings_);
+	return new(&integrators_[id]) Multiple_scattering_tracking(rng, take_settings_);
 }
 
 }

@@ -12,12 +12,7 @@ class alignas(64) Multiple_scattering_tracking : public Integrator {
 
 public:
 
-	struct Settings {
-
-	};
-
-	Multiple_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings,
-					  const Settings& settings);
+	Multiple_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -39,8 +34,6 @@ public:
 
 private:
 
-	const Settings settings_;
-
 	sampler::Random sampler_;
 };
 
@@ -57,8 +50,6 @@ public:
 private:
 
 	Multiple_scattering_tracking* integrators_;
-
-	Multiple_scattering_tracking::Settings settings_;
 };
 
 }

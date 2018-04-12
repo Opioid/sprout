@@ -19,9 +19,6 @@ public:
 								 const math::Ray& ray, float step_size, rnd::Generator& rng,
 								 Sampler_filter filter, const Worker& worker) const override;
 
-	virtual float3 absorption(const Transformation& transformation, const float3& p, float2 uv,
-							  Sampler_filter filter, const Worker& worker) const override final;
-
 	virtual void extinction(const Transformation& transformation, const float3& p, float2 uv,
 							Sampler_filter filter, const Worker& worker,
 							float3& absorption, float3& scattering) const override final;

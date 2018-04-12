@@ -15,8 +15,8 @@ public:
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override;
 
-	virtual float3 absorption(const Transformation& transformation, const float3& p, float2 uv,
-							  Sampler_filter filter, const Worker& worker) const override final;
+	virtual float3 absorption(float2 uv, Sampler_filter filter,
+							  const Worker& worker) const override final;
 
 	virtual bool is_scattering_volume() const final override;
 

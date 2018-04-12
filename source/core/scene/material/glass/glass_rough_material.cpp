@@ -44,8 +44,7 @@ const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate&
 	return sample;
 }
 
-float3 Glass_rough::absorption(const Transformation& /*transformation*/, const float3& /*p*/,
-							   float2 /*uv*/, Sampler_filter /*filter*/,
+float3 Glass_rough::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
 							   const Worker& /*worker*/) const {
 	return absorption_coefficient_;
 }
