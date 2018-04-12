@@ -89,12 +89,6 @@ float3 Emission_grid::optical_depth(const Transformation& /*transformation*/,
 	return float3::identity();
 }
 
-float3 Emission_grid::scattering(const Transformation& /*transformation*/,
-								 const float3& /*p*/, float2 /*uv*/,
-								 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
-	return float3::identity();
-}
-
 size_t Emission_grid::num_bytes() const {
 	return sizeof(*this);
 }

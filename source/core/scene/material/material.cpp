@@ -87,12 +87,6 @@ float3 Material::absorption(const Transformation& /*transformation*/,
 	return float3::identity();
 }
 
-float3 Material::scattering(const Transformation& /*transformation*/, const float3& /*p*/,
-							float2 /*uv*/, Sampler_filter /*filter*/,
-							const Worker& /*worker*/) const {
-	return float3::identity();
-}
-
 void Material::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
 						  float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
 						  float3& absorption, float3& scattering) const {

@@ -25,12 +25,6 @@ float3 Homogeneous::absorption(const Transformation& /*transformation*/, const f
 	return absorption_coefficient_;
 }
 
-float3 Homogeneous::scattering(const Transformation& /*transformation*/, const float3& /*p*/,
-							   float2 /*uv*/, Sampler_filter /*filter*/,
-							   const Worker& /*worker*/) const {
-	return scattering_coefficient_;
-}
-
 float3 Homogeneous::max_extinction(float2 /*uv*/, Sampler_filter /*filter*/,
 								   const Worker& /*worker*/) const {
 	return absorption_coefficient_ + scattering_coefficient_;

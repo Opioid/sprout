@@ -43,13 +43,6 @@ float3 Density::absorption(const Transformation& transformation, const float3& p
 	return density(transformation, p_o, filter, worker) * absorption_coefficient_;
 }
 
-float3 Density::scattering(const Transformation& transformation, const float3& p, float2 /*uv*/,
-						   Sampler_filter filter, const Worker& worker) const {
-	const float3 p_o = math::transform_point(p, transformation.world_to_object);
-
-	return density(transformation, p_o, filter, worker) * scattering_coefficient_;
-}
-
 void Density::extinction(const Transformation& transformation, const float3& p, float2 /*uv*/,
 						 Sampler_filter filter, const Worker& worker,
 						 float3& absorption, float3& scattering) const {

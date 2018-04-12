@@ -41,19 +41,11 @@ public:
 									sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename Fresnel>
-	static bxdf::Result refraction(const float3& wi, const float3& wo, float n_dot_wi,
-								   float n_dot_wo, const Layer& layer, const Fresnel& fresnel);
-
-	template<typename Layer, typename Fresnel>
 	static float refract(const float3& wo, float n_dot_wo, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename IOR, typename Fresnel>
 	static float refract(const float3& wo, float n_dot_wo, const Layer& layer, const IOR& ior,
-						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
-
-	template<typename Layer, typename Fresnel>
-	static float refract(const float3& wo, bool entering, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 };
 

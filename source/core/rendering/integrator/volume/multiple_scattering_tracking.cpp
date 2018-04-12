@@ -232,11 +232,9 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Volume&
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			const float3 sigma_a = material.absorption(transformation, p, float2(0.f),
-													   Sampler_filter::Undefined, worker);
-
-			const float3 sigma_s = material.scattering(transformation, p, float2(0.f),
-													   Sampler_filter::Undefined, worker);
+			float3 sigma_a, sigma_s;
+			material.extinction(transformation, p, float2(0.f),
+								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
 
