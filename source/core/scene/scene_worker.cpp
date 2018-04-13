@@ -104,8 +104,8 @@ shape::Node_stack& Worker::node_stack() const {
 	return node_stack_;
 }
 
-material::Stack& Worker::material_stack() const {
-	return material_stack_;
+prop::Interface_stack& Worker::interface_stack() const {
+	return interface_stack_;
 }
 
 material::Sample_cache& Worker::sample_cache() const {

@@ -104,13 +104,13 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (intersection.same_hemisphere(sample_result.wi)) {
-				worker.material_stack().pop();
+				worker.interface_stack().pop();
 			} else {
-				worker.material_stack().push(intersection.material());
+				worker.interface_stack().push(intersection);
 			}
 		}
 
-		if (!worker.material_stack().empty()) {
+		if (!worker.interface_stack().empty()) {
 			float3 vli;
 			float3 vtr;
 			float3 weight;

@@ -330,14 +330,14 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 
 bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
 										   float3& li, float3& transmittance, float3& weight) {
-	const Prop*    initial_prop = intersection.prop;
-	const uint32_t initial_part = intersection.geo.part;
-	const float2   initial_uv   = intersection.geo.uv;
+	// We rely on the material stack being not empty
+	const auto interface = worker.interface_stack().top();
+
+	const float2 initial_uv = intersection.geo.uv;
+
+	const auto& material = *interface->material();
 
 	weight = float3(1.f);
-
-	// We rely on the material stack being not empty
-	const auto& material = *worker.material_stack().top();
 
 	if (!worker.intersect_and_resolve_mask(ray, intersection, Sampler_filter::Nearest)) {
 		li = float3(0.f);
@@ -357,7 +357,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 	}
 
 	Transformation temp;
-	const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
+	const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
 	constexpr bool use_heterogeneous_algorithm = true;
 
@@ -396,11 +396,11 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			const float r2 = rng_.random_float();
 			if (r2 <= 1.f - pn) {
-				intersection.prop = initial_prop;
+				intersection.prop = interface->prop;
 				intersection.geo.p = p;
 				intersection.geo.uv = initial_uv;
 				intersection.geo.epsilon = 0.f;
-				intersection.geo.part = initial_part;
+				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
 				transmittance = float3(1.f);
