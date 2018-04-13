@@ -47,8 +47,10 @@ void Density::extinction(const Transformation& transformation, const float3& p,
 						 float3& absorption, float3& scattering) const {
 	const float3 p_o = math::transform_point(p, transformation.world_to_object);
 
-	absorption = density(transformation, p_o, filter, worker) * absorption_coefficient_;
-	scattering = density(transformation, p_o, filter, worker) * scattering_coefficient_;
+	const float d = density(transformation, p_o, filter, worker);
+
+	absorption = d * absorption_coefficient_;
+	scattering = d * scattering_coefficient_;
 }
 
 }

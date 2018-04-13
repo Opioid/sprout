@@ -144,7 +144,9 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = scene::Ray_max_t;
-		++ray.depth;
+		if (material_sample.ior() > 1.f) {
+			++ray.depth;
+		}
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
@@ -230,9 +232,13 @@ size_t Pathtracer_MIS::num_bytes() const {
 float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
 									 const Material_sample& material_sample,
 									 Sampler_filter filter, Worker& worker) {
-	const bool do_mis = !intersection.geo.subsurface;
-
 	float3 result(0.f);
+
+	if (1.f == material_sample.ior()) {
+		return result;
+	}
+
+	const bool do_mis = !intersection.geo.subsurface;
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {

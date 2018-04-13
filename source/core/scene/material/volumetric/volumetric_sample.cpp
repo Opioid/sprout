@@ -33,7 +33,7 @@ BSSRDF Sample::bssrdf() const {
 }
 
 float Sample::ior() const {
-	return 1.f;
+	return 1.5f;
 }
 
 bool Sample::is_translucent() const {

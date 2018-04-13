@@ -22,7 +22,7 @@ void Grid::compile() {
 
 	const int3 d = texture->dimensions_3();
 
-	for (uint32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
+	for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
 		max_density = std::max(texture->at_1(i), max_density);
 	}
 

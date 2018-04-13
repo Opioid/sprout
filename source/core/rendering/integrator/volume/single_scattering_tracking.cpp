@@ -507,19 +507,20 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 
 	const auto& material = *intersection.material();
 
-	if (material.is_heterogeneous_volume()) {
+	if (/*material.is_heterogeneous_volume()*/true) {
 		const float d = ray.max_t - ray.min_t;
-		const float max_extinction = math::average(material.max_extinction(float2(0.f),
-																		   Sampler_filter::Undefined,
-																		   worker));
-		bool terminated = false;
+
+		float3 w(1.f);
 		float t = 0.f;
 
-		do {
+		const float mt = math::max_component(material.max_extinction(float2(0.f),
+																	 Sampler_filter::Undefined,
+																	 worker));
+		for (;;) {
 			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / max_extinction;
+			t = t -std::log(1.f - r) / mt;
 			if (t > d) {
-				break;
+				return w;
 			}
 
 			const float3 p = ray.point(ray.min_t + t);
@@ -528,18 +529,23 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 			material.extinction(transformation, p,
 								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
-			const float3 extinction = sigma_a + sigma_s;
+			const float3 sigma_t = sigma_a + sigma_s;
+
+			const float3 sigma_n = float3(mt) - sigma_t;
+
+			float pn;
+			float3 wn;
+			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
+
+			avg_history_probabilities(mt, sigma_s, sigma_n, w, pn, wn);
 
 			const float r2 = rng_.random_float();
-			if (r2 < math::average(extinction) / max_extinction) {
-				terminated = true;
+			if (r2 < 1.f - pn) {
+				return float3(0.f);
+			} else {
+				SOFT_ASSERT(math::all_finite(wn));
+				w *= wn;
 			}
-		} while (!terminated);
-
-		if (terminated) {
-			return float3(0.f);
-		} else {
-			return float3(1.f);
 		}
 	}
 
@@ -625,8 +631,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		}
 	} else {
 		float3 sigma_a, sigma_s;
-		material.extinction(float2(0.f),
-							Sampler_filter::Undefined, worker, sigma_a, sigma_s);
+		material.extinction(float2(0.f), Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 		const float3 extinction = sigma_a + sigma_s;
 

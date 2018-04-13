@@ -100,7 +100,9 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = scene::Ray_max_t;
-		++ray.depth;
+		if (material_sample.ior() > 1.f) {
+			++ray.depth;
+		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (intersection.same_hemisphere(sample_result.wi)) {
@@ -142,7 +144,11 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 float3 Pathtracer_DL::direct_light(const Ray& ray, const Intersection& intersection,
 								   const Material_sample& material_sample,
 								   Sampler_filter filter, Worker& worker) {
-	float3 result = float3::identity();
+	float3 result(0.f);
+
+	if (1.f == material_sample.ior()) {
+		return result;
+	}
 
 	Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;

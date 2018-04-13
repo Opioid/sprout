@@ -111,7 +111,9 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = scene::Ray_max_t;
-		++ray.depth;
+		if (material_sample.ior() > 1.f) {
+			++ray.depth;
+		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (intersection.same_hemisphere(sample_result.wi)) {
