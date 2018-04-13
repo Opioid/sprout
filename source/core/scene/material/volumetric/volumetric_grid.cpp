@@ -31,8 +31,7 @@ void Grid::compile() {
 	max_extinction_ = max_density * extinction_coefficient;
 }
 
-float3 Grid::max_extinction(float2 /*uv*/, Sampler_filter /*filter*/,
-							const Worker& /*worker*/) const {
+float3 Grid::max_extinction() const {
 	return max_extinction_;
 }
 

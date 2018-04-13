@@ -1,11 +1,10 @@
 #include "multiple_scattering_tracking.hpp"
+#include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/light/light.hpp"
-#include "scene/light/light_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 #include "scene/volume/volume.hpp"
@@ -219,9 +218,7 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Volume&
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_component(material.max_extinction(float2(0.f),
-																	 Sampler_filter::Undefined,
-																	 worker));
+		const float mt = math::max_component(material.max_extinction());
 		for (;;) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -270,118 +267,7 @@ float3 Multiple_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
 												 const Worker& worker) {
-	const auto& material = *intersection.material();
-
-	const float d = ray.max_t - ray.min_t;
-
-	if (/*material.is_heterogeneous_volume()*/true) {
-	/*	Transformation temp;
-		const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
-
-		const float3 me = material.max_extinction(intersection.geo.uv, Sampler_filter::Nearest,
-												  worker);
-		const float mt = math::average(me);
-		bool terminated = false;
-		float t = 0.f;
-
-		do {
-			const float r0 = rng_.random_float();
-			t = t -std::log(1.f - r0) / mt;
-			if (t > d) {
-				break;
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, Sampler_filter::Nearest,
-								worker, sigma_a, sigma_s);
-
-			const float3 extinction = sigma_a + sigma_s;
-
-			const float r1 = rng_.random_float();
-			if (r1 < math::average(extinction) / mt) {
-				terminated = true;
-			}
-		} while (!terminated);
-
-		if (terminated) {
-			return float3(0.f);
-		} else {
-			return float3(1.f);
-		}
-*/
-
-		Transformation temp;
-		const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
-
-		const float3 me = material.max_extinction(intersection.geo.uv, Sampler_filter::Nearest,
-												  worker);
-		const float mt = math::average(me);
-
-		float3 w(1.f);
-		float t = 0.f;
-
-		for (;;) {
-			const float r0 = rng_.random_float();
-			t = t -std::log(1.f - r0) / mt;
-			if (t > d) {
-				return w;
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, Sampler_filter::Nearest,
-								worker, sigma_a, sigma_s);
-
-			const float3 sigma_t = sigma_a + sigma_s;
-
-			const float3 sigma_n = float3(mt) - sigma_t;
-
-//			float pn;
-//			float3 wn;
-//			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
-
-//			avg_history_probabilities(mt, sigma_s, sigma_n, w, pn, wn);
-
-//			const float r1 = rng_.random_float();
-//			if (r1 <= 1.f - pn) {
-//				return float3(0.f);
-//			} else {
-//				SOFT_ASSERT(math::all_finite(wn));
-//				w *= wn;
-//			}
-
-
-			float ps, pn;
-			float3 ws, wn;
-			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
-
-			avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
-
-			const float r1 = rng_.random_float();
-			if (r1 <= 1.f - pn && ps > 0.f) {
-				SOFT_ASSERT(math::all_finite(ws));
-
-			//	return w * ws;
-				return float3(1.f);
-			} else {
-				SOFT_ASSERT(math::all_finite(wn));
-
-				w *= wn;
-			}
-		}
-
-	}
-
-	float3 sigma_a, sigma_s;
-	material.extinction(intersection.geo.uv, Sampler_filter::Nearest,
-						worker, sigma_a, sigma_s);
-
-	const float3 extinction = sigma_a + sigma_s;
-
-	return attenuation(d, extinction);
+	return Tracking::transmittance(ray, intersection, rng_, worker);
 }
 
 bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
@@ -414,11 +300,11 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		Transformation temp;
 		const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
+		const float3 me = material.max_extinction();
+		const float  mt = math::max_component(me);
+
 		float3 w(1.f);
 		float t = 0.f;
-
-		const float3 me = material.max_extinction(interface->uv, Sampler_filter::Undefined, worker);
-		const float  mt = math::max_component(me);
 
 		for (;;) {
 			const float r0 = rng_.random_float();
@@ -470,12 +356,6 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			}
 		}
 	} else {
-		float3 w(1.f);
-		float t = 0.f;
-
-		const float3 me = material.max_extinction(interface->uv, Sampler_filter::Undefined, worker);
-		const float mt = math::max_component(me);
-
 		float3 sigma_a;
 		float3 sigma_s;
 		material.extinction(interface->uv, Sampler_filter::Undefined,
@@ -483,11 +363,16 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 		const float3 sigma_t = sigma_a + sigma_s;
 
+		const float mt = math::max_component(sigma_t);
+
 		const float3 sigma_n = float3(mt) - sigma_t;
 
+		float3 w(1.f);
+		float t = 0.f;
+
 		for (;;) {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
+			const float r0 = rng_.random_float();
+			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
 				transmittance = w;
 				li = float3(0.f);
@@ -500,8 +385,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
 
-			const float r2 = rng_.random_float();
-			if (r2 <= 1.f - pn) {
+			const float r1 = rng_.random_float();
+			if (r1 <= 1.f - pn && ps > 0.f) {
 				intersection.prop = interface->prop;
 				intersection.geo.p = ray.point(t);
 				intersection.geo.uv = interface->uv;

@@ -99,8 +99,7 @@ void Material::extinction(const Transformation& /*transformation*/, const float3
 	scattering = float3::identity();
 }
 
-float3 Material::max_extinction(float2 /*uv*/, Sampler_filter /*filter*/,
-								const Worker& /*worker*/) const {
+float3 Material::max_extinction() const {
 	return float3::identity();
 }
 

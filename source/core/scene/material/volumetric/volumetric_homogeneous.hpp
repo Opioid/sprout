@@ -29,9 +29,6 @@ public:
 							Sampler_filter filter, const Worker& worker,
 							float3& absorption, float3& scattering) const override final;
 
-	virtual float3 max_extinction(float2 uv, Sampler_filter filter,
-								  const Worker& worker) const override final;
-
 	virtual size_t num_bytes() const override final;
 };
 

@@ -4,7 +4,6 @@
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector4.hpp"
 
-namespace scene::prop { struct Intersection; }
 namespace scene::volume { class Volume; }
 
 namespace rendering {
@@ -18,7 +17,6 @@ class Integrator : public integrator::Integrator {
 public:
 
 	using Volume = scene::volume::Volume;
-	using Intersection = scene::prop::Intersection;
 
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();

@@ -1,4 +1,5 @@
 #include "single_scattering_tracking.hpp"
+#include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -219,9 +220,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_component(material.max_extinction(float2(0.f),
-																	 Sampler_filter::Undefined,
-																	 worker));
+		const float mt = math::max_component(material.max_extinction());
 		for (;;) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -290,9 +289,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			float3 w(1.f);
 			float t = 0.f;
 
-			const float mt = math::max_component(material.max_extinction(float2(0.f),
-																		 Sampler_filter::Undefined,
-																		 worker));
+			const float mt = math::max_component(material.max_extinction());
 			while (true) {
 				const float r = rng_.random_float();
 				t = t -std::log(1.f - r) / mt;
@@ -330,9 +327,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		} else if (Heterogeneous_algorithm::Delta_tracking == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
-			const float max_extinction = math::average(material.max_extinction(float2(0.f),
-																			   Sampler_filter::Undefined,
-																			   worker));
+			const float max_extinction = math::average(material.max_extinction());
 			bool terminated = false;
 			float t = 0.f;
 
@@ -500,59 +495,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 
 float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
 												 const Worker& worker) {
-	const auto& prop = *intersection.prop;
-
-	Transformation temp;
-	const auto& transformation = prop.transformation_at(ray.time, temp);
-
-	const auto& material = *intersection.material();
-
-	if (/*material.is_heterogeneous_volume()*/true) {
-		const float d = ray.max_t - ray.min_t;
-
-		float3 w(1.f);
-		float t = 0.f;
-
-		const float mt = math::max_component(material.max_extinction(float2(0.f),
-																	 Sampler_filter::Undefined,
-																	 worker));
-		for (;;) {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
-			if (t > d) {
-				return w;
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p,
-								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
-
-			const float3 sigma_t = sigma_a + sigma_s;
-
-			const float3 sigma_n = float3(mt) - sigma_t;
-
-			float pn;
-			float3 wn;
-			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
-
-			avg_history_probabilities(mt, sigma_s, sigma_n, w, pn, wn);
-
-			const float r2 = rng_.random_float();
-			if (r2 < 1.f - pn) {
-				return float3(0.f);
-			} else {
-				SOFT_ASSERT(math::all_finite(wn));
-				w *= wn;
-			}
-		}
-	}
-
-	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
+	return Tracking::transmittance(ray, intersection, rng_, worker);
 }
 
 bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
@@ -579,9 +522,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_component(material.max_extinction(float2(0.f),
-																	 Sampler_filter::Undefined,
-																	 worker));
+		const float mt = math::max_component(material.max_extinction());
 		while (true) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;

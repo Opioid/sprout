@@ -149,61 +149,12 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 
 float3 Single_scattering::transmittance(const Ray& ray, const Intersection& intersection,
 										const Worker& worker) {
-/*	const auto& prop = *intersection.prop;
-
-	Transformation temp;
-	const auto& transformation = prop.transformation_at(ray.time, temp);
-
-	const auto& material = *intersection.material();
-
-	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
-	*/
 	const auto& prop = *intersection.prop;
 
 	Transformation temp;
 	const auto& transformation = prop.transformation_at(ray.time, temp);
 
 	const auto& material = *intersection.material();
-
-	const float d = ray.max_t - ray.min_t;
-
-	if (material.is_heterogeneous_volume()) {
-		const float max_extinction = math::average(material.max_extinction(float2(0.f),
-																		   Sampler_filter::Nearest,
-																		   worker));
-		bool terminated = false;
-		float t = 0.f;
-
-		do {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / max_extinction;
-			if (t > d) {
-				break;
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p,
-								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
-
-			const float3 extinction = sigma_a + sigma_s;
-
-			const float r2 = rng_.random_float();
-			if (r2 < math::average(extinction) / max_extinction) {
-				terminated = true;
-			}
-		} while (!terminated);
-
-		if (terminated) {
-			return float3(0.f);
-		} else {
-			return float3(1.f);
-		}
-	}
 
 	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
 											  settings_.step_size, rng_,
