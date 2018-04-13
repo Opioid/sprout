@@ -36,7 +36,13 @@ float3 Density::optical_depth(const Transformation& transformation, const math::
 	return step_size * tau * extinction;
 }
 
-void Density::extinction(const Transformation& transformation, const float3& p, float2 /*uv*/,
+void Density::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
+						 float3& absorption, float3& scattering) const {
+	absorption = absorption_coefficient_;
+	scattering = scattering_coefficient_;
+}
+
+void Density::extinction(const Transformation& transformation, const float3& p,
 						 Sampler_filter filter, const Worker& worker,
 						 float3& absorption, float3& scattering) const {
 	const float3 p_o = math::transform_point(p, transformation.world_to_object);

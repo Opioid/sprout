@@ -126,8 +126,7 @@ float3 Material_subsurface::absorption(float2 uv, Sampler_filter filter,
 	return absorption_coefficient_;
 }
 
-void Material_subsurface::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
-									 float2 uv, Sampler_filter filter, const Worker& worker,
+void Material_subsurface::extinction(float2 uv, Sampler_filter filter, const Worker& worker,
 									 float3& absorption, float3& scattering) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -138,6 +137,13 @@ void Material_subsurface::extinction(const Transformation& /*transformation*/, c
 		return;
 	}
 
+	absorption = absorption_coefficient_;
+	scattering = scattering_coefficient_;
+}
+
+void Material_subsurface::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
+									 Sampler_filter /*filter*/, const Worker& /*worker*/,
+									 float3& absorption, float3& scattering) const {
 	absorption = absorption_coefficient_;
 	scattering = scattering_coefficient_;
 }

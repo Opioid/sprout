@@ -24,8 +24,14 @@ float3 Homogeneous::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
 	return absorption_coefficient_;
 }
 
+void Homogeneous::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
+							 float3& absorption, float3& scattering) const {
+	absorption = absorption_coefficient_;
+	scattering = scattering_coefficient_;
+}
+
 void Homogeneous::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
-							 float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
+							 Sampler_filter /*filter*/, const Worker& /*worker*/,
 							 float3& absorption, float3& scattering) const {
 	absorption = absorption_coefficient_;
 	scattering = scattering_coefficient_;

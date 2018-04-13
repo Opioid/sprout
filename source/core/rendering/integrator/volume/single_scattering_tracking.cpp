@@ -232,7 +232,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 			const float3 p = ray.point(ray.min_t + t);
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, float2(0.f),
+			material.extinction(transformation, p,
 								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -304,7 +304,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 				const float3 p = ray.point(ray.min_t + t);
 
 				float3 sigma_a, sigma_s;
-				material.extinction(transformation, p, float2(0.f),
+				material.extinction(transformation, p,
 									Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 				const float3 sigma_t = sigma_a + sigma_s;
@@ -350,7 +350,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 				p = ray.point(ray.min_t + t);
 
 				float3 sigma_a, sigma_s;
-				material.extinction(transformation, p, float2(0.f),
+				material.extinction(transformation, p,
 									Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 				extinction = sigma_a + sigma_s;
@@ -381,7 +381,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			const float d = ray.max_t - ray.min_t;
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, float3::identity(), float2(0.f),
+			material.extinction(float2(0.f),
 								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 			const float3 extinction = sigma_a + sigma_s;
@@ -428,7 +428,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 //			return sampledMedium ? (Tr * sigma_s / pdf) : (Tr / pdf);
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, float3::identity(), float2(0.f),
+			material.extinction(float2(0.f),
 								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -462,7 +462,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			const float d = ray.max_t - ray.min_t;
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, float3::identity(), float2(0.f),
+			material.extinction(float2(0.f),
 								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -525,7 +525,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 			const float3 p = ray.point(ray.min_t + t);
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, float2(0.f),
+			material.extinction(transformation, p,
 								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 			const float3 extinction = sigma_a + sigma_s;
@@ -588,7 +588,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			const float3 p = ray.point(ray.min_t + t);
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, float2(0.f),
+			material.extinction(transformation, p,
 								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -625,7 +625,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		}
 	} else {
 		float3 sigma_a, sigma_s;
-		material.extinction(transformation, float3::identity(), float2(0.f),
+		material.extinction(float2(0.f),
 							Sampler_filter::Undefined, worker, sigma_a, sigma_s);
 
 		const float3 extinction = sigma_a + sigma_s;

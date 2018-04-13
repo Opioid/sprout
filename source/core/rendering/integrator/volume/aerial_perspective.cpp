@@ -146,7 +146,7 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& 
 		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 
 		float3 sigma_a, scattering;
-		material.extinction(transformation, current, float2(0.f),
+		material.extinction(transformation, current,
 							Sampler_filter::Undefined, worker, sigma_a, scattering);
 
 		radiance += tr * scattering * local_radiance;
@@ -234,7 +234,7 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volum
 		}
 
 		float3 sigma_a, scattering;
-		material.extinction(transformation, current, float2(0.f),
+		material.extinction(transformation, current,
 							Sampler_filter::Undefined, worker, sigma_a, scattering);
 
 		radiance += tr * scattering * local_radiance;

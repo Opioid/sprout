@@ -36,7 +36,10 @@ public:
 	virtual float3 absorption(float2 uv, Sampler_filter filter,
 							  const Worker& worker) const override final;
 
-	virtual void extinction(const Transformation& transformation, const float3& p, float2 uv,
+	virtual void extinction(float2 uv, Sampler_filter filter, const Worker& worker,
+							float3& absorption, float3& scattering) const override final;
+
+	virtual void extinction(const Transformation& transformation, const float3& p,
 							Sampler_filter filter, const Worker& worker,
 							float3& absorption, float3& scattering) const override final;
 
