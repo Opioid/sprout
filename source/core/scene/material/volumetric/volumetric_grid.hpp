@@ -16,7 +16,7 @@ public:
 
 	virtual void compile() override final;
 
-	virtual float3 max_extinction() const override final;
+	virtual float max_extinction() const override final;
 
 	virtual bool  is_heterogeneous_volume() const override final;
 
@@ -29,7 +29,7 @@ private:
 
 	Texture_adapter grid_;
 
-	float3 max_extinction_;
+	float max_extinction_;
 };
 
 class Emission_grid final : public Material {

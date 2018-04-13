@@ -220,7 +220,7 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Volume& v
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_component(material.max_extinction());
+		const float mt = material.max_extinction();
 		for (;;) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -289,7 +289,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 			float3 w(1.f);
 			float t = 0.f;
 
-			const float mt = math::max_component(material.max_extinction());
+			const float mt = material.max_extinction();
 			while (true) {
 				const float r = rng_.random_float();
 				t = t -std::log(1.f - r) / mt;
@@ -327,7 +327,7 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 		} else if (Heterogeneous_algorithm::Delta_tracking == algorithm) {
 			const float d = ray.max_t - ray.min_t;
 
-			const float max_extinction = math::average(material.max_extinction());
+			const float max_extinction = material.max_extinction();
 			bool terminated = false;
 			float t = 0.f;
 
@@ -523,7 +523,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = math::max_component(material.max_extinction());
+		const float mt = material.max_extinction();
 		while (true) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;

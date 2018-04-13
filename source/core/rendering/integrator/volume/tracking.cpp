@@ -36,8 +36,7 @@ float3 Tracking::transmittance(const Ray& ray, const Intersection& intersection,
 		Transformation temp;
 		const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
 
-		const float3 me = material.max_extinction();
-		const float  mt = math::max_component(me);
+		const float mt = material.max_extinction();
 
 		float3 w(1.f);
 
