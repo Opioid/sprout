@@ -26,7 +26,7 @@ const Interface* Interface_stack::top() const {
 
 void Interface_stack::push(const Intersection& intersection) {
 	if (index_ < Num_entries - 1) {
-		stack_[index_] = {intersection.prop, intersection.geo.part};
+		stack_[index_] = {intersection.prop, intersection.geo.uv, intersection.geo.part};
 		++index_;
 	}
 }

@@ -2,7 +2,6 @@
 #define SU_CORE_SCENE_WORKER_HPP
 
 #include "material/material_sample_cache.hpp"
-#include "material/material_stack.hpp"
 #include "material/sampler_cache.hpp"
 #include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"

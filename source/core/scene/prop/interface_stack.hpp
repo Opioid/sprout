@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 #define SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 
+#include "base/math/vector2.hpp"
 #include <cstdint>
 
 namespace scene {
@@ -16,6 +17,7 @@ struct Interface {
 	const material::Material* material() const;
 
 	const Prop* prop;
+	float2		uv;
 	uint32_t	part;
 };
 

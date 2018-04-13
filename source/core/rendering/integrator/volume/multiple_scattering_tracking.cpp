@@ -333,8 +333,6 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 	// We rely on the material stack being not empty
 	const auto interface = worker.interface_stack().top();
 
-	const float2 initial_uv = intersection.geo.uv;
-
 	const auto& material = *interface->material();
 
 	weight = float3(1.f);
@@ -349,7 +347,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 	if (!material.is_scattering_volume()) {
 		// Basically the "glass" case
-		const float3 sigma_a = material.absorption(initial_uv, Sampler_filter::Nearest, worker);
+		const float3 sigma_a = material.absorption(interface->uv, Sampler_filter::Nearest, worker);
 
 		li = float3(0.f);
 		transmittance = attenuation(d, sigma_a);
@@ -365,7 +363,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float3 me = material.max_extinction(initial_uv, Sampler_filter::Undefined, worker);
+		const float3 me = material.max_extinction(interface->uv, Sampler_filter::Undefined, worker);
 		const float mt = math::max_component(me);
 
 		while (true) {
@@ -381,8 +379,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			float3 sigma_a;
 			float3 sigma_s;
-			material.extinction(transformation, p, initial_uv, Sampler_filter::Undefined, worker,
-								sigma_a, sigma_s);
+			material.extinction(transformation, p, interface->uv, Sampler_filter::Undefined,
+								worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
 
@@ -398,7 +396,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			if (r2 <= 1.f - pn) {
 				intersection.prop = interface->prop;
 				intersection.geo.p = p;
-				intersection.geo.uv = initial_uv;
+				intersection.geo.uv = interface->uv;
 				intersection.geo.epsilon = 0.f;
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
