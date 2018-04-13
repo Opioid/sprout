@@ -40,9 +40,8 @@ float3 Tracking::transmittance(const Ray& ray, const Intersection& intersection,
 		const float  mt = math::max_component(me);
 
 		float3 w(1.f);
-		float t = 0.f;
 
-		for (;;) {
+		for (float t = 0.f;;) {
 			const float r0 = rng.random_float();
 			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
@@ -61,8 +60,6 @@ float3 Tracking::transmittance(const Ray& ray, const Intersection& intersection,
 
 			float pn;
 			float3 wn;
-			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
-
 			avg_history_probabilities(mt, sigma_s, sigma_n, w, pn, wn);
 
 			const float r1 = rng.random_float();

@@ -498,7 +498,8 @@ float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersect
 	return Tracking::transmittance(ray, intersection, rng_, worker);
 }
 
-bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
+bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
+										   Sampler_filter filter, Worker& worker,
 										   float3& li, float3& transmittance, float3& weight) {
 	weight = float3(1.f);
 
@@ -507,7 +508,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 
 	const auto& material = *intersection.material();
 
-	const bool hit = worker.intersect_and_resolve_mask(ray, intersection, Sampler_filter::Nearest);
+	const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 	if (!hit) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
@@ -535,8 +536,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 			const float3 p = ray.point(ray.min_t + t);
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p,
-								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
+			material.extinction(transformation, p, filter, worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
 
@@ -572,7 +572,7 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 		}
 	} else {
 		float3 sigma_a, sigma_s;
-		material.extinction(float2(0.f), Sampler_filter::Undefined, worker, sigma_a, sigma_s);
+		material.extinction(float2(0.f), filter, worker, sigma_a, sigma_s);
 
 		const float3 extinction = sigma_a + sigma_s;
 

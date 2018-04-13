@@ -270,11 +270,12 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Interse
 	return Tracking::transmittance(ray, intersection, rng_, worker);
 }
 
-bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection, Worker& worker,
-										   float3& li, float3& transmittance, float3& weight) {
+bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
+											 Sampler_filter filter, Worker& worker,
+											 float3& li, float3& transmittance, float3& weight) {
 	weight = float3(1.f);
 
-	if (!worker.intersect_and_resolve_mask(ray, intersection, Sampler_filter::Nearest)) {
+	if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
 		return false;
@@ -289,7 +290,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 	if (!material.is_scattering_volume()) {
 		// Basically the "glass" case
-		const float3 sigma_a = material.absorption(interface->uv, Sampler_filter::Nearest, worker);
+		const float3 sigma_a = material.absorption(interface->uv, filter, worker);
 
 		li = float3(0.f);
 		transmittance = attenuation(d, sigma_a);
@@ -304,9 +305,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		const float  mt = math::max_component(me);
 
 		float3 w(1.f);
-		float t = 0.f;
 
-		for (;;) {
+		for (float t = 0.f;;) {
 			const float r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
@@ -317,9 +317,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			const float3 p = ray.point(t);
 
-			float3 sigma_a;
-			float3 sigma_s;
-			material.extinction(transformation, p, Sampler_filter::Undefined,
+			float3 sigma_a, sigma_s;
+			material.extinction(transformation, p, filter,
 								worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
@@ -356,9 +355,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			}
 		}
 	} else {
-		float3 sigma_a;
-		float3 sigma_s;
-		material.extinction(interface->uv, Sampler_filter::Undefined,
+		float3 sigma_a, sigma_s;
+		material.extinction(interface->uv, filter,
 							worker, sigma_a, sigma_s);
 
 		const float3 sigma_t = sigma_a + sigma_s;
@@ -368,9 +366,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		const float3 sigma_n = float3(mt) - sigma_t;
 
 		float3 w(1.f);
-		float t = 0.f;
 
-		for (;;) {
+		for (float t = 0.f;;) {
 			const float r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {

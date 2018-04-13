@@ -99,9 +99,10 @@ float3 Worker::volume_li(const Ray& ray, float3& transmittance) {
 	return radiance;
 }
 
-bool Worker::volume(Ray& ray, Intersection& intersection,
+bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 					float3& li, float3& transmittance, float3& weight) {
-	return volume_integrator_->integrate(ray, intersection, *this, li, transmittance, weight);
+	return volume_integrator_->integrate(ray, intersection, filter,
+										 *this, li, transmittance, weight);
 }
 
 float3 Worker::transmittance(const Ray& ray) const {
