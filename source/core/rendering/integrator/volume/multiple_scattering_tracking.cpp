@@ -355,11 +355,11 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		float t = 0.f;
 
 		const float3 me = material.max_extinction(interface->uv, Sampler_filter::Undefined, worker);
-		const float mt = math::max_component(me);
+		const float  mt = math::max_component(me);
 
 		for (;;) {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
+			const float r0 = rng_.random_float();
+			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
 				transmittance = w;
 				li = float3(0.f);
@@ -383,8 +383,10 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 			avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
 
-			const float r2 = rng_.random_float();
-			if (r2 <= 1.f - pn) {
+			const float r1 = rng_.random_float();
+			if (r1 <= 1.f - pn && ps > 0.f) {
+				SOFT_ASSERT(math::all_finite(ws));
+
 				intersection.prop = interface->prop;
 				intersection.geo.p = p;
 				intersection.geo.uv = interface->uv;

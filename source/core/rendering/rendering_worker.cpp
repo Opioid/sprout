@@ -148,6 +148,8 @@ float3 Worker::tinted_visibility(Ray& ray, const Intersection& intersection,
 		if (intersect(intersection.prop, ray, epsilon)) {
 			const float3 tr = volume_integrator_->transmittance(ray, intersection, *this);
 
+			SOFT_ASSERT(math::all_finite_and_positive(tr));
+
 			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
 			ray.max_t = ray_max_t;
 
