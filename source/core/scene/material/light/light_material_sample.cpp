@@ -18,10 +18,6 @@ float3 Sample::radiance() const {
 	return layer_.radiance_;
 }
 
-float Sample::ior() const {
-	return 1.5f;
-}
-
 void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const {
 	result.reflection = float3::identity();
 	result.pdf = 0.f;

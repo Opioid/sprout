@@ -44,10 +44,6 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	result.wavelength = 0.f;
 }
 
-float Sample::ior() const {
-	return 1.47f;
-}
-
 void Sample::Layer::set(const float3& color) {
 	diffuse_color_ = color;
 	roughness_ = 1.f;

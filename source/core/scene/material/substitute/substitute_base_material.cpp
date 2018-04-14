@@ -36,6 +36,10 @@ bool Material_base::has_emission_map() const {
 	return emission_map_.is_valid();
 }
 
+float Material_base::ior() const {
+	return ior_;
+}
+
 void Material_base::set_color_map(const Texture_adapter& color_map) {
 	color_map_ = color_map;
 }

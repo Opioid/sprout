@@ -15,9 +15,9 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-	virtual BSSRDF bssrdf() const override final;
+	virtual bool ior_greater_one() const override final;
 
-	virtual float ior() const override final;
+	virtual BSSRDF bssrdf() const override final;
 
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
 			 float anisotropy);

@@ -40,6 +40,10 @@ float3 Constant::average_radiance(float area) const {
 	return radiance;
 }
 
+float Constant::ior() const {
+	return 1.5f;
+}
+
 bool Constant::has_emission_map() const {
 	return false;
 }

@@ -45,6 +45,10 @@ float3 Glass_thin::thin_absorption(const float3& wo, const float3& n, float2 uv,
 	return opacity(uv, time, filter, worker) * (1.f - refraction_color_ * attenuation);
 }
 
+float Glass_thin::ior() const {
+	return ior_;
+}
+
 bool Glass_thin::has_tinted_shadow() const {
 	return true;
 }

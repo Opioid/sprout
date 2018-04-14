@@ -19,6 +19,8 @@ public:
 
 	virtual bool is_masked() const override final;
 
+	virtual float ior() const override final;
+
 	virtual size_t num_bytes() const override final;
 
 	void set_materials(const Material_ptr& a, const Material_ptr& b);

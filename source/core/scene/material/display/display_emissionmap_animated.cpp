@@ -38,6 +38,10 @@ const material::Sample& Emissionmap_animated::sample(const float3& wo, const Ren
 	return sample;
 }
 
+float Emissionmap_animated::ior() const {
+	return ior_;
+}
+
 size_t Emissionmap_animated::num_bytes() const {
 	return sizeof(*this);
 }
@@ -47,6 +51,7 @@ void Emissionmap_animated::set_roughness(float roughness) {
 }
 
 void Emissionmap_animated::set_ior(float ior) {
+	ior_ = ior;
 	f0_ = fresnel::schlick_f0(1.f, ior);
 }
 

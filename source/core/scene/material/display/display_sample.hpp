@@ -14,8 +14,6 @@ public:
 
 	virtual float3 radiance() const override final;
 
-	virtual float ior() const override final;
-
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Layer : material::Sample::Layer {

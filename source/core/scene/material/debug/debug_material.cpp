@@ -23,6 +23,10 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 	return sample;
 }
 
+float Material::ior() const {
+	return 1.47f;
+}
+
 size_t Material::num_bytes() const {
 	return sizeof(*this);
 }

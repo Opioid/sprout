@@ -40,6 +40,10 @@ float3 Constant::average_radiance(float /*area*/) const {
 	return emission_;
 }
 
+float Constant::ior() const {
+	return ior_;
+}
+
 size_t Constant::num_bytes() const {
 	return sizeof(*this);
 }
@@ -53,6 +57,7 @@ void Constant::set_roughness(float roughness) {
 }
 
 void Constant::set_ior(float ior) {
+	ior_ = ior;
 	f0_ = fresnel::schlick_f0(1.f, ior);
 }
 

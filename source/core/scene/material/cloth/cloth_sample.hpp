@@ -12,8 +12,6 @@ public:
 
 	virtual bxdf::Result evaluate(const float3& wi) const override final;
 
-	virtual float ior() const override final;
-
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Layer : public material::Sample::Layer {

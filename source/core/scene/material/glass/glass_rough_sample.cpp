@@ -83,10 +83,6 @@ float3 Sample_rough::absorption_coefficient() const {
 	return layer_.absorption_coefficient_;
 }
 
-float Sample_rough::ior() const {
-	return ior_.ior_i_;
-}
-
 bool Sample_rough::is_transmissive() const {
 	return true;
 }

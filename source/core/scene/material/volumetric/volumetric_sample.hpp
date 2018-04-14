@@ -17,8 +17,6 @@ public:
 
 	virtual BSSRDF bssrdf() const override final;
 
-	virtual float ior() const override final;
-
 	virtual bool is_translucent() const override final;
 
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,

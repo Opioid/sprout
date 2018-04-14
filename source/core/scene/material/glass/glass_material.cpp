@@ -37,6 +37,10 @@ float3 Glass::absorption(float2 /*uv*/, Sampler_filter /*filter*/, const Worker&
 	return absorption_coefficient_;
 }
 
+float Glass::ior() const {
+	return ior_;
+}
+
 bool Glass::is_scattering_volume() const {
 	return false;
 }

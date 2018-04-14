@@ -48,8 +48,4 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 
-float Sample::ior() const {
-	return 1.47f;
-}
-
 }

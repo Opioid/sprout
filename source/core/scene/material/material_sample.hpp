@@ -49,8 +49,6 @@ public:
 
 	virtual float3 radiance() const;
 
-	virtual float ior() const = 0;
-
 	virtual bool is_pure_emissive() const;
 
 	virtual bool is_transmissive() const;
@@ -58,6 +56,8 @@ public:
 	virtual bool is_translucent() const;
 
 	virtual bool is_sss() const;
+
+	virtual bool ior_greater_one() const;
 
 	const float3& wo() const;
 

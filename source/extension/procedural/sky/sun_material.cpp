@@ -47,6 +47,10 @@ void Sun_material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*pa
 	model_.init();
 }
 
+float Sun_material::ior() const {
+	return 1.5f;
+}
+
 size_t Sun_material::num_bytes() const {
 	return sizeof(*this);
 }

@@ -18,6 +18,8 @@ public:
 								   Sampler_filter filter,
 								   const Worker& worker) const override final;
 
+	virtual float ior() const override final;
+
 	virtual bool has_tinted_shadow() const override final;
 
 	virtual bool is_scattering_volume() const final override;

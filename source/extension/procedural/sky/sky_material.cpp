@@ -58,6 +58,10 @@ void Sky_material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*pa
 	model_.init();
 }
 
+float Sky_material::ior() const {
+	return 1.5f;
+}
+
 size_t Sky_material::num_bytes() const {
 	return sizeof(*this);
 }
@@ -188,6 +192,10 @@ void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*
 		// average_emission_ = cache_texture->average_3();
 		average_emission_ = model_.evaluate_sky(model_.zenith());
 	}
+}
+
+float Sky_baked_material::ior() const {
+	return 1.5f;
 }
 
 size_t Sky_baked_material::num_bytes() const {

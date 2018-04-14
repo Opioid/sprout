@@ -35,6 +35,10 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 	return sample;
 }
 
+float Material::ior() const {
+	return 1.f;
+}
+
 bool Material::is_volumetric() const {
 //	return true;
 	return false;

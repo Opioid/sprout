@@ -22,6 +22,8 @@ public:
 
 	virtual float3 average_radiance(float area) const override final;
 
+	virtual float ior() const override;
+
 	virtual bool has_emission_map() const override final;
 
 	virtual Sample_2D radiance_sample(float2 r2) const override final;

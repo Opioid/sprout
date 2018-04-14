@@ -87,10 +87,6 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	result.wavelength = 0.f;
 }
 
-float Sample::ior() const {
-	return 1.5f;
-}
-
 void Sample::Base_layer::set(const float3& color_a, const float3& color_b,
 							 float alpha, float alpha2) {
 	color_a_ = color_a;

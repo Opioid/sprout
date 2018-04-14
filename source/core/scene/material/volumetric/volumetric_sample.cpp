@@ -32,10 +32,6 @@ BSSRDF Sample::bssrdf() const {
 	return layer_.bssrdf;
 }
 
-float Sample::ior() const {
-	return 1.5f;
-}
-
 bool Sample::is_translucent() const {
 	return true;
 }

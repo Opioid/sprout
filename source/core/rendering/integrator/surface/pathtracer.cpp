@@ -111,7 +111,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = scene::Ray_max_t;
-		if (material_sample.ior() > 1.f) {
+		if (material_sample.ior_greater_one()) {
 			++ray.depth;
 		}
 

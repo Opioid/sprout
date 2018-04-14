@@ -19,6 +19,8 @@ public:
 
 	virtual bool has_emission_map() const override final;
 
+	virtual float ior() const override final;
+
 	void set_color_map(const Texture_adapter& color_map);
 	void set_normal_map(const Texture_adapter& normal_map);
 	void set_surface_map(const Texture_adapter& surface_map);

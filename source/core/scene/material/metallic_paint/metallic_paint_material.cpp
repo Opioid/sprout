@@ -63,6 +63,10 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 	return sample;
 }
 
+float Material::ior() const {
+	return ior_;
+}
+
 size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
@@ -110,6 +114,7 @@ void Material::set_coating_color(const float3& color) {
 }
 
 void Material::set_clearcoat(float ior, float roughness) {
+	ior_ = ior;
 	coating_.f0_ = fresnel::schlick_f0(1.f, ior);
 	const float alpha = roughness * roughness;
 	coating_.alpha_  = alpha;

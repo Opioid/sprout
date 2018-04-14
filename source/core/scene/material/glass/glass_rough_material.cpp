@@ -49,6 +49,10 @@ float3 Glass_rough::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
 	return absorption_coefficient_;
 }
 
+float Glass_rough::ior() const {
+	return ior_;
+}
+
 bool Glass_rough::is_scattering_volume() const {
 	return false;
 }

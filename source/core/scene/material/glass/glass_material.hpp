@@ -18,7 +18,9 @@ public:
 	virtual float3 absorption(float2 uv, Sampler_filter filter,
 							  const Worker& worker) const override final;
 
-	virtual bool is_scattering_volume() const final override;
+	virtual float ior() const override final;
+
+	virtual bool is_scattering_volume() const override final;
 
 	virtual size_t num_bytes() const override;
 

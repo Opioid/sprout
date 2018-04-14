@@ -107,7 +107,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 		result += throughput * sample_lights(ray, ray_offset, intersection,
-											 material_sample, filter, worker);;
+											 material_sample, filter, worker);
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
@@ -144,7 +144,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = scene::Ray_max_t;
-		if (material_sample.ior() > 1.f) {
+		if (material_sample.ior_greater_one()) {
 			++ray.depth;
 		}
 
@@ -234,7 +234,7 @@ float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersect
 									 Sampler_filter filter, Worker& worker) {
 	float3 result(0.f);
 
-	if (1.f == material_sample.ior()) {
+	if (!material_sample.ior_greater_one()) {
 		return result;
 	}
 

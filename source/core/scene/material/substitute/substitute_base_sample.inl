@@ -19,11 +19,6 @@ float3 Sample_base<Diffuse, Layer_data...>::radiance() const {
 }
 
 template<typename Diffuse, class... Layer_data>
-float Sample_base<Diffuse, Layer_data...>::ior() const {
-	return layer_.ior_;
-}
-
-template<typename Diffuse, class... Layer_data>
 template<typename Coating>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
 	const float3& wi, const Coating& coating_layer) const {

@@ -15,8 +15,6 @@ public:
 
 	virtual float3 radiance() const override final;
 
-	virtual float ior() const override final;
-
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	virtual bool is_pure_emissive() const override final;

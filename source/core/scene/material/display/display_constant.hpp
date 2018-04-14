@@ -20,6 +20,8 @@ public:
 
 	virtual float3 average_radiance(float area) const override final;
 
+	virtual float ior() const override final;
+
 	virtual size_t num_bytes() const override final;
 
 	void set_emission(const float3& radiance);
@@ -36,7 +38,10 @@ private:
 
 	float roughness_;
 
+	float ior_;
+
 	float f0_;
+
 };
 
 }

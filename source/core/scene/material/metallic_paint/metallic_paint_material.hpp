@@ -15,6 +15,8 @@ public:
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 
+	virtual float ior() const override final;
+
 	virtual size_t num_bytes() const override final;
 
 	void set_color(const float3& a, const float3& b);
@@ -48,6 +50,8 @@ protected:
 	float3 flakes_absorption_;
 	float  flakes_alpha_;
 	float  flakes_alpha2_;
+
+	float ior_;
 
 	coating::Clearcoat coating_;
 };

@@ -31,10 +31,6 @@ bxdf::Result Sample_isotropic::evaluate(const float3& wi) const {
 	return { n_dot_wi * ggx.reflection, ggx.pdf };
 }
 
-float Sample_isotropic::ior() const {
-	return 1.5f;
-}
-
 void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
@@ -79,10 +75,6 @@ bxdf::Result Sample_anisotropic::evaluate(const float3& wi) const {
 												  layer_, conductor);
 
 	return { n_dot_wi * ggx.reflection, ggx.pdf };
-}
-
-float Sample_anisotropic::ior() const {
-	return 1.5f;
 }
 
 void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {

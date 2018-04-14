@@ -26,6 +26,8 @@ public:
 								  float area, bool importance_sampling,
 								  thread::Pool& pool) override final;
 
+	virtual float ior() const override final;
+
 	virtual size_t num_bytes() const override final;
 };
 
@@ -57,6 +59,8 @@ public:
 								  const Transformation& transformation,
 								  float area, bool importance_sampling,
 								  thread::Pool& pool) override final;
+
+	virtual float ior() const override final;
 
 	virtual size_t num_bytes() const override final;
 

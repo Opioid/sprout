@@ -16,6 +16,8 @@ public:
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 
+	virtual float ior() const override final;
+
 	virtual bool is_volumetric() const override final;
 
 	void set_attenuation(const float3& absorption_color, const float3& scattering_color,

@@ -63,6 +63,10 @@ float3 Emissionmap_animated::average_radiance(float /*area*/) const {
 	return average_emission_;
 }
 
+float Emissionmap_animated::ior() const {
+	return 1.5f;
+}
+
 bool Emissionmap_animated::has_emission_map() const {
 	return emission_map_.is_valid();
 }

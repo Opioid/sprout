@@ -24,10 +24,6 @@ float3 Sample_thin::absorption_coefficient() const {
 	return layer_.absorption_coefficient_;
 }
 
-float Sample_thin::ior() const {
-	return layer_.ior_;
-}
-
 void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float p = sampler.generate_sample_1D();
 

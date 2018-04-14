@@ -13,8 +13,6 @@ public:
 
 	virtual float3 radiance() const override final;
 
-	virtual float ior() const override final;
-
 protected:
 
 	template<typename Coating>

@@ -38,6 +38,10 @@ float3 Material_overcast::average_radiance(float /*area*/) const {
 	return color_;
 }
 
+float Material_overcast::ior() const {
+	return 1.5f;
+}
+
 size_t Material_overcast::num_bytes() const {
 	return sizeof(*this);
 }

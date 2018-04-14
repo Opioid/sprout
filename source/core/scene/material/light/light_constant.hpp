@@ -21,6 +21,8 @@ public:
 
 	virtual float3 average_radiance(float area) const override final;
 
+	virtual float ior() const override final;
+
 	virtual bool has_emission_map() const override final;
 
 	virtual size_t num_bytes() const override final;

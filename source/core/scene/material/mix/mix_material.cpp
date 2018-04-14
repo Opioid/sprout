@@ -31,6 +31,10 @@ bool Material::is_masked() const {
 	return material_a_->is_masked() || material_b_->is_masked();
 }
 
+float Material::ior() const {
+	return material_a_->ior();
+}
+
 size_t Material::num_bytes() const {
 	return sizeof(*this);
 }

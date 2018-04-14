@@ -79,6 +79,10 @@ inline bool Sample::is_sss() const {
 	return false;
 }
 
+inline bool Sample::ior_greater_one() const {
+	return true;
+}
+
 inline const float3& Sample::wo() const {
 	return wo_;
 }

@@ -34,6 +34,10 @@ const material::Sample& Material_isotropic::sample(const float3& wo, const Rende
 	return sample;
 }
 
+float Material_isotropic::ior() const {
+	return ior_[0];
+}
+
 size_t Material_isotropic::num_bytes() const {
 	return sizeof(*this);
 }
@@ -90,6 +94,10 @@ const material::Sample& Material_anisotropic::sample(const float3& wo, const Ren
 	sample.layer_.set(ior_, absorption_, roughness_);
 
 	return sample;
+}
+
+float Material_anisotropic::ior() const {
+	return ior_[0];
 }
 
 size_t Material_anisotropic::num_bytes() const {

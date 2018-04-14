@@ -14,6 +14,8 @@ public:
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 
+	virtual float ior() const override final;
+
 	virtual size_t num_bytes() const override final;
 
 private:

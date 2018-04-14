@@ -20,12 +20,12 @@ void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const {
 	result.type.clear(bxdf::Type::Transmission);
 }
 
-BSSRDF Sample::bssrdf() const {
-	return layer_.bssrdf;
+bool Sample::ior_greater_one() const {
+	return false;
 }
 
-float Sample::ior() const {
-	return 1.f;
+BSSRDF Sample::bssrdf() const {
+	return layer_.bssrdf;
 }
 
 void Sample::set(const float3& absorption_coefficient,
