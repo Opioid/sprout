@@ -51,8 +51,6 @@ public:
 
 	const math::AABB& aabb() const;
 
-	void set_shape(const Shape_ptr& shape);
-
 	void set_shape_and_materials(const Shape_ptr& shape, const Materials& materials);
 
 	virtual void set_parameters(const json::Value& parameters) override;
@@ -70,10 +68,13 @@ public:
 
 	bool has_masked_material() const;
 	bool has_tinted_shadow() const;
+	bool has_no_surface() const;
 
 	size_t num_bytes() const;
 
 protected:
+
+	void set_shape(const Shape_ptr& shape);
 
 	bool visible(uint32_t ray_depth) const;
 

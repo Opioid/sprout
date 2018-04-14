@@ -135,6 +135,8 @@ private:
 	bvh::Builder<prop::Prop> prop_builder_;
 	prop::BVH_wrapper		 prop_bvh_;
 
+	prop::BVH_wrapper        volume_bvh1_;
+
 	bvh::Builder<volume::Volume> volume_builder_;
 	volume::BVH_wrapper          volume_bvh_;
 
@@ -147,6 +149,9 @@ private:
 
 	std::vector<prop::Prop*> finite_props_;
 	std::vector<prop::Prop*> infinite_props_;
+
+	std::vector<prop::Prop*> volumes1_;
+	std::vector<prop::Prop*> infinite_volumes1_;
 
 	std::vector<light::Light*> lights_;
 

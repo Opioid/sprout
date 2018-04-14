@@ -80,9 +80,10 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		if (!was_subsurface) {
 			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
-														  Bxdf_type::Transmission);
+															Bxdf_type::Transmission);
 			if (requires_bounce) {
-				if (settings_.disable_caustics && !ray.is_primary()) {
+				if (settings_.disable_caustics
+				&&  material_sample.ior_greater_one() && !ray.is_primary()) {
 					break;
 				}
 			} else {

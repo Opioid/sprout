@@ -122,7 +122,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			treat_as_singular = sample_result.type.test_any(Bxdf_type::Specular,
 															Bxdf_type::Transmission);
 			if (treat_as_singular) {
-				if (settings_.disable_caustics && !ray.is_primary()) {
+				if (settings_.disable_caustics
+				&&  material_sample.ior_greater_one() && !ray.is_primary()) {
 					break;
 				}
 			} else {

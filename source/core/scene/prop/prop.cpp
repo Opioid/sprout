@@ -14,16 +14,6 @@ namespace scene::prop {
 
 Prop::~Prop() {}
 
-void Prop::set_shape(const Shape_ptr& shape) {
-	shape_ = shape;
-
-	properties_.clear();
-	properties_.set(Property::Visible_in_camera);
-	properties_.set(Property::Visible_in_reflection);
-	properties_.set(Property::Visible_in_shadow);
-}
-
-
 void Prop::set_shape_and_materials(const Shape_ptr& shape, const Materials& materials) {
 	set_shape(shape);
 
@@ -140,6 +130,15 @@ const math::AABB& Prop::aabb() const {
 	return aabb_;
 }
 
+void Prop::set_shape(const Shape_ptr& shape) {
+	shape_ = shape;
+
+	properties_.clear();
+	properties_.set(Property::Visible_in_camera);
+	properties_.set(Property::Visible_in_reflection);
+	properties_.set(Property::Visible_in_shadow);
+}
+
 bool Prop::visible(uint32_t ray_depth) const {
 	if (0 == ray_depth) {
 		if (!properties_.test(Property::Visible_in_camera)) {
@@ -248,6 +247,10 @@ bool Prop::has_masked_material() const {
 
 bool Prop::has_tinted_shadow() const {
 	return properties_.test(Property::Tinted_shadow);
+}
+
+bool Prop::has_no_surface() const {
+	return 1 == materials_.size() && 1.f == materials_[0]->ior();
 }
 
 size_t Prop::num_bytes() const {

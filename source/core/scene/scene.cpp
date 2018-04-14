@@ -28,6 +28,8 @@ Scene::Scene(const take::Settings& settings) : take_settings_(settings) {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
 	infinite_props_.reserve(2);
+	volumes1_.reserve(16);
+	infinite_volumes1_.reserve(1);
 	lights_.reserve(16);
 	volumes_.reserve(16);
 	infinite_volumes_.reserve(1);
@@ -59,6 +61,14 @@ Scene::~Scene() {
 		for (auto l : lights_) {
 			delete l;
 		}
+	}
+
+	for (auto v : volumes1_) {
+		delete v;
+	}
+
+	for (auto v : infinite_volumes1_) {
+		delete v;
 	}
 
 	for (auto p : finite_props_) {
@@ -311,6 +321,10 @@ void Scene::compile(thread::Pool& pool) {
 		has_tinted_shadow_   = has_tinted_shadow_   || p->has_tinted_shadow();
 	}
 
+	for (auto v : volumes1_) {
+		v->set_visible_in_shadow(false);
+	}
+
 	for (auto v : volumes_) {
 		v->calculate_world_transformation();
 	}
@@ -324,6 +338,9 @@ void Scene::compile(thread::Pool& pool) {
 	prop_bvh_.set_infinite_props(infinite_props_);
 
 	// rebuild volume BVH
+	prop_builder_.build(volume_bvh1_.tree(), volumes1_);
+	volume_bvh1_.set_infinite_props(infinite_volumes1_);
+
 	volume_builder_.build(volume_bvh_.tree(), volumes_);
 	volume_bvh_.set_infinite_props(infinite_volumes_);
 
@@ -361,29 +378,23 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 }
 
 Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
-	prop::Prop* prop;
-
-	if (1 == materials.size() && materials[0]->is_volumetric()) {
-		volume::Volume* volume = new volume::Volume;
-
-		if (shape->is_finite()) {
-			volumes_.push_back(volume);
-		} else {
-			infinite_volumes_.push_back(volume);
-		}
-
-		prop = volume;
-	} else {
-		prop = new prop::Prop;
-
-		if (shape->is_finite()) {
-			finite_props_.push_back(prop);
-		} else {
-			infinite_props_.push_back(prop);
-		}
-	}
+	prop::Prop* prop = new prop::Prop;
 
 	prop->set_shape_and_materials(shape, materials);
+
+	if (shape->is_finite()) {
+		finite_props_.push_back(prop);
+	} else {
+		infinite_props_.push_back(prop);
+	}
+
+	if (prop->has_no_surface()) {
+		if (shape->is_finite()) {
+			volumes1_.push_back(prop);
+		} else {
+			infinite_volumes1_.push_back(prop);
+		}
+	}
 
 	entities_.push_back(prop);
 

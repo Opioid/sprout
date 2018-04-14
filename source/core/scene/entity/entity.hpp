@@ -39,6 +39,7 @@ public:
 	bool visible_in_reflection() const;
 	bool visible_in_shadow() const;
 
+	void set_visible_in_shadow(bool value);
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow,
 						bool propagate = false);
 	void set_propagate_visibility(bool enable);
