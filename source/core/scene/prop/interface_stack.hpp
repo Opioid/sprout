@@ -25,6 +25,8 @@ class Interface_stack {
 
 public:
 
+	void operator=(const Interface_stack& other);
+
 	bool empty() const;
 
 	void clear();

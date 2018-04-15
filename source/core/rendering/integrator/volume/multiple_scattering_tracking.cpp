@@ -265,9 +265,8 @@ float3 Multiple_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	return float3(0.f);
 }
 
-float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
-												 const Worker& worker) {
-	return Tracking::transmittance(ray, intersection, rng_, worker);
+float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Worker& worker) {
+	return Tracking::transmittance(ray, rng_, worker);
 }
 
 bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
@@ -281,7 +280,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		return false;
 	}
 
-	// We rely on the material stack being not empty
+	SOFT_ASSERT(!worker.interface_stack().empty());
+
 	const auto interface = worker.interface_stack().top();
 
 	const auto& material = *interface->material();

@@ -493,9 +493,8 @@ float3 Single_scattering_tracking::li(const Ray& ray, const Volume& volume,
 	}
 }
 
-float3 Single_scattering_tracking::transmittance(const Ray& ray, const Intersection& intersection,
-												 const Worker& worker) {
-	return Tracking::transmittance(ray, intersection, rng_, worker);
+float3 Single_scattering_tracking::transmittance(const Ray& ray, const Worker& worker) {
+	return Tracking::transmittance(ray, rng_, worker);
 }
 
 bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,

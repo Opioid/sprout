@@ -26,15 +26,18 @@ static inline void avg_history_probabilities(float mt,
 	wn = (sigma_n / (mt * pn));
 }
 
-float3 Tracking::transmittance(const Ray& ray, const Intersection& intersection,
-							   rnd::Generator& rng, const Worker& worker) {
-	const float d = ray.max_t - ray.min_t;
+float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, const Worker& worker) {
+	SOFT_ASSERT(!worker.interface_stack().empty());
 
-	const auto& material = *intersection.material();
+	const auto interface = worker.interface_stack().top();
+
+	const auto& material = *interface->material();
+
+	const float d = ray.max_t - ray.min_t;
 
 	if (material.is_heterogeneous_volume()) {
 		Transformation temp;
-		const auto& transformation = intersection.prop->transformation_at(ray.time, temp);
+		const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
 		const float mt = material.max_extinction();
 
@@ -72,7 +75,7 @@ float3 Tracking::transmittance(const Ray& ray, const Intersection& intersection,
 	}
 
 	float3 sigma_a, sigma_s;
-	material.extinction(intersection.geo.uv, Sampler_filter::Nearest,
+	material.extinction(interface->uv, Sampler_filter::Nearest,
 						worker, sigma_a, sigma_s);
 
 	const float3 extinction = sigma_a + sigma_s;

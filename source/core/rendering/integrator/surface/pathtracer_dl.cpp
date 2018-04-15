@@ -79,16 +79,22 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		if (!was_subsurface) {
-			requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
-															Bxdf_type::Transmission);
-			if (requires_bounce) {
-				if (settings_.disable_caustics
-				&&  material_sample.ior_greater_one() && !ray.is_primary()) {
-					break;
+			const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
+															  Bxdf_type::Transmission);
+
+			if (singular) {
+				if (material_sample.ior_greater_one()) {
+					if (settings_.disable_caustics && !ray.is_primary()) {
+						break;
+					}
+					requires_bounce = true;
+				} else {
+					requires_bounce = ray.is_primary();
 				}
 			} else {
 				ray.set_primary(false);
 				filter = Sampler_filter::Nearest;
+				requires_bounce = false;
 			}
 		}
 
@@ -126,14 +132,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 				break;
 			}
 		} else {
-			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
-
-			float3 vtr;
-			const float3 vli = worker.volume_li(ray, vtr);
-			result += throughput * vli;
-			throughput *= vtr;
-
-			if (!hit) {
+			if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
 				break;
 			}
 		}

@@ -8,6 +8,14 @@ const material::Material* Interface::material() const {
 	return prop->material(part);
 }
 
+void Interface_stack::operator=(const Interface_stack& other) {
+	index_ = other.index_;
+
+	for (uint32_t i = 0, len = index_; i < len; ++i) {
+		stack_[i] = other.stack_[i];
+	}
+}
+
 bool Interface_stack::empty() const {
 	return 0 == index_;
 }

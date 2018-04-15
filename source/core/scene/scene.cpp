@@ -63,14 +63,6 @@ Scene::~Scene() {
 		}
 	}
 
-	for (auto v : volumes1_) {
-		delete v;
-	}
-
-	for (auto v : infinite_volumes1_) {
-		delete v;
-	}
-
 	for (auto p : finite_props_) {
 		delete p;
 	}
@@ -96,6 +88,11 @@ const math::AABB& Scene::aabb() const {
 
 bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const {
 	return prop_bvh_.intersect(ray, node_stack, intersection);
+}
+
+bool Scene::intersect_volume(Ray& ray, Node_stack& node_stack,
+							 prop::Intersection& intersection) const {
+	return volume_bvh1_.intersect(ray, node_stack, intersection);
 }
 
 bool Scene::intersect_p(const Ray& ray, Node_stack& node_stack) const {

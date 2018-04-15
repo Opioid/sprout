@@ -72,6 +72,8 @@ public:
 
 	bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
 
+	bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
+
 	bool intersect_p(const Ray& ray, Node_stack& node_stack) const;
 
 	float opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const;

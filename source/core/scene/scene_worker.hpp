@@ -80,6 +80,7 @@ protected:
 	mutable shape::Node_stack node_stack_;
 
 	mutable prop::Interface_stack interface_stack_;
+	mutable prop::Interface_stack interface_stack_temp_;
 
 	mutable material::Sample_cache  sample_cache_;
 	const   material::Sampler_cache sampler_cache_;

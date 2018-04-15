@@ -31,9 +31,7 @@ public:
 	using Intersection   = scene::prop::Intersection;
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
-	static float3 transmittance(const Ray& ray, const Intersection& intersection,
-								rnd::Generator& rng, const Worker& worker);
-
+	static float3 transmittance(const Ray& ray, rnd::Generator& rng, const Worker& worker);
 };
 
 }}

@@ -26,8 +26,7 @@ public:
 	virtual float3 li(const Ray& ray, const Volume& volume,
 					  Worker& worker, float3& transmittance) = 0;
 
-	virtual float3 transmittance(const Ray& ray, const Intersection& intersection,
-								 const Worker& worker) = 0;
+	virtual float3 transmittance(const Ray& ray, const Worker& worker) = 0;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,

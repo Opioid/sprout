@@ -108,29 +108,37 @@ bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 float3 Worker::transmittance(const Ray& ray) const {
 	float3 transmittance(1.f);
 
+	interface_stack_temp_ = interface_stack_;
+
 	Ray tray = ray;
 
-	tray.properties.set(Ray::Property::Shadow);
+	Intersection intersection;
 
-	for (; tray.min_t < tray.max_t;) {
-		float epsilon;
-		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
-		if (!volume || tray.max_t >= scene::Almost_ray_max_t_minus_epsilon) {
-			// By convention don't integrate infinite volumes,
-			// as the result should be pre-computed in the surrounding infinite shape alredy.
+	const float ray_max_t = ray.max_t;
+
+	for (;;) {
+		const bool hit = scene_->intersect_volume(tray, node_stack_, intersection);
+
+		if (!interface_stack_.empty()) {
+			const float3 tr = volume_integrator_->transmittance(tray, *this);
+			transmittance *= math::saturate(tr);
+		}
+
+		if (!hit) {
 			break;
 		}
 
-		// Otherwise too small to handle meaningfully, but we still want to continue raymarching.
-		if (tray.max_t - tray.min_t > 0.0005f) {
-			transmittance *= volume_integrator_->transmittance(tray, *volume, *this);
+		if (intersection.same_hemisphere(ray.direction)) {
+			interface_stack_.pop();
+		} else {
+			interface_stack_.push(intersection);
 		}
 
-		SOFT_ASSERT(tray.max_t + epsilon - tray.min_t > 0.0001f);
-
-		tray.min_t = tray.max_t + epsilon;
-		tray.max_t = ray.max_t;
+		tray.min_t = tray.max_t + intersection.geo.epsilon * settings_.ray_offset_factor;
+		tray.max_t = ray_max_t;
 	}
+
+	interface_stack_ = interface_stack_temp_;
 
 	return transmittance;
 }
@@ -143,10 +151,12 @@ float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
 float3 Worker::tinted_visibility(Ray& ray, const Intersection& intersection,
 								 Sampler_filter filter) {
 	if (intersection.geo.subsurface) {
+		const float ray_min_t = ray.min_t;
 		const float ray_max_t = ray.max_t;
 
 		float epsilon;
 		if (intersect(intersection.prop, ray, epsilon)) {
+			/*
 			const float3 tr = volume_integrator_->transmittance(ray, intersection, *this);
 
 			SOFT_ASSERT(math::all_finite_and_positive(tr));
@@ -155,6 +165,16 @@ float3 Worker::tinted_visibility(Ray& ray, const Intersection& intersection,
 			ray.max_t = ray_max_t;
 
 			return tr * tinted_visibility(ray, filter);
+			*/
+
+			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
+			ray.max_t = ray_max_t;
+
+			const float3 tv = tinted_visibility(ray, filter);
+
+			ray.min_t = ray_min_t;
+
+			return tv;
 		}
 	}
 

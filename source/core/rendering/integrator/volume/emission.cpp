@@ -47,19 +47,8 @@ float3 Emission::li(const Ray& ray, const Volume& volume,
 	return emission;
 }
 
-float3 Emission::transmittance(const Ray& ray, const Intersection& intersection,
-							   const Worker& worker) {
-	const auto& prop = *intersection.prop;
-
-	Transformation temp;
-	const auto& transformation = prop.transformation_at(ray.time, temp);
-
-	const auto& material = *intersection.material();
-
-	const float3 tau = material.optical_depth(transformation, prop.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
+float3 Emission::transmittance(const Ray& /*ray*/, const Worker& /*worker*/) {
+	return float3(1.f);
 }
 
 size_t Emission::num_bytes() const {
