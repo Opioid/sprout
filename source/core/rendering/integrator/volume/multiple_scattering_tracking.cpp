@@ -272,11 +272,10 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Worker&
 bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 											 Sampler_filter filter, Worker& worker,
 											 float3& li, float3& transmittance, float3& weight) {
-	weight = float3(1.f);
-
 	if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
+		weight = float3(1.f);
 		return false;
 	}
 
@@ -294,6 +293,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 		li = float3(0.f);
 		transmittance = attenuation(d, sigma_a);
+		weight = float3(1.f);
 		return true;
 	}
 
@@ -311,6 +311,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			if (t > d) {
 				transmittance = w;
 				li = float3(0.f);
+				weight = float3(1.f);
 				return true;
 			}
 
@@ -370,6 +371,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			if (t > d) {
 				transmittance = w;
 				li = float3(0.f);
+				weight = float3(1.f);
 				return true;
 			}
 

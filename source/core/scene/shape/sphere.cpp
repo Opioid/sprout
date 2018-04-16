@@ -266,6 +266,7 @@ bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 	const float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);
+	const float pdf = math::cone_pdf_uniform(cos_theta_max);
 
 	const float axis_length = std::sqrt(axis_squared_length);
 	const float3 z = axis / axis_length;
@@ -275,11 +276,15 @@ bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 	const float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
+	const float b = math::dot(axis, dir);
+	const float det = (b * b) - axis_squared_length + radius_square;
+	const float dist = std::sqrt(det);
+	const float t = b - dist;
+
 	sample.wi = dir;
-	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
-	const float d = axis_length - radius; // this is not accurate
-	sample.t = d;
-	sample.epsilon = 5e-4f * d;
+	sample.pdf = pdf;
+	sample.t = t;
+	sample.epsilon = 5e-4f * t;
 
 	return true;
 }
