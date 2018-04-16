@@ -286,7 +286,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 
 	const auto& material = *interface->material();
 
-	const float d = ray.max_t;
+	const float d = ray.max_t - ray.min_t;
 
 	if (!material.is_scattering_volume()) {
 		// Basically the "glass" case
@@ -314,11 +314,10 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 				return true;
 			}
 
-			const float3 p = ray.point(t);
+			const float3 p = ray.point(ray.min_t + t);
 
 			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, filter,
-								worker, sigma_a, sigma_s);
+			material.extinction(transformation, p, filter, worker, sigma_a, sigma_s);
 
 			const float3 sigma_t = sigma_a + sigma_s;
 
@@ -355,8 +354,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		}
 	} else {
 		float3 sigma_a, sigma_s;
-		material.extinction(interface->uv, filter,
-							worker, sigma_a, sigma_s);
+		material.extinction(interface->uv, filter, worker, sigma_a, sigma_s);
 
 		const float3 sigma_t = sigma_a + sigma_s;
 
@@ -384,7 +382,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			const float r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
 				intersection.prop = interface->prop;
-				intersection.geo.p = ray.point(t);
+				intersection.geo.p = ray.point(ray.min_t + t);
 				intersection.geo.uv = interface->uv;
 				intersection.geo.epsilon = 0.f;
 				intersection.geo.part = interface->part;

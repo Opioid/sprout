@@ -103,12 +103,16 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		throughput *= sample_result.reflection / sample_result.pdf;
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-		ray.origin = intersection.geo.p;
-		ray.set_direction(sample_result.wi);
-		ray.min_t = ray_offset;
-		ray.max_t = scene::Ray_max_t;
+
 		if (material_sample.ior_greater_one()) {
+			ray.origin = intersection.geo.p;
+			ray.set_direction(sample_result.wi);
+			ray.min_t = ray_offset;
+			ray.max_t = scene::Ray_max_t;
 			++ray.depth;
+		} else {
+			ray.min_t = ray.max_t + ray_offset;
+			ray.max_t = scene::Ray_max_t;
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
@@ -131,10 +135,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			if (!hit) {
 				break;
 			}
-		} else {
-			if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
-				break;
-			}
+		} else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+			break;
 		}
 	}
 
@@ -171,6 +173,10 @@ float3 Pathtracer_DL::direct_light(const Ray& ray, const Intersection& intersect
 			const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 			if (math::any_greater_zero(tv)) {
 				const float3 tr = worker.transmittance(shadow_ray);
+
+//				if (math::all_greater_equal(tr, 1.f) && !intersection.geo.subsurface) {
+//					std::cout << ray.length() << std::endl;
+//				}
 
 				const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
 

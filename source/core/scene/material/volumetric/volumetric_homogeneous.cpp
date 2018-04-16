@@ -37,6 +37,10 @@ void Homogeneous::extinction(const Transformation& /*transformation*/, const flo
 	scattering = scattering_coefficient_;
 }
 
+float Homogeneous::max_extinction() const {
+	return math::max_component(absorption_coefficient_ + scattering_coefficient_);
+}
+
 size_t Homogeneous::num_bytes() const {
 	return sizeof(*this);
 }

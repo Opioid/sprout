@@ -15,6 +15,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace rendering {
 
 Worker::~Worker() {
@@ -110,11 +112,18 @@ float3 Worker::transmittance(const Ray& ray) const {
 
 	interface_stack_temp_ = interface_stack_;
 
+	// This is the typical SSS case:
+	// A medium is on the stack but we already considered it during shadow calculation,
+	// igonoring the IoR. Therefore remove the medium from the stack.
+	if (!interface_stack_.empty() && interface_stack_.top()->material()->ior() > 1.f) {
+		interface_stack_.pop();
+	}
+
+	const float ray_max_t = ray.max_t;
+
 	Ray tray = ray;
 
 	Intersection intersection;
-
-	const float ray_max_t = ray.max_t;
 
 	for (;;) {
 		const bool hit = scene_->intersect_volume(tray, node_stack_, intersection);
@@ -150,31 +159,19 @@ float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
 
 float3 Worker::tinted_visibility(Ray& ray, const Intersection& intersection,
 								 Sampler_filter filter) {
-	if (intersection.geo.subsurface) {
-		const float ray_min_t = ray.min_t;
+	if (intersection.geo.subsurface && intersection.material()->ior() > 1.f) {
 		const float ray_max_t = ray.max_t;
 
 		float epsilon;
 		if (intersect(intersection.prop, ray, epsilon)) {
-			/*
-			const float3 tr = volume_integrator_->transmittance(ray, intersection, *this);
+			const float3 tr = volume_integrator_->transmittance(ray, *this);
 
 			SOFT_ASSERT(math::all_finite_and_positive(tr));
 
 			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
 			ray.max_t = ray_max_t;
 
-			return tr * tinted_visibility(ray, filter);
-			*/
-
-			ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
-			ray.max_t = ray_max_t;
-
-			const float3 tv = tinted_visibility(ray, filter);
-
-			ray.min_t = ray_min_t;
-
-			return tv;
+			return tr * tinted_visibility(ray, filter);;
 		}
 	}
 

@@ -119,16 +119,22 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		if (!was_subsurface) {
-			treat_as_singular = sample_result.type.test_any(Bxdf_type::Specular,
-															Bxdf_type::Transmission);
-			if (treat_as_singular) {
-				if (settings_.disable_caustics
-				&&  material_sample.ior_greater_one() && !ray.is_primary()) {
-					break;
+			const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
+															  Bxdf_type::Transmission);
+
+			if (singular) {
+				if (material_sample.ior_greater_one()) {
+					if (settings_.disable_caustics && !ray.is_primary()) {
+						break;
+					}
+					treat_as_singular = true;
+				} else {
+					treat_as_singular = ray.is_primary();
 				}
 			} else {
 				ray.set_primary(false);
 				filter = Sampler_filter::Nearest;
+				treat_as_singular = false;
 			}
 		}
 
@@ -141,12 +147,15 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			ray.wavelength = sample_result.wavelength;
 		}
 
-		ray.origin = intersection.geo.p;
-		ray.set_direction(sample_result.wi);
-		ray.min_t = ray_offset;
-		ray.max_t = scene::Ray_max_t;
 		if (material_sample.ior_greater_one()) {
+			ray.origin = intersection.geo.p;
+			ray.set_direction(sample_result.wi);
+			ray.min_t = ray_offset;
+			ray.max_t = scene::Ray_max_t;
 			++ray.depth;
+		} else {
+			ray.min_t = ray.max_t + ray_offset;
+			ray.max_t = scene::Ray_max_t;
 		}
 
 		throughput *= sample_result.reflection / sample_result.pdf;
@@ -172,22 +181,13 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			if (!hit) {
 				break;
 			}
-		} else {
-			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
-
-			float3 vtr;
-			const float3 vli = worker.volume_li(ray, vtr);
-			result += throughput * vli;
-			throughput *= vtr;
-
-			if (!hit) {
-				break;
-			}
+		} else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+			break;
 		}
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
-		if (!was_was_subsurface) {
+		if (!was_was_subsurface /*&& material_sample.ior_greater_one()*/) {
 			float3 radiance;
 			const bool pure_emissive = evaluate_light(ray, intersection, sample_result,
 													  treat_as_singular, is_translucent,
@@ -239,7 +239,7 @@ float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersect
 		return result;
 	}
 
-	const bool do_mis = !intersection.geo.subsurface;
+	const bool do_mis = true;//!intersection.geo.subsurface;
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
@@ -320,7 +320,7 @@ bool Pathtracer_MIS::evaluate_light(const Ray& ray, const Intersection& intersec
 
 	float light_pdf = 0.f;
 
-	if (!treat_as_singular) {
+//	if (!treat_as_singular) {
 		auto light = worker.scene().light(light_id);
 
 		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
@@ -336,13 +336,12 @@ bool Pathtracer_MIS::evaluate_light(const Ray& ray, const Intersection& intersec
 		}
 
 		light_pdf = ls_pdf * light.pdf;
-	}
+//	}
 
 	const float3 wo = -sample_result.wi;
 
 	// This will invalidate the contents of previous previous material samples.
-	const auto& light_material_sample = intersection.sample(wo, ray, filter,
-															sampler_, worker);
+	const auto& light_material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
 	if (light_material_sample.same_hemisphere(wo)) {
 		const float3 ls_energy = light_material_sample.radiance();

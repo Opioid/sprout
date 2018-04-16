@@ -84,7 +84,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 		}
 
-		material_sample.sample(material_sampler(i, ray.properties), sample_result);
+		material_sample.sample(material_sampler(ray.depth, ray.properties), sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
 		}
@@ -108,12 +108,16 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		throughput *= sample_result.reflection / sample_result.pdf;
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-		ray.origin = intersection.geo.p;
-		ray.set_direction(sample_result.wi);
-		ray.min_t = ray_offset;
-		ray.max_t = scene::Ray_max_t;
+
 		if (material_sample.ior_greater_one()) {
+			ray.origin = intersection.geo.p;
+			ray.set_direction(sample_result.wi);
+			ray.min_t = ray_offset;
+			ray.max_t = scene::Ray_max_t;
 			++ray.depth;
+		} else {
+			ray.min_t = ray.max_t + ray_offset;
+			ray.max_t = scene::Ray_max_t;
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
@@ -136,17 +140,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			if (!hit) {
 				break;
 			}
-		} else {
-			const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
-
-			float3 vtr;
-			const float3 vli = worker.volume_li(ray, vtr);
-			result += throughput * vli;
-			throughput *= vtr;
-
-			if (!hit) {
-				break;
-			}
+		} else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+			break;
 		}
 	}
 
