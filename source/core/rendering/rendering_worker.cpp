@@ -15,8 +15,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace rendering {
 
 Worker::~Worker() {
@@ -133,7 +131,7 @@ float3 Worker::transmittance(const Ray& ray) const {
 			transmittance *= math::saturate(tr);
 		}
 
-		if (!hit) {
+		if (!hit || tray.max_t <= tray.min_t) {
 			break;
 		}
 
