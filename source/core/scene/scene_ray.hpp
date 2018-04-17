@@ -8,11 +8,8 @@ namespace scene {
 
 struct Ray : public math::Ray {
 	enum class Property {
-		Null		= 0,
-		Primary     = 1 << 0,
-		Recursive	= 1 << 1,
-		Direct_only	= 1 << 2,
-		Shadow      = 1 << 3
+		Null	= 0,
+		Primary = 1 << 0
 	};
 
 	using Properties = flags::Flags<Property>;

@@ -74,18 +74,14 @@ public:
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const;
 
-	virtual float3 optical_depth(const Transformation& transformation, const math::AABB& aabb,
-								 const math::Ray& ray, float step_size, rnd::Generator& rng,
-								 Sampler_filter filter, const Worker& worker) const;
-
 	virtual float3 absorption(float2 uv, Sampler_filter filter, const Worker& worker) const;
 
 	virtual void extinction(float2 uv, Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const;
+							float3& sigma_a, float3& sigma_s) const;
 
 	virtual void extinction(const Transformation& transformation, const float3& p,
 							Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const;
+							float3& sigma_a, float3& sigma_s) const;
 
 	virtual float majorant_sigma_t() const;
 
@@ -99,8 +95,6 @@ public:
 	virtual bool is_animated() const;
 
 	virtual bool has_tinted_shadow() const;
-
-	virtual bool is_volumetric() const;
 
 	virtual float ior() const = 0;
 

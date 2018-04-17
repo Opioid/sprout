@@ -59,8 +59,8 @@ private:
 						Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
 						Sampler_filter filter, Worker& worker, float3& radiance);
 
-	sampler::Sampler& material_sampler(uint32_t bounce, Ray::Properties properties);
-	sampler::Sampler& light_sampler(uint32_t bounce, Ray::Properties properties);
+	sampler::Sampler& material_sampler(uint32_t bounce);
+	sampler::Sampler& light_sampler(uint32_t bounce);
 
 	const Settings settings_;
 

@@ -101,17 +101,11 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 	ior_.eta_t_ = ior / external_ior;
 }
 
-float3 Material_subsurface::emission(const Transformation& /*transformation*/, const math::Ray& /*ray*/,
-							 float /*step_size*/, rnd::Generator& /*rng*/,
-							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+float3 Material_subsurface::emission(const Transformation& /*transformation*/,
+									 const math::Ray& /*ray*/, float /*step_size*/,
+									 rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
+									 const Worker& /*worker*/) const {
 	return float3::identity();
-}
-
-float3 Material_subsurface::optical_depth(const Transformation& /*transformation*/,
-								  const math::AABB& /*aabb*/, const math::Ray& ray,
-								  float /*step_size*/, rnd::Generator& /*rng*/,
-								  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
-	return ray.length() * (absorption_coefficient_ + scattering_coefficient_);
 }
 
 float3 Material_subsurface::absorption(float2 uv, Sampler_filter filter,

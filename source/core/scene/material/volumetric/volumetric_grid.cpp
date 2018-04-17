@@ -81,13 +81,6 @@ float3 Emission_grid::emission(const Transformation& transformation, const math:
 	return step_size * emission;
 }
 
-float3 Emission_grid::optical_depth(const Transformation& /*transformation*/,
-									const math::AABB& /*aabb*/, const math::Ray& /*ray*/,
-									float /*step_size*/, rnd::Generator& /*rng*/,
-									Sampler_filter /*filter*/, const Worker& /*worker*/) const {
-	return float3::identity();
-}
-
 size_t Emission_grid::num_bytes() const {
 	return sizeof(*this);
 }

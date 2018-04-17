@@ -11,9 +11,10 @@ namespace scene::material::volumetric {
 
 Height::Height(const Sampler_settings& sampler_settings) : Density(sampler_settings) {}
 
-float3 Height::optical_depth(const Transformation& /*transformation*/, const math::AABB& aabb,
-							 const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
-							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+/*
+float3 Height::optical_depth(const Transformation& transformation, const math::AABB& aabb,
+							 const math::Ray& ray, float step_size, rnd::Generator& rng,
+							 Sampler_filter filter, const Worker& worker) const {
 	const math::Ray rn = ray.normalized();
 
 	// This is an optimization of the generic stochastic method
@@ -61,6 +62,7 @@ float3 Height::optical_depth(const Transformation& /*transformation*/, const mat
 //	float3 old_result = Density::optical_depth(ray, step_size, rng, filter, worker);
 //	return old_result;
 }
+*/
 
 void Height::set_a_b(float a, float b) {
 	a_ = a;

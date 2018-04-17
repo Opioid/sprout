@@ -11,10 +11,6 @@ public:
 
 	Height(const Sampler_settings& sampler_settings);
 
-	virtual float3 optical_depth(const Transformation& transformation, const math::AABB& aabb,
-								 const math::Ray& ray, float step_size, rnd::Generator& rng,
-								 Sampler_filter filter, const Worker& worker) const override final;
-
 	void set_a_b(float a, float b);
 
 	virtual size_t num_bytes() const override final;

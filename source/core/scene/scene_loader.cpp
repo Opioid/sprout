@@ -259,7 +259,7 @@ prop::Prop* Loader::load_prop(const json::Value& prop_value,
 		return nullptr;
 	}
 
-	if (1 == materials.size() && materials[0]->is_volumetric()) {
+	if (1 == materials.size() && 1.f == materials[0]->ior()) {
 
 	} else {
 		while (materials.size() < shape->num_parts()) {

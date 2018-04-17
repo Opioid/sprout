@@ -15,16 +15,12 @@ public:
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const override final;
 
-	virtual float3 optical_depth(const Transformation& transformation, const math::AABB& aabb,
-								 const math::Ray& ray, float step_size, rnd::Generator& rng,
-								 Sampler_filter filter, const Worker& worker) const override;
-
 	virtual void extinction(float2 uv, Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const override final;
+							float3& sigma_a, float3& sigma_s) const override final;
 
 	virtual void extinction(const Transformation& transformation, const float3& p,
 							Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const override final;
+							float3& sigma_a, float3& sigma_s) const override final;
 
 private:
 

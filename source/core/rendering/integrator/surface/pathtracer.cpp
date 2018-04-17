@@ -76,7 +76,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			}
 		}
 
-		material_sample.sample(material_sampler(ray.depth, ray.properties), sample_result);
+		material_sample.sample(material_sampler(ray.depth), sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
 		}
@@ -140,8 +140,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	return result;
 }
 
-sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce, Ray::Properties properties) {
-	if (Num_material_samplers > bounce && properties.test_not(Ray::Property::Recursive)) {
+sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {
+	if (Num_material_samplers > bounce) {
 		return material_samplers_[bounce];
 	}
 

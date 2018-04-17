@@ -47,7 +47,6 @@ public:
 	void prepare(uint32_t num_samples_per_pixel);
 
 	float4 li(Ray& ray);
-	float3 li(Ray& ray, Intersection& intersection);
 
 	using Material_sample = scene::material::Sample;
 

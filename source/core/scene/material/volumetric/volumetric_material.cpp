@@ -39,11 +39,6 @@ float Material::ior() const {
 	return 1.f;
 }
 
-bool Material::is_volumetric() const {
-//	return true;
-	return false;
-}
-
 void Material::set_attenuation(const float3& absorption_color, const float3& scattering_color,
 							   float distance) {
 	attenuation(absorption_color, scattering_color, distance,

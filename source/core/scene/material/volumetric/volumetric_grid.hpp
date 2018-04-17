@@ -12,7 +12,7 @@ public:
 
 	Grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid);
 
-	~Grid();
+	virtual ~Grid() override final;
 
 	virtual void compile() override final;
 
@@ -38,15 +38,11 @@ public:
 
 	Emission_grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid);
 
-	~Emission_grid();
+	virtual ~Emission_grid() override final;
 
 	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const override final;
-
-	virtual float3 optical_depth(const Transformation& transformation, const math::AABB& aabb,
-								 const math::Ray& ray, float step_size, rnd::Generator& rng,
-								 Sampler_filter filter, const Worker& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
 

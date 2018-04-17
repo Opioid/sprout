@@ -74,29 +74,22 @@ float3 Material::emission(const Transformation& /*transformation*/, const math::
 	return float3::identity();
 }
 
-float3 Material::optical_depth(const Transformation& /*transformation*/, const math::AABB& /*aabb*/,
-							   const math::Ray& /*ray*/, float /*step_size*/,
-							   rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
-							   const Worker& /*worker*/) const {
-	return float3::identity();
-}
-
 float3 Material::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
 							const Worker& /*worker*/) const {
 	return float3::identity();
 }
 
 void Material::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
-						  float3& absorption, float3& scattering) const {
-	absorption = float3::identity();
-	scattering = float3::identity();
+						  float3& sigma_a, float3& sigma_s) const {
+	sigma_a = float3::identity();
+	sigma_s = float3::identity();
 }
 
 void Material::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
 						  Sampler_filter /*filter*/, const Worker& /*worker*/,
-						  float3& absorption, float3& scattering) const {
-	absorption = float3::identity();
-	scattering = float3::identity();
+						  float3& sigma_a, float3& sigma_s) const {
+	sigma_a = float3::identity();
+	sigma_s = float3::identity();
 }
 
 float Material::majorant_sigma_t() const {
@@ -120,10 +113,6 @@ bool Material::is_animated() const {
 }
 
 bool Material::has_tinted_shadow() const {
-	return false;
-}
-
-bool Material::is_volumetric() const {
 	return false;
 }
 

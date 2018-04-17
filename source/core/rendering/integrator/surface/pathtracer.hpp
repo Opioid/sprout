@@ -37,7 +37,7 @@ public:
 
 private:
 
-	sampler::Sampler& material_sampler(uint32_t bounce, Ray::Properties properties);
+	sampler::Sampler& material_sampler(uint32_t bounce);
 
 	const Settings settings_;
 

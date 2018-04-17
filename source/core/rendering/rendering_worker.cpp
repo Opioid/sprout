@@ -65,10 +65,6 @@ float4 Worker::li(Ray& ray) {
 	}
 }
 
-float3 Worker::li(Ray& ray, Intersection& intersection) {
-	return surface_integrator_->li(ray, intersection, *this);
-}
-
 bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 					float3& li, float3& transmittance, float3& weight) {
 	return volume_integrator_->integrate(ray, intersection, filter,

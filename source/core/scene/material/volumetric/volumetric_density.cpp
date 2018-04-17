@@ -15,42 +15,21 @@ float3 Density::emission(const Transformation& /*transformation*/, const math::R
 	return float3::identity();
 }
 
-float3 Density::optical_depth(const Transformation& transformation, const math::AABB& /*aabb*/,
-							  const math::Ray& ray, float step_size, rnd::Generator& rng,
-							  Sampler_filter filter, const Worker& worker) const {
-	const math::Ray rn = ray.normalized();
-
-	float min_t = rn.min_t + rng.random_float() * step_size;
-	float tau = 0.f;
-
-	const float3 rp_o = math::transform_point(rn.origin, transformation.world_to_object);
-	const float3 rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
-
-	for (; min_t < rn.max_t; min_t += step_size) {
-		const float3 p_o = rp_o + min_t * rd_o;
-		tau += density(transformation, p_o, filter, worker);
-	}
-
-	const float3 extinction = absorption_coefficient_ + scattering_coefficient_;
-
-	return step_size * tau * extinction;
-}
-
 void Density::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
-						 float3& absorption, float3& scattering) const {
-	absorption = absorption_coefficient_;
-	scattering = scattering_coefficient_;
+						 float3& sigma_a, float3& sigma_s) const {
+	sigma_a = absorption_coefficient_;
+	sigma_s = scattering_coefficient_;
 }
 
 void Density::extinction(const Transformation& transformation, const float3& p,
 						 Sampler_filter filter, const Worker& worker,
-						 float3& absorption, float3& scattering) const {
+						 float3& sigma_a, float3& sigma_s) const {
 	const float3 p_o = math::transform_point(p, transformation.world_to_object);
 
 	const float d = density(transformation, p_o, filter, worker);
 
-	absorption = d * absorption_coefficient_;
-	scattering = d * scattering_coefficient_;
+	sigma_a = d * absorption_coefficient_;
+	sigma_s = d * scattering_coefficient_;
 }
 
 }

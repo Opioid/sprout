@@ -12,13 +12,6 @@ float3 Homogeneous::emission(const Transformation& /*transformation*/, const mat
 	return float3::identity();
 }
 
-float3 Homogeneous::optical_depth(const Transformation& /*transformation*/,
-								  const math::AABB& /*aabb*/, const math::Ray& ray,
-								  float /*step_size*/, rnd::Generator& /*rng*/,
-								  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
-	return ray.length() * (absorption_coefficient_ + scattering_coefficient_);
-}
-
 float3 Homogeneous::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
 							   const Worker& /*worker*/) const {
 	return absorption_coefficient_;
