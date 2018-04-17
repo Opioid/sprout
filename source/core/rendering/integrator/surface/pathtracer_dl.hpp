@@ -4,13 +4,10 @@
 #include "surface_integrator.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/material/sampler_settings.hpp"
-#include <memory>
 
 namespace scene::material { class Sample; }
 
 namespace rendering::integrator::surface {
-
-namespace sub { class Integrator; class Factory; }
 
 class alignas(64) Pathtracer_DL final : public Integrator {
 
@@ -27,7 +24,7 @@ public:
 	};
 
 	Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_settings,
-				  const Settings& settings, sub::Integrator& subsurface);
+				  const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -46,8 +43,6 @@ private:
 	const Settings settings_;
 
 	sampler::Random sampler_;
-
-	sub::Integrator& subsurface_;
 };
 
 class Pathtracer_DL_factory final : public Factory {
@@ -55,7 +50,6 @@ class Pathtracer_DL_factory final : public Factory {
 public:
 
 	Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t num_integrators,
-						  std::unique_ptr<sub::Factory> sub_factory,
 						  uint32_t min_bounces, uint32_t max_bounces,
 						  float path_termination_probability,
 						  uint32_t num_light_samples, bool enable_caustics);
@@ -65,8 +59,6 @@ public:
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
-
-	std::unique_ptr<sub::Factory> sub_factory_;
 
 	Pathtracer_DL* integrators_;
 

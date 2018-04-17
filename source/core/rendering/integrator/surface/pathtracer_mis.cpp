@@ -1,5 +1,4 @@
 #include "pathtracer_mis.hpp"
-#include "sub/sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
@@ -21,17 +20,14 @@
 namespace rendering::integrator::surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
-							   const Settings& settings, sub::Integrator& subsurface) :
+							   const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
-	light_samplers_{rng, rng, rng},
-	subsurface_(subsurface) {}
+	light_samplers_{rng, rng, rng} {}
 
-Pathtracer_MIS::~Pathtracer_MIS() {
-	memory::safe_destruct(subsurface_);
-}
+Pathtracer_MIS::~Pathtracer_MIS() {}
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	const uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
@@ -55,8 +51,6 @@ void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel)
 			s.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
 		}
 	}
-
-	subsurface_.prepare(scene, num_samples_per_pixel);
 }
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -69,8 +63,6 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	for (auto& s : light_samplers_) {
 		s.resume_pixel(sample, scramble);
 	}
-
-	subsurface_.resume_pixel(sample, scramble);
 }
 
 float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) {
@@ -376,13 +368,11 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce, Ray::Properties
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
 											   uint32_t num_integrators,
-											   std::unique_ptr<sub::Factory> sub_factory,
 											   uint32_t min_bounces, uint32_t max_bounces,
 											   float path_termination_probability,
 											   Light_sampling light_sampling,
 											   bool enable_caustics) :
 	Factory(take_settings),
-	sub_factory_(std::move(sub_factory)),
 	integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
 	settings_{
 		min_bounces,
@@ -398,8 +388,7 @@ Pathtracer_MIS_factory::~Pathtracer_MIS_factory() {
 }
 
 Integrator* Pathtracer_MIS_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Pathtracer_MIS(rng, take_settings_, settings_,
-												*sub_factory_->create(id, rng));
+	return new(&integrators_[id]) Pathtracer_MIS(rng, take_settings_, settings_);
 }
 
 }

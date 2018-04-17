@@ -28,11 +28,7 @@ namespace rendering {
 	}
 
 	namespace integrator {
-		namespace surface {
-			class Factory;
-
-			namespace sub { class Factory; }
-		}
+		namespace surface { class Factory; }
 
 		namespace volume  { class Factory; }
 
@@ -78,14 +74,6 @@ private:
 	static std::shared_ptr<rendering::integrator::surface::Factory>
 	load_surface_integrator_factory(const json::Value& integrator_value,
 									const Settings& settings, uint32_t num_workers);
-
-	static std::unique_ptr<rendering::integrator::surface::sub::Factory>
-	find_subsurface_integrator_factory(const json::Value& parent_value,
-									   const Settings& settings, uint32_t num_workers);
-
-	static std::unique_ptr<rendering::integrator::surface::sub::Factory>
-	load_subsurface_integrator_factory(const json::Value& integrator_value,
-									   const Settings& settings, uint32_t num_workers);
 
 	static std::shared_ptr<rendering::integrator::volume::Factory>
 	load_volume_integrator_factory(const json::Value& integrator_value,

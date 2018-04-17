@@ -1,5 +1,4 @@
 #include "pathtracer.hpp"
-#include "sub/sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
@@ -19,16 +18,13 @@
 namespace rendering::integrator::surface {
 
 Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
-					   const Settings& settings, sub::Integrator& subsurface) :
+					   const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
-	material_samplers_{rng, rng, rng},
-	subsurface_(subsurface) {}
+	material_samplers_{rng, rng, rng} {}
 
-Pathtracer::~Pathtracer() {
-	memory::safe_destruct(subsurface_);
-}
+Pathtracer::~Pathtracer() {}
 
 void Pathtracer::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -36,8 +32,6 @@ void Pathtracer::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	for (auto& s : material_samplers_) {
 		s.resize(num_samples_per_pixel, 1, 1, 1);
 	}
-
-	subsurface_.prepare(scene, num_samples_per_pixel);
 }
 
 void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -46,8 +40,6 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	for (auto& s : material_samplers_) {
 		s.resume_pixel(sample, scramble);
 	}
-
-	subsurface_.resume_pixel(sample, scramble);
 }
 
 float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
@@ -168,11 +160,9 @@ size_t Pathtracer::num_bytes() const {
 
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   uint32_t num_integrators,
-									   std::unique_ptr<sub::Factory> sub_factory,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   float path_termination_probability, bool enable_caustics) :
 	Factory(take_settings),
-	sub_factory_(std::move(sub_factory)),
 	integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
 	settings_ {
 		min_bounces,
@@ -186,8 +176,7 @@ Pathtracer_factory::~Pathtracer_factory() {
 }
 
 Integrator* Pathtracer_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Pathtracer(rng, take_settings_, settings_,
-											 *sub_factory_->create(id, rng));
+	return new(&integrators_[id]) Pathtracer(rng, take_settings_, settings_);
 }
 
 }

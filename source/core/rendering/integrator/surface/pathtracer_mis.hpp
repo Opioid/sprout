@@ -5,7 +5,6 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/scene_ray.hpp"
-#include <memory>
 
 namespace scene {
 
@@ -15,8 +14,6 @@ namespace material { class Sample; }
 }
 
 namespace rendering::integrator::surface {
-
-namespace sub { class Integrator; class Factory; }
 
 class alignas(64) Pathtracer_MIS final : public Integrator {
 
@@ -34,7 +31,7 @@ public:
 	};
 
 	Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
-				   const Settings& settings, sub::Integrator& subsurface);
+				   const Settings& settings);
 
 	virtual ~Pathtracer_MIS() override final;
 
@@ -76,8 +73,6 @@ private:
 
 	static constexpr uint32_t Num_light_samplers = 3;
 	sampler::Golden_ratio light_samplers_[Num_light_samplers];
-
-	sub::Integrator& subsurface_;
 };
 
 class Pathtracer_MIS_factory final : public Factory {
@@ -85,7 +80,6 @@ class Pathtracer_MIS_factory final : public Factory {
 public:
 
 	Pathtracer_MIS_factory(const take::Settings& take_settings, uint32_t num_integrators,
-						   std::unique_ptr<sub::Factory> sub_factory,
 						   uint32_t min_bounces, uint32_t max_bounces,
 						   float path_termination_probability, Light_sampling light_sampling,
 						   bool enable_caustics);
@@ -95,8 +89,6 @@ public:
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
-
-	std::unique_ptr<sub::Factory> sub_factory_;
 
 	Pathtracer_MIS* integrators_;
 

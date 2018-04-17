@@ -14,9 +14,6 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
-#include "rendering/integrator/surface/sub/sub_multiple_scattering.hpp"
-#include "rendering/integrator/surface/sub/sub_multiple_scattering2.hpp"
-#include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/aerial_perspective.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/multiple_scattering_tracking.hpp"
@@ -129,11 +126,6 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	using namespace rendering::integrator;
 
 	if (!take->surface_integrator_factory) {
-		const float step_probability = 0.9f;
-		auto sub_factory = std::make_unique<
-			surface::sub::Single_scattering_factory>(take->settings, num_threads,
-													 step_probability);
-
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		const uint32_t min_bounces = 4;
 		const uint32_t max_bounces = 8;
@@ -142,7 +134,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 		take->surface_integrator_factory = std::make_shared<
 			surface::Pathtracer_MIS_factory>(take->settings, num_threads,
-											 std::move(sub_factory), min_bounces, max_bounces,
+											 min_bounces, max_bounces,
 											 path_termination_probability,
 											 light_sampling, enable_caustics);
 
@@ -432,10 +424,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
-
 			return std::make_shared<Pathtracer_factory>(
-				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
+				settings, num_workers, min_bounces, max_bounces,
 				path_termination_probability, enable_caustics);
 		} else if ("PTDL" == n.name) {
 			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
@@ -452,10 +442,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
-
 			return std::make_shared<Pathtracer_DL_factory>(
-				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
+				settings, num_workers, min_bounces, max_bounces,
 				path_termination_probability, num_light_samples, enable_caustics);
 		} else if ("PTMIS" == n.name) {
 			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
@@ -471,10 +459,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
-
 			return std::make_shared<Pathtracer_MIS_factory>(
-				settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
+				settings, num_workers, min_bounces, max_bounces,
 				path_termination_probability, light_sampling, enable_caustics);
 		} else if ("Debug" == n.name) {
 			auto vector = Debug::Settings::Vector::Shading_normal;
@@ -494,50 +480,6 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			}
 
 			return std::make_shared<Debug_factory>(settings, num_workers, vector);
-		}
-	}
-
-	return nullptr;
-}
-
-std::unique_ptr<rendering::integrator::surface::sub::Factory>
-Loader::find_subsurface_integrator_factory(const json::Value& parent_value,
-										   const Settings& settings, uint32_t num_workers) {
-	using namespace rendering::integrator::surface::sub;
-
-	std::unique_ptr<Factory> factory;
-	const auto subsurface_node = parent_value.FindMember("subsurface");
-	if (parent_value.MemberEnd() != subsurface_node) {
-		factory = load_subsurface_integrator_factory(subsurface_node->value, settings,
-													 num_workers);
-	}
-
-	if (!factory) {
-		const float step_probability = 0.9f;
-		factory = std::make_unique<Single_scattering_factory>(settings, num_workers, 
-															  step_probability);
-
-		logging::warning("No valid subsurface integrator specified, "
-						 "defaulting to Single Scattering.");
-	}
-
-	return factory;
-}
-
-std::unique_ptr<rendering::integrator::surface::sub::Factory>
-Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
-										   const Settings& settings, uint32_t num_workers) {
-	using namespace rendering::integrator::surface::sub;
-
-	for (auto& n : integrator_value.GetObject()) {
-		if ("Multiple_scattering" == n.name) {
-			return std::make_unique<Multiple_scattering_factory>(settings, num_workers);
-		} else if ("Multiple_scattering2" == n.name) {
-			return std::make_unique<Multiple_scattering2_factory>(settings, num_workers);
-		} else if ("Single_scattering" == n.name) {
-			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
-			return std::make_unique<Single_scattering_factory>(settings, num_workers, 
-															   step_probability);
 		}
 	}
 

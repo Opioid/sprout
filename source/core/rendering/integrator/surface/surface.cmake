@@ -1,5 +1,3 @@
-include("${CMAKE_CURRENT_LIST_DIR}/sub/sub.cmake")
-
 target_sources(core
 	PRIVATE
 	"${CMAKE_CURRENT_LIST_DIR}/ao.cpp"

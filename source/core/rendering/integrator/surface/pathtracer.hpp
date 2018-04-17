@@ -5,13 +5,10 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/scene_ray.hpp"
-#include <memory>
 
 namespace scene::light { struct Sample; }
 
 namespace rendering::integrator::surface {
-
-namespace sub { class Integrator; class Factory; }
 
 class alignas(64) Pathtracer final : public Integrator {
 
@@ -26,7 +23,7 @@ public:
 	};
 
 	Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
-			   const Settings& settings, sub::Integrator& subsurface);
+			   const Settings& settings);
 
 	virtual ~Pathtracer() override final;
 
@@ -48,8 +45,6 @@ private:
 
 	static constexpr uint32_t Num_material_samplers = 3;
 	sampler::Golden_ratio material_samplers_[Num_material_samplers];
-
-	sub::Integrator& subsurface_;
 };
 
 class Pathtracer_factory final : public Factory {
@@ -57,7 +52,6 @@ class Pathtracer_factory final : public Factory {
 public:
 
 	Pathtracer_factory(const take::Settings& take_settings, uint32_t num_integrators,
-					   std::unique_ptr<sub::Factory> sub_factory,
 					   uint32_t min_bounces, uint32_t max_bounces,
 					   float path_termination_probability, bool enable_caustics);
 
@@ -66,8 +60,6 @@ public:
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
-
-	std::unique_ptr<sub::Factory> sub_factory_;
 
 	Pathtracer* integrators_;
 
