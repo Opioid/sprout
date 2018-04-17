@@ -309,8 +309,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			const float r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
-				transmittance = w;
 				li = float3(0.f);
+				transmittance = w;
 				weight = float3(1.f);
 				return true;
 			}
@@ -341,11 +341,9 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
+				li = float3(0.f);
 				transmittance = float3(1.f);
 				weight = w * ws;
-
-				li = float3(0.f);
-
 				return true;
 			} else {
 				SOFT_ASSERT(math::all_finite(wn));
@@ -369,8 +367,8 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 			const float r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
-				transmittance = w;
 				li = float3(0.f);
+				transmittance = w;
 				weight = float3(1.f);
 				return true;
 			}
@@ -390,11 +388,9 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
+				li = float3(0.f);
 				transmittance = float3(1.f);
 				weight = w * ws;
-
-				li = float3(0.f);
-
 				return true;
 			} else {
 				SOFT_ASSERT(math::all_finite(wn));
