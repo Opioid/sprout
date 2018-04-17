@@ -4,6 +4,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/aerial_perspective.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/emission.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/emission.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/flow_vis.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/flow_vis.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/multiple_scattering_tracking.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/multiple_scattering_tracking.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/single_scattering.cpp"

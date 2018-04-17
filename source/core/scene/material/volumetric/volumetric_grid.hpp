@@ -29,7 +29,7 @@ private:
 
 	Texture_adapter grid_;
 
-	float max_extinction_;
+	float majorant_sigma_t_;
 };
 
 class Emission_grid final : public Material {
@@ -47,6 +47,29 @@ public:
 	virtual size_t num_bytes() const override final;
 
 private:
+
+	float3 emission(const float3& p, Sampler_filter filter, const Worker& worker) const;
+
+	Texture_adapter grid_;
+};
+
+class Flow_vis_grid final : public Material {
+
+public:
+
+	Flow_vis_grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid);
+
+	virtual ~Flow_vis_grid() override final;
+
+	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
+							float step_size, rnd::Generator& rng,
+							Sampler_filter filter, const Worker& worker) const override final;
+
+	virtual size_t num_bytes() const override final;
+
+private:
+
+	float density(const float3& p, Sampler_filter filter, const Worker& worker) const;
 
 	float3 emission(const float3& p, Sampler_filter filter, const Worker& worker) const;
 
