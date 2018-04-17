@@ -26,13 +26,11 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, const Volume& volume,
-								 const Worker& worker) override final;
-
-	virtual float3 li(const Ray& ray, const Volume& volume,
-					  Worker& worker, float3& transmittance) override final;
-
 	virtual float3 transmittance(const Ray& ray, const Worker& worker) override final;
+
+	virtual bool integrate(Ray& ray, Intersection& intersection,
+						   Sampler_filter filter, Worker& worker,
+						   float3& li, float3& transmittance, float3& weight) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -52,7 +50,7 @@ public:
 	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
 							  float step_size, float step_probability, bool indirect_lighting);
 
-	~Single_scattering_factory();
+	virtual ~Single_scattering_factory() override;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 

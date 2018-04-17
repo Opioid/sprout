@@ -7,7 +7,6 @@
 #include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
-#include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/sampling/sampling.hpp"
@@ -166,103 +165,6 @@ static inline void avg_history_probabilities(float mt,
 	pn = mn * c;
 
 	wn = (sigma_n / (mt * pn));
-}
-
-float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Volume& volume,
-												 const Worker& worker) {
-	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
-	const auto& material = *volume.material(0);
-
-	const bool use_heterogeneous_algorithm = material.is_heterogeneous_volume();
-
-	if (use_heterogeneous_algorithm) {
-/*		const float d = ray.max_t - ray.min_t;
-		const float max_extinction = math::average(material.majorant_sigma_t());
-		bool terminated = false;
-		float t = 0.f;
-
-		do {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / max_extinction;
-			if (t > d) {
-				break;
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			const float3 sigma_a = material.absorption(transformation, p,
-													   Sampler_filter::Undefined, worker);
-
-			const float3 sigma_s = material.scattering(transformation, p,
-													   Sampler_filter::Undefined, worker);
-
-			const float3 extinction = sigma_a + sigma_s;
-
-			const float r2 = rng_.random_float();
-			if (r2 < math::average(extinction) / max_extinction) {
-				terminated = true;
-			}
-		} while (!terminated);
-
-		if (terminated) {
-			return float3(0.f);
-		} else {
-			return float3(1.f);
-		}
-		*/
-
-		const float d = ray.max_t - ray.min_t;
-
-		float3 w(1.f);
-		float t = 0.f;
-
-		const float mt = material.majorant_sigma_t();
-		for (;;) {
-			const float r = rng_.random_float();
-			t = t -std::log(1.f - r) / mt;
-			if (t > d) {
-				return w;
-			}
-
-			const float3 p = ray.point(ray.min_t + t);
-
-			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p,
-								Sampler_filter::Undefined, worker, sigma_a, sigma_s);
-
-			const float3 sigma_t = sigma_a + sigma_s;
-
-			const float3 sigma_n = float3(mt) - sigma_t;
-
-			float pn;
-			float3 wn;
-			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
-
-			avg_history_probabilities(mt, sigma_s, sigma_n, w, pn, wn);
-
-			const float r2 = rng_.random_float();
-			if (r2 < 1.f - pn) {
-				return float3(0.f);
-			} else {
-				SOFT_ASSERT(math::all_finite(wn));
-				w *= wn;
-			}
-		}
-	}
-
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  1.f, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
-}
-
-float3 Multiple_scattering_tracking::li(const Ray& ray, const Volume& volume,
-									  Worker& worker, float3& transmittance) {
-	std::cout << "not implemented" << std::endl;
-	transmittance = float3(1.f);
-	return float3(0.f);
 }
 
 float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Worker& worker) {

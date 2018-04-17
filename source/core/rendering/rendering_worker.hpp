@@ -48,7 +48,6 @@ public:
 
 	float4 li(Ray& ray);
 	float3 li(Ray& ray, Intersection& intersection);
-	float3 volume_li(const Ray& ray, float3& transmittance);
 
 	using Material_sample = scene::material::Sample;
 

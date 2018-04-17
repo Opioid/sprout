@@ -4,8 +4,6 @@
 #include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace scene::entity { struct Composed_transformation; }
-
 namespace rendering::integrator::volume {
 
 class alignas(64) Multiple_scattering_tracking : public Integrator {
@@ -17,12 +15,6 @@ public:
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
-
-	virtual float3 transmittance(const Ray& ray, const Volume& volume,
-								 const Worker& worker) override final;
-
-	virtual float3 li(const Ray& ray, const Volume& volume,
-					  Worker& worker, float3& transmittance) override final;
 
 	virtual float3 transmittance(const Ray& ray, const Worker& worker) override final;
 
@@ -37,13 +29,13 @@ private:
 	sampler::Random sampler_;
 };
 
-class Multiple_scattering_tracking_factory : public Factory {
+class Multiple_scattering_tracking_factory final : public Factory {
 
 public:
 
 	Multiple_scattering_tracking_factory(const take::Settings& take_settings, uint32_t num_integrators);
 
-	~Multiple_scattering_tracking_factory();
+	virtual ~Multiple_scattering_tracking_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 

@@ -47,56 +47,26 @@ float4 Worker::li(Ray& ray) {
 	scene::prop::Intersection intersection;
 	const bool hit = intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined);
 
-	float3 vtr(1.f);
-	const float3 vli = volume_li(ray, vtr);
+//	float3 vtr(1.f);
+//	const float3 vli = volume_li(ray, vtr);
 
-	SOFT_ASSERT(math::all_finite_and_positive(vli));
+//	SOFT_ASSERT(math::all_finite_and_positive(vli));
 
 	if (hit) {
 		const float3 li = surface_integrator_->li(ray, intersection, *this);
 
 		SOFT_ASSERT(math::all_finite_and_positive(li));
 
-		return float4(vtr * li + vli, 1.f);
+		return float4(li, 1.f);
+//		return float4(vtr * li + vli, 1.f);
 	} else {
-		return float4(vli, spectrum::luminance(vli));
+		return float4(0.f);
+//		return float4(vli, spectrum::luminance(vli));
 	}
 }
 
 float3 Worker::li(Ray& ray, Intersection& intersection) {
 	return surface_integrator_->li(ray, intersection, *this);
-}
-
-float3 Worker::volume_li(const Ray& ray, float3& transmittance) {
-	float3 tr(1.f);
-	float3 radiance(0.f);
-
-	Ray tray = ray;
-
-	for (; tray.min_t < tray.max_t;) {
-		float epsilon;
-		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
-		if (!volume || tray.max_t >= scene::Almost_ray_max_t_minus_epsilon) {
-			// By convention don't integrate infinite volumes,
-			// as the result should be pre-computed in the surrounding infinite shape alredy.
-			break;
-		}
-
-		// Otherwise too small to handle meaningfully, but we still want to continue raymarching
-		if (tray.max_t - tray.min_t > 0.0005f) {
-			float3 temp;
-			radiance += tr * volume_integrator_->li(tray, *volume, *this, temp);
-			tr *= temp;
-		}
-
-		SOFT_ASSERT(tray.max_t + epsilon - tray.min_t > 0.0001f);
-
-		tray.min_t = tray.max_t + epsilon;
-		tray.max_t = ray.max_t;
-	}
-
-	transmittance = tr;
-	return radiance;
 }
 
 bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,

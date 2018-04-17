@@ -5,7 +5,6 @@
 #include "light/null_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
-#include "volume/volume_bvh_wrapper.hpp"
 #include "take/take_settings.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 #include <map>
@@ -47,8 +46,6 @@ class Prop;
 
 }
 
-namespace volume { class Volume; }
-
 class Worker;
 
 struct Ray;
@@ -80,9 +77,6 @@ public:
 
 	float3 thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const;
 
-	const volume::Volume* closest_volume_segment(Ray& ray, Node_stack& node_stack,
-												 float& epsilon) const;
-
 	float tick_duration() const;
 	float simulation_time() const;
 	uint64_t current_tick() const;
@@ -95,8 +89,6 @@ public:
 	struct Light { const light::Light& ref; float pdf; };
 	Light light(uint32_t id) const;
 	Light random_light(float random) const;
-
-	const volume::Volume* volume_region() const;
 
 	void tick(thread::Pool& thread_pool);
 	float seek(float time, thread::Pool& thread_pool);
@@ -137,10 +129,7 @@ private:
 	bvh::Builder<prop::Prop> prop_builder_;
 	prop::BVH_wrapper		 prop_bvh_;
 
-	prop::BVH_wrapper        volume_bvh1_;
-
-	bvh::Builder<volume::Volume> volume_builder_;
-	volume::BVH_wrapper          volume_bvh_;
+	prop::BVH_wrapper        volume_bvh_;
 
 	light::Null_light null_light_;
 
@@ -152,13 +141,10 @@ private:
 	std::vector<prop::Prop*> finite_props_;
 	std::vector<prop::Prop*> infinite_props_;
 
-	std::vector<prop::Prop*> volumes1_;
-	std::vector<prop::Prop*> infinite_volumes1_;
+	std::vector<prop::Prop*> volumes_;
+	std::vector<prop::Prop*> infinite_volumes_;
 
 	std::vector<light::Light*> lights_;
-
-	std::vector<volume::Volume*> volumes_;
-	std::vector<volume::Volume*> infinite_volumes_;
 
 	std::vector<entity::Entity*> extensions_;
 

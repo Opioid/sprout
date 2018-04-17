@@ -4,33 +4,17 @@
 #include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace scene::entity { struct Composed_transformation; }
-
 namespace rendering::integrator::volume {
 
-class alignas(64) Single_scattering_tracking : public Integrator {
+class alignas(64) Single_scattering_tracking final : public Integrator {
 
 public:
 
-	struct Settings {
-		float step_size;
-		float step_probability;
-
-		bool disable_indirect_lighting;
-	};
-
-	Single_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings,
-					  const Settings& settings);
+	Single_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
-
-	virtual float3 transmittance(const Ray& ray, const Volume& volume,
-								 const Worker& worker) override final;
-
-	virtual float3 li(const Ray& ray, const Volume& volume,
-					  Worker& worker, float3& transmittance) override final;
 
 	virtual float3 transmittance(const Ray& ray, const Worker& worker) override final;
 
@@ -47,17 +31,14 @@ private:
 	float3 direct_light(const Ray& ray, const float3& position,
 						const Intersection& intersection, Worker& worker);
 
-	const Settings settings_;
-
 	sampler::Random sampler_;
 };
 
-class Single_scattering_tracking_factory : public Factory {
+class Single_scattering_tracking_factory final : public Factory {
 
 public:
 
-	Single_scattering_tracking_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size, float step_probability, bool indirect_lighting);
+	Single_scattering_tracking_factory(const take::Settings& take_settings, uint32_t num_integrators);
 
 	~Single_scattering_tracking_factory() override final;
 
@@ -66,8 +47,6 @@ public:
 private:
 
 	Single_scattering_tracking* integrators_;
-
-	Single_scattering_tracking::Settings settings_;
 };
 
 }

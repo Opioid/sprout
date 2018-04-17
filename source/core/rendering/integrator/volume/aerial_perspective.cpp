@@ -1,4 +1,5 @@
 #include "aerial_perspective.hpp"
+#include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -10,7 +11,6 @@
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
-#include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/sampling/sampling.hpp"
@@ -31,19 +31,7 @@ void Aerial_perspective::prepare(const Scene& /*scene*/, uint32_t num_samples_pe
 
 void Aerial_perspective::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Aerial_perspective::transmittance(const Ray& ray, const Volume& volume,
-										 const Worker& worker) {
-	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
-	const auto& material = *volume.material(0);
-
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
-}
-
+/*
 float3 Aerial_perspective::li(const Ray& ray, const Volume& volume,
 							  Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
@@ -57,16 +45,23 @@ float3 Aerial_perspective::li(const Ray& ray, const Volume& volume,
 
 	return integrate_with_shadows(ray, volume, worker, transmittance);
 }
-
+*/
 
 float3 Aerial_perspective::transmittance(const Ray& ray, const Worker& worker) {
-	return float3(1.f);
+	return Tracking::transmittance(ray, rng_, worker);
+}
+
+bool Aerial_perspective::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
+								   Sampler_filter /*filter*/, Worker& /*worker*/,
+								   float3& /*li*/, float3& /*transmittance*/, float3& /*weight*/) {
+	return false;
 }
 
 size_t Aerial_perspective::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
+/*
 float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& volume, 
 												  Worker& worker, float3& transmittance) {
 	float min_t = ray.min_t;
@@ -235,6 +230,7 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volum
 
 	return color;
 }
+*/
 
 const scene::material::Sample& Aerial_perspective::sample(const float3& wo, float time,
 														  const Material& material,

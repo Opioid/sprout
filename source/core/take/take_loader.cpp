@@ -504,9 +504,7 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 
 			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
 		} else if ("Multiple_scattering_tracking" == n.name) {
-
-			return std::make_shared<Multiple_scattering_tracking_factory>(
-						settings, num_workers);
+			return std::make_shared<Multiple_scattering_tracking_factory>(settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
@@ -516,12 +514,7 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 															   step_size, step_probability,
 															   indirect_lighting);
 		} else if ("Single_scattering_tracking" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
-			const bool indirect_lighting = json::read_bool(n.value, "indirect_lighting", false);
-
-			return std::make_shared<Single_scattering_tracking_factory>(
-						settings, num_workers, step_size, step_probability, indirect_lighting);
+			return std::make_shared<Single_scattering_tracking_factory>(settings, num_workers);
 		}
 	}
 

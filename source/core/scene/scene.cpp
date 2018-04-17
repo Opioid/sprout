@@ -11,7 +11,6 @@
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "shape/shape.hpp"
-#include "volume/volume.hpp"
 #include "image/texture/texture.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
@@ -28,11 +27,9 @@ Scene::Scene(const take::Settings& settings) : take_settings_(settings) {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
 	infinite_props_.reserve(2);
-	volumes1_.reserve(16);
-	infinite_volumes1_.reserve(1);
-	lights_.reserve(16);
 	volumes_.reserve(16);
 	infinite_volumes_.reserve(1);
+	lights_.reserve(16);
 	extensions_.reserve(16);
 	entities_.reserve(16);
 	light_powers_.reserve(16);
@@ -44,14 +41,6 @@ Scene::Scene(const take::Settings& settings) : take_settings_(settings) {
 Scene::~Scene() {
 	for (auto e : extensions_) {
 		delete e;
-	}
-
-	for (auto v : volumes_) {
-		delete v;
-	}
-
-	for (auto v : infinite_volumes_) {
-		delete v;
 	}
 
 	// Normally lights_ should never be empty; containing null_light instead
@@ -92,7 +81,7 @@ bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& inte
 
 bool Scene::intersect_volume(Ray& ray, Node_stack& node_stack,
 							 prop::Intersection& intersection) const {
-	return volume_bvh1_.intersect(ray, node_stack, intersection);
+	return volume_bvh_.intersect(ray, node_stack, intersection);
 }
 
 bool Scene::intersect_p(const Ray& ray, Node_stack& node_stack) const {
@@ -113,61 +102,6 @@ float3 Scene::thin_absorption(const Ray& ray, Sampler_filter filter, const Worke
 	}
 
 	return float3(opacity(ray, filter, worker));
-}
-
-const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_stack,
-													float& epsilon) const {
-	const float original_max_t = ray.max_t;
-
-	ray.max_t = Ray_max_t;
-
-	float local_epsilon;
-	bool inside;
-	const volume::Volume* volume = volume_bvh_.intersect(ray, node_stack, true, 
-														 local_epsilon, inside);
-
-	if (!volume) {
-		return nullptr;
-	}
-
-	if (inside) {
-		if (!volume->shape()->is_finite()) {
-			volume_bvh_.intersect(ray, node_stack, false, local_epsilon, inside);
-		}
-
-		if (ray.max_t > original_max_t) {
-			ray.max_t = original_max_t;
-		}
-
-		epsilon = std::max(local_epsilon, 0.0001f);
-		return volume;
-	}
-
-	const float first = ray.max_t;
-	const float next = ray.max_t + (local_epsilon * take_settings_.ray_offset_factor);
-
-	if (next >= original_max_t) {
-		return nullptr;
-	}
-
-	entity::Composed_transformation temp;
-	const auto& transformation = volume->transformation_at(ray.time, temp);
-
-	ray.min_t = next;
-	ray.max_t = Ray_max_t;
-
-	if (!volume->shape()->intersect(transformation, ray, node_stack, local_epsilon, inside)) {
-		return nullptr;
-	}
-
-	ray.min_t = first;
-
-	if (ray.max_t > original_max_t) {
-		ray.max_t = original_max_t;
-	}
-
-	epsilon = std::max(local_epsilon, 0.0001f);
-	return volume;
 }
 
 float Scene::tick_duration() const {
@@ -220,14 +154,6 @@ Scene::Light Scene::random_light(float random) const {
 	SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
 
 	return { *lights_[l.offset], l.pdf };
-}
-
-const volume::Volume* Scene::volume_region() const {
-	if (!volumes_.empty()) {
-		return volumes_[0];
-	}
-
-	return nullptr;
 }
 
 void Scene::tick(thread::Pool& thread_pool) {
@@ -318,16 +244,8 @@ void Scene::compile(thread::Pool& pool) {
 		has_tinted_shadow_   = has_tinted_shadow_   || p->has_tinted_shadow();
 	}
 
-	for (auto v : volumes1_) {
-		v->set_visible_in_shadow(false);
-	}
-
 	for (auto v : volumes_) {
-		v->calculate_world_transformation();
-	}
-
-	for (auto v : infinite_volumes_) {
-		v->calculate_world_transformation();
+		v->set_visible_in_shadow(false);
 	}
 
 	// rebuild prop BVH
@@ -335,15 +253,8 @@ void Scene::compile(thread::Pool& pool) {
 	prop_bvh_.set_infinite_props(infinite_props_);
 
 	// rebuild volume BVH
-	prop_builder_.build(volume_bvh1_.tree(), volumes1_);
-	volume_bvh1_.set_infinite_props(infinite_volumes1_);
-
-	volume_builder_.build(volume_bvh_.tree(), volumes_);
+	prop_builder_.build(volume_bvh_.tree(), volumes_);
 	volume_bvh_.set_infinite_props(infinite_volumes_);
-
-	for (auto v : volumes_) {
-		v->set_scene_aabb(prop_bvh_.aabb());
-	}
 
 	// resort lights PDF
 	light_powers_.clear();
@@ -387,9 +298,9 @@ Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
 
 	if (prop->has_no_surface()) {
 		if (shape->is_finite()) {
-			volumes1_.push_back(prop);
+			volumes_.push_back(prop);
 		} else {
-			infinite_volumes1_.push_back(prop);
+			infinite_volumes_.push_back(prop);
 		}
 	}
 

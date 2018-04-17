@@ -8,7 +8,7 @@ namespace scene::entity { struct Composed_transformation; }
 
 namespace rendering::integrator::volume {
 
-class alignas(64) Aerial_perspective : public Integrator {
+class alignas(64) Aerial_perspective final : public Integrator {
 
 public:
 
@@ -25,23 +25,23 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, const Volume& volume,
-								 const Worker& worker) override final;
-
-	virtual float3 li(const Ray& ray, const Volume& volume,
-					  Worker& worker, float3& transmittance) override final;
-
 	virtual float3 transmittance(const Ray& ray, const Worker& worker) override final;
+
+	virtual bool integrate(Ray& ray, Intersection& intersection,
+						   Sampler_filter filter, Worker& worker,
+						   float3& li, float3& transmittance, float3& weight) override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
+	/*
 	float3 integrate_with_shadows(const Ray& ray, const Volume& volume,
 								  Worker& worker, float3& transmittance);
 
 	float3 integrate_without_shadows(const Ray& ray, const Volume& volume,
 									 Worker& worker, float3& transmittance);
+	*/
 
 	const Material_sample& sample(const float3& wo, float time, const Material& material,
 								  Sampler_filter filter, Worker& worker);
@@ -58,7 +58,7 @@ public:
 	Aerial_perspective_factory(const take::Settings& take_settings, uint32_t num_integrators,
 							   float step_size, bool shadows);
 
-	~Aerial_perspective_factory();
+	virtual ~Aerial_perspective_factory() override;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 

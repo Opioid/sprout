@@ -1,10 +1,10 @@
 #include "emission.hpp"
+#include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
-#include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
@@ -20,35 +20,14 @@ void Emission::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per
 
 void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worker& worker) {
-	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
-	const auto& material = *volume.material(0);
-
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
+float3 Emission::transmittance(const Ray& ray, const Worker& worker) {
+	return Tracking::transmittance(ray, rng_, worker);
 }
 
-float3 Emission::li(const Ray& ray, const Volume& volume,
-					Worker& worker, float3& transmittance) {
-	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
-	const auto& material = *volume.material(0);
-
-	const float3 emission = material.emission(transformation, ray, settings_.step_size, rng_,
-											  Sampler_filter::Undefined, worker);
-
-	transmittance = float3(1.f);
-
-	return emission;
-}
-
-float3 Emission::transmittance(const Ray& /*ray*/, const Worker& /*worker*/) {
-	return float3(1.f);
+bool Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
+						 Sampler_filter /*filter*/, Worker& /*worker*/,
+						 float3& /*li*/, float3& /*transmittance*/, float3& /*weight*/) {
+	return false;
 }
 
 size_t Emission::num_bytes() const {

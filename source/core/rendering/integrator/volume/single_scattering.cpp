@@ -1,4 +1,5 @@
 #include "single_scattering.hpp"
+#include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -6,7 +7,6 @@
 #include "scene/light/light_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
-#include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/sampling/sampling.hpp"
@@ -27,19 +27,7 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
-										const Worker& worker) {
-	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
-	const auto& material = *volume.material(0);
-
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), ray,
-											  settings_.step_size, rng_,
-											  Sampler_filter::Nearest, worker);
-	return math::exp(-tau);
-}
-
+/*
 float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 							 Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
@@ -101,29 +89,6 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Lighting
-	/*	Ray secondary_ray = ray;
-		secondary_ray.properties.set(Ray::Property::Recursive);
-		secondary_ray.set_primary(false);
-
-		if (settings_.disable_indirect_lighting) {
-			// TODO: All of this doesn't work with Pathtracer...
-			// Make the surface integrator stop after gathering direct lighting
-			// by selecting a very high ray depth.
-			// Don't take 0xFFFFFFFF because that will cause a wraparound in the MIS integrator,
-			// causing us to miss direct lighting from light sources wich are marked as
-			// invisible in the camera.
-			secondary_ray.depth = 0xFFFFFFFE;
-		}
-
-		scene::prop::Intersection secondary_intersection;
-		secondary_intersection.prop = &volume;
-		secondary_intersection.geo.p = current;
-		secondary_intersection.geo.geo_n = float3(0.f, 1.f, 0.f); // Value shouldn't matter
-		secondary_intersection.geo.part = 0;
-		secondary_intersection.geo.epsilon = 0.f;
-		secondary_intersection.geo.subsurface = false;
-	*/
-	//	const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
 		const float3 local_radiance = estimate_direct_light(ray, current, worker);
 
 		float3 sigma_a, scattering;
@@ -146,9 +111,15 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 
 	return color;
 }
+*/
+float3 Single_scattering::transmittance(const Ray& ray, const Worker& worker) {
+	return Tracking::transmittance(ray, rng_, worker);
+}
 
-float3 Single_scattering::transmittance(const Ray& /*ray*/, const Worker& /*worker*/) {
-	return float3(1.f);
+bool Single_scattering::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
+								  Sampler_filter /*filter*/, Worker& /*worker*/,
+								  float3& /*li*/, float3& /*transmittance*/, float3& /*weight*/) {
+	return false;
 }
 
 size_t Single_scattering::num_bytes() const {

@@ -20,7 +20,6 @@
 #include "shape/triangle/triangle_bvh_preset.hpp"
 #include "shape/triangle/triangle_mesh.hpp"
 #include "shape/triangle/triangle_mesh_generator.hpp"
-#include "volume/volume.hpp"
 #include "resource/resource_manager.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"

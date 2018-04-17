@@ -6,7 +6,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/light/light.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/material/material.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/prop/prop.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/shape/shape.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/volume/volume.cmake")
 
 target_sources(core
 	PRIVATE
