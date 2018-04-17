@@ -13,37 +13,8 @@
 
 namespace rendering::integrator::volume {
 
-static inline void avg_history_probabilities(float mt,
-											 const float3& sigma_s,
-											 const float3& sigma_n,
-											 const float3& w,
-											 float& ps, float& pn,
-											 float3& ws, float3& wn) {
-	const float ms = math::average(sigma_s * w);
-	const float mn = math::average(sigma_n * w);
-	const float c = 1.f / (ms + mn);
-
-	ps = ms * c;
-	pn = mn * c;
-
-	ws = (sigma_s / (mt * ps));
-	wn = (sigma_n / (mt * pn));
-}
-
-static inline void avg_history_probabilities(float mt,
-											 const float3& sigma_s,
-											 const float3& sigma_n,
-											 const float3& w,
-											 float& pn,
-											 float3& wn) {
-	const float ms = math::average(sigma_s * w);
-	const float mn = math::average(sigma_n * w);
-	const float c = 1.f / (ms + mn);
-
-	pn = mn * c;
-
-	wn = (sigma_n / (mt * pn));
-}
+// Code for hetereogeneous transmittance from:
+// https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
 float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, const Worker& worker) {
 	SOFT_ASSERT(!worker.interface_stack().empty());
@@ -54,17 +25,18 @@ float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, const Worker
 
 	const float d = ray.max_t - ray.min_t;
 
-	if (/*material.is_heterogeneous_volume()*/false) {
+	if (material.is_heterogeneous_volume()) {
 		Transformation temp;
 		const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
-		const float mt = material.max_extinction();
-/*
+		const float mt  = material.majorant_sigma_t();
+		const float imt = 1.f / mt;
+
 		float3 w(1.f);
 
 		for (float t = 0.f;;) {
 			const float r0 = rng.random_float();
-			t = t -std::log(1.f - r0) / mt;
+			t = t -std::log(1.f - r0) * imt;
 			if (t > d) {
 				return w;
 			}
@@ -79,72 +51,16 @@ float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, const Worker
 
 			const float3 sigma_n = float3(mt) - sigma_t;
 
-			float pn;
-			float3 wn;
-			avg_history_probabilities(mt, sigma_s, sigma_n, w, pn, wn);
-
-			const float r1 = rng.random_float();
-			if (r1 <= 1.f - pn) {
-				return float3(0.f);
-			} else {
-				SOFT_ASSERT(math::all_finite(wn));
-
-				w *= wn;
-			}
+			w *= imt * sigma_n;
 		}
-
-*/
-
-		float3 w(1.f);
-
-				for (float t = 0.f;;) {
-					const float r0 = rng.random_float();
-					t = t -std::log(1.f - r0) / mt;
-					if (t > d) {
-
-						return w;
-					}
-
-					const float3 p = ray.point(ray.min_t + t);
-
-					float3 sigma_a, sigma_s;
-					material.extinction(transformation, p, Sampler_filter::Nearest, worker, sigma_a, sigma_s);
-
-					const float3 sigma_t = sigma_a + sigma_s;
-
-					const float3 sigma_n = float3(mt) - sigma_t;
-
-					float ps, pn;
-					float3 ws, wn;
-					//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
-
-					avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
-
-					const float r1 = rng.random_float();
-					if (r1 <= 1.f - pn && ps > 0.f) {
-						SOFT_ASSERT(math::all_finite(ws));
-
-
-					//	w *= ws;
-
-						return float3(0.f);// - w;// ws;//float3(0.f);
-
-					} else {
-						SOFT_ASSERT(math::all_finite(wn));
-
-						w *= wn;
-					}
-				}
-
 	}
 
 	float3 sigma_a, sigma_s;
-	material.extinction(interface->uv, Sampler_filter::Nearest,
-						worker, sigma_a, sigma_s);
+	material.extinction(interface->uv, Sampler_filter::Nearest, worker, sigma_a, sigma_s);
 
-	const float3 extinction = sigma_a + sigma_s;
+	const float3 sigma_t = sigma_a + sigma_s;
 
-	return attenuation(d, extinction);
+	return attenuation(d, sigma_t);
 }
 
 }

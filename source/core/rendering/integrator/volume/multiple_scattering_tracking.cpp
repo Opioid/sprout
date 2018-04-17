@@ -179,7 +179,7 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Volume&
 
 	if (use_heterogeneous_algorithm) {
 /*		const float d = ray.max_t - ray.min_t;
-		const float max_extinction = math::average(material.max_extinction());
+		const float max_extinction = math::average(material.majorant_sigma_t());
 		bool terminated = false;
 		float t = 0.f;
 
@@ -218,7 +218,7 @@ float3 Multiple_scattering_tracking::transmittance(const Ray& ray, const Volume&
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = material.max_extinction();
+		const float mt = material.majorant_sigma_t();
 		for (;;) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -301,7 +301,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		Transformation temp;
 		const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
-		const float mt = material.max_extinction();
+		const float mt = material.majorant_sigma_t();
 
 		float3 w(1.f);
 

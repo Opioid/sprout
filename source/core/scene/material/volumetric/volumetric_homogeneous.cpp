@@ -25,19 +25,19 @@ float3 Homogeneous::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
 }
 
 void Homogeneous::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
-							 float3& absorption, float3& scattering) const {
-	absorption = absorption_coefficient_;
-	scattering = scattering_coefficient_;
+							 float3& sigma_a, float3& sigma_s) const {
+	sigma_a = absorption_coefficient_;
+	sigma_s = scattering_coefficient_;
 }
 
 void Homogeneous::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
 							 Sampler_filter /*filter*/, const Worker& /*worker*/,
-							 float3& absorption, float3& scattering) const {
-	absorption = absorption_coefficient_;
-	scattering = scattering_coefficient_;
+							 float3& sigma_a, float3& sigma_s) const {
+	sigma_a = absorption_coefficient_;
+	sigma_s = scattering_coefficient_;
 }
 
-float Homogeneous::max_extinction() const {
+float Homogeneous::majorant_sigma_t() const {
 	return math::max_component(absorption_coefficient_ + scattering_coefficient_);
 }
 

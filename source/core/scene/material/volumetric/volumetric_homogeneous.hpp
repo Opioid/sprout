@@ -23,13 +23,13 @@ public:
 							  const Worker& worker) const override final;
 
 	virtual void extinction(float2 uv, Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const override final;
+							float3& sigma_a, float3& sigma_s) const override final;
 
 	virtual void extinction(const Transformation& transformation, const float3& p,
 							Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const override final;
+							float3& sigma_a, float3& sigma_s) const override final;
 
-	virtual float max_extinction() const override final;
+	virtual float majorant_sigma_t() const override final;
 
 	virtual size_t num_bytes() const override final;
 };

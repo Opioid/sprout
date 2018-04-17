@@ -31,7 +31,7 @@ void Grid::compile() {
 	max_extinction_ = max_density * math::max_component(extinction_coefficient);
 }
 
-float Grid::max_extinction() const {
+float Grid::majorant_sigma_t() const {
 	return max_extinction_;
 }
 

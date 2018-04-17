@@ -16,7 +16,7 @@ public:
 
 	virtual void compile() override final;
 
-	virtual float max_extinction() const override final;
+	virtual float majorant_sigma_t() const override final;
 
 	virtual bool  is_heterogeneous_volume() const override final;
 

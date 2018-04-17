@@ -99,7 +99,7 @@ void Material::extinction(const Transformation& /*transformation*/, const float3
 	scattering = float3::identity();
 }
 
-float Material::max_extinction() const {
+float Material::majorant_sigma_t() const {
 	return 0.f;
 }
 
