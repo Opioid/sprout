@@ -38,7 +38,7 @@ public:
 
 	bool intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const;
 
-	bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon, bool& inside) const;
+	bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const;
 
 	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
 

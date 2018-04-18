@@ -49,9 +49,15 @@ public:
 
 	bool intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
+	bool intersect(math::Ray& ray, Node_stack& node_stack) const;
+
 	bool intersect(VVector ray_origin, VVector ray_direction, VVector ray_inv_direction,
 				   VVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
 				   Node_stack& node_stack, Intersection& intersection) const;
+
+	bool intersect(VVector ray_origin, VVector ray_direction, VVector ray_inv_direction,
+				   VVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
+				   Node_stack& node_stack) const;
 
 	bool intersect_p(const math::Ray& ray, Node_stack& node_stack) const;
 

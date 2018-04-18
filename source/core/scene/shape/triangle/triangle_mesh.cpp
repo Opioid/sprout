@@ -136,7 +136,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 }
 
 bool Mesh::intersect(const Transformation& transformation, Ray& ray,
-					 Node_stack& node_stack, float& epsilon, bool& inside) const {
+					 Node_stack& node_stack, float& epsilon) const {
 	const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 	Vector ray_origin = simd::load_float4(ray.origin.v);
 	ray_origin = math::transform_point(world_to_object, ray_origin);
@@ -150,19 +150,11 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 	const Vector ray_min_t = simd::load_float(&ray.min_t);
 		  Vector ray_max_t = simd::load_float(&ray.max_t);
 
-	Intersection pi;
 	if (tree_.intersect(ray_origin, ray_direction, ray_inv_direction,
-						ray_min_t, ray_max_t, ray_signs, node_stack, pi)) {
+						ray_min_t, ray_max_t, ray_signs, node_stack)) {
 		const float tray_max_t = simd::get_x(ray_max_t);
 		ray.max_t = tray_max_t;
-
 		epsilon = 3e-3f * tray_max_t;
-
-		const Vector geo_n = tree_.triangle_normal_v(pi.index);
-		const Vector dv = math::dot3_1(geo_n, ray_direction);
-
-		inside = simd::get_x(dv) >= 0.f;
-
 		return true;
 	}
 

@@ -105,18 +105,29 @@ bool Box::intersect(const Transformation& transformation, Ray& ray,
 }
 
 bool Box::intersect(const Transformation& transformation, Ray& ray,
-					Node_stack& /*node_stack*/, float& epsilon, bool& inside) const {
-	math::Ray tray;
-	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
-	tray.min_t = ray.min_t;
-	tray.max_t = ray.max_t;
+					Node_stack& /*node_stack*/, float& epsilon) const {
+	float3 v = transformation.position - ray.origin;
+	float b = math::dot(v, ray.direction);
+	float radius = transformation.scale[0];
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
-	float hit_t;
-	if (math::AABB(float3(-1.f), float3(1.f)).intersect_p(tray, hit_t, inside)) {
-		ray.max_t = hit_t;
-		epsilon = std::max(1e-5f * hit_t, 1e-5f);
-		return true;
+	if (det > 0.f) {
+		float dist = std::sqrt(det);
+		float t0 = b - dist;
+
+		if (t0 > ray.min_t && t0 < ray.max_t) {
+			ray.max_t = t0;
+			epsilon = 5e-4f * t0;
+			return true;
+		}
+
+		float t1 = b + dist;
+
+		if (t1 > ray.min_t && t1 < ray.max_t) {
+			ray.max_t = t1;
+			epsilon = 5e-4f * t1;
+			return true;
+		}
 	}
 
 	return false;

@@ -32,6 +32,9 @@ public:
 	bool intersect(VVector origin, VVector direction, VVector min_t, Vector& max_t,
 				   uint32_t index, Vector& u, Vector& v) const;
 
+	bool intersect(VVector origin, VVector direction, VVector min_t, Vector& max_t,
+				   uint32_t index) const;
+
 	bool intersect_p(VVector origin, VVector direction, VVector min_t, VVector max_t,
 					 uint32_t index) const;
 

@@ -64,6 +64,17 @@ bool Indexed_data<IV, SV>::intersect(VVector origin, VVector direction, VVector 
 }
 
 template<typename IV, typename SV>
+bool Indexed_data<IV, SV>::intersect(VVector origin, VVector direction, VVector min_t,
+									 Vector& max_t, uint32_t index) const {
+	const auto& tri = triangles_[index];
+	const IV& a = intersection_vertices_[tri.a];
+	const IV& b = intersection_vertices_[tri.b];
+	const IV& c = intersection_vertices_[tri.c];
+
+	return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
+}
+
+template<typename IV, typename SV>
 bool Indexed_data<IV, SV>::intersect_p(VVector origin, VVector direction,
 									   VVector min_t, VVector max_t, uint32_t index) const {
 	const auto& tri = triangles_[index];

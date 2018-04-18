@@ -108,8 +108,54 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 		_mm_store_ss(&ray.max_t, ray_max_t);
 		intersection.u = math::splat_x(u);
 		intersection.v = math::splat_x(v);
-
 		intersection.index = index;
+		return true;
+	}
+
+	return false;
+}
+
+template<typename Data>
+bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack) const {
+	node_stack.push(0xFFFFFFFF);
+	uint32_t n = 0;
+
+	uint32_t index = 0xFFFFFFFF;
+
+	const Vector ray_origin		   = simd::load_float4(ray.origin.v);
+	const Vector ray_direction	   = simd::load_float4(ray.direction.v);
+	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+	const Vector ray_min_t		   = simd::load_float(&ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
+
+	while (0xFFFFFFFF != n) {
+		const auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (0 == node.num_primitives()) {
+				if (0 == ray.signs[node.axis()]) {
+					node_stack.push(node.next());
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.next();
+				}
+
+				continue;
+			}
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
+					index = i;
+				}
+			}
+		}
+
+		n = node_stack.pop();
+	}
+
+	if (index != 0xFFFFFFFF) {
+		_mm_store_ss(&ray.max_t, ray_max_t);
 		return true;
 	}
 
@@ -157,8 +203,49 @@ bool Tree<Data>::intersect(VVector ray_origin, VVector ray_direction, VVector ra
 	if (index != 0xFFFFFFFF) {
 		intersection.u = math::splat_x(u);
 		intersection.v = math::splat_x(v);
-
 		intersection.index = index;
+		return true;
+	}
+
+	return false;
+}
+
+template<typename Data>
+bool Tree<Data>::intersect(VVector ray_origin, VVector ray_direction, VVector ray_inv_direction,
+						   VVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
+						   Node_stack& node_stack) const {
+	node_stack.push(0xFFFFFFFF);
+	uint32_t n = 0;
+
+	uint32_t index = 0xFFFFFFFF;
+
+	while (0xFFFFFFFF != n) {
+		const auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (0 == node.num_primitives()) {
+				if (0 == ray_signs[node.axis()]) {
+					node_stack.push(node.next());
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.next();
+				}
+
+				continue;
+			}
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
+					index = i;
+				}
+			}
+		}
+
+		n = node_stack.pop();
+	}
+
+	if (index != 0xFFFFFFFF) {
 		return true;
 	}
 

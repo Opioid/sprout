@@ -61,8 +61,37 @@ bool Rectangle::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Rectangle::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
-						  Node_stack& /*node_stack*/, float& /*epsilon*/, bool& /*inside*/) const {
+bool Rectangle::intersect(const Transformation& transformation, Ray& ray,
+						  Node_stack& /*node_stack*/, float& epsilon) const {
+	const float3& normal = transformation.rotation.r[2];
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
+		float3 k = p - transformation.position;
+
+		float3 t = -transformation.rotation.r[0];
+
+		float u = math::dot(t, k / transformation.scale[0]);
+		if (u > 1.f || u < -1.f) {
+			return false;
+		}
+
+		float3 b = -transformation.rotation.r[1];
+
+		float v = math::dot(b, k / transformation.scale[1]);
+		if (v > 1.f || v < -1.f) {
+			return false;
+		}
+
+		ray.max_t = hit_t;
+		epsilon = 5e-4f * hit_t;
+		return true;
+	}
+
 	return false;
 }
 

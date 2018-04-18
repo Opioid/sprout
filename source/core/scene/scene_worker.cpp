@@ -47,8 +47,7 @@ bool Worker::intersect(const prop::Prop* prop, Ray& ray, Intersection& intersect
 }
 
 bool Worker::intersect(const prop::Prop* prop, Ray& ray, float& epsilon) const {
-	bool inside;
-	return prop->intersect(ray, node_stack_, epsilon, inside);
+	return prop->intersect(ray, node_stack_, epsilon);
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter) {

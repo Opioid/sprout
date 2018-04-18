@@ -78,9 +78,20 @@ bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Morphable_mesh::intersect(const Transformation& /*transformation*/,
-							   Ray& /*ray*/, Node_stack& /*node_stack*/,
-							   float& /*epsilon*/, bool& /*inside*/) const {
+bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
+							   Node_stack& node_stack, float& epsilon) const {
+	math::Ray tray;
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+	tray.min_t = ray.min_t;
+	tray.max_t = ray.max_t;
+
+	if (tree_.intersect(tray, node_stack)) {
+		ray.max_t = tray.max_t;
+		epsilon = 3e-3f * tray.max_t;
+		return true;
+	}
+
 	return false;
 }
 

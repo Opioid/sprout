@@ -27,9 +27,8 @@ public:
 	virtual bool intersect(const Transformation& transformation, Ray& ray, Node_stack& node_stack,
 						   shape::Intersection& intersection) const override final;
 
-	virtual bool intersect(const Transformation& transformation,
-						   Ray& ray, Node_stack& node_stack,
-						   float& epsilon, bool& inside) const override final;
+	virtual bool intersect(const Transformation& transformation, Ray& ray,
+						   Node_stack& node_stack, float& epsilon) const override final;
 
 	virtual bool intersect_p(const Transformation& transformation, const Ray& ray,
 							 Node_stack& node_stack) const override final;

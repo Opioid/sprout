@@ -45,8 +45,20 @@ bool Plane::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Plane::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
-					  Node_stack& /*node_stack*/, float& /*epsilon*/, bool& /*inside*/) const {
+bool Plane::intersect(const Transformation& transformation, Ray& ray,
+					  Node_stack& /*node_stack*/, float& epsilon) const {
+	const float3& normal = transformation.rotation.r[2];
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		ray.max_t = hit_t;
+		epsilon = 5e-4f * hit_t;
+		return true;
+	}
+
 	return false;
 }
 
