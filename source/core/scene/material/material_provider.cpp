@@ -1072,14 +1072,14 @@ Material_ptr Provider::load_volumetric(const json::Value& volumetric_value,
 	scattering_color = use_scattering_color ? scattering_color : color;
 
 	if (density_map.is_valid()) {
-//		auto material = std::make_shared<volumetric::Grid>(sampler_settings, density_map);
-//		material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
-//		material->set_anisotropy(anisotropy);
-//		return material;
-
-
-		auto material = std::make_shared<volumetric::Flow_vis_grid>(sampler_settings, density_map);
+		auto material = std::make_shared<volumetric::Grid>(sampler_settings, density_map);
+		material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+		material->set_anisotropy(anisotropy);
 		return material;
+
+
+//		auto material = std::make_shared<volumetric::Flow_vis_grid>(sampler_settings, density_map);
+//		return material;
 
 	} else if (emission_map.is_valid()) {
 		auto material = std::make_shared<volumetric::Emission_grid>(sampler_settings, emission_map);

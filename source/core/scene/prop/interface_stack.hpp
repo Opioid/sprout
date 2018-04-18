@@ -16,6 +16,8 @@ class Prop;
 struct Interface {
 	const material::Material* material() const;
 
+	bool matches(const Intersection& intersection) const;
+
 	const Prop* prop;
 	float2		uv;
 	uint32_t	part;
@@ -33,7 +35,10 @@ public:
 
 	const Interface* top() const;
 
+	float top_ior() const;
+
 	void push(const Intersection& intersection);
+	void remove(const Intersection& intersection);
 	void pop();
 
 private:

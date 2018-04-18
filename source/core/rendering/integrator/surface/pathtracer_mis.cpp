@@ -154,7 +154,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (intersection.same_hemisphere(sample_result.wi)) {
-				worker.interface_stack().pop();
+			//	worker.interface_stack().pop();
+				worker.interface_stack().remove(intersection);
 			} else {
 				worker.interface_stack().push(intersection);
 			}
