@@ -71,7 +71,7 @@ bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 										 *this, li, transmittance, weight);
 }
 
-float3 Worker::transmittance(const Ray& ray) const {
+float3 Worker::transmittance(const Ray& ray) {
 	float3 transmittance(1.f);
 
 	interface_stack_temp_ = interface_stack_;
@@ -102,7 +102,7 @@ float3 Worker::transmittance(const Ray& ray) const {
 		}
 
 		if (intersection.same_hemisphere(ray.direction)) {
-			interface_stack_.pop();
+			interface_stack_.remove(intersection);
 		} else {
 			interface_stack_.push(intersection);
 		}
@@ -117,7 +117,7 @@ float3 Worker::transmittance(const Ray& ray) const {
 }
 
 
-float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
+float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) {
 	return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
 }
 
@@ -144,6 +144,19 @@ float3 Worker::tinted_visibility(Ray& ray, const Intersection& intersection,
 
 sampler::Sampler* Worker::sampler() {
 	return sampler_;
+}
+
+scene::prop::Interface_stack& Worker::interface_stack() {
+	return interface_stack_;
+}
+
+void Worker::interface_change(const float3& dir, const Intersection& intersection) {
+	if (intersection.same_hemisphere(dir)) {
+		interface_stack_.remove(intersection);
+	} else if (interface_stack_.top_ior() == 1.f
+		   ||  intersection.material()->ior() > 1.f) {
+		interface_stack_.push(intersection);
+	}
 }
 
 }

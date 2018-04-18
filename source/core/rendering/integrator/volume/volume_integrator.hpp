@@ -17,7 +17,7 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float3 transmittance(const Ray& ray, const Worker& worker) = 0;
+	virtual float3 transmittance(const Ray& ray, Worker& worker) = 0;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,

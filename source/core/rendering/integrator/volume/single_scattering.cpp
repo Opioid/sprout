@@ -112,7 +112,7 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	return color;
 }
 */
-float3 Single_scattering::transmittance(const Ray& ray, const Worker& worker) {
+float3 Single_scattering::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 

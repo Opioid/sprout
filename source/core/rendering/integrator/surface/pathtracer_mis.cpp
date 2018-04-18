@@ -153,12 +153,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			if (intersection.same_hemisphere(sample_result.wi)) {
-			//	worker.interface_stack().pop();
-				worker.interface_stack().remove(intersection);
-			} else {
-				worker.interface_stack().push(intersection);
-			}
+			worker.interface_change(sample_result.wi, intersection);
 		}
 
 		if (!worker.interface_stack().empty()) {

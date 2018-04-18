@@ -162,7 +162,7 @@ static inline void avg_history_probabilities(float mt,
 	wn = (sigma_n / (mt * pn));
 }
 
-float3 Single_scattering_tracking::transmittance(const Ray& ray, const Worker& worker) {
+float3 Single_scattering_tracking::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 

@@ -16,7 +16,7 @@ namespace rendering::integrator::volume {
 // Code for hetereogeneous transmittance from:
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
-float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, const Worker& worker) {
+float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, Worker& worker) {
 	SOFT_ASSERT(!worker.interface_stack().empty());
 
 	const auto interface = worker.interface_stack().top();

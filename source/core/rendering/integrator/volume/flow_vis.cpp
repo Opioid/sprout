@@ -26,7 +26,7 @@ void Flow_vis::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per
 
 void Flow_vis::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Flow_vis::transmittance(const Ray& /*ray*/, const Worker& /*worker*/) {
+float3 Flow_vis::transmittance(const Ray& /*ray*/, Worker& /*worker*/) {
 	return float3(1.f);
 }
 

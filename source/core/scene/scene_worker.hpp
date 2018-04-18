@@ -3,7 +3,6 @@
 
 #include "material/material_sample_cache.hpp"
 #include "material/sampler_cache.hpp"
-#include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
 #include "take/take_settings.hpp"
 #include "base/math/vector.hpp"
@@ -55,8 +54,6 @@ public:
 
 	shape::Node_stack& node_stack() const;
 
-	prop::Interface_stack& interface_stack() const;
-
 	material::Sample_cache& sample_cache() const;
 
 	template<typename T> T& sample() const;
@@ -78,9 +75,6 @@ protected:
 	const Scene* scene_;
 
 	mutable shape::Node_stack node_stack_;
-
-	mutable prop::Interface_stack interface_stack_;
-	mutable prop::Interface_stack interface_stack_temp_;
 
 	mutable material::Sample_cache  sample_cache_;
 	const   material::Sampler_cache sampler_cache_;

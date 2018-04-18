@@ -47,7 +47,7 @@ float3 Aerial_perspective::li(const Ray& ray, const Volume& volume,
 }
 */
 
-float3 Aerial_perspective::transmittance(const Ray& ray, const Worker& worker) {
+float3 Aerial_perspective::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 

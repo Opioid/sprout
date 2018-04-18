@@ -43,9 +43,9 @@ public:
 
 private:
 
-	static constexpr uint32_t Num_entries = 16;
+	static constexpr int32_t Num_entries = 16;
 
-	uint32_t index_;
+	int32_t index_;
 	Interface stack_[Num_entries];
 };
 

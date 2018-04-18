@@ -25,7 +25,7 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, const Worker& worker) override final;
+	virtual float3 transmittance(const Ray& ray, Worker& worker) override final;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,

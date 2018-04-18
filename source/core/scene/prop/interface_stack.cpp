@@ -2,6 +2,8 @@
 #include "prop.hpp"
 #include "prop_intersection.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace scene::prop {
 
 const material::Material* Interface::material() const {
@@ -52,21 +54,16 @@ void Interface_stack::push(const Intersection& intersection) {
 }
 
 void Interface_stack::remove(const Intersection& intersection) {
-	if (index_ > 0) {
-	//	--index_;
-
-		if (stack_[index_ - 1].matches(intersection)) {
-			--index_;
-		} else if (index_ > 1) {
-			if (stack_[index_ - 2].matches(intersection)) {
-				stack_[index_ - 2] = stack_[index_ - 1];
-				--index_;
+	const int32_t back = index_ - 1;
+	for (int32_t i = back; i >= 0; --i) {
+		if (stack_[i].matches(intersection)) {
+			for (int32_t j = i; j < back; ++j) {
+				stack_[j] = stack_[j + 1];
 			}
-		} else {
-			pop();
+
+			--index_;
+			return;
 		}
-
-
 	}
 }
 

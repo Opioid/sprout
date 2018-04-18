@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_WORKER_HPP
 
 #include "scene/scene_worker.hpp"
+#include "scene/prop/interface_stack.hpp"
 
 namespace sampler {
 
@@ -53,19 +54,26 @@ public:
 	bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 				float3& li, float3& transmittance, float3& weight);
 
-	float3 transmittance(const Ray& ray) const;
+	float3 transmittance(const Ray& ray);
 
-	float3 tinted_visibility(const Ray& ray, Sampler_filter filter) const;
+	float3 tinted_visibility(const Ray& ray, Sampler_filter filter);
 
 	float3 tinted_visibility(Ray& ray, const Intersection& intersection, Sampler_filter filter);
 
 	sampler::Sampler* sampler();
+
+	scene::prop::Interface_stack& interface_stack();
+
+	void interface_change(const float3& dir, const Intersection& intersection);
 
 protected:
 
 	integrator::surface::Integrator* surface_integrator_ = nullptr;
 	integrator::volume::Integrator*  volume_integrator_  = nullptr;
 	sampler::Sampler* sampler_ = nullptr;
+
+	scene::prop::Interface_stack interface_stack_;
+	scene::prop::Interface_stack interface_stack_temp_;
 };
 
 }
