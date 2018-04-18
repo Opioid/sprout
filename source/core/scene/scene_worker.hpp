@@ -39,8 +39,8 @@ public:
 	uint32_t id() const;
 
 	bool intersect(Ray& ray, Intersection& intersection) const;
+	bool intersect(Ray& ray, float& epsilon) const;
 	bool intersect(const prop::Prop* prop, Ray& ray, Intersection& intersection) const;
-	bool intersect(const prop::Prop* prop, Ray& ray, float& epsilon) const;
 
 	bool resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter);
 

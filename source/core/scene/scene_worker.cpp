@@ -37,6 +37,11 @@ bool Worker::intersect(Ray& ray, Intersection& intersection) const {
 	return scene_->intersect(ray, node_stack_, intersection);
 }
 
+
+bool Worker::intersect(Ray& ray, float& epsilon) const {
+	return scene_->intersect(ray, node_stack_, epsilon);
+}
+
 bool Worker::intersect(const prop::Prop* prop, Ray& ray, Intersection& intersection) const {
 	const bool hit = prop->intersect(ray, node_stack_, intersection.geo);
 	if (hit) {
@@ -44,10 +49,6 @@ bool Worker::intersect(const prop::Prop* prop, Ray& ray, Intersection& intersect
 	}
 
 	return hit;
-}
-
-bool Worker::intersect(const prop::Prop* prop, Ray& ray, float& epsilon) const {
-	return prop->intersect(ray, node_stack_, epsilon);
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter) {

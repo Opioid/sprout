@@ -69,6 +69,8 @@ public:
 
 	bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
 
+	bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const;
+
 	bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
 
 	bool intersect_p(const Ray& ray, Node_stack& node_stack) const;
