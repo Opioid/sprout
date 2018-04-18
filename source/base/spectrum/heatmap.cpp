@@ -1,5 +1,6 @@
 #include "heatmap.hpp"
 #include "math/vector3.inl"
+#include <iterator>
 
 namespace spectrum {
 
