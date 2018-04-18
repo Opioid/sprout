@@ -5,6 +5,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"
 #include "base/random/generator.inl"
+#include "base/spectrum/heatmap.hpp"
 #include "base/spectrum/rgb.hpp"
 
 #include <iostream>
@@ -184,27 +185,9 @@ float3 Flow_vis_grid::emission(const float3& p, Sampler_filter filter, const Wor
 
 	const auto& sampler = worker.sampler_3D(sampler_key(), filter);
 
-	const float density = 2.f * grid_.sample_1(sampler, p_g);
+	const float density = std::min(2.f * grid_.sample_1(sampler, p_g), 1.f);
 
-	if (density > 0.88) {
-		return float3(1.f, 1.f, 0.f);
-	} else if (density > 0.76f) {
-		return float3(1.f, 0.5f, 0.f);
-	} else if (density > 0.64f) {
-		return float3(1.f, 0.f, 0.f);
-	} else if (density > 0.52f) {
-		return float3(0.5f, 0.f, 0.f);
-	} else if (density > 0.4f) {
-		return float3(0.f, 1.f, 0.f);
-	} else if (density > 0.28f) {
-		return float3(0.f, 0.5f, 0.f);
-	} else if (density > 0.16f) {
-		return float3(0.f, 0.f, 1.f);
-	} else if (density > 0.04f) {
-		return float3(0.f, 0.f, 0.5f);
-	}
-
-	return float3(0.f);
+	return spectrum::heatmap(density);
 }
 
 }

@@ -51,7 +51,7 @@ bool Flow_vis::integrate(Ray& ray, Intersection& intersection,
 	transmittance = float3(1.f);
 	weight = float3(1.);
 
-	return false;
+	return true;
 }
 
 size_t Flow_vis::num_bytes() const {
