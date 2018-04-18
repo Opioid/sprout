@@ -8,6 +8,8 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "base/spectrum/heatmap.hpp"
+#include "base/spectrum/rgb.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -47,8 +49,17 @@ bool Flow_vis::integrate(Ray& ray, Intersection& intersection,
 	Transformation temp;
 	const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
-	li = material.emission(transformation, ray, 0.01f, rng_, filter, worker);
-	transmittance = float3(1.f);
+	const float3 fv = material.emission(transformation, ray, 0.01f, rng_, filter, worker);
+	const float a = 8.f * math::average(fv);
+	const float opacity = std::min(a * a, 1.f);
+	transmittance = float3(1.f);//float3(1.f  - opacity);
+	li = fv;
+
+//	const float3 fv = material.emission(transformation, ray, 0.01f, rng_, filter, worker);
+//	const float luminance = std::min(16.f * math::average(li), 1.f);
+//	transmittance = math::saturate(float3(1.f - 4.f * fv));
+//	li = float3(0.);
+
 	weight = float3(1.);
 
 	return true;

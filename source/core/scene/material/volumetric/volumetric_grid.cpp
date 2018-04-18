@@ -6,7 +6,6 @@
 #include "base/math/ray.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/heatmap.hpp"
-#include "base/spectrum/rgb.hpp"
 
 #include <iostream>
 
@@ -124,8 +123,6 @@ float3 Flow_vis_grid::emission(const Transformation& transformation, const math:
 
 	return step_size * 8.f * emission;
 
-
-
 /*
 	float density = 0.f;
 
@@ -137,28 +134,9 @@ float3 Flow_vis_grid::emission(const Transformation& transformation, const math:
 		density += Flow_vis_grid::density(p_o, filter, worker);
 	}
 
-	density *= 48.f * step_size;
+	density *= std::min(48.f * step_size, 1.f);
 
-
-	if (density > 0.88) {
-		return float3(1.f, 1.f, 0.f);
-	} else if (density > 0.76f) {
-		return float3(1.f, 0.5f, 0.f);
-	} else if (density > 0.64f) {
-		return float3(1.f, 0.f, 0.f);
-	} else if (density > 0.52f) {
-		return float3(0.5f, 0.f, 0.f);
-	} else if (density > 0.4f) {
-		return float3(0.f, 1.f, 0.f);
-	} else if (density > 0.28f) {
-		return float3(0.f, 0.5f, 0.f);
-	} else if (density > 0.16f) {
-		return float3(0.f, 0.f, 1.f);
-	} else if (density > 0.04f) {
-		return float3(0.f, 0.f, 0.5f);
-	}
-
-	return float3(0.f);
+	return spectrum::heatmap(density);
 	*/
 }
 
