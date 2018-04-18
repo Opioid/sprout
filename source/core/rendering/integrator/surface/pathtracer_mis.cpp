@@ -175,7 +175,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
-		if (!was_was_subsurface && material_sample.ior_greater_one()) {
+		if (!was_was_subsurface) {
 			float3 radiance;
 			const bool pure_emissive = evaluate_light(ray, intersection, sample_result,
 													  treat_as_singular, is_translucent,

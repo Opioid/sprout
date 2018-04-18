@@ -276,15 +276,20 @@ bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	const float b = math::dot(axis, dir);
 	const float det = (b * b) - axis_squared_length + radius_square;
-	const float dist = std::sqrt(det);
-	const float t = b - dist;
 
-	sample.wi = dir;
-	sample.pdf = pdf;
-	sample.t = t;
-	sample.epsilon = 5e-4f * t;
+	if (det > 0.f) {
+		const float dist = std::sqrt(det);
+		const float t = b - dist;
 
-	return true;
+		sample.wi = dir;
+		sample.pdf = pdf;
+		sample.t = t;
+		sample.epsilon = 5e-4f * t;
+
+		return true;
+	}
+
+	return false;
 }
 
 float Sphere::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
@@ -332,6 +337,7 @@ bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation, con
 	sample.t  = d;
 	// sin_theta because of the uv weight
 	sample.pdf = sl / (c * area * sin_theta);
+	sample.epsilon = 5e-4f * d;
 
 	return true;
 }

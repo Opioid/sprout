@@ -79,7 +79,7 @@ float3 Worker::transmittance(const Ray& ray) {
 	// This is the typical SSS case:
 	// A medium is on the stack but we already considered it during shadow calculation,
 	// igonoring the IoR. Therefore remove the medium from the stack.
-	if (!interface_stack_.empty() && interface_stack_.top()->material()->ior() > 1.f) {
+	if (interface_stack_.top_ior() > 1.f) {
 		interface_stack_.pop();
 	}
 
