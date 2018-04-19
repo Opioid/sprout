@@ -75,29 +75,6 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (0.f == sample_result.pdf) {
 			break;
 		}
-/*
-		if (!was_subsurface) {
-			const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
-															  Bxdf_type::Transmission);
-
-			if (singular) {
-				if (material_sample.ior_greater_one()) {
-					if (settings_.disable_caustics && !ray.is_primary()) {
-						break;
-					}
-					treat_as_singular = true;
-				} else {
-					treat_as_singular = ray.is_primary();
-				}
-			} else {
-				ray.set_primary(false);
-				filter = Sampler_filter::Nearest;
-				treat_as_singular = false;
-			}
-		}
-
-		was_subsurface = intersection.geo.subsurface;
-		*/
 
 		const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
 														  Bxdf_type::Transmission);
