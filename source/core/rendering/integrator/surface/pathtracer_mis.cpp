@@ -17,6 +17,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
@@ -72,8 +74,6 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
-	bool treat_as_singular = ray.is_primary();
-
 	float3 throughput(1.f);
 	float3 result(0.f);
 
@@ -112,20 +112,14 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 														  Bxdf_type::Transmission);
 
 		if (singular) {
-			if (material_sample.ior_greater_one()) {
-				if (settings_.disable_caustics && !ray.is_primary()
-				&&  worker.interface_stack().top_ior() == 1.f) {
-					break;
-				}
-
-				treat_as_singular = true;
-			} else {
-				treat_as_singular = ray.is_primary();
+			if (settings_.disable_caustics && !ray.is_primary()
+			&&  material_sample.ior_greater_one()
+			&&  worker.interface_stack().top_ior() == 1.f) {
+				break;
 			}
 		} else {
 			ray.set_primary(false);
 			filter = Sampler_filter::Nearest;
-			treat_as_singular = false;
 		}
 
 		const bool was_subsurface = !worker.interface_stack().empty();
@@ -172,10 +166,10 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
-		if (!was_subsurface || treat_as_singular) {
+		if (!was_subsurface || ray.is_primary()) {
 			float3 radiance;
 			const bool pure_emissive = evaluate_light(ray, intersection, sample_result,
-													  treat_as_singular, is_translucent,
+													  singular, is_translucent,
 													  filter, worker, radiance);
 
 			result += throughput * radiance;

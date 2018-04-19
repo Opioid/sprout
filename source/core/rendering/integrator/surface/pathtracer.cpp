@@ -83,16 +83,14 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 														  Bxdf_type::Transmission);
 
 		if (singular) {
-			if (material_sample.ior_greater_one()) {
-				if (settings_.disable_caustics && !ray.is_primary()
-				&&  worker.interface_stack().top_ior() == 1.f) {
-					break;
-				}
+			if (settings_.disable_caustics && !ray.is_primary()
+			&&  material_sample.ior_greater_one()
+			&&  worker.interface_stack().top_ior() == 1.f) {
+				break;
 			}
 		} else {
 			ray.set_primary(false);
 			filter = Sampler_filter::Nearest;
-
 		}
 
 		throughput *= sample_result.reflection / sample_result.pdf;

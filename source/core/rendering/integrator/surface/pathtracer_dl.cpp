@@ -75,7 +75,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (0.f == sample_result.pdf) {
 			break;
 		}
-
+/*
 		if (!was_subsurface) {
 			const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
 															  Bxdf_type::Transmission);
@@ -97,6 +97,23 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		was_subsurface = intersection.geo.subsurface;
+		*/
+
+		const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
+														  Bxdf_type::Transmission);
+
+		if (singular) {
+			if (settings_.disable_caustics && !ray.is_primary()
+			&&  material_sample.ior_greater_one()
+			&&  worker.interface_stack().top_ior() == 1.f) {
+				break;
+			}
+		} else {
+			ray.set_primary(false);
+			filter = Sampler_filter::Nearest;
+		}
+
+		treat_as_singular = singular && (worker.interface_stack().empty() || ray.is_primary());
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
