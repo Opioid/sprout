@@ -38,7 +38,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
-	bool requires_bounce = ray.is_primary();
+	bool treat_as_singular = ray.is_primary();
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -49,7 +49,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
-		if (requires_bounce && material_sample.same_hemisphere(wo)) {
+		if (treat_as_singular && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -85,14 +85,14 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 					if (settings_.disable_caustics && !ray.is_primary()) {
 						break;
 					}
-					requires_bounce = true;
+					treat_as_singular = true;
 				} else {
-					requires_bounce = ray.is_primary();
+					treat_as_singular = ray.is_primary();
 				}
 			} else {
 				ray.set_primary(false);
 				filter = Sampler_filter::Nearest;
-				requires_bounce = false;
+				treat_as_singular = false;
 			}
 		}
 

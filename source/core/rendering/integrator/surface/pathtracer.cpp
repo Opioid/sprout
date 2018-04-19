@@ -50,8 +50,6 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 throughput(1.f);
 	float3 result(0.f);
 
-	bool was_subsurface = false;
-
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
@@ -81,21 +79,21 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		if (!was_subsurface) {
-			const bool requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
-																	 Bxdf_type::Transmission);
-			if (requires_bounce) {
-				if (settings_.disable_caustics
-				&&  material_sample.ior_greater_one() && !ray.is_primary()) {
+		const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
+														  Bxdf_type::Transmission);
+
+		if (singular) {
+			if (material_sample.ior_greater_one()) {
+				if (settings_.disable_caustics && !ray.is_primary()
+				&&  worker.interface_stack().top_ior() == 1.f) {
 					break;
 				}
-			} else {
-				ray.set_primary(false);
-				filter = Sampler_filter::Nearest;
 			}
-		}
+		} else {
+			ray.set_primary(false);
+			filter = Sampler_filter::Nearest;
 
-		was_subsurface = intersection.geo.subsurface;
+		}
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 

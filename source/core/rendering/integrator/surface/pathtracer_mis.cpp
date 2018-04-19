@@ -74,8 +74,6 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 	bool treat_as_singular = ray.is_primary();
 
-	bool was_subsurface = false;
-
 	float3 throughput(1.f);
 	float3 result(0.f);
 
@@ -110,28 +108,27 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			break;
 		}
 
-		if (!was_subsurface) {
-			const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
-															  Bxdf_type::Transmission);
+		const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
+														  Bxdf_type::Transmission);
 
-			if (singular) {
-				if (material_sample.ior_greater_one()) {
-					if (settings_.disable_caustics && !ray.is_primary()) {
-						break;
-					}
-					treat_as_singular = true;
-				} else {
-					treat_as_singular = ray.is_primary();
+		if (singular) {
+			if (material_sample.ior_greater_one()) {
+				if (settings_.disable_caustics && !ray.is_primary()
+				&&  worker.interface_stack().top_ior() == 1.f) {
+					break;
 				}
+
+				treat_as_singular = true;
 			} else {
-				ray.set_primary(false);
-				filter = Sampler_filter::Nearest;
-				treat_as_singular = false;
+				treat_as_singular = ray.is_primary();
 			}
+		} else {
+			ray.set_primary(false);
+			filter = Sampler_filter::Nearest;
+			treat_as_singular = false;
 		}
 
-		const bool was_was_subsurface = was_subsurface;
-		was_subsurface = intersection.geo.subsurface;
+		const bool was_subsurface = !worker.interface_stack().empty();
 
 		const bool is_translucent = material_sample.is_translucent();
 
@@ -175,7 +172,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
-		if (!was_was_subsurface) {
+		if (!was_subsurface || treat_as_singular) {
 			float3 radiance;
 			const bool pure_emissive = evaluate_light(ray, intersection, sample_result,
 													  treat_as_singular, is_translucent,
@@ -227,7 +224,7 @@ float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersect
 		return result;
 	}
 
-	const bool do_mis = !intersection.geo.subsurface;
+	const bool do_mis = worker.interface_stack().empty();
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
