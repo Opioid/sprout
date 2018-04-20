@@ -74,6 +74,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 											 : Sampler_filter::Nearest;
 	Bxdf_sample sample_result;
 
+	bool treat_as_singular = true;
+
 	float3 throughput(1.f);
 	float3 result(0.f);
 
@@ -98,6 +100,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
+		const float previous_bxdf_pdf = sample_result.pdf;
+
 		// Material BSDF importance sample
 		material_sample.sample(material_sampler(ray.depth), sample_result);
 
@@ -114,12 +118,15 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			&&  worker.interface_stack().top_ior() == 1.f) {
 				break;
 			}
+
+			if (material_sample.ior_greater_one()) {
+				treat_as_singular = true;
+			}
 		} else {
 			ray.set_primary(false);
 			filter = Sampler_filter::Nearest;
+			treat_as_singular = false;
 		}
-
-		const bool was_subsurface = !worker.interface_stack().empty();
 
 		const bool is_translucent = material_sample.is_translucent();
 
@@ -163,10 +170,14 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
-		if (!was_subsurface || ray.is_primary()) {
+		if (!material_sample.ior_greater_one() && !treat_as_singular) {
+			sample_result.pdf = previous_bxdf_pdf;
+		}
+
+		if (worker.interface_stack().top_ior() == 1.f || treat_as_singular) {
 			bool pure_emissive;
 			const float3 radiance = evaluate_light(ray, intersection, sample_result,
-												   singular, is_translucent, filter,
+												   treat_as_singular, is_translucent, filter,
 												   worker, pure_emissive);
 
 			result += throughput * radiance;
@@ -176,11 +187,11 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			}
 		}
 
-		if (i >= max_bounces - 1) {
+		if (ray.depth >= max_bounces - 1) {
 			break;
 		}
 
-		if (i > settings_.min_bounces) {
+		if (ray.depth > settings_.min_bounces) {
 			const float q = std::max(spectrum::luminance(throughput),
 									 settings_.path_continuation_probability);
 			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
@@ -215,7 +226,7 @@ float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersect
 		return result;
 	}
 
-	const bool do_mis = worker.interface_stack().empty();
+	const bool do_mis = worker.interface_stack().top_ior() == 1.f;
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
@@ -326,7 +337,15 @@ float3 Pathtracer_MIS::evaluate_light(const Ray& ray, const Intersection& inters
 
 		const float weight = power_heuristic(sample_result.pdf, light_pdf);
 
-		return weight * ls_energy;
+		const float3 radiance = weight * ls_energy;
+
+	//	SOFT_ASSERT(math::all_finite_and_positive(radiance));
+
+		if (!math::all_finite_and_positive(radiance)) {
+			std::cout << sample_result.pdf << std::endl;
+		}
+
+		return radiance;
 	}
 
 	return float3::identity();

@@ -57,11 +57,11 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		result += throughput * direct_light(ray, intersection, material_sample, filter, worker);
 
-		if (i >= settings_.max_bounces - 1) {
+		if (ray.depth >= settings_.max_bounces - 1) {
 			break;
 		}
 
-		if (i > settings_.min_bounces) {
+		if (ray.depth > settings_.min_bounces) {
 			const float q = std::max(spectrum::luminance(throughput),
 									 settings_.path_continuation_probability);
 			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
@@ -83,12 +83,15 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			&&  worker.interface_stack().top_ior() == 1.f) {
 				break;
 			}
+
+			if (material_sample.ior_greater_one()) {
+				treat_as_singular = true;
+			}
 		} else {
 			ray.set_primary(false);
 			filter = Sampler_filter::Nearest;
+			treat_as_singular = false;
 		}
-
-		treat_as_singular = singular && (worker.interface_stack().empty() || ray.is_primary());
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 

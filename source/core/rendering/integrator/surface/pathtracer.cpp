@@ -58,7 +58,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			result += throughput * material_sample.radiance();
 		}
 
-		if (i >= settings_.max_bounces) {
+		if (ray.depth >= settings_.max_bounces) {
 			break;
 		}
 
@@ -66,7 +66,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		if (i > settings_.min_bounces) {
+		if (ray.depth > settings_.min_bounces) {
 			const float q = std::max(spectrum::luminance(throughput),
 									 settings_.path_continuation_probability);
 			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {

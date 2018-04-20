@@ -168,6 +168,7 @@ static inline void avg_history_probabilities(float mt,
 }
 
 float3 Multiple_scattering_tracking::transmittance(const Ray& ray, Worker& worker) {
+//	return float3(1.f);
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
@@ -180,6 +181,11 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		weight = float3(1.f);
 		return false;
 	}
+
+//	li = float3(0.f);
+//	transmittance = float3(1.f);
+//	weight = float3(1.f);
+//	return true;
 
 	SOFT_ASSERT(!worker.interface_stack().empty());
 
