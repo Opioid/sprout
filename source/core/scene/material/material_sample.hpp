@@ -42,8 +42,6 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const = 0;
 
-	virtual float3 absorption_coefficient() const;
-
 	virtual float3 radiance() const;
 
 	virtual bool is_pure_emissive() const;
@@ -51,8 +49,6 @@ public:
 	virtual bool is_transmissive() const;
 
 	virtual bool is_translucent() const;
-
-	virtual bool is_sss() const;
 
 	virtual bool ior_greater_one() const;
 

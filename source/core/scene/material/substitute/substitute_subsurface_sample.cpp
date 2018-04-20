@@ -52,10 +52,6 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 	result.wavelength = 0.f;
 }
 
-float3 Sample_subsurface::absorption_coefficient() const {
-	return float3(0.f);
-}
-
 void Sample_subsurface::set(float anisotropy, const IOR& ior) {
 	anisotropy_ = anisotropy;
 	ior_ = ior;

@@ -55,10 +55,6 @@ inline float3 Sample::radiance() const {
 	return float3::identity();
 }
 
-inline float3 Sample::absorption_coefficient() const {
-	return float3::identity();
-}
-
 inline bool Sample::is_pure_emissive() const {
 	return false;
 }
@@ -68,10 +64,6 @@ inline bool Sample::is_transmissive() const {
 }
 
 inline bool Sample::is_translucent() const {
-	return false;
-}
-
-inline bool Sample::is_sss() const {
 	return false;
 }
 

@@ -15,8 +15,6 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-	virtual float3 absorption_coefficient() const override final;
-
 	virtual bool is_transmissive() const override final;
 
 	struct IOR {

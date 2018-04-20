@@ -20,10 +20,6 @@ bxdf::Result Sample_thin::evaluate(const float3& /*wi*/) const {
 	return { float3::identity(), 0.f };
 }
 
-float3 Sample_thin::absorption_coefficient() const {
-	return layer_.absorption_coefficient_;
-}
-
 void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float p = sampler.generate_sample_1D();
 

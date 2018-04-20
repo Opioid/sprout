@@ -79,10 +79,6 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 	result.wavelength = 0.f;
 }
 
-float3 Sample_rough::absorption_coefficient() const {
-	return layer_.absorption_coefficient_;
-}
-
 bool Sample_rough::is_transmissive() const {
 	return true;
 }
