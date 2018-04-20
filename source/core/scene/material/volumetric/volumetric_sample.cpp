@@ -33,7 +33,7 @@ bool Sample::is_translucent() const {
 }
 
 void Sample::set(float anisotropy) {
-	layer_.anisotropy = std::clamp(anisotropy, -0.999f, 0.999f);
+	layer_.anisotropy = anisotropy;
 }
 
 float Sample::Layer::phase(const float3& wo, const float3& wi) const {

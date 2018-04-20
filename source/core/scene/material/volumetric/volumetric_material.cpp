@@ -44,7 +44,7 @@ void Material::set_attenuation(const float3& absorption_color, const float3& sca
 }
 
 void Material::set_anisotropy(float anisotropy) {
-	anisotropy_ = anisotropy;
+	anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
 size_t Material::sample_size() {

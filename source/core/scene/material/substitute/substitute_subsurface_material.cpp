@@ -79,7 +79,7 @@ void Material_subsurface::set_attenuation(const float3& absorption_color,
 }
 
 void Material_subsurface::set_volumetric_anisotropy(float anisotropy) {
-	anisotropy_ = anisotropy;
+	anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
 void Material_subsurface::set_ior(float ior, float external_ior) {
