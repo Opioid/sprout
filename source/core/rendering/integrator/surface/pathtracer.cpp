@@ -58,11 +58,11 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			result += throughput * material_sample.radiance();
 		}
 
-		if (ray.depth >= settings_.max_bounces) {
+		if (material_sample.is_pure_emissive()) {
 			break;
 		}
 
-		if (material_sample.is_pure_emissive()) {
+		if (ray.depth >= settings_.max_bounces) {
 			break;
 		}
 

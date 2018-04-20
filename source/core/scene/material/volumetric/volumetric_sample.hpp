@@ -15,12 +15,9 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-	virtual BSSRDF bssrdf() const override final;
-
 	virtual bool is_translucent() const override final;
 
-	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
-			 float anisotropy);
+	void set(float anisotropy);
 
 public:
 
@@ -29,7 +26,7 @@ public:
 
 		float sample(const float3& wo, float2 r2, float3& wi) const;
 
-		BSSRDF bssrdf;
+		float anisotropy;
 	};
 
 	Layer layer_;

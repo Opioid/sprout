@@ -28,29 +28,23 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 
-BSSRDF Sample::bssrdf() const {
-	return layer_.bssrdf;
-}
-
 bool Sample::is_translucent() const {
 	return true;
 }
 
-void Sample::set(const float3& absorption_coefficient,
-				 const float3& scattering_coefficient,
-				 float anisotropy) {
-	layer_.bssrdf.set(absorption_coefficient, scattering_coefficient, anisotropy);
+void Sample::set(float anisotropy) {
+	layer_.anisotropy = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
 float Sample::Layer::phase(const float3& wo, const float3& wi) const {
-	const float g = bssrdf.anisotropy();
+	const float g = anisotropy;
 	return phase_hg(math::dot(wo, wi), g);
 //	const float k = 1.55f * g - (0.55f * g) * (g * g);
 //	return phase_schlick(math::dot(wo, wi), k);
 }
 
 float Sample::Layer::sample(const float3& wo, float2 r2, float3& wi) const {
-	const float g = bssrdf.anisotropy();
+	const float g = anisotropy;
 
 	float cos_theta;
 	if (std::abs(g) < 0.001f) {

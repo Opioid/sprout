@@ -2,7 +2,6 @@
 #include "logging/logging.hpp"
 #include "resource/resource_provider.inl"
 #include "resource/resource_manager.inl"
-#include "bssrdf.hpp"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_adapter.inl"
 #include "image/texture/texture_provider.hpp"

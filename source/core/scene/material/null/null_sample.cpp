@@ -24,14 +24,4 @@ bool Sample::ior_greater_one() const {
 	return false;
 }
 
-BSSRDF Sample::bssrdf() const {
-	return layer_.bssrdf;
-}
-
-void Sample::set(const float3& absorption_coefficient,
-				 const float3& scattering_coefficient,
-				 float anisotropy) {
-	layer_.bssrdf.set(absorption_coefficient, scattering_coefficient, anisotropy);
-}
-
 }

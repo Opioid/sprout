@@ -1,5 +1,4 @@
 #include "material.hpp"
-#include "bssrdf.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"

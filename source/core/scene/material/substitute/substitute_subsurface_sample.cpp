@@ -1,7 +1,6 @@
 #include "substitute_subsurface_sample.hpp"
 #include "substitute_base_sample.inl"
 #include "scene/material/bxdf.hpp"
-#include "scene/material/bssrdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
@@ -54,23 +53,12 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 }
 
 float3 Sample_subsurface::absorption_coefficient() const {
-	return bssrdf_.absorption_coefficient();
+	return float3(0.f);
 }
 
-BSSRDF Sample_subsurface::bssrdf() const {
-	return bssrdf_;
-}
-
-void Sample_subsurface::set(const float3& absorption_coefficient,
-							const float3& scattering_coefficient,
-							float anisotropy,
-							const IOR& ior) {
-	bssrdf_.set(absorption_coefficient, scattering_coefficient, anisotropy);
+void Sample_subsurface::set(float anisotropy, const IOR& ior) {
+	anisotropy_ = anisotropy;
 	ior_ = ior;
-}
-
-bool Sample_subsurface::is_sss() const {
-	return bssrdf_.is_scattering();
 }
 
 void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,

@@ -17,19 +17,9 @@ public:
 
 	virtual bool ior_greater_one() const override final;
 
-	virtual BSSRDF bssrdf() const override final;
-
-	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
-			 float anisotropy);
-
 private:
 
-	struct Layer : public material::Sample::Layer {
-		BSSRDF bssrdf;
-	};
-
-	Layer layer_;
-
+	material::Sample::Layer layer_;
 };
 
 }

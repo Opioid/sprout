@@ -16,8 +16,6 @@ public:
 
 	virtual float3 absorption_coefficient() const override final;
 
-	virtual BSSRDF bssrdf() const override final;
-
 	struct IOR {
 		float ior_i_;
 		float ior_o_;
@@ -25,10 +23,7 @@ public:
 		float eta_t_;
 	};
 
-	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
-			 float anisotropy, const IOR& ior);
-
-	virtual bool is_sss() const override final;
+	void set(float anisotropy, const IOR& ior);
 
 private:
 
@@ -38,7 +33,7 @@ private:
 	void reflect_internally(const Layer& layer, sampler::Sampler& sampler,
 							bxdf::Sample& result) const;
 
-	BSSRDF bssrdf_;
+	float anisotropy_;
 
 	IOR ior_;
 };

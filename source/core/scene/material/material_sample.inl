@@ -51,10 +51,6 @@ inline float3 Sample::Layer::world_to_tangent(const float3& v) const {
 				  v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline BSSRDF Sample::bssrdf() const {
-	return BSSRDF();
-}
-
 inline float3 Sample::radiance() const {
 	return float3::identity();
 }

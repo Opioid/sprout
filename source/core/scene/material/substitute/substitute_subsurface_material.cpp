@@ -38,7 +38,7 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 //			sample.set(absorption_coefficient, scattering_coefficient, anisotropy_);
 //		} else {
-			sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
+			sample.set(anisotropy_);
 //		}
 
 		return sample;
@@ -50,17 +50,7 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
-	if (color_map_.is_valid()) {
-		float3 absorption_coefficient;
-		float3 scattering_coefficient;
-
-		attenuation(sample.layer_.diffuse_color_, attenuation_distance_,
-					absorption_coefficient, scattering_coefficient);
-
-		sample.set(absorption_coefficient, scattering_coefficient, anisotropy_, ior_);
-	} else {
-		sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_, ior_);
-	}
+	sample.set(anisotropy_, ior_);
 
 	return sample;
 
