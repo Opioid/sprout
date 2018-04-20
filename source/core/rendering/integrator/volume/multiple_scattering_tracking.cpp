@@ -13,9 +13,6 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-#include <iostream>
-#include "math/print.hpp"
-
 #include "base/debug/assert.hpp"
 
 namespace rendering::integrator::volume {
@@ -28,12 +25,10 @@ enum class Algorithm {
 
 Multiple_scattering_tracking::Multiple_scattering_tracking(rnd::Generator& rng,
 														   const take::Settings& take_settings) :
-	Integrator(rng, take_settings),
-	sampler_(rng) {}
+	Integrator(rng, take_settings) {}
 
-void Multiple_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
-}
+void Multiple_scattering_tracking::prepare(const Scene& /*scene*/,
+										   uint32_t /*num_samples_per_pixel*/) {}
 
 void Multiple_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
@@ -168,7 +163,6 @@ static inline void avg_history_probabilities(float mt,
 }
 
 float3 Multiple_scattering_tracking::transmittance(const Ray& ray, Worker& worker) {
-//	return float3(1.f);
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
@@ -182,18 +176,20 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 		return false;
 	}
 
-//	li = float3(0.f);
-//	transmittance = float3(1.f);
-//	weight = float3(1.f);
-//	return true;
+	const float d = ray.max_t - ray.min_t;
+
+	if (d < 0.0005f) {
+		li = float3(0.f);
+		transmittance = float3(1.f);
+		weight = float3(1.f);
+		return true;
+	}
 
 	SOFT_ASSERT(!worker.interface_stack().empty());
 
 	const auto interface = worker.interface_stack().top();
 
 	const auto& material = *interface->material();
-
-	const float d = ray.max_t - ray.min_t;
 
 	if (!material.is_scattering_volume()) {
 		// Basically the "glass" case
@@ -245,7 +241,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 				intersection.prop = interface->prop;
 				intersection.geo.p = p;
 				intersection.geo.uv = interface->uv;
-				intersection.geo.epsilon = 0.f;
+			//	intersection.geo.epsilon = 0.f;
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
@@ -292,7 +288,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 				intersection.prop = interface->prop;
 				intersection.geo.p = ray.point(ray.min_t + t);
 				intersection.geo.uv = interface->uv;
-				intersection.geo.epsilon = 0.f;
+			//	intersection.geo.epsilon = 0.f;
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
@@ -312,7 +308,7 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 }
 
 size_t Multiple_scattering_tracking::num_bytes() const {
-	return sizeof(*this) + sampler_.num_bytes();
+	return sizeof(*this);
 }
 
 Multiple_scattering_tracking_factory::Multiple_scattering_tracking_factory(const take::Settings& take_settings,

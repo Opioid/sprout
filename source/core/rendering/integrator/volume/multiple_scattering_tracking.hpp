@@ -26,7 +26,6 @@ public:
 
 private:
 
-	sampler::Random sampler_;
 };
 
 class Multiple_scattering_tracking_factory final : public Factory {

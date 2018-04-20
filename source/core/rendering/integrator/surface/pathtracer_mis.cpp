@@ -17,8 +17,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace rendering::integrator::surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
@@ -339,11 +337,7 @@ float3 Pathtracer_MIS::evaluate_light(const Ray& ray, const Intersection& inters
 
 		const float3 radiance = weight * ls_energy;
 
-	//	SOFT_ASSERT(math::all_finite_and_positive(radiance));
-
-		if (!math::all_finite_and_positive(radiance)) {
-			std::cout << sample_result.pdf << std::endl;
-		}
+		SOFT_ASSERT(math::all_finite_and_positive(radiance));
 
 		return radiance;
 	}

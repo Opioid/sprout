@@ -50,8 +50,8 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 
 	uint32_t num_blades = 160 * 1024;
 
-	float2 start(-1.f,  1.f);
-	float2 end  ( 1.f, -1.f);
+//	float2 start(-1.f,  1.f);
+//	float2 end  ( 1.f, -1.f);
 
 //	float2 range = end - start;
 
