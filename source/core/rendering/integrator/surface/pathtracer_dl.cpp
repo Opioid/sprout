@@ -43,8 +43,6 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 throughput(1.f);
 	float3 result(0.f);
 
-	bool was_subsurface = false;
-
 	for (uint32_t i = ray.depth;; ++i) {
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
@@ -57,8 +55,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		result += throughput * direct_light(ray, intersection, material_sample,
-											filter, worker);
+		result += throughput * direct_light(ray, intersection, material_sample, filter, worker);
+
 		if (i >= settings_.max_bounces - 1) {
 			break;
 		}

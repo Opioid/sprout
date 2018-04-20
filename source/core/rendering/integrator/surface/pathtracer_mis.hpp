@@ -55,9 +55,9 @@ private:
 						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
 
-	bool evaluate_light(const Ray& ray, const Intersection& intersection,
-						Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
-						Sampler_filter filter, Worker& worker, float3& radiance);
+	float3 evaluate_light(const Ray& ray, const Intersection& intersection,
+						  Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
+						  Sampler_filter filter, Worker& worker, bool& pure_emissive);
 
 	sampler::Sampler& material_sampler(uint32_t bounce);
 	sampler::Sampler& light_sampler(uint32_t bounce);
