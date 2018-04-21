@@ -1,4 +1,4 @@
-#include "single_scattering.hpp"
+#include "ray_marching_single.hpp"
 #include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
@@ -15,23 +15,23 @@
 
 namespace rendering::integrator::volume {
 
-Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
-									 const Settings& settings) :
+Ray_marching_single::Ray_marching_single(rnd::Generator& rng, const take::Settings& take_settings,
+										 const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
 
-void Single_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Ray_marching_single::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
-void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Ray_marching_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 /*
-float3 Single_scattering::li(const Ray& ray, const Volume& volume,
+float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
 							 Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
-		transmittance = Single_scattering::transmittance(ray, volume, worker);
+		transmittance = Ray_marching_single::transmittance(ray, volume, worker);
 		return float3::identity();
 	}
 
@@ -112,22 +112,22 @@ float3 Single_scattering::li(const Ray& ray, const Volume& volume,
 	return color;
 }
 */
-float3 Single_scattering::transmittance(const Ray& ray, Worker& worker) {
+float3 Ray_marching_single::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
-bool Single_scattering::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
-								  Sampler_filter /*filter*/, Worker& /*worker*/,
-								  float3& /*li*/, float3& /*transmittance*/, float3& /*weight*/) {
+bool Ray_marching_single::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
+									Sampler_filter /*filter*/, Worker& /*worker*/,
+									float3& /*li*/, float3& /*transmittance*/, float3& /*weight*/) {
 	return false;
 }
 
-size_t Single_scattering::num_bytes() const {
+size_t Ray_marching_single::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Single_scattering::estimate_direct_light(const Ray& ray, const float3& position,
-												Worker& worker) {
+float3 Ray_marching_single::estimate_direct_light(const Ray& ray, const float3& position,
+												  Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;
@@ -160,20 +160,19 @@ float3 Single_scattering::estimate_direct_light(const Ray& ray, const float3& po
 	return result;
 }
 
-Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
-													 uint32_t num_integrators, float step_size, 
-													 float step_probability,
-													 bool indirect_lighting) :
+Ray_marching_single_factory::Ray_marching_single_factory(const take::Settings& take_settings,
+														 uint32_t num_integrators, float step_size,
+														 float step_probability) :
 	Factory(take_settings, num_integrators),
-	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{step_size, step_probability, !indirect_lighting} {}
+	integrators_(memory::allocate_aligned<Ray_marching_single>(num_integrators)),
+	settings_{step_size, step_probability} {}
 
-Single_scattering_factory::~Single_scattering_factory() {
+Ray_marching_single_factory::~Ray_marching_single_factory() {
 	memory::free_aligned(integrators_);
 }
 
-Integrator* Single_scattering_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Single_scattering(rng, take_settings_, settings_);
+Integrator* Ray_marching_single_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Ray_marching_single(rng, take_settings_, settings_);
 }
 
 }

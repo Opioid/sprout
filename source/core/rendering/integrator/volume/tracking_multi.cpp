@@ -1,4 +1,4 @@
-#include "multiple_scattering_tracking.hpp"
+#include "tracking_multi.hpp"
 #include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -17,20 +17,13 @@
 
 namespace rendering::integrator::volume {
 
-enum class Algorithm {
-	Tracking,
-	Delta_tracking,
-	Experiment
-};
 
-Multiple_scattering_tracking::Multiple_scattering_tracking(rnd::Generator& rng,
-														   const take::Settings& take_settings) :
+Tracking_multi::Tracking_multi(rnd::Generator& rng, const take::Settings& take_settings) :
 	Integrator(rng, take_settings) {}
 
-void Multiple_scattering_tracking::prepare(const Scene& /*scene*/,
-										   uint32_t /*num_samples_per_pixel*/) {}
+void Tracking_multi::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
-void Multiple_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Tracking_multi::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 static inline void max_probabilities(float mt,
 									 const float3& sigma_a,
@@ -162,13 +155,13 @@ static inline void avg_history_probabilities(float mt,
 	wn = (sigma_n / (mt * pn));
 }
 
-float3 Multiple_scattering_tracking::transmittance(const Ray& ray, Worker& worker) {
+float3 Tracking_multi::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
-bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
-											 Sampler_filter filter, Worker& worker,
-											 float3& li, float3& transmittance, float3& weight) {
+bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
+							   Sampler_filter filter, Worker& worker,
+							   float3& li, float3& transmittance, float3& weight) {
 	if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
@@ -307,21 +300,21 @@ bool Multiple_scattering_tracking::integrate(Ray& ray, Intersection& intersectio
 	return true;
 }
 
-size_t Multiple_scattering_tracking::num_bytes() const {
+size_t Tracking_multi::num_bytes() const {
 	return sizeof(*this);
 }
 
-Multiple_scattering_tracking_factory::Multiple_scattering_tracking_factory(const take::Settings& take_settings,
-													 uint32_t num_integrators) :
+Tracking_multi_factory::Tracking_multi_factory(const take::Settings& take_settings,
+											   uint32_t num_integrators) :
 	Factory(take_settings, num_integrators),
-	integrators_(memory::allocate_aligned<Multiple_scattering_tracking>(num_integrators)) {}
+	integrators_(memory::allocate_aligned<Tracking_multi>(num_integrators)) {}
 
-Multiple_scattering_tracking_factory::~Multiple_scattering_tracking_factory() {
+Tracking_multi_factory::~Tracking_multi_factory() {
 	memory::free_aligned(integrators_);
 }
 
-Integrator* Multiple_scattering_tracking_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Multiple_scattering_tracking(rng, take_settings_);
+Integrator* Tracking_multi_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Tracking_multi(rng, take_settings_);
 }
 
 }

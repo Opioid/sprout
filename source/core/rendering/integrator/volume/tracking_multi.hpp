@@ -1,16 +1,15 @@
-#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_MULTIPLE_SCATTERING_TRACKING_HPP
-#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_MULTIPLE_SCATTERING_TRACKING_HPP
+#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_TRACKING_MULTI_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_TRACKING_MULTI_HPP
 
 #include "volume_integrator.hpp"
-#include "sampler/sampler_random.hpp"
 
 namespace rendering::integrator::volume {
 
-class alignas(64) Multiple_scattering_tracking : public Integrator {
+class alignas(64) Tracking_multi : public Integrator {
 
 public:
 
-	Multiple_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings);
+	Tracking_multi(rnd::Generator& rng, const take::Settings& take_settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -28,19 +27,19 @@ private:
 
 };
 
-class Multiple_scattering_tracking_factory final : public Factory {
+class Tracking_multi_factory final : public Factory {
 
 public:
 
-	Multiple_scattering_tracking_factory(const take::Settings& take_settings, uint32_t num_integrators);
+	Tracking_multi_factory(const take::Settings& take_settings, uint32_t num_integrators);
 
-	virtual ~Multiple_scattering_tracking_factory() override final;
+	virtual ~Tracking_multi_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
 
-	Multiple_scattering_tracking* integrators_;
+	Tracking_multi* integrators_;
 };
 
 }

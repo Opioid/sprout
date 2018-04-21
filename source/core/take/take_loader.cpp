@@ -17,9 +17,9 @@
 #include "rendering/integrator/volume/aerial_perspective.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/flow_vis.hpp"
-#include "rendering/integrator/volume/multiple_scattering_tracking.hpp"
-#include "rendering/integrator/volume/single_scattering.hpp"
-#include "rendering/integrator/volume/single_scattering_tracking.hpp"
+#include "rendering/integrator/volume/ray_marching_single.hpp"
+#include "rendering/integrator/volume/tracking_multi.hpp"
+#include "rendering/integrator/volume/tracking_single.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
 #include "rendering/postprocessor/postprocessor_glare.hpp"
@@ -143,14 +143,10 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	}
 
 	if (!take->volume_integrator_factory) {
-		const float step_size = 1.f;
-		const float step_probability = 0.9f;
-		const bool indirect_light = false;
-		take->volume_integrator_factory = std::make_shared<
-			volume::Single_scattering_factory>(take->settings, num_threads,
-											   step_size, step_probability, indirect_light);
+		take->volume_integrator_factory = std::make_shared<volume::Tracking_multi_factory>(
+					take->settings, num_threads);
 
-		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
+		logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
 	}
 
 	take->view.init(manager.thread_pool());
@@ -508,18 +504,20 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 
 			return std::make_shared<Flow_vis_factory>(settings, num_workers, step_size);
-		} else if ("Multiple_scattering_tracking" == n.name) {
-			return std::make_shared<Multiple_scattering_tracking_factory>(settings, num_workers);
-		} else if ("Single_scattering" == n.name) {
+		} else if ("Ray_marching" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
-			const bool indirect_lighting = json::read_bool(n.value, "indirect_lighting", false);
 
-			return std::make_shared<Single_scattering_factory>(settings, num_workers,
-															   step_size, step_probability,
-															   indirect_lighting);
-		} else if ("Single_scattering_tracking" == n.name) {
-			return std::make_shared<Single_scattering_tracking_factory>(settings, num_workers);
+			return std::make_shared<Ray_marching_single_factory>(settings, num_workers,
+																 step_size, step_probability);
+		} else if ("Tracking" == n.name) {
+			const bool multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
+
+			if (multiple_scattering) {
+				return std::make_shared<Tracking_multi_factory>(settings, num_workers);
+			} else {
+				return std::make_shared<Tracking_single_factory>(settings, num_workers);
+			}
 		}
 	}
 

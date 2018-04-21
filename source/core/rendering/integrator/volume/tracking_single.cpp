@@ -1,4 +1,4 @@
-#include "single_scattering_tracking.hpp"
+#include "tracking_single.hpp"
 #include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
@@ -21,16 +21,15 @@
 
 namespace rendering::integrator::volume {
 
-Single_scattering_tracking::Single_scattering_tracking(rnd::Generator& rng,
-													   const take::Settings& take_settings) :
+Tracking_single::Tracking_single(rnd::Generator& rng, const take::Settings& take_settings) :
 	Integrator(rng, take_settings),
 	sampler_(rng) {}
 
-void Single_scattering_tracking::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Tracking_single::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
-void Single_scattering_tracking::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Tracking_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 static inline void max_probabilities(float mt,
 									 const float3& sigma_a,
@@ -162,13 +161,13 @@ static inline void avg_history_probabilities(float mt,
 	wn = (sigma_n / (mt * pn));
 }
 
-float3 Single_scattering_tracking::transmittance(const Ray& ray, Worker& worker) {
+float3 Tracking_single::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
-bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
-										   Sampler_filter filter, Worker& worker,
-										   float3& li, float3& transmittance, float3& weight) {
+bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
+								Sampler_filter filter, Worker& worker,
+								float3& li, float3& transmittance, float3& weight) {
 	weight = float3(1.f);
 
 	Transformation temp;
@@ -263,12 +262,11 @@ bool Single_scattering_tracking::integrate(Ray& ray, Intersection& intersection,
 	return true;
 }
 
-size_t Single_scattering_tracking::num_bytes() const {
+size_t Tracking_single::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
-												Worker& worker) {
+float3 Tracking_single::direct_light(const Ray& ray, const float3& position, Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;
@@ -300,9 +298,8 @@ float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& po
 	return result;
 }
 
-float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& position,
-												const Intersection& intersection,
-												Worker& worker) {
+float3 Tracking_single::direct_light(const Ray& ray, const float3& position,
+									 const Intersection& intersection, Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;
@@ -339,17 +336,17 @@ float3 Single_scattering_tracking::direct_light(const Ray& ray, const float3& po
 	return result;
 }
 
-Single_scattering_tracking_factory::Single_scattering_tracking_factory(const take::Settings& take_settings,
-													 uint32_t num_integrators) :
+Tracking_single_factory::Tracking_single_factory(const take::Settings& take_settings,
+												 uint32_t num_integrators) :
 	Factory(take_settings, num_integrators),
-	integrators_(memory::allocate_aligned<Single_scattering_tracking>(num_integrators)) {}
+	integrators_(memory::allocate_aligned<Tracking_single>(num_integrators)) {}
 
-Single_scattering_tracking_factory::~Single_scattering_tracking_factory() {
+Tracking_single_factory::~Tracking_single_factory() {
 	memory::free_aligned(integrators_);
 }
 
-Integrator* Single_scattering_tracking_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Single_scattering_tracking(rng, take_settings_);
+Integrator* Tracking_single_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Tracking_single(rng, take_settings_);
 }
 
 }

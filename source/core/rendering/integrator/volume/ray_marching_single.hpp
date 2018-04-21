@@ -1,5 +1,5 @@
-#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_SINGLE_SCATTERING_HPP
-#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_SINGLE_SCATTERING_HPP
+#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_RAY_MARCHING_SINGLE_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_RAY_MARCHING_SINGLE_HPP
 
 #include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
@@ -8,19 +8,17 @@ namespace scene::entity { struct Composed_transformation; }
 
 namespace rendering::integrator::volume {
 
-class alignas(64) Single_scattering : public Integrator {
+class alignas(64) Ray_marching_single : public Integrator {
 
 public:
 
 	struct Settings {
 		float step_size;
 		float step_probability;
-
-		bool disable_indirect_lighting;
 	};
 
-	Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
-					  const Settings& settings);
+	Ray_marching_single(rnd::Generator& rng, const take::Settings& take_settings,
+						const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -43,22 +41,22 @@ private:
 	sampler::Random sampler_;
 };
 
-class Single_scattering_factory : public Factory {
+class Ray_marching_single_factory : public Factory {
 
 public:
 
-	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size, float step_probability, bool indirect_lighting);
+	Ray_marching_single_factory(const take::Settings& take_settings, uint32_t num_integrators,
+								float step_size, float step_probability);
 
-	virtual ~Single_scattering_factory() override;
+	virtual ~Ray_marching_single_factory() override;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
 
-	Single_scattering* integrators_;
+	Ray_marching_single* integrators_;
 
-	Single_scattering::Settings settings_;
+	Ray_marching_single::Settings settings_;
 };
 
 }

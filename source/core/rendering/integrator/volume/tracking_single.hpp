@@ -1,16 +1,16 @@
-#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_SINGLE_SCATTERING_TRACKING_HPP
-#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_SINGLE_SCATTERING_TRACKING_HPP
+#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_TRACKING_SINGLE_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_TRACKING_SINGLE_HPP
 
 #include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
 
 namespace rendering::integrator::volume {
 
-class alignas(64) Single_scattering_tracking final : public Integrator {
+class alignas(64) Tracking_single final : public Integrator {
 
 public:
 
-	Single_scattering_tracking(rnd::Generator& rng, const take::Settings& take_settings);
+	Tracking_single(rnd::Generator& rng, const take::Settings& take_settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -34,19 +34,19 @@ private:
 	sampler::Random sampler_;
 };
 
-class Single_scattering_tracking_factory final : public Factory {
+class Tracking_single_factory final : public Factory {
 
 public:
 
-	Single_scattering_tracking_factory(const take::Settings& take_settings, uint32_t num_integrators);
+	Tracking_single_factory(const take::Settings& take_settings, uint32_t num_integrators);
 
-	~Single_scattering_tracking_factory() override final;
+	~Tracking_single_factory() override final;
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
 
-	Single_scattering_tracking* integrators_;
+	Tracking_single* integrators_;
 };
 
 }
