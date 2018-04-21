@@ -97,7 +97,7 @@ float3 Worker::transmittance(const Ray& ray) {
 			transmittance *= math::saturate(tr);
 		}
 
-		if (!hit || tray.max_t <= tray.min_t) {
+		if (!hit) {
 			break;
 		}
 

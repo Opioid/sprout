@@ -234,7 +234,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 				intersection.prop = interface->prop;
 				intersection.geo.p = p;
 				intersection.geo.uv = interface->uv;
-			//	intersection.geo.epsilon = 0.f;
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
@@ -281,7 +280,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 				intersection.prop = interface->prop;
 				intersection.geo.p = ray.point(ray.min_t + t);
 				intersection.geo.uv = interface->uv;
-			//	intersection.geo.epsilon = 0.f;
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
