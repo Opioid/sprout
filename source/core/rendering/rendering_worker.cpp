@@ -111,7 +111,7 @@ float3 Worker::transmittance(const Ray& ray) {
 		tray.max_t = ray_max_t;
 	}
 
-	interface_stack_ = interface_stack_temp_;
+	interface_stack_.swap(interface_stack_temp_);
 
 	return transmittance;
 }

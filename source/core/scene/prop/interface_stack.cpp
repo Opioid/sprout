@@ -1,6 +1,7 @@
 #include "interface_stack.hpp"
 #include "prop.hpp"
 #include "prop_intersection.hpp"
+#include "base/memory/align.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -14,12 +15,26 @@ bool Interface::matches(const Intersection& intersection) const {
 	return prop == intersection.prop && part == intersection.geo.part;
 }
 
+Interface_stack::Interface_stack() : stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
+
+Interface_stack::~Interface_stack() {
+	memory::free_aligned(stack_);
+}
+
 void Interface_stack::operator=(const Interface_stack& other) {
 	index_ = other.index_;
 
 	for (uint32_t i = 0, len = index_; i < len; ++i) {
 		stack_[i] = other.stack_[i];
 	}
+}
+
+void Interface_stack::swap(Interface_stack& other) {
+	Interface* temp = stack_;
+	stack_ = other.stack_;
+	other.stack_ = temp;
+
+	index_ = other.index_;
 }
 
 bool Interface_stack::empty() const {

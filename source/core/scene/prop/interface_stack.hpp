@@ -27,7 +27,12 @@ class Interface_stack {
 
 public:
 
+	Interface_stack();
+	~Interface_stack();
+
 	void operator=(const Interface_stack& other);
+
+	void swap(Interface_stack& other);
 
 	bool empty() const;
 
@@ -46,7 +51,7 @@ private:
 	static constexpr int32_t Num_entries = 16;
 
 	int32_t index_;
-	Interface stack_[Num_entries];
+	Interface* stack_;
 };
 
 }}
