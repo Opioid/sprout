@@ -118,7 +118,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			}
 
 			if (material_sample.ior_greater_one()) {
-				treat_as_singular = true;
+				const bool scattering = intersection.material()->is_scattering_volume();
+				treat_as_singular = scattering ? ray.is_primary() : true;
 			}
 		} else {
 			ray.set_primary(false);
