@@ -92,6 +92,8 @@ public:
 	Light light(uint32_t id) const;
 	Light random_light(float random) const;
 
+	bool has_volumes() const;
+
 	void tick(thread::Pool& thread_pool);
 	float seek(float time, thread::Pool& thread_pool);
 
@@ -137,6 +139,7 @@ private:
 
 	bool has_masked_material_;
 	bool has_tinted_shadow_;
+	bool has_volumes_;
 
 	std::vector<entity::Dummy*> dummies_;
 

@@ -41,38 +41,48 @@ void Worker::prepare(uint32_t num_samples_per_pixel) {
 	sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 }
 
-float4 Worker::li(Ray& ray) {
-	interface_stack_.clear();
+float4 Worker::li(Ray& ray, const scene::prop::Interface_stack& interface_stack) {
+	interface_stack_ = interface_stack;
 
 	scene::prop::Intersection intersection;
-	const bool hit = intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined);
 
-//	float3 vtr(1.f);
-//	const float3 vli = volume_li(ray, vtr);
+	if (!interface_stack_.empty()) {
+		float3 vli;
+		float3 vtr;
+		float3 weight;
+		if (!volume_integrator_->integrate(ray, intersection, Sampler_filter::Undefined, *this,
+										   vli, vtr, weight)) {
+			return float4(vli, spectrum::luminance(vli));
+		}
 
-//	SOFT_ASSERT(math::all_finite_and_positive(vli));
+		const float3 li = surface_integrator_->li(ray, intersection, *this);
 
-	if (hit) {
+		SOFT_ASSERT(math::all_finite_and_positive(li));
+
+		return float4(vtr * weight * li + vli, 1.f);
+	} else if (intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined)) {
 		const float3 li = surface_integrator_->li(ray, intersection, *this);
 
 		SOFT_ASSERT(math::all_finite_and_positive(li));
 
 		return float4(li, 1.f);
-//		return float4(vtr * li + vli, 1.f);
 	} else {
 		return float4(0.f);
-//		return float4(vli, spectrum::luminance(vli));
 	}
 }
 
 bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 					float3& li, float3& transmittance, float3& weight) {
-	return volume_integrator_->integrate(ray, intersection, filter,
-										 *this, li, transmittance, weight);
+	return volume_integrator_->integrate(ray, intersection, filter, *this,
+										 li, transmittance, weight);
 }
 
 float3 Worker::transmittance(const Ray& ray) {
 	float3 transmittance(1.f);
+
+	if (!scene_->has_volumes()) {
+		return transmittance;
+	}
 
 	interface_stack_temp_ = interface_stack_;
 

@@ -106,7 +106,7 @@ void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) 
 	ipd_falloff_ = std::sqrt(ipd_falloff);
 }
 
-void Cubic_stereoscopic::on_update(rendering::Worker& /*worker*/) {}
+void Cubic_stereoscopic::on_update(Worker& /*worker*/) {}
 
 void Cubic_stereoscopic::set_parameter(const std::string& name,
 									   const json::Value& value) {

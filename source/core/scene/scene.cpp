@@ -160,6 +160,10 @@ Scene::Light Scene::random_light(float random) const {
 	return { *lights_[l.offset], l.pdf };
 }
 
+bool Scene::has_volumes() const {
+	return has_volumes_;
+}
+
 void Scene::tick(thread::Pool& thread_pool) {
 	const float simulation_time = static_cast<float>(simulation_time_);
 	const float tick_duration	= static_cast<float>(tick_duration_);
@@ -270,6 +274,8 @@ void Scene::compile(thread::Pool& pool) {
 	}
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());
+
+	has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }
 
 entity::Dummy* Scene::create_dummy() {

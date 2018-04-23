@@ -44,7 +44,9 @@ public:
 
 	void push(const Intersection& intersection);
 	void remove(const Intersection& intersection);
+	bool remove_p(const Intersection& intersection);
 	void pop();
+
 
 private:
 

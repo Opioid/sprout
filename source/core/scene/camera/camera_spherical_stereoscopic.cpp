@@ -72,7 +72,7 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 	return true;
 }
 
-void Spherical_stereoscopic::on_update(rendering::Worker& /*worker*/) {}
+void Spherical_stereoscopic::on_update(Worker& /*worker*/) {}
 
 void Spherical_stereoscopic::set_parameter(const std::string& name,
 										   const json::Value& value) {

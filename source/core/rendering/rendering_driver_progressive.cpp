@@ -107,16 +107,15 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
 }
 
 void Driver_progressive::restart() {
-	view_.camera->update(workers_[0]);
-
-	view_.camera->sensor().clear();
-	iteration_ = 0;
-
 	if (schedule_.recompile) {
 		scene_.compile(thread_pool_);
 	}
 
 	schedule_.restart = false;
+
+	view_.camera->update(scene_, workers_[0]);
+	view_.camera->sensor().clear();
+	iteration_ = 0;
 }
 
 }

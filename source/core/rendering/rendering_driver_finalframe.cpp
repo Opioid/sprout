@@ -35,7 +35,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 	float tick_offset = scene_.seek(start_frame * camera.frame_duration(), thread_pool_);
 	float tick_rest   = scene_.tick_duration() - tick_offset;
 
-	camera.update(workers_[0]);
+	camera.update(scene_, workers_[0]);
 
 	for (uint32_t f = 0; f < view_.num_frames; ++f) {
 		const uint32_t current_frame = view_.start_frame + f;
@@ -50,7 +50,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
 		if (0.f == camera.frame_duration()) {
 			scene_.tick(thread_pool_);
-			camera.update(workers_[0]);
+			camera.update(scene_, workers_[0]);
 			render_subframe(0.f, 0.f, 1.f, progressor);
 		} else if (!camera.motion_blur()) {
 			float frame_offset = 0.f;
@@ -61,7 +61,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
 					scene_.tick(thread_pool_);
-					camera.update(workers_[0]);
+					camera.update(scene_, workers_[0]);
 					tick_offset = 0.f;
 					tick_rest = scene_.tick_duration();
 				}
@@ -89,7 +89,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
 					scene_.tick(thread_pool_);
-					camera.update(workers_[0]);
+					camera.update(scene_, workers_[0]);
 					tick_offset = 0.f;
 					tick_rest = scene_.tick_duration();
 				}

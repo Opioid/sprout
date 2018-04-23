@@ -44,9 +44,9 @@ public:
 
 private:
 
-	virtual void on_update(rendering::Worker& worker) override final;
+	virtual void on_update(Worker& worker) override final;
 
-	void update_focus(rendering::Worker& worker);
+	void update_focus(Worker& worker);
 
 	virtual void set_parameter(const std::string& name, const json::Value& value) override final;
 

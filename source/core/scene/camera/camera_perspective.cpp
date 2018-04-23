@@ -1,8 +1,8 @@
 #include "camera_perspective.hpp"
 #include "rendering/sensor/sensor.hpp"
-#include "rendering/rendering_worker.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/scene_worker.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/json/json.hpp"
@@ -96,7 +96,7 @@ void Perspective::set_focus(const Focus& focus) {
 	focus_distance_ = focus_.distance;
 }
 
-void Perspective::on_update(rendering::Worker& worker) {
+void Perspective::on_update(Worker& worker) {
 	const float2 fr(resolution_);
 	const float ratio = fr[0] / fr[1];
 
@@ -121,7 +121,7 @@ void Perspective::on_update(rendering::Worker& worker) {
 	update_focus(worker);
 }
 
-void Perspective::update_focus(rendering::Worker& worker) {
+void Perspective::update_focus(Worker& worker) {
 	if (focus_.use_point && lens_radius_ > 0.f) {
 		float3 direction = left_top_ + focus_.point[0] * d_x_ + focus_.point[1] * d_y_;
 		direction = math::normalize(direction);

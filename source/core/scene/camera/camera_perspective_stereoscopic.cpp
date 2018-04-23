@@ -67,7 +67,7 @@ void Perspective_stereoscopic::set_fov(float fov) {
 	d_y_ = (left_bottom - left_top_) / fr[1];
 }
 
-void Perspective_stereoscopic::on_update(rendering::Worker& /*worker*/) {}
+void Perspective_stereoscopic::on_update(Worker& /*worker*/) {}
 
 void Perspective_stereoscopic::set_parameter(const std::string& name,
 											 const json::Value& value) {

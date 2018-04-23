@@ -1,7 +1,11 @@
 #include "camera.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "rendering/sensor/sensor.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/scene_worker.hpp"
+#include "scene/prop/prop_intersection.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
@@ -14,8 +18,36 @@ Camera::Camera(int2 resolution) : resolution_(resolution) {}
 
 Camera::~Camera() {}
 
-void Camera::update(rendering::Worker& worker) {
+void Camera::update(const Scene& scene, Worker& worker) {
 	calculate_world_transformation();
+
+	interface_stack_.clear();
+	interfaces_.clear();
+
+	if (scene.has_volumes()) {
+		math::Transformation transformation = local_frame_a();
+
+		Ray ray(transformation.position, float3(0.f, 1.f, 0.f), 0.f, Ray_max_t);
+
+		prop::Intersection intersection;
+
+		for (;;) {
+			if (!scene.intersect_volume(ray, worker.node_stack(), intersection)) {
+				break;
+			}
+
+			if (intersection.same_hemisphere(ray.direction)) {
+				if (!interfaces_.remove_p(intersection)) {
+					interface_stack_.push(intersection);
+				}
+			} else {
+				interfaces_.push(intersection);
+			}
+
+			ray.min_t = ray.max_t + intersection.geo.epsilon;// * settings_.ray_offset_factor;
+			ray.max_t = Ray_max_t;
+		}
+	}
 
 	on_update(worker);
 }
@@ -49,6 +81,10 @@ rendering::sensor::Sensor& Camera::sensor() const {
 
 void Camera::set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor) {
 	sensor_ = std::move(sensor);
+}
+
+const prop::Interface_stack& Camera::interface_stack() const {
+	return interface_stack_;
 }
 
 float Camera::frame_duration() const {

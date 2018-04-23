@@ -82,6 +82,23 @@ void Interface_stack::remove(const Intersection& intersection) {
 	}
 }
 
+bool Interface_stack::remove_p(const Intersection& intersection) {
+	const int32_t back = index_ - 1;
+	for (int32_t i = back; i >= 0; --i) {
+		if (stack_[i].matches(intersection)) {
+			for (int32_t j = i; j < back; ++j) {
+				stack_[j] = stack_[j + 1];
+			}
+
+			--index_;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 void Interface_stack::pop() {
 	if (index_ > 0) {
 		--index_;

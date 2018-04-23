@@ -29,7 +29,7 @@ public:
 
 private:
 
-	virtual void on_update(rendering::Worker& worker) override final;
+	virtual void on_update(Worker& worker) override final;
 
 	virtual void set_parameter(const std::string& name, const json::Value& value) override final;
 

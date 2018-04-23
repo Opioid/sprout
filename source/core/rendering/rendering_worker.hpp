@@ -47,7 +47,7 @@ public:
 
 	void prepare(uint32_t num_samples_per_pixel);
 
-	float4 li(Ray& ray);
+	float4 li(Ray& ray, const scene::prop::Interface_stack& interface_stack);
 
 	using Material_sample = scene::material::Sample;
 
