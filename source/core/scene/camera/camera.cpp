@@ -5,7 +5,7 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
