@@ -91,9 +91,9 @@ float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
 		// Lighting
 		const float3 local_radiance = estimate_direct_light(ray, current, worker);
 
-		float3 sigma_a, scattering;
-		material.extinction(transformation, current,
-							Sampler_filter::Undefined, worker, sigma_a, scattering);
+		float3 mu_a, scattering;
+		material.collision_coefficients(transformation, current,
+							Sampler_filter::Undefined, worker, mu_a, scattering);
 
 		radiance += tr * scattering * local_radiance;
 	}

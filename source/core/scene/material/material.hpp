@@ -74,16 +74,17 @@ public:
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const;
 
-	virtual float3 absorption(float2 uv, Sampler_filter filter, const Worker& worker) const;
+	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
+										  const Worker& worker) const;
 
-	virtual void extinction(float2 uv, Sampler_filter filter, const Worker& worker,
-							float3& sigma_a, float3& sigma_s) const;
+	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const;
 
-	virtual void extinction(const Transformation& transformation, const float3& p,
-							Sampler_filter filter, const Worker& worker,
-							float3& sigma_a, float3& sigma_s) const;
+	virtual void collision_coefficients(const Transformation& transformation, const float3& p,
+										Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const;
 
-	virtual float majorant_sigma_t() const;
+	virtual float majorant_mu_t() const;
 
 	virtual bool is_heterogeneous_volume() const;
 	virtual bool is_scattering_volume() const;
@@ -126,7 +127,7 @@ public:
 
 	static float3 spectrum_at_wavelength(float lambda, float value = 1.f);
 
-	static constexpr uint32_t Num_bands = 16;
+	static constexpr int32_t Num_bands = 16;
 
 	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 

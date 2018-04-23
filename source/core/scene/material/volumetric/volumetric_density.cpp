@@ -15,21 +15,21 @@ float3 Density::emission(const Transformation& /*transformation*/, const math::R
 	return float3::identity();
 }
 
-void Density::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
-						 float3& sigma_a, float3& sigma_s) const {
-	sigma_a = absorption_coefficient_;
-	sigma_s = scattering_coefficient_;
+void Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+									 const Worker& /*worker*/, float3& mu_a, float3& mu_s) const {
+	mu_a = absorption_coefficient_;
+	mu_s = scattering_coefficient_;
 }
 
-void Density::extinction(const Transformation& transformation, const float3& p,
-						 Sampler_filter filter, const Worker& worker,
-						 float3& sigma_a, float3& sigma_s) const {
+void Density::collision_coefficients(const Transformation& transformation, const float3& p,
+									 Sampler_filter filter, const Worker& worker,
+									 float3& mu_a, float3& mu_s) const {
 	const float3 p_o = math::transform_point(p, transformation.world_to_object);
 
 	const float d = density(transformation, p_o, filter, worker);
 
-	sigma_a = d * absorption_coefficient_;
-	sigma_s = d * scattering_coefficient_;
+	mu_a = d * absorption_coefficient_;
+	mu_s = d * scattering_coefficient_;
 }
 
 }

@@ -73,25 +73,26 @@ float3 Material::emission(const Transformation& /*transformation*/, const math::
 	return float3::identity();
 }
 
-float3 Material::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
+float3 Material::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
 							const Worker& /*worker*/) const {
 	return float3::identity();
 }
 
-void Material::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
-						  float3& sigma_a, float3& sigma_s) const {
-	sigma_a = float3::identity();
-	sigma_s = float3::identity();
+void Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+									  const Worker& /*worker*/,
+									  float3& mu_a, float3& mu_s) const {
+	mu_a = float3::identity();
+	mu_s = float3::identity();
 }
 
-void Material::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
-						  Sampler_filter /*filter*/, const Worker& /*worker*/,
-						  float3& sigma_a, float3& sigma_s) const {
-	sigma_a = float3::identity();
-	sigma_s = float3::identity();
+void Material::collision_coefficients(const Transformation& /*transformation*/, const float3& /*p*/,
+									  Sampler_filter /*filter*/, const Worker& /*worker*/,
+									  float3& mu_a, float3& mu_s) const {
+	mu_a = float3::identity();
+	mu_s = float3::identity();
 }
 
-float Material::majorant_sigma_t() const {
+float Material::majorant_mu_t() const {
 	return 0.f;
 }
 
@@ -147,7 +148,7 @@ void Material::init_rainbow() {
 //	const float end   = Spectrum::end_wavelength();
 
 	float3 sum_rgb(0.f);
-	for (uint32_t i = 0; i < Num_bands; ++i) {
+	for (int32_t i = 0; i < Num_bands; ++i) {
 	//	const float wl = start + (end - start) * ((static_cast<float>(i) + 0.5f) / nb);
 		Spectrum temp;
 		temp.clear(0.f);

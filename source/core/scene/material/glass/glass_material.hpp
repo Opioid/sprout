@@ -15,7 +15,7 @@ public:
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override;
 
-	virtual float3 absorption(float2 uv, Sampler_filter filter,
+	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
 							  const Worker& worker) const override final;
 
 	virtual float ior() const override final;

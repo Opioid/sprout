@@ -12,25 +12,27 @@ float3 Homogeneous::emission(const Transformation& /*transformation*/, const mat
 	return float3::identity();
 }
 
-float3 Homogeneous::absorption(float2 /*uv*/, Sampler_filter /*filter*/,
-							   const Worker& /*worker*/) const {
+float3 Homogeneous::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
+										   const Worker& /*worker*/) const {
 	return absorption_coefficient_;
 }
 
-void Homogeneous::extinction(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/,
-							 float3& sigma_a, float3& sigma_s) const {
-	sigma_a = absorption_coefficient_;
-	sigma_s = scattering_coefficient_;
+void Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+										 const Worker& /*worker*/,
+										 float3& mu_a, float3& mu_s) const {
+	mu_a = absorption_coefficient_;
+	mu_s = scattering_coefficient_;
 }
 
-void Homogeneous::extinction(const Transformation& /*transformation*/, const float3& /*p*/,
-							 Sampler_filter /*filter*/, const Worker& /*worker*/,
-							 float3& sigma_a, float3& sigma_s) const {
-	sigma_a = absorption_coefficient_;
-	sigma_s = scattering_coefficient_;
+void Homogeneous::collision_coefficients(const Transformation& /*transformation*/,
+										 const float3& /*p*/, Sampler_filter /*filter*/,
+										 const Worker& /*worker*/,
+										 float3& mu_a, float3& mu_s) const {
+	mu_a = absorption_coefficient_;
+	mu_s = scattering_coefficient_;
 }
 
-float Homogeneous::majorant_sigma_t() const {
+float Homogeneous::majorant_mu_t() const {
 	return math::max_component(absorption_coefficient_ + scattering_coefficient_);
 }
 

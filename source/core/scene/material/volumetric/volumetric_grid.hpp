@@ -16,7 +16,7 @@ public:
 
 	virtual void compile() override final;
 
-	virtual float majorant_sigma_t() const override final;
+	virtual float majorant_mu_t() const override final;
 
 	virtual bool  is_heterogeneous_volume() const override final;
 
@@ -29,7 +29,7 @@ private:
 
 	Texture_adapter grid_;
 
-	float majorant_sigma_t_;
+	float majorant_mu_t_;
 };
 
 class Emission_grid final : public Material {

@@ -29,7 +29,7 @@ float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, Worker& work
 		Transformation temp;
 		const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
-		const float mt  = material.majorant_sigma_t();
+		const float mt  = material.majorant_mu_t();
 		const float imt = 1.f / mt;
 
 		float3 w(1.f);
@@ -43,24 +43,24 @@ float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, Worker& work
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, Sampler_filter::Nearest,
-								worker, sigma_a, sigma_s);
+			float3 mu_a, mu_s;
+			material.collision_coefficients(transformation, p, Sampler_filter::Nearest,
+								worker, mu_a, mu_s);
 
-			const float3 sigma_t = sigma_a + sigma_s;
+			const float3 mu_t = mu_a + mu_s;
 
-			const float3 sigma_n = float3(mt) - sigma_t;
+			const float3 mu_n = float3(mt) - mu_t;
 
-			w *= imt * sigma_n;
+			w *= imt * mu_n;
 		}
 	}
 
-	float3 sigma_a, sigma_s;
-	material.extinction(interface->uv, Sampler_filter::Nearest, worker, sigma_a, sigma_s);
+	float3 mu_a, mu_s;
+	material.collision_coefficients(interface->uv, Sampler_filter::Nearest, worker, mu_a, mu_s);
 
-	const float3 sigma_t = sigma_a + sigma_s;
+	const float3 mu_t = mu_a + mu_s;
 
-	return attenuation(d, sigma_t);
+	return attenuation(d, mu_t);
 }
 
 }

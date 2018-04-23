@@ -32,133 +32,133 @@ void Tracking_single::prepare(const Scene& /*scene*/, uint32_t num_samples_per_p
 void Tracking_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 static inline void max_probabilities(float mt,
-									 const float3& sigma_a,
-									 const float3& sigma_s,
-									 const float3& sigma_n,
+									 const float3& mu_a,
+									 const float3& mu_s,
+									 const float3& mu_n,
 									 float& pa, float& ps, float& pn,
 									 float3& wa, float3& ws, float3& wn) {
-	const float ma = math::max_component(sigma_a);
-	const float ms = math::max_component(sigma_s);
-	const float mn = math::max_component(sigma_n);
+	const float ma = math::max_component(mu_a);
+	const float ms = math::max_component(mu_s);
+	const float mn = math::max_component(mu_n);
 	const float c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
 	pn = mn * c;
 
-	wa = (sigma_a / (mt * pa));
-	ws = (sigma_s / (mt * ps));
-	wn = (sigma_n / (mt * pn));
+	wa = (mu_a / (mt * pa));
+	ws = (mu_s / (mt * ps));
+	wn = (mu_n / (mt * pn));
 }
 
 static inline void max_history_probabilities(float mt,
-											 const float3& sigma_a,
-											 const float3& sigma_s,
-											 const float3& sigma_n,
+											 const float3& mu_a,
+											 const float3& mu_s,
+											 const float3& mu_n,
 											 const float3& w,
 											 float& pa, float& ps, float& pn,
 											 float3& wa, float3& ws, float3& wn) {
-	const float ma = math::max_component(sigma_a * w);
-	const float ms = math::max_component(sigma_s * w);
-	const float mn = math::max_component(sigma_n * w);
+	const float ma = math::max_component(mu_a * w);
+	const float ms = math::max_component(mu_s * w);
+	const float mn = math::max_component(mu_n * w);
 	const float c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
 	pn = mn * c;
 
-	wa = (sigma_a / (mt * pa));
-	ws = (sigma_s / (mt * ps));
-	wn = (sigma_n / (mt * pn));
+	wa = (mu_a / (mt * pa));
+	ws = (mu_s / (mt * ps));
+	wn = (mu_n / (mt * pn));
 }
 
 static inline void max_history_probabilities(float mt,
-											 const float3& sigma_a,
-											 const float3& sigma_s,
-											 const float3& sigma_n,
+											 const float3& mu_a,
+											 const float3& mu_s,
+											 const float3& mu_n,
 											 const float3& w,
 											 float& pn, float3& wn) {
-	const float ma = math::max_component(sigma_a * w);
-	const float ms = math::max_component(sigma_s * w);
-	const float mn = math::max_component(sigma_n * w);
+	const float ma = math::max_component(mu_a * w);
+	const float ms = math::max_component(mu_s * w);
+	const float mn = math::max_component(mu_n * w);
 	const float c = 1.f / (ma + ms + mn);
 
 	pn = mn * c;
 
-	wn = (sigma_n / (mt * pn));
+	wn = (mu_n / (mt * pn));
 }
 
 static inline void avg_probabilities(float mt,
-									 const float3& sigma_a,
-									 const float3& sigma_s,
-									 const float3& sigma_n,
+									 const float3& mu_a,
+									 const float3& mu_s,
+									 const float3& mu_n,
 									 float& pa, float& ps, float& pn,
 									 float3& wa, float3& ws, float3& wn) {
-	const float ma = math::average(sigma_a);
-	const float ms = math::average(sigma_s);
-	const float mn = math::average(sigma_n);
+	const float ma = math::average(mu_a);
+	const float ms = math::average(mu_s);
+	const float mn = math::average(mu_n);
 	const float c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
 	pn = mn * c;
 
-	wa = (sigma_a / (mt * pa));
-	ws = (sigma_s / (mt * ps));
-	wn = (sigma_n / (mt * pn));
+	wa = (mu_a / (mt * pa));
+	ws = (mu_s / (mt * ps));
+	wn = (mu_n / (mt * pn));
 }
 
 static inline void avg_history_probabilities(float mt,
-											 const float3& sigma_a,
-											 const float3& sigma_s,
-											 const float3& sigma_n,
+											 const float3& mu_a,
+											 const float3& mu_s,
+											 const float3& mu_n,
 											 const float3& w,
 											 float& pa, float& ps, float& pn,
 											 float3& wa, float3& ws, float3& wn) {
-	const float ma = 0.f;//math::average(sigma_a * w);
-	const float ms = math::average(sigma_s * w);
-	const float mn = math::average(sigma_n * w);
+	const float ma = 0.f;//math::average(mu_a * w);
+	const float ms = math::average(mu_s * w);
+	const float mn = math::average(mu_n * w);
 	const float c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
 	pn = mn * c;
 
-	wa = (sigma_a / (mt * pa));
-	ws = (sigma_s / (mt * ps));
-	wn = (sigma_n / (mt * pn));
+	wa = (mu_a / (mt * pa));
+	ws = (mu_s / (mt * ps));
+	wn = (mu_n / (mt * pn));
 }
 
 static inline void avg_history_probabilities(float mt,
-											 const float3& sigma_s,
-											 const float3& sigma_n,
+											 const float3& mu_s,
+											 const float3& mu_n,
 											 const float3& w,
 											 float& ps, float& pn,
 											 float3& ws, float3& wn) {
-	const float ms = math::average(sigma_s * w);
-	const float mn = math::average(sigma_n * w);
+	const float ms = math::average(mu_s * w);
+	const float mn = math::average(mu_n * w);
 	const float c = 1.f / (ms + mn);
 
 	ps = ms * c;
 	pn = mn * c;
 
-	ws = (sigma_s / (mt * ps));
-	wn = (sigma_n / (mt * pn));
+	ws = (mu_s / (mt * ps));
+	wn = (mu_n / (mt * pn));
 }
 
 static inline void avg_history_probabilities(float mt,
-											 const float3& sigma_s,
-											 const float3& sigma_n,
+											 const float3& mu_s,
+											 const float3& mu_n,
 											 const float3& w,
 											 float& pn,
 											 float3& wn) {
-	const float ms = math::average(sigma_s * w);
-	const float mn = math::average(sigma_n * w);
+	const float ms = math::average(mu_s * w);
+	const float mn = math::average(mu_n * w);
 	const float c = 1.f / (ms + mn);
 
 	pn = mn * c;
 
-	wn = (sigma_n / (mt * pn));
+	wn = (mu_n / (mt * pn));
 }
 
 float3 Tracking_single::transmittance(const Ray& ray, Worker& worker) {
@@ -190,7 +190,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 		float3 w(1.f);
 		float t = 0.f;
 
-		const float mt = material.majorant_sigma_t();
+		const float mt = material.majorant_mu_t();
 		while (true) {
 			const float r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
@@ -202,18 +202,18 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 
 			const float3 p = ray.point(ray.min_t + t);
 
-			float3 sigma_a, sigma_s;
-			material.extinction(transformation, p, filter, worker, sigma_a, sigma_s);
+			float3 mu_a, mu_s;
+			material.collision_coefficients(transformation, p, filter, worker, mu_a, mu_s);
 
-			const float3 sigma_t = sigma_a + sigma_s;
+			const float3 mu_t = mu_a + mu_s;
 
-			const float3 sigma_n = float3(mt) - sigma_t;
+			const float3 mu_n = float3(mt) - mu_t;
 
 			float ps, pn;
 			float3 ws, wn;
-			//avg_probabilities(mt, sigma_a, sigma_s, sigma_n, pa, ps, pn, wa, ws, wn);
+			//avg_probabilities(mt, mu_a, mu_s, mu_n, pa, ps, pn, wa, ws, wn);
 
-			avg_history_probabilities(mt, sigma_s, sigma_n, w, ps, pn, ws, wn);
+			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
 
 			const float r2 = rng_.random_float();
 			if (r2 <= 1.f - pn) {
@@ -238,12 +238,12 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 			}
 		}
 	} else {
-		float3 sigma_a, sigma_s;
-		material.extinction(float2(0.f), filter, worker, sigma_a, sigma_s);
+		float3 mu_a, mu_s;
+		material.collision_coefficients(float2(0.f), filter, worker, mu_a, mu_s);
 
-		const float3 extinction = sigma_a + sigma_s;
+		const float3 extinction = mu_a + mu_s;
 
-		const float3 scattering_albedo = sigma_s / extinction;
+		const float3 scattering_albedo = mu_s / extinction;
 
 		transmittance = math::exp(-d * extinction);
 

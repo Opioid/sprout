@@ -29,15 +29,15 @@ public:
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const override final;
 
-	virtual float3 absorption(float2 uv, Sampler_filter filter,
-							  const Worker& worker) const override final;
+	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
+										  const Worker& worker) const override final;
 
-	virtual void extinction(float2 uv, Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const override final;
+	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const override final;
 
-	virtual void extinction(const Transformation& transformation, const float3& p,
-							Sampler_filter filter, const Worker& worker,
-							float3& absorption, float3& scattering) const override final;
+	virtual void collision_coefficients(const Transformation& transformation, const float3& p,
+										Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const override final;
 
 	static size_t sample_size();
 
@@ -49,7 +49,7 @@ private:
 	float anisotropy_;
 	float attenuation_distance_;
 
-	Sample_subsurface::IOR ior_;
+	Sample_subsurface::IOR sior_;
 };
 
 }

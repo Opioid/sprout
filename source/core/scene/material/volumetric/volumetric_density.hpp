@@ -15,12 +15,12 @@ public:
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const override final;
 
-	virtual void extinction(float2 uv, Sampler_filter filter, const Worker& worker,
-							float3& sigma_a, float3& sigma_s) const override final;
+	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const override final;
 
-	virtual void extinction(const Transformation& transformation, const float3& p,
-							Sampler_filter filter, const Worker& worker,
-							float3& sigma_a, float3& sigma_s) const override final;
+	virtual void collision_coefficients(const Transformation& transformation, const float3& p,
+										Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const override final;
 
 private:
 

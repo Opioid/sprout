@@ -30,11 +30,11 @@ void Grid::compile() {
 
 	const float3 extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-	majorant_sigma_t_ = max_density * math::max_component(extinction_coefficient);
+	majorant_mu_t_ = max_density * math::max_component(extinction_coefficient);
 }
 
-float Grid::majorant_sigma_t() const {
-	return majorant_sigma_t_;
+float Grid::majorant_mu_t() const {
+	return majorant_mu_t_;
 }
 
 bool Grid::is_heterogeneous_volume() const {
