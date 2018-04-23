@@ -26,7 +26,7 @@ float3 Emission::transmittance(const Ray& ray, Worker& worker) {
 
 bool Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
 						 Sampler_filter /*filter*/, Worker& /*worker*/,
-						 float3& /*li*/, float3& /*transmittance*/, float3& /*weight*/) {
+						 float3& /*li*/, float3& /*transmittance*/) {
 	return false;
 }
 

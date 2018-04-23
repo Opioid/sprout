@@ -21,7 +21,7 @@ public:
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,
-						   float3& li, float3& transmittance, float3& weight) = 0;
+						   float3& li, float3& transmittance) = 0;
 };
 
 class Factory {

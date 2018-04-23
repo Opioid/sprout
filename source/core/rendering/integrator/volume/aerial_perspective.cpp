@@ -53,7 +53,7 @@ float3 Aerial_perspective::transmittance(const Ray& ray, Worker& worker) {
 
 bool Aerial_perspective::integrate(Ray& /*ray*/, Intersection& /*intersection*/,
 								   Sampler_filter /*filter*/, Worker& /*worker*/,
-								   float3& /*li*/, float3& /*transmittance*/, float3& /*weight*/) {
+								   float3& /*li*/, float3& /*transmittance*/) {
 	return false;
 }
 

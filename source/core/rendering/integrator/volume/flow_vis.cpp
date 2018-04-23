@@ -32,11 +32,11 @@ float3 Flow_vis::transmittance(const Ray& /*ray*/, Worker& /*worker*/) {
 
 bool Flow_vis::integrate(Ray& ray, Intersection& intersection,
 						 Sampler_filter filter, Worker& worker,
-						 float3& li, float3& transmittance, float3& weight) {
+						 float3& li, float3& transmittance) {
 	if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
-		weight = float3(1.f);
+	//	weight = float3(1.f);
 		return false;
 	}
 
@@ -60,7 +60,7 @@ bool Flow_vis::integrate(Ray& ray, Intersection& intersection,
 //	transmittance = math::saturate(float3(1.f - 4.f * fv));
 //	li = float3(0.);
 
-	weight = float3(1.);
+//	weight = float3(1.);
 
 	return true;
 }

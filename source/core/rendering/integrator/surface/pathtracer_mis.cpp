@@ -153,11 +153,9 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		if (!worker.interface_stack().empty()) {
 			float3 vli;
 			float3 vtr;
-			float3 weight;
-			const bool hit = worker.volume(ray, intersection, filter, vli, vtr, weight);
+			const bool hit = worker.volume(ray, intersection, filter, vli, vtr);
 
 			result += throughput * vli;
-			vtr *= weight;
 			throughput *= vtr;
 
 			if (!hit) {

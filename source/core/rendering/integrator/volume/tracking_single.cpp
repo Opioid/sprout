@@ -167,8 +167,8 @@ float3 Tracking_single::transmittance(const Ray& ray, Worker& worker) {
 
 bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 								Sampler_filter filter, Worker& worker,
-								float3& li, float3& transmittance, float3& weight) {
-	weight = float3(1.f);
+								float3& li, float3& transmittance) {
+//	weight = float3(1.f);
 
 	Transformation temp;
 	const auto& transformation = intersection.prop->transformation_at(ray.time, temp);

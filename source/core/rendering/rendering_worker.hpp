@@ -52,7 +52,7 @@ public:
 	using Material_sample = scene::material::Sample;
 
 	bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
-				float3& li, float3& transmittance, float3& weight);
+				float3& li, float3& transmittance);
 
 	float3 transmittance(const Ray& ray);
 

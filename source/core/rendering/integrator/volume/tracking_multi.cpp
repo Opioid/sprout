@@ -161,11 +161,11 @@ float3 Tracking_multi::transmittance(const Ray& ray, Worker& worker) {
 
 bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 							   Sampler_filter filter, Worker& worker,
-							   float3& li, float3& transmittance, float3& weight) {
+							   float3& li, float3& transmittance) {
 	if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
-		weight = float3(1.f);
+	//	weight = float3(1.f);
 		return false;
 	}
 
@@ -174,7 +174,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 	if (d < 0.0005f) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
-		weight = float3(1.f);
+	//	weight = float3(1.f);
 		return true;
 	}
 
@@ -190,7 +190,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 
 		li = float3(0.f);
 		transmittance = attenuation(d, mu_a);
-		weight = float3(1.f);
+	//	weight = float3(1.f);
 		return true;
 	}
 
@@ -208,7 +208,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 			if (t > d) {
 				li = float3(0.f);
 				transmittance = w;
-				weight = float3(1.f);
+			//	weight = float3(1.f);
 				return true;
 			}
 
@@ -238,8 +238,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 				intersection.geo.subsurface = true;
 
 				li = float3(0.f);
-				transmittance = float3(1.f);
-				weight = w * ws;
+			//	transmittance = float3(1.f);
+			//	weight = w * ws;
+				transmittance = w * ws;
 				return true;
 			} else {
 				SOFT_ASSERT(math::all_finite(wn));
@@ -265,7 +266,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 			if (t > d) {
 				li = float3(0.f);
 				transmittance = w;
-				weight = float3(1.f);
+			//	weight = float3(1.f);
 				return true;
 			}
 
@@ -284,8 +285,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection,
 				intersection.geo.subsurface = true;
 
 				li = float3(0.f);
-				transmittance = float3(1.f);
-				weight = w * ws;
+			//	transmittance = float3(1.f);
+			//	weight = w * ws;
+				transmittance = w * ws;
 				return true;
 			} else {
 				SOFT_ASSERT(math::all_finite(wn));

@@ -49,9 +49,8 @@ float4 Worker::li(Ray& ray, const scene::prop::Interface_stack& interface_stack)
 	if (!interface_stack_.empty()) {
 		float3 vli;
 		float3 vtr;
-		float3 weight;
 		if (!volume_integrator_->integrate(ray, intersection, Sampler_filter::Undefined, *this,
-										   vli, vtr, weight)) {
+										   vli, vtr)) {
 			return float4(vli, spectrum::luminance(vli));
 		}
 
@@ -59,7 +58,7 @@ float4 Worker::li(Ray& ray, const scene::prop::Interface_stack& interface_stack)
 
 		SOFT_ASSERT(math::all_finite_and_positive(li));
 
-		return float4(vtr * weight * li + vli, 1.f);
+		return float4(vtr * li + vli, 1.f);
 	} else if (intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined)) {
 		const float3 li = surface_integrator_->li(ray, intersection, *this);
 
@@ -72,9 +71,9 @@ float4 Worker::li(Ray& ray, const scene::prop::Interface_stack& interface_stack)
 }
 
 bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
-					float3& li, float3& transmittance, float3& weight) {
+					float3& li, float3& transmittance) {
 	return volume_integrator_->integrate(ray, intersection, filter, *this,
-										 li, transmittance, weight);
+										 li, transmittance);
 }
 
 float3 Worker::transmittance(const Ray& ray) {
