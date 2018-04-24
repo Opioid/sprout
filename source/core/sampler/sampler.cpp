@@ -19,7 +19,7 @@ Sampler::~Sampler() {
 
 void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
 					 uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) {
-	uint32_t num_samples = num_iterations * num_samples_per_iteration;
+	const uint32_t num_samples = num_iterations * num_samples_per_iteration;
 
 	if (num_samples != num_samples_
 	||  num_samples_per_iteration != num_samples_per_iteration_
@@ -28,6 +28,7 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
 		memory::free_aligned(current_sample_2D_);
 
 		num_samples_ = num_samples;
+		num_samples_per_iteration_ = num_samples_per_iteration;
 
 		num_dimensions_2D_ = num_dimensions_2D;
 		current_sample_2D_ = memory::allocate_aligned<uint32_t>(num_dimensions_2D +

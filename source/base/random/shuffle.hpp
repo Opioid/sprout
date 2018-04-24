@@ -2,6 +2,7 @@
 #define SU_BASE_RANDOM_SHUFFLE_HPP
 
 #include "generator.inl"
+#include <utility>
 
 namespace rnd {
 

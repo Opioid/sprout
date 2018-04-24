@@ -1,16 +1,15 @@
 #pragma once
 
 #include "sampler.hpp"
-#include <vector>
 
 namespace sampler {
 
-class alignas(64) Golden_ratio : public Sampler {
+class alignas(64) Golden_ratio final : public Sampler {
 
 public:
 
 	Golden_ratio(rnd::Generator& rng);
-	~Golden_ratio();
+	virtual ~Golden_ratio() override final;
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) override final;
@@ -31,12 +30,12 @@ private:
 	float*  samples_1D_;
 };
 
-class Golden_ratio_factory : public Factory {
+class Golden_ratio_factory final : public Factory {
 
 public:
 
 	Golden_ratio_factory(uint32_t num_samplers);
-	~Golden_ratio_factory();
+	virtual ~Golden_ratio_factory() override final;
 
 	virtual Sampler* create(uint32_t id, rnd::Generator& rng) const override final;
 
