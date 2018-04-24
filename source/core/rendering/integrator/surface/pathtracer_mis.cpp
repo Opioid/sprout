@@ -111,13 +111,12 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 														  Bxdf_type::Transmission);
 
 		if (singular) {
-			if (settings_.disable_caustics && !ray.is_primary()
-			&&  material_sample.ior_greater_one()
-			&&  worker.interface_stack().top_ior() == 1.f) {
-				break;
-			}
-
 			if (material_sample.ior_greater_one()) {
+				if (settings_.disable_caustics && !ray.is_primary()
+				&&  worker.interface_stack().top_ior() == 1.f) {
+					break;
+				}
+
 				const bool scattering = intersection.material()->is_scattering_volume();
 				treat_as_singular = scattering ? ray.is_primary() : true;
 			}
