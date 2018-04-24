@@ -51,6 +51,32 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 	return false;
 }
 
+bool Infinite_sphere::intersect_fast(const Transformation& transformation,
+									 Ray& ray, Node_stack& /*node_stack*/,
+									 Intersection& intersection) const {
+	if (ray.max_t >= Ray_max_t) {
+		intersection.epsilon = 5e-4f;
+
+		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
+		xyz = math::normalize(xyz);
+		intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+		intersection.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
+
+		intersection.p = ray.point(Ray_max_t);
+		const float3 n = -ray.direction;
+		intersection.geo_n = n;
+		intersection.part = 0;
+
+		ray.max_t = Ray_max_t;
+
+		SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
+		return true;
+	}
+
+	return false;
+}
+
 bool Infinite_sphere::intersect(const Transformation& /*transformation*/, Ray& ray,
 								Node_stack& /*node_stack*/, float& epsilon) const {
 	if (ray.max_t >= Ray_max_t) {

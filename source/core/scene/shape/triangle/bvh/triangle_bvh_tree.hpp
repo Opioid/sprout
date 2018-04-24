@@ -83,6 +83,8 @@ public:
 
     float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;
 
+	float2 interpolate_triangle_uv(VVector u, VVector v, uint32_t index) const;
+
 	float    triangle_bitangent_sign(uint32_t index) const;
     uint32_t triangle_material_index(uint32_t index) const;
 

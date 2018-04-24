@@ -55,6 +55,38 @@ bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Canopy::intersect_fast(const Transformation& transformation, Ray& ray,
+							Node_stack& /*node_stack*/, Intersection& intersection) const {
+	if (ray.max_t >= Ray_max_t) {
+		if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
+			return false;
+		}
+
+		intersection.epsilon = 5e-4f;
+
+		intersection.p = ray.point(Ray_max_t);
+
+		float3 n = -ray.direction;
+		intersection.geo_n = n;
+		intersection.part = 0;
+
+		// paraboloid, so doesn't match hemispherical camera
+		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
+		xyz = math::normalize(xyz);
+		float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+		intersection.uv[0] = 0.5f * disk[0] + 0.5f;
+		intersection.uv[1] = 0.5f * disk[1] + 0.5f;
+
+		ray.max_t = Ray_max_t;
+
+		SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
+		return true;
+	}
+
+	return false;
+}
+
 bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 					   Node_stack& /*node_stack*/, float& epsilon) const {
 	if (ray.max_t >= Ray_max_t) {

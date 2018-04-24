@@ -113,6 +113,69 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Sphere::intersect_fast(const Transformation& transformation, Ray& ray,
+							Node_stack& /*node_stack*/, Intersection& intersection) const {
+	float3 v = transformation.position - ray.origin;
+	float b = math::dot(v, ray.direction);
+	float radius = transformation.scale[0];
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
+
+	if (det > 0.f) {
+		float dist = std::sqrt(det);
+		float t0 = b - dist;
+
+		if (t0 > ray.min_t && t0 < ray.max_t) {
+			intersection.epsilon = 5e-4f * t0;
+
+			float3 p = ray.point(t0);
+			float3 n = math::normalize(p - transformation.position);
+
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+			xyz = math::normalize(xyz);
+
+			float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
+			float theta = std::acos(xyz[1]);
+
+			intersection.p = p;
+			intersection.geo_n = n;
+			intersection.uv = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
+			intersection.part = 0;
+
+			SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
+			ray.max_t = t0;
+			return true;
+		}
+
+		float t1 = b + dist;
+
+		if (t1 > ray.min_t && t1 < ray.max_t) {
+			intersection.epsilon = 5e-4f * t1;
+
+			float3 p = ray.point(t1);
+			float3 n = math::normalize(p - transformation.position);
+
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+			xyz = math::normalize(xyz);
+
+			float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
+			float theta = std::acos(xyz[1]);
+
+			intersection.p = p;
+			intersection.geo_n = n;
+			intersection.uv = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
+			intersection.part = 0;
+
+			SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
+			ray.max_t = t1;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 					   Node_stack& /*node_stack*/, float& epsilon) const {
 	float3 v = transformation.position - ray.origin;

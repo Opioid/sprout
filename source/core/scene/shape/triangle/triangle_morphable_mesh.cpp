@@ -78,6 +78,42 @@ bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Morphable_mesh::intersect_fast(const Transformation& transformation, Ray& ray,
+									Node_stack& node_stack,
+									shape::Intersection& intersection) const {
+	math::Ray tray;
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+	tray.min_t = ray.min_t;
+	tray.max_t = ray.max_t;
+
+	Intersection pi;
+	if (tree_.intersect(tray, node_stack, pi)) {
+		ray.max_t = tray.max_t;
+
+		float epsilon = 3e-3f * tray.max_t;
+
+		float3 p_w = ray.point(tray.max_t);
+
+		const float2 uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
+
+		float3	 geo_n			= tree_.triangle_normal(pi.index);
+		uint32_t material_index = tree_.triangle_material_index(pi.index);
+
+		float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
+
+		intersection.p = p_w;
+		intersection.geo_n = geo_n_w;
+		intersection.uv = uv;
+		intersection.epsilon = epsilon;
+		intersection.part = material_index;
+
+		return true;
+	}
+
+	return false;
+}
+
 bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& node_stack, float& epsilon) const {
 	math::Ray tray;

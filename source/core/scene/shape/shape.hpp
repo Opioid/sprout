@@ -42,6 +42,9 @@ public:
 	virtual bool intersect(const Transformation& transformation, Ray& ray,
 						   Node_stack& node_stack, Intersection& intersection) const = 0;
 
+	virtual bool intersect_fast(const Transformation& transformation, Ray& ray,
+								Node_stack& node_stack, Intersection& intersection) const = 0;
+
 	virtual bool intersect(const Transformation& transformation, Ray& ray,
 						   Node_stack& node_stack, float& epsilon) const = 0;
 

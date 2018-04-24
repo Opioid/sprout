@@ -130,10 +130,10 @@ private:
 	double simulation_time_ = 0.0;
 	uint64_t current_tick_ = 0;
 
-	bvh::Builder<prop::Prop> prop_builder_;
-	prop::BVH_wrapper		 prop_bvh_;
+	bvh::Builder<prop::Prop> bvh_builder_;
 
-	prop::BVH_wrapper        volume_bvh_;
+	prop::BVH_wrapper prop_bvh_;
+	prop::BVH_wrapper volume_bvh_;
 
 	light::Null_light null_light_;
 

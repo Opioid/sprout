@@ -483,6 +483,11 @@ float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const {
 }
 
 template<typename Data>
+float2 Tree<Data>::interpolate_triangle_uv(VVector u, VVector v, uint32_t index) const {
+	return data_.interpolate_uv(u, v, index);
+}
+
+template<typename Data>
 float Tree<Data>::triangle_bitangent_sign(uint32_t index) const {
 	return data_.bitangent_sign(index);
 }

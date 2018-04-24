@@ -31,6 +31,9 @@ public:
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 				   Intersection& intersection) const;
 
+	bool intersect_fast(scene::Ray& ray, shape::Node_stack& node_stack,
+						Intersection& intersection) const;
+
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, float& epsilon) const;
 
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;

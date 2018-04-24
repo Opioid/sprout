@@ -52,6 +52,39 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Celestial_disk::intersect_fast(const Transformation& transformation, Ray& ray,
+									Node_stack& /*node_stack*/, Intersection& intersection) const {
+	const float3& n = transformation.rotation.r[2];
+	const float b = math::dot(n, ray.direction);
+
+	if (b > 0.f) {
+		return false;
+	}
+
+	const float radius = transformation.scale[0];
+	const float det = (b * b) - math::dot(n, n) + (radius * radius);
+
+	if (det > 0.f && ray.max_t >= Ray_max_t) {
+		constexpr float hit_t = Almost_ray_max_t;
+		ray.max_t = hit_t;
+
+		intersection.p = ray.point(hit_t);
+		intersection.geo_n = n;
+
+		const float3 k = ray.direction - n;
+		const float3 sk = k / radius;
+		intersection.uv[0] = (math::dot(intersection.t, sk) + 1.f) * 0.5f;
+		intersection.uv[1] = (math::dot(intersection.b, sk) + 1.f) * 0.5f;
+
+		intersection.epsilon = 5e-4f;
+		intersection.part = 0;
+
+		return true;
+	}
+
+	return false;
+}
+
 bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& /*node_stack*/, float& epsilon) const {
 	const float3& n = transformation.rotation.r[2];

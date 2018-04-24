@@ -61,6 +61,47 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Disk::intersect_fast(const Transformation& transformation, Ray& ray,
+						  Node_stack& /*node_stack*/, Intersection& intersection) const {
+	const float3& normal = transformation.rotation.r[2];
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
+		float3 k = p - transformation.position;
+		float l = math::dot(k, k);
+
+		float radius = transformation.scale[0];
+
+		if (l <= radius * radius) {
+			intersection.p = p;
+			intersection.geo_n = normal;
+
+			float3 t = -transformation.rotation.r[0];
+			float3 b = -transformation.rotation.r[1];
+
+			float3 sk = k / radius;
+			float uv_scale = 0.5f * transformation.scale[2];
+			intersection.uv[0] = (math::dot(t, sk) + 1.f) * uv_scale;
+			intersection.uv[1] = (math::dot(b, sk) + 1.f) * uv_scale;
+
+			intersection.epsilon = 5e-4f * hit_t;
+			intersection.part = 0;
+
+			SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
+			ray.max_t = hit_t;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 bool Disk::intersect(const Transformation& transformation, Ray& ray,
 					 Node_stack& /*node_stack*/, float& epsilon) const {
 	const float3& normal = transformation.rotation.r[2];

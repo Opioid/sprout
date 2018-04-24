@@ -85,7 +85,7 @@ bool Scene::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
 
 bool Scene::intersect_volume(Ray& ray, Node_stack& node_stack,
 							 prop::Intersection& intersection) const {
-	return volume_bvh_.intersect(ray, node_stack, intersection);
+	return volume_bvh_.intersect_fast(ray, node_stack, intersection);
 }
 
 bool Scene::intersect_p(const Ray& ray, Node_stack& node_stack) const {
@@ -257,11 +257,11 @@ void Scene::compile(thread::Pool& pool) {
 	}
 
 	// rebuild prop BVH
-	prop_builder_.build(prop_bvh_.tree(), finite_props_);
+	bvh_builder_.build(prop_bvh_.tree(), finite_props_);
 	prop_bvh_.set_infinite_props(infinite_props_);
 
 	// rebuild volume BVH
-	prop_builder_.build(volume_bvh_.tree(), volumes_);
+	bvh_builder_.build(volume_bvh_.tree(), volumes_);
 	volume_bvh_.set_infinite_props(infinite_volumes_);
 
 	// resort lights PDF

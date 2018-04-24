@@ -45,7 +45,7 @@ float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, Worker& work
 
 			float3 mu_a, mu_s;
 			material.collision_coefficients(transformation, p, Sampler_filter::Nearest,
-								worker, mu_a, mu_s);
+											worker, mu_a, mu_s);
 
 			const float3 mu_t = mu_a + mu_s;
 

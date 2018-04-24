@@ -63,6 +63,22 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack,
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
 
+bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack,
+						  shape::Intersection& intersection) const {
+	if (!visible(ray.depth)) {
+		return false;
+	}
+
+	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+		return false;
+	}
+
+	entity::Composed_transformation temp;
+	const auto& transformation = transformation_at(ray.time, temp);
+
+	return shape_->intersect_fast(transformation, ray, node_stack, intersection);
+}
+
 bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
 //	if (!visible(ray.depth)) {
 //		return false;
