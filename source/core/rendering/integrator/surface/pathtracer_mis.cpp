@@ -188,8 +188,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		if (ray.depth > settings_.min_bounces) {
-			const float q = std::max(spectrum::luminance(throughput),
-									 settings_.path_continuation_probability);
+			const float q = settings_.path_continuation_probability;
 			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
 				break;
 			}
