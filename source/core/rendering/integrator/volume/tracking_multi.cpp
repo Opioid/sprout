@@ -295,8 +295,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 			}
 		}
 	}
-
-	return true;
 }
 
 size_t Tracking_multi::num_bytes() const {
