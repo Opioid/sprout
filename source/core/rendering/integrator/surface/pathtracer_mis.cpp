@@ -17,6 +17,9 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace rendering::integrator::surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
@@ -92,7 +95,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-
+const bool do_mis = worker.interface_stack().top_ior() == 1.f;
 		result += throughput * sample_lights(ray, ray_offset, intersection,
 											 material_sample, filter, worker);
 
@@ -171,12 +174,20 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		if (worker.interface_stack().top_ior() == 1.f || treat_as_singular) {
+
 			bool pure_emissive;
 			const float3 radiance = evaluate_light(ray, intersection, sample_result,
 												   treat_as_singular, is_translucent, filter,
 												   worker, pure_emissive);
 
+
+			if (!do_mis && !treat_as_singular) {
+				std::cout << "problem: " << radiance << std::endl;
+			}
+
+			if (do_mis || treat_as_singular) {
 			result += throughput * radiance;
+			}
 
 			if (pure_emissive) {
 				break;
