@@ -46,7 +46,7 @@ public:
 private:
 
 	float3 sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
-						 const Material_sample& material_sample,
+						 const Material_sample& material_sample, bool do_mis,
 						 Sampler_filter filter, Worker& worker);
 
 	float3 evaluate_light(const Light& light, float light_weight, const Ray& history,
