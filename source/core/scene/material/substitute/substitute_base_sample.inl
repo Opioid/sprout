@@ -100,7 +100,7 @@ void Sample_base<Diffuse, Layer_data...>::pure_specular_sample_and_coating(
 }
 
 template<typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::set(const float3& color, const float3& radiance,
+void Sample_base<Diffuse, Layer_data...>::Layer::set(f_float3 color, f_float3 radiance,
 													 float ior, float constant_f0,
 													 float roughness, float metallic) {
 	diffuse_color_ = (1.f - metallic) * color;
@@ -116,7 +116,7 @@ void Sample_base<Diffuse, Layer_data...>::Layer::set(const float3& color, const 
 
 template<typename Diffuse, class... Layer_data>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(
-	f_float3 wi, f_float3 wo, const float3& h, float wo_dot_h) const {
+	f_float3 wi, f_float3 wo, f_float3 h, float wo_dot_h) const {
 	const float n_dot_wi = clamp_n_dot(wi);
 	const float n_dot_wo = clamp_abs_n_dot(wo);
 

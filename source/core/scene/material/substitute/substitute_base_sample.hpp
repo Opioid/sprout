@@ -37,11 +37,10 @@ protected:
 public:
 
 	struct Layer : material::Sample::Layer, Layer_data... {
-		void set(const float3& color, const float3& radiance, float ior,
+		void set(f_float3 color, f_float3 radiance, float ior,
 				 float constant_f0, float roughness, float metallic);
 
-		bxdf::Result base_evaluate(f_float3 wi, f_float3 wo, const float3& h,
-								   float wo_dot_h) const;
+		bxdf::Result base_evaluate(f_float3 wi, f_float3 wo, f_float3 h, float wo_dot_h) const;
 
 		void diffuse_sample(f_float3 wo, sampler::Sampler& sampler,
 							bxdf::Sample& result) const;
