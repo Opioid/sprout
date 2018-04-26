@@ -10,7 +10,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-bxdf::Result Sample::evaluate(const float3& wi) const {
+bxdf::Result Sample::evaluate(f_float3 wi) const {
 	const float phase = layer_.phase(wo_, wi);
 
 	return { float3(phase), phase };
@@ -36,14 +36,14 @@ void Sample::set(float anisotropy) {
 	layer_.anisotropy = anisotropy;
 }
 
-float Sample::Layer::phase(const float3& wo, const float3& wi) const {
+float Sample::Layer::phase(f_float3 wo, f_float3 wi) const {
 	const float g = anisotropy;
 	return phase_hg(math::dot(wo, wi), g);
 //	const float k = 1.55f * g - (0.55f * g) * (g * g);
 //	return phase_schlick(math::dot(wo, wi), k);
 }
 
-float Sample::Layer::sample(const float3& wo, float2 r2, float3& wi) const {
+float Sample::Layer::sample(f_float3 wo, float2 r2, float3& wi) const {
 	const float g = anisotropy;
 
 	float cos_theta;

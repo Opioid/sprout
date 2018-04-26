@@ -14,7 +14,7 @@ namespace scene::material::glass {
 Glass_rough::Glass_rough(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, false) {}
 
-const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Glass_rough::sample(f_float3 wo, const Renderstate& rs,
 											Sampler_filter filter, sampler::Sampler& /*sampler*/,
 											const Worker& worker) const {
 	auto& sample = worker.sample<Sample_rough>();

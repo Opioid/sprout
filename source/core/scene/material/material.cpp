@@ -29,7 +29,7 @@ void Material::compile() {}
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,
+float3 Material::sample_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/,
 								 float /*time*/, Sampler_filter /*filter*/,
 								 const Worker& /*worker*/) const {
 	return float3(0.f);
@@ -62,7 +62,7 @@ float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter,
 	}
 }
 
-float3 Material::thin_absorption(const float3& /*wo*/, const float3& /*n*/, float2 uv, float time,
+float3 Material::thin_absorption(f_float3 /*wo*/, f_float3 /*n*/, float2 uv, float time,
 								 Sampler_filter filter, const Worker& worker) const {
 	return float3(opacity(uv, time, filter, worker));
 }

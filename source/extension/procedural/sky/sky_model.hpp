@@ -23,9 +23,9 @@ public:
 	void set_ground_albedo(const float3& albedo);
 	void set_turbidity(float turbidity);
 
-	float3 evaluate_sky(const float3& wi) const;
+	float3 evaluate_sky(f_float3 wi) const;
 
-	float3 evaluate_sky_and_sun(const float3& wi) const;
+	float3 evaluate_sky_and_sun(f_float3 wi) const;
 
 	static constexpr float3 zenith() { return float3(0.f, 1.f, 0.f); };
 

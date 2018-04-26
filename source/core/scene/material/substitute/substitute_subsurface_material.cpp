@@ -15,7 +15,7 @@ namespace scene::material::substitute {
 Material_subsurface::Material_subsurface(const Sampler_settings& sampler_settings) :
 	Material_base(sampler_settings, false) {}
 
-const material::Sample& Material_subsurface::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Material_subsurface::sample(f_float3 wo, const Renderstate& rs,
 													Sampler_filter filter,
 													sampler::Sampler& /*sampler*/,
 													const Worker& worker) const {

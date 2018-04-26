@@ -11,8 +11,8 @@ struct Transformation {
 
 	bool operator!=(const Transformation& o) const;
 
-	Vector3f_a position;
-	Vector3f_a scale;
+	float3 position;
+	float3 scale;
 	Quaternion rotation;
 };
 

@@ -26,11 +26,11 @@ public:
 protected:
 
 	template<typename Layer>
-	Result evaluate(const float3& wi, const float3& wo, const float3& h,
+	Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
 					float wo_dot_h, float internal_ior, const Layer& layer) const;
 
 	template<typename Layer>
-	void sample(const float3& wo, float internal_ior,
+	void sample(f_float3 wo, float internal_ior,
 				const Layer& layer, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;
 
@@ -50,11 +50,11 @@ public:
 protected:
 
 	template<typename Layer>
-	Result evaluate(const float3& wi, const float3& wo, const float3& h,
+	Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
 					float wo_dot_h, float internal_ior, const Layer& layer) const;
 
 	template<typename Layer>
-	void sample(const float3& wo, float internal_ior,
+	void sample(f_float3 wo, float internal_ior,
 				const Layer& layer, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;
 
@@ -71,10 +71,10 @@ class Coating_layer : public Sample::Layer, public Coating {
 
 public:
 
-	Result evaluate(const float3& wi, const float3& wo, const float3& h,
+	Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
 					float wo_dot_h, float internal_ior) const;
 
-	void sample(const float3& wo, float internal_ior, sampler::Sampler& sampler,
+	void sample(f_float3 wo, float internal_ior, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;
 };
 

@@ -51,8 +51,8 @@ public:
 	virtual bool intersect_p(const Transformation& transformation,
 							 const Ray& ray, Node_stack& node_stack) const = 0;
 
-//	virtual bool intersect_p(VVector ray_origin, VVector ray_direction,
-//							 VVector ray_min_t, VVector ray_max_t,
+//	virtual bool intersect_p(FVector ray_origin, FVector ray_direction,
+//							 FVector ray_min_t, FVector ray_max_t,
 //							 const Transformation& transformation,
 //							 Node_stack& node_stack) const;
 

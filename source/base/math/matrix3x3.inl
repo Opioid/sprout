@@ -6,7 +6,7 @@
 #include <cmath>
 
 namespace math {
-
+/*
 template<typename T>
 Matrix3x3<T>::Matrix3x3() {}
 
@@ -151,11 +151,10 @@ void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up) {
 	Vector3<T> x = normalize(cross(up, z));
 	Vector3<T> y = cross(z, x);
 
-	/*
-	m.m00 =  x.x;		  m.m01 = y.x;		    m.m02 = z.x;
-	m.m10 =  x.y;         m.m11 = y.y;          m.m12 = z.y;
-	m.m20 =  x.z;         m.m21 = y.z;          m.m22 = z.z;
-	*/
+//	m.m00 =  x.x;		  m.m01 = y.x;		    m.m02 = z.x;
+//	m.m10 =  x.y;         m.m11 = y.y;          m.m12 = z.y;
+//	m.m20 =  x.z;         m.m21 = y.z;          m.m22 = z.z;
+
 	//Confusion!
 
 	m.m00 =  x.x;		  m.m01 = x.y;		    m.m02 = x.z;
@@ -163,22 +162,21 @@ void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up) {
 	m.m20 =  z.x;         m.m21 = z.y;          m.m22 = z.z;
 }
 
-/*
-template<typename T>
-void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
-	m.rows[2] = v;
+//template<typename T>
+//void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
+//	m.rows[2] = v;
 
-	if (v.x < T(0.6) && v.x > -T(0.6)) {
-		m.rows[1] = Vector3<T>(T(1), T(0), T(0));
-	} else if (v.y < T(0.6) && v.y > T(0.6)) {
-		m.rows[1] = Vector3<T>(T(0), T(1), T(0));
-	} else {
-		m.rows[1] = Vector3<T>(T(0), T(0), T(1));
-	}
+//	if (v.x < T(0.6) && v.x > -T(0.6)) {
+//		m.rows[1] = Vector3<T>(T(1), T(0), T(0));
+//	} else if (v.y < T(0.6) && v.y > T(0.6)) {
+//		m.rows[1] = Vector3<T>(T(0), T(1), T(0));
+//	} else {
+//		m.rows[1] = Vector3<T>(T(0), T(0), T(1));
+//	}
 
-	m.rows[0] = normalize(cross(v, m.rows[1]));
-	m.rows[1] = cross(m.rows[0], m.rows[2]);
-}*/
+//	m.rows[0] = normalize(cross(v, m.rows[1]));
+//	m.rows[1] = cross(m.rows[0], m.rows[2]);
+//}
 
 template<typename T>
 void set_scale(Matrix3x3<T>& m, T x, T y, T z) {
@@ -266,7 +264,7 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
 						m.m01, m.m11, m.m21,
 						m.m02, m.m12, m.m22);
 }
-
+*/
 //==============================================================================
 // Aligned 3x3 float matrix
 //==============================================================================

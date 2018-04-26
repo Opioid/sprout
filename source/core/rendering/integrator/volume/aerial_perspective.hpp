@@ -43,7 +43,7 @@ private:
 									 Worker& worker, float3& transmittance);
 	*/
 
-	const Material_sample& sample(const float3& wo, float time, const Material& material,
+	const Material_sample& sample(f_float3 wo, float time, const Material& material,
 								  Sampler_filter filter, Worker& worker);
 
 	const Settings settings_;

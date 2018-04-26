@@ -65,7 +65,7 @@ void Model::set_turbidity(float turbidity) {
 	dirty_ = true;
 }
 
-float3 Model::evaluate_sky(const float3& wi) const {
+float3 Model::evaluate_sky(f_float3 wi) const {
 	const float wi_dot_z = std::max(wi[1], 0.00001f);
 	const float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
@@ -95,7 +95,7 @@ float3 Model::evaluate_sky(const float3& wi) const {
 	return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
 }
 
-float3 Model::evaluate_sky_and_sun(const float3& wi) const {
+float3 Model::evaluate_sky_and_sun(f_float3 wi) const {
 	const float wi_dot_z = std::max(wi[1], 0.00001f);
 	const float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 

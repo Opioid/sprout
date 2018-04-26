@@ -13,7 +13,7 @@ namespace scene::material::substitute {
 Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_base(sampler_settings, two_sided) {}
 
-const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
 										 Sampler_filter filter, sampler::Sampler& /*sampler*/,
 										 const Worker& worker) const {
 	SOFT_ASSERT(!rs.subsurface);

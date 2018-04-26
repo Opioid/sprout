@@ -14,32 +14,10 @@ template<typename T> struct Matrix4x4;
  * Generic 3x3 matrix
  *
  ****************************************************************************/
-
+/*
 template<typename T> 
 struct Matrix3x3 {
-	union {
-		struct {
-			T m00, m01, m02,
-			  m10, m11, m12, 
-			  m20, m21, m22;
-		};
-
-		struct {
-			T m[9]; 
-		};
-
-		struct {
-			Vector3<T> rows[3];
-		};
-
-		struct {
-			Vector3<T> x, y, z;
-		};
-
-		struct {
-			Vector3<T> x, y, z;
-		} v3;
-	};
+	Vector3<T> r[3];
 
 	Matrix3x3();
 
@@ -114,7 +92,7 @@ void set_rotation(Matrix3x3<T>& m, const Vector3<T>& v, T a);
 
 template<typename T>
 Matrix3x3<T> transposed(const Matrix3x3<T>& m);
-
+*/
 /****************************************************************************
  *
  * Aligned 3x3 float matrix

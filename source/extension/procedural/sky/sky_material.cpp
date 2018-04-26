@@ -26,7 +26,7 @@ using namespace scene;
 
 Sky_material::Sky_material(Model& model) : Material(model) {}
 
-const material::Sample& Sky_material::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Sky_material::sample(f_float3 wo, const Renderstate& rs,
 											 Sampler_filter /*filter*/,
 											 sampler::Sampler& /*sampler*/,
 											 const Worker& worker) const {
@@ -41,7 +41,7 @@ const material::Sample& Sky_material::sample(const float3& wo, const Renderstate
 	return sample;
 }
 
-float3 Sky_material::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
+float3 Sky_material::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
 									 float /*time*/, Sampler_filter /*filter*/,
 									 const Worker& /*worker*/) const {
 	return model_.evaluate_sky(wi);
@@ -70,7 +70,7 @@ Sky_baked_material::Sky_baked_material(Model& model) : Material(model) {}
 
 Sky_baked_material::~Sky_baked_material() {}
 
-const material::Sample& Sky_baked_material::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Sky_baked_material::sample(f_float3 wo, const Renderstate& rs,
 												   Sampler_filter filter,
 												   sampler::Sampler& /*sampler*/,
 												   const Worker& worker) const {
@@ -88,7 +88,7 @@ const material::Sample& Sky_baked_material::sample(const float3& wo, const Rende
 	return sample;
 }
 
-float3 Sky_baked_material::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
+float3 Sky_baked_material::sample_radiance(f_float3 /*wi*/, float2 uv, float /*area*/,
 										   float /*time*/, Sampler_filter filter,
 										   const Worker& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);

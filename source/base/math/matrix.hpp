@@ -6,9 +6,11 @@ namespace math {
 struct alignas(16) Matrix3x3f_a;
 struct alignas(16) Matrix4x4f_a;
 	
+//template<typename T> struct Matrix3x3;
+
 }
 
-// using float3x3 = Matrix3x3<float>;
+//using float3x3 = math::Matrix3x3<float>;
 using float3x3 = math::Matrix3x3f_a;
 using float4x4 = math::Matrix4x4f_a;
 

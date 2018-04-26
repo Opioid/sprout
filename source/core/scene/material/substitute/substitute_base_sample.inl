@@ -21,7 +21,7 @@ float3 Sample_base<Diffuse, Layer_data...>::radiance() const {
 template<typename Diffuse, class... Layer_data>
 template<typename Coating>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
-	const float3& wi, const Coating& coating_layer) const {
+	f_float3 wi, const Coating& coating_layer) const {
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
 
@@ -116,7 +116,7 @@ void Sample_base<Diffuse, Layer_data...>::Layer::set(const float3& color, const 
 
 template<typename Diffuse, class... Layer_data>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(
-	const float3& wi, const float3& wo, const float3& h, float wo_dot_h) const {
+	f_float3 wi, f_float3 wo, const float3& h, float wo_dot_h) const {
 	const float n_dot_wi = clamp_n_dot(wi);
 	const float n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -138,7 +138,7 @@ bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(
 }
 
 template<typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(const float3& wo,
+void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(f_float3 wo,
 																sampler::Sampler& sampler,
 																bxdf::Sample& result) const {
 	const float n_dot_wo = clamp_abs_n_dot(wo);
@@ -156,7 +156,7 @@ void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(const float3& wo
 }
 
 template<typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(const float3& wo,
+void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(f_float3 wo,
 																 sampler::Sampler& sampler,
 																 bxdf::Sample& result) const {
 	const float n_dot_wo = clamp_abs_n_dot(wo);
@@ -174,7 +174,7 @@ void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(const float3& w
 
 template<typename Diffuse, class... Layer_data>
 void Sample_base<Diffuse, Layer_data...>::Layer::pure_specular_sample(
-	const float3& wo, sampler::Sampler& sampler, bxdf::Sample& result) const {
+	f_float3 wo, sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float n_dot_wo = clamp_abs_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);

@@ -13,7 +13,7 @@ namespace scene::material::glass {
 Glass::Glass(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, false) {}
 
-const material::Sample& Glass::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Glass::sample(f_float3 wo, const Renderstate& rs,
 									  Sampler_filter filter, sampler::Sampler& /*sampler*/,
 									  const Worker& worker) const {
 	auto& sample = worker.sample<Sample>();
@@ -33,7 +33,8 @@ const material::Sample& Glass::sample(const float3& wo, const Renderstate& rs,
 	return sample;
 }
 
-float3 Glass::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+float3 Glass::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
+									 const Worker& /*worker*/) const {
 	return absorption_coefficient_;
 }
 

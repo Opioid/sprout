@@ -16,7 +16,7 @@ const material::Sample::Layer& Sample_thin::base_layer() const {
 	return layer_;
 }
 
-bxdf::Result Sample_thin::evaluate(const float3& /*wi*/) const {
+bxdf::Result Sample_thin::evaluate(f_float3 /*wi*/) const {
 	return { float3::identity(), 0.f };
 }
 

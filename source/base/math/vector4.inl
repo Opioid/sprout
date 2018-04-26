@@ -23,6 +23,11 @@ template<typename T>
 constexpr Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
 
 template<typename T>
+constexpr Vector3<T> Vector4<T>::xyz() const {
+	return Vector3<T>(v);
+}
+
+template<typename T>
 constexpr T Vector4<T>::operator[](uint32_t i) const{
 	return v[i];
 }
@@ -49,15 +54,25 @@ constexpr Vector4<T> Vector4<T>::operator/(T s) const {
 }
 
 template<typename T>
-constexpr Vector4<T>& Vector4<T>::operator+=(const Vector4& v) {
-	v[0] += v[0]; v[1] += v[1]; v[2] += v[2]; v[3] += v[3];
+constexpr Vector4<T>& Vector4<T>::operator+=(const Vector4& a) {
+	v[0] += a[0]; v[1] += a[1]; v[2] += a[2]; v[3] += a[3];
 	return *this;
 }
 
 template<typename T>
-constexpr Vector4<T>& Vector4<T>::operator-=(const Vector4& v) {
-	v[0] -= v[0]; v[1] -= v[1]; v[2] -= v[2]; v[3] -= v[3];
+constexpr Vector4<T>& Vector4<T>::operator-=(const Vector4& a) {
+	v[0] -= a[0]; v[1] -= a[1]; v[2] -= a[2]; v[3] -= a[3];
 	return *this;
+}
+
+template<typename T>
+static constexpr bool operator==(const Vector4<T>& a, const Vector4<T>& b) {
+	return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
+}
+
+template<typename T>
+static constexpr bool operator!=(const Vector4<T>& a, const Vector4<T>& b) {
+	return a[0] != b[0] && a[1] != b[1] && a[2] != b[2] && a[3] != b[3];
 }
 
 template<typename T>
@@ -87,7 +102,7 @@ inline constexpr Vector4f_a::Vector4f_a(float s) : v{s, s, s, s} {}
 inline constexpr Vector4f_a::Vector4f_a(const Vector2<float> xy, float z, float w) :
 	v{xy[0], xy[1], z, w} {}
 
-inline constexpr Vector4f_a::Vector4f_a(const Vector3f_a& xyz, float w) :
+inline constexpr Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :
 	v{xyz[0], xyz[1], xyz[2], w} {}
 
 inline constexpr Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :
@@ -109,42 +124,42 @@ inline constexpr Vector4f_a Vector4f_a::identity() {
 	return Vector4f_a(0.f, 0.f, 0.f, 0.f);
 }
 
-static inline constexpr Vector4f_a operator+(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr Vector4f_a operator+(FVector4f_a a, FVector4f_a b) {
 	return Vector4f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
-static inline constexpr Vector4f_a operator*(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr Vector4f_a operator*(FVector4f_a a, FVector4f_a b) {
 	return Vector4f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]);
 }
 
-static inline constexpr Vector4f_a operator/(const Vector4f_a& a, float s) {
+static inline constexpr Vector4f_a operator/(FVector4f_a a, float s) {
 	const float is = 1.f / s;
 	return Vector4f_a(is * a[0], is * a[1], is * a[2], is * a[3]);
 }
 
-static inline constexpr Vector4f_a& operator+=(Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr Vector4f_a& operator+=(Vector4f_a& a, FVector4f_a b) {
 	a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; a[3] += b[3];
 	return a;
 }
 
-static inline constexpr Vector4f_a& operator-=(Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr Vector4f_a& operator-=(Vector4f_a& a, FVector4f_a b) {
 	a[0] -= b[0]; a[1] -= b[1]; a[2] -= b[2]; a[3] -= b[3];
 	return a;
 }
 
-static inline constexpr bool operator==(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr bool operator==(FVector4f_a a, FVector4f_a b) {
 	return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
 }
 
-static inline constexpr bool operator!=(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr bool operator!=(FVector4f_a a, FVector4f_a b) {
 	return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
-static inline constexpr Vector4f_a operator*(float s, const Vector4f_a& a) {
+static inline constexpr Vector4f_a operator*(float s, FVector4f_a a) {
 	return Vector4f_a(s * a[0], s * a[1], s * a[2], s * a[3]);
 }
 
-static inline constexpr float dot(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr float dot(FVector4f_a a, FVector4f_a b) {
 	return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 

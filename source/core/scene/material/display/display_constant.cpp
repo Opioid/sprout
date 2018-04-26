@@ -16,7 +16,7 @@ namespace scene::material::display {
 Constant::Constant(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
-const material::Sample& Constant::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Constant::sample(f_float3 wo, const Renderstate& rs,
 										 Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
 										 const Worker& worker) const {
 	auto& sample = worker.sample<Sample>();
@@ -30,7 +30,7 @@ const material::Sample& Constant::sample(const float3& wo, const Renderstate& rs
 	return sample;
 }
 
-float3 Constant::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,
+float3 Constant::sample_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/,
 								 float /*time*/, Sampler_filter /*filter*/,
 								 const Worker& /*worker*/) const {
 	return emission_;

@@ -232,7 +232,7 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volum
 }
 */
 
-const scene::material::Sample& Aerial_perspective::sample(const float3& wo, float time,
+const scene::material::Sample& Aerial_perspective::sample(f_float3 wo, float time,
 														  const Material& material,
 														  Sampler_filter filter,
 														  Worker& worker) {

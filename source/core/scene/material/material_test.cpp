@@ -48,7 +48,7 @@ bool check(const float3& result,
 	return true;
 }
 
-bool check(const bxdf::Sample& result, const float3& wo, const Sample::Layer& layer) {
+bool check(const bxdf::Sample& result, f_float3 wo, const Sample::Layer& layer) {
 	if (!std::isfinite(result.pdf)
 	||  !math::all_finite(result.wi)
 	||  !math::all_finite(result.reflection)) {

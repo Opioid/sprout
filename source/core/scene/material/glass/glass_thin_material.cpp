@@ -14,7 +14,7 @@ namespace scene::material::glass {
 Glass_thin::Glass_thin(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, true) {}
 
-const material::Sample& Glass_thin::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Glass_thin::sample(f_float3 wo, const Renderstate& rs,
 										  Sampler_filter filter, sampler::Sampler& /*sampler*/,
 										  const Worker& worker) const {
 	auto& sample = worker.sample<Sample_thin>();
@@ -35,8 +35,8 @@ const material::Sample& Glass_thin::sample(const float3& wo, const Renderstate& 
 	return sample;
 }
 
-float3 Glass_thin::thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
-								  Sampler_filter filter, const Worker& worker) const {
+float3 Glass_thin::thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
+								   Sampler_filter filter, const Worker& worker) const {
 	const float  n_dot_wi = clamp_abs_dot(wo, n);
 	const float  approximated_distance = thickness_ / n_dot_wi;
 	const float3 attenuation = rendering::attenuation(approximated_distance,

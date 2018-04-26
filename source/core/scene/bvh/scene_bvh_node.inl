@@ -74,8 +74,8 @@ inline bool Node::intersect_p(const math::Ray& ray) const {
 
 // I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
-inline bool Node::intersect_p(VVector ray_origin, VVector ray_inv_direction,
-							  VVector ray_min_t, VVector ray_max_t) const {
+inline bool Node::intersect_p(FVector ray_origin, FVector ray_inv_direction,
+							  FVector ray_min_t, FVector ray_max_t) const {
 	const Vector bb_min = simd::load_float3(min_.v/*bounds[0]*/);
 	const Vector bb_max = simd::load_float3(max_.v/*bounds[1]*/);
 

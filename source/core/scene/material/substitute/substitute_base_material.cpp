@@ -12,7 +12,7 @@ namespace scene::material::substitute {
 Material_base::Material_base(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
-float3 Material_base::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
+float3 Material_base::sample_radiance(f_float3 /*wi*/, float2 uv, float /*area*/,
 									  float /*time*/, Sampler_filter filter,
 									  const Worker& worker) const {
 	if (emission_map_.is_valid()) {

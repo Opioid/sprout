@@ -50,10 +50,10 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice);
 
-	virtual const Sample& sample(const float3& wo, const Renderstate& rs, Sampler_filter filter,
+	virtual const Sample& sample(f_float3 wo, const Renderstate& rs, Sampler_filter filter,
 								 sampler::Sampler& sampler, const Worker& worker) const = 0;
 
-	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
+	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
 								   Sampler_filter filter, const Worker& worker) const;
 
 	virtual float3 average_radiance(float area) const;
@@ -67,7 +67,7 @@ public:
 
 	virtual float opacity(float2 uv, float time, Sampler_filter filter, const Worker& worker) const;
 
-	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
+	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
 								   Sampler_filter filter, const Worker& worker) const;
 
 	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,

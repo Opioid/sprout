@@ -180,36 +180,7 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 
 namespace quaternion {
 
-static inline Quaternion create(const Matrix3x3<float>& m) noexcept {
-	float trace = m.m00 + m.m11 + m.m22;
-	Quaternion temp;
-
-	if (trace > 0.f) {
-		float s = std::sqrt(trace + 1.f);
-		temp[3] = s * 0.5f;
-		s = 0.5f / s;
-
-		temp[0] = (m.m21 - m.m12) * s;
-		temp[1] = (m.m02 - m.m20) * s;
-		temp[2] = (m.m10 - m.m01) * s;
-	} else {
-		int i = m.m00 < m.m11 ? (m.m11 < m.m22 ? 2 : 1) : (m.m00 < m.m22 ? 2 : 0);
-		int j = (i + 1) % 3;
-		int k = (i + 2) % 3;
-
-		float s = std::sqrt(m.m[i * 3 + i] - m.m[j * 3 + j] - m.m[k * 3 + k] + 1.f);
-		temp.v[i] = s * 0.5f;
-		s = 0.5f / s;
-
-		temp[3] = (m.m[k * 3 + j] - m.m[j * 3 + k]) * s;
-		temp.v[j] = (m.m[j * 3 + i] + m.m[i * 3 + j]) * s;
-		temp.v[k] = (m.m[k * 3 + i] + m.m[i * 3 + k]) * s;
-	}
-
-	return temp;
-}
-
-static inline Quaternion create(const Matrix3x3f_a& m) noexcept {
+static inline Quaternion create(const float3x3& m) noexcept {
 	const float trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
 	Quaternion temp;
 
@@ -239,7 +210,7 @@ static inline Quaternion create(const Matrix3x3f_a& m) noexcept {
 	return temp;
 }
 
-static inline Matrix3x3f_a create_matrix3x3(const Quaternion& q) noexcept {
+static inline float3x3 create_matrix3x3(AQuaternion q) noexcept {
 	float d = dot(q, q);
 
 	float s = 2.f / d;
@@ -249,9 +220,9 @@ static inline Matrix3x3f_a create_matrix3x3(const Quaternion& q) noexcept {
 	float xx = q[0] * xs, xy = q[0] * ys, xz = q[0] * zs;
 	float yy = q[1] * ys, yz = q[1] * zs, zz = q[2] * zs;
 
-	return Matrix3x3f_a(1.f - (yy + zz), xy - wz,         xz + wy,
-						xy + wz,         1.f - (xx + zz), yz - wx,
-						xz - wy,         yz + wx,         1.f - (xx + yy));
+	return float3x3(1.f - (yy + zz), xy - wz,         xz + wy,
+					xy + wz,         1.f - (xx + zz), yz - wx,
+					xz - wy,         yz + wx,         1.f - (xx + yy));
 }
 
 static inline Quaternion create_rotation_x(float a) noexcept {
@@ -275,14 +246,14 @@ static inline Quaternion create_rotation_z(float a) noexcept {
 					  std::cos(a * 0.5f));
 }
 
-static inline Quaternion mul(const Quaternion& a, const Quaternion& b) noexcept {
+static inline Quaternion mul(AQuaternion a, AQuaternion b) noexcept {
 	return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
 					  (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
 					  (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
 					  (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
-static inline Quaternion slerp(const Quaternion& a, const Quaternion& b, float t) noexcept {
+static inline Quaternion slerp(AQuaternion a, AQuaternion b, float t) noexcept {
 	// calc cosine theta
 	float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 

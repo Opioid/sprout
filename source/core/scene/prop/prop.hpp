@@ -44,8 +44,8 @@ public:
 
 	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
 
-//	bool intersect_p(VVector ray_origin, VVector ray_direction,
-//					 VVector ray_inv_direction, VVector ray_mint_, VVector ray_max_t,
+//	bool intersect_p(FVector ray_origin, FVector ray_direction,
+//					 FVector ray_inv_direction, FVector ray_mint_, FVector ray_max_t,
 //					 float ray_time, shape::Node_stack& node_stack) const;
 
 	const shape::Shape* shape() const;

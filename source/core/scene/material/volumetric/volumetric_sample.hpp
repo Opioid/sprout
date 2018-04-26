@@ -11,7 +11,7 @@ public:
 
 	virtual const Layer& base_layer() const override final;
 
-	virtual bxdf::Result evaluate(const float3& wi) const override final;
+	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
@@ -22,9 +22,9 @@ public:
 public:
 
 	struct Layer : public material::Sample::Layer {
-		float phase(const float3& wo, const float3& wi) const;
+		float phase(f_float3 wo, f_float3 wi) const;
 
-		float sample(const float3& wo, float2 r2, float3& wi) const;
+		float sample(f_float3 wo, float2 r2, float3& wi) const;
 
 		float anisotropy;
 	};

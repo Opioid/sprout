@@ -6,7 +6,7 @@
 
 namespace math {
 
-inline Ray::Ray(const float3& origin, const float3& direction, float min_t, float max_t) :
+inline Ray::Ray(f_float3 origin, f_float3 direction, float min_t, float max_t) :
 	origin(origin),
 	direction(direction),
 	inv_direction(reciprocal(direction)),
@@ -18,7 +18,7 @@ inline Ray::Ray(const float3& origin, const float3& direction, float min_t, floa
 		inv_direction[2] < 0.f ? uint8_t(1u) : uint8_t(0u)}
 	{}
 
-inline Ray::Ray(const float3& origin, const float3& direction,
+inline Ray::Ray(f_float3 origin, f_float3 direction,
 				float min_t, float max_t, uint32_t depth) :
 	origin(origin),
 	direction(direction),
@@ -31,7 +31,7 @@ inline Ray::Ray(const float3& origin, const float3& direction,
 		inv_direction[2] < 0.f ? uint8_t(1u) : uint8_t(0u)},
 	depth(depth) {}
 
-inline Ray::Ray(const float3& origin, const float3& direction, const float3& inv_direction,
+inline Ray::Ray(f_float3 origin, f_float3 direction, f_float3 inv_direction,
 				float min_t, float max_t, uint8_t sign_x, uint8_t sign_y, uint8_t sign_z) :
 	origin(origin),
 	direction(direction),
@@ -49,7 +49,7 @@ inline void Ray::set_direction(const float3& v) {
 	signs[2] = inv_direction[2] < 0.f ? 1u : 0u;
 }
 
-inline Vector3f_a Ray::point(float t) const {
+inline float3 Ray::point(float t) const {
 	return origin + t * direction;
 }
 

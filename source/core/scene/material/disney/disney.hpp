@@ -21,7 +21,7 @@ public:
 								   const Layer& layer);
 
 	template<typename Layer>
-	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 sampler::Sampler& sampler, bxdf::Sample& result);
 
 private:
@@ -39,7 +39,7 @@ public:
 								   const Layer& layer);
 
 	template<typename Layer>
-	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 sampler::Sampler& sampler, bxdf::Sample& result);
 
 private:
@@ -61,7 +61,7 @@ public:
 								   const Layer& layer);
 
 	template<typename Layer>
-	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 sampler::Sampler& sampler, bxdf::Sample& result);
 
 private:

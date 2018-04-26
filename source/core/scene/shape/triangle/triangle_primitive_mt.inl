@@ -191,7 +191,7 @@ static inline bool intersect(const Intersection_vertex_MT& a,
 	return false;
 }
 
-static inline bool intersect(VVector origin, VVector direction, VVector min_t, Vector& max_t,
+static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
 							 const Intersection_vertex_MT& a,
 							 const Intersection_vertex_MT& b,
 							 const Intersection_vertex_MT& c,
@@ -234,7 +234,7 @@ static inline bool intersect(VVector origin, VVector direction, VVector min_t, V
 	return false;
 }
 
-static inline bool intersect(VVector origin, VVector direction, VVector min_t, Vector& max_t,
+static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
 							 const Intersection_vertex_MT& a,
 							 const Intersection_vertex_MT& b,
 							 const Intersection_vertex_MT& c) {
@@ -338,8 +338,8 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 
 }
 
-static inline bool intersect_p(VVector origin, VVector direction,
-							   VVector min_t, VVector max_t,
+static inline bool intersect_p(FVector origin, FVector direction,
+							   FVector min_t, FVector max_t,
 							   const Intersection_vertex_MT& a,
 							   const Intersection_vertex_MT& b,
 							   const Intersection_vertex_MT& c) {
@@ -441,7 +441,7 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a,
 				  w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
 }
 
-static inline float2 interpolate_uv(VVector u, VVector v,
+static inline float2 interpolate_uv(FVector u, FVector v,
 									const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c) {
@@ -484,7 +484,7 @@ static inline void interpolate_data(const Shading_vertex_MTC& a,
 	tc = float2(n_u[3], t_v[3]);
 }
 
-static inline void interpolate_data(VVector u, VVector v,
+static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
@@ -516,7 +516,7 @@ static inline void interpolate_data(VVector u, VVector v,
 	tc[1] = r[1];
 }
 
-static inline void interpolate_data(VVector u, VVector v,
+static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,

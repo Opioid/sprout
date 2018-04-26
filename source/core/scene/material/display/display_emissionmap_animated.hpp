@@ -14,7 +14,7 @@ public:
 						 bool two_sided, const Texture_adapter& emission_map,
 						 float emission_factor, float animation_duration);
 
-	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 

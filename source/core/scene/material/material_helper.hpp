@@ -12,7 +12,7 @@
 
 namespace scene::material {
 
-static inline float3 sample_normal(const float3& wo,
+static inline float3 sample_normal(f_float3 wo,
 								   const Renderstate& rs,
 								   const image::texture::Adapter& map,
 								   const image::texture::sampler::Sampler_2D& sampler) {

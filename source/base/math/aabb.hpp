@@ -15,13 +15,13 @@ public:
 
 	AABB() = default;
 	constexpr AABB(const float3& min, const float3& max);
-	AABB(VVector min, VVector max);
+	AABB(FVector min, FVector max);
 
 	const float3& min() const;
 	const float3& max() const;
 
-	Vector3f_a position() const;
-	Vector3f_a halfsize() const;
+	float3 position() const;
+	float3 halfsize() const;
 
 	float surface_area() const;
 	float volume() const;
@@ -30,14 +30,14 @@ public:
 
 	bool intersect_p(const Ray& ray) const;
 
-	bool intersect_p(VVector ray_origin, VVector ray_inv_direction,
-					 VVector ray_min_t, VVector ray_max_t) const;
+	bool intersect_p(FVector ray_origin, FVector ray_inv_direction,
+					 FVector ray_min_t, FVector ray_max_t) const;
 
 	bool intersect_p(const Ray& ray, float& min_t, float& max_t) const;
 	bool intersect_p(const Ray& ray, float& hit_t, bool& inside) const;
 
 	void set_min_max(const float3& min, const float3& max);
-	void set_min_max(VVector min, VVector max);
+	void set_min_max(FVector min, FVector max);
 
 	void insert(const float3& p);
 

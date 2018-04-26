@@ -12,11 +12,11 @@ public:
 
 	Material_overcast(const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 
-	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
+	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
 								   Sampler_filter filter,
 								   const Worker& worker) const override final;
 
@@ -30,7 +30,7 @@ public:
 
 private:
 
-	float3 overcast(const float3& wi) const;
+	float3 overcast(f_float3 wi) const;
 
 	float3 color_;
 };

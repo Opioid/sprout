@@ -11,17 +11,17 @@ public:
 
 	virtual const Layer& base_layer() const override final;
 
-	virtual bxdf::Result evaluate(const float3& wi) const override final;
+	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Base_layer : material::Sample::Layer {
 		void set(const float3& color_a, const float3& color_b, float alpha, float alpha2);
 
-		bxdf::Result evaluate(const float3& wi, const float3& wo, const float3& h,
+		bxdf::Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
 							  float wo_dot_h) const;
 
-		void sample(const float3& wo, sampler::Sampler& sampler, bxdf::Sample& result) const;
+		void sample(f_float3 wo, sampler::Sampler& sampler, bxdf::Sample& result) const;
 
 		float3 color_a_;
 		float3 color_b_;
@@ -34,10 +34,10 @@ public:
 		void set(const float3& ior, const float3& absorption,
 				 float alpha, float alpha2, float weight);
 
-		bxdf::Result evaluate(const float3& wi, const float3& wo, const float3& h,
+		bxdf::Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
 							  float wo_dot_h, float3& fresnel_result) const;
 
-		void sample(const float3& wo, sampler::Sampler& sampler,
+		void sample(f_float3 wo, sampler::Sampler& sampler,
 					float3& fresnel_result, bxdf::Sample& result) const;
 
 		float3 ior_;

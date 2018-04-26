@@ -9,7 +9,7 @@ namespace scene::material::mix {
 Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
-const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
                                          Sampler_filter filter, sampler::Sampler& sampler,
                                          const Worker& worker) const {
 	auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);

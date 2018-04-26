@@ -10,7 +10,7 @@ Material_overcast::Material_overcast(const Sampler_settings& sampler_settings,
 									 bool two_sided) :
 	Material(sampler_settings, two_sided) {}
 
-const material::Sample& Material_overcast::sample(const float3& wo, const Renderstate& rs,
+const material::Sample& Material_overcast::sample(f_float3 wo, const Renderstate& rs,
 												  Sampler_filter /*filter*/,
 												  sampler::Sampler& /*sampler*/,
 												  const Worker& worker) const {
@@ -24,7 +24,7 @@ const material::Sample& Material_overcast::sample(const float3& wo, const Render
 	return sample;
 }
 
-float3 Material_overcast::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
+float3 Material_overcast::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
 										  float /*time*/, Sampler_filter /*filter*/,
 										  const Worker& /*worker*/) const {
 	return overcast(wi);
@@ -50,7 +50,7 @@ void Material_overcast::set_emission(const float3& radiance) {
 	color_ = radiance;
 }
 
-float3 Material_overcast::overcast(const float3& wi) const {
+float3 Material_overcast::overcast(f_float3 wi) const {
 	return ((1.f + 2.f * math::dot(float3(0.f, 1.f, 0.f), wi)) / 3.f) * color_;
 }
 

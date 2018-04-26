@@ -12,7 +12,7 @@ public:
 	Material(const Sampler_settings& sampler_settings);
 	virtual ~Material() override;
 
-	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   const Worker& worker) const override final;
 

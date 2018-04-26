@@ -15,7 +15,7 @@
 namespace scene::material::substitute::testing {
 
 struct Setup {
-	void test(const float3& wi, const float3& wo,
+	void test(f_float3 wi, f_float3 wo,
 			  const float3& t, const float3& b, const float3& n,
 			  sampler::Sampler& sampler);
 
@@ -120,7 +120,7 @@ void test() {
 	*/
 }
 
-void Setup::test(const float3& wi, const float3& wo,
+void Setup::test(f_float3 wi, f_float3 wo,
 				 const float3& t, const float3& b, const float3& n,
 				 sampler::Sampler& sampler) {
 	Sample sample;

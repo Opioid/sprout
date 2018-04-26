@@ -13,7 +13,7 @@ namespace math {
 
 inline constexpr AABB::AABB(const float3& min, const float3& max) : bounds_{min, max} {}
 
-inline AABB::AABB(VVector min, VVector max) {
+inline AABB::AABB(FVector min, FVector max) {
 	simd::store_float4(bounds_[0].v, min);
 	simd::store_float4(bounds_[1].v, max);
 }
@@ -132,8 +132,8 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 				 _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_p(VVector ray_origin, VVector ray_inv_direction,
-							  VVector ray_min_t, VVector ray_max_t) const {
+inline bool AABB::intersect_p(FVector ray_origin, FVector ray_inv_direction,
+							  FVector ray_min_t, FVector ray_max_t) const {
 	const Vector bb_min = simd::load_float4(bounds_[0].v);
 	const Vector bb_max = simd::load_float4(bounds_[1].v);
 
@@ -320,7 +320,7 @@ inline void AABB::set_min_max(const float3& min, const float3& max) {
 	bounds_[1] = max;
 }
 
-inline void AABB::set_min_max(VVector min, VVector max) {
+inline void AABB::set_min_max(FVector min, FVector max) {
 	simd::store_float4(bounds_[0].v, min);
 	simd::store_float4(bounds_[1].v, max);
 }

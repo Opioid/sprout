@@ -235,8 +235,8 @@ bool Mesh::intersect_p(const Transformation& transformation, const Ray& ray,
 							 ray_min_t, ray_max_t, ray_signs, node_stack);
 }
 
-//bool Mesh::intersect_p(VVector ray_origin, VVector ray_direction,
-//					   VVector ray_min_t, VVector ray_max_t,
+//bool Mesh::intersect_p(FVector ray_origin, FVector ray_direction,
+//					   FVector ray_min_t, FVector ray_max_t,
 //					   const Transformation& transformation,
 //					   Node_stack& node_stack) const {
 //	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);

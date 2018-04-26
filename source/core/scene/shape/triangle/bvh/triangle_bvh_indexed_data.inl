@@ -53,7 +53,7 @@ bool Indexed_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) con
 }
 
 template<typename IV, typename SV>
-bool Indexed_data<IV, SV>::intersect(VVector origin, VVector direction, VVector min_t,
+bool Indexed_data<IV, SV>::intersect(FVector origin, FVector direction, FVector min_t,
 									 Vector& max_t, uint32_t index, Vector& u, Vector& v) const {
 	const auto& tri = triangles_[index];
 	const IV& a = intersection_vertices_[tri.a];
@@ -64,7 +64,7 @@ bool Indexed_data<IV, SV>::intersect(VVector origin, VVector direction, VVector 
 }
 
 template<typename IV, typename SV>
-bool Indexed_data<IV, SV>::intersect(VVector origin, VVector direction, VVector min_t,
+bool Indexed_data<IV, SV>::intersect(FVector origin, FVector direction, FVector min_t,
 									 Vector& max_t, uint32_t index) const {
 	const auto& tri = triangles_[index];
 	const IV& a = intersection_vertices_[tri.a];
@@ -75,8 +75,8 @@ bool Indexed_data<IV, SV>::intersect(VVector origin, VVector direction, VVector 
 }
 
 template<typename IV, typename SV>
-bool Indexed_data<IV, SV>::intersect_p(VVector origin, VVector direction,
-									   VVector min_t, VVector max_t, uint32_t index) const {
+bool Indexed_data<IV, SV>::intersect_p(FVector origin, FVector direction,
+									   FVector min_t, FVector max_t, uint32_t index) const {
 	const auto& tri = triangles_[index];
 	const IV& a = intersection_vertices_[tri.a];
 	const IV& b = intersection_vertices_[tri.b];
@@ -97,7 +97,7 @@ void Indexed_data<IV, SV>::interpolate_data(uint32_t index, float2 uv,
 }
 
 template<typename IV, typename SV>
-void Indexed_data<IV, SV>::interpolate_data(VVector u, VVector v, uint32_t index,
+void Indexed_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 											float3& n, float3& t, float2& tc) const {
 	const auto& tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
@@ -108,7 +108,7 @@ void Indexed_data<IV, SV>::interpolate_data(VVector u, VVector v, uint32_t index
 }
 
 template<typename IV, typename SV>
-void Indexed_data<IV, SV>::interpolate_data(VVector u, VVector v, uint32_t index,
+void Indexed_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 											Vector& n, Vector& t, float2& tc) const {
 	const auto& tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
@@ -129,7 +129,7 @@ float2 Indexed_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
 }
 
 template<typename IV, typename SV>
-float2 Indexed_data<IV, SV>::interpolate_uv(VVector u, VVector v, uint32_t index) const {
+float2 Indexed_data<IV, SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const {
 	const auto& tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
 	const SV& sb = shading_vertices_[tri.b];

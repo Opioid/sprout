@@ -27,6 +27,8 @@ struct Vector4 {
 
 	explicit constexpr Vector4(const Vector3<T>& xyz, T w = T(1));
 
+	constexpr Vector3<T> xyz() const;
+
 	constexpr T operator[](uint32_t i) const;
 	constexpr T& operator[](uint32_t i);
 
@@ -58,7 +60,7 @@ struct alignas(16) Vector4f_a {
 
 	explicit constexpr Vector4f_a(const Vector2<float> xy, float z, float w = 1.f);
 
-	explicit constexpr Vector4f_a(const Vector3f_a& xyz, float w = 1.f);
+	explicit constexpr Vector4f_a(FVector3f_a xyz, float w = 1.f);
 
 	explicit constexpr Vector4f_a(const Vector3<float>& xyz, float w = 1.f);
 

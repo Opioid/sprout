@@ -27,25 +27,25 @@ public:
 								   float3& fresnel_result);
 
 	template<typename Layer, typename Fresnel>
-	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename Fresnel>
-	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler,
 						 float3& fresnel_result, bxdf::Sample& result);
 
 	template<typename Layer, typename IOR, typename Fresnel>
-	static float reflect_internally(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float reflect_internally(f_float3 wo, float n_dot_wo, const Layer& layer,
 									const IOR& ior,  const Fresnel& fresnel,
 									sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename Fresnel>
-	static float refract(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float refract(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename IOR, typename Fresnel>
-	static float refract(const float3& wo, float n_dot_wo, const Layer& layer, const IOR& ior,
+	static float refract(f_float3 wo, float n_dot_wo, const Layer& layer, const IOR& ior,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 };
 
@@ -54,11 +54,11 @@ class Anisotropic {
 public:
 
 	template<typename Layer, typename Fresnel>
-	static bxdf::Result reflection(const float3& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+	static bxdf::Result reflection(f_float3 h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
 								   const Layer& layer, const Fresnel& fresnel);
 
 	template<typename Layer, typename Fresnel>
-	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+	static float reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 };
 

@@ -30,6 +30,9 @@ struct Vector3 {
 
 	explicit constexpr Vector3(const Vector3f_a& a);
 
+	template<typename U>
+	explicit constexpr Vector3(const Vector3<U>& a);
+
 	constexpr Vector2<T> xy() const;
 
 	constexpr T operator[](uint32_t i) const;
@@ -69,7 +72,7 @@ struct Vector3 {
 
 	T absolute_max(uint32_t& i) const;
 
-	static const Vector3 identity;
+	static constexpr Vector3 identity();
 };
 
 //==============================================================================
@@ -82,16 +85,16 @@ struct alignas(16) Vector3f_a {
 
 	Vector3f_a() = default;
 
-	constexpr Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {};
+	constexpr Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
 
-	constexpr Vector3f_a(const float* v);
+	constexpr Vector3f_a(const float* a);
 
 	explicit constexpr Vector3f_a(float s);
 
 	explicit constexpr Vector3f_a(const Vector2<float> xy, float z);
 
 	template<typename T>
-	explicit constexpr Vector3f_a(const Vector3<T>& v);
+	explicit constexpr Vector3f_a(const Vector3<T>& a);
 
 	constexpr Vector2<float> xy() const;
 
@@ -100,11 +103,9 @@ struct alignas(16) Vector3f_a {
 
 	float absolute_max(uint32_t& i) const;
 
-	static constexpr Vector3f_a identity() ;
+	static constexpr Vector3f_a identity();
 };
 
 }
-
-
 
 #endif

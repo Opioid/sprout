@@ -15,7 +15,7 @@ using namespace scene;
 
 Sun_material::Sun_material(Model& model) : Material(model) {}
 
-const scene::material::Sample& Sun_material::sample(const float3& wo, const Renderstate& rs,
+const scene::material::Sample& Sun_material::sample(f_float3 wo, const Renderstate& rs,
 													Sampler_filter /*filter*/,
 													sampler::Sampler& /*sampler*/,
 													const scene::Worker& worker) const {
@@ -30,7 +30,7 @@ const scene::material::Sample& Sun_material::sample(const float3& wo, const Rend
 	return sample;
 }
 
-float3 Sun_material::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
+float3 Sun_material::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
 									 float /*time*/, Sampler_filter /*filter*/,
 									 const scene::Worker& /*worker*/) const {
 	return model_.evaluate_sky_and_sun(wi);

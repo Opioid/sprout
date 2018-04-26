@@ -29,23 +29,23 @@ public:
 
 	bool intersect_p(uint32_t index, const math::Ray& ray) const;
 
-	bool intersect(VVector origin, VVector direction, VVector min_t, Vector& max_t,
+	bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
 				   uint32_t index, Vector& u, Vector& v) const;
 
-	bool intersect(VVector origin, VVector direction, VVector min_t, Vector& max_t,
+	bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
 				   uint32_t index) const;
 
-	bool intersect_p(VVector origin, VVector direction, VVector min_t, VVector max_t,
+	bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
 					 uint32_t index) const;
 
 	void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
-	void interpolate_data(VVector u, VVector v, uint32_t index,
+	void interpolate_data(FVector u, FVector v, uint32_t index,
 						  float3& n, float3& t, float2& tc) const;
-	void interpolate_data(VVector u, VVector v, uint32_t index,
+	void interpolate_data(FVector u, FVector v, uint32_t index,
 						  Vector& n, Vector& t, float2& tc) const;
 
 	float2 interpolate_uv(uint32_t index, float2 uv) const;
-	float2 interpolate_uv(VVector u, VVector v, uint32_t index) const;
+	float2 interpolate_uv(FVector u, FVector v, uint32_t index) const;
 
 	float    bitangent_sign(uint32_t index) const;
 	uint32_t material_index(uint32_t index) const;

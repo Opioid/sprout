@@ -13,7 +13,7 @@
 namespace scene::material::oren_nayar {
 
 template<typename Layer>
-float3 Isotropic::reflection(const float3& wi, const float3& wo, float n_dot_wi, float n_dot_wo,
+float3 Isotropic::reflection(f_float3 wi, f_float3 wo, float n_dot_wi, float n_dot_wo,
 							 const Layer& layer, float& pdf) {
 	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.alpha2_);
 
@@ -26,7 +26,7 @@ float3 Isotropic::reflection(const float3& wi, const float3& wo, float n_dot_wi,
 }
 
 template<typename Layer>
-float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+float Isotropic::reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
 						 sampler::Sampler& sampler, bxdf::Sample& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
@@ -47,7 +47,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	return n_dot_wi;
 }
 
-inline float Isotropic::f(const float3& wi, const float3& wo, float n_dot_wi, float n_dot_wo, float alpha2) {
+inline float Isotropic::f(f_float3 wi, f_float3 wo, float n_dot_wi, float n_dot_wo, float alpha2) {
 	float wi_dot_wo = math::dot(wi, wo);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;

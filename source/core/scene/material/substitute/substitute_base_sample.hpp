@@ -16,7 +16,7 @@ public:
 protected:
 
 	template<typename Coating>
-	bxdf::Result base_and_coating_evaluate(const float3& wi, const Coating& coating_layer) const;
+	bxdf::Result base_and_coating_evaluate(f_float3 wi, const Coating& coating_layer) const;
 
 	template<typename Coating>
 	void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler,
@@ -40,16 +40,16 @@ public:
 		void set(const float3& color, const float3& radiance, float ior,
 				 float constant_f0, float roughness, float metallic);
 
-		bxdf::Result base_evaluate(const float3& wi, const float3& wo, const float3& h,
+		bxdf::Result base_evaluate(f_float3 wi, f_float3 wo, const float3& h,
 								   float wo_dot_h) const;
 
-		void diffuse_sample(const float3& wo, sampler::Sampler& sampler,
+		void diffuse_sample(f_float3 wo, sampler::Sampler& sampler,
 							bxdf::Sample& result) const;
 
-		void specular_sample(const float3& wo, sampler::Sampler& sampler,
+		void specular_sample(f_float3 wo, sampler::Sampler& sampler,
 							 bxdf::Sample& result) const;
 
-		void pure_specular_sample(const float3& wo, sampler::Sampler& sampler,
+		void pure_specular_sample(f_float3 wo, sampler::Sampler& sampler,
 								  bxdf::Sample& result) const;
 
 		float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const;

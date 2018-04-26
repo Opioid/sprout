@@ -113,8 +113,8 @@ bool Prop::intersect_p(const Ray& ray, Node_stack& node_stack) const {
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
 
-//bool Prop::intersect_p(VVector ray_origin, VVector ray_direction,
-//					   VVector ray_inv_direction, VVector ray_min_t, VVector ray_max_t,
+//bool Prop::intersect_p(FVector ray_origin, FVector ray_direction,
+//					   FVector ray_inv_direction, FVector ray_min_t, FVector ray_max_t,
 //					   float ray_time, shape::Node_stack& node_stack) const {
 //	if (!visible_in_shadow()) {
 //		return false;

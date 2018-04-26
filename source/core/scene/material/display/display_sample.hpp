@@ -10,7 +10,7 @@ public:
 
 	virtual const Layer& base_layer() const override final;
 
-	virtual bxdf::Result evaluate(const float3& wi) const override final;
+	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
 	virtual float3 radiance() const override final;
 
