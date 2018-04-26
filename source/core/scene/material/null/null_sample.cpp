@@ -1,4 +1,5 @@
 #include "null_sample.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/bxdf.hpp"
 #include "base/math/vector3.inl"
 
