@@ -49,7 +49,7 @@ bool Flow_vis::integrate(Ray& ray, Intersection& intersection,
 	Transformation temp;
 	const auto& transformation = interface->prop->transformation_at(ray.time, temp);
 
-	const float3 fv = material.emission(transformation, ray, 0.01f, rng_, filter, worker);
+	const float3 fv = material.emission(ray, transformation, 0.01f, rng_, filter, worker);
 	const float a = 8.f * spectrum::luminance(fv);
 	const float opacity = std::min(a, 1.f);
 	transmittance = float3(1.f  - opacity);

@@ -6,7 +6,7 @@ namespace scene::material::volumetric {
 
 Homogeneous::Homogeneous(const Sampler_settings& sampler_settings) : Material(sampler_settings) {}
 
-float3 Homogeneous::emission(const Transformation& /*transformation*/, const math::Ray& /*ray*/,
+float3 Homogeneous::emission(const math::Ray& /*ray*/, const Transformation& /*transformation*/,
 							 float /*step_size*/, rnd::Generator& /*rng*/,
 							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	return float3::identity();
@@ -24,9 +24,8 @@ void Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*
 	mu_s = scattering_coefficient_;
 }
 
-void Homogeneous::collision_coefficients(const Transformation& /*transformation*/,
-										 f_float3 /*p*/, Sampler_filter /*filter*/,
-										 const Worker& /*worker*/,
+void Homogeneous::collision_coefficients(f_float3 /*p*/, const Transformation& /*transformation*/,
+										 Sampler_filter /*filter*/, const Worker& /*worker*/,
 										 float3& mu_a, float3& mu_s) const {
 	mu_a = absorption_coefficient_;
 	mu_s = scattering_coefficient_;

@@ -23,7 +23,7 @@ float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, Worker& work
 
 	const auto& material = *interface->material();
 
-	const float d = ray.max_t - ray.min_t;
+	const float d = ray.max_t;
 
 	if (material.is_heterogeneous_volume()) {
 		Transformation temp;
@@ -34,17 +34,17 @@ float3 Tracking::transmittance(const Ray& ray, rnd::Generator& rng, Worker& work
 
 		float3 w(1.f);
 
-		for (float t = 0.f;;) {
+		for (float t = ray.min_t;;) {
 			const float r0 = rng.random_float();
 			t = t -std::log(1.f - r0) * imt;
 			if (t > d) {
 				return w;
 			}
 
-			const float3 p = ray.point(ray.min_t + t);
+			const float3 p = ray.point(t);
 
 			float3 mu_a, mu_s;
-			material.collision_coefficients(transformation, p, Sampler_filter::Nearest,
+			material.collision_coefficients(p, transformation, Sampler_filter::Nearest,
 											worker, mu_a, mu_s);
 
 			const float3 mu_t = mu_a + mu_s;

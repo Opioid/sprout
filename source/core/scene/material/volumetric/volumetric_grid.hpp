@@ -24,7 +24,7 @@ public:
 
 private:
 
-	virtual float density(const Transformation& transformation, f_float3 p,
+	virtual float density(f_float3 p, const Transformation& transformation,
 						  Sampler_filter filter, const Worker& worker) const override final;
 
 	Texture_adapter grid_;
@@ -40,7 +40,7 @@ public:
 
 	virtual ~Emission_grid() override final;
 
-	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
+	virtual float3 emission(const math::Ray& ray, const Transformation& transformation,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const override final;
 
@@ -61,7 +61,7 @@ public:
 
 	virtual ~Flow_vis_grid() override final;
 
-	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
+	virtual float3 emission(const math::Ray& ray, const Transformation& transformation,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const override final;
 

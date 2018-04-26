@@ -70,7 +70,7 @@ public:
 	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
 								   Sampler_filter filter, const Worker& worker) const;
 
-	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
+	virtual float3 emission( const math::Ray& ray, const Transformation& transformation,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const;
 
@@ -80,7 +80,7 @@ public:
 	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const;
 
-	virtual void collision_coefficients(const Transformation& transformation, f_float3 p,
+	virtual void collision_coefficients(f_float3 p, const Transformation& transformation,
 										Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const;
 

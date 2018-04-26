@@ -153,9 +153,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		return false;
 	}
 
-	const float d = ray.max_t - ray.min_t;
+	const float d = ray.max_t;
 
-	if (d < 0.0005f) {
+	if (d - ray.min_t < 0.0005f) {
 		li = float3(0.f);
 		transmittance = float3(1.f);
 	//	weight = float3(1.f);
@@ -186,7 +186,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 		float3 w(1.f);
 
-		for (float t = 0.f;;) {
+		for (float t = ray.min_t;;) {
 			const float r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
@@ -196,10 +196,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				return true;
 			}
 
-			const float3 p = ray.point(ray.min_t + t);
+			const float3 p = ray.point(t);
 
 			float3 mu_a, mu_s;
-			material.collision_coefficients(transformation, p, filter, worker, mu_a, mu_s);
+			material.collision_coefficients(p, transformation, filter, worker, mu_a, mu_s);
 
 			const float3 mu_t = mu_a + mu_s;
 
@@ -254,7 +254,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 		float3 w(1.f);
 
-		for (float t = 0.f;;) {
+		for (float t = ray.min_t;;) {
 			const float r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) * imt;
 			if (t > d) {
@@ -278,7 +278,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 			const float r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
 				intersection.prop = interface->prop;
-				intersection.geo.p = ray.point(ray.min_t + t);
+				intersection.geo.p = ray.point(t);
 				intersection.geo.uv = interface->uv;
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;

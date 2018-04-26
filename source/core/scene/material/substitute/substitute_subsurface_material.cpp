@@ -91,8 +91,8 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 	sior_.eta_t_ = ior / external_ior;
 }
 
-float3 Material_subsurface::emission(const Transformation& /*transformation*/,
-									 const math::Ray& /*ray*/, float /*step_size*/,
+float3 Material_subsurface::emission(const math::Ray& /*ray*/,
+									 const Transformation& /*transformation*/, float /*step_size*/,
 									 rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
 									 const Worker& /*worker*/) const {
 	return float3::identity();
@@ -126,8 +126,9 @@ void Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filte
 	mu_s = scattering_coefficient_;
 }
 
-void Material_subsurface::collision_coefficients(const Transformation& /*transformation*/,
-												 f_float3 /*p*/, Sampler_filter /*filter*/,
+void Material_subsurface::collision_coefficients(f_float3 /*p*/,
+												 const Transformation& /*transformation*/,
+												 Sampler_filter /*filter*/,
 												 const Worker& /*worker*/,
 												 float3& mu_a, float3& mu_s) const {
 	mu_a = absorption_coefficient_;
