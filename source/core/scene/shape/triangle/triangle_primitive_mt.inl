@@ -202,22 +202,22 @@ static inline bool intersect(VVector origin, VVector direction, VVector min_t, V
 	Vector bp = simd::load_float4(b.p.v);
 	Vector cp = simd::load_float4(c.p.v);
 
-	Vector e1 = math::sub(bp, ap);
-	Vector e2 = math::sub(cp, ap);
+	Vector e1 = sub(bp, ap);
+	Vector e2 = sub(cp, ap);
 
 	Vector pvec = cross3(direction, e2);
 
 	Vector inv_det = rcp1(dot3_1(e1, pvec));
 
-	Vector tvec = math::sub(origin, ap);
-	Vector u = math::mul1(dot3_1(tvec, pvec), inv_det);
+	Vector tvec = sub(origin, ap);
+	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
 
 	Vector qvec = cross3(tvec, e1);
-	Vector v = math::mul1(dot3_1(direction, qvec), inv_det);
+	Vector v = mul1(dot3_1(direction, qvec), inv_det);
 
-	Vector hit_t = math::mul1(dot3_1(e2, qvec), inv_det);
+	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
 
-	Vector uv = math::add1(u, v);
+	Vector uv = add1(u, v);
 
 	if (0 != (_mm_comige_ss(u, simd::Zero) &
 			  _mm_comige_ss(simd::One, u) &
@@ -244,22 +244,22 @@ static inline bool intersect(VVector origin, VVector direction, VVector min_t, V
 	Vector bp = simd::load_float4(b.p.v);
 	Vector cp = simd::load_float4(c.p.v);
 
-	Vector e1 = math::sub(bp, ap);
-	Vector e2 = math::sub(cp, ap);
+	Vector e1 = sub(bp, ap);
+	Vector e2 = sub(cp, ap);
 
 	Vector pvec = cross3(direction, e2);
 
 	Vector inv_det = rcp1(dot3_1(e1, pvec));
 
-	Vector tvec = math::sub(origin, ap);
-	Vector u = math::mul1(dot3_1(tvec, pvec), inv_det);
+	Vector tvec = sub(origin, ap);
+	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
 
 	Vector qvec = cross3(tvec, e1);
-	Vector v = math::mul1(dot3_1(direction, qvec), inv_det);
+	Vector v = mul1(dot3_1(direction, qvec), inv_det);
 
-	Vector hit_t = math::mul1(dot3_1(e2, qvec), inv_det);
+	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
 
-	Vector uv = math::add1(u, v);
+	Vector uv = add1(u, v);
 
 	if (0 != (_mm_comige_ss(u, simd::Zero) &
 			  _mm_comige_ss(simd::One, u) &

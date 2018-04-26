@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INL
 
 #include "triangle_bvh_data.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
@@ -117,3 +118,5 @@ size_t Data<Intersection_triangle, Shading_triangle>::num_bytes() const {
 }
 
 }
+
+#endif

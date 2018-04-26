@@ -2,7 +2,6 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_PROVIDER_HPP
 
 #include "resource/resource_provider.hpp"
-#include "triangle_bvh_preset.hpp"
 #include <string>
 #include <vector>
 
@@ -27,7 +26,7 @@ public:
 	using Strings   = std::vector<std::string>;
 
 	Provider();
-	~Provider();
+	virtual ~Provider() override;
 
 	virtual std::shared_ptr<Shape> load(const std::string& filename,
 										const memory::Variant_map& options,
@@ -41,8 +40,7 @@ public:
 	virtual size_t num_bytes() const override final;
 
 	static std::shared_ptr<Shape> create_mesh(const Triangles& triangles, const Vertices& vertices,
-											  uint32_t num_parts, BVH_preset bvh_preset,
-											  thread::Pool& thread_pool);
+											  uint32_t num_parts, thread::Pool& thread_pool);
 
 private:
 
@@ -51,7 +49,7 @@ private:
 											   resource::Manager& manager);
 
 	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
-						  BVH_preset bvh_preset, thread::Pool& thread_pool);
+						  thread::Pool& thread_pool);
 
 //	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
 //						  BVH_preset bvh_preset, thread::Pool& thread_pool);

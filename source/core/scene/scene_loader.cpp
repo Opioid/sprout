@@ -17,7 +17,6 @@
 #include "shape/plane.hpp"
 #include "shape/rectangle.hpp"
 #include "shape/sphere.hpp"
-#include "shape/triangle/triangle_bvh_preset.hpp"
 #include "shape/triangle/triangle_mesh.hpp"
 #include "shape/triangle/triangle_mesh_generator.hpp"
 #include "resource/resource_manager.inl"
@@ -310,17 +309,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value)
 	}
 
 	if (const std::string file = json::read_string(shape_value, "file"); !file.empty()) {
-		memory::Variant_map options;
-
-		const std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
-
-		if ("fast" == bvh_preset_value) {
-			options.set("bvh_preset", shape::triangle::BVH_preset::Fast);
-		} else if ("slow" == bvh_preset_value) {
-			options.set("bvh_preset", shape::triangle::BVH_preset::Slow);
-		}
-
-		return resource_manager_.load<shape::Shape>(file, options);
+		return resource_manager_.load<shape::Shape>(file);
 	}
 
 	return nullptr;

@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_JSON_HANDLER_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_JSON_HANDLER_HPP
 
-#include "triangle_bvh_preset.hpp"
 #include "triangle_primitive.hpp"
 #include "scene/shape/shape_vertex.hpp"
 #include "rapidjson/reader.h"
@@ -44,8 +43,6 @@ public:
 	bool EndObject(size_t memberCount);
 	bool StartArray();
 	bool EndArray(size_t elementCount);
-
-	BVH_preset bvh_preset() const;
 
 	bool has_positions() const;
 	bool has_normals() const;
@@ -125,8 +122,6 @@ private:
 
 	uint32_t current_vertex_;
 	uint32_t current_vertex_element_;
-
-	BVH_preset bvh_preset_;
 
 	bool has_positions_;
 	bool has_normals_;

@@ -21,7 +21,6 @@ void Json_handler::clear(bool read_indices) {
 	current_vertex_element_ = 0;
 	current_triangle_ = 0;
 	current_triangle_element_ = 0;
-	bvh_preset_ = BVH_preset::Undefined,
 	has_positions_ = false;
 	has_normals_ = false;
 	has_tangents_ = false;
@@ -89,15 +88,7 @@ bool Json_handler::RawNumber(const char* /*str*/, rapidjson::SizeType /*length*/
 }
 
 bool Json_handler::String(const char* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
-	if (String_type::BVH_preset == expected_string_) {
-		std::string bvh_preset_value(str);
-
-		if ("fast" == bvh_preset_value) {
-			bvh_preset_ = shape::triangle::BVH_preset::Fast;
-		} else if ("slow" == bvh_preset_value) {
-			bvh_preset_ = shape::triangle::BVH_preset::Slow;
-		}
-	} else if (String_type::Morph_target == expected_string_) {
+	if (String_type::Morph_target == expected_string_) {
 		morph_targets_.emplace_back(str);
 	}
 
@@ -213,10 +204,6 @@ bool Json_handler::StartArray() {
 
 bool Json_handler::EndArray(size_t /*elementCount*/) {
 	return true;
-}
-
-BVH_preset Json_handler::bvh_preset() const {
-	return bvh_preset_;
 }
 
 bool Json_handler::has_positions() const {

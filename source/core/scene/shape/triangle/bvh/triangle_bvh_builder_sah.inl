@@ -1,106 +1,96 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH_INL
 
 #include "triangle_bvh_builder_sah.hpp"
-#include "triangle_bvh_builder_base.inl"
+//#include "triangle_bvh_builder_base.inl"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
-#include "scene/shape/node_stack.inl"
+#include "scene/bvh/scene_bvh_node.inl"
+#include "scene/shape/node_stack.hpp"
+#include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
+#include "base/math/simd_aabb.inl"
+#include "base/thread/thread_pool.hpp"
+#include <vector>
 
 namespace scene::shape::triangle::bvh {
 
 template<typename Data>
-void Builder_SAH::build(Tree<Data>& tree,
-						const std::vector<Index_triangle>& triangles,
-						const std::vector<Vertex>& vertices,
-						uint32_t num_parts,
-						uint32_t max_primitives,
-						thread::Pool& thread_pool) {
-	std::vector<uint32_t> primitive_indices(triangles.size());
-	std::vector<math::AABB> primitive_bounds(triangles.size());
+void Builder_SAH::build(Tree<Data>& tree, const Triangles& triangles, const Vertices& vertices,
+						uint32_t max_primitives, thread::Pool& thread_pool) {
+	Build_node root;
 
-	math::AABB aabb = math::AABB::empty();
+	{
+		const float log2_num_triangles = std::log2(static_cast<float>(triangles.size()));
+		spatial_split_threshold_ = static_cast<uint32_t>(log2_num_triangles / 2.f + 0.5f);
 
-	for (uint32_t i = 0, len = static_cast<uint32_t>(triangles.size()); i < len; ++i) {
-		primitive_indices[i] = i;
+		References references(triangles.size());
 
-		auto a = float3(vertices[triangles[i].a].p);
-		auto b = float3(vertices[triangles[i].b].p);
-		auto c = float3(vertices[triangles[i].c].p);
+		std::vector<math::Simd_AABB> aabbs(thread_pool.num_threads(), math::AABB::empty());
 
-		float3 min = triangle_min(a, b, c);
-		float3 max = triangle_max(a, b, c);
+		thread_pool.run_range([&triangles, &vertices, &references, &aabbs]
+			(uint32_t id, int32_t begin, int32_t end) {
+				math::Simd_AABB aabb(math::AABB::empty());
+				for (int32_t i = begin; i < end; ++i) {
+					auto a = simd::load_float3(vertices[triangles[i].i[0]].p);
+					auto b = simd::load_float3(vertices[triangles[i].i[1]].p);
+					auto c = simd::load_float3(vertices[triangles[i].i[2]].p);
 
-		primitive_bounds[i] = math::AABB(min, max);
+					auto min = triangle_min(a, b, c);
+					auto max = triangle_max(a, b, c);
 
-		aabb.merge_assign(primitive_bounds[i]);
+					references[i].set_min_max_primitive(min, max, i);
+
+					aabb.merge_assign(min, max);
+				}
+				aabbs[id].merge_assign(aabb);
+			}, 0, static_cast<int32_t>(triangles.size()));
+
+		math::Simd_AABB aabb(math::AABB::empty());
+		for (auto& b : aabbs) {
+			aabb.merge_assign(b);
+		}
+
+		num_nodes_ = 1;
+		num_references_ = 0;
+
+		split(&root, references, math::AABB(aabb.min, aabb.max), max_primitives, 0, thread_pool);
 	}
 
-	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts, vertices);
-
-	Build_node root;
-	split(&root,
-		  primitive_indices.begin(), primitive_indices.end(),
-		  aabb, triangles, vertices, primitive_bounds, max_primitives, thread_pool, tree);
-
-	num_nodes_ = 1;
-	root.num_sub_nodes(num_nodes_);
+	tree.allocate_triangles(num_references_, vertices);
 
 	nodes_ = tree.allocate_nodes(num_nodes_);
 
 	current_node_ = 0;
-	serialize(&root);
+	serialize(&root, triangles, vertices, tree);
 }
 
 template<typename Data>
-void Builder_SAH::split(Build_node* node,
-						index begin, index end,
-						const math::AABB& aabb,
-						const std::vector<Index_triangle>& triangles,
-						const std::vector<Vertex>& vertices,
-						aabbs triangle_bounds,
-						uint32_t max_primitives,
-						thread::Pool& thread_pool,
-						Tree<Data>& tree) {
-	node->aabb = aabb;
+void Builder_SAH::serialize(Build_node* node, const Triangles& triangles,
+							const Vertices& vertices, Tree<Data>& tree) {
+	auto& n = new_node();
+	n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 
-	uint32_t num_primitives = static_cast<uint32_t>(std::distance(begin, end));
+	if (node->children[0]) {
+		serialize(node->children[0], triangles, vertices, tree);
 
-	if (num_primitives <= max_primitives) {
-		assign(node, begin, end, triangles, vertices, tree);
+		n.set_split_node(current_node_index(), node->axis);
+
+		serialize(node->children[1], triangles, vertices, tree);
 	} else {
-		Split_candidate sp = splitting_plane(begin, end, aabb, triangle_bounds, thread_pool);
+		const uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+		n.set_leaf_node(node->start_index, num_primitives);
 
-		if (static_cast<float>(num_primitives) <= sp.cost()) {
-			assign(node, begin, end, triangles, vertices, tree);
-		} else {
-			node->axis = sp.axis();
-
-			index pids1_begin = std::partition(begin, end,
-				[&sp, &triangle_bounds](uint32_t pi) {
-					return sp.behind(triangle_bounds[pi].max()); });
-
-			if (begin == pids1_begin || end == pids1_begin) {
-				// This can happen if we didn't find a good splitting plane.
-				// It means every triangle was (partially) on the same side of the plane.
-
-				assign(node, begin, end, triangles, vertices, tree);
-			} else {
-				node->children[0] = new Build_node;
-				split(node->children[0], begin, pids1_begin, sp.aabb_0(),
-					  triangles, vertices, triangle_bounds,
-					  max_primitives, thread_pool, tree);
-
-				node->children[1] = new Build_node;
-				split(node->children[1], pids1_begin, end, sp.aabb_1(),
-					  triangles, vertices, triangle_bounds,
-					  max_primitives, thread_pool, tree);
-			}
+		for (const auto p : node->primitives) {
+			const auto& t = triangles[p];
+			tree.add_triangle(t.i[0], t.i[1], t.i[2], t.material_index, vertices);
 		}
 	}
 }
 
 }
+
+#endif

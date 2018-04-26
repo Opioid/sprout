@@ -20,7 +20,6 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 	std::vector<scene::shape::triangle::Index_triangle> triangles;
 	std::vector<scene::shape::Vertex> vertices;
 	uint32_t num_parts = 1;
-	scene::shape::triangle::BVH_preset bvh_preset = scene::shape::triangle::BVH_preset::Slow;
 
 	const uint32_t num_vertices = 16;
 
@@ -77,8 +76,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 
 	calculate_normals(triangles, vertices);
 
-	return scene::shape::triangle::Provider::create_mesh(triangles, vertices,
-														 num_parts, bvh_preset,
+	return scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts,
 														 manager.thread_pool());
 }
 

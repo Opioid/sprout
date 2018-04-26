@@ -7,12 +7,8 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
-
 #include "triangle_mesh_exporter.hpp"
-
-// #include "bvh/triangle_bvh_builder_sah.inl"
-#include "bvh/triangle_bvh_builder_sah2.inl"
-#include "bvh/triangle_bvh_builder_suh.inl"
+#include "bvh/triangle_bvh_builder_sah.inl"
 #include "bvh/triangle_bvh_data.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
 #include "bvh/triangle_bvh_indexed_data.inl"
@@ -43,11 +39,8 @@ Provider::Provider() : resource::Provider<Shape>("Mesh") {}
 Provider::~Provider() {}
 
 std::shared_ptr<Shape> Provider::load(const std::string& filename,
-									  const memory::Variant_map& options,
+									  const memory::Variant_map& /*options*/,
 									  resource::Manager& manager) {
-	BVH_preset bvh_preset = BVH_preset::Undefined;
-	options.query("bvh_preset", bvh_preset);
-
 	auto stream_pointer = manager.filesystem().read_stream(filename);
 
 	file::Type type = file::query_type(*stream_pointer);
@@ -105,10 +98,6 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		}
 	}
 
-	if (BVH_preset::Undefined == bvh_preset) {
-		bvh_preset = handler.bvh_preset();
-	}
-
 	SOFT_ASSERT(check_and_fix(handler.vertices(), filename));
 
 //	Exporter::write(filename, handler);
@@ -119,7 +108,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	manager.thread_pool().run_async(
 		[mesh, parts = std::move(handler.parts()), triangles = std::move(handler.triangles()),
-		 vertices = std::move(handler.vertices()), bvh_preset, &manager]() mutable {
+		 vertices = std::move(handler.vertices()), &manager]() mutable {
 			logging::verbose("Started asynchronously building triangle mesh BVH.");
 
 			for (auto& p : parts) {
@@ -131,7 +120,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 				}
 			}
 
-			build_bvh(*mesh, triangles, vertices, bvh_preset, manager.thread_pool());
+			build_bvh(*mesh, triangles, vertices, manager.thread_pool());
 
 			logging::verbose("Finished asynchronously building triangle mesh BVH.");
 		}
@@ -152,8 +141,7 @@ size_t Provider::num_bytes() const {
 }
 
 std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const Vertices& vertices,
-                                             uint32_t num_parts, BVH_preset bvh_preset,
-                                             thread::Pool& thread_pool) {
+											 uint32_t num_parts, thread::Pool& thread_pool) {
 	if (triangles.empty() || vertices.empty() || !num_parts) {
 		throw std::runtime_error("No mesh data");
 	}
@@ -164,8 +152,8 @@ std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const V
 
 	thread_pool.run_async(
 		[mesh, triangles_in = std::move(triangles), vertices_in = std::move(vertices),
-		 bvh_preset, &thread_pool]()  {
-			build_bvh(*mesh, triangles_in, vertices_in, bvh_preset, thread_pool);
+		 &thread_pool]()  {
+			build_bvh(*mesh, triangles_in, vertices_in, thread_pool);
 		}
 	);
 
@@ -249,17 +237,9 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 }
 
 void Provider::build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
-						 BVH_preset bvh_preset, thread::Pool& thread_pool) {
-	if (BVH_preset::Fast == bvh_preset) {
-		bvh::Builder_SUH builder;
-		builder.build(mesh.tree(), triangles, vertices, 8);
-	} else {
-//		bvh::Builder_SAH builder(16, 64);
-//		builder.build(mesh->tree(), triangles, vertices, 4, thread_pool);
-
-		bvh::Builder_SAH2 builder(16, 64);
-		builder.build(mesh.tree(), triangles, vertices, 4, thread_pool);
-	}
+						 thread::Pool& thread_pool) {
+	bvh::Builder_SAH builder(16, 64);
+	builder.build(mesh.tree(), triangles, vertices, 4, thread_pool);
 
 	mesh.init();
 }
@@ -355,15 +335,13 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 	stream.seekg(binary_start + indices_offset);
 	stream.read(indices, indices_size);
 
-	BVH_preset bvh_preset = BVH_preset::Slow;
-
 	auto mesh = std::make_shared<Mesh>();
 
 	mesh->tree().allocate_parts(static_cast<uint32_t>(parts.size()));
 
 	thread_pool.run_async(
 		[mesh, local_parts = std::move(parts), local_indices = std::move(indices), num_indices,
-		 local_vertices = std::move(vertices), bvh_preset, index_bytes, &thread_pool]() {
+		 local_vertices = std::move(vertices), index_bytes, &thread_pool]() {
 			std::vector<Index_triangle> triangles(num_indices / 3);
 
 			if (4 == index_bytes) {
@@ -376,7 +354,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 			delete[] local_indices;
 
-			build_bvh(*mesh, triangles, local_vertices, bvh_preset, thread_pool);
+			build_bvh(*mesh, triangles, local_vertices, thread_pool);
 		}
 	);
 
