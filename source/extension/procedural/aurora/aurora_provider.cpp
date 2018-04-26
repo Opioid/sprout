@@ -184,7 +184,7 @@ void Provider::simulate_particle(const float3& start, float peak_height, rnd::Ge
 	}
 }
 
-float3 Provider::world_to_grid(const float3& position) const {
+float3 Provider::world_to_grid(f_float3 position) const {
 	return voxel_ratio_ * float3(position[0],
 								 (ground_to_bottom_ + aurora_height_) - position[1],
 								 position[2]);

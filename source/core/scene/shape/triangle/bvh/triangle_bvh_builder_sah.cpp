@@ -43,7 +43,7 @@ Builder_SAH::Build_node::~Build_node() {
 	delete children[1];
 }
 
-Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const float3& p, bool spatial) :
+Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, f_float3 p, bool spatial) :
 	aabb_0_(math::AABB::empty()),
 	aabb_1_(math::AABB::empty()),
 	d_(p.v[split_axis]),

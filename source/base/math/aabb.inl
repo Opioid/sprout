@@ -44,7 +44,7 @@ inline float AABB::volume() const {
 	return d[0] * d[1] * d[2];
 }
 
-inline bool AABB::intersect(const float3& p) const {
+inline bool AABB::intersect(f_float3 p) const {
 	if (p[0] >= bounds_[0][0] && p[0] <= bounds_[1][0]
 	&&  p[1] >= bounds_[0][1] && p[1] <= bounds_[1][1]
 	&&  p[2] >= bounds_[0][2] && p[2] <= bounds_[1][2]) {
@@ -325,7 +325,7 @@ inline void AABB::set_min_max(FVector min, FVector max) {
 	simd::store_float4(bounds_[1].v, max);
 }
 
-inline void AABB::insert(const float3& p) {
+inline void AABB::insert(f_float3 p) {
 	bounds_[0] = math::min(p, bounds_[0]);
 	bounds_[1] = math::max(p, bounds_[1]);
 }

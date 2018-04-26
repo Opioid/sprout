@@ -19,7 +19,7 @@ public:
 
 	void clear();
 
-	void splat(const float3& position, const float3& color);
+	void splat(f_float3 position, const float3& color);
 
 	float3* data();
 

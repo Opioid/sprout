@@ -13,7 +13,7 @@ Plane::Plane() {
 	aabb_.set_min_max(float3::identity(), float3::identity());
 }
 
-bool Plane::intersect(const Transformation& transformation, Ray& ray,
+bool Plane::intersect(Ray& ray, const Transformation& transformation,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -45,7 +45,7 @@ bool Plane::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Plane::intersect_fast(const Transformation& transformation, Ray& ray,
+bool Plane::intersect_fast(Ray& ray, const Transformation& transformation,
 						   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -74,7 +74,7 @@ bool Plane::intersect_fast(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Plane::intersect(const Transformation& transformation, Ray& ray,
+bool Plane::intersect(Ray& ray, const Transformation& transformation,
 					  Node_stack& /*node_stack*/, float& epsilon) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -91,7 +91,7 @@ bool Plane::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
+bool Plane::intersect_p(const Ray& ray, const Transformation& transformation,
 						Node_stack& /*node_stack*/) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -106,7 +106,7 @@ bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
 	return false;
 }
 
-float Plane::opacity(const Transformation& transformation, const Ray& ray,
+float Plane::opacity(const Ray& ray, const Transformation& transformation,
 					 const Materials& materials,
 					 Sampler_filter filter, const Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
@@ -126,7 +126,7 @@ float Plane::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
-float3 Plane::thin_absorption(const Transformation& transformation, const Ray& ray,
+float3 Plane::thin_absorption(const Ray& ray, const Transformation& transformation,
 							  const Materials& materials,
 							  Sampler_filter filter, const Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
@@ -147,15 +147,15 @@ float3 Plane::thin_absorption(const Transformation& transformation, const Ray& r
 	return float3(0.f);
 }
 
-bool Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   const float3& /*p*/, const float3& /*n*/, float /*area*/, bool /*two_sided*/,
+bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 /*n*/,
+				   const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 				   Node_stack& /*node_stack*/, Sample& /*sample*/) const {
 	return false;
 }
 
-bool Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   const float3& /*p*/, float /*area*/, bool /*two_sided*/,
+bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/,
+				   const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 				   Node_stack& /*node_stack*/, Sample& /*sample*/) const {
 	return false;
@@ -167,8 +167,8 @@ float Plane::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/
 	return 0.f;
 }
 
-bool Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
+bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+				   const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				   Sample& sample) const {
 	sample.pdf = 0.f;
 	return false;
@@ -184,7 +184,7 @@ float Plane::uv_weight(float2 /*uv*/) const {
 	return 1.f;
 }
 
-float Plane::area(uint32_t /*part*/, const float3& /*scale*/) const {
+float Plane::area(uint32_t /*part*/, f_float3 /*scale*/) const {
 	return 1.f;
 }
 

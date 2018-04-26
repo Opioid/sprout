@@ -24,7 +24,7 @@ public:
 
 private:
 
-	virtual float density(const Transformation& transformation, const float3& p,
+	virtual float density(const Transformation& transformation, f_float3 p,
 						  Sampler_filter filter, const Worker& worker) const override final;
 
 	Texture_adapter grid_;
@@ -48,7 +48,7 @@ public:
 
 private:
 
-	float3 emission(const float3& p, Sampler_filter filter, const Worker& worker) const;
+	float3 emission(f_float3 p, Sampler_filter filter, const Worker& worker) const;
 
 	Texture_adapter grid_;
 };
@@ -69,9 +69,9 @@ public:
 
 private:
 
-	float density(const float3& p, Sampler_filter filter, const Worker& worker) const;
+	float density(f_float3 p, Sampler_filter filter, const Worker& worker) const;
 
-	float3 emission(const float3& p, Sampler_filter filter, const Worker& worker) const;
+	float3 emission(f_float3 p, Sampler_filter filter, const Worker& worker) const;
 
 	Texture_adapter grid_;
 };

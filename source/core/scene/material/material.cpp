@@ -85,7 +85,7 @@ void Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
 	mu_s = float3::identity();
 }
 
-void Material::collision_coefficients(const Transformation& /*transformation*/, const float3& /*p*/,
+void Material::collision_coefficients(const Transformation& /*transformation*/, f_float3 /*p*/,
 									  Sampler_filter /*filter*/, const Worker& /*worker*/,
 									  float3& mu_a, float3& mu_s) const {
 	mu_a = float3::identity();

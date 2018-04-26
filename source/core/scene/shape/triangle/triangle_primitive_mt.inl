@@ -130,7 +130,7 @@ inline float Triangle_MT::area() const {
 	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(const float3& scale) const {
+inline float Triangle_MT::area(f_float3 scale) const {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;
@@ -393,7 +393,7 @@ static inline float area(const Intersection_vertex_MT& a,
 static inline float area(const Intersection_vertex_MT& a,
 						 const Intersection_vertex_MT& b,
 						 const Intersection_vertex_MT& c,
-						 const float3& scale) {
+						 f_float3 scale) {
 	const float3 sa = scale * a.p;
 	const float3 sb = scale * b.p;
 	const float3 sc = scale * c.p;
@@ -758,7 +758,7 @@ inline float area(const Vertex_MTC& a,
 inline float area(const Vertex_MTC& a,
 				  const Vertex_MTC& b,
 				  const Vertex_MTC& c,
-				  const float3& scale) {
+				  f_float3 scale) {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;

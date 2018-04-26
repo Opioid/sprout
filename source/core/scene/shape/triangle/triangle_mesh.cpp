@@ -35,7 +35,7 @@ uint32_t Mesh::num_parts() const {
 	return tree_.num_parts();
 }
 
-bool Mesh::intersect(const Transformation& transformation, Ray& ray,
+bool Mesh::intersect(Ray& ray, const Transformation& transformation,
 					 Node_stack& node_stack, shape::Intersection& intersection) const {
 /*	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -135,7 +135,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Mesh::intersect_fast(const Transformation& transformation, Ray& ray,
+bool Mesh::intersect_fast(Ray& ray, const Transformation& transformation,
 						  Node_stack& node_stack, shape::Intersection& intersection) const {
 	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 	Vector ray_origin = simd::load_float4(ray.origin.v);
@@ -182,7 +182,7 @@ bool Mesh::intersect_fast(const Transformation& transformation, Ray& ray,
 }
 
 
-bool Mesh::intersect(const Transformation& transformation, Ray& ray,
+bool Mesh::intersect(Ray& ray, const Transformation& transformation,
 					 Node_stack& node_stack, float& epsilon) const {
 	const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 	Vector ray_origin = simd::load_float4(ray.origin.v);
@@ -208,7 +208,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Mesh::intersect_p(const Transformation& transformation, const Ray& ray,
+bool Mesh::intersect_p(const Ray& ray, const Transformation& transformation,
 					   Node_stack& node_stack) const {
 //	math::Ray tray;
 //	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -251,7 +251,7 @@ bool Mesh::intersect_p(const Transformation& transformation, const Ray& ray,
 //							 ray_min_t, ray_max_t, ray_signs, node_stack);
 //}
 
-float Mesh::opacity(const Transformation& transformation, const Ray& ray,
+float Mesh::opacity(const Ray& ray, const Transformation& transformation,
 					const Materials& materials,
 					Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
@@ -263,7 +263,7 @@ float Mesh::opacity(const Transformation& transformation, const Ray& ray,
 	return tree_.opacity(tray, ray.time, materials, filter, worker);
 }
 
-float3 Mesh::thin_absorption(const Transformation& transformation, const Ray& ray,
+float3 Mesh::thin_absorption(const Ray& ray, const Transformation& transformation,
 							 const Materials& materials,
 							 Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
@@ -275,16 +275,15 @@ float3 Mesh::thin_absorption(const Transformation& transformation, const Ray& ra
 	return tree_.absorption(tray, ray.time, materials, filter, worker);
 }
 
-bool Mesh::sample(uint32_t part, const Transformation& transformation,
-				  const float3& p, const float3& /*n*/, float area, bool two_sided,
-				  sampler::Sampler& sampler, uint32_t sampler_dimension,
-				  Node_stack& node_stack, Sample& sample) const {
-	return Mesh::sample(part, transformation, p, area, two_sided,
+bool Mesh::sample(uint32_t part, f_float3 p, f_float3 /*n*/, const Transformation& transformation,
+				  float area, bool two_sided, sampler::Sampler& sampler,
+				  uint32_t sampler_dimension, Node_stack& node_stack, Sample& sample) const {
+	return Mesh::sample(part, p, transformation, area, two_sided,
 						sampler, sampler_dimension, node_stack, sample);
 }
 
-bool Mesh::sample(uint32_t part, const Transformation& transformation,
-				  const float3& p, float area, bool two_sided,
+bool Mesh::sample(uint32_t part, f_float3 p, const Transformation& transformation,
+				  float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
 	const float  r  = sampler.generate_sample_1D(sampler_dimension);
@@ -336,8 +335,8 @@ float Mesh::pdf(const Ray& ray, const shape::Intersection& intersection,
 	return sl / (c * area);
 }
 
-bool Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
+bool Mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+				  const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				  Sample& /*sample*/) const {
 	return false;
 }
@@ -352,7 +351,7 @@ float Mesh::uv_weight(float2 /*uv*/) const {
 	return 1.f;
 }
 
-float Mesh::area(uint32_t part, const float3& scale) const {
+float Mesh::area(uint32_t part, f_float3 scale) const {
 	// HACK: This only really works for uniform scales!
 	return distributions_[part].distribution.integral() * scale[0] * scale[1];
 }

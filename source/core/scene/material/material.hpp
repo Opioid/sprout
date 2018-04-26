@@ -80,7 +80,7 @@ public:
 	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const;
 
-	virtual void collision_coefficients(const Transformation& transformation, const float3& p,
+	virtual void collision_coefficients(const Transformation& transformation, f_float3 p,
 										Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const;
 

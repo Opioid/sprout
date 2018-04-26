@@ -36,7 +36,7 @@ struct Triangle_MT {
 	float3 normal() const;
 
 	float area() const;
-	float area(const float3& scale) const;
+	float area(f_float3 scale) const;
 };
 
 struct Intersection_vertex_MT {

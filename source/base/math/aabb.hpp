@@ -26,7 +26,7 @@ public:
 	float surface_area() const;
 	float volume() const;
 
-	bool intersect(const float3& p) const;
+	bool intersect(f_float3 p) const;
 
 	bool intersect_p(const Ray& ray) const;
 
@@ -39,7 +39,7 @@ public:
 	void set_min_max(const float3& min, const float3& max);
 	void set_min_max(FVector min, FVector max);
 
-	void insert(const float3& p);
+	void insert(f_float3 p);
 
 	AABB transform(const Matrix4x4f_a& m) const;
 

@@ -39,38 +39,38 @@ public:
 
 	virtual uint32_t num_parts() const;
 
-	virtual bool intersect(const Transformation& transformation, Ray& ray,
+	virtual bool intersect(Ray& ray, const Transformation& transformation,
 						   Node_stack& node_stack, Intersection& intersection) const = 0;
 
-	virtual bool intersect_fast(const Transformation& transformation, Ray& ray,
+	virtual bool intersect_fast(Ray& ray, const Transformation& transformation,
 								Node_stack& node_stack, Intersection& intersection) const = 0;
 
-	virtual bool intersect(const Transformation& transformation, Ray& ray,
+	virtual bool intersect(Ray& ray, const Transformation& transformation,
 						   Node_stack& node_stack, float& epsilon) const = 0;
 
-	virtual bool intersect_p(const Transformation& transformation,
-							 const Ray& ray, Node_stack& node_stack) const = 0;
+	virtual bool intersect_p(const Ray& ray, const Transformation& transformation,
+							 Node_stack& node_stack) const = 0;
 
 //	virtual bool intersect_p(FVector ray_origin, FVector ray_direction,
 //							 FVector ray_min_t, FVector ray_max_t,
 //							 const Transformation& transformation,
 //							 Node_stack& node_stack) const;
 
-	virtual float opacity(const Transformation& transformation, const Ray& ray,
+	virtual float opacity(const Ray& ray, const Transformation& transformation,
 						  const Materials& materials,
 						  Sampler_filter filter, const Worker& worker) const = 0;
 
-	virtual float3 thin_absorption(const Transformation& transformation, const Ray& ray,
+	virtual float3 thin_absorption(const Ray& ray, const Transformation& transformation,
 								   const Materials& materials,
 								   Sampler_filter filter, const Worker& worker) const = 0;
 
-	virtual bool sample(uint32_t part, const Transformation& transformation,
-						const float3& p, const float3& n, float area, bool two_sided,
+	virtual bool sample(uint32_t part, f_float3 p, f_float3 n,
+						const Transformation& transformation, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
-	virtual bool sample(uint32_t part, const Transformation& transformation,
-						const float3& p, float area, bool two_sided,
+	virtual bool sample(uint32_t part, f_float3 p, const Transformation& transformation,
+						float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
@@ -82,9 +82,9 @@ public:
 
 	// The following two functions are used for textured lights
 	// and should have the uv weight baked in!
-	virtual bool sample(uint32_t part, const Transformation& transformation,
-						const float3& p, float2 uv, float area, bool two_sided,
-						Sample& sample) const = 0;
+	virtual bool sample(uint32_t part, f_float3 p, float2 uv,
+						const Transformation& transformation, float area,
+						bool two_sided, Sample& sample) const = 0;
 
 	virtual float pdf_uv(const Ray& ray, const Intersection& intersection,
 						 const Transformation& transformation,
@@ -92,7 +92,7 @@ public:
 
 	virtual float uv_weight(float2 uv) const = 0;
 
-	virtual float area(uint32_t part, const float3& scale) const = 0;
+	virtual float area(uint32_t part, f_float3 scale) const = 0;
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;

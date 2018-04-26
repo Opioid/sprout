@@ -28,7 +28,7 @@ math::AABB Sphere::transformed_aabb(const math::Transformation& t) const {
 	return math::AABB(t.position - halfsize, t.position + halfsize);
 }
 
-bool Sphere::intersect(const Transformation& transformation, Ray& ray,
+bool Sphere::intersect(Ray& ray, const Transformation& transformation,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
@@ -113,7 +113,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Sphere::intersect_fast(const Transformation& transformation, Ray& ray,
+bool Sphere::intersect_fast(Ray& ray, const Transformation& transformation,
 							Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
@@ -176,7 +176,7 @@ bool Sphere::intersect_fast(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Sphere::intersect(const Transformation& transformation, Ray& ray,
+bool Sphere::intersect(Ray& ray, const Transformation& transformation,
 					   Node_stack& /*node_stack*/, float& epsilon) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
@@ -205,7 +205,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Sphere::intersect_p(const Transformation& transformation, const Ray& ray,
+bool Sphere::intersect_p(const Ray& ray, const Transformation& transformation,
 						 Node_stack& /*node_stack*/) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
@@ -230,7 +230,7 @@ bool Sphere::intersect_p(const Transformation& transformation, const Ray& ray,
 	return false;
 }
 
-float Sphere::opacity(const Transformation& transformation, const Ray& ray,
+float Sphere::opacity(const Ray& ray, const Transformation& transformation,
 					  const Materials& materials,
 					  Sampler_filter filter, const Worker& worker) const {
 	float3 v = transformation.position - ray.origin;
@@ -268,7 +268,7 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
-float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& ray,
+float3 Sphere::thin_absorption(const Ray& ray, const Transformation& transformation,
 							   const Materials& materials,
 							   Sampler_filter filter, const Worker& worker) const {
 	float3 v = transformation.position - ray.origin;
@@ -308,16 +308,16 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 	return float3(0.f);
 }
 
-bool Sphere::sample(uint32_t part, const Transformation& transformation,
-					const float3& p, const float3& /*n*/, float area, bool two_sided,
+bool Sphere::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
+					const Transformation& transformation, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& node_stack, Sample& sample) const {
-	return Sphere::sample(part, transformation, p, area, two_sided,
+	return Sphere::sample(part, p, transformation, area, two_sided,
 						  sampler, sampler_dimension, node_stack, sample);
 }
 
-bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-					const float3& p, float /*area*/, bool /*two_sided*/,
+bool Sphere::sample(uint32_t /*part*/, f_float3 p, const Transformation& transformation,
+					float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
 	const float3 axis = transformation.position - p;
@@ -368,8 +368,8 @@ float Sphere::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
 	return math::cone_pdf_uniform(cos_theta_max);
 }
 
-bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation, const float3& p,
-					float2 uv, float area, bool /*two_sided*/, Sample& sample) const {
+bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, const Transformation& transformation,
+					float area, bool /*two_sided*/, Sample& sample) const {
 	float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
 	float theta = uv[1] * math::Pi;
 
@@ -433,7 +433,7 @@ float Sphere::uv_weight(float2 uv) const {
 	return 1.f / sin_theta;
 }
 
-float Sphere::area(uint32_t /*part*/, const float3& scale) const {
+float Sphere::area(uint32_t /*part*/, f_float3 scale) const {
 	return (4.f * math::Pi) * (scale[0] * scale[0]);
 }
 

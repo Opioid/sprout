@@ -64,7 +64,7 @@ public:
 
 	scene::prop::Interface_stack& interface_stack();
 
-	void interface_change(const float3& dir, const Intersection& intersection);
+	void interface_change(f_float3 dir, const Intersection& intersection);
 
 protected:
 

@@ -34,7 +34,7 @@ public:
 
 private:
 
-	float3 estimate_direct_light(const Ray& ray, const float3& position, Worker& worker);
+	float3 estimate_direct_light(const Ray& ray, f_float3 position, Worker& worker);
 
 	const Settings settings_;
 

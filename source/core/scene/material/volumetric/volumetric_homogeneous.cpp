@@ -25,7 +25,7 @@ void Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*
 }
 
 void Homogeneous::collision_coefficients(const Transformation& /*transformation*/,
-										 const float3& /*p*/, Sampler_filter /*filter*/,
+										 f_float3 /*p*/, Sampler_filter /*filter*/,
 										 const Worker& /*worker*/,
 										 float3& mu_a, float3& mu_s) const {
 	mu_a = absorption_coefficient_;

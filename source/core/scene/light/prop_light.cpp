@@ -22,8 +22,7 @@ const Light::Transformation& Prop_light::transformation_at(
 	return prop_->transformation_at(time, transformation);
 }
 
-bool Prop_light::sample(const Transformation& transformation,
-						const float3& p, float time,
+bool Prop_light::sample(f_float3 p, float time, const Transformation& transformation,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker, Sample& result) const {
 	auto material = prop_->material(part_);
@@ -32,7 +31,7 @@ bool Prop_light::sample(const Transformation& transformation,
 
 	const bool two_sided = material->is_two_sided();
 
-	if (!prop_->shape()->sample(part_, transformation, p, area, two_sided, sampler,
+	if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
 								sampler_dimension, worker.node_stack(), result.shape)) {
 		return false;
 	}
@@ -43,8 +42,8 @@ bool Prop_light::sample(const Transformation& transformation,
 	return true;
 }
 
-bool Prop_light::sample(const Transformation& transformation,
-						const float3& p, const float3& n, float time, bool total_sphere,
+bool Prop_light::sample(f_float3 p, f_float3 n,
+						float time, const Transformation& transformation, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker, Sample& result) const {
 	auto material = prop_->material(part_);
@@ -54,12 +53,12 @@ bool Prop_light::sample(const Transformation& transformation,
 	const bool two_sided = material->is_two_sided();
 
 	if (total_sphere) {
-		if (!prop_->shape()->sample(part_, transformation, p, area, two_sided, sampler,
+		if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
 									sampler_dimension, worker.node_stack(), result.shape)) {
 			return false;
 		}
 	} else {
-		if (!prop_->shape()->sample(part_, transformation, p, n, area, two_sided, sampler,
+		if (!prop_->shape()->sample(part_, p, n, transformation, area, two_sided, sampler,
 									sampler_dimension, worker.node_stack(), result.shape)) {
 			return false;
 		}

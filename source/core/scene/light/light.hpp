@@ -39,22 +39,20 @@ public:
 	virtual const Transformation& transformation_at(
 			float time, Transformation& transformation) const = 0;
 
-	virtual bool sample(const Transformation& transformation,
-						const float3& p, float time,
+	virtual bool sample(f_float3 p, float time, const Transformation& transformation,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker, Sample& result) const = 0;
 
-	virtual bool sample(const Transformation& transformation,
-						const float3& p, const float3& n, float time, bool total_sphere,
+	virtual bool sample(f_float3 p, f_float3 n,
+						float time, const Transformation& transformation, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker, Sample& result) const = 0;
 
-	bool sample(const float3& p, const float3& n, float time, bool total_sphere,
+	bool sample(f_float3 p, f_float3 n, float time, bool total_sphere,
 				sampler::Sampler& sampler, uint32_t sampler_dimension,
 				Sampler_filter filter, const Worker& worker, Sample& result) const;
 
-	bool sample(const float3& p, float time,
-				sampler::Sampler& sampler, uint32_t sampler_dimension,
+	bool sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
 				Sampler_filter filter, const Worker& worker, Sample& result) const;
 
 	virtual float pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,

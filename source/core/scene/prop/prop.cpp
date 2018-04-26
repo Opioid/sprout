@@ -60,7 +60,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack,
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->intersect(transformation, ray, node_stack, intersection);
+	return shape_->intersect(ray, transformation, node_stack, intersection);
 }
 
 bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack,
@@ -76,7 +76,7 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack,
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->intersect_fast(transformation, ray, node_stack, intersection);
+	return shape_->intersect_fast(ray, transformation, node_stack, intersection);
 }
 
 bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
@@ -95,7 +95,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->intersect(transformation, ray, node_stack, epsilon);
+	return shape_->intersect(ray, transformation, node_stack, epsilon);
 }
 
 bool Prop::intersect_p(const Ray& ray, Node_stack& node_stack) const {
@@ -110,7 +110,7 @@ bool Prop::intersect_p(const Ray& ray, Node_stack& node_stack) const {
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->intersect_p(transformation, ray, node_stack);
+	return shape_->intersect_p(ray, transformation, node_stack);
 }
 
 //bool Prop::intersect_p(FVector ray_origin, FVector ray_direction,
@@ -221,7 +221,7 @@ float Prop::opacity(const Ray& ray, Sampler_filter filter, const Worker& worker)
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->opacity(transformation, ray, materials_, filter, worker);
+	return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
 
 float3 Prop::thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
@@ -240,7 +240,7 @@ float3 Prop::thin_absorption(const Ray& ray, Sampler_filter filter, const Worker
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->thin_absorption(transformation, ray, materials_, filter, worker);
+	return shape_->thin_absorption(ray, transformation, materials_, filter, worker);
 }
 
 float Prop::area(uint32_t part) const {

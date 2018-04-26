@@ -159,7 +159,7 @@ scene::prop::Interface_stack& Worker::interface_stack() {
 	return interface_stack_;
 }
 
-void Worker::interface_change(const float3& dir, const Intersection& intersection) {
+void Worker::interface_change(f_float3 dir, const Intersection& intersection) {
 	if (intersection.same_hemisphere(dir)) {
 		interface_stack_.remove(intersection);
 	} else if (interface_stack_.top_ior() == 1.f

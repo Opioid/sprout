@@ -37,7 +37,7 @@ void Volume_rasterizer::clear() {
 	}
 }
 
-void Volume_rasterizer::splat(const float3& position, const float3& color) {
+void Volume_rasterizer::splat(f_float3 position, const float3& color) {
 	const int3 c(position);
 
 	if (c[0] < 0 || c[0] >= dimensions_[0]

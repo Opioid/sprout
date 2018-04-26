@@ -31,17 +31,17 @@ public:
 
 	virtual uint32_t num_parts() const override final;
 
-	virtual bool intersect(const Transformation& transformation, Ray& ray, Node_stack& node_stack,
+	virtual bool intersect(Ray& ray, const Transformation& transformation, Node_stack& node_stack,
 						   shape::Intersection& intersection) const override final;
 
-	virtual bool intersect_fast(const Transformation& transformation, Ray& ray,
+	virtual bool intersect_fast(Ray& ray, const Transformation& transformation,
 								Node_stack& node_stack,
 								shape::Intersection& intersection) const override final;
 
-	virtual bool intersect(const Transformation& transformation, Ray& ray,
+	virtual bool intersect(Ray& ray, const Transformation& transformation,
 						   Node_stack& node_stack, float& epsilon) const override final;
 
-	virtual bool intersect_p(const Transformation& transformation, const Ray& ray,
+	virtual bool intersect_p(const Ray& ray, const Transformation& transformation,
 							 Node_stack& node_stack) const override final;
 
 //	virtual bool intersect_p(FVector ray_origin, FVector ray_direction,
@@ -49,21 +49,21 @@ public:
 //							 const Transformation& transformation,
 //							 Node_stack& node_stack) const override final;
 
-	virtual float opacity(const Transformation& transformation, const Ray& ray,
+	virtual float opacity(const Ray& ray, const Transformation& transformation,
 						  const Materials& materials, Sampler_filter filter,
 						  const Worker& worker) const override final;
 
-	virtual float3 thin_absorption(const Transformation& transformation, const Ray& ray,
+	virtual float3 thin_absorption(const Ray& ray, const Transformation& transformation,
 								   const Materials& materials, Sampler_filter filter,
 								   const Worker& worker) const override final;
 
-	virtual bool sample(uint32_t part, const Transformation& transformation,
-						const float3& p, const float3& n, float area, bool two_sided,
+	virtual bool sample(uint32_t part, f_float3 p, f_float3 n,
+						const Transformation& transformation, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const override final;
 
-	virtual bool sample(uint32_t part, const Transformation& transformation,
-						const float3& p, float area, bool two_sided,
+	virtual bool sample(uint32_t part, f_float3 p, const Transformation& transformation,
+						float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const override final;
 
@@ -71,9 +71,8 @@ public:
 					  const Transformation& transformation,
 					  float area, bool two_sided, bool total_sphere) const override final;
 
-	virtual bool sample(uint32_t part, const Transformation& transformation,
-						const float3& p, float2 uv, float area, bool two_sided,
-						Sample& sample) const override final;
+	virtual bool sample(uint32_t part, f_float3 p, float2 uv, const Transformation& transformation,
+						float area, bool two_sided, Sample& sample) const override final;
 
 	virtual float pdf_uv(const Ray& ray, const shape::Intersection& intersection,
 						 const Transformation& transformation,
@@ -81,7 +80,7 @@ public:
 
 	virtual float uv_weight(float2 uv) const override final;
 
-	virtual float area(uint32_t part, const float3& scale) const override final;
+	virtual float area(uint32_t part, f_float3 scale) const override final;
 
 	virtual bool is_complex() const override final;
 

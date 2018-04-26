@@ -15,8 +15,7 @@
 
 namespace scene::light {
 
-bool Prop_image_light::sample(const Transformation& transformation,
-							  const float3& p, float time,
+bool Prop_image_light::sample(f_float3 p, float time, const Transformation& transformation,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Sampler_filter filter, const Worker& worker, Sample& result) const {
 	const auto material = prop_->material(part_);
@@ -33,7 +32,7 @@ bool Prop_image_light::sample(const Transformation& transformation,
 	const bool two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	if (!prop_->shape()->sample(part_, transformation, p, rs.uv, area, two_sided, result.shape)) {
+	if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result.shape)) {
 		return false;
 	}
 
@@ -44,8 +43,8 @@ bool Prop_image_light::sample(const Transformation& transformation,
 	return true;
 }
 
-bool Prop_image_light::sample(const Transformation& transformation,
-							  const float3& p, const float3& n, float time, bool total_sphere,
+bool Prop_image_light::sample(f_float3 p, f_float3 n,
+							  float time, const Transformation& transformation, bool total_sphere,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Sampler_filter filter, const Worker& worker, Sample& result) const {
 	const auto material = prop_->material(part_);
@@ -62,7 +61,7 @@ bool Prop_image_light::sample(const Transformation& transformation,
 	const bool two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	if (!prop_->shape()->sample(part_, transformation, p, rs.uv, area, two_sided, result.shape)) {
+	if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result.shape)) {
 		return false;
 	}
 

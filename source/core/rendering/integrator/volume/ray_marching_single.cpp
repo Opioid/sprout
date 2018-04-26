@@ -126,7 +126,7 @@ size_t Ray_marching_single::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Ray_marching_single::estimate_direct_light(const Ray& ray, const float3& position,
+float3 Ray_marching_single::estimate_direct_light(const Ray& ray, f_float3 position,
 												  Worker& worker) {
 	float3 result = float3::identity();
 

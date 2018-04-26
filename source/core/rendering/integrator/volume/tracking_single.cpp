@@ -266,7 +266,7 @@ size_t Tracking_single::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Tracking_single::direct_light(const Ray& ray, const float3& position, Worker& worker) {
+float3 Tracking_single::direct_light(const Ray& ray, f_float3 position, Worker& worker) {
 	float3 result = float3::identity();
 
 	Ray shadow_ray;
@@ -298,7 +298,7 @@ float3 Tracking_single::direct_light(const Ray& ray, const float3& position, Wor
 	return result;
 }
 
-float3 Tracking_single::direct_light(const Ray& ray, const float3& position,
+float3 Tracking_single::direct_light(const Ray& ray, f_float3 position,
 									 const Intersection& intersection, Worker& worker) {
 	float3 result = float3::identity();
 
