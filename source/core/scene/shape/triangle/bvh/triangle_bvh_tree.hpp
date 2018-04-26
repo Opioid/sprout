@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_HPP
 
 #include "scene/material/material.hpp"
 #include "base/math/aabb.hpp"
@@ -119,3 +120,5 @@ private:
 };
 
 }}}}
+
+#endif

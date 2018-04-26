@@ -23,6 +23,24 @@ struct Index_triangle;
 
 namespace bvh {
 
+struct Reference {
+	Reference() {}
+
+	uint32_t primitive() const;
+
+	void set_min_max_primitive(FVector min, FVector max, uint32_t primitive);
+
+	void clip_min(float d, uint8_t axis);
+	void clip_max(float d, uint8_t axis);
+
+	struct alignas(16) Vector {
+		float v[3];
+		uint32_t index;
+	};
+
+	Vector bounds[2];
+};
+
 template<typename Data> class Tree;
 
 class Builder_SAH /*: private Builder_base*/  {
@@ -39,24 +57,6 @@ public:
 			   uint32_t max_primitives, thread::Pool& thread_pool);
 
 private:
-
-	struct Reference {
-		Reference() {}
-
-		uint32_t primitive() const;
-
-		void set_min_max_primitive(FVector min, FVector max, uint32_t primitive);
-
-		void clip_min(float d, uint8_t axis);
-		void clip_max(float d, uint8_t axis);
-
-		struct alignas(16) Vector {
-			float v[3];
-			uint32_t index;
-		};
-
-		Vector bounds[2];
-	};
 
 	using References = std::vector<Reference>;
 

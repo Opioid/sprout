@@ -25,6 +25,8 @@ public:
 
 //	using Tree = bvh::Tree<bvh::Indexed_data_interleaved<Vertex_type>>;
 
+//	using Tree = bvh::Tree<bvh::Hybrid_data<Intersection_vertex_type, Shading_vertex_type>>;
+
 	bool init();
 
 	Tree& tree();

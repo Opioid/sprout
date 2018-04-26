@@ -13,11 +13,11 @@
 
 namespace scene::shape::triangle::bvh {
 
-uint32_t Builder_SAH::Reference::primitive() const {
+uint32_t Reference::primitive() const {
 	return bounds[0].index;
 }
 
-void Builder_SAH::Reference::set_min_max_primitive(FVector min, FVector max, uint32_t primitive) {
+void Reference::set_min_max_primitive(FVector min, FVector max, uint32_t primitive) {
 	float3 tmp;
 	simd::store_float4(tmp.v, min);
 	bounds[0].v[0] = tmp[0]; bounds[0].v[1] = tmp[1]; bounds[0].v[2] = tmp[2];
@@ -25,11 +25,11 @@ void Builder_SAH::Reference::set_min_max_primitive(FVector min, FVector max, uin
 	simd::store_float4(bounds[1].v, max);
 }
 
-void Builder_SAH::Reference::clip_min(float d, uint8_t axis) {
+void Reference::clip_min(float d, uint8_t axis) {
 	bounds[0].v[axis] = std::max(d, bounds[0].v[axis]);
 }
 
-void Builder_SAH::Reference::clip_max(float d, uint8_t axis) {
+void Reference::clip_max(float d, uint8_t axis) {
 	bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
 }
 

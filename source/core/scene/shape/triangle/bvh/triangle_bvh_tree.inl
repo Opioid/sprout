@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_INL
 
 #include "triangle_bvh_tree.hpp"
 #include "scene/scene_worker.hpp"
@@ -568,3 +569,5 @@ size_t Tree<Data>::num_bytes() const {
 }
 
 }
+
+#endif
