@@ -71,10 +71,10 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	const uint32_t max_bounces = settings_.max_bounces;
 
-	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined 
-											 : Sampler_filter::Nearest;
+	Sampler_filter filter = Sampler_filter::Undefined;
 	Bxdf_sample sample_result;
 
+	bool primary_ray = true;
 	bool treat_as_singular = true;
 
 	float3 throughput(1.f);
@@ -112,21 +112,18 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			break;
 		}
 
-		const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
-														  Bxdf_type::Transmission);
-
-		if (singular) {
+		if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
 			if (material_sample.ior_greater_one()) {
-				if (settings_.disable_caustics && !ray.is_primary()
+				if (settings_.disable_caustics && !primary_ray
 				&&  worker.interface_stack().top_ior() == 1.f) {
 					break;
 				}
 
 				const bool scattering = intersection.material()->is_scattering_volume();
-				treat_as_singular = scattering ? ray.is_primary() : true;
+				treat_as_singular = scattering ? primary_ray : true;
 			}
 		} else {
-			ray.set_primary(false);
+			primary_ray = false;
 			filter = Sampler_filter::Nearest;
 			treat_as_singular = false;
 		}
@@ -272,7 +269,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 	const float shadow_offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 	Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
 				   light_sample.shape.t - shadow_offset, history.depth, history.time,
-				   history.wavelength, history.properties);
+				   history.wavelength);
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 

@@ -63,7 +63,7 @@ protected:
 
 	virtual void on_set_transformation() override final;
 
-	static Ray create_ray(const float3& origin, const float3& direction, float time);
+	static Ray create_ray(f_float3 origin, f_float3 direction, float time);
 
 	int2 resolution_;
 	std::unique_ptr<rendering::sensor::Sensor> sensor_;

@@ -7,25 +7,20 @@
 namespace scene {
 
 struct Ray : public math::Ray {
-	enum class Property {
-		Null	= 0,
-		Primary = 1 << 0
-	};
+//	enum class Property {
+//		Null	= 0
+//	};
 
-	using Properties = flags::Flags<Property>;
+//	using Properties = flags::Flags<Property>;
 
 	Ray() = default;
 	Ray(const float3& origin, const float3& direction,
 		float min_t = 0.f, float max_t = 1.f, uint32_t depth = 0,
-		float time = 0.f, float wavelength = 0.f,
-		Properties properties = Property::Null);
-
-	bool is_primary() const;
-	void set_primary(bool primary);
+		float time = 0.f, float wavelength = 0.f);
 
 	float time;
 	float wavelength;
-	Properties properties;
+//	Properties properties;
 };
 
 }

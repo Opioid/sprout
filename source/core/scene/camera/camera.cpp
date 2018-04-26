@@ -105,8 +105,8 @@ void Camera::set_motion_blur(bool motion_blur) {
 
 void Camera::on_set_transformation() {}
 
-Ray Camera::create_ray(const float3& origin, const float3& direction, float time) {
-	return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f, Ray::Property::Primary);
+Ray Camera::create_ray(f_float3 origin, f_float3 direction, float time) {
+	return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);
 }
 
 }

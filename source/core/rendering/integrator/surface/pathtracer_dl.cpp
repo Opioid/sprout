@@ -34,11 +34,12 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
-	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined
-											 : Sampler_filter::Nearest;
+	Sampler_filter filter = Sampler_filter::Undefined;
+
 	Bxdf_sample sample_result;
 
-	bool treat_as_singular = ray.is_primary();
+	bool primary_ray = true;
+	bool treat_as_singular = true;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -73,21 +74,18 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
-														  Bxdf_type::Transmission);
-
-		if (singular) {
+		if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
 			if (material_sample.ior_greater_one()) {
-				if (settings_.disable_caustics && !ray.is_primary()
+				if (settings_.disable_caustics && !primary_ray
 				&&  worker.interface_stack().top_ior() == 1.f) {
 					break;
 				}
 
 				const bool scattering = intersection.material()->is_scattering_volume();
-				treat_as_singular = scattering ? ray.is_primary() : true;
+				treat_as_singular = scattering ? primary_ray : true;
 			}
 		} else {
-			ray.set_primary(false);
+			primary_ray = false;
 			filter = Sampler_filter::Nearest;
 			treat_as_singular = false;
 		}

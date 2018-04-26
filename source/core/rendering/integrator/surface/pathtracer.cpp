@@ -43,9 +43,11 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
-	Sampler_filter filter = ray.is_primary() ? Sampler_filter::Undefined
-											 : Sampler_filter::Nearest;
+	Sampler_filter filter = Sampler_filter::Undefined;
+
 	Bxdf_sample sample_result;
+
+	bool primary_ray = true;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -82,13 +84,13 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 														  Bxdf_type::Transmission);
 
 		if (singular) {
-			if (settings_.disable_caustics && !ray.is_primary()
+			if (settings_.disable_caustics && !primary_ray
 			&&  material_sample.ior_greater_one()
 			&&  worker.interface_stack().top_ior() == 1.f) {
 				break;
 			}
 		} else {
-			ray.set_primary(false);
+			primary_ray = false;
 			filter = Sampler_filter::Nearest;
 		}
 
