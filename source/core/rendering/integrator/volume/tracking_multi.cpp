@@ -140,21 +140,6 @@ static inline void avg_history_probabilities(float mt,
 	wn = (mu_n / (mt * pn));
 }
 
-static inline void avg_history_probabilities(float mt,
-											 const float3& mu_s,
-											 const float3& mu_n,
-											 const float3& w,
-											 float& pn,
-											 float3& wn) {
-	const float ms = math::average(mu_s * w);
-	const float mn = math::average(mu_n * w);
-	const float c = 1.f / (ms + mn);
-
-	pn = mn * c;
-
-	wn = (mu_n / (mt * pn));
-}
-
 float3 Tracking_multi::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
@@ -220,11 +205,16 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 			const float3 mu_n = float3(mt) - mu_t;
 
-			float ps, pn;
-			float3 ws, wn;
-			//avg_probabilities(mt, mu_a, mu_s, mu_n, pa, ps, pn, wa, ws, wn);
+//			float ps, pn;
+//			float3 ws, wn;
+//			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
 
-			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
+			const float ms = math::average(mu_s * w);
+			const float mn = math::average(mu_n * w);
+			const float c = 1.f / (ms + mn);
+
+			const float ps = ms * c;
+			const float pn = mn * c;
 
 			const float r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
@@ -236,12 +226,16 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
+				const float3 ws = mu_s / (mt * ps);
+
 				li = float3(0.f);
 			//	transmittance = float3(1.f);
 			//	weight = w * ws;
 				transmittance = w * ws;
 				return true;
 			} else {
+				const float3 wn = mu_n / (mt * pn);
+
 				SOFT_ASSERT(math::all_finite(wn));
 
 				w *= wn;
@@ -253,7 +247,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 		const float3 mu_t = mu_a + mu_s;
 
-		const float mt = math::max_component(mu_t);
+		const float mt  = math::max_component(mu_t);
+		const float imt = 1.f / mt;
 
 		const float3 mu_n = float3(mt) - mu_t;
 
@@ -261,7 +256,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 		for (float t = 0.f;;) {
 			const float r0 = rng_.random_float();
-			t = t -std::log(1.f - r0) / mt;
+			t = t -std::log(1.f - r0) * imt;
 			if (t > d) {
 				li = float3(0.f);
 				transmittance = w;
@@ -269,11 +264,16 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				return true;
 			}
 
-			float ps, pn;
-			float3 ws, wn;
-			//avg_probabilities(mt, mu_a, mu_s, mu_n, pa, ps, pn, wa, ws, wn);
+	//		float ps, pn;
+	//		float3 ws, wn;
+	//		avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
 
-			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
+			const float ms = math::average(mu_s * w);
+			const float mn = math::average(mu_n * w);
+			const float c = 1.f / (ms + mn);
+
+			const float ps = ms * c;
+			const float pn = mn * c;
 
 			const float r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
@@ -283,12 +283,16 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
+				const float3 ws = mu_s / (mt * ps);
+
 				li = float3(0.f);
 			//	transmittance = float3(1.f);
 			//	weight = w * ws;
 				transmittance = w * ws;
 				return true;
 			} else {
+				const float3 wn = mu_n / (mt * pn);
+
 				SOFT_ASSERT(math::all_finite(wn));
 
 				w *= wn;
