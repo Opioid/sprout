@@ -1,6 +1,7 @@
 #include "volumetric_sample.hpp"
-#include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/material_sample.inl"
+#include "sampler/sampler.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/sampling/sampling.hpp"
 
