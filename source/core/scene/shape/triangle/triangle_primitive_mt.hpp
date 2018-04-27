@@ -39,10 +39,6 @@ struct Triangle_MT {
 	float area(f_float3 scale) const;
 };
 
-struct Intersection_vertex_MT {
-	float3 p;
-};
-
 struct Shading_vertex_MT {
 	float3 n, t;
 	float2 uv;

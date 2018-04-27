@@ -137,19 +137,17 @@ inline float Triangle_MT::area(f_float3 scale) const {
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
-static inline bool intersect(const Intersection_vertex_MT& a,
-							 const Intersection_vertex_MT& b,
-							 const Intersection_vertex_MT& c,
+static inline bool intersect(f_float3 a, f_float3 b, f_float3 c,
 							 math::Ray& ray, float2& uv) {
-	float3 e1 = b.p - a.p;
-	float3 e2 = c.p - a.p;
+	float3 e1 = b - a;
+	float3 e2 = c - a;
 
 	float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);
 	float inv_det = 1.f / det;
 
-	float3 tvec = ray.origin - a.p;
+	float3 tvec = ray.origin - a;
 	float u = math::dot(tvec, pvec) * inv_det;
 
 //	if (u < 0.f || u > 1.f) {
@@ -192,30 +190,31 @@ static inline bool intersect(const Intersection_vertex_MT& a,
 }
 
 static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-							 const Intersection_vertex_MT& a,
-							 const Intersection_vertex_MT& b,
-							 const Intersection_vertex_MT& c,
+							 const float3& a, const float3& b, const float3& c,
 							 Vector& u_out, Vector& v_out) {
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.p.v);
-	Vector bp = simd::load_float4(b.p.v);
-	Vector cp = simd::load_float4(c.p.v);
+	Vector ap = simd::load_float4(a.v);
+	Vector bp = simd::load_float4(b.v);
+	Vector cp = simd::load_float4(c.v);
 
-	Vector e1 = sub(bp, ap);
-	Vector e2 = sub(cp, ap);
+	Vector e1   = sub(bp, ap);
+	Vector e2   = sub(cp, ap);
+	Vector tvec = sub(origin, ap);
 
 	Vector pvec = cross3(direction, e2);
-
-	Vector inv_det = rcp1(dot3_1(e1, pvec));
-
-	Vector tvec = sub(origin, ap);
-	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
-
 	Vector qvec = cross3(tvec, e1);
-	Vector v = mul1(dot3_1(direction, qvec), inv_det);
 
-	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
+	Vector e1_d_pv = dot3_1(e1, pvec);
+	Vector tv_d_pv = dot3_1(tvec, pvec);
+	Vector di_d_qv = dot3_1(direction, qvec);
+	Vector e2_d_qv = dot3_1(e2, qvec);
+
+	Vector inv_det = rcp1(e1_d_pv);
+
+	Vector u     = mul1(tv_d_pv, inv_det);
+	Vector v     = mul1(di_d_qv, inv_det);
+	Vector hit_t = mul1(e2_d_qv, inv_det);
 
 	Vector uv = add1(u, v);
 
@@ -235,29 +234,30 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 }
 
 static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-							 const Intersection_vertex_MT& a,
-							 const Intersection_vertex_MT& b,
-							 const Intersection_vertex_MT& c) {
+							 const float3& a, const float3& b, const float3& c) {
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.p.v);
-	Vector bp = simd::load_float4(b.p.v);
-	Vector cp = simd::load_float4(c.p.v);
+	Vector ap = simd::load_float4(a.v);
+	Vector bp = simd::load_float4(b.v);
+	Vector cp = simd::load_float4(c.v);
 
-	Vector e1 = sub(bp, ap);
-	Vector e2 = sub(cp, ap);
+	Vector e1   = sub(bp, ap);
+	Vector e2   = sub(cp, ap);
+	Vector tvec = sub(origin, ap);
 
 	Vector pvec = cross3(direction, e2);
-
-	Vector inv_det = rcp1(dot3_1(e1, pvec));
-
-	Vector tvec = sub(origin, ap);
-	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
-
 	Vector qvec = cross3(tvec, e1);
-	Vector v = mul1(dot3_1(direction, qvec), inv_det);
 
-	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
+	Vector e1_d_pv = dot3_1(e1, pvec);
+	Vector tv_d_pv = dot3_1(tvec, pvec);
+	Vector di_d_qv = dot3_1(direction, qvec);
+	Vector e2_d_qv = dot3_1(e2, qvec);
+
+	Vector inv_det = rcp1(e1_d_pv);
+
+	Vector u     = mul1(tv_d_pv, inv_det);
+	Vector v     = mul1(di_d_qv, inv_det);
+	Vector hit_t = mul1(e2_d_qv, inv_det);
 
 	Vector uv = add1(u, v);
 
@@ -274,10 +274,7 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 	return false;
 }
 
-static inline bool intersect_p(const Intersection_vertex_MT& a,
-							   const Intersection_vertex_MT& b,
-							   const Intersection_vertex_MT& c,
-							   const math::Ray& ray) {
+static inline bool intersect_p(f_float3 a, f_float3 b, f_float3 c, const math::Ray& ray) {
 	// Implementation A
 /*	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
@@ -311,15 +308,15 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 */
 	// Implementation B
 
-	float3 e1 = b.p - a.p;
-	float3 e2 = c.p - a.p;
+	float3 e1 = b - a;
+	float3 e2 = c - a;
 
 	float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);
 	float inv_det = 1.f / det;
 
-	float3 tvec = ray.origin - a.p;
+	float3 tvec = ray.origin - a;
 	float u = math::dot(tvec, pvec) * inv_det;
 
 	float3 qvec = math::cross(tvec, e1);
@@ -340,32 +337,33 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 
 static inline bool intersect_p(FVector origin, FVector direction,
 							   FVector min_t, FVector max_t,
-							   const Intersection_vertex_MT& a,
-							   const Intersection_vertex_MT& b,
-							   const Intersection_vertex_MT& c) {
+							   const float3& a, const float3& b, const float3& c) {
 	// Implementation C
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.p.v);
-	Vector bp = simd::load_float4(b.p.v);
-	Vector cp = simd::load_float4(c.p.v);
+	Vector ap = simd::load_float4(a.v);
+	Vector bp = simd::load_float4(b.v);
+	Vector cp = simd::load_float4(c.v);
 
-	Vector e1 = math::sub(bp, ap);
-	Vector e2 = math::sub(cp, ap);
+	Vector e1   = sub(bp, ap);
+	Vector e2   = sub(cp, ap);
+	Vector tvec = sub(origin, ap);
 
 	Vector pvec = cross3(direction, e2);
-
-	Vector inv_det = rcp1(dot3_1(e1, pvec));
-
-	Vector tvec = math::sub(origin, ap);
-	Vector u = math::mul1(dot3_1(tvec, pvec), inv_det);
-
 	Vector qvec = cross3(tvec, e1);
-	Vector v = math::mul1(dot3_1(direction, qvec), inv_det);
 
-	Vector hit_t = math::mul1(dot3_1(e2, qvec), inv_det);
+	Vector e1_d_pv = dot3_1(e1, pvec);
+	Vector tv_d_pv = dot3_1(tvec, pvec);
+	Vector di_d_qv = dot3_1(direction, qvec);
+	Vector e2_d_qv = dot3_1(e2, qvec);
 
-	Vector uv = math::add1(u, v);
+	Vector inv_det = rcp1(e1_d_pv);
+
+	Vector u     = mul1(tv_d_pv, inv_det);
+	Vector v     = mul1(di_d_qv, inv_det);
+	Vector hit_t = mul1(e2_d_qv, inv_det);
+
+	Vector uv = add1(u, v);
 
 	return 0 != (_mm_comige_ss(u, simd::Zero) &
 				 _mm_comige_ss(simd::One, u) &
@@ -375,28 +373,20 @@ static inline bool intersect_p(FVector origin, FVector direction,
 				 _mm_comige_ss(max_t, hit_t));
 }
 
-static inline void interpolate_p(const Intersection_vertex_MT& a,
-								 const Intersection_vertex_MT& b,
-								 const Intersection_vertex_MT& c,
-								 float2 uv, float3& p) {
+static inline void interpolate_p(f_float3 a, f_float3 b, f_float3 c, float2 uv, float3& p) {
 	const float w = 1.f - uv[0] - uv[1];
 
-	p = w * a.p + uv[0] * b.p + uv[1] * c.p;
+	p = w * a + uv[0] * b + uv[1] * c;
 }
 
-static inline float area(const Intersection_vertex_MT& a,
-						 const Intersection_vertex_MT& b,
-						 const Intersection_vertex_MT& c) {
-	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
+static inline float area(f_float3 a, f_float3 b, f_float3 c) {
+	return 0.5f * math::length(math::cross(b - a, c - a));
 }
 
-static inline float area(const Intersection_vertex_MT& a,
-						 const Intersection_vertex_MT& b,
-						 const Intersection_vertex_MT& c,
-						 f_float3 scale) {
-	const float3 sa = scale * a.p;
-	const float3 sb = scale * b.p;
-	const float3 sc = scale * c.p;
+static inline float area(f_float3 a, f_float3 b, f_float3 c, f_float3 scale) {
+	const float3 sa = scale * a;
+	const float3 sb = scale * b;
+	const float3 sc = scale * c;
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 

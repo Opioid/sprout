@@ -259,13 +259,13 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
 
 	if (num_triangles <= sweep_threshold_) {
 		for (const auto& r : references) {
-			const float3& max(r.bounds[1].v);
+			const float3 max(r.bounds[1].v);
 			split_candidates_.emplace_back(X, max, false);
 			split_candidates_.emplace_back(Y, max, false);
 			split_candidates_.emplace_back(Z, max, false);
 		}
 	} else {
-		const float3& min = aabb.min();
+		f_float3 min = aabb.min();
 
 		const float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {

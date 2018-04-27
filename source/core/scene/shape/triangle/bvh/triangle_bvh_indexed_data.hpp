@@ -18,7 +18,7 @@ namespace bvh {
 
 struct Reference;
 
-template<typename IV, typename SV>
+template<typename SV>
 class Indexed_data {
 
 public:
@@ -87,7 +87,7 @@ private:
 	uint32_t num_vertices_;
 
 	Index_triangle* triangles_;
-	IV*				intersection_vertices_;
+	float3*			intersection_vertices_;
 	SV*				shading_vertices_;
 };
 
