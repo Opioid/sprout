@@ -17,14 +17,13 @@
 
 namespace rendering::integrator::volume {
 
-
 Tracking_multi::Tracking_multi(rnd::Generator& rng, const take::Settings& take_settings) :
 	Integrator(rng, take_settings) {}
 
 void Tracking_multi::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
 void Tracking_multi::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
-
+/*
 static inline void max_probabilities(float mt,
 									 const float3& mu_a,
 									 const float3& mu_s,
@@ -139,7 +138,7 @@ static inline void avg_history_probabilities(float mt,
 	ws = (mu_s / (mt * ps));
 	wn = (mu_n / (mt * pn));
 }
-
+*/
 float3 Tracking_multi::transmittance(const Ray& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
