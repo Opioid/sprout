@@ -71,8 +71,8 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t);
  ****************************************************************************/
 
 // using quaternion = Quaternion<float>;
-using Quaternion = float4;
-using AQuaternion = f_float4;
+using Quaternion  = float4;
+using FQuaternion = f_float4;
 
 }
 

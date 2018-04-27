@@ -9,7 +9,8 @@ void Composed_transformation::set(const math::Transformation& t) {
 	rotation = math::quaternion::create_matrix3x3(t.rotation);
 	position = t.position;
 	scale = t.scale;
-	math::compose(object_to_world, rotation, scale, position);
+
+	object_to_world = math::compose(rotation, scale, position);
 	world_to_object = math::affine_inverted(object_to_world);
 }
 
