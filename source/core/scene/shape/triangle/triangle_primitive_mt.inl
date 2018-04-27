@@ -218,12 +218,12 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 
 	Vector uv = add1(u, v);
 
-	if (0 != (_mm_comige_ss(u, simd::Zero) &
-			  _mm_comige_ss(simd::One, u) &
-			  _mm_comige_ss(v, simd::Zero) &
-			  _mm_comige_ss(simd::One, uv) &
-			  _mm_comige_ss(hit_t, min_t) &
-			  _mm_comige_ss(max_t, hit_t))) {
+	if (0 != (_mm_ucomige_ss(u, simd::Zero) &
+			  _mm_ucomige_ss(simd::One, u) &
+			  _mm_ucomige_ss(v, simd::Zero) &
+			  _mm_ucomige_ss(simd::One, uv) &
+			  _mm_ucomige_ss(hit_t, min_t) &
+			  _mm_ucomige_ss(max_t, hit_t))) {
 		max_t = hit_t;
 		u_out = u;
 		v_out = v;
@@ -261,12 +261,12 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 
 	Vector uv = add1(u, v);
 
-	if (0 != (_mm_comige_ss(u, simd::Zero) &
-			  _mm_comige_ss(simd::One, u) &
-			  _mm_comige_ss(v, simd::Zero) &
-			  _mm_comige_ss(simd::One, uv) &
-			  _mm_comige_ss(hit_t, min_t) &
-			  _mm_comige_ss(max_t, hit_t))) {
+	if (0 != (_mm_ucomige_ss(u, simd::Zero) &
+			  _mm_ucomige_ss(simd::One, u) &
+			  _mm_ucomige_ss(v, simd::Zero) &
+			  _mm_ucomige_ss(simd::One, uv) &
+			  _mm_ucomige_ss(hit_t, min_t) &
+			  _mm_ucomige_ss(max_t, hit_t))) {
 		max_t = hit_t;
 		return true;
 	}
@@ -335,8 +335,7 @@ static inline bool intersect_p(f_float3 a, f_float3 b, f_float3 c, const math::R
 
 }
 
-static inline bool intersect_p(FVector origin, FVector direction,
-							   FVector min_t, FVector max_t,
+static inline bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
 							   const float3& a, const float3& b, const float3& c) {
 	// Implementation C
 	using namespace math;
@@ -365,12 +364,12 @@ static inline bool intersect_p(FVector origin, FVector direction,
 
 	Vector uv = add1(u, v);
 
-	return 0 != (_mm_comige_ss(u, simd::Zero) &
-				 _mm_comige_ss(simd::One, u) &
-				 _mm_comige_ss(v, simd::Zero) &
-				 _mm_comige_ss(simd::One, uv) &
-				 _mm_comige_ss(hit_t, min_t) &
-				 _mm_comige_ss(max_t, hit_t));
+	return 0 != (_mm_ucomige_ss(u, simd::Zero) &
+				 _mm_ucomige_ss(simd::One, u) &
+				 _mm_ucomige_ss(v, simd::Zero) &
+				 _mm_ucomige_ss(simd::One, uv) &
+				 _mm_ucomige_ss(hit_t, min_t) &
+				 _mm_ucomige_ss(max_t, hit_t));
 }
 
 static inline void interpolate_p(f_float3 a, f_float3 b, f_float3 c, float2 uv, float3& p) {
@@ -411,8 +410,7 @@ static inline void interpolate_data(const Shading_vertex_MT& a,
 	tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline Shading_vertex_MTC::Shading_vertex_MTC(const packed_float3& n,
-											  const packed_float3& t,
+inline Shading_vertex_MTC::Shading_vertex_MTC(const packed_float3& n, const packed_float3& t,
 											  float2 uv) :
 	n_u(n, uv[0]), t_v(t, uv[1]) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)
@@ -565,8 +563,7 @@ inline short4 float_to_snorm16(const packed_float3& v, float s) {
 				  float_to_xnorm(s));
 }
 
-inline Shading_vertex_MTCC::Shading_vertex_MTCC(const packed_float3& n,
-												const packed_float3& t,
+inline Shading_vertex_MTCC::Shading_vertex_MTCC(const packed_float3& n, const packed_float3& t,
 												float2 uv) :
 	n_u(float_to_snorm16(n, uv[0])),
 	t_v(float_to_snorm16(t, uv[1])) {

@@ -107,6 +107,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 	if (index != 0xFFFFFFFF) {
 		_mm_store_ss(&ray.max_t, ray_max_t);
+		//ray.max_t = _mm_cvtss_f32(ray_max_t);
 		intersection.u = math::splat_x(u);
 		intersection.v = math::splat_x(v);
 		intersection.index = index;
