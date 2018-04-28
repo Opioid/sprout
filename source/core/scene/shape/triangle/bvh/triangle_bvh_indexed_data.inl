@@ -165,13 +165,10 @@ float3 Indexed_data<SV>::normal(uint32_t index) const {
 template<typename SV>
 Vector Indexed_data<SV>::normal_v(uint32_t index) const {
 	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
 
-	const Vector ap = simd::load_float4(a.v);
-	const Vector bp = simd::load_float4(b.v);
-	const Vector cp = simd::load_float4(c.v);
+	const Vector ap = simd::load_float4(intersection_vertices_[tri.a].v);
+	const Vector bp = simd::load_float4(intersection_vertices_[tri.b].v);
+	const Vector cp = simd::load_float4(intersection_vertices_[tri.c].v);
 
 	const Vector e1 = math::sub(bp, ap);
 	const Vector e2 = math::sub(cp, ap);
