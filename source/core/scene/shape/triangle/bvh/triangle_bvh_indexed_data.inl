@@ -56,9 +56,9 @@ template<typename SV>
 bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_t,
 								 Vector& max_t, uint32_t index, Vector& u, Vector& v) const {
 	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
+	const float* a = intersection_vertices_[tri.a].v;
+	const float* b = intersection_vertices_[tri.b].v;
+	const float* c = intersection_vertices_[tri.c].v;
 
 	return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
@@ -67,9 +67,9 @@ template<typename SV>
 bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_t,
 								 Vector& max_t, uint32_t index) const {
 	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
+	const float* a = intersection_vertices_[tri.a].v;
+	const float* b = intersection_vertices_[tri.b].v;
+	const float* c = intersection_vertices_[tri.c].v;
 
 	return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
 }
@@ -78,9 +78,9 @@ template<typename SV>
 bool Indexed_data<SV>::intersect_p(FVector origin, FVector direction,
 								   FVector min_t, FVector max_t, uint32_t index) const {
 	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
+	const float* a = intersection_vertices_[tri.a].v;
+	const float* b = intersection_vertices_[tri.b].v;
+	const float* c = intersection_vertices_[tri.c].v;
 
 	return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
 }

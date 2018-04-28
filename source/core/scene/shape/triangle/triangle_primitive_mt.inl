@@ -190,13 +190,13 @@ static inline bool intersect(f_float3 a, f_float3 b, f_float3 c,
 }
 
 static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-							 const float3& a, const float3& b, const float3& c,
+							 const float* a, const float* b, const float* c,
 							 Vector& u_out, Vector& v_out) {
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.v);
-	Vector bp = simd::load_float4(b.v);
-	Vector cp = simd::load_float4(c.v);
+	Vector ap = simd::load_float4(a);
+	Vector bp = simd::load_float4(b);
+	Vector cp = simd::load_float4(c);
 
 	Vector e1   = sub(bp, ap);
 	Vector e2   = sub(cp, ap);
@@ -234,12 +234,12 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 }
 
 static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-							 const float3& a, const float3& b, const float3& c) {
+							 const float* a, const float* b, const float* c) {
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.v);
-	Vector bp = simd::load_float4(b.v);
-	Vector cp = simd::load_float4(c.v);
+	Vector ap = simd::load_float4(a);
+	Vector bp = simd::load_float4(b);
+	Vector cp = simd::load_float4(c);
 
 	Vector e1   = sub(bp, ap);
 	Vector e2   = sub(cp, ap);
@@ -336,13 +336,13 @@ static inline bool intersect_p(f_float3 a, f_float3 b, f_float3 c, const math::R
 }
 
 static inline bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
-							   const float3& a, const float3& b, const float3& c) {
+							   const float* a, const float* b, const float* c) {
 	// Implementation C
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.v);
-	Vector bp = simd::load_float4(b.v);
-	Vector cp = simd::load_float4(c.v);
+	Vector ap = simd::load_float4(a);
+	Vector bp = simd::load_float4(b);
+	Vector cp = simd::load_float4(c);
 
 	Vector e1   = sub(bp, ap);
 	Vector e2   = sub(cp, ap);
