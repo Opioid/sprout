@@ -19,7 +19,7 @@ void Material::set_mask(const Texture_adapter& mask) {
 	mask_ = mask;
 }
 
-void Material::set_parameters(const json::Value& parameters) {
+void Material::set_parameters(json::Value const& parameters) {
 	for (auto& n : parameters.GetObject()) {
 		set_parameter(n.name.GetString(), n.value);
 	}
@@ -137,7 +137,7 @@ bool Material::is_two_sided() const {
 	return two_sided_;
 }
 
-void Material::set_parameter(std::string const& /*name*/, const json::Value& /*value*/) {}
+void Material::set_parameter(std::string const& /*name*/, json::Value const& /*value*/) {}
 
 float3 Material::rainbow_[Num_bands];
 

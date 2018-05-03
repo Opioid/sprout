@@ -10,7 +10,7 @@
 
 namespace rendering::integrator::surface {
 
-Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings) :
+Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}

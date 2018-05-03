@@ -175,7 +175,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 
 	auto const& material = *intersection.material();
 
-	const bool hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
+	bool const hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 	if (!hit) {
 		li = float3(0.f);
 		transmittance = float3(1.f);

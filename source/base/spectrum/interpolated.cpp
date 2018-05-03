@@ -17,7 +17,7 @@ float Interpolated::start_wavelength() const {
 }
 
 float Interpolated::end_wavelength() const {
-	const size_t len = wavelengths_.size();
+	size_t const len = wavelengths_.size();
 	if (len > 0) {
 		return wavelengths_[len - 1];
 	}
@@ -45,7 +45,7 @@ float Interpolated::evaluate(float wl) const {
 }
 
 float Interpolated::integrate(float a, float b) const {
-	const size_t len = wavelengths_.size();
+	size_t const len = wavelengths_.size();
 	if (len < 2) {
 		return 0.f;
 	}

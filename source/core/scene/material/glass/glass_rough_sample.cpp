@@ -54,7 +54,7 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
 //	result.wavelength = 0.f;
 
-	const bool same_side = same_hemisphere(wo_);
+	bool const same_side = same_hemisphere(wo_);
 
 	float const p = sampler.generate_sample_1D();
 

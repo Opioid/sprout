@@ -49,7 +49,7 @@ bool Loader::load(std::string const& filename, std::string const& take_name, Sce
 	try {
 		auto& filesystem = resource_manager_.filesystem();
 
-		const std::string take_mount_folder = string::parent_directory(take_name);
+		std::string const take_mount_folder = string::parent_directory(take_name);
 		filesystem.push_mount(take_mount_folder);
 
 		std::string resolved_name;
@@ -113,24 +113,24 @@ size_t Loader::num_bytes() const {
 	return 0;
 }
 
-void Loader::read_materials(const json::Value& materials_value) {
+void Loader::read_materials(json::Value const& materials_value) {
 	if (!materials_value.IsArray()) {
 		return;
 	}
 
 	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
-		const json::Value::ConstMemberIterator name_node = m->FindMember("name");
+		json::Value::ConstMemberIterator const name_node = m->FindMember("name");
 		if (m->MemberEnd() == name_node) {
 			continue;
 		}
 
-		const std::string name = name_node->value.GetString();
+		std::string const name = name_node->value.GetString();
 
 		local_materials_[name] = m;
 	}
 }
 
-void Loader::load_entities(const json::Value& entities_value,
+void Loader::load_entities(json::Value const& entities_value,
 						   entity::Entity* parent, Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
@@ -142,9 +142,9 @@ void Loader::load_entities(const json::Value& entities_value,
 			continue;
 		}
 
-		const std::string type_name = type_node->value.GetString();
+		std::string const type_name = type_node->value.GetString();
 
-		const std::string name = json::read_string(e, "name");
+		std::string const name = json::read_string(e, "name");
 
 		entity::Entity* entity = nullptr;
 
@@ -177,9 +177,9 @@ void Loader::load_entities(const json::Value& entities_value,
 			math::quaternion::identity()
 		};
 
-		const json::Value* animation_value = nullptr;
-		const json::Value* children = nullptr;
-		const json::Value* visibility = nullptr;
+		json::Value const* animation_value = nullptr;
+		json::Value const* children = nullptr;
+		json::Value const* visibility = nullptr;
 
 		for (auto& n : e.GetObject()) {
 			if ("transformation" == n.name) {
@@ -216,7 +216,7 @@ void Loader::load_entities(const json::Value& entities_value,
 	}
 }
 
-void Loader::set_visibility(entity::Entity* entity, const json::Value& visibility_value) {
+void Loader::set_visibility(entity::Entity* entity, json::Value const& visibility_value) {
 	bool in_camera	   = true;
 	bool in_reflection = true;
 	bool in_shadow	   = true;
@@ -238,11 +238,11 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 //	entity->set_propagate_visibility(propagate);
 }
 
-prop::Prop* Loader::load_prop(const json::Value& prop_value,
+prop::Prop* Loader::load_prop(json::Value const& prop_value,
 							  std::string const& name, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 	Materials materials;
-	const json::Value* visibility = nullptr;
+	json::Value const* visibility = nullptr;
 
 	for (auto& n : prop_value.GetObject()) {
 		if ("shape" == n.name) {
@@ -278,7 +278,7 @@ prop::Prop* Loader::load_prop(const json::Value& prop_value,
 	return prop;
 }
 
-void Loader::load_light(const json::Value& /*light_value*/, prop::Prop* prop, Scene& scene) {
+void Loader::load_light(json::Value const& /*light_value*/, prop::Prop* prop, Scene& scene) {
 	for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
 		if (auto const material = prop->material(i); material->is_emissive()) {
 			if (prop->shape()->is_analytical() && material->has_emission_map()) {
@@ -290,7 +290,7 @@ void Loader::load_light(const json::Value& /*light_value*/, prop::Prop* prop, Sc
 	}
 }
 
-entity::Entity* Loader::load_extension(std::string const& type, const json::Value& extension_value,
+entity::Entity* Loader::load_extension(std::string const& type, json::Value const& extension_value,
 									   std::string const& name, Scene& scene) {
 	if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
 		entity::Entity* entity = p->second->create_extension(extension_value, scene,
@@ -303,12 +303,12 @@ entity::Entity* Loader::load_extension(std::string const& type, const json::Valu
 	return nullptr;
 }
 
-std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value) {
-	if (const std::string type = json::read_string(shape_value, "type"); !type.empty()) {
+std::shared_ptr<shape::Shape> Loader::load_shape(json::Value const& shape_value) {
+	if (std::string const type = json::read_string(shape_value, "type"); !type.empty()) {
         return shape(type, shape_value);
 	}
 
-	if (const std::string file = json::read_string(shape_value, "file"); !file.empty()) {
+	if (std::string const file = json::read_string(shape_value, "file"); !file.empty()) {
 		return resource_manager_.load<shape::Shape>(file);
 	}
 
@@ -316,7 +316,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value)
 }
 
 std::shared_ptr<shape::Shape> Loader::shape(std::string const& type,
-											const json::Value& shape_value) const {
+											json::Value const& shape_value) const {
 	if ("Box" == type) {
 		return box_;
 	} else if ("Canopy" == type) {
@@ -348,7 +348,7 @@ std::shared_ptr<shape::Shape> Loader::shape(std::string const& type,
 	return nullptr;
 }
 
-void Loader::load_materials(const json::Value& materials_value, Scene& scene,
+void Loader::load_materials(json::Value const& materials_value, Scene& scene,
 							Materials& materials) {
 	if (!materials_value.IsArray()) {
 		return;

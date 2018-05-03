@@ -14,7 +14,7 @@ public:
 	};
 
 	Emission(rnd::Generator& rng, take::Settings const& take_settings,
-			 const Settings& settings);
+			 Settings const& settings);
 
 	virtual void prepare(scene::Scene const& scene, uint32_t num_samples_per_pixel) override final;
 

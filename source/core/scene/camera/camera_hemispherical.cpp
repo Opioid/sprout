@@ -74,6 +74,6 @@ bool Hemispherical::generate_ray(sampler::Camera_sample const& sample,
 
 void Hemispherical::on_update(Worker& /*worker*/) {}
 
-void Hemispherical::set_parameter(std::string const& /*name*/, const json::Value& /*value*/) {}
+void Hemispherical::set_parameter(std::string const& /*name*/, json::Value const& /*value*/) {}
 
 }

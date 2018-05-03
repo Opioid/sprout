@@ -102,7 +102,7 @@ void Builder_SAH::Split_candidate::evaluate(const References& references, float 
 		aabb_1_.set_min_max(box_1.min, box_1.max);
 	}
 
-	const bool empty_side = 0 == num_side_0 || 0 == num_side_1;
+	bool const empty_side = 0 == num_side_0 || 0 == num_side_1;
 	if (empty_side) {
 		cost_ = 2.f + static_cast<float>(references.size());
 	} else {
@@ -333,7 +333,7 @@ uint32_t Builder_SAH::current_node_index() const {
 }
 
 void Builder_SAH::assign(Build_node* node, const References& references) {
-	const size_t num_references = references.size();
+	size_t const num_references = references.size();
 	node->primitives.resize(num_references);
 	for (size_t i = 0; i < num_references; ++i) {
 		node->primitives[i] = references[i].primitive();

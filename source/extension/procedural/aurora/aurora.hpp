@@ -9,7 +9,7 @@ class Aurora : public scene::entity::Entity {
 
 public:
 
-	virtual void set_parameters(const json::Value& parameters) override final;
+	virtual void set_parameters(json::Value const& parameters) override final;
 
 private:
 

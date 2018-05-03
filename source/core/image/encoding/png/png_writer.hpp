@@ -36,7 +36,6 @@ public:
 
 	virtual bool write(std::ostream& stream, Float4 const& image,
 					   thread::Pool& pool) override final;
-
 };
 
 }

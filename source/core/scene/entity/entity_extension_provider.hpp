@@ -15,7 +15,7 @@ class Entity;
 class Extension_provider {
 public:
 
-	virtual Entity* create_extension(const json::Value& extension_value,
+	virtual Entity* create_extension(json::Value const& extension_value,
 									 Scene& scene,
 									 resource::Manager& manager) = 0;
 };

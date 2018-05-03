@@ -13,7 +13,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
 	auto volume = std::make_shared<Byte1>(description);
 
-	const size_t num_bytes = dimensions[0] * dimensions[1] * dimensions[2];
+	int32_t const num_bytes = dimensions[0] * dimensions[1] * dimensions[2];
 	stream.read(reinterpret_cast<char*>(volume->data()), num_bytes);
 
 	return volume;

@@ -61,7 +61,7 @@ Material_ptr Provider::load(std::string const& filename, memory::Variant_map con
 
 Material_ptr Provider::load(void const* data, std::string const& mount_folder,
 							memory::Variant_map const& /*options*/, resource::Manager& manager) {
-	const json::Value* value = reinterpret_cast<const json::Value*>(data);
+	json::Value const* value = reinterpret_cast<json::Value const*>(data);
 
 	return load(*value, mount_folder, manager);
 }
@@ -74,9 +74,9 @@ Material_ptr Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-Material_ptr Provider::load(const json::Value& value, std::string const& mount_folder,
+Material_ptr Provider::load(json::Value const& value, std::string const& mount_folder,
 							resource::Manager& manager) {
-	const json::Value::ConstMemberIterator rendering_node = value.FindMember("rendering");
+	json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
 	if (value.MemberEnd() == rendering_node) {
 		throw std::runtime_error("Material has no render node");
 	}
@@ -85,7 +85,7 @@ Material_ptr Provider::load(const json::Value& value, std::string const& mount_f
 
 	std::shared_ptr<Material> material;
 
-	const json::Value& rendering_value = rendering_node->value;
+	json::Value const& rendering_value = rendering_node->value;
 
 	for (auto& n : rendering_value.GetObject()) {
 		if ("Cloth" == n.name) {
@@ -126,7 +126,7 @@ Material_ptr Provider::load(const json::Value& value, std::string const& mount_f
 	return material;
 }
 
-Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Manager& manager) {
+Material_ptr Provider::load_cloth(json::Value const& cloth_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	Texture_adapter color_map;
@@ -177,7 +177,7 @@ Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Mana
 	return material;
 }
 
-Material_ptr Provider::load_debug(const json::Value& debug_value, resource::Manager& manager) {
+Material_ptr Provider::load_debug(json::Value const& debug_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	Texture_adapter mask;
@@ -210,7 +210,7 @@ Material_ptr Provider::load_debug(const json::Value& debug_value, resource::Mana
 	return material;
 }
 
-Material_ptr Provider::load_display(const json::Value& display_value, resource::Manager& manager) {
+Material_ptr Provider::load_display(json::Value const& display_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	Texture_adapter mask;
@@ -288,7 +288,7 @@ Material_ptr Provider::load_display(const json::Value& display_value, resource::
 	return material;
 }
 
-Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Manager& manager) {
+Material_ptr Provider::load_glass(json::Value const& glass_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	Texture_adapter normal_map;
@@ -377,7 +377,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	}
 }
 
-Material_ptr Provider::load_light(const json::Value& light_value, resource::Manager& manager) {
+Material_ptr Provider::load_light(json::Value const& light_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	std::string quantity;
@@ -470,7 +470,7 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 	return material;
 }
 
-Material_ptr Provider::load_matte(const json::Value& matte_value, resource::Manager& manager) {
+Material_ptr Provider::load_matte(json::Value const& matte_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 //	Texture_ptr normal_map;
@@ -516,7 +516,7 @@ Material_ptr Provider::load_matte(const json::Value& matte_value, resource::Mana
 	return material;
 }
 
-Material_ptr Provider::load_metal(const json::Value& metal_value, resource::Manager& manager) {
+Material_ptr Provider::load_metal(json::Value const& metal_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	Texture_adapter normal_map;
@@ -602,7 +602,7 @@ Material_ptr Provider::load_metal(const json::Value& metal_value, resource::Mana
 	}
 }
 
-Material_ptr Provider::load_metallic_paint(const json::Value& paint_value,
+Material_ptr Provider::load_metallic_paint(json::Value const& paint_value,
 										   resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
@@ -702,7 +702,7 @@ Material_ptr Provider::load_metallic_paint(const json::Value& paint_value,
 	return material;
 }
 
-Material_ptr Provider::load_mix(const json::Value& mix_value, resource::Manager& manager) {
+Material_ptr Provider::load_mix(json::Value const& mix_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	Texture_adapter mask;
@@ -713,7 +713,7 @@ Material_ptr Provider::load_mix(const json::Value& mix_value, resource::Manager&
 	for (auto& n : mix_value.GetObject()) {
 		if ("materials" == n.name) {
 			for (auto& m : n.value.GetArray()) {
-				const std::string filename = json::read_string(m, "file");
+				std::string const filename = json::read_string(m, "file");
 
 				if (!filename.empty()) {
 					materials.push_back(manager.load<Material>(filename));
@@ -758,7 +758,7 @@ Material_ptr Provider::load_mix(const json::Value& mix_value, resource::Manager&
 	return material;
 }
 
-Material_ptr Provider::load_sky(const json::Value& sky_value, resource::Manager& manager) {
+Material_ptr Provider::load_sky(json::Value const& sky_value, resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
 	Texture_adapter mask;
@@ -800,7 +800,7 @@ Material_ptr Provider::load_sky(const json::Value& sky_value, resource::Manager&
 	return material;
 }
 
-Material_ptr Provider::load_substitute(const json::Value& substitute_value,
+Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 									   resource::Manager& manager) {
 	Sampler_settings sampler_settings;
 
@@ -1009,7 +1009,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 	return material;
 }
 
-Material_ptr Provider::load_volumetric(const json::Value& volumetric_value,
+Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
 									   resource::Manager& manager) {
 	Sampler_settings sampler_settings(Sampler_settings::Filter::Linear,
 									  Sampler_settings::Address::Clamp,
@@ -1097,7 +1097,7 @@ Material_ptr Provider::load_volumetric(const json::Value& volumetric_value,
 	return material;
 }
 
-Sampler_settings::Address read_address(const json::Value& address_value) {
+Sampler_settings::Address read_address(json::Value const& address_value) {
 	std::string address = json::read_string(address_value);
 
 	if ("Clamp" == address) {
@@ -1109,7 +1109,7 @@ Sampler_settings::Address read_address(const json::Value& address_value) {
 	return Sampler_settings::Address::Undefined;
 }
 
-void Provider::read_sampler_settings(const json::Value& sampler_value, Sampler_settings& settings) {
+void Provider::read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings) {
 	for (auto& n : sampler_value.GetObject()) {
 		if ("filter" == n.name) {
 			std::string filter = json::read_string(n.value);
@@ -1136,7 +1136,7 @@ void Provider::read_sampler_settings(const json::Value& sampler_value, Sampler_s
 	}
 }
 
-void Provider::read_texture_description(const json::Value& texture_value,
+void Provider::read_texture_description(json::Value const& texture_value,
 										Texture_description& description) {
 	description.filename = "";
 	description.usage = "Color";
@@ -1177,7 +1177,7 @@ Texture_adapter Provider::create_texture(const Texture_description& description,
 						   description.scale);
 }
 
-void Provider::read_coating_description(const json::Value& coating_value,
+void Provider::read_coating_description(json::Value const& coating_value,
 										Coating_description& description) {
 	if (!coating_value.IsObject()) {
 		return;
@@ -1245,7 +1245,7 @@ float3 Provider::read_hex_RGB(std::string const& text) {
 				  static_cast<float>(elements[2]) / 255.f);
 }
 
-float3 Provider::read_color(const json::Value& color_value) {
+float3 Provider::read_color(json::Value const& color_value) {
 	if (color_value.IsArray()) {
 		return json::read_float3(color_value);
 	}
@@ -1254,11 +1254,11 @@ float3 Provider::read_color(const json::Value& color_value) {
 		return float3(0.f);
 	}
 
-	const std::string hex_string = json::read_string(color_value);
+	std::string const hex_string = json::read_string(color_value);
 	return read_hex_RGB(hex_string);
 }
 
-float3 Provider::read_spectrum(const json::Value& spectrum_value) {
+float3 Provider::read_spectrum(json::Value const& spectrum_value) {
 	if (!spectrum_value.IsObject()) {
 		return float3(0.f);
 	}

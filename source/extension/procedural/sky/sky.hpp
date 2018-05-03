@@ -15,7 +15,7 @@ public:
 	Sky() = default;
 	~Sky();
 
-	virtual void set_parameters(const json::Value& parameters) override final;
+	virtual void set_parameters(json::Value const& parameters) override final;
 
 	void init(scene::prop::Prop* sky, scene::prop::Prop* sun);
 

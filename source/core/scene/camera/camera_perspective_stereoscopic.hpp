@@ -30,7 +30,7 @@ private:
 	virtual void on_update(Worker& worker) override final;
 
 	virtual void set_parameter(std::string const& name,
-							   const json::Value& value) override final;
+							   json::Value const& value) override final;
 
 	float3 left_top_;
 	float3 d_x_;

@@ -76,8 +76,8 @@ void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_sh
 		node->axis = sp.axis();
 
 		index props1_begin = std::partition(begin, end, [&sp](T* b) {
-			const bool mib = math::plane::behind(sp.plane(), b->aabb().min());
-			const bool mab = math::plane::behind(sp.plane(), b->aabb().max());
+			bool const mib = math::plane::behind(sp.plane(), b->aabb().min());
+			bool const mab = math::plane::behind(sp.plane(), b->aabb().max());
 
 			return mib && mab;
 		});

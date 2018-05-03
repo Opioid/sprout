@@ -18,7 +18,7 @@
 namespace rendering::integrator::surface {
 
 Pathtracer::Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
-					   const Settings& settings) :
+					   Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
@@ -80,7 +80,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 			break;
 		}
 
-		const bool singular = sample_result.type.test_any(Bxdf_type::Specular,
+		bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
 														  Bxdf_type::Transmission);
 
 		if (singular) {
@@ -116,7 +116,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (!worker.interface_stack().empty()) {
 			float3 vli;
 			float3 vtr;
-			const bool hit = worker.volume(ray, intersection, filter, vli, vtr);
+			bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
 			result += throughput * vli;
 			throughput *= vtr;

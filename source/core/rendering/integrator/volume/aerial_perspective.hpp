@@ -19,7 +19,7 @@ public:
 	};
 
 	Aerial_perspective(rnd::Generator& rng, take::Settings const& take_settings,
-					   const Settings& settings);
+					   Settings const& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 

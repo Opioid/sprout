@@ -75,11 +75,11 @@ bool Spherical_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
 void Spherical_stereoscopic::on_update(Worker& /*worker*/) {}
 
 void Spherical_stereoscopic::set_parameter(std::string const& name,
-										   const json::Value& value) {
+										   json::Value const& value) {
 	if ("stereo" == name) {
 		for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
-			const std::string node_name = n->name.GetString();
-			const json::Value& node_value = n->value;
+			std::string const node_name = n->name.GetString();
+			json::Value const& node_value = n->value;
 
 			if ("ipd" == node_name) {
 				set_interpupillary_distance(json::read_float(node_value));

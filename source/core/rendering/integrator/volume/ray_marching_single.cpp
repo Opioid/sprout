@@ -16,7 +16,7 @@
 namespace rendering::integrator::volume {
 
 Ray_marching_single::Ray_marching_single(rnd::Generator& rng, take::Settings const& take_settings,
-										 const Settings& settings) :
+										 Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}

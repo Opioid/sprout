@@ -38,32 +38,32 @@ public:
 
 private:
 
-	Material_ptr load(const json::Value& value, std::string const& mount_folder,
+	Material_ptr load(json::Value const& value, std::string const& mount_folder,
 					  resource::Manager& manager);
 
-	Material_ptr load_cloth(const json::Value& cloth_value, resource::Manager& manager);
+	Material_ptr load_cloth(json::Value const& cloth_value, resource::Manager& manager);
 
-	Material_ptr load_debug(const json::Value& debug_value, resource::Manager& manager);
+	Material_ptr load_debug(json::Value const& debug_value, resource::Manager& manager);
 
-	Material_ptr load_display(const json::Value& display_value, resource::Manager& manager);
+	Material_ptr load_display(json::Value const& display_value, resource::Manager& manager);
 
-	Material_ptr load_glass(const json::Value& glass_value, resource::Manager& manager);
+	Material_ptr load_glass(json::Value const& glass_value, resource::Manager& manager);
 
-	Material_ptr load_light(const json::Value& light_value, resource::Manager& manager);
+	Material_ptr load_light(json::Value const& light_value, resource::Manager& manager);
 
-	Material_ptr load_matte(const json::Value& matte_value, resource::Manager& manager);
+	Material_ptr load_matte(json::Value const& matte_value, resource::Manager& manager);
 
-	Material_ptr load_metal(const json::Value& metal_value, resource::Manager& manager);
+	Material_ptr load_metal(json::Value const& metal_value, resource::Manager& manager);
 
-	Material_ptr load_metallic_paint(const json::Value& paint_value, resource::Manager& manager);
+	Material_ptr load_metallic_paint(json::Value const& paint_value, resource::Manager& manager);
 
-	Material_ptr load_mix(const json::Value& mix_value, resource::Manager& manager);
+	Material_ptr load_mix(json::Value const& mix_value, resource::Manager& manager);
 
-	Material_ptr load_sky(const json::Value& sky_value, resource::Manager& manager);
+	Material_ptr load_sky(json::Value const& sky_value, resource::Manager& manager);
 
-	Material_ptr load_substitute(const json::Value& substitute_value, resource::Manager& manager);
+	Material_ptr load_substitute(json::Value const& substitute_value, resource::Manager& manager);
 
-	Material_ptr load_volumetric(const json::Value& volumetric_value, resource::Manager& manager);
+	Material_ptr load_volumetric(json::Value const& volumetric_value, resource::Manager& manager);
 
 	struct Texture_description {
 		std::string		filename;
@@ -73,10 +73,10 @@ private:
 		int32_t			num_elements;
 	};
 
-	static void read_sampler_settings(const json::Value& sampler_value,
+	static void read_sampler_settings(json::Value const& sampler_value,
 									  Sampler_settings& settings);
 
-	static void read_texture_description(const json::Value& texture_value,
+	static void read_texture_description(json::Value const& texture_value,
 										 Texture_description& description);
 
 	static Texture_adapter create_texture(const Texture_description& description,
@@ -93,14 +93,14 @@ private:
 		Texture_description weight_map_description;
 	};
 
-	static void read_coating_description(const json::Value& clearcoat_value,
+	static void read_coating_description(json::Value const& clearcoat_value,
 										 Coating_description& description);
 
 	static float3 read_hex_RGB(std::string const& text);
 
-	static float3 read_color(const json::Value& color_value);
+	static float3 read_color(json::Value const& color_value);
 
-	static float3 read_spectrum(const json::Value& spectrum_value);
+	static float3 read_spectrum(json::Value const& spectrum_value);
 
 	Material_ptr fallback_material_;
 

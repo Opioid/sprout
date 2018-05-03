@@ -23,7 +23,7 @@ public:
 	};
 
 	Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
-			   const Settings& settings);
+			   Settings const& settings);
 
 	virtual ~Pathtracer() override final;
 

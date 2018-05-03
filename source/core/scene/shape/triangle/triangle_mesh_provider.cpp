@@ -273,13 +273,13 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 	auto root = json::parse_insitu(json_string);
 
-	const json::Value::ConstMemberIterator geometry_node = root->FindMember("geometry");
+	json::Value::ConstMemberIterator const geometry_node = root->FindMember("geometry");
 	if (root->MemberEnd() == geometry_node) {
 		delete[] json_string;
 		throw std::runtime_error("Model has no geometry node");
 	}
 
-	const json::Value& geometry_value = geometry_node->value;
+	json::Value const& geometry_value = geometry_node->value;
 
 	std::vector<Part> parts;
 

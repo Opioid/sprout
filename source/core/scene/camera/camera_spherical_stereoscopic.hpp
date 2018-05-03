@@ -26,7 +26,7 @@ private:
 
 	virtual void on_update(Worker& worker) override final;
 
-	virtual void set_parameter(std::string const& name, const json::Value& value) override final;
+	virtual void set_parameter(std::string const& name, json::Value const& value) override final;
 
 	float d_x_;
 	float d_y_;

@@ -18,7 +18,7 @@ public:
 		float    num_light_samples_reciprocal;
 	};
 
-	Whitted(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings);
+	Whitted(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 

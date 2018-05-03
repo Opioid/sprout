@@ -17,7 +17,7 @@
 namespace rendering::integrator::surface {
 
 Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings,
-				 const Settings& settings) :
+				 Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}

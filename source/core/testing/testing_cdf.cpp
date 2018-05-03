@@ -37,7 +37,7 @@ void test_1D() {
 
 	rnd::Generator rng;
 
-//	const size_t num_values = 1024 * 10;
+//	size_t const num_values = 1024 * 10;
 
 //	std::vector<float> values(num_values);
 
@@ -47,7 +47,7 @@ void test_1D() {
 
 	std::vector<float> values = { 0.0f, 3.f, 0.0f, 0.f };
 
-//	const size_t num_samples = 1024 * 1024 * 32;
+//	size_t const num_samples = 1024 * 1024 * 32;
 
 //	std::vector<float> samples(num_samples);
 
@@ -106,10 +106,10 @@ void test_2D() {
 
 	image::encoding::rgbe::Reader reader;
 
-	const std::string name = "../data/textures/uffizi_spherical.hdr";
-//	const std::string name = "../data/textures/river_road_spherical.hdr";
-//	const std::string name = "../data/textures/city_night_lights_spherical.hdr";
-//	const std::string name = "../data/textures/ennis_spherical.hdr";
+	std::string const name = "../data/textures/uffizi_spherical.hdr";
+//	std::string const name = "../data/textures/river_road_spherical.hdr";
+//	std::string const name = "../data/textures/city_night_lights_spherical.hdr";
+//	std::string const name = "../data/textures/ennis_spherical.hdr";
 
 	std::ifstream stream(name, std::ios::binary);
 	if (!stream) {
@@ -119,7 +119,7 @@ void test_2D() {
 
 	rnd::Generator rng;
 
-	const size_t num_samples = 1024 * 1024 * 16;
+	size_t const num_samples = 1024 * 1024 * 16;
 
 	std::vector<float2> samples(num_samples);
 

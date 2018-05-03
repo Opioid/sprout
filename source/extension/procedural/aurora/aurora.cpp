@@ -2,7 +2,7 @@
 
 namespace procedural::aurora {
 
-void Aurora::set_parameters(const json::Value& /*parameters*/) {}
+void Aurora::set_parameters(json::Value const& /*parameters*/) {}
 
 void Aurora::on_set_transformation() {}
 

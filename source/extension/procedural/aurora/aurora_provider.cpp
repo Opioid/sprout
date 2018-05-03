@@ -39,7 +39,7 @@ void Provider::set_scene_loader(Loader& loader) {
 	scene_loader_ = &loader;
 }
 
-entity::Entity* Provider::create_extension(const json::Value& /*extension_value*/,
+entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/,
 										   Scene& scene, resource::Manager& manager) {
 	spectrum::init();
 

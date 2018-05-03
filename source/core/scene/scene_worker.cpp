@@ -43,7 +43,7 @@ bool Worker::intersect(Ray& ray, float& epsilon) const {
 }
 
 bool Worker::intersect(const prop::Prop* prop, Ray& ray, Intersection& intersection) const {
-	const bool hit = prop->intersect(ray, node_stack_, intersection.geo);
+	bool const hit = prop->intersect(ray, node_stack_, intersection.geo);
 	if (hit) {
 		intersection.prop = prop;
 	}

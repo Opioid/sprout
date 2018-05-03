@@ -28,7 +28,7 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) {
 	sky->set_transformation(transformation);
 }
 
-void Sky::set_parameters(const json::Value& parameters) {
+void Sky::set_parameters(json::Value const& parameters) {
 	for (auto& n : parameters.GetObject()) {
 		if ("sun" == n.name) {
 			float3 const angles = json::read_float3(n.value, "rotation", float3::identity());

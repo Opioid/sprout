@@ -99,7 +99,7 @@ float3 Worker::transmittance(Ray const& ray) {
 	Intersection intersection;
 
 	for (;;) {
-		const bool hit = scene_->intersect_volume(tray, node_stack_, intersection);
+		bool const hit = scene_->intersect_volume(tray, node_stack_, intersection);
 
 		if (!interface_stack_.empty()) {
 			float3 const tr = volume_integrator_->transmittance(tray, *this);

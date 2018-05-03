@@ -12,7 +12,7 @@
 namespace rendering::integrator::volume {
 
 Emission::Emission(rnd::Generator& rng, take::Settings const& take_settings,
-				   const Settings& settings) :
+				   Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings) {}
 

@@ -11,7 +11,7 @@
 
 namespace rendering::integrator::surface {
 
-AO::AO(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings) :
+AO::AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}

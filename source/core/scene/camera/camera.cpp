@@ -52,7 +52,7 @@ void Camera::update(const Scene& scene, Worker& worker) {
 	on_update(worker);
 }
 
-void Camera::set_parameters(const json::Value& parameters) {
+void Camera::set_parameters(json::Value const& parameters) {
 	for (auto& n : parameters.GetObject()) {
 		if ("frame_duration" == n.name) {
 			frame_duration_ = json::read_float(n.value);

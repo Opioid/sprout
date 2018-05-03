@@ -18,9 +18,9 @@ class Filtered : public Base {
 
 public:
 
-	Filtered(int2 dimensions, float exposure, const Clamp& clamp, const filter::Filter* filter);
+	Filtered(int2 dimensions, float exposure, const Clamp& clamp, filter::Filter const* filter);
 	Filtered(int2 dimensions, float exposure, const Texture_ptr& backplate,
-			 const Clamp& clamp, const filter::Filter* filter);
+			 const Clamp& clamp, filter::Filter const* filter);
 	~Filtered();
 
 	virtual int32_t filter_radius_int() const override final;
@@ -40,7 +40,7 @@ private:
 
 	Clamp clamp_;
 
-	const filter::Filter* filter_;
+	filter::Filter const* filter_;
 };
 
 }

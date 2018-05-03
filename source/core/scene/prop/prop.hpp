@@ -55,7 +55,7 @@ public:
 
 	void set_shape_and_materials(const Shape_ptr& shape, const Materials& materials);
 
-	virtual void set_parameters(const json::Value& parameters) override;
+	virtual void set_parameters(json::Value const& parameters) override;
 
 	void prepare_sampling(uint32_t part, uint32_t light_id,
 						  bool material_importance_sampling, thread::Pool& pool);

@@ -23,7 +23,7 @@
 namespace rendering::integrator::surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
-							   const Settings& settings) :
+							   Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
@@ -96,7 +96,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-		const bool do_mis = worker.interface_stack().top_ior() == 1.f;
+		bool const do_mis = worker.interface_stack().top_ior() == 1.f;
 
 		result += throughput * sample_lights(ray, ray_offset, intersection,
 											 material_sample, do_mis, filter, worker);
@@ -119,7 +119,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 					break;
 				}
 
-				const bool scattering = intersection.material()->is_scattering_volume();
+				bool const scattering = intersection.material()->is_scattering_volume();
 				treat_as_singular = scattering ? primary_ray : true;
 			}
 		} else {
@@ -128,7 +128,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			treat_as_singular = false;
 		}
 
-		const bool is_translucent = material_sample.is_translucent();
+		bool const is_translucent = material_sample.is_translucent();
 
 		if (0.f == ray.wavelength) {
 			ray.wavelength = sample_result.wavelength;
@@ -154,7 +154,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		if (!worker.interface_stack().empty()) {
 			float3 vli;
 			float3 vtr;
-			const bool hit = worker.volume(ray, intersection, filter, vli, vtr);
+			bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
 			result += throughput * vli;
 			throughput *= vtr;

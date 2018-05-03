@@ -62,25 +62,25 @@ public:
 
 private:
 
-	void read_materials(const json::Value& materials_value);
+	void read_materials(json::Value const& materials_value);
 
-	void load_entities(const json::Value& entities_value, entity::Entity* parent, Scene& scene);
+	void load_entities(json::Value const& entities_value, entity::Entity* parent, Scene& scene);
 
-	void set_visibility(entity::Entity* entity, const json::Value& visibility_value);
+	void set_visibility(entity::Entity* entity, json::Value const& visibility_value);
 
-	prop::Prop* load_prop(const json::Value& prop_value, std::string const& name, Scene& scene);
+	prop::Prop* load_prop(json::Value const& prop_value, std::string const& name, Scene& scene);
 
-	void load_light(const json::Value& light_value, prop::Prop* prop, Scene& scene);
+	void load_light(json::Value const& light_value, prop::Prop* prop, Scene& scene);
 
-	entity::Entity* load_extension(std::string const& type, const json::Value& extension_value,
+	entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
 								   std::string const& name, Scene& scene);
 
-	std::shared_ptr<shape::Shape> load_shape(const json::Value& shape_value);
+	std::shared_ptr<shape::Shape> load_shape(json::Value const& shape_value);
 
 	std::shared_ptr<shape::Shape> shape(std::string const& type,
-										const json::Value& shape_value) const;
+										json::Value const& shape_value) const;
 
-	void load_materials(const json::Value& materials_value, Scene& scene,
+	void load_materials(json::Value const& materials_value, Scene& scene,
 						Materials& materials);
 
 	Material_ptr load_material(std::string const& name, Scene& scene);
@@ -98,7 +98,7 @@ private:
 
 	Material_ptr fallback_material_;
 
-	std::map<std::string, const json::Value*> local_materials_;
+	std::map<std::string, json::Value const*> local_materials_;
 	std::string mount_folder_;
 
 	std::map<std::string, entity::Extension_provider*> extension_providers_;

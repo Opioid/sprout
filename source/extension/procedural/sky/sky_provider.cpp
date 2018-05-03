@@ -34,11 +34,11 @@ void Provider::set_material_provider(material::Provider& material_provider) {
 	material_provider_ = &material_provider;
 }
 
-entity::Entity* Provider::create_extension(const json::Value& extension_value,
+entity::Entity* Provider::create_extension(json::Value const& extension_value,
 										   Scene& scene, resource::Manager& manager) {
 	Sky* sky = new Sky;
 
-	const bool bake = true;
+	bool const bake = true;
 
 	std::shared_ptr<Material> sky_material;
 
@@ -65,14 +65,14 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	sky->init(sky_prop, sun_prop);
 	sky->set_propagate_visibility(true);
 
-	const json::Value::ConstMemberIterator p = extension_value.FindMember("parameters");
+	json::Value::ConstMemberIterator const p = extension_value.FindMember("parameters");
 	if (extension_value.MemberEnd() != p) {
 		sky->set_parameters(p->value);
 	}
 
-	const bool visible_in_camera = true;
-	const bool visible_in_reflection = true;
-	const bool visible_in_shadow = true;
+	bool const visible_in_camera = true;
+	bool const visible_in_reflection = true;
+	bool const visible_in_shadow = true;
 
 	sky_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 

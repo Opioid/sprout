@@ -20,7 +20,7 @@
 namespace rendering::integrator::surface {
 
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
-							 const Settings& settings) :
+							 Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
@@ -81,7 +81,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 					break;
 				}
 
-				const bool scattering = intersection.material()->is_scattering_volume();
+				bool const scattering = intersection.material()->is_scattering_volume();
 				treat_as_singular = scattering ? primary_ray : true;
 			}
 		} else {
@@ -112,7 +112,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		if (!worker.interface_stack().empty()) {
 			float3 vli;
 			float3 vtr;
-			const bool hit = worker.volume(ray, intersection, filter, vli, vtr);
+			bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
 			result += throughput * vli;
 			throughput *= vtr;

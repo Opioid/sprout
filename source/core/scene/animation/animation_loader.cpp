@@ -7,18 +7,18 @@
 namespace scene::animation {
 
 std::shared_ptr<animation::Animation> load_keyframes(
-		const json::Value& keyframes_value, const math::Transformation& default_transformation);
+		json::Value const& keyframes_value, const math::Transformation& default_transformation);
 
 std::shared_ptr<animation::Animation> load_sequence(
-		const json::Value& keyframes_value, const math::Transformation& default_transformation);
+		json::Value const& keyframes_value, const math::Transformation& default_transformation);
 
-void read_morphing(const json::Value& value, entity::Keyframe::Morphing& morphing);
+void read_morphing(json::Value const& value, entity::Keyframe::Morphing& morphing);
 
-std::shared_ptr<animation::Animation> load(const json::Value& animation_value,
+std::shared_ptr<animation::Animation> load(json::Value const& animation_value,
 										   const math::Transformation& default_transformation) {
 	for (auto n = animation_value.MemberBegin(); n != animation_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		std::string const node_name = n->name.GetString();
+		rapidjson::Value const& node_value = n->value;
 
 		if ("keyframes" == node_name) {
 			return load_keyframes(node_value, default_transformation);
@@ -31,7 +31,7 @@ std::shared_ptr<animation::Animation> load(const json::Value& animation_value,
 }
 
 std::shared_ptr<animation::Animation> load_keyframes(
-		const json::Value& keyframes_value, const math::Transformation& default_transformation) {
+		json::Value const& keyframes_value, const math::Transformation& default_transformation) {
 	if (!keyframes_value.IsArray()) {
 		return nullptr;
 	}
@@ -49,7 +49,7 @@ std::shared_ptr<animation::Animation> load_keyframes(
 		keyframe.morphing.weight = 0.f;
 
 		for (auto& n : k.GetObject()) {
-			const std::string node_name = n.name.GetString();
+			std::string const node_name = n.name.GetString();
 
 			if ("time" == node_name) {
 				keyframe.time = json::read_float(n.value);
@@ -67,13 +67,13 @@ std::shared_ptr<animation::Animation> load_keyframes(
 }
 
 std::shared_ptr<animation::Animation> load_sequence(
-		const json::Value& sequence_value, const math::Transformation& default_transformation) {
+		json::Value const& sequence_value, const math::Transformation& default_transformation) {
 	uint32_t start_frame = 0;
 	uint32_t num_frames = 0;
 	uint32_t frames_per_second = 0;
 
 	for (auto& n : sequence_value.GetObject()) {
-		const std::string node_name = n.name.GetString();
+		std::string const node_name = n.name.GetString();
 
 		if ("start_frame" == node_name) {
 			start_frame = json::read_uint(n.value);
@@ -115,9 +115,9 @@ std::shared_ptr<animation::Animation> load_sequence(
 	return animation;
 }
 
-void read_morphing(const json::Value& value, entity::Keyframe::Morphing& morphing) {
+void read_morphing(json::Value const& value, entity::Keyframe::Morphing& morphing) {
 	for (auto& n : value.GetObject()) {
-		const std::string node_name = n.name.GetString();
+		std::string const node_name = n.name.GetString();
 
 		if ("targets" == node_name) {
 			if (n.value.IsArray() && n.value.Size() >= 2) {

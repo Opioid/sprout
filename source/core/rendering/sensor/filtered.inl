@@ -10,12 +10,12 @@ namespace rendering::sensor {
 
 template<class Base, class Clamp>
 Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, const Clamp& clamp,
-								const filter::Filter* filter) :
+								filter::Filter const* filter) :
 	Base(dimensions, exposure), clamp_(clamp), filter_(filter) {}
 
 template<class Base, class Clamp>
 Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, const Texture_ptr& backplate,
-								const Clamp& clamp, const filter::Filter* filter) :
+								const Clamp& clamp, filter::Filter const* filter) :
 	Base(dimensions, exposure, backplate), clamp_(clamp), filter_(filter) {}
 
 template<class Base, class Clamp>

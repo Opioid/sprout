@@ -3,7 +3,7 @@
 
 namespace scene { namespace entity {
 
-void Dummy::set_parameters(const json::Value& /*parameters*/) {}
+void Dummy::set_parameters(json::Value const& /*parameters*/) {}
 
 void Dummy::on_set_transformation() {}
 

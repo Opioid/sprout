@@ -187,7 +187,7 @@ void Prop::on_set_transformation() {
 	}
 }
 
-void Prop::set_parameters(const json::Value& /*parameters*/) {}
+void Prop::set_parameters(json::Value const& /*parameters*/) {}
 
 void Prop::prepare_sampling(uint32_t part, uint32_t light_id,
 							bool material_importance_sampling, thread::Pool& pool) {

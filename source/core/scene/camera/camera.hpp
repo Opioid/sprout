@@ -40,7 +40,7 @@ public:
 	virtual bool generate_ray(sampler::Camera_sample const& sample,
 							  uint32_t view, Ray& ray) const = 0;
 
-	virtual void set_parameters(const json::Value& parameters) override final;
+	virtual void set_parameters(json::Value const& parameters) override final;
 
 	int2 resolution() const;
 
@@ -59,7 +59,7 @@ protected:
 
 	virtual void on_update(Worker& worker) = 0;
 
-	virtual void set_parameter(std::string const& name, const json::Value& value) = 0;
+	virtual void set_parameter(std::string const& name, json::Value const& value) = 0;
 
 	virtual void on_set_transformation() override final;
 

@@ -18,7 +18,7 @@
 namespace rendering::integrator::volume {
 
 Flow_vis::Flow_vis(rnd::Generator& rng, take::Settings const& take_settings,
-				   const Settings& settings) :
+				   Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings) {}
 

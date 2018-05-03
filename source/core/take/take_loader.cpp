@@ -66,8 +66,8 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 	auto take = std::make_unique<Take>();
 
-	const json::Value* postprocessors_value = nullptr;
-	const json::Value* exporter_value = nullptr;
+	json::Value const* postprocessors_value = nullptr;
+	json::Value const* exporter_value = nullptr;
 
 	for (auto& n : root->GetObject()) {
 		if ("camera" == n.name) {
@@ -127,11 +127,11 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	using namespace rendering::integrator;
 
 	if (!take->surface_integrator_factory) {
-		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
+		Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
 		uint32_t const min_bounces = 4;
 		uint32_t const max_bounces = 8;
 		float const path_termination_probability = 0.9f;
-		const bool enable_caustics = false;
+		bool const enable_caustics = false;
 
 		take->surface_integrator_factory = std::make_shared<
 			surface::Pathtracer_MIS_factory>(take->settings, num_threads,
@@ -154,11 +154,11 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	return take;
 }
 
-void Loader::load_camera(const json::Value& camera_value, Take& take) {
+void Loader::load_camera(json::Value const& camera_value, Take& take) {
 	using namespace scene::camera;
 
 	std::string type_name;
-	const json::Value* type_value = nullptr;
+	json::Value const* type_value = nullptr;
 
 	for (auto& n : camera_value.GetObject()) {
 		type_name  = n.name.GetString();
@@ -180,9 +180,9 @@ void Loader::load_camera(const json::Value& camera_value, Take& take) {
 		math::quaternion::identity()
 	};
 
-	const json::Value* parameters_value = nullptr;
-	const json::Value* animation_value = nullptr;
-	const json::Value* sensor_value = nullptr;
+	json::Value const* parameters_value = nullptr;
+	json::Value const* animation_value = nullptr;
+	json::Value const* sensor_value = nullptr;
 
 	std::string layout_type;
 	bool stereo = false;
@@ -271,13 +271,13 @@ void Loader::load_camera(const json::Value& camera_value, Take& take) {
 }
 
 std::unique_ptr<rendering::sensor::Sensor>
-Loader::load_sensor(const json::Value& sensor_value, int2 dimensions) {
+Loader::load_sensor(json::Value const& sensor_value, int2 dimensions) {
 	using namespace rendering::sensor;
 
 	bool alpha_transparency = false;
 	float exposure = 0.f;
 	float3 clamp_max(-1.f);
-	const filter::Filter* filter = nullptr;
+	filter::Filter const* filter = nullptr;
 
 	for (auto& n : sensor_value.GetObject()) {
 		if ("alpha_transparency" == n.name) {
@@ -291,7 +291,7 @@ Loader::load_sensor(const json::Value& sensor_value, int2 dimensions) {
 		}
 	}
 
-	const bool clamp = !math::any_negative(clamp_max);
+	bool const clamp = !math::any_negative(clamp_max);
 
 	if (filter) {
 		if (alpha_transparency) {
@@ -333,7 +333,7 @@ Loader::load_sensor(const json::Value& sensor_value, int2 dimensions) {
 }
 
 const rendering::sensor::filter::Filter*
-Loader::load_filter(const json::Value& filter_value) {
+Loader::load_filter(json::Value const& filter_value) {
 	for (auto& n : filter_value.GetObject()) {
 		if ("Gaussian" == n.name) {
 			float const radius = json::read_float(n.value, "radius", 1.f);
@@ -350,7 +350,7 @@ Loader::load_filter(const json::Value& filter_value) {
 }
 
 std::shared_ptr<sampler::Factory>
-Loader::load_sampler_factory(const json::Value& sampler_value, uint32_t num_workers,
+Loader::load_sampler_factory(json::Value const& sampler_value, uint32_t num_workers,
 							 uint32_t& num_samples_per_pixel) {
 	for (auto& n : sampler_value.GetObject()) {
 		num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
@@ -374,7 +374,7 @@ Loader::load_sampler_factory(const json::Value& sampler_value, uint32_t num_work
 	return nullptr;
 }
 
-void Loader::load_integrator_factories(const json::Value& integrator_value,
+void Loader::load_integrator_factories(json::Value const& integrator_value,
 									   uint32_t num_workers, Take& take) {
 	for (auto& n : integrator_value.GetObject()) {
 		if ("surface" == n.name) {
@@ -388,8 +388,8 @@ void Loader::load_integrator_factories(const json::Value& integrator_value,
 }
 
 std::shared_ptr<rendering::integrator::surface::Factory>
-Loader::load_surface_integrator_factory(const json::Value& integrator_value,
-										const Settings& settings, uint32_t num_workers) {
+Loader::load_surface_integrator_factory(json::Value const& integrator_value,
+										Settings const& settings, uint32_t num_workers) {
 	using namespace rendering::integrator;
 	using namespace rendering::integrator::surface;
 
@@ -419,7 +419,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			float const path_termination_probability = json::read_float(
 				n.value, "path_termination_probability", default_path_termination_probability);
 
-			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+			bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_factory>(
 				settings, num_workers, min_bounces, max_bounces,
@@ -437,7 +437,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
 															   light_sampling.num_samples);
 
-			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+			bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_DL_factory>(
 				settings, num_workers, min_bounces, max_bounces,
@@ -454,7 +454,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			load_light_sampling(n.value, light_sampling);
 
-			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+			bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_MIS_factory>(
 				settings, num_workers, min_bounces, max_bounces,
@@ -462,7 +462,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 		} else if ("Debug" == n.name) {
 			auto vector = Debug::Settings::Vector::Shading_normal;
 
-			const std::string vector_type = json::read_string(n.value, "vector");
+			std::string const vector_type = json::read_string(n.value, "vector");
 
 			if ("Tangent" == vector_type) {
 				vector = Debug::Settings::Vector::Tangent;
@@ -484,15 +484,15 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 }
 
 std::shared_ptr<rendering::integrator::volume::Factory>
-Loader::load_volume_integrator_factory(const json::Value& integrator_value,
-									   const Settings& settings, uint32_t num_workers) {
+Loader::load_volume_integrator_factory(json::Value const& integrator_value,
+									   Settings const& settings, uint32_t num_workers) {
 	using namespace rendering::integrator;
 	using namespace rendering::integrator::volume;
 
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Aerial_perspective" == n.name) {
 			float const step_size = json::read_float(n.value, "step_size", 1.f);
-			const bool shadows = json::read_bool(n.value, "shadows", true);
+			bool const shadows = json::read_bool(n.value, "shadows", true);
 
 			return std::make_shared<Aerial_perspective_factory>(settings, num_workers,
 																step_size, shadows);
@@ -511,7 +511,7 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Ray_marching_single_factory>(settings, num_workers,
 																 step_size, step_probability);
 		} else if ("Tracking" == n.name) {
-			const bool multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
+			bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
 			if (multiple_scattering) {
 				return std::make_shared<Tracking_multi_factory>(settings, num_workers);
@@ -524,7 +524,7 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 	return nullptr;
 }
 
-void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager& manager,
+void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
 								 Take& take) {
 	if (!pp_value.IsArray()) {
 		return;
@@ -542,7 +542,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 		if ("tonemapper" == n->name) {
 			pipeline.add(load_tonemapper(n->value));
 		} else if ("Backplate" == n->name) {
-			const std::string name = json::read_string(n->value, "file");
+			std::string const name = json::read_string(n->value, "file");
 			auto backplate = manager.load<image::texture::Texture>(name);
 
 			if (take.view.camera
@@ -563,7 +563,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 		} else if ("Glare" == n->name) {
 			Glare::Adaption adaption = Glare::Adaption::Mesopic;
 
-			std::string adaption_name = json::read_string(n->value, "adaption");
+			std::string const adaption_name = json::read_string(n->value, "adaption");
 			if ("Scotopic" == adaption_name) {
 				adaption = Glare::Adaption::Scotopic;
 			} else if ("Mesopic" == adaption_name) {
@@ -579,7 +579,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 		} else if ("Glare2" == n->name) {
 			Glare2::Adaption adaption = Glare2::Adaption::Mesopic;
 
-			std::string adaption_name = json::read_string(n->value, "adaption");
+			std::string const adaption_name = json::read_string(n->value, "adaption");
 			if ("Scotopic" == adaption_name) {
 				adaption = Glare2::Adaption::Scotopic;
 			} else if ("Mesopic" == adaption_name) {
@@ -595,7 +595,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 		} else if ("Glare3" == n->name) {
 			Glare3::Adaption adaption = Glare3::Adaption::Mesopic;
 
-			std::string adaption_name = json::read_string(n->value, "adaption");
+			std::string const adaption_name = json::read_string(n->value, "adaption");
 			if ("Scotopic" == adaption_name) {
 				adaption = Glare3::Adaption::Scotopic;
 			} else if ("Mesopic" == adaption_name) {
@@ -613,7 +613,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 }
 
 std::unique_ptr<rendering::postprocessor::Postprocessor>
-Loader::load_tonemapper(const json::Value& tonemapper_value) {
+Loader::load_tonemapper(json::Value const& tonemapper_value) {
 	using namespace rendering::postprocessor::tonemapping;
 
 	for (auto& n : tonemapper_value.GetObject()) {
@@ -641,7 +641,7 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 	return nullptr;
 }
 
-bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
+bool Loader::peek_stereoscopic(json::Value const& parameters_value) {
 	auto const export_node = parameters_value.FindMember("stereo");
 	if (parameters_value.MemberEnd() == export_node) {
 		return false;
@@ -651,7 +651,7 @@ bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
 }
 
 std::vector<std::unique_ptr<exporting::Sink>>
-Loader::load_exporters(const json::Value& exporter_value, const View& view) {
+Loader::load_exporters(json::Value const& exporter_value, const View& view) {
 	if (!view.camera) {
 		return {};
 	}
@@ -662,14 +662,14 @@ Loader::load_exporters(const json::Value& exporter_value, const View& view) {
 
 	for (auto& n : exporter_value.GetObject()) {
 		if ("Image" == n.name) {
-			const std::string format = json::read_string(n.value, "format", "PNG");
+			std::string const format = json::read_string(n.value, "format", "PNG");
 
 			std::unique_ptr<image::Writer> writer;
 
 			if ("RGBE" == format) {
 				writer = std::unique_ptr<image::encoding::rgbe::Writer>();
 			} else {
-				const bool transparent_sensor = camera.sensor().has_alpha_transparency();
+				bool const transparent_sensor = camera.sensor().has_alpha_transparency();
 				if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
 					writer = std::make_unique<image::encoding::png::Writer_alpha>(
 						camera.sensor().dimensions());
@@ -700,7 +700,7 @@ Loader::load_exporters(const json::Value& exporter_value, const View& view) {
 	return exporters;
 }
 
-void Loader::load_settings(const json::Value& settings_value, Settings& settings) {
+void Loader::load_settings(json::Value const& settings_value, Settings& settings) {
 	for (auto& n : settings_value.GetObject()) {
 		if ("ray_offset_factor" == n.name) {
 			settings.ray_offset_factor = json::read_float(n.value);
@@ -708,7 +708,7 @@ void Loader::load_settings(const json::Value& settings_value, Settings& settings
 	}
 }
 
-void Loader::load_light_sampling(const json::Value& parent_value,
+void Loader::load_light_sampling(json::Value const& parent_value,
 								 rendering::integrator::Light_sampling& sampling) {
 	auto const light_sampling_node = parent_value.FindMember("light_sampling");
 	if (parent_value.MemberEnd() == light_sampling_node) {

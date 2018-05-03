@@ -20,7 +20,7 @@
 namespace rendering::integrator::volume {
 
 Aerial_perspective::Aerial_perspective(rnd::Generator& rng, take::Settings const& take_settings,
-									   const Settings& settings) :
+									   Settings const& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}

@@ -18,7 +18,7 @@ public:
 	Entity() = default;
 	virtual ~Entity();
 
-	virtual void set_parameters(const json::Value& parameters) = 0;
+	virtual void set_parameters(json::Value const& parameters) = 0;
 
 	const math::Transformation& local_frame_a() const;
 

@@ -22,7 +22,7 @@ public:
 		float radius;
 	};
 
-	AO(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings);
+	AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 

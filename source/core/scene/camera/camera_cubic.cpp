@@ -97,6 +97,6 @@ bool Cubic::generate_ray(sampler::Camera_sample const& sample,
 void Cubic::on_update(Worker& /*worker*/) {}
 
 void Cubic::set_parameter(std::string const& /*name*/,
-						  const json::Value& /*value*/) {}
+						  json::Value const& /*value*/) {}
 
 }

@@ -56,43 +56,43 @@ private:
 		float interpupillary_distance = 0.f;
 	};
 
-	static void load_camera(const json::Value& camera_value, Take& take);
+	static void load_camera(json::Value const& camera_value, Take& take);
 
 	static std::unique_ptr<rendering::sensor::Sensor>
-	load_sensor(const json::Value& sensor_value, int2 dimensions);
+	load_sensor(json::Value const& sensor_value, int2 dimensions);
 
 	static const rendering::sensor::filter::Filter*
-	load_filter(const rapidjson::Value& filter_value);
+	load_filter(rapidjson::Value const& filter_value);
 
 	static std::shared_ptr<sampler::Factory>
-	load_sampler_factory(const json::Value& sampler_value, uint32_t num_workers,
+	load_sampler_factory(json::Value const& sampler_value, uint32_t num_workers,
 						 uint32_t& num_samples_per_pixel);
 
-	static void load_integrator_factories(const json::Value& integrator_value,
+	static void load_integrator_factories(json::Value const& integrator_value,
 										  uint32_t num_workers, Take& take);
 
 	static std::shared_ptr<rendering::integrator::surface::Factory>
-	load_surface_integrator_factory(const json::Value& integrator_value,
-									const Settings& settings, uint32_t num_workers);
+	load_surface_integrator_factory(json::Value const& integrator_value,
+									Settings const& settings, uint32_t num_workers);
 
 	static std::shared_ptr<rendering::integrator::volume::Factory>
-	load_volume_integrator_factory(const json::Value& integrator_value,
-								   const Settings& settings, uint32_t num_workers);
+	load_volume_integrator_factory(json::Value const& integrator_value,
+								   Settings const& settings, uint32_t num_workers);
 
-	static void load_postprocessors(const json::Value& pp_value, resource::Manager& manager,
+	static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
 									Take& take);
 
 	static std::unique_ptr<rendering::postprocessor::Postprocessor>
-	load_tonemapper(const json::Value& tonemapper_value);
+	load_tonemapper(json::Value const& tonemapper_value);
 
-	static bool peek_stereoscopic(const json::Value& parameters_value);
+	static bool peek_stereoscopic(json::Value const& parameters_value);
 
 	static std::vector<std::unique_ptr<exporting::Sink>>
-	load_exporters(const json::Value& exporter_value, const View& view);
+	load_exporters(json::Value const& exporter_value, const View& view);
 
-	static void load_settings(const json::Value& settings_value, Settings& settings);
+	static void load_settings(json::Value const& settings_value, Settings& settings);
 
-	static void load_light_sampling(const json::Value& parent_value,
+	static void load_light_sampling(json::Value const& parent_value,
 									rendering::integrator::Light_sampling& sampling);
 };
 

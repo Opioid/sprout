@@ -29,7 +29,7 @@ bool Prop_image_light::sample(f_float3 p, float time, const Transformation& tran
 
 	float const area = prop_->area(part_);
 
-	const bool two_sided = material->is_two_sided();
+	bool const two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
 	if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result.shape)) {
@@ -58,7 +58,7 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n,
 
 	float const area = prop_->area(part_);
 
-	const bool two_sided = material->is_two_sided();
+	bool const two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
 	if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result.shape)) {
@@ -85,7 +85,7 @@ float Prop_image_light::pdf(Ray const& ray, const Intersection& intersection, bo
 
 	auto const material = prop_->material(part_);
 
-	const bool two_sided = material->is_two_sided();
+	bool const two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
 	float const shape_pdf = prop_->shape()->pdf_uv(ray, intersection, transformation,

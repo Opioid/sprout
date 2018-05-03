@@ -22,7 +22,7 @@ public:
 	void set_scene_loader(scene::Loader& loader);
 	void set_material_provider(scene::material::Provider& provider);
 
-	virtual scene::entity::Entity* create_extension(const json::Value& extension_value,
+	virtual scene::entity::Entity* create_extension(json::Value const& extension_value,
 													scene::Scene& scene,
 													resource::Manager& manager) override final;
 

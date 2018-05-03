@@ -221,24 +221,24 @@ void log_memory_consumption(resource::Manager const& manager, take::Take const& 
 
 	logging::verbose("Memory consumption:");
 
-	const size_t image_num_bytes = manager.num_bytes<image::Image>();
+	size_t const image_num_bytes = manager.num_bytes<image::Image>();
 	logging::verbose("\tImages: " + string::print_bytes(image_num_bytes));
 
-	const size_t material_num_bytes = manager.num_bytes<scene::material::Material>();
+	size_t const material_num_bytes = manager.num_bytes<scene::material::Material>();
 	logging::verbose("\tMaterials: " + string::print_bytes(material_num_bytes));
 
-	const size_t mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
+	size_t const mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
 	logging::verbose("\tMeshes: " + string::print_bytes(mesh_num_bytes));
 
-	const size_t renderer_num_bytes = take.view.pipeline.num_bytes()
+	size_t const renderer_num_bytes = take.view.pipeline.num_bytes()
 									+ take.view.camera->sensor().num_bytes()
 									+ rendering_num_bytes;
 	logging::verbose("\tRenderer: " + string::print_bytes(renderer_num_bytes));
 
-	const size_t scene_num_bytes = loader.num_bytes() + scene.num_bytes();
+	size_t const scene_num_bytes = loader.num_bytes() + scene.num_bytes();
 	logging::verbose("\tScene: " + string::print_bytes(scene_num_bytes));
 
-	const size_t total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes
+	size_t const total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes
 								 + renderer_num_bytes + scene_num_bytes;
 	logging::verbose("\tTotal: " + string::print_bytes(total_num_bytes));
 }

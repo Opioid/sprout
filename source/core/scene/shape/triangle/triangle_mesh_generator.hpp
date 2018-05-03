@@ -18,7 +18,7 @@ class Generator {
 
 public:
 
-	virtual std::shared_ptr<Shape> create_mesh(const json::Value& mesh_value,
+	virtual std::shared_ptr<Shape> create_mesh(json::Value const& mesh_value,
 											   resource::Manager& manager) = 0;
 };
 

@@ -70,7 +70,7 @@ void Perspective_stereoscopic::set_fov(float fov) {
 void Perspective_stereoscopic::on_update(Worker& /*worker*/) {}
 
 void Perspective_stereoscopic::set_parameter(std::string const& name,
-											 const json::Value& value) {
+											 json::Value const& value) {
 	if ("fov" == name) {
 		set_fov(math::degrees_to_radians(json::read_float(value)));
 	} else if ("stereo" == name) {

@@ -44,7 +44,7 @@ public:
 
 	void set_mask(const Texture_adapter& mask);
 
-	void set_parameters(const json::Value& parameters);
+	void set_parameters(json::Value const& parameters);
 
 	virtual void compile();
 
@@ -109,7 +109,7 @@ public:
 
 protected:
 
-	virtual void set_parameter(std::string const& name, const json::Value& value);
+	virtual void set_parameter(std::string const& name, json::Value const& value);
 
 private:
 

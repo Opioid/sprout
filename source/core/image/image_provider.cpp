@@ -1,6 +1,7 @@
 #include "image_provider.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/resource_provider.inl"
+#include "encoding/json/json_reader.hpp"
 #include "encoding/raw/raw_reader.hpp"
 #include "encoding/rgbe/rgbe_reader.hpp"
 #include "file/file.hpp"
@@ -38,7 +39,7 @@ std::shared_ptr<Image> Provider::load(std::string const& filename,
 
 		Swizzle swizzle = Swizzle::XYZW;
 		options.query("swizzle", swizzle);
-		const bool swap_xy = Swizzle::YXZW == swizzle;
+		bool const swap_xy = Swizzle::YXZW == swizzle;
 
 		bool invert = false;
 		options.query("invert", invert);
@@ -48,8 +49,11 @@ std::shared_ptr<Image> Provider::load(std::string const& filename,
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);
 	} else if (file::Type::Undefined == type) {
-		encoding::raw::Reader reader;
+		encoding::json::Reader reader;
 		return reader.read(stream);
+
+	//	encoding::raw::Reader reader;
+	//	return reader.read(stream);
 	}
 
 	throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
