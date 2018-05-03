@@ -7,7 +7,7 @@
 
 namespace crypto { namespace sha1 {
 
-std::vector<uint8_t> encode(const std::string& input) {
+std::vector<uint8_t> encode(std::string const& input) {
 	SHA1 checksum;
 	checksum.update(input);
 	return checksum.final();
@@ -19,7 +19,7 @@ SHA1::SHA1() {
 
 SHA1::~SHA1() {}
 
-void SHA1::update(const std::string& s) {
+void SHA1::update(std::string const& s) {
 	std::istringstream is(s);
 	update(is);
 }
@@ -228,7 +228,7 @@ void SHA1::transform(uint32_t block[Block_bytes]) {
 }
 
 
-void SHA1::buffer_to_block(const std::string& buffer, uint32_t block[Block_bytes]) {
+void SHA1::buffer_to_block(std::string const& buffer, uint32_t block[Block_bytes]) {
 	// Convert the std::string (byte buffer) to a uint32 array (MSB)
 	for (uint32_t i = 0; i < Block_ints; ++i) {
 		block[i] = (buffer[4 * i + 3] & 0xff)

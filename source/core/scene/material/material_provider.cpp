@@ -49,7 +49,7 @@ Provider::Provider() :
 
 Provider::~Provider() {}
 
-Material_ptr Provider::load(const std::string& filename, const memory::Variant_map& /*options*/,
+Material_ptr Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
 							resource::Manager& manager) {
 	std::string resolved_name;
 	auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
@@ -59,8 +59,8 @@ Material_ptr Provider::load(const std::string& filename, const memory::Variant_m
 	return load(*root, string::parent_directory(resolved_name), manager);
 }
 
-Material_ptr Provider::load(const void* data, const std::string& mount_folder,
-							const memory::Variant_map& /*options*/, resource::Manager& manager) {
+Material_ptr Provider::load(void const* data, std::string const& mount_folder,
+							memory::Variant_map const& /*options*/, resource::Manager& manager) {
 	const json::Value* value = reinterpret_cast<const json::Value*>(data);
 
 	return load(*value, mount_folder, manager);
@@ -74,7 +74,7 @@ Material_ptr Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-Material_ptr Provider::load(const json::Value& value, const std::string& mount_folder,
+Material_ptr Provider::load(const json::Value& value, std::string const& mount_folder,
 							resource::Manager& manager) {
 	const json::Value::ConstMemberIterator rendering_node = value.FindMember("rendering");
 	if (value.MemberEnd() == rendering_node) {
@@ -398,7 +398,7 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 		} else if ("emittance" == n.name) {
 			quantity = json::read_string(n.value, "quantity");
 
-			const auto s = n.value.FindMember("spectrum");
+			auto const s = n.value.FindMember("spectrum");
 			if (n.value.MemberEnd() != s) {
 				color = read_spectrum(s->value);
 			}
@@ -1213,7 +1213,7 @@ void Provider::read_coating_description(const json::Value& coating_value,
 	}
 }
 
-float3 Provider::read_hex_RGB(const std::string& text) {
+float3 Provider::read_hex_RGB(std::string const& text) {
 	if (7 != text.length() || '#' != text[0]) {
 		return float3(0.f);
 	}
@@ -1265,7 +1265,7 @@ float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 
 	for (auto& n : spectrum_value.GetObject()) {
 		if ("sRGB" == n.name) {
-			const float3 srgb = read_color(n.value);
+			float3 const srgb = read_color(n.value);
 			return spectrum::sRGB_to_linear_RGB(srgb);
 		} else if ("RGB" == n.name) {
 			return read_color(n.value);

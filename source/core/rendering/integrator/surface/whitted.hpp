@@ -18,7 +18,7 @@ public:
 		float    num_light_samples_reciprocal;
 	};
 
-	Whitted(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings);
+	Whitted(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -30,9 +30,9 @@ public:
 
 private:
 
-	float3 shade(const Ray& ray, const Intersection& intersection, Worker& worker);
+	float3 shade(Ray const& ray, const Intersection& intersection, Worker& worker);
 
-	float3 estimate_direct_light(const Ray& ray, const Intersection& intersection,
+	float3 estimate_direct_light(Ray const& ray, const Intersection& intersection,
 								 const Material_sample& material_sample, Worker& worker);
 
 	const Settings settings_;
@@ -44,7 +44,7 @@ class Whitted_factory final : public Factory {
 
 public:
 
-	Whitted_factory(const take::Settings& take_settings, uint32_t num_integrators,
+	Whitted_factory(take::Settings const& take_settings, uint32_t num_integrators,
 					uint32_t num_light_samples);
 
 	~Whitted_factory();

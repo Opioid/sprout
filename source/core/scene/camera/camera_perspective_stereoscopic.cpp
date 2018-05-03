@@ -36,7 +36,7 @@ float Perspective_stereoscopic::pixel_solid_angle() const {
 	return 1.f;
 }
 
-bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
+bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
 											uint32_t view, scene::Ray& ray) const {
 	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
@@ -69,7 +69,7 @@ void Perspective_stereoscopic::set_fov(float fov) {
 
 void Perspective_stereoscopic::on_update(Worker& /*worker*/) {}
 
-void Perspective_stereoscopic::set_parameter(const std::string& name,
+void Perspective_stereoscopic::set_parameter(std::string const& name,
 											 const json::Value& value) {
 	if ("fov" == name) {
 		set_fov(math::degrees_to_radians(json::read_float(value)));

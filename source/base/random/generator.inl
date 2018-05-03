@@ -17,7 +17,7 @@ inline uint32_t Generator::random_uint() {
 }
 
 inline float Generator::random_float() {
-	const uint32_t bits = advance_pcg32();
+	uint32_t const bits = advance_pcg32();
 
 	return 2.3283064365386963e-10f * static_cast<float>(bits);
 }
@@ -29,9 +29,9 @@ inline uint32_t Generator::advance_pcg32() {
 	state_ = oldstate * 6364136223846793005ULL + (inc_ | 1);
 
 	// Calculate output function (XSH RR), uses old state for max ILP
-	const uint32_t xorshifted = static_cast<uint32_t>(((oldstate >> 18u) ^ oldstate) >> 27u);
+	uint32_t const xorshifted = static_cast<uint32_t>(((oldstate >> 18u) ^ oldstate) >> 27u);
 
-	const uint32_t rot = static_cast<uint32_t>(oldstate >> 59u);
+	uint32_t const rot = static_cast<uint32_t>(oldstate >> 59u);
 
 	return (xorshifted >> rot) | (xorshifted << ((0xFFFFFFFF - rot) & 31));
 }

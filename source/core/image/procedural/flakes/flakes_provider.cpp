@@ -11,7 +11,7 @@
 
 namespace image { namespace procedural { namespace flakes {
 
-std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& options) {
+std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& options) {
 	Properties props(options);
 
 	Renderer renderer(props.dimensions, 4);
@@ -51,7 +51,7 @@ std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& op
 	return image;
 }
 
-std::shared_ptr<Image> Provider::create_mask(const memory::Variant_map& options) {
+std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options) {
 	Properties props(options);
 
 	Renderer renderer(props.dimensions, 4);
@@ -86,7 +86,7 @@ std::shared_ptr<Image> Provider::create_mask(const memory::Variant_map& options)
 	return image;
 }
 
-Provider::Properties::Properties(const memory::Variant_map& options) :
+Provider::Properties::Properties(memory::Variant_map const& options) :
 	dimensions(512, 512) {
 	float size = 0.006f;
 	float density = 0.5f;

@@ -16,7 +16,7 @@ namespace scene::camera {
 
 Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) :
 	Stereoscopic(resolution) {
-	const float2 fr(resolution);
+	float2 const fr(resolution);
 	d_x_ = 1.f / fr[0];
 	d_y_ = 1.f / fr[1];
 
@@ -41,29 +41,29 @@ float Spherical_stereoscopic::pixel_solid_angle() const {
 	return 1.f;
 }
 
-bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
+bool Spherical_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
 										  uint32_t view, scene::Ray& ray) const {
-	const float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
+	float2 const coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
-	const float x = d_x_ * coordinates[0];
-	const float y = d_y_ * coordinates[1];
+	float const x = d_x_ * coordinates[0];
+	float const y = d_y_ * coordinates[1];
 
-	const float phi   = (x - 0.5f) * (2.f * math::Pi);
-	const float theta = y * math::Pi;
+	float const phi   = (x - 0.5f) * (2.f * math::Pi);
+	float const theta = y * math::Pi;
 
-	const float sin_phi   = std::sin(phi);
-	const float cos_phi   = std::cos(phi);
-	const float sin_theta = std::sin(theta);
-	const float cos_theta = std::cos(theta);
+	float const sin_phi   = std::sin(phi);
+	float const cos_phi   = std::cos(phi);
+	float const sin_theta = std::sin(theta);
+	float const cos_theta = std::cos(theta);
 
-	const float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
+	float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
 	float3x3 rotation;
 	math::set_rotation_y(rotation, phi);
-	const float3 eye_pos = eye_offsets_[view] * rotation;
+	float3 const eye_pos = eye_offsets_[view] * rotation;
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(sample.time, temp);
+	auto const& transformation = transformation_at(sample.time, temp);
 
 	ray = create_ray(math::transform_point(eye_pos, transformation.object_to_world),
 					 math::transform_vector(dir, transformation.rotation),
@@ -74,7 +74,7 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 
 void Spherical_stereoscopic::on_update(Worker& /*worker*/) {}
 
-void Spherical_stereoscopic::set_parameter(const std::string& name,
+void Spherical_stereoscopic::set_parameter(std::string const& name,
 										   const json::Value& value) {
 	if ("stereo" == name) {
 		for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {

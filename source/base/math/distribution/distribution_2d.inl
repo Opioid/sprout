@@ -9,7 +9,7 @@
 namespace math {
 
 template<typename T>
-void Distribution_t_2D<T>::init(const float* data, int2 dimensions) {
+void Distribution_t_2D<T>::init(float const* data, int2 dimensions) {
 	conditional_.resize(dimensions[1]);
 
 	std::vector<float> integrals(dimensions[1]);
@@ -27,7 +27,7 @@ void Distribution_t_2D<T>::init(const float* data, int2 dimensions) {
 }
 
 template<typename T>
-void Distribution_t_2D<T>::init(const float* data, int2 dimensions, thread::Pool& pool) {
+void Distribution_t_2D<T>::init(float const* data, int2 dimensions, thread::Pool& pool) {
 	conditional_.resize(dimensions[1]);
 
 	std::vector<float> integrals(dimensions[1]);
@@ -53,7 +53,7 @@ void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) {
 
 	std::vector<float> integrals(conditional_.size());
 
-	const uint32_t num_conditional = static_cast<uint32_t>(conditional_.size());
+	uint32_t const num_conditional = static_cast<uint32_t>(conditional_.size());
 
 	for (uint32_t i = 0; i < num_conditional; ++i) {
 		integrals[i] = conditional_[i].integral();
@@ -67,23 +67,23 @@ void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) {
 
 template<typename T>
 typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuous(float2 r2) const {
-	const auto v = marginal_.sample_continuous(r2[1]);
+	auto const v = marginal_.sample_continuous(r2[1]);
 
-	const uint32_t i = static_cast<uint32_t>(v.offset * conditional_size_);
-	const uint32_t c = std::min(i, conditional_max_);
+	uint32_t const i = static_cast<uint32_t>(v.offset * conditional_size_);
+	uint32_t const c = std::min(i, conditional_max_);
 
-	const auto u = conditional_[c].sample_continuous(r2[0]);
+	auto const u = conditional_[c].sample_continuous(r2[0]);
 
 	return { float2(u.offset, v.offset), u.pdf * v.pdf };
 }
 
 template<typename T>
 float Distribution_t_2D<T>::pdf(float2 uv) const {
-	const float v_pdf = marginal_.pdf(uv[1]);
+	float const v_pdf = marginal_.pdf(uv[1]);
 
-	const uint32_t i = static_cast<uint32_t>(uv[1] * conditional_size_);
-	const uint32_t c = std::min(i, conditional_max_);
-	const float u_pdf = conditional_[c].pdf(uv[0]);
+	uint32_t const i = static_cast<uint32_t>(uv[1] * conditional_size_);
+	uint32_t const c = std::min(i, conditional_max_);
+	float const u_pdf = conditional_[c].pdf(uv[0]);
 
 	return u_pdf * v_pdf;
 }

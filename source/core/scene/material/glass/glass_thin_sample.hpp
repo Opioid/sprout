@@ -8,7 +8,7 @@ class Sample_thin : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const override final;
+	virtual Layer const& base_layer() const override final;
 
 	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
@@ -19,7 +19,7 @@ public:
 	virtual bool is_translucent() const override final;
 
 	struct Layer : public material::Sample::Layer {
-		void set(const float3& refraction_color, const float3& absorption_coefficient,
+		void set(float3 const& refraction_color, float3 const& absorption_coefficient,
 				 float ior, float ior_outside, float thickess);
 
 		float3 color_;
@@ -35,10 +35,10 @@ public:
 
 	public:
 
-		static float reflect(const Sample_thin& sample, const Layer& layer,
+		static float reflect(const Sample_thin& sample, Layer const& layer,
 							 sampler::Sampler& sampler, bxdf::Sample& result);
 
-		static float refract(const Sample_thin& sample, const Layer& layer,
+		static float refract(const Sample_thin& sample, Layer const& layer,
 							 sampler::Sampler& sampler, bxdf::Sample& result);
 	};
 };

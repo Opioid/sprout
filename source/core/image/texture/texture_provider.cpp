@@ -25,8 +25,8 @@ Provider::Provider() : resource::Provider<Texture>("Texture") {
 	encoding::init();
 }
 
-std::shared_ptr<Texture> Provider::load(const std::string& filename,
-										const memory::Variant_map& options,
+std::shared_ptr<Texture> Provider::load(std::string const& filename,
+										memory::Variant_map const& options,
 										resource::Manager& manager) {
 	Channels channels = Channels::XYZ;
 
@@ -94,9 +94,9 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 	return nullptr;
 }
 
-std::shared_ptr<Texture> Provider::load(const void* /*data*/,
-										const std::string& /*mount_folder*/,
-										const memory::Variant_map& /*options*/,
+std::shared_ptr<Texture> Provider::load(void const* /*data*/,
+										std::string const& /*mount_folder*/,
+										memory::Variant_map const& /*options*/,
 										resource::Manager& /*manager*/) {
 	return nullptr;
 }

@@ -58,7 +58,7 @@ public:
 	using Prop			  = scene::prop::Prop;
 	using Intersection	  = scene::prop::Intersection;
 
-	Integrator(rnd::Generator& rng, const take::Settings& settings);
+	Integrator(rnd::Generator& rng, take::Settings const& settings);
 	virtual ~Integrator();
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) = 0;

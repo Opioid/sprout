@@ -39,7 +39,7 @@ float4 Byte1_unorm::at_4(int32_t x, int32_t y) const {
 	return float4(encoding::cached_unorm_to_float(value), 0.f, 0.f, 1.f);
 }
 
-float4 Byte1_unorm::gather_1(const int4& xy_xy1) const {
+float4 Byte1_unorm::gather_1(int4 const& xy_xy1) const {
 	uint8_t v[4];
 	image_.gather(xy_xy1, v);
 
@@ -49,7 +49,7 @@ float4 Byte1_unorm::gather_1(const int4& xy_xy1) const {
 				  encoding::cached_unorm_to_float(v[3]));
 }
 
-void Byte1_unorm::gather_2(const int4& xy_xy1, float2 c[4]) const {
+void Byte1_unorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
 	uint8_t v[4];
 	image_.gather(xy_xy1, v);
 
@@ -59,7 +59,7 @@ void Byte1_unorm::gather_2(const int4& xy_xy1, float2 c[4]) const {
 	c[3] = float2(encoding::cached_unorm_to_float(v[3]), 0.f);
 }
 
-void Byte1_unorm::gather_3(const int4& xy_xy1, float3 c[4]) const {
+void Byte1_unorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {
 	uint8_t v[4];
 	image_.gather(xy_xy1, v);
 

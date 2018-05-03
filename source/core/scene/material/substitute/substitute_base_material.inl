@@ -18,7 +18,7 @@ void Material_base::set_sample(f_float3 wo, const Renderstate& rs,
 	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_.is_valid()) {
-		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
+		float3 const n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

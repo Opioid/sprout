@@ -133,7 +133,7 @@ static inline constexpr Vector4f_a operator*(FVector4f_a a, FVector4f_a b) {
 }
 
 static inline constexpr Vector4f_a operator/(FVector4f_a a, float s) {
-	const float is = 1.f / s;
+	float const is = 1.f / s;
 	return Vector4f_a(is * a[0], is * a[1], is * a[2], is * a[3]);
 }
 

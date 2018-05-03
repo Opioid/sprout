@@ -18,16 +18,16 @@ namespace scene::light {
 bool Prop_image_light::sample(f_float3 p, float time, const Transformation& transformation,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Sampler_filter filter, const Worker& worker, Sample& result) const {
-	const auto material = prop_->material(part_);
+	auto const material = prop_->material(part_);
 
-	const float2 s2d = sampler.generate_sample_2D(sampler_dimension);
+	float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
-	const auto rs = material->radiance_sample(s2d);
+	auto const rs = material->radiance_sample(s2d);
 	if (0.f == rs.pdf) {
 		return false;
 	}
 
-	const float area = prop_->area(part_);
+	float const area = prop_->area(part_);
 
 	const bool two_sided = material->is_two_sided();
 
@@ -47,16 +47,16 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n,
 							  float time, const Transformation& transformation, bool total_sphere,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Sampler_filter filter, const Worker& worker, Sample& result) const {
-	const auto material = prop_->material(part_);
+	auto const material = prop_->material(part_);
 
-	const float2 s2d = sampler.generate_sample_2D(sampler_dimension);
+	float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
-	const auto rs = material->radiance_sample(s2d);
+	auto const rs = material->radiance_sample(s2d);
 	if (0.f == rs.pdf) {
 		return false;
 	}
 
-	const float area = prop_->area(part_);
+	float const area = prop_->area(part_);
 
 	const bool two_sided = material->is_two_sided();
 
@@ -76,22 +76,22 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n,
 	return false;
 }
 
-float Prop_image_light::pdf(const Ray& ray, const Intersection& intersection, bool /*total_sphere*/,
+float Prop_image_light::pdf(Ray const& ray, const Intersection& intersection, bool /*total_sphere*/,
 							Sampler_filter filter, const Worker& worker) const {
 	entity::Composed_transformation temp;
-	const auto& transformation = prop_->transformation_at(ray.time, temp);
+	auto const& transformation = prop_->transformation_at(ray.time, temp);
 
-	const float area = prop_->area(part_);
+	float const area = prop_->area(part_);
 
-	const auto material = prop_->material(part_);
+	auto const material = prop_->material(part_);
 
 	const bool two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	const float shape_pdf = prop_->shape()->pdf_uv(ray, intersection, transformation,
+	float const shape_pdf = prop_->shape()->pdf_uv(ray, intersection, transformation,
 												   area, two_sided);
 
-	const float material_pdf = material->emission_pdf(intersection.uv, filter, worker);
+	float const material_pdf = material->emission_pdf(intersection.uv, filter, worker);
 
 	return shape_pdf * material_pdf;
 }

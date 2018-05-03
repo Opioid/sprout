@@ -34,21 +34,21 @@ float Perspective::pixel_solid_angle() const {
 	return fov_ / static_cast<float>(resolution_[0]);
 }
 
-bool Perspective::generate_ray(const sampler::Camera_sample& sample,
+bool Perspective::generate_ray(sampler::Camera_sample const& sample,
 							   uint32_t /*view*/, scene::Ray& ray) const {
-	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
+	float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
 	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
 	float3 origin;
 
 	if (lens_radius_ > 0.f) {
-		const float2 lens = math::sample_disk_concentric(sample.lens_uv);
+		float2 const lens = math::sample_disk_concentric(sample.lens_uv);
 
 		origin = float3(lens_radius_ * lens, 0.f);
 
-		const float t = focus_distance_ / direction[2];
-		const float3 focus = t * direction;
+		float const t = focus_distance_ / direction[2];
+		float3 const focus = t * direction;
 
 		direction = focus - origin;
 	} else {
@@ -56,12 +56,12 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	}
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(sample.time, temp);
+	auto const& transformation = transformation_at(sample.time, temp);
 
-	const float3 origin_w = math::transform_point(origin, transformation.object_to_world);
+	float3 const origin_w = math::transform_point(origin, transformation.object_to_world);
 
 	direction = math::normalize(direction);
-	const float3 direction_w = math::transform_vector(direction, transformation.object_to_world);
+	float3 const direction_w = math::transform_vector(direction, transformation.object_to_world);
 
 	ray = create_ray(origin_w, direction_w, sample.time);
 
@@ -73,15 +73,15 @@ void Perspective::set_fov(float fov) {
 }
 
 void Perspective::set_lens(const Lens& lens) {
-	const float a = math::degrees_to_radians(lens.angle);
-	const float c = std::cos(a);
-	const float s = std::sin(a);
+	float const a = math::degrees_to_radians(lens.angle);
+	float const c = std::cos(a);
+	float const s = std::sin(a);
 
-	const float3 axis(c, s, 0.f);
-	const float tilt = math::degrees_to_radians(lens.tilt);
+	float3 const axis(c, s, 0.f);
+	float const tilt = math::degrees_to_radians(lens.tilt);
 	math::set_rotation(lens_tilt_, axis, tilt);
 
-	const float shift = 2.f * lens.shift;
+	float const shift = 2.f * lens.shift;
 
 	lens_shift_  = float2(-s * shift, c * shift);
 	lens_radius_ = lens.radius;
@@ -97,10 +97,10 @@ void Perspective::set_focus(const Focus& focus) {
 }
 
 void Perspective::on_update(Worker& worker) {
-	const float2 fr(resolution_);
-	const float ratio = fr[0] / fr[1];
+	float2 const fr(resolution_);
+	float const ratio = fr[0] / fr[1];
 
-	const float z = ratio * math::Pi / fov_ * 0.5f;
+	float const z = ratio * math::Pi / fov_ * 0.5f;
 
 //	float3 left_top   (-ratio,  1.f, z);
 //	float3 right_top  ( ratio,  1.f, z);
@@ -127,7 +127,7 @@ void Perspective::update_focus(Worker& worker) {
 		direction = math::normalize(direction);
 
 		entity::Composed_transformation temp;
-		const auto& transformation = transformation_at(0.f, temp);
+		auto const& transformation = transformation_at(0.f, temp);
 
 		scene::Ray ray(transformation.position,
 					   math::transform_vector(direction, transformation.object_to_world),
@@ -142,7 +142,7 @@ void Perspective::update_focus(Worker& worker) {
 	}
 }
 
-void Perspective::set_parameter(const std::string& name, const json::Value& value) {
+void Perspective::set_parameter(std::string const& name, const json::Value& value) {
 	if ("fov" == name) {
 		set_fov(math::degrees_to_radians(json::read_float(value)));
 	} else if ("lens" == name) {

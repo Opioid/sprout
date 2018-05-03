@@ -18,14 +18,14 @@ public:
 
 	virtual float pixel_solid_angle() const override final;
 
-	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+	virtual bool generate_ray(sampler::Camera_sample const& sample, uint32_t view,
 							  scene::Ray& ray) const override final;
 
 private:
 
 	virtual void on_update(Worker& worker) override final;
 
-	virtual void set_parameter(const std::string& name, const json::Value& value) override final;
+	virtual void set_parameter(std::string const& name, const json::Value& value) override final;
 
 	float d_x_;
 	float d_y_;

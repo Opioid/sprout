@@ -14,7 +14,7 @@ template<typename T, uint32_t Log_tile_size>
 Tiled_image<T, Log_tile_size>::~Tiled_image() {}
 
 template<typename T, uint32_t Log_tile_size>
-const T& Tiled_image<T, Log_tile_size>::at(uint32_t x, uint32_t y) const {
+T const& Tiled_image<T, Log_tile_size>::at(uint32_t x, uint32_t y) const {
 	return data_.at(x, y);
 }
 

@@ -13,12 +13,12 @@ namespace scene::camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 	Stereoscopic(int2(resolution[0], resolution[0])) {
-	const float f = static_cast<float>(resolution[0]);
+	float const f = static_cast<float>(resolution[0]);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
 
-	const float3 right_top  ( 1.f,  1.f, 1.f);
-	const float3 left_bottom(-1.f, -1.f, 1.f);
+	float3 const right_top  ( 1.f,  1.f, 1.f);
+	float3 const left_bottom(-1.f, -1.f, 1.f);
 
 	d_x_ = (right_top - left_top_)   / f;
 	d_y_ = (left_bottom - left_top_) / f;
@@ -73,27 +73,27 @@ float Cubic_stereoscopic::pixel_solid_angle() const {
 	return 1.f;
 }
 
-bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
+bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
 									  uint32_t view, scene::Ray& ray) const {
-	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
+	float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
 	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
-	const uint32_t face = view % 6;
+	uint32_t const face = view % 6;
 	direction = math::normalize(direction * view_rotations_[face]);
 
-	const float a = -std::atan2(direction[0], direction[2]);
+	float const a = -std::atan2(direction[0], direction[2]);
 
 	float3x3 rotation;
 	math::set_rotation_y(rotation, a);
 
-	const float ipd_scale = 1.f - std::pow(std::abs(direction[1]), 12.f - ipd_falloff_ * 10.f);
+	float const ipd_scale = 1.f - std::pow(std::abs(direction[1]), 12.f - ipd_falloff_ * 10.f);
 
-	const uint32_t eye = view < 6 ? 0 : 1;
-	const float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
+	uint32_t const eye = view < 6 ? 0 : 1;
+	float3 const eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(sample.time, temp);
+	auto const& transformation = transformation_at(sample.time, temp);
 
 	ray = create_ray(math::transform_point(eye_offset, transformation.object_to_world),
 					 math::transform_vector(direction, transformation.object_to_world),
@@ -108,7 +108,7 @@ void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) 
 
 void Cubic_stereoscopic::on_update(Worker& /*worker*/) {}
 
-void Cubic_stereoscopic::set_parameter(const std::string& name,
+void Cubic_stereoscopic::set_parameter(std::string const& name,
 									   const json::Value& value) {
 	if ("stereo" == name) {
 		for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {

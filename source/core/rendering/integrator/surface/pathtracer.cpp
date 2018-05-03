@@ -17,7 +17,7 @@
 
 namespace rendering::integrator::surface {
 
-Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
+Pathtracer::Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
 					   const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
@@ -53,8 +53,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 result(0.f);
 
 	for (uint32_t i = ray.depth;; ++i) {
-		const float3 wo = -ray.direction;
-		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+		float3 const wo = -ray.direction;
+		auto const& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
@@ -69,7 +69,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		if (ray.depth > settings_.min_bounces) {
-			const float q = settings_.path_continuation_probability;
+			float const q = settings_.path_continuation_probability;
 			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
 				break;
 			}
@@ -96,7 +96,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
-		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 		if (material_sample.ior_greater_one()) {
 			ray.origin = intersection.geo.p;
@@ -150,7 +150,7 @@ size_t Pathtracer::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
 }
 
-Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
+Pathtracer_factory::Pathtracer_factory(take::Settings const& take_settings,
 									   uint32_t num_integrators,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   float path_termination_probability, bool enable_caustics) :

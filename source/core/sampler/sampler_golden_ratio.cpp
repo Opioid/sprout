@@ -30,7 +30,7 @@ void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index, Camera_sam
 float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
 	SOFT_ASSERT(current_sample_2D_[dimension] < num_samples_);
 
-	const uint32_t current = current_sample_2D_[dimension]++;
+	uint32_t const current = current_sample_2D_[dimension]++;
 
 	return samples_2D_[dimension * num_samples_ + current];
 }
@@ -38,7 +38,7 @@ float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
 float Golden_ratio::generate_sample_1D(uint32_t dimension) {
 	SOFT_ASSERT(current_sample_1D_[dimension] < num_samples_);
 
-	const uint32_t current = current_sample_1D_[dimension]++;
+	uint32_t const current = current_sample_1D_[dimension]++;
 
 	return samples_1D_[dimension * num_samples_ + current];
 }
@@ -59,7 +59,7 @@ void Golden_ratio::on_resize() {
 void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
 	for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
 		float2* begin = samples_2D_ + i * num_samples_;
-		const float2 r(scramble.random_float(), scramble.random_float());
+		float2 const r(scramble.random_float(), scramble.random_float());
 		math::golden_ratio(begin, num_samples_, r);
 		rnd::shuffle(begin, num_samples_, scramble);
 	}

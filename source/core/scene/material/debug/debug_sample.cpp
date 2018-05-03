@@ -15,32 +15,32 @@ const material::Sample::Layer& Sample::base_layer() const {
 }
 
 bxdf::Result Sample::evaluate(f_float3 wi) const {
-	const float3 n = math::cross(layer_.t_, layer_.b_);
+	float3 const n = math::cross(layer_.t_, layer_.b_);
 	const bool same_side = math::dot(n, layer_.n_) > 0.f;
 
-	const float n_dot_wi = layer_.clamp_n_dot(wi);
+	float const n_dot_wi = layer_.clamp_n_dot(wi);
 
-	const float3 color = same_side ? color_front : color_back;
+	float3 const color = same_side ? color_front : color_back;
 
-	const float pdf = n_dot_wi * math::Pi_inv;
-	const float3 lambert = math::Pi_inv * color;
+	float const pdf = n_dot_wi * math::Pi_inv;
+	float3 const lambert = math::Pi_inv * color;
 
 	return { n_dot_wi * lambert, pdf };
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
-	const float3 n = math::cross(layer_.t_, layer_.b_);
+	float3 const n = math::cross(layer_.t_, layer_.b_);
 	const bool same_side = math::dot(n, layer_.n_) > 0.f;
 
-	const float2 s2d = sampler.generate_sample_2D();
+	float2 const s2d = sampler.generate_sample_2D();
 
-	const float3 is = math::sample_hemisphere_cosine(s2d);
+	float3 const is = math::sample_hemisphere_cosine(s2d);
 
-	const float3 wi = math::normalize(layer_.tangent_to_world(is));
+	float3 const wi = math::normalize(layer_.tangent_to_world(is));
 
-	const float n_dot_wi = layer_.clamp_n_dot(wi);
+	float const n_dot_wi = layer_.clamp_n_dot(wi);
 
-	const float3 color = same_side ? color_front : color_back;
+	float3 const color = same_side ? color_front : color_back;
 
 	result.reflection = n_dot_wi * math::Pi_inv * color;
 	result.wi = wi;

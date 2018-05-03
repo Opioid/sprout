@@ -18,7 +18,7 @@ public:
 	void set_coating_normal_map(const Texture_adapter& normal_map);
 
 	void set_coating_weight(float weight);
-	void set_coating_color(const float3& color);
+	void set_coating_color(float3 const& color);
 
 protected:
 

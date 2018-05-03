@@ -22,7 +22,7 @@ const material::Sample& Glass_dispersion::sample(f_float3 wo, const Renderstate&
 
 	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
+		float3 const n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

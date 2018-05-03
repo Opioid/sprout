@@ -13,7 +13,7 @@ const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
                                          Sampler_filter filter, sampler::Sampler& sampler,
                                          const Worker& worker) const {
 	auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);
-	const float mask = mask_.sample_1(texture_sampler, rs.uv);
+	float const mask = mask_.sample_1(texture_sampler, rs.uv);
 
 	if (mask > sampler.generate_sample_1D(1)) {
 		return material_a_->sample(wo, rs, filter, sampler, worker);

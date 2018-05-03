@@ -19,7 +19,7 @@
 
 namespace rendering::integrator::volume {
 
-Aerial_perspective::Aerial_perspective(rnd::Generator& rng, const take::Settings& take_settings,
+Aerial_perspective::Aerial_perspective(rnd::Generator& rng, take::Settings const& take_settings,
 									   const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
@@ -32,7 +32,7 @@ void Aerial_perspective::prepare(const Scene& /*scene*/, uint32_t num_samples_pe
 void Aerial_perspective::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 /*
-float3 Aerial_perspective::li(const Ray& ray, const Volume& volume,
+float3 Aerial_perspective::li(Ray const& ray, const Volume& volume,
 							  Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
 		transmittance = Aerial_perspective::transmittance(ray, volume, worker);
@@ -47,7 +47,7 @@ float3 Aerial_perspective::li(const Ray& ray, const Volume& volume,
 }
 */
 
-float3 Aerial_perspective::transmittance(const Ray& ray, Worker& worker) {
+float3 Aerial_perspective::transmittance(Ray const& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
@@ -62,35 +62,35 @@ size_t Aerial_perspective::num_bytes() const {
 }
 
 /*
-float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& volume, 
+float3 Aerial_perspective::integrate_with_shadows(Ray const& ray, const Volume& volume, 
 												  Worker& worker, float3& transmittance) {
 	float min_t = ray.min_t;
-	const float range = ray.max_t - min_t;
+	float const range = ray.max_t - min_t;
 
 	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
+	auto const& transformation = volume.transformation_at(ray.time, temp);
 
-	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-	const uint32_t num_samples = ray.is_primary() ? max_samples : 1;
+	uint32_t const max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	uint32_t const num_samples = ray.is_primary() ? max_samples : 1;
 
-	const float step = range / static_cast<float>(num_samples);
+	float const step = range / static_cast<float>(num_samples);
 
 	float3 radiance(0.f);
 	float3 tr(1.f);
 
-	const float3 start = ray.point(min_t);
+	float3 const start = ray.point(min_t);
 
-	const float r = std::max(rng_.random_float(), 0.0001f);
+	float const r = std::max(rng_.random_float(), 0.0001f);
 
 	min_t += r * step;
 
-	const float3 next = ray.point(min_t);
+	float3 const next = ray.point(min_t);
 	Ray tau_ray(start, next - start, 0.f, 1.f, 0, ray.time);
 
-	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
-	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
+	float3 const tau_ray_direction     = ray.point(min_t + step) - next;
+	float3 const inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
 
-	const auto& material = *volume.material(0);
+	auto const& material = *volume.material(0);
 
 	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
 		// This happens sometimes when the range is very small compared to the world coordinates.
@@ -101,13 +101,13 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& 
 			continue;
 		}
 
-		const float3 tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
+		float3 const tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
 												  settings_.step_size, rng_,
 												  Sampler_filter::Undefined, worker);
 
 		tr *= math::exp(-tau);
 
-		const float3 current = ray.point(min_t);
+		float3 const current = ray.point(min_t);
 		tau_ray.origin = current;
 		// This stays the same during the loop,
 		// but we need a different value in the first iteration.
@@ -127,7 +127,7 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& 
 		secondary_intersection.geo.part = 0;
 		secondary_intersection.geo.epsilon = 0.0005f;
 
-		const float3 local_radiance = worker.li(secondary_ray, secondary_intersection);
+		float3 const local_radiance = worker.li(secondary_ray, secondary_intersection);
 
 		float3 mu_a, scattering;
 		material.collision_coefficients(transformation, current,
@@ -138,40 +138,40 @@ float3 Aerial_perspective::integrate_with_shadows(const Ray& ray, const Volume& 
 
 	transmittance = tr;
 
-	const float3 color = step * radiance;
+	float3 const color = step * radiance;
 
 	return color;
 }
 
-float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volume& volume, 
+float3 Aerial_perspective::integrate_without_shadows(Ray const& ray, const Volume& volume, 
 													 Worker& worker, float3& transmittance) {
 	float min_t = ray.min_t;
-	const float range = ray.max_t - min_t;
+	float const range = ray.max_t - min_t;
 
 	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
+	auto const& transformation = volume.transformation_at(ray.time, temp);
 
-	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-	const uint32_t num_samples = ray.is_primary() ? max_samples : 1;
+	uint32_t const max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	uint32_t const num_samples = ray.is_primary() ? max_samples : 1;
 
-	const float step = range / static_cast<float>(num_samples);
+	float const step = range / static_cast<float>(num_samples);
 
 	float3 radiance(0.f);
 	float3 tr(1.f);
 
-	const float3 start = ray.point(min_t);
+	float3 const start = ray.point(min_t);
 
-	const float r = std::max(rng_.random_float(), 0.0001f);
+	float const r = std::max(rng_.random_float(), 0.0001f);
 
 	min_t += r * step;
 
-	const float3 next = ray.point(min_t);
+	float3 const next = ray.point(min_t);
 	Ray tau_ray(start, next - start, 0.f, 1.f, 0, ray.time);
 
-	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
-	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
+	float3 const tau_ray_direction     = ray.point(min_t + step) - next;
+	float3 const inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
 
-	const auto& material = *volume.material(0);
+	auto const& material = *volume.material(0);
 
 	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
 		// This happens sometimes when the range is very small compared to the world coordinates.
@@ -182,13 +182,13 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volum
 			continue;
 		}
 
-		const float3 tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
+		float3 const tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
 												  settings_.step_size, rng_,
 												  Sampler_filter::Undefined, worker);
 
 		tr *= math::exp(-tau);
 
-		const float3 current = ray.point(min_t);
+		float3 const current = ray.point(min_t);
 		tau_ray.origin = current;
 		// This stays the same during the loop,
 		// but we need a different value in the first iteration.
@@ -202,15 +202,15 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volum
 		float3 local_radiance(0.f);
 
 		// Lighting
-		const uint32_t num_light_samples = 1;
+		uint32_t const num_light_samples = 1;
 		for (uint32_t j = num_light_samples; j > 0; --j) {
-			const auto light = worker.scene().random_light(rng_.random_float());
+			auto const light = worker.scene().random_light(rng_.random_float());
 
 			scene::light::Sample light_sample;
 			if (light.ref.sample(start, float3::identity(), ray.time, true, sampler_, 0,
 								 Sampler_filter::Nearest, worker, light_sample)) {
 
-				const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
+				auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
 				local_radiance += (light_sample.radiance * bxdf.reflection)
 								/ (light.pdf * light_sample.shape.pdf);
@@ -226,7 +226,7 @@ float3 Aerial_perspective::integrate_without_shadows(const Ray& ray, const Volum
 
 	transmittance = tr;
 
-	const float3 color = step * radiance;
+	float3 const color = step * radiance;
 
 	return color;
 }
@@ -243,7 +243,7 @@ const scene::material::Sample& Aerial_perspective::sample(f_float3 wo, float tim
 	return material.sample(wo, rs, filter, sampler_, worker);
 }
 
-Aerial_perspective_factory::Aerial_perspective_factory(const take::Settings& take_settings,
+Aerial_perspective_factory::Aerial_perspective_factory(take::Settings const& take_settings,
 													   uint32_t num_integrators, float step_size,
 													   bool shadows) :
 	Factory(take_settings, num_integrators),

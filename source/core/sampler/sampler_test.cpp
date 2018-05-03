@@ -21,15 +21,15 @@ using namespace sampler;
 using namespace image;
 using namespace image::procedural;
 
-void render_set(const std::string& name, Sampler& sampler, Renderer& renderer, Byte3& target);
+void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target);
 
-void render_disk(const std::string& name, Sampler& sampler, rnd::Generator& scramble,
+void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
 				 Renderer& renderer, Byte3& target);
 
-void render_quad(const std::string& name, Sampler& sampler, rnd::Generator& scramble,
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
 				 Renderer& renderer, Byte3& target);
 
-void render_quad(const std::string& name, Sampler& sampler, rnd::Generator& scramble,
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
 				 float2 center, Renderer& renderer, Byte3& target);
 
 void test() {
@@ -69,12 +69,12 @@ void test() {
 		rnd::Generator rng;
 		Hammersley sampler(rng);
 		sampler.resize(num_samples, 1, 1, 1);
-		const float2 center(0.2f, 0.5f);
+		float2 const center(0.2f, 0.5f);
 		render_quad("hammersley_quad_0.png", sampler, rng, center, renderer, target);
 	}
 }
 
-void render_set(const std::string& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
+void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
 	rnd::Generator rng(0, 1);
 
 	render_disk(name + "_disk_0.png", sampler, rng, renderer, target);
@@ -84,20 +84,20 @@ void render_set(const std::string& name, Sampler& sampler, Renderer& renderer, B
 	render_quad(name + "_quad_1.png", sampler, rng, renderer, target);
 }
 
-void render_disk(const std::string& name, Sampler& sampler, rnd::Generator& scramble,
+void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
 				 Renderer& renderer, Byte3& target) {
 	std::cout << name << ": ";
 
-	const float2 center(0.5f, 0.5f);
+	float2 const center(0.5f, 0.5f);
 
 	renderer.set_brush(float3(0.18f));
 	renderer.clear();
 
-	const uint32_t num_samples = sampler.num_samples();
+	uint32_t const num_samples = sampler.num_samples();
 
-	const uint32_t segment_len = num_samples / 4;
+	uint32_t const segment_len = num_samples / 4;
 
-	const float n = 1.f / static_cast<float>(segment_len);
+	float const n = 1.f / static_cast<float>(segment_len);
 
 
 	sampler.resume_pixel(0, scramble);
@@ -106,8 +106,8 @@ void render_disk(const std::string& name, Sampler& sampler, rnd::Generator& scra
 
 	float2 average(0.f);
 	for (uint32_t i = 0; i < segment_len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
-		const float2 ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
+		float2 const s = sampler.generate_sample_2D();
+		float2 const ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
 		average += n * ds;
 		renderer.draw_circle(ds, 0.005f);
 	}
@@ -118,8 +118,8 @@ void render_disk(const std::string& name, Sampler& sampler, rnd::Generator& scra
 
 	average = float2(0.f);
 	for (uint32_t i = 0; i < segment_len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
-		const float2 ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
+		float2 const s = sampler.generate_sample_2D();
+		float2 const ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
 		average += n * ds;
 		renderer.draw_circle(ds, 0.005f);
 	}
@@ -130,8 +130,8 @@ void render_disk(const std::string& name, Sampler& sampler, rnd::Generator& scra
 
 	average = float2(0.f);
 	for (uint32_t i = 0; i < segment_len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
-		const float2 ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
+		float2 const s = sampler.generate_sample_2D();
+		float2 const ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
 		average += n * ds;
 		renderer.draw_circle(ds, 0.005f);
 	}
@@ -142,8 +142,8 @@ void render_disk(const std::string& name, Sampler& sampler, rnd::Generator& scra
 
 	average = float2(0.f);
 	for (uint32_t i = 0, len = num_samples / 4; i < len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
-		const float2 ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
+		float2 const s = sampler.generate_sample_2D();
+		float2 const ds = 0.5f * (math::sample_disk_concentric(s) + float2(1.f));
 		average += n * ds;
 		renderer.draw_circle(ds, 0.005f);
 	}
@@ -155,38 +155,38 @@ void render_disk(const std::string& name, Sampler& sampler, rnd::Generator& scra
 	encoding::png::Writer::write(name, target);
 }
 
-void render_quad(const std::string& name, Sampler& sampler, rnd::Generator& scramble,
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
 				 Renderer& renderer, Byte3& target) {
 	renderer.set_brush(float3(0.18f));
 	renderer.clear();
 
-	const uint32_t num_samples = sampler.num_samples();
+	uint32_t const num_samples = sampler.num_samples();
 
-	const uint32_t segment_len = num_samples / 4;
+	uint32_t const segment_len = num_samples / 4;
 
 	sampler.resume_pixel(0, scramble);
 
 	renderer.set_brush(float3(1.f, 0.f, 0.f));
 	for (uint32_t i = 0; i < segment_len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
+		float2 const s = sampler.generate_sample_2D();
 		renderer.draw_circle(s, 0.005f);
 	}
 
 	renderer.set_brush(float3(0.f, 0.7f, 0.f));
 	for (uint32_t i = 0; i < segment_len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
+		float2 const s = sampler.generate_sample_2D();
 		renderer.draw_circle(s, 0.005f);
 	}
 
 	renderer.set_brush(float3(0.f, 0.f, 1.f));
 	for (uint32_t i = 0; i < segment_len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
+		float2 const s = sampler.generate_sample_2D();
 		renderer.draw_circle(s, 0.005f);
 	}
 
 	renderer.set_brush(float3(0.7f, 0.7f, 0.f));
 	for (uint32_t i = 0; i < segment_len; ++i) {
-		const float2 s = sampler.generate_sample_2D();
+		float2 const s = sampler.generate_sample_2D();
 		renderer.draw_circle(s, 0.005f);
 	}
 
@@ -195,25 +195,25 @@ void render_quad(const std::string& name, Sampler& sampler, rnd::Generator& scra
 	encoding::png::Writer::write(name, target);
 }
 
-void render_quad(const std::string& name, Sampler& sampler, rnd::Generator& scramble,
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
 				 float2 center, Renderer& renderer, Byte3& target) {
 	renderer.set_brush(float3(0.18f));
 	renderer.clear();
 
-	const uint32_t num_samples = sampler.num_samples();
+	uint32_t const num_samples = sampler.num_samples();
 
 	sampler.resume_pixel(0, scramble);
 
 	renderer.set_brush(float3(0.8f, 0.8f, 0.8f));
 	for (uint32_t i = 0; i < num_samples; ++i) {
-		const float2 s = sampler.generate_sample_2D();
+		float2 const s = sampler.generate_sample_2D();
 
-		const float2 d = s - center;
-//		const float scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
+		float2 const d = s - center;
+//		float const scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
 
-		const float scale = math::length(d);
+		float const scale = math::length(d);
 
-		const float2 p = scale * d + center;
+		float2 const p = scale * d + center;
 
 		renderer.draw_circle(p, 0.005f);
 	}

@@ -18,7 +18,7 @@ public:
 
 	virtual float ior() const override final;
 
-	void set_attenuation(const float3& absorption_color, const float3& scattering_color,
+	void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
 						 float distance);
 
 	void set_anisotropy(float anisotropy);

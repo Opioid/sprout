@@ -15,10 +15,10 @@ public:
 
 	T& serialized_at(uint32_t i);
 
-	const T& at(uint32_t x, uint32_t y) const;
+	T const& at(uint32_t x, uint32_t y) const;
 	T& at(uint32_t x, uint32_t y);
 
-	const void* data() const;
+	void const* data() const;
 
 private:
 

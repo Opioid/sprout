@@ -23,8 +23,8 @@ Worker::~Worker() {
 	memory::safe_destruct(surface_integrator_);
 }
 
-void Worker::init(uint32_t id, const take::Settings& settings,
-				  const scene::Scene& scene, uint32_t max_sample_size,
+void Worker::init(uint32_t id, take::Settings const& settings,
+				  scene::Scene const& scene, uint32_t max_sample_size,
 				  integrator::surface::Factory& surface_integrator_factory,
 				  integrator::volume::Factory& volume_integrator_factory,
 				  sampler::Factory& sampler_factory) {
@@ -54,13 +54,13 @@ float4 Worker::li(Ray& ray, const scene::prop::Interface_stack& interface_stack)
 			return float4(vli, spectrum::luminance(vli));
 		}
 
-		const float3 li = surface_integrator_->li(ray, intersection, *this);
+		float3 const li = surface_integrator_->li(ray, intersection, *this);
 
 		SOFT_ASSERT(math::all_finite_and_positive(li));
 
 		return float4(vtr * li + vli, 1.f);
 	} else if (intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined)) {
-		const float3 li = surface_integrator_->li(ray, intersection, *this);
+		float3 const li = surface_integrator_->li(ray, intersection, *this);
 
 		SOFT_ASSERT(math::all_finite_and_positive(li));
 
@@ -76,7 +76,7 @@ bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 										 li, transmittance);
 }
 
-float3 Worker::transmittance(const Ray& ray) {
+float3 Worker::transmittance(Ray const& ray) {
 	float3 transmittance(1.f);
 
 	if (!scene_->has_volumes()) {
@@ -92,7 +92,7 @@ float3 Worker::transmittance(const Ray& ray) {
 		interface_stack_.pop();
 	}
 
-	const float ray_max_t = ray.max_t;
+	float const ray_max_t = ray.max_t;
 
 	Ray tray = ray;
 
@@ -102,7 +102,7 @@ float3 Worker::transmittance(const Ray& ray) {
 		const bool hit = scene_->intersect_volume(tray, node_stack_, intersection);
 
 		if (!interface_stack_.empty()) {
-			const float3 tr = volume_integrator_->transmittance(tray, *this);
+			float3 const tr = volume_integrator_->transmittance(tray, *this);
 			transmittance *= math::saturate(tr);
 		}
 
@@ -126,18 +126,18 @@ float3 Worker::transmittance(const Ray& ray) {
 }
 
 
-float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) {
+float3 Worker::tinted_visibility(Ray const& ray, Sampler_filter filter) {
 	return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
 }
 
 float3 Worker::tinted_visibility(Ray& ray, const Intersection& intersection,
 								 Sampler_filter filter) {
 	if (intersection.geo.subsurface && intersection.material()->ior() > 1.f) {
-		const float ray_max_t = ray.max_t;
+		float const ray_max_t = ray.max_t;
 
 		float epsilon;
 		if (intersect(ray, epsilon)) {
-			const float3 tr = volume_integrator_->transmittance(ray, *this);
+			float3 const tr = volume_integrator_->transmittance(ray, *this);
 
 			SOFT_ASSERT(math::all_finite_and_positive(tr));
 

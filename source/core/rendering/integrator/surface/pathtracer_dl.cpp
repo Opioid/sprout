@@ -19,7 +19,7 @@
 
 namespace rendering::integrator::surface {
 
-Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_settings,
+Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
 							 const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
@@ -45,7 +45,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 result(0.f);
 
 	for (uint32_t i = ray.depth;; ++i) {
-		const float3 wo = -ray.direction;
+		float3 const wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
 		if (treat_as_singular && material_sample.same_hemisphere(wo)) {
@@ -63,7 +63,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		}
 
 		if (ray.depth > settings_.min_bounces) {
-			const float q = settings_.path_continuation_probability;
+			float const q = settings_.path_continuation_probability;
 			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
 				break;
 			}
@@ -92,7 +92,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
-		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 		if (material_sample.ior_greater_one()) {
 			ray.origin = intersection.geo.p;
@@ -128,7 +128,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	return result;
 }
 
-float3 Pathtracer_DL::direct_light(const Ray& ray, const Intersection& intersection,
+float3 Pathtracer_DL::direct_light(Ray const& ray, const Intersection& intersection,
 								   const Material_sample& material_sample,
 								   Sampler_filter filter, Worker& worker) {
 	float3 result(0.f);
@@ -144,26 +144,26 @@ float3 Pathtracer_DL::direct_light(const Ray& ray, const Intersection& intersect
 	shadow_ray.time   = ray.time;
 
 	for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
-		const auto light = worker.scene().random_light(rng_.random_float());
+		auto const light = worker.scene().random_light(rng_.random_float());
 
 		scene::light::Sample light_sample;
 		if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
 							 material_sample.is_translucent(), sampler_, 0,
 							 Sampler_filter::Nearest, worker, light_sample)) {
 			shadow_ray.set_direction(light_sample.shape.wi);
-			const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+			float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 			shadow_ray.max_t = light_sample.shape.t - offset;
 
-		//	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
-			const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
+		//	float3 const tv = worker.tinted_visibility(shadow_ray, filter);
+			float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 			if (math::any_greater_zero(tv)) {
-				const float3 tr = worker.transmittance(shadow_ray);
+				float3 const tr = worker.transmittance(shadow_ray);
 
 //				if (math::all_greater_equal(tr, 1.f) && !intersection.geo.subsurface) {
 //					std::cout << ray.length() << std::endl;
 //				}
 
-				const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
+				auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
 				result += (tv * tr) * (light_sample.radiance * bxdf.reflection)
 						/ (light.pdf * light_sample.shape.pdf);
@@ -178,7 +178,7 @@ size_t Pathtracer_DL::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings,
+Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings,
 											 uint32_t num_integrators,
 											 uint32_t min_bounces, uint32_t max_bounces,
 											 float path_termination_probability,

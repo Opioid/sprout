@@ -55,7 +55,7 @@ void Typed_image<T>::store(int32_t index, T v) {
 }
 
 template<typename T>
-const T& Typed_image<T>::at(int32_t index) const {
+T const& Typed_image<T>::at(int32_t index) const {
 	return data_[index];
 }
 
@@ -83,7 +83,7 @@ T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const {
 }
 
 template<typename T>
-const T& Typed_image<T>::at(int32_t x, int32_t y) const {
+T const& Typed_image<T>::at(int32_t x, int32_t y) const {
 	const int32_t i = y * description_.dimensions[0] + x;
 	return data_[i];
 }
@@ -95,7 +95,7 @@ T& Typed_image<T>::at(int32_t x, int32_t y) {
 }
 
 template<typename T>
-const T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
+T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
 	const int32_t i = element * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
@@ -113,7 +113,7 @@ T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const {
 }
 
 template<typename T>
-const T& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
+T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
 	const int32_t i = z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
@@ -125,7 +125,7 @@ T& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) {
 }
 
 template<typename T>
-const T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const {
+T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const {
 	const int32_t i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
@@ -137,7 +137,7 @@ T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) 
 }
 
 template<typename T>
-void Typed_image<T>::gather(const int4& xy_xy1, T c[4]) const {
+void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const {
 	const int32_t width = description_.dimensions[0];
 
 	const int32_t y0 = width * xy_xy1[1];

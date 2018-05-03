@@ -10,7 +10,7 @@ class Distribution_1D {
 
 public:
 
-	void init(const float* data, size_t len);
+	void init(float const* data, size_t len);
 
 	float integral() const;
 
@@ -29,7 +29,7 @@ public:
 
 private:
 
-	void precompute_1D_pdf_cdf(const float* data, size_t len);
+	void precompute_1D_pdf_cdf(float const* data, size_t len);
 
 	std::vector<float> pdf_;
 	std::vector<float> cdf_;
@@ -45,7 +45,7 @@ class Distribution_lut_1D {
 
 public:
 
-	void init(const float* data, uint32_t len, uint32_t lut_bucket_size = 0);
+	void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0);
 
 	float integral() const;
 
@@ -66,7 +66,7 @@ private:
 
 	uint32_t map(float s) const;
 
-	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
+	void precompute_1D_pdf_cdf(float const* data, uint32_t len);
 	void init_lut(uint32_t lut_size);
 
 	std::vector<uint32_t> lut_;
@@ -86,7 +86,7 @@ public:
 	Distribution_implicit_pdf_lut_1D();
 	~Distribution_implicit_pdf_lut_1D();
 
-	void init(const float* data, uint32_t len, uint32_t lut_bucket_size = 0);
+	void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0);
 
 	float integral() const;
 
@@ -109,7 +109,7 @@ private:
 
 	uint32_t map(float s) const;
 
-	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
+	void precompute_1D_pdf_cdf(float const* data, uint32_t len);
 	void init_lut(uint32_t lut_size);
 
 	uint32_t* lut_;
@@ -131,7 +131,7 @@ public:
 	Distribution_implicit_pdf_lut_lin_1D();
 	~Distribution_implicit_pdf_lut_lin_1D();
 
-	void init(const float* data, uint32_t len, uint32_t lut_bucket_size = 0);
+	void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0);
 
 	float integral() const;
 
@@ -154,7 +154,7 @@ private:
 
 	uint32_t map(float s) const;
 
-	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
+	void precompute_1D_pdf_cdf(float const* data, uint32_t len);
 	void init_lut(uint32_t lut_size);
 
 	uint32_t* lut_;

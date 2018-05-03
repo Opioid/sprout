@@ -7,7 +7,7 @@
 
 namespace scene::bvh {
 
-inline void Node::set_aabb(const float* min, const float* max) {
+inline void Node::set_aabb(float const* min, float const* max) {
 	min_.v[0] = min[0];
 	min_.v[1] = min[1];
 	min_.v[2] = min[2];

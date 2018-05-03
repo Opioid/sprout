@@ -16,7 +16,7 @@
 
 namespace rendering::integrator::surface {
 
-Whitted::Whitted(rnd::Generator& rng, const take::Settings& take_settings,
+Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings,
 				 const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
@@ -34,7 +34,7 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
 //	float3 result(0.f);
 
-//	const float3 wo = -ray.direction;
+//	float3 const wo = -ray.direction;
 
 //	float3 opacity = intersection.thin_absorption(wo, ray.time, Sampler_filter::Undefined, worker);
 //	float3 throughput = opacity;
@@ -63,10 +63,10 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	return shade(ray, intersection, worker);
 }
 
-float3 Whitted::shade(const Ray& ray, const Intersection& intersection, Worker& worker) {
+float3 Whitted::shade(Ray const& ray, const Intersection& intersection, Worker& worker) {
 	float3 result(0.f);
 
-	const float3 wo = -ray.direction;
+	float3 const wo = -ray.direction;
 	auto& material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined,
 												sampler_, worker);
 
@@ -83,11 +83,11 @@ float3 Whitted::shade(const Ray& ray, const Intersection& intersection, Worker& 
 	return result;
 }
 
-float3 Whitted::estimate_direct_light(const Ray& ray, const Intersection& intersection,
+float3 Whitted::estimate_direct_light(Ray const& ray, const Intersection& intersection,
 									  const Material_sample& material_sample, Worker& worker) {
 	float3 result(0.f);
 
-	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+	float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 	Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
@@ -95,9 +95,9 @@ float3 Whitted::estimate_direct_light(const Ray& ray, const Intersection& inters
 	shadow_ray.depth  = ray.depth;
 	shadow_ray.time   = ray.time;
 
-	const auto& lights = worker.scene().lights();
+	auto const& lights = worker.scene().lights();
 	for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
-		const auto light = lights[l];
+		auto const light = lights[l];
 		for (uint32_t i = 0, nls = settings_.num_light_samples; i < nls; ++i) {
 			scene::light::Sample light_sample;
 			if (light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
@@ -106,11 +106,11 @@ float3 Whitted::estimate_direct_light(const Ray& ray, const Intersection& inters
 				shadow_ray.set_direction(light_sample.shape.wi);
 				shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-				const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Undefined);
+				float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Undefined);
 				if (math::any_greater_zero(tv)) {
-					const float3 tr = worker.transmittance(shadow_ray);
+					float3 const tr = worker.transmittance(shadow_ray);
 
-					const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
+					auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
 					result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
 							  light_sample.shape.pdf;
@@ -126,7 +126,7 @@ size_t Whitted::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t num_integrators,
+Whitted_factory::Whitted_factory(take::Settings const& take_settings, uint32_t num_integrators,
 								 uint32_t num_light_samples) :
 	Factory(take_settings),
 	integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {

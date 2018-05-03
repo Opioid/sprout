@@ -11,18 +11,18 @@
 
 namespace math {
 
-inline constexpr AABB::AABB(const float3& min, const float3& max) : bounds_{min, max} {}
+inline constexpr AABB::AABB(float3 const& min, float3 const& max) : bounds_{min, max} {}
 
 inline AABB::AABB(FVector min, FVector max) {
 	simd::store_float4(bounds_[0].v, min);
 	simd::store_float4(bounds_[1].v, max);
 }
 
-inline const float3& AABB::min() const {
+inline float3 const& AABB::min() const {
 	return bounds_[0];
 }
 
-inline const float3& AABB::max() const {
+inline float3 const& AABB::max() const {
 	return bounds_[1];
 }
 
@@ -35,12 +35,12 @@ inline float3 AABB::halfsize() const {
 }
 
 inline float AABB::surface_area() const {
-	const float3 d = bounds_[1] - bounds_[0];
+	float3 const d = bounds_[1] - bounds_[0];
 	return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);
 }
 
 inline float AABB::volume() const {
-	const float3 d = bounds_[1] - bounds_[0];
+	float3 const d = bounds_[1] - bounds_[0];
 	return d[0] * d[1] * d[2];
 }
 
@@ -57,7 +57,7 @@ inline bool AABB::intersect(f_float3 p) const {
 // This test is presented in the paper
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
-inline bool AABB::intersect_p(const Ray& ray) const {
+inline bool AABB::intersect_p(Ray const& ray) const {
 /*	int8_t sign_0 = ray.signs[0];
 	float min_t = (bounds_[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
 	float max_t = (bounds_[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
@@ -165,7 +165,7 @@ inline bool AABB::intersect_p(FVector ray_origin, FVector ray_inv_direction,
 				 _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) const {
+inline bool AABB::intersect_p(Ray const& ray, float& min_out, float& max_out) const {
 /*	int8_t sign_0 = ray.signs[0];
 	float min_t = (bounds_[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
 	float max_t = (bounds_[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
@@ -263,7 +263,7 @@ inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) co
 				 _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_p(const Ray& ray, float& hit_t, bool& inside) const {
+inline bool AABB::intersect_p(Ray const& ray, float& hit_t, bool& inside) const {
 	Vector ray_origin		 = simd::load_float4(ray.origin.v);
 	Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
 	Vector ray_min_t		 = simd::load_float(&ray.min_t);
@@ -295,8 +295,8 @@ inline bool AABB::intersect_p(const Ray& ray, float& hit_t, bool& inside) const 
 	max_t = math::min1(max_t, SU_MUX_HIGH(max_t, max_t));
 	min_t = math::max1(min_t, SU_MUX_HIGH(min_t, min_t));
 
-	const float min_out = simd::get_x(min_t);
-	const float max_out = simd::get_x(max_t);
+	float const min_out = simd::get_x(min_t);
+	float const max_out = simd::get_x(max_t);
 
 	if (min_out < ray.min_t) {
 		hit_t = max_out;
@@ -315,7 +315,7 @@ inline bool AABB::intersect_p(const Ray& ray, float& hit_t, bool& inside) const 
 				 _mm_comige_ss(max_t, min_t));
 }
 
-inline void AABB::set_min_max(const float3& min, const float3& max) {
+inline void AABB::set_min_max(float3 const& min, float3 const& max) {
 	bounds_[0] = min;
 	bounds_[1] = max;
 }

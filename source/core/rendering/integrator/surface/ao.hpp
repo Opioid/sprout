@@ -22,7 +22,7 @@ public:
 		float radius;
 	};
 
-	AO(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings);
+	AO(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -43,7 +43,7 @@ class AO_factory final : public Factory {
 
 public:
 
-	AO_factory(const take::Settings& settings, uint32_t num_integrators,
+	AO_factory(take::Settings const& settings, uint32_t num_integrators,
 			   uint32_t num_samples, float radius);
 
 	~AO_factory();

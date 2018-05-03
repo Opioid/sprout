@@ -18,14 +18,14 @@ public:
 		bool disable_shadows;
 	};
 
-	Aerial_perspective(rnd::Generator& rng, const take::Settings& take_settings,
+	Aerial_perspective(rnd::Generator& rng, take::Settings const& take_settings,
 					   const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, Worker& worker) override final;
+	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,
@@ -36,10 +36,10 @@ public:
 private:
 
 	/*
-	float3 integrate_with_shadows(const Ray& ray, const Volume& volume,
+	float3 integrate_with_shadows(Ray const& ray, const Volume& volume,
 								  Worker& worker, float3& transmittance);
 
-	float3 integrate_without_shadows(const Ray& ray, const Volume& volume,
+	float3 integrate_without_shadows(Ray const& ray, const Volume& volume,
 									 Worker& worker, float3& transmittance);
 	*/
 
@@ -55,7 +55,7 @@ class Aerial_perspective_factory : public Factory {
 
 public:
 
-	Aerial_perspective_factory(const take::Settings& take_settings, uint32_t num_integrators,
+	Aerial_perspective_factory(take::Settings const& take_settings, uint32_t num_integrators,
 							   float step_size, bool shadows);
 
 	virtual ~Aerial_perspective_factory() override;

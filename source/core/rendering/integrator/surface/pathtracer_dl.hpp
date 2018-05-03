@@ -23,7 +23,7 @@ public:
 		bool	 disable_caustics;
 	};
 
-	Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_settings,
+	Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
 				  const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
@@ -36,7 +36,7 @@ public:
 
 private:
 
-	float3 direct_light(const Ray& ray, const Intersection& intersection,
+	float3 direct_light(Ray const& ray, const Intersection& intersection,
 						const Material_sample& material_sample,
 						Sampler_filter filter, Worker& worker);
 
@@ -49,7 +49,7 @@ class Pathtracer_DL_factory final : public Factory {
 
 public:
 
-	Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t num_integrators,
+	Pathtracer_DL_factory(take::Settings const& take_settings, uint32_t num_integrators,
 						  uint32_t min_bounces, uint32_t max_bounces,
 						  float path_termination_probability,
 						  uint32_t num_light_samples, bool enable_caustics);

@@ -7,7 +7,7 @@ namespace memory {
 
 template<typename T>
 bool Variant_map::query(std::string_view key, T& value) const {
-	const auto i = map_.find(key);
+	auto const i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -25,7 +25,7 @@ bool Variant_map::query(std::string_view key, T& value) const {
 }
 
 inline bool Variant_map::query(std::string_view key, bool& value) const {
-	const auto i = map_.find(key);
+	auto const i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -43,7 +43,7 @@ inline bool Variant_map::query(std::string_view key, bool& value) const {
 }
 
 inline bool Variant_map::query(std::string_view key, int32_t& value) const {
-	const auto i = map_.find(key);
+	auto const i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -61,7 +61,7 @@ inline bool Variant_map::query(std::string_view key, int32_t& value) const {
 }
 
 inline bool Variant_map::query(std::string_view key, uint32_t& value) const {
-	const auto i = map_.find(key);
+	auto const i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -79,7 +79,7 @@ inline bool Variant_map::query(std::string_view key, uint32_t& value) const {
 }
 
 inline bool Variant_map::query(std::string_view key, float& value) const {
-	const auto i = map_.find(key);
+	auto const i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -97,28 +97,28 @@ inline bool Variant_map::query(std::string_view key, float& value) const {
 }
 
 template<typename T>
-void Variant_map::set(const std::string& key, T value) {
+void Variant_map::set(std::string const& key, T value) {
 	map_[key] = Variant(static_cast<uint32_t>(value));
 }
 
-inline void Variant_map::set(const std::string& key, bool value) {
+inline void Variant_map::set(std::string const& key, bool value) {
 	map_[key] = Variant(value);
 }
 
-inline void Variant_map::set(const std::string& key, int32_t value) {
+inline void Variant_map::set(std::string const& key, int32_t value) {
 	map_[key] = Variant(value);
 }
 
-inline void Variant_map::set(const std::string& key, uint32_t value) {
+inline void Variant_map::set(std::string const& key, uint32_t value) {
 	map_[key] = Variant(value);
 }
 
-inline void Variant_map::set(const std::string& key, float value) {
+inline void Variant_map::set(std::string const& key, float value) {
 	map_[key] = Variant(value);
 }
 
-inline void Variant_map::inherit(const Variant_map& other, const std::string& key) {
-	const auto i = other.map_.find(key);
+inline void Variant_map::inherit(const Variant_map& other, std::string const& key) {
+	auto const i = other.map_.find(key);
 
 	if (other.map_.end() == i) {
 		return;

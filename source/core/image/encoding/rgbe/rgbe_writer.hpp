@@ -12,20 +12,20 @@ public:
 
 	virtual std::string file_extension() const override final;
 
-	virtual bool write(std::ostream& stream, const Float4& image,
+	virtual bool write(std::ostream& stream, Float4 const& image,
 					   thread::Pool& pool) override final;
 
 private:
 
 	static void write_header(std::ostream& stream, int2 dimensions);
 
-	static void write_pixels(std::ostream& stream, const Float4& image);
+	static void write_pixels(std::ostream& stream, Float4 const& image);
 
-	static void write_pixels_rle(std::ostream& stream, const Float4& image);
+	static void write_pixels_rle(std::ostream& stream, Float4 const& image);
 
 	static void write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t num_bytes);
 
-	static byte4 float_to_rgbe(const float4& c);
+	static byte4 float_to_rgbe(float4 const& c);
 };
 
 }

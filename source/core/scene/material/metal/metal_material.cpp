@@ -23,7 +23,7 @@ const material::Sample& Material_isotropic::sample(f_float3 wo, const Renderstat
 
 	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
+		float3 const n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -46,11 +46,11 @@ void Material_isotropic::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material_isotropic::set_ior(const float3& ior) {
+void Material_isotropic::set_ior(float3 const& ior) {
 	ior_ = ior;
 }
 
-void Material_isotropic::set_absorption(const float3& absorption) {
+void Material_isotropic::set_absorption(float3 const& absorption) {
 	absorption_ = absorption;
 }
 
@@ -112,11 +112,11 @@ void Material_anisotropic::set_direction_map(const Texture_adapter& direction_ma
 	direction_map_ = direction_map;
 }
 
-void Material_anisotropic::set_ior(const float3& ior) {
+void Material_anisotropic::set_ior(float3 const& ior) {
 	ior_ = ior;
 }
 
-void Material_anisotropic::set_absorption(const float3& absorption) {
+void Material_anisotropic::set_absorption(float3 const& absorption) {
 	absorption_ = absorption;
 }
 

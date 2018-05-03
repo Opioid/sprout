@@ -18,10 +18,10 @@ public:
 
 	template<typename Layer>
 	static float3 reflection(f_float3 wi, f_float3 wo, float n_dot_wi, float n_dot_wo,
-							 const Layer& layer, float& pdf);
+							 Layer const& layer, float& pdf);
 
 	template<typename Layer>
-	static float reflect(f_float3 wo, float n_dot_wo, const Layer& layer,
+	static float reflect(f_float3 wo, float n_dot_wo, Layer const& layer,
 						 sampler::Sampler& sampler, bxdf::Sample& result);
 
 private:

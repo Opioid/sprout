@@ -11,7 +11,7 @@ std::string Writer::file_extension() const {
 	return "hdr";
 }
 
-bool Writer::write(std::ostream& stream, const image::Float4& image, thread::Pool& /*pool*/) {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*pool*/) {
 	write_header(stream, image.description().dimensions.xy());
 
 	write_pixels_rle(stream, image);
@@ -25,8 +25,8 @@ void Writer::write_header(std::ostream& stream, int2 dimensions) {
 	stream << "-Y " << dimensions[1] << " +X " << dimensions[0] << "\n";
 }
 
-void Writer::write_pixels(std::ostream& stream, const Float4& image) {
-	const auto& d = image.description().dimensions;
+void Writer::write_pixels(std::ostream& stream, Float4 const& image) {
+	auto const& d = image.description().dimensions;
 	for (uint32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
 		byte4 rgbe = float_to_rgbe(image.at(i));
 
@@ -34,7 +34,7 @@ void Writer::write_pixels(std::ostream& stream, const Float4& image) {
 	}
 }
 
-void Writer::write_pixels_rle(std::ostream& stream, const Float4& image) {
+void Writer::write_pixels_rle(std::ostream& stream, Float4 const& image) {
 	uint32_t scanline_width = image.description().dimensions[0];
 	uint32_t num_scanlines  = image.description().dimensions[1];
 
@@ -57,7 +57,7 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float4& image) {
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(byte4));
 
 		for (uint32_t i = 0; i < scanline_width; ++i, ++current_pixel) {
-			const auto& pixel = image.at(current_pixel);
+			auto const& pixel = image.at(current_pixel);
 
 			rgbe = float_to_rgbe(pixel);
 
@@ -145,7 +145,7 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 	}
 }
 
-byte4 Writer::float_to_rgbe(const float4& c) {
+byte4 Writer::float_to_rgbe(float4 const& c) {
 	float v = c[0];
 
 	if (c[1] > v) {

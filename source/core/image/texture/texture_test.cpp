@@ -7,13 +7,13 @@
 
 namespace image::texture::testing {
 
-bool is_valid_normal_map(const Image& image, const std::string& filename) {
+bool is_valid_normal_map(const Image& image, std::string const& filename) {
 	if (Image::Type::Byte3 != image.description().type) {
 		std::cout << "\"" << filename << "\" is not Byte3" << std::endl;
 		return false;
 	}
 
-	const Byte3& typed_image = static_cast<const Byte3&>(image);
+	Byte3 const& typed_image = static_cast<Byte3 const&>(image);
 
 	int2 d = image.description().dimensions.xy();
 	for (int32_t y = 0; y < d[1]; ++y) {

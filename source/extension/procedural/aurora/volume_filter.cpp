@@ -16,7 +16,7 @@ Volume_filter::Volume_filter(const int3& dimensions, float radius, float alpha,
 	kernel_(memory::allocate_aligned<K>(kernel_width_)),
 	num_buckets_(num_buckets),
 	scratch_(new float3*[num_buckets]) {
-	const float fr = radius + 0.5f;
+	float const fr = radius + 0.5f;
 	math::filter::Gaussian_functor gauss(fr * fr, alpha);
 
 	const int32_t ir = static_cast<int32_t>(radius + 0.5f);
@@ -24,8 +24,8 @@ Volume_filter::Volume_filter(const int3& dimensions, float radius, float alpha,
 	for (int32_t x = 0, width = kernel_width_; x < width; ++x) {
 		const int32_t o = -ir + x;
 
-		const float fo = static_cast<float>(o);
-		const float w = gauss(fo * fo);
+		float const fo = static_cast<float>(o);
+		float const w = gauss(fo * fo);
 
 		kernel_[x] = K{o, w};
 	}
@@ -75,7 +75,7 @@ void Volume_filter::filter_slices(uint32_t id, int32_t begin, int32_t end, float
 					if (kx >= 0 && kx < width) {
 						const int32_t i = z * area + y * dimensions_[0] + kx;
 
-						const float3 color = target[i];
+						float3 const color = target[i];
 
 						accum += k.w * color;
 						weight_sum += k.w;
@@ -84,7 +84,7 @@ void Volume_filter::filter_slices(uint32_t id, int32_t begin, int32_t end, float
 
 				const int32_t o = y * dimensions_[0] + x;
 
-				const float3 filtered = accum / weight_sum;
+				float3 const filtered = accum / weight_sum;
 				scratch[o] = filtered;
 			}
 		}
@@ -102,7 +102,7 @@ void Volume_filter::filter_slices(uint32_t id, int32_t begin, int32_t end, float
 					if (ky >= 0 && ky < height) {
 						const int32_t i = ky * dimensions_[0] + x;
 
-						const float3 color = scratch[i];
+						float3 const color = scratch[i];
 
 						accum += k.w * color;
 						weight_sum += k.w;
@@ -111,7 +111,7 @@ void Volume_filter::filter_slices(uint32_t id, int32_t begin, int32_t end, float
 
 				const int32_t o = z * area + y * dimensions_[0] + x;
 
-				const float3 filtered = accum / weight_sum;
+				float3 const filtered = accum / weight_sum;
 				target[o] = filtered;
 			}
 		}
@@ -137,7 +137,7 @@ void Volume_filter::filter_z(uint32_t id, int32_t begin, int32_t end, float3* ta
 					if (kz >= 0 && kz < depth) {
 						const int32_t i = kz * area + y * dimensions_[0] + x;
 
-						const float3 color = target[i];
+						float3 const color = target[i];
 
 						accum += k.w * color;
 						weight_sum += k.w;
@@ -146,7 +146,7 @@ void Volume_filter::filter_z(uint32_t id, int32_t begin, int32_t end, float3* ta
 
 				const int32_t o = y * dimensions_[0] + z;
 
-				const float3 filtered = accum / weight_sum;
+				float3 const filtered = accum / weight_sum;
 				scratch[o] = filtered;
 
 			}

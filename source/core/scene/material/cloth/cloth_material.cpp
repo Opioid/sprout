@@ -56,7 +56,7 @@ void Material::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material::set_color(const float3& color) {
+void Material::set_color(float3 const& color) {
 	color_ = color;
 }
 

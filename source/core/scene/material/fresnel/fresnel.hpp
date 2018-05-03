@@ -9,28 +9,28 @@ class Schlick {
 public:
 
 	Schlick(float f0);
-	Schlick(const float3& f0);
+	Schlick(f_float3 f0);
 
 	float3 operator()(float wo_dot_h) const;
 
 private:
 
-	const float3 f0_;
+	float3 const f0_;
 };
 
 class Schlick_blending {
 
 public:
 
-	Schlick_blending(const float3& a, const float3& b, float f0);
+	Schlick_blending(f_float3 a, f_float3 b, float f0);
 
 	float3 operator()(float wo_dot_h) const;
 
 private:
 
-	const float3 a_;
-	const float3 b_;
-	const float f0_;
+	float3 const a_;
+	float3 const b_;
+	float const f0_;
 };
 
 class Thinfilm {
@@ -44,24 +44,24 @@ public:
 
 private:
 
-	const float external_ior_;
-	const float thinfilm_ior_;
-	const float internal_ior_;
-	const float thickness_;
+	float const external_ior_;
+	float const thinfilm_ior_;
+	float const internal_ior_;
+	float const thickness_;
 };
 
 class Conductor {
 
 public:
 
-	Conductor(const float3& eta, const float3& k);
+	Conductor(f_float3 eta, f_float3 k);
 
 	float3 operator()(float wo_dot_h) const;
 
 private:
 
-	const float3 eta_;
-	const float3 k_;
+	float3 const eta_;
+	float3 const k_;
 };
 
 class Constant {
@@ -69,13 +69,13 @@ class Constant {
 public:
 
 	Constant(float f);
-	Constant(const float3& f);
+	Constant(f_float3 f);
 
 	float3 operator()(float wo_dot_h) const;
 
 private:
 
-	const float3 f_;
+	float3 const f_;
 };
 
 
@@ -84,14 +84,14 @@ class Weighted {
 
 public:
 
-	Weighted(const T& fresnel, float weight);
+	Weighted(T const& fresnel, float weight);
 
 	float3 operator()(float wo_dot_h) const;
 
 private:
 
 	const T fresnel_;
-	const float weight_;
+	float const weight_;
 };
 
 using Schlick_weighted   = Weighted<Schlick>;

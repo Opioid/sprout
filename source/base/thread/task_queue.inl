@@ -34,16 +34,16 @@ void Task_queue<T>::restart() {
 }
 
 template<typename T>
-void Task_queue<T>::push(const T& task) {
-	const uint32_t current = top_++;
+void Task_queue<T>::push(T const& task) {
+	uint32_t const current = top_++;
 
 	tasks_[current] = task;
 }
 
 template<typename T>
 bool Task_queue<T>::pop(T& task) {
-	// const uint32_t current = current_consume_++;
-	const uint32_t current = current_consume_.fetch_add(1, std::memory_order_relaxed);
+	// uint32_t const current = current_consume_++;
+	uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
 	if (current < top_) {
 		task = tasks_[current];

@@ -6,7 +6,7 @@ Client::Client(net::Socket socket) : websocket_(socket) {}
 
 Client::~Client() {}
 
-bool Client::run(const std::string& introduction) {
+bool Client::run(std::string const& introduction) {
 	if (!websocket_.handshake()) {
 		return false;
 	}
@@ -24,7 +24,7 @@ void Client::shutdown() {
 	thread_.join();
 }
 
-bool Client::send(const std::string& text) {
+bool Client::send(std::string const& text) {
 	return websocket_.send(text);
 }
 
@@ -66,7 +66,7 @@ void Client::loop() {
 	}
 }
 
-void Client::push_message(const std::string& message) {
+void Client::push_message(std::string const& message) {
 	messages_.push_back(message);
 }
 

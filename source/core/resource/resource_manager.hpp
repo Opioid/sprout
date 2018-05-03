@@ -31,22 +31,22 @@ public:
 	void register_provider(Provider<T>& provider);
 
 	template<typename T>
-	std::shared_ptr<T> load(const std::string& filename,
-							const memory::Variant_map& options = memory::Variant_map());
+	std::shared_ptr<T> load(std::string const& filename,
+							memory::Variant_map const& options = memory::Variant_map());
 
 	template<typename T>
-	std::shared_ptr<T> load(const std::string& name, const void* data,
-							const std::string& mount_folder,
-							const memory::Variant_map& options = memory::Variant_map());
+	std::shared_ptr<T> load(std::string const& name, void const* data,
+							std::string const& mount_folder,
+							memory::Variant_map const& options = memory::Variant_map());
 
 	template<typename T>
-	std::shared_ptr<T> get(const std::string& filename,
-						   const memory::Variant_map& options = memory::Variant_map());
+	std::shared_ptr<T> get(std::string const& filename,
+						   memory::Variant_map const& options = memory::Variant_map());
 
 	template<typename T>
-	void store(const std::string& name,
+	void store(std::string const& name,
 			   std::shared_ptr<T> resource,
-			   const memory::Variant_map& options = memory::Variant_map());
+			   memory::Variant_map const& options = memory::Variant_map());
 
 	template<typename T>
 	size_t num_bytes() const;

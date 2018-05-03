@@ -9,7 +9,7 @@ class Sample_rough final : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const override final;
+	virtual Layer const& base_layer() const override final;
 
 	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
@@ -24,7 +24,7 @@ public:
 		float eta_t_;
 	};
 
-	void set(const float3& refraction_color, const float3& absorption_color,
+	void set(float3 const& refraction_color, float3 const& absorption_color,
 			 float attenuation_distance, float ior, float ior_outside, float alpha);
 
 	struct Layer : public material::Sample::Layer {
@@ -39,13 +39,13 @@ public:
 
 	IOR ior_;
 
-	void reflect(const Layer& layer, sampler::Sampler& sampler,
+	void reflect(Layer const& layer, sampler::Sampler& sampler,
 				 bxdf::Sample& result) const;
 
-	void reflect_internally(const Layer& layer, sampler::Sampler& sampler,
+	void reflect_internally(Layer const& layer, sampler::Sampler& sampler,
 							bxdf::Sample& result) const;
 
-	void refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
+	void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
 				 bxdf::Sample& result) const;
 };
 

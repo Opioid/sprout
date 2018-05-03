@@ -20,7 +20,7 @@ Grid::~Grid() {}
 void Grid::compile() {
 	float max_density = 0.f;
 
-	const auto texture = grid_.texture();
+	auto const texture = grid_.texture();
 
 	const int3 d = texture->dimensions_3();
 
@@ -28,7 +28,7 @@ void Grid::compile() {
 		max_density = std::max(texture->at_1(i), max_density);
 	}
 
-	const float3 extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
+	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
 	majorant_mu_t_ = max_density * math::max_component(extinction_coefficient);
 }
@@ -52,7 +52,7 @@ float Grid::density(f_float3 p, const Transformation& /*transformation*/,
 	float3 p_g = 0.5f * (float3(1.f) + p);
 	p_g[1] = 1.f - p_g[1];
 
-	const auto& sampler = worker.sampler_3D(sampler_key(), filter);
+	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
 	return grid_.sample_1(sampler, p_g);
 }
@@ -72,11 +72,11 @@ float3 Emission_grid::emission(const math::Ray& ray,const Transformation& transf
 
 	float3 emission(0.f);
 
-	const float3 rp_o = math::transform_point(rn.origin, transformation.world_to_object);
-	const float3 rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
+	float3 const rp_o = math::transform_point(rn.origin, transformation.world_to_object);
+	float3 const rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
 
 	for (; min_t < rn.max_t; min_t += step_size) {
-		const float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
+		float3 const p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
 		emission += Emission_grid::emission(p_o, filter, worker);
 	}
 
@@ -93,7 +93,7 @@ float3 Emission_grid::emission(f_float3 p, Sampler_filter filter, const Worker& 
 	float3 p_g = 0.5f * (float3(1.f) + p);
 	p_g[1] = 1.f - p_g[1];
 
-	const auto& sampler = worker.sampler_3D(sampler_key(), filter);
+	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
 	return 0.00001f * grid_.sample_3(sampler, p_g);
 }
@@ -113,11 +113,11 @@ float3 Flow_vis_grid::emission(const math::Ray& ray,const Transformation& transf
 
 	float3 emission(0.f);
 
-	const float3 rp_o = math::transform_point(rn.origin, transformation.world_to_object);
-	const float3 rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
+	float3 const rp_o = math::transform_point(rn.origin, transformation.world_to_object);
+	float3 const rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
 
 	for (; min_t < rn.max_t; min_t += step_size) {
-		const float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
+		float3 const p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
 		emission += Flow_vis_grid::emission(p_o, filter, worker);
 	}
 
@@ -126,11 +126,11 @@ float3 Flow_vis_grid::emission(const math::Ray& ray,const Transformation& transf
 /*
 	float density = 0.f;
 
-	const float3 rp_o = math::transform_point(rn.origin, transformation.world_to_object);
-	const float3 rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
+	float3 const rp_o = math::transform_point(rn.origin, transformation.world_to_object);
+	float3 const rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
 
 	for (; min_t < rn.max_t; min_t += step_size) {
-		const float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
+		float3 const p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
 		density += Flow_vis_grid::density(p_o, filter, worker);
 	}
 
@@ -150,7 +150,7 @@ float Flow_vis_grid::density(f_float3 p, Sampler_filter filter, const Worker& wo
 	float3 p_g = 0.5f * (float3(1.f) + p);
 	p_g[1] = 1.f - p_g[1];
 
-	const auto& sampler = worker.sampler_3D(sampler_key(), filter);
+	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
 	return grid_.sample_1(sampler, p_g);
 }
@@ -161,9 +161,9 @@ float3 Flow_vis_grid::emission(f_float3 p, Sampler_filter filter, const Worker& 
 	float3 p_g = 0.5f * (float3(1.f) + p);
 	p_g[1] = 1.f - p_g[1];
 
-	const auto& sampler = worker.sampler_3D(sampler_key(), filter);
+	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-	const float density = std::min(2.f * grid_.sample_1(sampler, p_g), 1.f);
+	float const density = std::min(2.f * grid_.sample_1(sampler, p_g), 1.f);
 
 	return spectrum::heatmap(density);
 }

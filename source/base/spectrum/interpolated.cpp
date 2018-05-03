@@ -3,7 +3,7 @@
 
 namespace spectrum {
 
-Interpolated::Interpolated(const float* wavelengths, const float* intensities, size_t len) {
+Interpolated::Interpolated(float const* wavelengths, float const* intensities, size_t len) {
 	wavelengths_.assign(wavelengths, wavelengths + len);
 	intensities_.assign(intensities, intensities + len);
 }

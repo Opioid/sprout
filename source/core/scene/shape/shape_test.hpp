@@ -18,7 +18,7 @@ namespace testing {
 
 bool check(const Intersection& intersection,
 		   const entity::Composed_transformation& transformation,
-		   const Ray& ray);
+		   Ray const& ray);
 
 bool check(const Sample& sample);
 

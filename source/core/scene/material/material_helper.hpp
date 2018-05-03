@@ -16,8 +16,8 @@ static inline float3 sample_normal(f_float3 wo,
 								   const Renderstate& rs,
 								   const image::texture::Adapter& map,
 								   const image::texture::sampler::Sampler_2D& sampler) {
-	const float3 nm = map.sample_3(sampler, rs.uv);
-	const float3 n  = math::normalize(rs.tangent_to_world(nm));
+	float3 const nm = map.sample_3(sampler, rs.uv);
+	float3 const n  = math::normalize(rs.tangent_to_world(nm));
 
 	SOFT_ASSERT(testing::check_normal_map(n, nm, rs.uv));
 

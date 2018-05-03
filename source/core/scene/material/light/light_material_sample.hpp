@@ -9,7 +9,7 @@ class Sample : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const override final;
+	virtual Layer const& base_layer() const override final;
 
 	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
@@ -20,7 +20,7 @@ public:
 	virtual bool is_pure_emissive() const override final;
 
 	struct Layer : public material::Sample::Layer {
-		void set(const float3& radiance);
+		void set(float3 const& radiance);
 
 		float3 radiance_;
 	};

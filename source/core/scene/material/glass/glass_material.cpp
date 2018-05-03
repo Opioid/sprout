@@ -22,7 +22,7 @@ const material::Sample& Glass::sample(f_float3 wo, const Renderstate& rs,
 
 	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
+		float3 const n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -54,11 +54,11 @@ void Glass::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Glass::set_refraction_color(const float3& color) {
+void Glass::set_refraction_color(float3 const& color) {
 	refraction_color_ = color;
 }
 
-void Glass::set_attenuation(const float3& absorption_color, float distance) {
+void Glass::set_attenuation(float3 const& absorption_color, float distance) {
 	absorption_color_ = absorption_color;
 
 	absorption_coefficient_ = extinction_coefficient(absorption_color, distance);

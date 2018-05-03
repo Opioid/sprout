@@ -21,7 +21,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 	std::vector<scene::shape::Vertex> vertices;
 	uint32_t num_parts = 1;
 
-	const uint32_t num_vertices = 16;
+	uint32_t const num_vertices = 16;
 
 /*
 	float r = 0.f;
@@ -80,7 +80,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 														 manager.thread_pool());
 }
 
-void Grass::add_blade(const float3& offset,
+void Grass::add_blade(float3 const& offset,
 					  float rotation_y, float lean_factor, float width, float height,
 					  uint32_t vertex_offset,
 					  std::vector<scene::shape::triangle::Index_triangle>& triangles,
@@ -226,14 +226,14 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 	std::vector<packed_float3> triangle_normals(triangles.size());
 
 	for (size_t i = 0, len = triangles.size(); i < len; ++i) {
-		const auto& tri = triangles[i];
+		auto const& tri = triangles[i];
 
-		const auto& a = vertices[tri.i[0]].p;
-		const auto& b = vertices[tri.i[1]].p;
-		const auto& c = vertices[tri.i[2]].p;
+		auto const& a = vertices[tri.i[0]].p;
+		auto const& b = vertices[tri.i[1]].p;
+		auto const& c = vertices[tri.i[2]].p;
 
-		const auto e1 = b - a;
-		const auto e2 = c - a;
+		auto const e1 = b - a;
+		auto const e2 = c - a;
 
 		triangle_normals[i] = math::normalize(math::cross(e1, e2));
 	}
@@ -248,7 +248,7 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 	std::vector<Shading_normal> normals(vertices.size());
 
 	for (size_t i = 0, len = triangles.size(); i < len; ++i) {
-		const auto& tri = triangles[i];
+		auto const& tri = triangles[i];
 
 		normals[tri.i[0]].sum += triangle_normals[i];
 		++normals[tri.i[0]].num;

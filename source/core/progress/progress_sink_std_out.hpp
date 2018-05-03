@@ -20,7 +20,7 @@ private:
 
 	float threshold_;
 
-	const float step_;
+	float const step_;
 };
 
 }

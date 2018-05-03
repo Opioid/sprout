@@ -14,8 +14,8 @@ std::string Writer::file_extension() const {
 	return "png";
 }
 
-bool Writer::write(std::ostream& stream, const Float4& image, thread::Pool& pool) {
-	const auto d = image.description().dimensions;
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
+	auto const d = image.description().dimensions;
 
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
@@ -34,13 +34,13 @@ bool Writer::write(std::ostream& stream, const Float4& image, thread::Pool& pool
 	return true;
 }
 
-bool Writer::write(const std::string& name, const Byte3& image) {
+bool Writer::write(std::string const& name, Byte3 const& image) {
 	std::ofstream stream(name, std::ios::binary);
 	if (!stream) {
 		return false;
 	}
 
-	const auto d = image.description().dimensions;
+	auto const d = image.description().dimensions;
 
 	size_t buffer_len = 0;
 	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1],
@@ -57,13 +57,13 @@ bool Writer::write(const std::string& name, const Byte3& image) {
 	return true;
 }
 
-bool Writer::write(const std::string& name, const Byte1& image) {
+bool Writer::write(std::string const& name, Byte1 const& image) {
 	std::ofstream stream(name, std::ios::binary);
 	if (!stream) {
 		return false;
 	}
 
-	const auto d = image.description().dimensions;
+	auto const d = image.description().dimensions;
 
 	size_t buffer_len = 0;
 	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1],
@@ -80,7 +80,7 @@ bool Writer::write(const std::string& name, const Byte1& image) {
 	return true;
 }
 
-bool Writer::write(const std::string& name, const float* data, int2 dimensions, float scale) {
+bool Writer::write(std::string const& name, float const* data, int2 dimensions, float scale) {
 	std::ofstream stream(name, std::ios::binary);
 	if (!stream) {
 		return false;
@@ -109,7 +109,7 @@ bool Writer::write(const std::string& name, const float* data, int2 dimensions, 
 	return true;
 }
 
-bool Writer::write(const std::string& name, const float2* data, int2 dimensions, float scale) {
+bool Writer::write(std::string const& name, float2 const* data, int2 dimensions, float scale) {
 	std::ofstream stream(name, std::ios::binary);
 	if (!stream) {
 		return false;
@@ -146,8 +146,8 @@ std::string Writer_alpha::file_extension() const {
 	return "png";
 }
 
-bool Writer_alpha::write(std::ostream& stream, const Float4& image, thread::Pool& pool) {
-	const auto d = image.description().dimensions;
+bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
+	auto const d = image.description().dimensions;
 
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 			to_sRGB(image, begin, end); }, 0, d[0] * d[1]);

@@ -193,7 +193,7 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 	info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
 	info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
-	const uint32_t depth = static_cast<uint32_t>(chunk.data[8]);
+	uint32_t const depth = static_cast<uint32_t>(chunk.data[8]);
 	if (8 != depth) {
 		throw std::runtime_error(string::to_string(depth) +  " bit depth PNG not supported");
 	}
@@ -248,7 +248,7 @@ bool Reader::parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
 }
 
 bool Reader::parse_data(const Chunk& chunk, Info& info) {
-	const uint32_t buffer_size = 8192;
+	uint32_t const buffer_size = 8192;
 	uint8_t buffer[buffer_size];
 
 	info.stream.next_in = chunk.data;
@@ -264,7 +264,7 @@ bool Reader::parse_data(const Chunk& chunk, Info& info) {
 			return false;
 		}
 
-		const uint32_t decompressed = buffer_size - info.stream.avail_out;
+		uint32_t const decompressed = buffer_size - info.stream.avail_out;
 
 		for (uint32_t i = 0; i < decompressed; ++i) {
 			if (info.filter_byte) {

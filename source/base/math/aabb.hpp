@@ -14,11 +14,11 @@ class AABB {
 public:
 
 	AABB() = default;
-	constexpr AABB(const float3& min, const float3& max);
+	constexpr AABB(float3 const& min, float3 const& max);
 	AABB(FVector min, FVector max);
 
-	const float3& min() const;
-	const float3& max() const;
+	float3 const& min() const;
+	float3 const& max() const;
 
 	float3 position() const;
 	float3 halfsize() const;
@@ -28,15 +28,15 @@ public:
 
 	bool intersect(f_float3 p) const;
 
-	bool intersect_p(const Ray& ray) const;
+	bool intersect_p(Ray const& ray) const;
 
 	bool intersect_p(FVector ray_origin, FVector ray_inv_direction,
 					 FVector ray_min_t, FVector ray_max_t) const;
 
-	bool intersect_p(const Ray& ray, float& min_t, float& max_t) const;
-	bool intersect_p(const Ray& ray, float& hit_t, bool& inside) const;
+	bool intersect_p(Ray const& ray, float& min_t, float& max_t) const;
+	bool intersect_p(Ray const& ray, float& hit_t, bool& inside) const;
 
-	void set_min_max(const float3& min, const float3& max);
+	void set_min_max(float3 const& min, float3 const& max);
 	void set_min_max(FVector min, FVector max);
 
 	void insert(f_float3 p);

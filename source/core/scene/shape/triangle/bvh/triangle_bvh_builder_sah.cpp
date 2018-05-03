@@ -58,7 +58,7 @@ void Builder_SAH::Split_candidate::evaluate(const References& references, float 
 	math::Simd_AABB box_1(aabb_1_);
 
 	if (spatial_) {
-		for (const auto& r : references) {
+		for (auto const& r : references) {
 			math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
 			if (behind(r.bounds[1].v)) {
@@ -84,7 +84,7 @@ void Builder_SAH::Split_candidate::evaluate(const References& references, float 
 		aabb_0_.clip_max(d_, axis_);
 		aabb_1_.clip_min(d_, axis_);
 	} else {
-		for (const auto& r : references) {
+		for (auto const& r : references) {
 			math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
 			if (behind(r.bounds[1].v)) {
@@ -106,8 +106,8 @@ void Builder_SAH::Split_candidate::evaluate(const References& references, float 
 	if (empty_side) {
 		cost_ = 2.f + static_cast<float>(references.size());
 	} else {
-		const float weight_0 = static_cast<float>(num_side_0) * aabb_0_.surface_area();
-		const float weight_1 = static_cast<float>(num_side_1) * aabb_1_.surface_area();
+		float const weight_0 = static_cast<float>(num_side_0) * aabb_0_.surface_area();
+		float const weight_1 = static_cast<float>(num_side_1) * aabb_1_.surface_area();
 		cost_ = 2.f + (weight_0 + weight_1) / aabb_surface_area;
 	}
 
@@ -122,7 +122,7 @@ void Builder_SAH::Split_candidate::distribute(const References& references,
 	references1.reserve(num_side_1_);
 
 	if (spatial_) {
-		for (const auto& r : references) {
+		for (auto const& r : references) {
 			if (behind(r.bounds[1].v)) {
 				references0.push_back(r);
 			} else if (!behind(r.bounds[0].v)) {
@@ -138,7 +138,7 @@ void Builder_SAH::Split_candidate::distribute(const References& references,
 			}
 		}
 	} else {
-		for (const auto& r : references) {
+		for (auto const& r : references) {
 			if (behind(r.bounds[1].v)) {
 				references0.push_back(r);
 			} else {
@@ -152,7 +152,7 @@ float Builder_SAH::Split_candidate::cost() const {
 	return cost_;
 }
 
-bool Builder_SAH::Split_candidate::behind(const float* point) const {
+bool Builder_SAH::Split_candidate::behind(float const* point) const {
 	return point[axis_] < d_;
 }
 
@@ -187,7 +187,7 @@ void Builder_SAH::split(Build_node* node, References& references, const math::AA
 						uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool) {
 	node->aabb = aabb;
 
-	const uint32_t num_primitives = static_cast<uint32_t>(references.size());
+	uint32_t const num_primitives = static_cast<uint32_t>(references.size());
 
 	if (num_primitives <= max_primitives) {
 		assign(node, references);
@@ -248,18 +248,18 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
 
 	split_candidates_.clear();
 
-	const uint32_t num_triangles = static_cast<uint32_t>(references.size());
+	uint32_t const num_triangles = static_cast<uint32_t>(references.size());
 
-	const float3 halfsize = aabb.halfsize();
-	const float3 position = aabb.position();
+	float3 const halfsize = aabb.halfsize();
+	float3 const position = aabb.position();
 
 	split_candidates_.emplace_back(X, position, true);
 	split_candidates_.emplace_back(Y, position, true);
 	split_candidates_.emplace_back(Z, position, true);
 
 	if (num_triangles <= sweep_threshold_) {
-		for (const auto& r : references) {
-			const float3 max(r.bounds[1].v);
+		for (auto const& r : references) {
+			float3 const max(r.bounds[1].v);
 			split_candidates_.emplace_back(X, max, false);
 			split_candidates_.emplace_back(Y, max, false);
 			split_candidates_.emplace_back(Z, max, false);
@@ -267,17 +267,17 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
 	} else {
 		f_float3 min = aabb.min();
 
-		const float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
+		float3 const step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
-			const float fi = static_cast<float>(i);
+			float const fi = static_cast<float>(i);
 
-			const float3 slice_x(min[0] + fi * step[0], position[1], position[2]);
+			float3 const slice_x(min[0] + fi * step[0], position[1], position[2]);
 			split_candidates_.emplace_back(X, slice_x, false);
 
-			const float3 slice_y(position[0], min[1] + fi * step[1], position[2]);
+			float3 const slice_y(position[0], min[1] + fi * step[1], position[2]);
 			split_candidates_.emplace_back(Y, slice_y, false);
 
-			const float3 slice_z(position[0], position[1], min[2] + fi * step[2]);
+			float3 const slice_z(position[0], position[1], min[2] + fi * step[2]);
 			split_candidates_.emplace_back(Z, slice_z, false);
 
 			if (depth < spatial_split_threshold_) {
@@ -288,7 +288,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
 		}
 	}
 
-	const float aabb_surface_area = aabb.surface_area();
+	float const aabb_surface_area = aabb.surface_area();
 
 	// Arbitrary heuristic for starting the thread pool
 	if (num_triangles < 1024) {
@@ -308,7 +308,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
 	float  min_cost = split_candidates_[0].cost();
 
 	for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
-		const float cost = split_candidates_[i].cost();
+		float const cost = split_candidates_[i].cost();
 
 		if (cost < min_cost) {
 			sc = i;
@@ -316,7 +316,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
 		}
 	}
 
-	const auto& sp = split_candidates_[sc];
+	auto const& sp = split_candidates_[sc];
 
 	exhausted = (sp.aabb_0() == aabb && num_triangles == sp.num_side_0()) ||
 				(sp.aabb_1() == aabb && num_triangles == sp.num_side_1());

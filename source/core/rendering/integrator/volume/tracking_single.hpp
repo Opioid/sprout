@@ -10,13 +10,13 @@ class alignas(64) Tracking_single final : public Integrator {
 
 public:
 
-	Tracking_single(rnd::Generator& rng, const take::Settings& take_settings);
+	Tracking_single(rnd::Generator& rng, take::Settings const& take_settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, Worker& worker) override final;
+	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,
@@ -26,9 +26,9 @@ public:
 
 private:
 
-	float3 direct_light(const Ray& ray, f_float3 position, Worker& worker);
+	float3 direct_light(Ray const& ray, f_float3 position, Worker& worker);
 
-	float3 direct_light(const Ray& ray, f_float3 position,
+	float3 direct_light(Ray const& ray, f_float3 position,
 						const Intersection& intersection, Worker& worker);
 
 	sampler::Random sampler_;
@@ -38,7 +38,7 @@ class Tracking_single_factory final : public Factory {
 
 public:
 
-	Tracking_single_factory(const take::Settings& take_settings, uint32_t num_integrators);
+	Tracking_single_factory(take::Settings const& take_settings, uint32_t num_integrators);
 
 	~Tracking_single_factory() override final;
 

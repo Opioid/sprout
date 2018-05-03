@@ -10,12 +10,12 @@
 
 namespace rendering::integrator::surface {
 
-Debug::Debug(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings) :
+Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
 
-void Debug::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
 void Debug::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
@@ -33,7 +33,7 @@ float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		vector = intersection.geo.geo_n;
 		break;
 	case Settings::Vector::Shading_normal: {
-		const float3 wo = -ray.direction;
+		float3 const wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined,
 													sampler_, worker);
 
@@ -59,7 +59,7 @@ size_t Debug::num_bytes() const {
 	return sizeof(*this);
 }
 
-Debug_factory::Debug_factory(const take::Settings& take_settings, uint32_t num_integrators,
+Debug_factory::Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
 							 Debug::Settings::Vector vector) :
 	Factory(take_settings),
 	integrators_(memory::allocate_aligned<Debug>(num_integrators)) {

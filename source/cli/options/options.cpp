@@ -45,7 +45,7 @@ Options parse(int argc, const char* argv[]) {
 
 		const int initial_argc = argc;
 
-		const auto parsed = options.parse(argc, argv);
+		auto const parsed = options.parse(argc, argv);
 
 		if (1 == initial_argc || parsed.count("help")) {
 			std::stringstream stream;

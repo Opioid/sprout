@@ -21,7 +21,7 @@ Disk::Disk() {
 
 bool Disk::intersect(Ray& ray, const Transformation& transformation,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -63,7 +63,7 @@ bool Disk::intersect(Ray& ray, const Transformation& transformation,
 
 bool Disk::intersect_fast(Ray& ray, const Transformation& transformation,
 						  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -104,7 +104,7 @@ bool Disk::intersect_fast(Ray& ray, const Transformation& transformation,
 
 bool Disk::intersect(Ray& ray, const Transformation& transformation,
 					 Node_stack& /*node_stack*/, float& epsilon) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -128,9 +128,9 @@ bool Disk::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Disk::intersect_p(const Ray& ray, const Transformation& transformation,
+bool Disk::intersect_p(Ray const& ray, const Transformation& transformation,
 					   Node_stack& /*node_stack*/) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -151,10 +151,10 @@ bool Disk::intersect_p(const Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-float Disk::opacity(const Ray& ray, const Transformation& transformation,
+float Disk::opacity(Ray const& ray, const Transformation& transformation,
 					const Materials& materials,
 					Sampler_filter filter, const Worker& worker) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -180,10 +180,10 @@ float Disk::opacity(const Ray& ray, const Transformation& transformation,
 	return 0.f;
 }
 
-float3 Disk::thin_absorption(const Ray& ray, const Transformation& transformation,
+float3 Disk::thin_absorption(Ray const& ray, const Transformation& transformation,
 							 const Materials& materials,
 							 Sampler_filter filter, const Worker& worker) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -221,19 +221,19 @@ bool Disk::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
 bool Disk::sample(uint32_t /*part*/, f_float3 p, const Transformation& transformation,
 				  float area, bool two_sided, sampler::Sampler& sampler,
 				  uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample& sample) const {
-	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-	const float2 xy = math::sample_disk_concentric(r2);
+	float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+	float2 const xy = math::sample_disk_concentric(r2);
 
-	const float3 ls = float3(xy, 0.f);
-	const float3 ws = transformation.position
+	float3 const ls = float3(xy, 0.f);
+	float3 const ws = transformation.position
 					+ transformation.scale[0] * math::transform_vector(ls, transformation.rotation);
 
-	const float3 axis = ws - p;
+	float3 const axis = ws - p;
 
-	const float sl = math::squared_length(axis);
-	const float t  = std::sqrt(sl);
+	float const sl = math::squared_length(axis);
+	float const t  = std::sqrt(sl);
 
-	const float3 wi = axis / t;
+	float3 const wi = axis / t;
 
 	float c = -math::dot(transformation.rotation.r[2], wi);
 
@@ -245,7 +245,7 @@ bool Disk::sample(uint32_t /*part*/, f_float3 p, const Transformation& transform
 		return false;
 	}
 
-	const float pdf = sl / (c * area);
+	float const pdf = sl / (c * area);
 
 	if (pdf > 1.6e19f) {
 		return false;
@@ -259,10 +259,10 @@ bool Disk::sample(uint32_t /*part*/, f_float3 p, const Transformation& transform
 	return true;
 }
 
-float Disk::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
+float Disk::pdf(Ray const& ray, const shape::Intersection& /*intersection*/,
 				const Transformation& transformation,
 				float area, bool two_sided, bool /*total_sphere*/) const {
-	const float3 normal = transformation.rotation.r[2];
+	float3 const normal = transformation.rotation.r[2];
 
 	float c = -math::dot(normal, ray.direction);
 
@@ -281,7 +281,7 @@ bool Disk::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
 	return false;
 }
 
-float Disk::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
+float Disk::pdf_uv(Ray const& /*ray*/, const Intersection& /*intersection*/,
 				   const Transformation& /*transformation*/,
 				   float /*area*/, bool /*two_sided*/) const {
 	return 0.f;

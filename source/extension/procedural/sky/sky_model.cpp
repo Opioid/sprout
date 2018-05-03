@@ -26,7 +26,7 @@ bool Model::init() {
 
 	release();
 
-	const float elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
+	float const elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
 
 	/*
 	for (uint32_t i = 0; i < 3; ++i) {
@@ -50,12 +50,12 @@ float3 Model::sun_direction() const {
 	return sun_direction_;
 }
 
-void Model::set_sun_direction(const float3& direction) {
+void Model::set_sun_direction(float3 const& direction) {
 	sun_direction_ = direction;
 	dirty_ = true;
 }
 
-void Model::set_ground_albedo(const float3& albedo) {
+void Model::set_ground_albedo(float3 const& albedo) {
 	ground_albedo_ = albedo;
 	dirty_ = true;
 }
@@ -66,11 +66,11 @@ void Model::set_turbidity(float turbidity) {
 }
 
 float3 Model::evaluate_sky(f_float3 wi) const {
-	const float wi_dot_z = std::max(wi[1], 0.00001f);
-	const float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
+	float const wi_dot_z = std::max(wi[1], 0.00001f);
+	float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
-//	const float theta = std::acos(wi_dot_z);
-	const float gamma = std::acos(wi_dot_s);
+//	float const theta = std::acos(wi_dot_z);
+	float const gamma = std::acos(wi_dot_s);
 
 	/*
 	float3 radiance;
@@ -80,11 +80,11 @@ float3 Model::evaluate_sky(f_float3 wi) const {
 	}
 	*/
 
-	const float sqrt_cos_theta = std::sqrt(wi_dot_z);
+	float const sqrt_cos_theta = std::sqrt(wi_dot_z);
 
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {
-		const float wl_center = Spectrum::wavelength_center(i);
+		float const wl_center = Spectrum::wavelength_center(i);
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_radiance(skymodel_states_[i],
 																		/*theta,*/ wi_dot_z,
 																		sqrt_cos_theta,
@@ -96,22 +96,22 @@ float3 Model::evaluate_sky(f_float3 wi) const {
 }
 
 float3 Model::evaluate_sky_and_sun(f_float3 wi) const {
-	const float wi_dot_z = std::max(wi[1], 0.00001f);
-	const float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
+	float const wi_dot_z = std::max(wi[1], 0.00001f);
+	float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
-	const float theta = std::acos(wi_dot_z);
-	const float gamma = std::acos(wi_dot_s);
+	float const theta = std::acos(wi_dot_z);
+	float const gamma = std::acos(wi_dot_s);
 
-	const float sin_gamma = std::sqrt(1.f - wi_dot_s * wi_dot_s);
+	float const sin_gamma = std::sqrt(1.f - wi_dot_s * wi_dot_s);
 
-	const float sqrt_cos_theta = std::sqrt(wi_dot_z);
+	float const sqrt_cos_theta = std::sqrt(wi_dot_z);
 
 	ArHosekSkyModelSolarTemp temp;
 	arhosekskymodel_solar_radiance_temp(&temp, theta, sin_gamma);
 
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {
-		const float wl_center = Spectrum::wavelength_center(i);
+		float const wl_center = Spectrum::wavelength_center(i);
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(
 												   skymodel_states_[i], &temp, wi_dot_z,
 												   sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
@@ -126,6 +126,6 @@ void Model::release() {
 	}
 }
 
-//const float3 Model::zenith_ = float3(0.f, 1.f, 0.f);
+//float3 const Model::zenith_ = float3(0.f, 1.f, 0.f);
 
 }

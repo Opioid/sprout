@@ -21,7 +21,7 @@ public:
 	void set_color_map(const Texture_adapter& color_map);
 	void set_normal_map(const Texture_adapter& normal_map);
 
-	void set_color(const float3& color);
+	void set_color(float3 const& color);
 
 	static size_t sample_size();
 

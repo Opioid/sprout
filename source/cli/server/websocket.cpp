@@ -36,7 +36,7 @@ bool Websocket::handshake() {
 	return true;
 }
 
-void Websocket::ping(const std::string& text) {
+void Websocket::ping(std::string const& text) {
 	prepare_header(text.size(), Opcode::Ping);
 
 	buffer_.insert(buffer_.end(), text.begin(), text.end());
@@ -48,7 +48,7 @@ int Websocket::receive(char* data, size_t size) {
 	return socket_.receive(data, static_cast<uint32_t>(size));
 }
 
-bool Websocket::send(const std::string& text) {
+bool Websocket::send(std::string const& text) {
 	prepare_header(text.size(), Opcode::Text_frame);
 
 	buffer_.insert(buffer_.end(), text.begin(), text.end());
@@ -118,7 +118,7 @@ void Websocket::decode_text(const char* buffer, size_t size, std::string& text) 
 
 	uint32_t mask_start = 0;
 
-	const uint32_t length_marker = buffer[1] & 0x7f;
+	uint32_t const length_marker = buffer[1] & 0x7f;
 	if (length_marker < 126) {
 		payload_length = length_marker;
 		mask_start = 2;

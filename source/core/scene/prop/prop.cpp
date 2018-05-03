@@ -58,7 +58,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack,
 	}
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(ray.time, temp);
+	auto const& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect(ray, transformation, node_stack, intersection);
 }
@@ -74,7 +74,7 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack,
 	}
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(ray.time, temp);
+	auto const& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect_fast(ray, transformation, node_stack, intersection);
 }
@@ -93,12 +93,12 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
 	}
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(ray.time, temp);
+	auto const& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect(ray, transformation, node_stack, epsilon);
 }
 
-bool Prop::intersect_p(const Ray& ray, Node_stack& node_stack) const {
+bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const {
 	if (!visible_in_shadow()) {
 		return false;
 	}
@@ -108,7 +108,7 @@ bool Prop::intersect_p(const Ray& ray, Node_stack& node_stack) const {
 	}
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(ray.time, temp);
+	auto const& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect_p(ray, transformation, node_stack);
 }
@@ -126,7 +126,7 @@ bool Prop::intersect_p(const Ray& ray, Node_stack& node_stack) const {
 //	}
 
 //	entity::Composed_transformation temp;
-//	const auto& transformation = transformation_at(ray_time, temp);
+//	auto const& transformation = transformation_at(ray_time, temp);
 
 //	return shape_->intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t,
 //							   transformation, node_stack);
@@ -194,9 +194,9 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id,
 	shape_->prepare_sampling(part);
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(0.f, temp);
+	auto const& transformation = transformation_at(0.f, temp);
 
-	const float area = shape_->area(part, transformation.scale);
+	float const area = shape_->area(part, transformation.scale);
 	parts_[part].area = area;
 
 	parts_[part].light_id = light_id;
@@ -205,7 +205,7 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id,
 									   material_importance_sampling, pool);
 }
 
-float Prop::opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
+float Prop::opacity(Ray const& ray, Sampler_filter filter, const Worker& worker) const {
 	if (!has_masked_material()) {
 		return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 	}
@@ -219,12 +219,12 @@ float Prop::opacity(const Ray& ray, Sampler_filter filter, const Worker& worker)
 	}
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(ray.time, temp);
+	auto const& transformation = transformation_at(ray.time, temp);
 
 	return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
 
-float3 Prop::thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
+float3 Prop::thin_absorption(Ray const& ray, Sampler_filter filter, const Worker& worker) const {
 	if (!has_tinted_shadow()) {
 		return float3(opacity(ray, filter, worker));
 	}
@@ -238,7 +238,7 @@ float3 Prop::thin_absorption(const Ray& ray, Sampler_filter filter, const Worker
 	}
 
 	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(ray.time, temp);
+	auto const& transformation = transformation_at(ray.time, temp);
 
 	return shape_->thin_absorption(ray, transformation, materials_, filter, worker);
 }

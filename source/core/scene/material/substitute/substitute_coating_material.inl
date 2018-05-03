@@ -34,7 +34,7 @@ void Material_coating<Coating>::set_coating_weight(float weight) {
 }
 
 template<typename Coating>
-void Material_coating<Coating>::set_coating_color(const float3& color) {
+void Material_coating<Coating>::set_coating_color(float3 const& color) {
 	coating_.color_ = color;
 }
 
@@ -46,7 +46,7 @@ void Material_coating<Coating>::set_coating_basis(f_float3 wo, const Renderstate
 	if (Material_base::normal_map_ == coating_normal_map_) {
 		sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
 	} else if (coating_normal_map_.is_valid()) {
-		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
+		float3 const n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.coating_.set_tangent_frame(n);
 	} else {
 		sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);

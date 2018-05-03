@@ -32,7 +32,7 @@ public:
 	Worker();
 	~Worker();
 
-	void init(uint32_t id, const take::Settings& settings,
+	void init(uint32_t id, take::Settings const& settings,
 			  const Scene& scene, uint32_t max_sample_size);
 
 	uint32_t id() const;
@@ -46,9 +46,9 @@ public:
 	bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
 									Sampler_filter filter);
 
-	bool visibility(const Ray& ray) const;
+	bool visibility(Ray const& ray) const;
 
-	float masked_visibility(const Ray& ray, Sampler_filter filter) const;
+	float masked_visibility(Ray const& ray, Sampler_filter filter) const;
 
 	const Scene& scene() const;
 

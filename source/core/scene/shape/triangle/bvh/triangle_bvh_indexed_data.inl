@@ -34,20 +34,20 @@ uint32_t Indexed_data<SV>::current_triangle() const {
 
 template<typename SV>
 bool Indexed_data<SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
-	const auto t = triangles_[index];
-	const float3 a = intersection_vertices_[t.a];
-	const float3 b = intersection_vertices_[t.b];
-	const float3 c = intersection_vertices_[t.c];
+	auto const t = triangles_[index];
+	float3 const a = intersection_vertices_[t.a];
+	float3 const b = intersection_vertices_[t.b];
+	float3 const c = intersection_vertices_[t.c];
 
 	return triangle::intersect(a, b, c, ray, uv);
 }
 
 template<typename SV>
 bool Indexed_data<SV>::intersect_p(uint32_t index, const math::Ray& ray) const {
-	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
+	auto const tri = triangles_[index];
+	float3 const a = intersection_vertices_[tri.a];
+	float3 const b = intersection_vertices_[tri.b];
+	float3 const c = intersection_vertices_[tri.c];
 
 	return triangle::intersect_p(a, b, c, ray);
 }
@@ -55,10 +55,10 @@ bool Indexed_data<SV>::intersect_p(uint32_t index, const math::Ray& ray) const {
 template<typename SV>
 bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_t,
 								 Vector& max_t, uint32_t index, Vector& u, Vector& v) const {
-	const auto tri = triangles_[index];
-	const float* a = intersection_vertices_[tri.a].v;
-	const float* b = intersection_vertices_[tri.b].v;
-	const float* c = intersection_vertices_[tri.c].v;
+	auto const tri = triangles_[index];
+	float const* a = intersection_vertices_[tri.a].v;
+	float const* b = intersection_vertices_[tri.b].v;
+	float const* c = intersection_vertices_[tri.c].v;
 
 	return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
@@ -66,10 +66,10 @@ bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_
 template<typename SV>
 bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_t,
 								 Vector& max_t, uint32_t index) const {
-	const auto tri = triangles_[index];
-	const float* a = intersection_vertices_[tri.a].v;
-	const float* b = intersection_vertices_[tri.b].v;
-	const float* c = intersection_vertices_[tri.c].v;
+	auto const tri = triangles_[index];
+	float const* a = intersection_vertices_[tri.a].v;
+	float const* b = intersection_vertices_[tri.b].v;
+	float const* c = intersection_vertices_[tri.c].v;
 
 	return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
 }
@@ -77,10 +77,10 @@ bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_
 template<typename SV>
 bool Indexed_data<SV>::intersect_p(FVector origin, FVector direction,
 								   FVector min_t, FVector max_t, uint32_t index) const {
-	const auto tri = triangles_[index];
-	const float* a = intersection_vertices_[tri.a].v;
-	const float* b = intersection_vertices_[tri.b].v;
-	const float* c = intersection_vertices_[tri.c].v;
+	auto const tri = triangles_[index];
+	float const* a = intersection_vertices_[tri.a].v;
+	float const* b = intersection_vertices_[tri.b].v;
+	float const* c = intersection_vertices_[tri.c].v;
 
 	return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
 }
@@ -88,7 +88,7 @@ bool Indexed_data<SV>::intersect_p(FVector origin, FVector direction,
 template<typename SV>
 void Indexed_data<SV>::interpolate_data(uint32_t index, float2 uv,
 										float3& n, float3& t, float2& tc) const {
-	const auto tri = triangles_[index];
+	auto const tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
 	const SV& b = shading_vertices_[tri.b];
 	const SV& c = shading_vertices_[tri.c];
@@ -99,7 +99,7 @@ void Indexed_data<SV>::interpolate_data(uint32_t index, float2 uv,
 template<typename SV>
 void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 										float3& n, float3& t, float2& tc) const {
-	const auto tri = triangles_[index];
+	auto const tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
 	const SV& b = shading_vertices_[tri.b];
 	const SV& c = shading_vertices_[tri.c];
@@ -110,7 +110,7 @@ void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 template<typename SV>
 void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 										Vector& n, Vector& t, float2& tc) const {
-	const auto tri = triangles_[index];
+	auto const tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
 	const SV& b = shading_vertices_[tri.b];
 	const SV& c = shading_vertices_[tri.c];
@@ -120,7 +120,7 @@ void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 
 template<typename SV>
 float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const {
-	const auto tri = triangles_[index];
+	auto const tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
 	const SV& sb = shading_vertices_[tri.b];
 	const SV& sc = shading_vertices_[tri.c];
@@ -130,7 +130,7 @@ float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const {
 
 template<typename SV>
 float2 Indexed_data<SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const {
-	const auto tri = triangles_[index];
+	auto const tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
 	const SV& sb = shading_vertices_[tri.b];
 	const SV& sc = shading_vertices_[tri.c];
@@ -152,19 +152,19 @@ uint32_t Indexed_data<SV>::material_index(uint32_t index) const {
 
 template<typename SV>
 float3 Indexed_data<SV>::normal(uint32_t index) const {
-	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
+	auto const tri = triangles_[index];
+	float3 const a = intersection_vertices_[tri.a];
+	float3 const b = intersection_vertices_[tri.b];
+	float3 const c = intersection_vertices_[tri.c];
 
-	const float3 e1 = b - a;
-	const float3 e2 = c - a;
+	float3 const e1 = b - a;
+	float3 const e2 = c - a;
 	return math::normalize(math::cross(e1, e2));
 }
 
 template<typename SV>
 Vector Indexed_data<SV>::normal_v(uint32_t index) const {
-	const auto tri = triangles_[index];
+	auto const tri = triangles_[index];
 
 	const Vector ap = simd::load_float4(intersection_vertices_[tri.a].v);
 	const Vector bp = simd::load_float4(intersection_vertices_[tri.b].v);
@@ -178,20 +178,20 @@ Vector Indexed_data<SV>::normal_v(uint32_t index) const {
 
 template<typename SV>
 float Indexed_data<SV>::area(uint32_t index) const {
-	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
+	auto const tri = triangles_[index];
+	float3 const a = intersection_vertices_[tri.a];
+	float3 const b = intersection_vertices_[tri.b];
+	float3 const c = intersection_vertices_[tri.c];
 
 	return triangle::area(a, b, c);
 }
 
 template<typename SV>
 float Indexed_data<SV>::area(uint32_t index, f_float3 scale) const {
-	const auto tri = triangles_[index];
-	const float3 a = intersection_vertices_[tri.a];
-	const float3 b = intersection_vertices_[tri.b];
-	const float3 c = intersection_vertices_[tri.c];
+	auto const tri = triangles_[index];
+	float3 const a = intersection_vertices_[tri.a];
+	float3 const b = intersection_vertices_[tri.b];
+	float3 const c = intersection_vertices_[tri.c];
 
 	return triangle::area(a, b, c, scale);
 }
@@ -200,12 +200,12 @@ template<typename SV>
 void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
 	SOFT_ASSERT(index < num_triangles_);
 
-	const float2 uv = math::sample_triangle_uniform(r2);
+	float2 const uv = math::sample_triangle_uniform(r2);
 
-	const auto tri = triangles_[index];
-	const float3 ia = intersection_vertices_[tri.a];
-	const float3 ib = intersection_vertices_[tri.b];
-	const float3 ic = intersection_vertices_[tri.c];
+	auto const tri = triangles_[index];
+	float3 const ia = intersection_vertices_[tri.a];
+	float3 const ib = intersection_vertices_[tri.b];
+	float3 const ic = intersection_vertices_[tri.c];
 
 	triangle::interpolate_p(ia, ib, ic, uv, p);
 
@@ -218,7 +218,7 @@ void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) 
 
 template<typename SV>
 void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, const Vertices& vertices) {
-	const uint32_t num_vertices = static_cast<uint32_t>(vertices.size());
+	uint32_t const num_vertices = static_cast<uint32_t>(vertices.size());
 
 	if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
 		num_triangles_ = num_triangles;
@@ -294,7 +294,7 @@ uint32_t Indexed_data_interleaved<V>::current_triangle() const {
 
 template<typename V>
 bool Indexed_data_interleaved<V>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
-	const auto& t = triangles_[index];
+	auto const& t = triangles_[index];
 	const V& a = vertices_[t.a];
 	const V& b = vertices_[t.b];
 	const V& c = vertices_[t.c];
@@ -304,7 +304,7 @@ bool Indexed_data_interleaved<V>::intersect(uint32_t index, math::Ray& ray, floa
 
 template<typename V>
 bool Indexed_data_interleaved<V>::intersect_p(uint32_t index, const math::Ray& ray) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const V& a = vertices_[tri.a];
 	const V& b = vertices_[tri.b];
 	const V& c = vertices_[tri.c];
@@ -315,7 +315,7 @@ bool Indexed_data_interleaved<V>::intersect_p(uint32_t index, const math::Ray& r
 template<typename V>
 void Indexed_data_interleaved<V>::interpolate_data(uint32_t index, float2 uv,
 												   float3& n, float3& t, float2& tc) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const V& a = vertices_[tri.a];
 	const V& b = vertices_[tri.b];
 	const V& c = vertices_[tri.c];
@@ -325,7 +325,7 @@ void Indexed_data_interleaved<V>::interpolate_data(uint32_t index, float2 uv,
 
 template<typename V>
 float2 Indexed_data_interleaved<V>::interpolate_uv(uint32_t index, float2 uv) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const V& sa = vertices_[tri.a];
 	const V& sb = vertices_[tri.b];
 	const V& sc = vertices_[tri.c];
@@ -347,7 +347,7 @@ uint32_t Indexed_data_interleaved<V>::material_index(uint32_t index) const {
 
 template<typename V>
 float3 Indexed_data_interleaved<V>::normal(uint32_t index) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const V& a = vertices_[tri.a];
 	const V& b = vertices_[tri.b];
 	const V& c = vertices_[tri.c];
@@ -359,7 +359,7 @@ float3 Indexed_data_interleaved<V>::normal(uint32_t index) const {
 
 template<typename V>
 float Indexed_data_interleaved<V>::area(uint32_t index) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const V& a = vertices_[tri.a];
 	const V& b = vertices_[tri.b];
 	const V& c = vertices_[tri.c];
@@ -369,7 +369,7 @@ float Indexed_data_interleaved<V>::area(uint32_t index) const {
 
 template<typename V>
 float Indexed_data_interleaved<V>::area(uint32_t index, f_float3 scale) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const V& a = vertices_[tri.a];
 	const V& b = vertices_[tri.b];
 	const V& c = vertices_[tri.c];
@@ -381,9 +381,9 @@ template<typename V>
 void Indexed_data_interleaved<V>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
 	SOFT_ASSERT(index < num_triangles_);
 
-	const float2 uv = math::sample_triangle_uniform(r2);
+	float2 const uv = math::sample_triangle_uniform(r2);
 
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const V& ia = vertices_[tri.a];
 	const V& ib = vertices_[tri.b];
 	const V& ic = vertices_[tri.c];
@@ -463,7 +463,7 @@ uint32_t Hybrid_data<IV, SV>::current_triangle() const {
 
 template<typename IV, typename SV>
 bool Hybrid_data<IV, SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -473,7 +473,7 @@ bool Hybrid_data<IV, SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) 
 
 template<typename IV, typename SV>
 bool Hybrid_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -484,7 +484,7 @@ bool Hybrid_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) cons
 template<typename IV, typename SV>
 bool Hybrid_data<IV, SV>::intersect(FVector origin, FVector direction, FVector min_t,
 									Vector& max_t, uint32_t index, Vector& u, Vector& v) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -495,7 +495,7 @@ bool Hybrid_data<IV, SV>::intersect(FVector origin, FVector direction, FVector m
 template<typename IV, typename SV>
 bool Hybrid_data<IV, SV>::intersect(FVector origin, FVector direction, FVector min_t,
 									Vector& max_t, uint32_t index) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -506,7 +506,7 @@ bool Hybrid_data<IV, SV>::intersect(FVector origin, FVector direction, FVector m
 template<typename IV, typename SV>
 bool Hybrid_data<IV, SV>::intersect_p(FVector origin, FVector direction,
 									   FVector min_t, FVector max_t, uint32_t index) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -517,7 +517,7 @@ bool Hybrid_data<IV, SV>::intersect_p(FVector origin, FVector direction,
 template<typename IV, typename SV>
 void Hybrid_data<IV, SV>::interpolate_data(uint32_t index, float2 uv,
 											float3& n, float3& t, float2& tc) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
 	const SV& b = shading_vertices_[tri.b];
 	const SV& c = shading_vertices_[tri.c];
@@ -528,7 +528,7 @@ void Hybrid_data<IV, SV>::interpolate_data(uint32_t index, float2 uv,
 template<typename IV, typename SV>
 void Hybrid_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 											float3& n, float3& t, float2& tc) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
 	const SV& b = shading_vertices_[tri.b];
 	const SV& c = shading_vertices_[tri.c];
@@ -539,7 +539,7 @@ void Hybrid_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 template<typename IV, typename SV>
 void Hybrid_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 											Vector& n, Vector& t, float2& tc) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const SV& a = shading_vertices_[tri.a];
 	const SV& b = shading_vertices_[tri.b];
 	const SV& c = shading_vertices_[tri.c];
@@ -549,7 +549,7 @@ void Hybrid_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
 
 template<typename IV, typename SV>
 float2 Hybrid_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
 	const SV& sb = shading_vertices_[tri.b];
 	const SV& sc = shading_vertices_[tri.c];
@@ -559,7 +559,7 @@ float2 Hybrid_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
 
 template<typename IV, typename SV>
 float2 Hybrid_data<IV, SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const {
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
 	const SV& sb = shading_vertices_[tri.b];
 	const SV& sc = shading_vertices_[tri.c];
@@ -581,19 +581,19 @@ uint32_t Hybrid_data<IV, SV>::material_index(uint32_t index) const {
 
 template<typename IV, typename SV>
 float3 Hybrid_data<IV, SV>::normal(uint32_t index) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
 
-	const float3 e1 = b.p - a.p;
-	const float3 e2 = c.p - a.p;
+	float3 const e1 = b.p - a.p;
+	float3 const e2 = c.p - a.p;
 	return math::normalize(math::cross(e1, e2));
 }
 
 template<typename IV, typename SV>
 Vector Hybrid_data<IV, SV>::normal_v(uint32_t index) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -610,7 +610,7 @@ Vector Hybrid_data<IV, SV>::normal_v(uint32_t index) const {
 
 template<typename IV, typename SV>
 float Hybrid_data<IV, SV>::area(uint32_t index) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -620,7 +620,7 @@ float Hybrid_data<IV, SV>::area(uint32_t index) const {
 
 template<typename IV, typename SV>
 float Hybrid_data<IV, SV>::area(uint32_t index, f_float3 scale) const {
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];
 	const IV& c = intersection_vertices_[vi + 2];
@@ -632,16 +632,16 @@ template<typename IV, typename SV>
 void Hybrid_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
 	SOFT_ASSERT(index < num_triangles_);
 
-	const float2 uv = math::sample_triangle_uniform(r2);
+	float2 const uv = math::sample_triangle_uniform(r2);
 
-	const uint32_t vi = index * 3;
+	uint32_t const vi = index * 3;
 	const IV& ia = intersection_vertices_[vi + 0];
 	const IV& ib = intersection_vertices_[vi + 1];
 	const IV& ic = intersection_vertices_[vi + 2];
 
 	triangle::interpolate_p(ia, ib, ic, uv, p);
 
-	const auto& tri = triangles_[index];
+	auto const& tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
 	const SV& sb = shading_vertices_[tri.b];
 	const SV& sc = shading_vertices_[tri.c];
@@ -651,8 +651,8 @@ void Hybrid_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& t
 
 template<typename IV, typename SV>
 void Hybrid_data<IV, SV>::allocate_triangles(uint32_t num_triangles, const Vertices& vertices) {
-	const uint32_t num_intersection_vertices = num_triangles * 3;
-	const uint32_t num_shading_vertices = static_cast<uint32_t>(vertices.size());
+	uint32_t const num_intersection_vertices = num_triangles * 3;
+	uint32_t const num_shading_vertices = static_cast<uint32_t>(vertices.size());
 
 	if (num_triangles != num_triangles_ || num_shading_vertices != num_shading_vertices_) {
 		num_triangles_ = num_triangles;
@@ -678,7 +678,7 @@ void Hybrid_data<IV, SV>::allocate_triangles(uint32_t num_triangles, const Verti
 template<typename IV, typename SV>
 void Hybrid_data<IV, SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
 									   uint32_t material_index, const Vertices& vertices) {
-	const uint32_t v = current_triangle_ * 3;
+	uint32_t const v = current_triangle_ * 3;
 	intersection_vertices_[v + 0].p = float3(vertices[a].p);
 	intersection_vertices_[v + 1].p = float3(vertices[b].p);
 	intersection_vertices_[v + 2].p = float3(vertices[c].p);

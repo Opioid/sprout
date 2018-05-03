@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_ENCODING_PNG_WRITER_HPP
+#define SU_CORE_IMAGE_ENCODING_PNG_WRITER_HPP
 
 #include "image/image_writer.hpp"
 #include "image/encoding/encoding_srgb.hpp"
@@ -13,16 +14,16 @@ public:
 
 	virtual std::string file_extension() const override final;
 
-	virtual bool write(std::ostream& stream, const Float4& image,
+	virtual bool write(std::ostream& stream, Float4 const& image,
 					   thread::Pool& pool) override final;
 
-	static bool write(const std::string& name, const Byte3& image);
+	static bool write(std::string const& name, Byte3 const& image);
 
-	static bool write(const std::string& name, const Byte1& image);
+	static bool write(std::string const& name, Byte1 const& image);
 
-	static bool write(const std::string& name, const float* data, int2 dimensions, float scale);
+	static bool write(std::string const& name, float const* data, int2 dimensions, float scale);
 
-	static bool write(const std::string& name, const float2* data, int2 dimensions, float scale);
+	static bool write(std::string const& name, float2 const* data, int2 dimensions, float scale);
 };
 
 class Writer_alpha : public image::Writer, Srgb_alpha {
@@ -33,9 +34,11 @@ public:
 
 	virtual std::string file_extension() const override final;
 
-	virtual bool write(std::ostream& stream, const Float4& image,
+	virtual bool write(std::ostream& stream, Float4 const& image,
 					   thread::Pool& pool) override final;
 
 };
 
 }
+
+#endif

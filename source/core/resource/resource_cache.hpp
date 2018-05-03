@@ -24,16 +24,16 @@ public:
 	Typed_cache(Provider<T>& provider);
 	~Typed_cache();
 
-	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options,
+	std::shared_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
 							Manager& manager);
 
-	std::shared_ptr<T> load(const std::string& name, const void* data,
-							const std::string& mount_folder,
-							const memory::Variant_map& options, Manager& manager);
+	std::shared_ptr<T> load(std::string const& name, void const* data,
+							std::string const& mount_folder,
+							memory::Variant_map const& options, Manager& manager);
 
-	std::shared_ptr<T> get(const std::string& filename, const memory::Variant_map& options);
+	std::shared_ptr<T> get(std::string const& filename, memory::Variant_map const& options);
 
-	void store(const std::string& name, const memory::Variant_map& options,
+	void store(std::string const& name, memory::Variant_map const& options,
 			   std::shared_ptr<T> resource);
 
 	size_t num_bytes() const;

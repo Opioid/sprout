@@ -20,7 +20,7 @@ public:
 						Sampler_filter filter, const Worker& worker,
 						Sample& result) const override final;
 
-	virtual float pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,
+	virtual float pdf(Ray const& ray, const Intersection& intersection, bool total_sphere,
 					  Sampler_filter filter, const Worker& worker) const override final;
 
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override final;

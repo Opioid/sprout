@@ -55,8 +55,8 @@ float3 blackbody(float temperature) {
 	float3 xyz(0.f);
 	for (uint32_t k = 0; k < num_steps; ++k) {
 		// convert to nanometer
-		const float wl = (wl_min + static_cast<float>(k) * wl_step) * 1e-9f;
-		const float p = planck(temperature, wl);
+		float const wl = (wl_min + static_cast<float>(k) * wl_step) * 1e-9f;
+		float const p = planck(temperature, wl);
 
 		xyz[0] += p * color_matching[k][0];
 		xyz[1] += p * color_matching[k][1];
@@ -68,7 +68,7 @@ float3 blackbody(float temperature) {
 
 //	return spectrum::XYZ_to_linear_RGB(xyz);
 
-	const float3 rgb = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));
+	float3 const rgb = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));
 
 	return math::normalize(rgb);
 }

@@ -18,7 +18,7 @@ Rectangle::Rectangle() {
 
 bool Rectangle::intersect(Ray& ray, const Transformation& transformation,
 						  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -63,7 +63,7 @@ bool Rectangle::intersect(Ray& ray, const Transformation& transformation,
 
 bool Rectangle::intersect_fast(Ray& ray, const Transformation& transformation,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -105,7 +105,7 @@ bool Rectangle::intersect_fast(Ray& ray, const Transformation& transformation,
 
 bool Rectangle::intersect(Ray& ray, const Transformation& transformation,
 						  Node_stack& /*node_stack*/, float& epsilon) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -137,9 +137,9 @@ bool Rectangle::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Rectangle::intersect_p(const Ray& ray, const Transformation& transformation,
+bool Rectangle::intersect_p(Ray const& ray, const Transformation& transformation,
 							Node_stack& /*node_stack*/) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -169,10 +169,10 @@ bool Rectangle::intersect_p(const Ray& ray, const Transformation& transformation
 	return false;
 }
 
-float Rectangle::opacity(const Ray& ray, const Transformation& transformation,
+float Rectangle::opacity(Ray const& ray, const Transformation& transformation,
 						 const Materials& materials,
 						 Sampler_filter filter, const Worker& worker) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -203,10 +203,10 @@ float Rectangle::opacity(const Ray& ray, const Transformation& transformation,
 	return 0.f;
 }
 
-float3 Rectangle::thin_absorption(const Ray& ray, const Transformation& transformation,
+float3 Rectangle::thin_absorption(Ray const& ray, const Transformation& transformation,
 								  const Materials& materials,
 								  Sampler_filter filter, const Worker& worker) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -284,10 +284,10 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, const Transformation& tran
 	return true;
 }
 
-float Rectangle::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
+float Rectangle::pdf(Ray const& ray, const shape::Intersection& /*intersection*/,
 					 const Transformation& transformation,
 					 float area, bool two_sided, bool /*total_sphere*/) const {
-	const float3 normal = transformation.rotation.r[2];
+	float3 const normal = transformation.rotation.r[2];
 
 	float c = -math::dot(normal, ray.direction);
 
@@ -295,7 +295,7 @@ float Rectangle::pdf(const Ray& ray, const shape::Intersection& /*intersection*/
 		c = std::abs(c);
 	}
 
-	const float sl = ray.max_t * ray.max_t;
+	float const sl = ray.max_t * ray.max_t;
 	return sl / (c * area);
 }
 
@@ -332,7 +332,7 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
 	return true;
 }
 
-float Rectangle::pdf_uv(const Ray& ray, const Intersection& intersection,
+float Rectangle::pdf_uv(Ray const& ray, const Intersection& intersection,
 						const Transformation& transformation,
 						float area, bool two_sided) const {
 	return pdf(ray, intersection, transformation, area, two_sided, false);

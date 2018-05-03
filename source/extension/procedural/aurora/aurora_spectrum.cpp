@@ -20,17 +20,17 @@ void init() {
 	const Interpolated CIE_Z(CIE_Wavelengths_360_830_1nm, CIE_Z_360_830_1nm, CIE_XYZ_Num);
 
 	constexpr float wl_427 = 427.8f;
-	const float3 cie_427(CIE_X.evaluate(wl_427),
+	float3 const cie_427(CIE_X.evaluate(wl_427),
 						 CIE_Y.evaluate(wl_427),
 						 CIE_Z.evaluate(wl_427));
 
 	constexpr float wl_557 = 557.7f;
-	const float3 cie_557(CIE_X.evaluate(wl_557),
+	float3 const cie_557(CIE_X.evaluate(wl_557),
 						 CIE_Y.evaluate(wl_557),
 						 CIE_Z.evaluate(wl_557));
 
 	constexpr float wl_630 = 630.f;
-	const float3 cie_630(CIE_X.evaluate(wl_630),
+	float3 const cie_630(CIE_X.evaluate(wl_630),
 						 CIE_Y.evaluate(wl_630),
 						 CIE_Z.evaluate(wl_630));
 
@@ -163,7 +163,7 @@ void init() {
 
 		xyz *= normalization * step;
 
-		const float3 rgb = XYZ_to_linear_RGB(xyz);
+		float3 const rgb = XYZ_to_linear_RGB(xyz);
 
 		colors[i] = math::max(rgb, 0.f);
 	}

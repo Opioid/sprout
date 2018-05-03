@@ -28,7 +28,7 @@ const material::Sample& Material_subsurface::sample(f_float3 wo, const Rendersta
 
 //		if (color_map_.is_valid()) {
 //			auto& sampler = worker.sampler_2D(sampler_key(), filter);
-//			const float3 color = color_map_.sample_3(sampler, rs.uv);
+//			float3 const color = color_map_.sample_3(sampler, rs.uv);
 
 //			float3 absorption_coefficient;
 //			float3 scattering_coefficient;
@@ -67,8 +67,8 @@ size_t Material_subsurface::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_subsurface::set_attenuation(const float3& absorption_color,
-										  const float3& scattering_color,
+void Material_subsurface::set_attenuation(float3 const& absorption_color,
+										  float3 const& scattering_color,
 										  float distance) {
 	absorption_color_ = absorption_color;
 
@@ -102,7 +102,7 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Sampler_filter fil
 												   const Worker& worker) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-		const float3 color = color_map_.sample_3(sampler, uv);
+		float3 const color = color_map_.sample_3(sampler, uv);
 
 		return extinction_coefficient(color, attenuation_distance_);
 	}
@@ -115,7 +115,7 @@ void Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filte
 												 float3& mu_a, float3& mu_s) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-		const float3 color = color_map_.sample_3(sampler, uv);
+		float3 const color = color_map_.sample_3(sampler, uv);
 
 		attenuation(color, attenuation_distance_, mu_a, mu_s);
 

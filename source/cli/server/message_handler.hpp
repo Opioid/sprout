@@ -8,7 +8,7 @@ class Message_handler {
 
 public:
 
-	virtual void handle(const std::string& message) = 0;
+	virtual void handle(std::string const& message) = 0;
 
 	virtual std::string introduction() const = 0;
 

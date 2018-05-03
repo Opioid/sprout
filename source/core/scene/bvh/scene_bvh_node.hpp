@@ -41,7 +41,7 @@ public:
 		return min_.next_or_data + static_cast<uint32_t>(max_.num_primitives);
 	}
 
-	void set_aabb(const float* min, const float* max);
+	void set_aabb(float const* min, float const* max);
 
 	void set_split_node(uint32_t next_node, uint8_t axis);
 	void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives);

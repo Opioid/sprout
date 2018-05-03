@@ -22,7 +22,7 @@
 
 namespace rendering::integrator::surface {
 
-Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
+Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
 							   const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
@@ -33,7 +33,7 @@ Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_s
 Pathtracer_MIS::~Pathtracer_MIS() {}
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
-	const uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
+	uint32_t const num_lights = static_cast<uint32_t>(scene.lights().size());
 
 	num_lights_reciprocal_ = num_lights > 0 ? 1.f / static_cast<float>(num_lights) : 0.f;
 
@@ -43,7 +43,7 @@ void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel)
 		s.resize(num_samples_per_pixel, 1, 1, 1);
 	}
 
-	const uint32_t num_light_samples = settings_.light_sampling.num_samples;
+	uint32_t const num_light_samples = settings_.light_sampling.num_samples;
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (auto& s : light_samplers_) {
@@ -69,7 +69,7 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) {
-	const uint32_t max_bounces = settings_.max_bounces;
+	uint32_t const max_bounces = settings_.max_bounces;
 
 	Sampler_filter filter = Sampler_filter::Undefined;
 	Bxdf_sample sample_result;
@@ -82,7 +82,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 	for (uint32_t i = ray.depth;; ++i) {
 		float3 wo = -ray.direction;
-		const auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+		auto const& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
 		// Only check for the very first hit.
 		// Subsequent hits are handled by the MIS scheme.
@@ -94,7 +94,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			return result;
 		}
 
-		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 		const bool do_mis = worker.interface_stack().top_ior() == 1.f;
 
@@ -103,7 +103,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		SOFT_ASSERT(math::all_finite_and_positive(result));
 
-		const float previous_bxdf_pdf = sample_result.pdf;
+		float const previous_bxdf_pdf = sample_result.pdf;
 
 		// Material BSDF importance sample
 		material_sample.sample(material_sampler(ray.depth), sample_result);
@@ -174,7 +174,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		if (do_mis || treat_as_singular) {
 			bool pure_emissive;
-			const float3 radiance = evaluate_light(ray, intersection, sample_result,
+			float3 const radiance = evaluate_light(ray, intersection, sample_result,
 												   treat_as_singular, is_translucent, filter,
 												   worker, pure_emissive);
 
@@ -190,7 +190,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 
 		if (ray.depth > settings_.min_bounces) {
-			const float q = settings_.path_continuation_probability;
+			float const q = settings_.path_continuation_probability;
 			if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
 				break;
 			}
@@ -203,18 +203,18 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 size_t Pathtracer_MIS::num_bytes() const {
 	size_t sampler_bytes = 0;
 
-	for (const auto& s : material_samplers_) {
+	for (auto const& s : material_samplers_) {
 		sampler_bytes += s.num_bytes();
 	}
 
-	for (const auto& s : light_samplers_) {
+	for (auto const& s : light_samplers_) {
 		sampler_bytes += s.num_bytes();
 	}
 
 	return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
 }
 
-float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
+float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
 									 const Material_sample& material_sample, bool do_mis,
 									 Sampler_filter filter, Worker& worker) {
 	float3 result(0.f);
@@ -223,13 +223,13 @@ float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersect
 		return result;
 	}
 
-	const uint32_t num_samples = settings_.light_sampling.num_samples;
+	uint32_t const num_samples = settings_.light_sampling.num_samples;
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = num_samples; i > 0; --i) {
-			const float select = light_sampler(ray.depth).generate_sample_1D(1);
+			float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
-			const auto light = worker.scene().random_light(select);
+			auto const light = worker.scene().random_light(select);
 
 			result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis,
 									 intersection, material_sample, filter, worker);
@@ -237,10 +237,10 @@ float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersect
 
 		result *= settings_.num_light_samples_reciprocal;
 	} else {
-		const auto& lights = worker.scene().lights();
-		const float light_weight = num_lights_reciprocal_;
+		auto const& lights = worker.scene().lights();
+		float const light_weight = num_lights_reciprocal_;
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
-			const auto& light = *lights[l];
+			auto const& light = *lights[l];
 			for (uint32_t i = num_samples; i > 0; --i) {
 				result += evaluate_light(light, light_weight, ray, ray_offset, l, do_mis,
 										 intersection, material_sample, filter, worker);
@@ -253,7 +253,7 @@ float3 Pathtracer_MIS::sample_lights(const Ray& ray, float ray_offset, Intersect
 	return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, const Ray& history,
+float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ray const& history,
 									  float ray_offset, uint32_t sampler_dimension, bool do_mis,
 									  const Intersection& intersection,
 									  const Material_sample& material_sample,
@@ -266,24 +266,24 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 		return float3(0.f);
 	}
 
-	const float shadow_offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+	float const shadow_offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 	Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
 				   light_sample.shape.t - shadow_offset, history.depth, history.time,
 				   history.wavelength);
 
-	const float3 tv = worker.tinted_visibility(shadow_ray, intersection, filter);
+	float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 
 	SOFT_ASSERT(math::all_finite_and_positive(tv));
 
 	if (math::any_greater_zero(tv)) {
-		const float3 tr = worker.transmittance(shadow_ray);
+		float3 const tr = worker.transmittance(shadow_ray);
 
 		SOFT_ASSERT(math::all_finite_and_positive(tr));
 
-		const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
+		auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
-		const float light_pdf = light_sample.shape.pdf * light_weight;
-		const float weight = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
+		float const light_pdf = light_sample.shape.pdf * light_weight;
+		float const weight = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
 		return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * bxdf.reflection);
 	}
@@ -291,11 +291,11 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, co
 	return float3(0.f);
 }
 
-float3 Pathtracer_MIS::evaluate_light(const Ray& ray, const Intersection& intersection,
+float3 Pathtracer_MIS::evaluate_light(Ray const& ray, const Intersection& intersection,
 									  Bxdf_sample sample_result, bool treat_as_singular,
 									  bool is_translucent, Sampler_filter filter,
 									  Worker& worker, bool& pure_emissive) {
-	const uint32_t light_id = intersection.light_id();
+	uint32_t const light_id = intersection.light_id();
 	if (!Light::is_light(light_id)) {
 		pure_emissive = false;
 		return float3::identity();
@@ -310,7 +310,7 @@ float3 Pathtracer_MIS::evaluate_light(const Ray& ray, const Intersection& inters
 			light.pdf = num_lights_reciprocal_;
 		}
 
-		const float ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent,
+		float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent,
 										   Sampler_filter::Nearest, worker);
 
 		if (0.f == ls_pdf) {
@@ -321,19 +321,19 @@ float3 Pathtracer_MIS::evaluate_light(const Ray& ray, const Intersection& inters
 		light_pdf = ls_pdf * light.pdf;
 	}
 
-	const float3 wo = -sample_result.wi;
+	float3 const wo = -sample_result.wi;
 
 	// This will invalidate the contents of previous previous material samples.
-	const auto& light_material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+	auto const& light_material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
 	pure_emissive = light_material_sample.is_pure_emissive();
 
 	if (light_material_sample.same_hemisphere(wo)) {
-		const float3 ls_energy = light_material_sample.radiance();
+		float3 const ls_energy = light_material_sample.radiance();
 
-		const float weight = power_heuristic(sample_result.pdf, light_pdf);
+		float const weight = power_heuristic(sample_result.pdf, light_pdf);
 
-		const float3 radiance = weight * ls_energy;
+		float3 const radiance = weight * ls_energy;
 
 		SOFT_ASSERT(math::all_finite_and_positive(radiance));
 
@@ -359,7 +359,7 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
 	return sampler_;
 }
 
-Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
+Pathtracer_MIS_factory::Pathtracer_MIS_factory(take::Settings const& take_settings,
 											   uint32_t num_integrators,
 											   uint32_t min_bounces, uint32_t max_bounces,
 											   float path_termination_probability,

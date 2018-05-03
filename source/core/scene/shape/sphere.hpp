@@ -26,14 +26,14 @@ public:
 	virtual bool intersect(Ray& ray, const Transformation& transformation,
 						   Node_stack& node_stack, float& epsilon) const override final;
 
-	virtual bool intersect_p(const Ray& ray, const Transformation& transformation,
+	virtual bool intersect_p(Ray const& ray, const Transformation& transformation,
 							 Node_stack& node_stack) const override final;
 
-	virtual float opacity(const Ray& ray, const Transformation& transformation,
+	virtual float opacity(Ray const& ray, const Transformation& transformation,
 						  const Materials& materials, Sampler_filter filter,
 						  const Worker& worker) const override final;
 
-	virtual float3 thin_absorption(const Ray& ray, const Transformation& transformation,
+	virtual float3 thin_absorption(Ray const& ray, const Transformation& transformation,
 								   const Materials& materials, Sampler_filter filter,
 								   const Worker& worker) const override final;
 
@@ -47,7 +47,7 @@ public:
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const override final;
 
-	virtual float pdf(const Ray& ray, const Intersection& intersection,
+	virtual float pdf(Ray const& ray, const Intersection& intersection,
 					  const Transformation& transformation,
 					  float area, bool two_sided, bool total_sphere) const override final;
 
@@ -55,7 +55,7 @@ public:
 						const Transformation& transformation, float area, bool two_sided,
 						Sample& sample) const override final;
 
-	virtual float pdf_uv(const Ray& ray, const Intersection& intersection,
+	virtual float pdf_uv(Ray const& ray, const Intersection& intersection,
 						 const Transformation& transformation,
 						 float area, bool two_sided) const override final;
 

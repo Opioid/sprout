@@ -13,9 +13,9 @@
 namespace scene::material::lambert {
 
 template<typename Layer>
-bxdf::Result Isotropic::reflection(const float3& color, float n_dot_wi, const Layer& layer) {
-	const float3 reflection = math::Pi_inv * color;
-	const float  pdf = n_dot_wi * math::Pi_inv;
+bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi, Layer const& layer) {
+	float3 const reflection = math::Pi_inv * color;
+	float const  pdf = n_dot_wi * math::Pi_inv;
 
 	(void)layer;
 	SOFT_ASSERT(testing::check(reflection, float3::identity(), float3::identity(), pdf, layer));
@@ -24,15 +24,15 @@ bxdf::Result Isotropic::reflection(const float3& color, float n_dot_wi, const La
 }
 
 template<typename Layer>
-float Isotropic::reflect(const float3& color, const Layer& layer,
+float Isotropic::reflect(float3 const& color, Layer const& layer,
 						 sampler::Sampler& sampler, bxdf::Sample& result) {
-	const float2 s2d = sampler.generate_sample_2D();
+	float2 const s2d = sampler.generate_sample_2D();
 
-	const float3 is = math::sample_hemisphere_cosine(s2d);
+	float3 const is = math::sample_hemisphere_cosine(s2d);
 
-	const float3 wi = math::normalize(layer.tangent_to_world(is));
+	float3 const wi = math::normalize(layer.tangent_to_world(is));
 
-	const float n_dot_wi = layer.clamp_n_dot(wi);
+	float const n_dot_wi = layer.clamp_n_dot(wi);
 
 	result.reflection = math::Pi_inv * color;
 	result.wi = wi;

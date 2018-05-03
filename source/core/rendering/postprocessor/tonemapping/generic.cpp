@@ -8,15 +8,15 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 	a_(contrast),
 	d_(shoulder),
 	hdr_max_(hdr_max) {
-	const float ad = contrast * shoulder;
+	float const ad = contrast * shoulder;
 
-	const float midi_pow_a  = std::pow(mid_in, contrast);
-	const float midi_pow_ad = std::pow(mid_in, ad);
-	const float hdrm_pow_a  = std::pow(hdr_max, contrast);
-	const float hdrm_pow_ad = std::pow(hdr_max, ad);
+	float const midi_pow_a  = std::pow(mid_in, contrast);
+	float const midi_pow_ad = std::pow(mid_in, ad);
+	float const hdrm_pow_a  = std::pow(hdr_max, contrast);
+	float const hdrm_pow_ad = std::pow(hdr_max, ad);
 
-	const float u = hdrm_pow_ad * mid_out - midi_pow_ad * mid_out;
-	const float v = midi_pow_ad * mid_out;
+	float const u = hdrm_pow_ad * mid_out - midi_pow_ad * mid_out;
+	float const v = midi_pow_ad * mid_out;
 
 	b_ = -((-midi_pow_a + (mid_out * (hdrm_pow_ad * midi_pow_a - hdrm_pow_a * v)) / u) / v);
 	c_ = (hdrm_pow_ad * midi_pow_a - hdrm_pow_a * v) / u;
@@ -25,7 +25,7 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 void Generic::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
 					const image::Float4& source, image::Float4& destination) {
 	for (int32_t i = begin; i < end; ++i) {
-		const float4& color = source.at(i);
+		float4 const& color = source.at(i);
 
 		destination.at(i) = float4(tonemap_function(color[0]),
 								   tonemap_function(color[1]),

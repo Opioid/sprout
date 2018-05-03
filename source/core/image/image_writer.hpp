@@ -1,7 +1,8 @@
 #pragma once
 
 #include "typed_image_fwd.hpp"
-#include <ostream>
+#include <iosfwd>
+#include <string>
 
 namespace thread { class Pool; }
 
@@ -15,7 +16,7 @@ public:
 
 	virtual std::string file_extension() const = 0;
 
-	virtual bool write(std::ostream& stream, const Float4& image, thread::Pool& pool) = 0;
+	virtual bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) = 0;
 };
 
 }

@@ -30,7 +30,7 @@ const material::Sample& Emissionmap::sample(f_float3 wo, const Renderstate& rs,
 
 	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-	const float3 radiance = emission_map_.sample_3(sampler, rs.uv);
+	float3 const radiance = emission_map_.sample_3(sampler, rs.uv);
 	sample.layer_.set(emission_factor_ * radiance);
 
 	return sample;
@@ -56,7 +56,7 @@ bool Emissionmap::has_emission_map() const {
 }
 
 Material::Sample_2D Emissionmap::radiance_sample(float2 r2) const {
-	const auto result = distribution_.sample_continuous(r2);
+	auto const result = distribution_.sample_continuous(r2);
 
 	return { result.uv, result.pdf * total_weight_ };
 }
@@ -78,16 +78,16 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 	}
 
 	if (importance_sampling) {
-		const auto texture = emission_map_.texture();
-		const auto d = texture->dimensions_2();
+		auto const texture = emission_map_.texture();
+		auto const d = texture->dimensions_2();
 
 		std::vector<math::Distribution_2D::Distribution_impl> conditional(d[1]);
 
 		std::vector<float4> artws(pool.num_threads(), float4::identity());
 
-		const float2 rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
+		float2 const rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
 
-		const float ef = emission_factor_;
+		float const ef = emission_factor_;
 
 		pool.run_range([&conditional, &artws, &shape, texture, d, rd, ef]
 			(uint32_t id, int32_t begin, int32_t end) {
@@ -95,14 +95,14 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 				float4 artw(0.f);
 
 				for (int32_t y = begin; y < end; ++y) {
-					const float v = rd[1] * (static_cast<float>(y) + 0.5f);
+					float const v = rd[1] * (static_cast<float>(y) + 0.5f);
 
 					for (int32_t x = 0; x < d[0]; ++x) {
-						const float u = rd[0] * (static_cast<float>(x) + 0.5f);
+						float const u = rd[0] * (static_cast<float>(x) + 0.5f);
 
-						const float uv_weight = shape.uv_weight(float2(u, v));
+						float const uv_weight = shape.uv_weight(float2(u, v));
 
-						const float3 radiance = ef * texture->at_3(x, y);
+						float3 const radiance = ef * texture->at_3(x, y);
 
 						luminance[x] = uv_weight * spectrum::luminance(radiance);
 

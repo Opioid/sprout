@@ -22,7 +22,7 @@ public:
 		bool disable_caustics;
 	};
 
-	Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
+	Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
 			   const Settings& settings);
 
 	virtual ~Pathtracer() override final;
@@ -51,7 +51,7 @@ class Pathtracer_factory final : public Factory {
 
 public:
 
-	Pathtracer_factory(const take::Settings& take_settings, uint32_t num_integrators,
+	Pathtracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
 					   uint32_t min_bounces, uint32_t max_bounces,
 					   float path_termination_probability, bool enable_caustics);
 

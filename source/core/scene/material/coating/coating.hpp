@@ -11,7 +11,7 @@ struct Result {
 };
 
 struct Coating_base {
-	void set_color_and_weight(const float3& color, float weight);
+	void set_color_and_weight(float3 const& color, float weight);
 
 	float3 color_;
 	float  weight_;
@@ -26,12 +26,12 @@ public:
 protected:
 
 	template<typename Layer>
-	Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
-					float wo_dot_h, float internal_ior, const Layer& layer) const;
+	Result evaluate(f_float3 wi, f_float3 wo, float3 const& h,
+					float wo_dot_h, float internal_ior, Layer const& layer) const;
 
 	template<typename Layer>
 	void sample(f_float3 wo, float internal_ior,
-				const Layer& layer, sampler::Sampler& sampler,
+				Layer const& layer, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;
 
 public:
@@ -50,12 +50,12 @@ public:
 protected:
 
 	template<typename Layer>
-	Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
-					float wo_dot_h, float internal_ior, const Layer& layer) const;
+	Result evaluate(f_float3 wi, f_float3 wo, float3 const& h,
+					float wo_dot_h, float internal_ior, Layer const& layer) const;
 
 	template<typename Layer>
 	void sample(f_float3 wo, float internal_ior,
-				const Layer& layer, sampler::Sampler& sampler,
+				Layer const& layer, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;
 
 public:
@@ -71,7 +71,7 @@ class Coating_layer : public Sample::Layer, public Coating {
 
 public:
 
-	Result evaluate(f_float3 wi, f_float3 wo, const float3& h,
+	Result evaluate(f_float3 wi, f_float3 wo, float3 const& h,
 					float wo_dot_h, float internal_ior) const;
 
 	void sample(f_float3 wo, float internal_ior, sampler::Sampler& sampler,

@@ -95,7 +95,7 @@ bool Morphable_mesh::intersect_fast(Ray& ray, const Transformation& transformati
 
 		float3 p_w = ray.point(tray.max_t);
 
-		const float2 uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
+		float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
 
 		float3	 geo_n			= tree_.triangle_normal(pi.index);
 		uint32_t material_index = tree_.triangle_material_index(pi.index);
@@ -131,7 +131,7 @@ bool Morphable_mesh::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Morphable_mesh::intersect_p(const Ray& ray, const Transformation& transformation,
+bool Morphable_mesh::intersect_p(Ray const& ray, const Transformation& transformation,
 								 Node_stack& node_stack) const {
 	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -142,7 +142,7 @@ bool Morphable_mesh::intersect_p(const Ray& ray, const Transformation& transform
 	return tree_.intersect_p(tray, node_stack);
 }
 
-float Morphable_mesh::opacity(const Ray& ray, const Transformation& transformation,
+float Morphable_mesh::opacity(Ray const& ray, const Transformation& transformation,
 							  const Materials& materials,
 							  Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
@@ -154,7 +154,7 @@ float Morphable_mesh::opacity(const Ray& ray, const Transformation& transformati
 	return tree_.opacity(tray, ray.time, materials, filter, worker);
 }
 
-float3 Morphable_mesh::thin_absorption(const Ray& ray, const Transformation& transformation,
+float3 Morphable_mesh::thin_absorption(Ray const& ray, const Transformation& transformation,
 									   const Materials& materials,
 									   Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
@@ -182,7 +182,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/,
 	return false;
 }
 
-float Morphable_mesh::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+float Morphable_mesh::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
 						  const Transformation& /*transformation*/,
 						  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
 	return 0.f;
@@ -195,7 +195,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
 	return false;
 }
 
-float Morphable_mesh::pdf_uv(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+float Morphable_mesh::pdf_uv(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
 							 const Transformation& /*transformation*/,
 							 float /*area*/, bool /*two_sided*/) const {
 	return 0.f;

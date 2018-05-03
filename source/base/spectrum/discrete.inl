@@ -11,8 +11,8 @@ template<int32_t N>
 Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
 		const Interpolated& interpolated) {
 	for (int32_t i = 0; i < N; ++i) {
-		const float a = wavelengths_[i];
-		const float b = wavelengths_[i + 1];
+		float const a = wavelengths_[i];
+		float const b = wavelengths_[i + 1];
 		values_[i] = interpolated.integrate(a, b) / (b - a);
 	}
 }
@@ -64,7 +64,7 @@ constexpr float3 Discrete_spectral_power_distribution<N>::normalized_XYZ() const
 
 template<int32_t N>
 void Discrete_spectral_power_distribution<N>::init(float start_wavelength, float end_wavelength) {
-	const float step = (end_wavelength - start_wavelength) / static_cast<float>(N);
+	float const step = (end_wavelength - start_wavelength) / static_cast<float>(N);
 
 	// initialize the wavelengths ranges of the bins
 	for (int32_t i = 0; i < N + 1; ++i) {

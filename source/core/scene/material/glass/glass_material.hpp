@@ -26,8 +26,8 @@ public:
 
 	void set_normal_map(const Texture_adapter& normal_map);
 
-	void set_refraction_color(const float3& color);
-	void set_attenuation(const float3& absorption_color, float distance);
+	void set_refraction_color(float3 const& color);
+	void set_attenuation(float3 const& absorption_color, float distance);
 	void set_ior(float ior);
 
 	static size_t sample_size();

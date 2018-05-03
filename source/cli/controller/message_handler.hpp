@@ -25,7 +25,7 @@ public:
 					resource::Manager& resource_manager,
 					Camera& camera);
 
-	virtual void handle(const std::string& message) override final;
+	virtual void handle(std::string const& message) override final;
 
 	virtual std::string introduction() const override final;
 
@@ -33,11 +33,11 @@ public:
 
 private:
 
-	void handle_entity(scene::entity::Entity* entity, const std::string& value,
-					   const std::string& parameters, bool recompile);
+	void handle_entity(scene::entity::Entity* entity, std::string const& value,
+					   std::string const& parameters, bool recompile);
 
-	void handle_material(scene::material::Material* material, const std::string& value,
-						 const std::string& parameters);
+	void handle_material(scene::material::Material* material, std::string const& value,
+						 std::string const& parameters);
 
 	rendering::Driver_progressive& driver_;
 	resource::Manager& resource_manager_;

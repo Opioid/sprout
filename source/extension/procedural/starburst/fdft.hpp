@@ -32,9 +32,9 @@ static inline float2 mulc(float2 a, float t) {
 }
 
 static float map(int32_t b, float tc, int2& x_x1) {
-	const float u = tc - 0.5f;
+	float const u = tc - 0.5f;
 
-	const float fu = std::floor(u);
+	float const fu = std::floor(u);
 
 	const int32_t x = static_cast<int32_t>(fu);
 
@@ -47,8 +47,8 @@ static float map(int32_t b, float tc, int2& x_x1) {
 template<typename T>
 static T sample(const T* source, int32_t w, int32_t b, float tc, int32_t y) {
 	int2 x_x1;
-	const float s  = map(b, tc, x_x1);
-	const float _s = 1.f - s;
+	float const s  = map(b, tc, x_x1);
+	float const _s = 1.f - s;
 
 	const int32_t y0 = w * y;
 	T c0 = source[y0 + x_x1[0]];
@@ -66,30 +66,30 @@ public:
 		num_samples_(uint32_t(float(width) * std::floor(1.f / alpha)) + 1),
 		cos_sin_(new float2[width * num_samples_]),
 		s_(new float2[width]) {
-			const float m = float(width_);
-			const float half_m = 0.5f * m;
-			const float sqrt_m = std::sqrt(m);
-			const float i_sqrt_m = 1.f / sqrt_m;
-			const float iss = std::floor(1.f / alpha);
-			const float dk = 1.f / (m * iss);
+			float const m = float(width_);
+			float const half_m = 0.5f * m;
+			float const sqrt_m = std::sqrt(m);
+			float const i_sqrt_m = 1.f / sqrt_m;
+			float const iss = std::floor(1.f / alpha);
+			float const dk = 1.f / (m * iss);
 
-			const float ucot = 1.f / std::tan(alpha * (math::Pi * 0.5f));
-			const float cot = math::Pi * ucot;
-			const float csc = (2.f * math::Pi) / std::sin(alpha * (math::Pi * 0.5f));
+			float const ucot = 1.f / std::tan(alpha * (math::Pi * 0.5f));
+			float const cot = math::Pi * ucot;
+			float const csc = (2.f * math::Pi) / std::sin(alpha * (math::Pi * 0.5f));
 
-			const float2 sx = sqrtc(float2(1.f, -ucot));
+			float2 const sx = sqrtc(float2(1.f, -ucot));
 /*
 			float coordinates = 0.5f;
 			for (uint32_t x = 0, block = 0, len = width_, num_samples = num_samples_;
 				 x < len;
 				 ++x, ++coordinates, block += num_samples) {
-				const float u = (coordinates - half_m) * i_sqrt_m;
-				const float cscu = csc * u;
+				float const u = (coordinates - half_m) * i_sqrt_m;
+				float const cscu = csc * u;
 				uint32_t ss = 0;
 				for (float k = -0.5f; k <= 0.5f; k += dk, ++ss) {
-					const float v = k * sqrt_m;
-					const float t = v * (cot * v - cscu);
-					const uint32_t i = block + ss;
+					float const v = k * sqrt_m;
+					float const t = v * (cot * v - cscu);
+					uint32_t const i = block + ss;
 					cos_sin_[i][0] = std::cos(t);
 					cos_sin_[i][1] = std::sin(t);
 				}
@@ -101,14 +101,14 @@ public:
 			pool.run_range([this, half_m, sqrt_m, i_sqrt_m, dk, cot, csc, sx]
 				(uint32_t /*id*/, int32_t begin, int32_t end) {
 					for (int32_t x = begin, num_samples = num_samples_; x < end; ++x) {
-						const float coordinates = static_cast<float>(x) + 0.5f;
-						const float u = (coordinates - half_m) * i_sqrt_m;
-						const float cscu = csc * u;
+						float const coordinates = static_cast<float>(x) + 0.5f;
+						float const u = (coordinates - half_m) * i_sqrt_m;
+						float const cscu = csc * u;
 						uint32_t ss = 0;
 						for (float k = -0.5f; k <= 0.5f; k += dk, ++ss) {
-							const float v = k * sqrt_m;
-							const float t = v * (cot * v - cscu);
-							const uint32_t i = x * num_samples + ss;
+							float const v = k * sqrt_m;
+							float const t = v * (cot * v - cscu);
+							uint32_t const i = x * num_samples + ss;
 							cos_sin_[i][0] = std::cos(t);
 							cos_sin_[i][1] = std::sin(t);
 						}
@@ -163,18 +163,18 @@ static void fdft(image::Float2& destination, const Source& source, const Row& ro
 	const int32_t d = destination.description().dimensions[0];
 	const int32_t b = d - 1;
 
-	const float m = float(d);
-	const float sqrt_m = std::sqrt(m);
-	const float iss = std::floor(1.f / alpha);// 8.f;
-	const float norm = 1.f / (iss * sqrt_m);
-	const float dk = 1.f / (m * iss);
+	float const m = float(d);
+	float const sqrt_m = std::sqrt(m);
+	float const iss = std::floor(1.f / alpha);// 8.f;
+	float const norm = 1.f / (iss * sqrt_m);
+	float const dk = 1.f / (m * iss);
 
 	T* row_samples = row.row_samples<T>(id);
 
 	for (int32_t y = begin; y < end; ++y) {
 		uint32_t ss = 0;
 		for (float k = -0.5f; k <= 0.5f; k += dk, ++ss) {
-			const float tc = (k + 0.5f) * m;
+			float const tc = (k + 0.5f) * m;
 			row_samples[ss] = sample<T>(source.data(), d, b, tc, y);
 		}
 
@@ -188,10 +188,10 @@ static void fdft(image::Float2& destination, const Source& source, const Row& ro
 				integration += mulc_cos_sin(g, row.cos_sin(x, i));
 			}
 
-	//		const float  u = (coordinates - half_m) * i_sqrt_m;
-	//		const float2 s = math::mulc(sx, cot * u * u);
+	//		float const  u = (coordinates - half_m) * i_sqrt_m;
+	//		float2 const s = math::mulc(sx, cot * u * u);
 
-			const float2 s = row.s(x);
+			float2 const s = row.s(x);
 
 			destination.store(x, y, norm * mulc(s, integration));
 		}
@@ -201,7 +201,7 @@ static void fdft(image::Float2& destination, const Source& source, const Row& ro
 template<typename Source, typename T>
 static void fdft(image::Float2& destination, const Source& source, const Row& row,
 				 float alpha, thread::Pool& pool) {
-	const auto d = destination.description().dimensions;
+	auto const d = destination.description().dimensions;
 	pool.run_range([&destination, &source, &row, alpha]
 		(uint32_t id, int32_t begin, int32_t end) {
 			fdft<Source, T>(destination, source, row, alpha, id, begin, end);

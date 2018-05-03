@@ -1,4 +1,5 @@
 #include "file.hpp"
+#include <istream>
 #include <cstring>
 
 namespace file {

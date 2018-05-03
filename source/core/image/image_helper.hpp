@@ -5,9 +5,9 @@
 
 namespace image {
 
-float3 average_and_max_3(const Float4& image, float3& max);
+float3 average_and_max_3(Float4 const& image, float3& max);
 
-float average_and_max_luminance(const Float4& image, float& max);
+float average_and_max_luminance(Float4 const& image, float& max);
 
 }
 

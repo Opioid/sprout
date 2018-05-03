@@ -76,13 +76,13 @@ const material::Sample& Sky_baked_material::sample(f_float3 wo, const Renderstat
 												   const Worker& worker) const {
 	auto& sample = worker.sample<material::light::Sample>();
 
-	const auto& sampler = worker.sampler_2D(sampler_key(), filter);
+	auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	sample.set_basis(rs.geo_n, wo);
 
 	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-	const float3 radiance = emission_map_.sample_3(sampler, rs.uv);
+	float3 const radiance = emission_map_.sample_3(sampler, rs.uv);
 	sample.layer_.set(radiance);
 
 	return sample;
@@ -104,7 +104,7 @@ bool Sky_baked_material::has_emission_map() const {
 }
 
 Material::Sample_2D Sky_baked_material::radiance_sample(float2 r2) const {
-	const auto result = distribution_.sample_continuous(r2);
+	auto const result = distribution_.sample_continuous(r2);
 
 	return { result.uv, result.pdf * total_weight_ };
 }
@@ -130,19 +130,19 @@ void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*
 
 	for (int32_t y = 0; y < d[1]; ++y) {
 		for (int32_t x = 0; x < d[0]; ++x) {
-			const float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
+			float2 const uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
 							(static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
 
 //			scene::shape::Sample sample;
 //			shape.sample(part, transformation, float3::identity(),
 //						 uv, area, sample);
 
-			const float3 wi = unclipped_canopy_mapping(transformation, uv);
+			float3 const wi = unclipped_canopy_mapping(transformation, uv);
 
 			/*if (0.f == sample.pdf) {
 				cache->at(x, y) = packed_float3::identity;
 			} else*/ {
-				const float3 radiance = model_.evaluate_sky(/*sample.*/wi);
+				float3 const radiance = model_.evaluate_sky(/*sample.*/wi);
 				cache->at(x, y) = packed_float3(radiance);
 			}
 		}
@@ -166,12 +166,12 @@ void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*
 
 		for (int32_t y = 0, l = 0; y < d[1]; ++y) {
 			for (int32_t x = 0; x < d[0]; ++x, ++l) {
-				const float3 radiance = float3(cache->at(x, y));
+				float3 const radiance = float3(cache->at(x, y));
 
-				const float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
+				float2 const uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
 								(static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
 
-				const float weight = shape.uv_weight(uv);
+				float const weight = shape.uv_weight(uv);
 
 				average_radiance += weight * radiance;
 
@@ -205,9 +205,9 @@ size_t Sky_baked_material::num_bytes() const {
 
 float3 Sky_baked_material::unclipped_canopy_mapping(const Transformation& transformation,
 													float2 uv) {
-	const float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
+	float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-	const float3 dir = math::disk_to_hemisphere_equidistant(disk);
+	float3 const dir = math::disk_to_hemisphere_equidistant(disk);
 
 	return math::transform_vector(dir, transformation.rotation);
 }

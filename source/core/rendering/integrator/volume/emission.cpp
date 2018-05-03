@@ -11,16 +11,16 @@
 
 namespace rendering::integrator::volume {
 
-Emission::Emission(rnd::Generator& rng, const take::Settings& take_settings,
+Emission::Emission(rnd::Generator& rng, take::Settings const& take_settings,
 				   const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings) {}
 
-void Emission::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
 void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Emission::transmittance(const Ray& ray, Worker& worker) {
+float3 Emission::transmittance(Ray const& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
@@ -34,7 +34,7 @@ size_t Emission::num_bytes() const {
 	return sizeof(*this);
 }
 
-Emission_factory::Emission_factory(const take::Settings& settings, uint32_t num_integrators,
+Emission_factory::Emission_factory(take::Settings const& settings, uint32_t num_integrators,
 								   float step_size) :
 	Factory(settings, num_integrators),
 	integrators_(memory::allocate_aligned<Emission>(num_integrators)),

@@ -60,7 +60,7 @@ public:
 	using Entity = entity::Entity;
 	using Prop = prop::Prop;
 
-	Scene(const take::Settings& settings);
+	Scene(take::Settings const& settings);
 	~Scene();
 
 	void finish();
@@ -73,11 +73,11 @@ public:
 
 	bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
 
-	bool intersect_p(const Ray& ray, Node_stack& node_stack) const;
+	bool intersect_p(Ray const& ray, Node_stack& node_stack) const;
 
-	float opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const;
+	float opacity(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
 
-	float3 thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const;
+	float3 thin_absorption(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
 
 	float tick_duration() const;
 	float simulation_time() const;
@@ -100,18 +100,18 @@ public:
 	void compile(thread::Pool& pool);
 
 	entity::Dummy* create_dummy();
-	entity::Dummy* create_dummy(const std::string& name);
+	entity::Dummy* create_dummy(std::string const& name);
 
 	Prop* create_prop(const Shape_ptr& shape, const Materials& materials);
 
 	Prop* create_prop(const Shape_ptr& shape, const Materials& materials,
-					  const std::string& name);
+					  std::string const& name);
 
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
 
 	void add_extension(Entity* extension);
-	void add_extension(Entity* extension, const std::string& name);
+	void add_extension(Entity* extension, std::string const& name);
 
 	void add_material(const Material_ptr& material);
 	void add_animation(const std::shared_ptr<animation::Animation>& animation);
@@ -122,7 +122,7 @@ public:
 
 private:
 
-	void add_named_entity(Entity* entity, const std::string& name);
+	void add_named_entity(Entity* entity, std::string const& name);
 
 	const take::Settings take_settings_;
 

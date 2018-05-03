@@ -24,7 +24,7 @@ public:
 
 	virtual size_t num_bytes() const override final;
 
-	void set_emission(const float3& radiance);
+	void set_emission(float3 const& radiance);
 	void set_roughness(float roughness);
 	void set_ior(float ior);
 

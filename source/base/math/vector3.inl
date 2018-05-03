@@ -286,7 +286,7 @@ static bool any_inf(const Vector3<T>& v) {
 // Aligned 3D float vector
 //==============================================================================
 
-inline constexpr Vector3f_a::Vector3f_a(const float* a) : v{a[0], a[1], a[2], 0.f} {}
+inline constexpr Vector3f_a::Vector3f_a(float const* a) : v{a[0], a[1], a[2], 0.f} {}
 
 inline constexpr Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}
 
@@ -310,9 +310,9 @@ inline constexpr float& Vector3f_a::operator[](uint32_t i) {
 }
 
 inline float Vector3f_a::absolute_max(uint32_t& i) const {
-	const float ax = std::abs(v[0]);
-	const float ay = std::abs(v[1]);
-	const float az = std::abs(v[2]);
+	float const ax = std::abs(v[0]);
+	float const ay = std::abs(v[1]);
+	float const az = std::abs(v[2]);
 
 	if (ax >= ay && ax >= az) {
 		i = 0;
@@ -360,7 +360,7 @@ static inline constexpr Vector3f_a operator*(FVector3f_a a, FVector3f_a b) {
 }
 
 static inline constexpr Vector3f_a operator/(FVector3f_a a, float s) {
-	const float is = 1.f / s;
+	float const is = 1.f / s;
 	return Vector3f_a(is * a[0], is * a[1], is * a[2]);
 }
 
@@ -417,7 +417,7 @@ static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, float s) {
 }
 
 static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, float s) {
-	const float is = 1.f / s;
+	float const is = 1.f / s;
 	a[0] *= is;
 	a[1] *= is;
 	a[2] *= is;
@@ -499,7 +499,7 @@ static inline Vector3f_a pow(FVector3f_a v, float e) {
 }
 
 static inline constexpr Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t) {
-	const float u = 1.f - t;
+	float const u = 1.f - t;
 	return u * a + t * b;
 }
 
@@ -517,8 +517,8 @@ static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b
 		return;
 	}
 
-	const float c = 1.f / (1.f + n[2]);
-	const float d = -n[0] * n[1] * c;
+	float const c = 1.f / (1.f + n[2]);
+	float const d = -n[0] * n[1] * c;
 	t = Vector3f_a(1.f - n[0] * n[0] * c, d, -n[0]);
 	b = Vector3f_a(d, 1.f - n[1] * n[1] * c, -n[1]);
 	*/
@@ -526,10 +526,10 @@ static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b
 	// Building an Orthonormal Basis, Revisited
 	// http://jcgt.org/published/0006/01/01/
 
-//	const float sign = std::copysign(1.f, n[2]);
-	const float sign = copysign1(n[2]);
-	const float c = -1.f / (sign + n[2]);
-	const float d = n[0] * n[1] * c;
+//	float const sign = std::copysign(1.f, n[2]);
+	float const sign = copysign1(n[2]);
+	float const c = -1.f / (sign + n[2]);
+	float const d = n[0] * n[1] * c;
 	t = Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 	b = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
 }
@@ -539,7 +539,7 @@ static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b
 static inline void orthonormal_basis_sse(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
 	const Vector u = simd::load_float3(n.v);
 
-	const float sign = copysign1(n[2]);
+	float const sign = copysign1(n[2]);
 
 	__m128 temp0 = _mm_set_ps1(1.f / (sign + n[2]));
 
@@ -563,9 +563,9 @@ static inline void orthonormal_basis_sse(const Vector3f_a& n, Vector3f_a& t, Vec
 }*/
 
 static inline Vector3f_a tangent(FVector3f_a n) {
-	const float sign = std::copysign(1.f, n[2]);
-	const float c = -1.f / (sign + n[2]);
-	const float d = n[0] * n[1] * c;
+	float const sign = std::copysign(1.f, n[2]);
+	float const c = -1.f / (sign + n[2]);
+	float const d = n[0] * n[1] * c;
 	return Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 }
 

@@ -24,9 +24,9 @@ void Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
 void Density::collision_coefficients(f_float3 p, const Transformation& transformation,
 									 Sampler_filter filter, const Worker& worker,
 									 float3& mu_a, float3& mu_s) const {
-	const float3 p_o = math::transform_point(p, transformation.world_to_object);
+	float3 const p_o = math::transform_point(p, transformation.world_to_object);
 
-	const float d = density(p_o, transformation, filter, worker);
+	float const d = density(p_o, transformation, filter, worker);
 
 	mu_a = d * absorption_coefficient_;
 	mu_s = d * scattering_coefficient_;

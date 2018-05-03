@@ -18,7 +18,7 @@ class Socket {
 public:
 
 	Socket();
-	Socket(const std::string& service);
+	Socket(std::string const& service);
 	~Socket();
 
 	bool is_valid() const;

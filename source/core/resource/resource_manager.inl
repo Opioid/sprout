@@ -8,7 +8,7 @@ namespace resource {
 
 template<typename T>
 void Manager::register_provider(Provider<T>& provider) {
-	const uint32_t id = Provider<T>::id();
+	uint32_t const id = Provider<T>::id();
 	auto old = caches_.find(id);
 
 	if (caches_.end() != old) {
@@ -19,8 +19,8 @@ void Manager::register_provider(Provider<T>& provider) {
 }
 
 template<typename T>
-std::shared_ptr<T> Manager::load(const std::string& filename,
-								 const memory::Variant_map& options) {
+std::shared_ptr<T> Manager::load(std::string const& filename,
+								 memory::Variant_map const& options) {
 	if (filename.empty()) {
 		return nullptr;
 	}
@@ -36,9 +36,9 @@ std::shared_ptr<T> Manager::load(const std::string& filename,
 }
 
 template<typename T>
-std::shared_ptr<T> Manager::load(const std::string& name, const void* data,
-								 const std::string& mount_folder,
-								 const memory::Variant_map& options) {
+std::shared_ptr<T> Manager::load(std::string const& name, void const* data,
+								 std::string const& mount_folder,
+								 memory::Variant_map const& options) {
 	if (name.empty()) {
 		return nullptr;
 	}
@@ -54,8 +54,8 @@ std::shared_ptr<T> Manager::load(const std::string& name, const void* data,
 }
 
 template<typename T>
-std::shared_ptr<T> Manager::get(const std::string& filename,
-								const memory::Variant_map& options) {
+std::shared_ptr<T> Manager::get(std::string const& filename,
+								memory::Variant_map const& options) {
 	if (filename.empty()) {
 		return nullptr;
 	}
@@ -71,9 +71,9 @@ std::shared_ptr<T> Manager::get(const std::string& filename,
 }
 
 template<typename T>
-void Manager::store(const std::string& name,
+void Manager::store(std::string const& name,
 					std::shared_ptr<T> resource,
-					const memory::Variant_map& options) {
+					memory::Variant_map const& options) {
 	if (name.empty() || !resource) {
 		return;
 	}

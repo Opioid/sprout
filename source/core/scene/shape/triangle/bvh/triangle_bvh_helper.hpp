@@ -6,21 +6,21 @@
 
 namespace scene::shape::triangle::bvh {
 
-float3 triangle_min(const float3& a, const float3& b, const float3& c);
-float3 triangle_max(const float3& a, const float3& b, const float3& c);
+float3 triangle_min(float3 const& a, float3 const& b, float3 const& c);
+float3 triangle_max(float3 const& a, float3 const& b, float3 const& c);
 
 Vector triangle_min(FVector a, FVector b, FVector c);
 
 Vector triangle_max(FVector a, FVector b, FVector c);
 
-float3 triangle_min(const float3& a, const float3& b, const float3& c, const float3& x);
-float3 triangle_max(const float3& a, const float3& b, const float3& c, const float3& x);
+float3 triangle_min(float3 const& a, float3 const& b, float3 const& c, float3 const& x);
+float3 triangle_max(float3 const& a, float3 const& b, float3 const& c, float3 const& x);
 
-float triangle_area(const float3& a, const float3& b, const float3& c);
+float triangle_area(float3 const& a, float3 const& b, float3 const& c);
 
-uint32_t triangle_side(const float3& a, const float3& b, const float3& c, const math::Plane& p);
+uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, const math::Plane& p);
 
-bool triangle_completely_behind(const float3& a, const float3& b, const float3& c,
+bool triangle_completely_behind(float3 const& a, float3 const& b, float3 const& c,
 								const math::Plane& p);
 
 }

@@ -25,8 +25,8 @@ void Morph_target_collection::add_swap_vertices(std::vector<Vertex>& vertices) {
 
 void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool,
 									std::vector<Vertex>& vertices) {
-	const auto& va = morph_targets_[a];
-	const auto& vb = morph_targets_[b];
+	auto const& va = morph_targets_[a];
+	auto const& vb = morph_targets_[b];
 
 	pool.run_range([&va, &vb, weight, &vertices](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t i = begin; i < end; ++i) {

@@ -20,12 +20,12 @@ void Volume_rasterizer::resolve(image::Byte3& target) const {
 	const int32_t len = dimensions_[0] * dimensions_[1] * dimensions_[2];
 
 	for (int32_t i = 0; i < len; ++i) {
-		const float3 color = spectrum::linear_RGB_to_sRGB(samples_[i]);
+		float3 const color = spectrum::linear_RGB_to_sRGB(samples_[i]);
 		target.store(i, encoding::float_to_unorm(color));
 	}
 }
 
-void Volume_rasterizer::set_brush(const float3& color) {
+void Volume_rasterizer::set_brush(float3 const& color) {
 	brush_ = color;
 }
 
@@ -37,7 +37,7 @@ void Volume_rasterizer::clear() {
 	}
 }
 
-void Volume_rasterizer::splat(f_float3 position, const float3& color) {
+void Volume_rasterizer::splat(f_float3 position, float3 const& color) {
 	const int3 c(position);
 
 	if (c[0] < 0 || c[0] >= dimensions_[0]

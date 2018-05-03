@@ -15,7 +15,7 @@ Transparent::~Transparent() {
 }
 
 void Transparent::clear() {
-	const auto d = dimensions();
+	auto const d = dimensions();
 	for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
 		pixels_[i].color = float4(0.f);
 		pixels_[i].weight_sum = 0.f;
@@ -27,20 +27,20 @@ bool Transparent::has_alpha_transparency() const {
 }
 
 size_t Transparent::num_bytes() const {
-	const auto d = dimensions();
+	auto const d = dimensions();
 	return d[0] * d[1] * sizeof(Pixel);
 }
 
-void Transparent::add_pixel(int2 pixel, const float4& color, float weight) {
-	const auto d = dimensions();
+void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) {
+	auto const d = dimensions();
 
 	auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
 	value.color += weight * color;
 	value.weight_sum += weight;
 }
 
-void Transparent::add_pixel_atomic(int2 pixel, const float4& color, float weight) {
-	const auto d = dimensions();
+void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight) {
+	auto const d = dimensions();
 
 	auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
 	atomic::add_assign(value.color[0], weight * color[0]);
@@ -51,10 +51,10 @@ void Transparent::add_pixel_atomic(int2 pixel, const float4& color, float weight
 }
 
 void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) const {
-	const float exposure_factor = exposure_factor_;
+	float const exposure_factor = exposure_factor_;
 
 	for (int32_t i = begin; i < end; ++i) {
-		const auto& value = pixels_[i];
+		auto const& value = pixels_[i];
 
 		const float4 color = value.color / value.weight_sum;
 

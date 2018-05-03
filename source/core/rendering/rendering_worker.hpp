@@ -39,8 +39,8 @@ public:
 
 	~Worker();
 
-	void init(uint32_t id, const take::Settings& settings,
-			  const scene::Scene& scene, uint32_t max_sample_size,
+	void init(uint32_t id, take::Settings const& settings,
+			  scene::Scene const& scene, uint32_t max_sample_size,
 			  integrator::surface::Factory& surface_integrator_factory,
 			  integrator::volume::Factory& volume_integrator_factory,
 			  sampler::Factory& sampler_factory);
@@ -54,9 +54,9 @@ public:
 	bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
 				float3& li, float3& transmittance);
 
-	float3 transmittance(const Ray& ray);
+	float3 transmittance(Ray const& ray);
 
-	float3 tinted_visibility(const Ray& ray, Sampler_filter filter);
+	float3 tinted_visibility(Ray const& ray, Sampler_filter filter);
 
 	float3 tinted_visibility(Ray& ray, const Intersection& intersection, Sampler_filter filter);
 

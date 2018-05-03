@@ -55,7 +55,7 @@ public:
 	bool sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
 				Sampler_filter filter, const Worker& worker, Sample& result) const;
 
-	virtual float pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,
+	virtual float pdf(Ray const& ray, const Intersection& intersection, bool total_sphere,
 					  Sampler_filter filter, const Worker& worker) const = 0;
 
 	virtual float3 power(const math::AABB& scene_bb) const = 0;

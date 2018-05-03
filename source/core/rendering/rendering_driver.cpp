@@ -38,7 +38,7 @@ scene::camera::Camera& Driver::camera() {
 	return *view_.camera;
 }
 
-const scene::Scene& Driver::scene() const {
+scene::Scene const& Driver::scene() const {
 	return scene_;
 }
 

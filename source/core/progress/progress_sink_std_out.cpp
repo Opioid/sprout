@@ -22,7 +22,7 @@ void Std_out::tick() {
 
 	++progress_;
 
-	const float p = static_cast<float>(progress_) / static_cast<float>(resolution_) * 100.f;
+	float const p = static_cast<float>(progress_) / static_cast<float>(resolution_) * 100.f;
 	if (p >= threshold_) {
 		threshold_ += step_;
 

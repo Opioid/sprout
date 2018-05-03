@@ -66,7 +66,7 @@ static inline float f3(float theta, float lambda) {
 
 void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	// This seems a bit arbitrary
-	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
+	float const solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
 	const spectrum::Interpolated CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
@@ -85,7 +85,7 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		float3 d;
 	};
 
-	const auto dim = camera.sensor_dimensions();
+	auto const dim = camera.sensor_dimensions();
 	kernel_dimensions_ = 2 * dim;
 	const int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
 
@@ -109,11 +109,11 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 			for (int32_t x = 0; x < kernel_dimensions_[0]; ++x) {
 				const int2 p(-dim[0] + x, -dim[1] + y);
 
-				const float theta = math::length(float2(p)) * solid_angle;
+				float const theta = math::length(float2(p)) * solid_angle;
 
-				const float a = f0(theta);
-				const float b = f1(theta);
-				const float c = f2(theta);
+				float const a = f0(theta);
+				float const b = f1(theta);
+				float const c = f2(theta);
 
 				init.a_sum += a;
 				init.b_sum += b;
@@ -124,8 +124,8 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 				if (Adaption::Photopic != adaption_) {
 					float3 xyz(0.f);
 					for (int32_t k = 0; k < wl_num_samples; ++k) {
-						const float lambda = wl_start + static_cast<float>(k) * wl_step;
-						const float val = wl_norm * f3(theta , lambda);
+						float const lambda = wl_start + static_cast<float>(k) * wl_step;
+						float const val = wl_norm * f3(theta , lambda);
 						xyz[0] += CIE_X.evaluate(lambda) * val;
 						xyz[1] += CIE_Y.evaluate(lambda) * val;
 						xyz[2] += CIE_Z.evaluate(lambda) * val;
@@ -178,9 +178,9 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		break;
 	}
 
-	const float a_n = scale[0] / a_sum;
-	const float b_n = scale[1] / b_sum;
-	const float c_n = scale[2] / c_sum;
+	float const a_n = scale[0] / a_sum;
+	float const b_n = scale[1] / b_sum;
+	float const c_n = scale[2] / c_sum;
 
 	float* kernel_r = memory::allocate_aligned<float>(kernel_size);
 	float* kernel_g = memory::allocate_aligned<float>(kernel_size);
@@ -188,17 +188,17 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 	if (Adaption::Photopic == adaption_) {
 		for (int32_t i = 0; i < kernel_size; ++i) {
-			const float k = a_n * f[i].a + b_n * f[i].b + c_n * f[i].c;
+			float const k = a_n * f[i].a + b_n * f[i].b + c_n * f[i].c;
 
 			kernel_r[i] = k;
 			kernel_g[i] = k;
 			kernel_b[i] = k;
 		}
 	} else {
-		const float3 d_n = scale[3] / d_sum;
+		float3 const d_n = scale[3] / d_sum;
 
 		for (int32_t i = 0; i < kernel_size; ++i) {
-			const float3 k((a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d);
+			float3 const k((a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d);
 
 			kernel_r[i] = k[0];
 			kernel_g[i] = k[1];
@@ -253,11 +253,11 @@ static inline float2 mul_complex(float2 a, float2 b, float scale) {
 
 void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 					   thread::Pool& pool) {
-	const auto dim = kernel_dimensions_;
+	auto const dim = kernel_dimensions_;
 
 	pool.run_range([this, dim, &source]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			const float threshold = threshold_;
+			float const threshold = threshold_;
 
 			const int2 offset = dim / 4;
 
@@ -298,7 +298,7 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 
 	pool.run_range([this, dim]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			const float scale = 1.f / (dim[0] * dim[1]);
+			float const scale = 1.f / (dim[0] * dim[1]);
 			for (int32_t i = begin; i < end; ++i) {
 				high_pass_dft_r_[i] = mul_complex(high_pass_dft_r_[i], kernel_dft_r_[i], scale);
 				high_pass_dft_g_[i] = mul_complex(high_pass_dft_g_[i], kernel_dft_g_[i], scale);
@@ -325,7 +325,7 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
 			const int2 source_dim = source.dimensions2();
 
-			const float intensity = intensity_;
+			float const intensity = intensity_;
 
 			for (int32_t y = begin; y < end; ++y) {
 				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
@@ -335,7 +335,7 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 					const int32_t ix = (x + source_dim[0]) % dim[0];
 					const int32_t i = iy * dim[0] + ix;
 
-					const auto& s = source.at(sc[0], sc[1]);
+					auto const& s = source.at(sc[0], sc[1]);
 					float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
 					glare = math::max(glare, float3(0.f));
 

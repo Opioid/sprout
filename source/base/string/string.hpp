@@ -33,7 +33,7 @@ static inline void trim(std::string& text) {
 	text.assign(begin, end);
 }
 
-static inline std::string parent_directory(const std::string& filename) {
+static inline std::string parent_directory(std::string const& filename) {
 	size_t i = filename.find_last_of('/');
 	return filename.substr(0, i + 1);
 }

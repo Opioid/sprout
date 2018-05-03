@@ -21,14 +21,14 @@ public:
 		float eta_t_;
 	};
 
-	void set(float anisotropy, const IOR& ior);
+	void set(float anisotropy, IOR const& ior);
 
 private:
 
-	void refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
+	void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
 				 bxdf::Sample& result) const;
 
-	void reflect_internally(const Layer& layer, sampler::Sampler& sampler,
+	void reflect_internally(Layer const& layer, sampler::Sampler& sampler,
 							bxdf::Sample& result) const;
 
 	float anisotropy_;

@@ -39,13 +39,13 @@
 
 //#include <iostream>
 
-static void log_memory_consumption(const resource::Manager& manager, const take::Take& take,
-								   const scene::Loader& loader, const scene::Scene& scene,
+static void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
+								   scene::Loader const& loader, scene::Scene const& scene,
 								   size_t rendering_num_bytes);
 
-static bool is_json(const std::string& text);
+static bool is_json(std::string const& text);
 
-int main(int argc, const char* argv[]) {
+int main(int argc, char const* argv[]) {
 //	scene::material::substitute::testing::test();
 //	scene::material::glass::testing::test();
 //	scene::material::glass::testing::rough_refraction();
@@ -65,7 +65,7 @@ int main(int argc, const char* argv[]) {
 
 	logging::init(logging::Type::Std_out);
 
-	const auto args = options::parse(argc, argv);
+	auto const args = options::parse(argc, argv);
 
 	logging::set_verbose(args.verbose);
 	logging::info("Welcome to sprout (" + platform::build() + ")!");
@@ -84,9 +84,9 @@ int main(int argc, const char* argv[]) {
 		}
 	}
 
-	const auto total_start = std::chrono::high_resolution_clock::now();
+	auto const total_start = std::chrono::high_resolution_clock::now();
 
-	const uint32_t available_threads = std::max(std::thread::hardware_concurrency(), 1u);
+	uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 	uint32_t num_workers;
 	if (args.threads <= 0) {
 		const int32_t num_threads = static_cast<int32_t>(available_threads) + args.threads;
@@ -117,7 +117,7 @@ int main(int argc, const char* argv[]) {
 
 	logging::info("Loading...");
 
-	const auto loading_start = std::chrono::high_resolution_clock::now();
+	auto const loading_start = std::chrono::high_resolution_clock::now();
 
 	resource::Manager resource_manager(file_system, thread_pool);
 
@@ -173,7 +173,7 @@ int main(int argc, const char* argv[]) {
 
 	logging::info("Rendering...");
 
-	const uint32_t max_sample_size = material_provider.max_sample_size();
+	uint32_t const max_sample_size = material_provider.max_sample_size();
 
 	size_t rendering_num_bytes = 0;
 
@@ -183,7 +183,7 @@ int main(int argc, const char* argv[]) {
 	} else {
 		progress::Std_out progressor;
 
-		const auto rendering_start = std::chrono::high_resolution_clock::now();
+		auto const rendering_start = std::chrono::high_resolution_clock::now();
 
 		if (take->view.camera) {
 			rendering::Driver_finalframe driver(*take, scene, thread_pool, max_sample_size);
@@ -212,8 +212,8 @@ int main(int argc, const char* argv[]) {
 	return 0;
 }
 
-void log_memory_consumption(const resource::Manager& manager, const take::Take& take,
-							const scene::Loader& loader, const scene::Scene& scene,
+void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
+							scene::Loader const& loader, scene::Scene const& scene,
 							size_t rendering_num_bytes) {
 	if (!logging::is_verbose()) {
 		return;
@@ -243,8 +243,8 @@ void log_memory_consumption(const resource::Manager& manager, const take::Take& 
 	logging::verbose("\tTotal: " + string::print_bytes(total_num_bytes));
 }
 
-bool is_json(const std::string& text) {
-	const auto it = text.find_first_not_of(" \t");
+bool is_json(std::string const& text) {
+	auto const it = text.find_first_not_of(" \t");
 
 	if (std::string::npos != it) {
 		return '{' == text[it];

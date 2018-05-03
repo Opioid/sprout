@@ -6,7 +6,7 @@
 
 namespace exporting {
 
-Image_sequence::Image_sequence(const std::string& filename, std::unique_ptr<image::Writer> writer) :
+Image_sequence::Image_sequence(std::string const& filename, std::unique_ptr<image::Writer> writer) :
 	filename_(filename), writer_(std::move(writer)) {}
 
 void Image_sequence::write(const image::Float4& image, uint32_t frame, thread::Pool& pool) {

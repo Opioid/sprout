@@ -18,7 +18,7 @@ using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 
 Worker::Worker() : node_stack_(128 + 16) {}
 
-void Worker::init(uint32_t id, const take::Settings& settings,
+void Worker::init(uint32_t id, take::Settings const& settings,
 				  const Scene& scene, uint32_t max_sample_size) {
 	id_ = id;
 	rng_ = rnd::Generator(0, id);
@@ -52,9 +52,9 @@ bool Worker::intersect(const prop::Prop* prop, Ray& ray, Intersection& intersect
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter) {
-	const float ray_offset_factor = settings_.ray_offset_factor;
+	float const ray_offset_factor = settings_.ray_offset_factor;
 
-	const float start_min_t = ray.min_t;
+	float const start_min_t = ray.min_t;
 
 	float opacity = intersection.opacity(ray.time, filter, *this);
 
@@ -88,11 +88,11 @@ bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
 	return resolve_mask(ray, intersection, filter);
 }
 
-bool Worker::visibility(const Ray& ray) const {
+bool Worker::visibility(Ray const& ray) const {
 	return !scene_->intersect_p(ray, node_stack_);
 }
 
-float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) const {
+float Worker::masked_visibility(Ray const& ray, Sampler_filter filter) const {
 	return 1.f - scene_->opacity(ray, filter, *this);
 }
 

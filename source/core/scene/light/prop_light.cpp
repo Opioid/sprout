@@ -27,7 +27,7 @@ bool Prop_light::sample(f_float3 p, float time, const Transformation& transforma
 						Sampler_filter filter, const Worker& worker, Sample& result) const {
 	auto material = prop_->material(part_);
 
-	const float area = prop_->area(part_);
+	float const area = prop_->area(part_);
 
 	const bool two_sided = material->is_two_sided();
 
@@ -48,7 +48,7 @@ bool Prop_light::sample(f_float3 p, f_float3 n,
 						Sampler_filter filter, const Worker& worker, Sample& result) const {
 	auto material = prop_->material(part_);
 
-	const float area = prop_->area(part_);
+	float const area = prop_->area(part_);
 
 	const bool two_sided = material->is_two_sided();
 
@@ -74,12 +74,12 @@ bool Prop_light::sample(f_float3 p, f_float3 n,
 	return true;
 }
 
-float Prop_light::pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,
+float Prop_light::pdf(Ray const& ray, const Intersection& intersection, bool total_sphere,
 					  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	entity::Composed_transformation temp;
-	const auto& transformation = prop_->transformation_at(ray.time, temp);
+	auto const& transformation = prop_->transformation_at(ray.time, temp);
 
-	const float area = prop_->area(part_);
+	float const area = prop_->area(part_);
 
 	const bool two_sided = prop_->material(part_)->is_two_sided();
 
@@ -87,9 +87,9 @@ float Prop_light::pdf(const Ray& ray, const Intersection& intersection, bool tot
 }
 
 float3 Prop_light::power(const math::AABB& scene_bb) const {
-	const float area = prop_->area(part_);
+	float const area = prop_->area(part_);
 
-	const float3 radiance = prop_->material(part_)->average_radiance(area);
+	float3 const radiance = prop_->material(part_)->average_radiance(area);
 
 	if (prop_->shape()->is_finite()) {
 		return area * radiance;

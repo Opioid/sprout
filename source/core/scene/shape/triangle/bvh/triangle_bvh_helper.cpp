@@ -5,11 +5,11 @@
 
 namespace scene::shape::triangle::bvh {
 
-float3 triangle_min(const float3& a, const float3& b, const float3& c) {
+float3 triangle_min(float3 const& a, float3 const& b, float3 const& c) {
 	return math::min(a, math::min(b, c));
 }
 
-float3 triangle_max(const float3& a, const float3& b, const float3& c) {
+float3 triangle_max(float3 const& a, float3 const& b, float3 const& c) {
 	return math::max(a, math::max(b, c));
 }
 
@@ -21,19 +21,19 @@ Vector triangle_max(FVector a, FVector b, FVector c) {
 	return math::max(a, math::max(b, c));
 }
 
-float3 triangle_min(const float3& a, const float3& b, const float3& c, const float3& x) {
+float3 triangle_min(float3 const& a, float3 const& b, float3 const& c, float3 const& x) {
 	return math::min(a, math::min(b, math::min(c, x)));
 }
 
-float3 triangle_max(const float3& a, const float3& b, const float3& c, const float3& x) {
+float3 triangle_max(float3 const& a, float3 const& b, float3 const& c, float3 const& x) {
 	return math::max(a, math::max(b, math::max(c, x)));
 }
 
-float triangle_area(const float3& a, const float3& b, const float3& c) {
+float triangle_area(float3 const& a, float3 const& b, float3 const& c) {
 	return 0.5f * math::length(math::cross(b - a, c - a));
 }
 
-uint32_t triangle_side(const float3& a, const float3& b, const float3& c, const math::Plane& p) {
+uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, const math::Plane& p) {
 	uint32_t behind = 0;
 
 	if (math::plane::behind(p, a)) {
@@ -57,7 +57,7 @@ uint32_t triangle_side(const float3& a, const float3& b, const float3& c, const 
 	}
 }
 
-bool triangle_completely_behind(const float3& a, const float3& b, const float3& c,
+bool triangle_completely_behind(float3 const& a, float3 const& b, float3 const& c,
 								const math::Plane& p) {
 	if (math::plane::behind(p, a) && math::plane::behind(p, b) && math::plane::behind(p, c)) {
 		return true;

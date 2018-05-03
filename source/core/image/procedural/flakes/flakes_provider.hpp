@@ -15,14 +15,14 @@ class Provider {
 
 public:
 
-	std::shared_ptr<Image> create_normal_map(const memory::Variant_map& options);
+	std::shared_ptr<Image> create_normal_map(memory::Variant_map const& options);
 
-	std::shared_ptr<Image> create_mask(const memory::Variant_map& options);
+	std::shared_ptr<Image> create_mask(memory::Variant_map const& options);
 
 private:
 
 	struct Properties {
-		Properties(const memory::Variant_map& options);
+		Properties(memory::Variant_map const& options);
 
 		int2 dimensions;
 

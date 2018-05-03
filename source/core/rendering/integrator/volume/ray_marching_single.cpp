@@ -15,7 +15,7 @@
 
 namespace rendering::integrator::volume {
 
-Ray_marching_single::Ray_marching_single(rnd::Generator& rng, const take::Settings& take_settings,
+Ray_marching_single::Ray_marching_single(rnd::Generator& rng, take::Settings const& take_settings,
 										 const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
@@ -28,7 +28,7 @@ void Ray_marching_single::prepare(const Scene& /*scene*/, uint32_t num_samples_p
 void Ray_marching_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 /*
-float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
+float3 Ray_marching_single::li(Ray const& ray, const Volume& volume,
 							 Worker& worker, float3& transmittance) {
 	if (ray.properties.test(Ray::Property::Recursive)) {
 		transmittance = Ray_marching_single::transmittance(ray, volume, worker);
@@ -36,34 +36,34 @@ float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
 	}
 
 	float min_t = ray.min_t;
-	const float range = ray.max_t - min_t;
+	float const range = ray.max_t - min_t;
 
 	Transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
+	auto const& transformation = volume.transformation_at(ray.time, temp);
 
-//	const float step_size = -std::log(settings_.step_probability) / spectrum::average(sigma);
+//	float const step_size = -std::log(settings_.step_probability) / spectrum::average(sigma);
 
-	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-	const uint32_t num_samples = ray.is_primary() ? max_samples : 1;
+	uint32_t const max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	uint32_t const num_samples = ray.is_primary() ? max_samples : 1;
 
-	const float step = range / static_cast<float>(num_samples);
+	float const step = range / static_cast<float>(num_samples);
 
 	float3 radiance(0.f);
 	float3 tr(1.f);
 
-	const float3 start = ray.point(min_t);
+	float3 const start = ray.point(min_t);
 
-	const float r = rng_.random_float();
+	float const r = rng_.random_float();
 
 	min_t += r * step;
 
-	const float3 next = ray.point(min_t);
+	float3 const next = ray.point(min_t);
 	Ray tau_ray(start, next - start, 0.f, 1.f, 0, ray.time);
 
-	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
-	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
+	float3 const tau_ray_direction     = ray.point(min_t + step) - next;
+	float3 const inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
 
-	const auto& material = *volume.material(0);
+	auto const& material = *volume.material(0);
 
 	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
 		// This happens sometimes when the range is very small compared to the world coordinates.
@@ -74,13 +74,13 @@ float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
 			continue;
 		}
 
-		const float3 tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
+		float3 const tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
 												  settings_.step_size, rng_,
 												  Sampler_filter::Undefined, worker);
 
 		tr *= math::exp(-tau);
 
-		const float3 current = ray.point(min_t);
+		float3 const current = ray.point(min_t);
 		tau_ray.origin = current;
 		// This stays the same during the loop,
 		// but we need a different value in the first iteration.
@@ -89,7 +89,7 @@ float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Lighting
-		const float3 local_radiance = estimate_direct_light(ray, current, worker);
+		float3 const local_radiance = estimate_direct_light(ray, current, worker);
 
 		float3 mu_a, scattering;
 		material.collision_coefficients(transformation, current,
@@ -99,7 +99,7 @@ float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
 	}
 
 	tau_ray.set_direction(ray.point(ray.max_t) - tau_ray.origin);
-	const float3 tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
+	float3 const tau = material.optical_depth(transformation, volume.aabb(), tau_ray,
 											  settings_.step_size, rng_,
 											  Sampler_filter::Undefined, worker);
 
@@ -107,12 +107,12 @@ float3 Ray_marching_single::li(const Ray& ray, const Volume& volume,
 
 	transmittance = tr;
 
-	const float3 color = step * radiance;
+	float3 const color = step * radiance;
 
 	return color;
 }
 */
-float3 Ray_marching_single::transmittance(const Ray& ray, Worker& worker) {
+float3 Ray_marching_single::transmittance(Ray const& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
@@ -126,7 +126,7 @@ size_t Ray_marching_single::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Ray_marching_single::estimate_direct_light(const Ray& ray, f_float3 position,
+float3 Ray_marching_single::estimate_direct_light(Ray const& ray, f_float3 position,
 												  Worker& worker) {
 	float3 result = float3::identity();
 
@@ -136,21 +136,21 @@ float3 Ray_marching_single::estimate_direct_light(const Ray& ray, f_float3 posit
 	shadow_ray.depth  = ray.depth + 1;
 	shadow_ray.time   = ray.time;
 
-	const auto light = worker.scene().random_light(rng_.random_float());
+	auto const light = worker.scene().random_light(rng_.random_float());
 
 	scene::light::Sample light_sample;
 	if (light.ref.sample(position, float3(0.f, 0.f, 1.f), ray.time,
 						 true, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
 		shadow_ray.set_direction(light_sample.shape.wi);
-		const float offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+		float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
 		shadow_ray.max_t = light_sample.shape.t - offset;
 
-		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+		float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 
 		if (math::any_greater_zero(tv)) {
-			const float3 tr = worker.transmittance(shadow_ray);
+			float3 const tr = worker.transmittance(shadow_ray);
 
-			const float phase = 1.f / (4.f * math::Pi);
+			float const phase = 1.f / (4.f * math::Pi);
 
 			result += (tv * tr) * (phase * light_sample.radiance)
 					/ (light.pdf * light_sample.shape.pdf);
@@ -160,7 +160,7 @@ float3 Ray_marching_single::estimate_direct_light(const Ray& ray, f_float3 posit
 	return result;
 }
 
-Ray_marching_single_factory::Ray_marching_single_factory(const take::Settings& take_settings,
+Ray_marching_single_factory::Ray_marching_single_factory(take::Settings const& take_settings,
 														 uint32_t num_integrators, float step_size,
 														 float step_probability) :
 	Factory(take_settings, num_integrators),

@@ -3,7 +3,7 @@
 
 namespace scene::material::metal {
 
-void ior_and_absorption(const std::string& name, float3& ior, float3& absorption) {
+void ior_and_absorption(std::string const& name, float3& ior, float3& absorption) {
 	// http://www.3delight.com/en/modules/forum/viewtopic.php?t=4205
 	// R: 642nm G: 529nm B: 464nm
 	// Table of wavelength-dependent values for ior and absorption (k)

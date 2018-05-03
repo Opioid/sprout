@@ -9,7 +9,7 @@
 
 namespace exporting {
 
-Ffmpeg::Ffmpeg(const std::string& filename, int2 dimensions, uint32_t framerate) :
+Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, uint32_t framerate) :
 	Srgb(dimensions) {
 	// -i - tells it to read frames from stdin
 	std::ostringstream cmd;
@@ -43,7 +43,7 @@ void Ffmpeg::write(const image::Float4& image, uint32_t /*frame*/, thread::Pool&
 		return;
 	}
 
-	const auto d = image.description().dimensions;
+	auto const d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
 

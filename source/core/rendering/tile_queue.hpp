@@ -21,7 +21,7 @@ public:
 
 private:
 
-	void push(const int4& tile);
+	void push(int4 const& tile);
 
 	uint32_t num_tiles_;
 	int4* tiles_;

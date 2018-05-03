@@ -61,7 +61,7 @@ protected:
 
 	float total_weight_;
 
-	const float frame_length_;
+	float const frame_length_;
 
 	int32_t element_;
 };

@@ -18,7 +18,7 @@ namespace net {
 
 Socket::Socket() : socket_(Invalid_socket) {}
 
-Socket::Socket(const std::string& service) : socket_(Invalid_socket) {
+Socket::Socket(std::string const& service) : socket_(Invalid_socket) {
 	addrinfo hints;
 	std::memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;

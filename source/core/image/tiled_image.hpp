@@ -13,7 +13,7 @@ public:
 	Tiled_image(const Image::Description& description);
 	~Tiled_image();
 
-	const T& at(uint32_t x, uint32_t y) const;
+	T const& at(uint32_t x, uint32_t y) const;
 	T& at(uint32_t x, uint32_t y);
 
 private:

@@ -86,8 +86,8 @@ void Pool::wake_all() {
 
 void Pool::wake_all(int32_t begin, int32_t end) {
 #ifdef GRANULAR_TASKS
-	const float range = static_cast<float>(end - begin);
-	const float num_tasks = static_cast<float>(tasks_.size());
+	float const range = static_cast<float>(end - begin);
+	float const num_tasks = static_cast<float>(tasks_.size());
 	const int32_t step = static_cast<int32_t>(std::ceil(range / num_tasks));
 
 	tasks_.clear();
@@ -98,8 +98,8 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 
 	wake_all();
 #else
-	const float range = static_cast<float>(end - begin);
-	const float num_threads = static_cast<float>(threads_.size());
+	float const range = static_cast<float>(end - begin);
+	float const num_threads = static_cast<float>(threads_.size());
 	const int32_t step = static_cast<int32_t>(std::ceil(range / num_threads));
 
 	int32_t b = 0;

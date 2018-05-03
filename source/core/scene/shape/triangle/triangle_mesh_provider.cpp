@@ -30,16 +30,16 @@
 namespace scene::shape::triangle {
 
 #ifdef SU_DEBUG
-bool check(const std::vector<Vertex>& vertices, const std::string& filename);
-bool check_and_fix(std::vector<Vertex>& vertices, const std::string& filename);
+bool check(const std::vector<Vertex>& vertices, std::string const& filename);
+bool check_and_fix(std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
 Provider::Provider() : resource::Provider<Shape>("Mesh") {}
 
 Provider::~Provider() {}
 
-std::shared_ptr<Shape> Provider::load(const std::string& filename,
-									  const memory::Variant_map& /*options*/,
+std::shared_ptr<Shape> Provider::load(std::string const& filename,
+									  memory::Variant_map const& /*options*/,
 									  resource::Manager& manager) {
 	auto stream_pointer = manager.filesystem().read_stream(filename);
 
@@ -129,9 +129,9 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 	return mesh;
 }
 
-std::shared_ptr<Shape> Provider::load(const void* /*data*/,
-									  const std::string& /*mount_folder*/,
-									  const memory::Variant_map& /*options*/,
+std::shared_ptr<Shape> Provider::load(void const* /*data*/,
+									  std::string const& /*mount_folder*/,
+									  memory::Variant_map const& /*options*/,
 									  resource::Manager& /*manager*/) {
 	return nullptr;
 }
@@ -163,7 +163,7 @@ std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const V
     return mesh;
 }
 
-std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename,
+std::shared_ptr<Shape> Provider::load_morphable_mesh(std::string const& filename,
 													 const Strings& morph_targets,
 													 resource::Manager& manager) {
 	auto collection = std::make_shared<Morph_target_collection>();
@@ -362,9 +362,9 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 }
 
 #ifdef SU_DEBUG
-bool check(const std::vector<Vertex>& vertices, const std::string& filename) {
+bool check(const std::vector<Vertex>& vertices, std::string const& filename) {
 	for (size_t i = 0, len = vertices.size(); i < len; ++i) {
-		const auto& v = vertices[i];
+		auto const& v = vertices[i];
 		if (math::squared_length(v.n) < 0.1f ||
 			math::squared_length(v.t) < 0.1f) {
 
@@ -380,7 +380,7 @@ bool check(const std::vector<Vertex>& vertices, const std::string& filename) {
 	return true;
 }
 
-bool check_and_fix(std::vector<Vertex>& vertices, const std::string& /*filename*/) {
+bool check_and_fix(std::vector<Vertex>& vertices, std::string const& /*filename*/) {
 	bool success = true;
 
 	for (size_t i = 0, len = vertices.size(); i < len; ++i) {

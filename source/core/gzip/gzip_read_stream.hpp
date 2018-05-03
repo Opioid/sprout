@@ -75,7 +75,7 @@ public:
 
 	Read_stream();
 
-//	explicit Read_stream(const std::string& name,
+//	explicit Read_stream(std::string const& name,
 //						 std::ios_base::openmode mode = std::ios_base::binary);
 
 //	explicit Read_stream(const char* name,

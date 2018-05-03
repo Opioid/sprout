@@ -14,8 +14,8 @@ bxdf::Result Sample_subsurface::evaluate(f_float3 wi) const {
 		return { float3::identity(), 0.f };
 	}
 
-	const float3 h = math::normalize(wo_ + wi);
-	const float wo_dot_h = clamp_dot(wo_, h);
+	float3 const h = math::normalize(wo_ + wi);
+	float const wo_dot_h = clamp_dot(wo_, h);
 
 	auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
 	result.pdf *= 0.5f;
@@ -25,7 +25,7 @@ bxdf::Result Sample_subsurface::evaluate(f_float3 wi) const {
 void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const bool same_side = same_hemisphere(wo_);
 
-	const float p = sampler.generate_sample_1D();
+	float const p = sampler.generate_sample_1D();
 
 	if (same_side) {
 		if (p < 0.5f) {
@@ -52,12 +52,12 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 	result.wavelength = 0.f;
 }
 
-void Sample_subsurface::set(float anisotropy, const IOR& ior) {
+void Sample_subsurface::set(float anisotropy, IOR const& ior) {
 	anisotropy_ = anisotropy;
 	ior_ = ior;
 }
 
-void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
+void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
 								bxdf::Sample& result) const {
 	IOR tmp_ior;
 
@@ -71,16 +71,16 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 		tmp_ior.eta_i_ = ior_.eta_t_;
 	}
 
-	const float n_dot_wo = layer.clamp_abs_n_dot(wo_);
+	float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
 	const fresnel::Schlick schlick(layer.f0_);
-	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, tmp_ior,
+	float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, tmp_ior,
 												   schlick, sampler, result);
 
 	result.reflection *= n_dot_wi;
 }
 
-void Sample_subsurface::reflect_internally(const Layer& layer, sampler::Sampler& sampler,
+void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler& sampler,
 										   bxdf::Sample& result) const {
 	IOR tmp_ior;
 
@@ -88,10 +88,10 @@ void Sample_subsurface::reflect_internally(const Layer& layer, sampler::Sampler&
 	tmp_ior.ior_o_ = ior_.ior_i_;
 	tmp_ior.eta_i_ = ior_.eta_t_;
 
-	const float n_dot_wo = layer.clamp_abs_n_dot(wo_);
+	float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
 	const fresnel::Schlick schlick(layer.f0_);
-	const float n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, tmp_ior,
+	float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, tmp_ior,
 															  schlick, sampler, result);
 
 	SOFT_ASSERT(testing::check(result, wo_, layer));

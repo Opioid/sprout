@@ -24,7 +24,7 @@ void Builder_SAH::build(Tree<Data>& tree, const Triangles& triangles, const Vert
 	Build_node root;
 
 	{
-		const float log2_num_triangles = std::log2(static_cast<float>(triangles.size()));
+		float const log2_num_triangles = std::log2(static_cast<float>(triangles.size()));
 		spatial_split_threshold_ = static_cast<uint32_t>(log2_num_triangles / 2.f + 0.5f);
 
 		References references(triangles.size());
@@ -84,8 +84,8 @@ void Builder_SAH::serialize(Build_node* node, const Triangles& triangles,
 		const uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
 		n.set_leaf_node(node->start_index, num_primitives);
 
-		for (const auto p : node->primitives) {
-			const auto& t = triangles[p];
+		for (auto const p : node->primitives) {
+			auto const& t = triangles[p];
 			tree.add_triangle(t.i[0], t.i[1], t.i[2], t.material_index, vertices);
 		}
 	}

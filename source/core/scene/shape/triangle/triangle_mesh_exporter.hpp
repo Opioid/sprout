@@ -11,7 +11,7 @@ class Exporter {
 
 public:
 
-	static void write(const std::string& filename, const Json_handler& handler);
+	static void write(std::string const& filename, const Json_handler& handler);
 };
 
 }

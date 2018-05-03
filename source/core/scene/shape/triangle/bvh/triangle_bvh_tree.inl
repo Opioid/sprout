@@ -80,7 +80,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 	Vector v;
 
 	while (0xFFFFFFFF != n) {
-		const auto& node = nodes_[n];
+		auto const& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -131,7 +131,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack) const {
 		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	while (0xFFFFFFFF != n) {
-		const auto& node = nodes_[n];
+		auto const& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -177,7 +177,7 @@ bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ra
 	Vector v;
 
 	while (0xFFFFFFFF != n) {
-		const auto& node = nodes_[n];
+		auto const& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -222,7 +222,7 @@ bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ra
 	uint32_t index = 0xFFFFFFFF;
 
 	while (0xFFFFFFFF != n) {
-		const auto& node = nodes_[n];
+		auto const& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -266,7 +266,7 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 	const Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	while (0xFFFFFFFF != n) {
-		const auto& node = nodes_[n];
+		auto const& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -302,7 +302,7 @@ bool Tree<Data>::intersect_p(FVector ray_origin, FVector ray_direction, FVector 
 	uint32_t n = 0;
 
 	while (0xFFFFFFFF != n) {
-		const auto& node = nodes_[n];
+		auto const& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -374,7 +374,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const Materials& materials
 					v = math::splat_x(v);
 					float2 uv = data_.interpolate_uv(u, v, i);
 
-					const auto material = materials[data_.material_index(i)];
+					auto const material = materials[data_.material_index(i)];
 
 					opacity += (1.f - opacity) * material->opacity(uv, time, filter, worker);
 					if (opacity >= 1.f) {
@@ -438,11 +438,11 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const Materials& mater
 					v = math::splat_x(v);
 					float2 uv = data_.interpolate_uv(u, v, i);
 
-					const float3 normal = data_.normal(i);
+					float3 const normal = data_.normal(i);
 
-					const auto material = materials[data_.material_index(i)];
+					auto const material = materials[data_.material_index(i)];
 
-					const float3 ta = material->thin_absorption(ray.direction, normal, uv,
+					float3 const ta = material->thin_absorption(ray.direction, normal, uv,
 																time, filter, worker);
 					absorption += (1.f - absorption) * ta;
 					if (math::all_greater_equal(absorption, 1.f)) {

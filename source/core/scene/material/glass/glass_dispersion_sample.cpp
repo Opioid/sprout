@@ -19,8 +19,8 @@ void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 	float3 weight;
 	float wavelength = wavelength_;
 	if (0.f == wavelength) {
-		const float start = Material::Spectrum::start_wavelength();
-		const float end   = Material::Spectrum::end_wavelength();
+		float const start = Material::Spectrum::start_wavelength();
+		float const end   = Material::Spectrum::end_wavelength();
 		wavelength = start + (end - start) * sampler.rng().random_float();
 
 		weight = Material::spectrum_at_wavelength(wavelength);
@@ -51,7 +51,7 @@ void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 
 	layer_.ior_ = ior;
 
-	const float p = sampler.generate_sample_1D();
+	float const p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
 		BSDF::reflect(*this, layer_, sampler, result);

@@ -19,7 +19,7 @@ public:
 
 	void restart();
 
-	void push(const T& task);
+	void push(T const& task);
 
 	bool pop(T& task);
 

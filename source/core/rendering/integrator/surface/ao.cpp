@@ -11,7 +11,7 @@
 
 namespace rendering::integrator::surface {
 
-AO::AO(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings) :
+AO::AO(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings) :
 	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
@@ -33,15 +33,15 @@ float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	occlusion_ray.max_t	 = settings_.radius;
 	occlusion_ray.time   = ray.time;
 
-	const float3 wo = -ray.direction;
-	const auto& material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined,
+	float3 const wo = -ray.direction;
+	auto const& material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined,
 													  sampler_, worker);
 
 	for (uint32_t i = settings_.num_samples; i > 0; --i) {
-		const float2 sample = sampler_.generate_sample_2D();
-		const float3 hs = math::sample_hemisphere_cosine(sample);
+		float2 const sample = sampler_.generate_sample_2D();
+		float3 const hs = math::sample_hemisphere_cosine(sample);
 //		float3 ws = intersection.geo.tangent_to_world(hs);
-		const float3 ws = material_sample.base_layer().tangent_to_world(hs);
+		float3 const ws = material_sample.base_layer().tangent_to_world(hs);
 
 		occlusion_ray.set_direction(ws);
 
@@ -57,7 +57,7 @@ size_t AO::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-AO_factory::AO_factory(const take::Settings& settings, uint32_t num_integrators,
+AO_factory::AO_factory(take::Settings const& settings, uint32_t num_integrators,
 					   uint32_t num_samples, float radius) :
 	Factory(settings),
 	integrators_(memory::allocate_aligned<AO>(num_integrators)) {

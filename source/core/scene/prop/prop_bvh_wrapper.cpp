@@ -44,7 +44,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
-		const auto& node = nodes[n];
+		auto const& node = nodes[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -60,7 +60,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				const auto p = props[i];
+				auto const p = props[i];
 				if (p->intersect(ray, node_stack, intersection.geo)) {
 					prop = p;
 					hit = true;
@@ -73,7 +73,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	}
 
 	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-		const auto p = infinite_props_[i];
+		auto const p = infinite_props_[i];
 		if (p->intersect(ray, node_stack, intersection.geo)) {
 			prop = p;
 			hit = true;
@@ -107,7 +107,7 @@ bool BVH_wrapper::intersect_fast(scene::Ray& ray, shape::Node_stack& node_stack,
 	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
-		const auto& node = nodes[n];
+		auto const& node = nodes[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -123,7 +123,7 @@ bool BVH_wrapper::intersect_fast(scene::Ray& ray, shape::Node_stack& node_stack,
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				const auto p = props[i];
+				auto const p = props[i];
 				if (p->intersect_fast(ray, node_stack, intersection.geo)) {
 					prop = p;
 					hit = true;
@@ -136,7 +136,7 @@ bool BVH_wrapper::intersect_fast(scene::Ray& ray, shape::Node_stack& node_stack,
 	}
 
 	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-		const auto p = infinite_props_[i];
+		auto const p = infinite_props_[i];
 		if (p->intersect_fast(ray, node_stack, intersection.geo)) {
 			prop = p;
 			hit = true;
@@ -168,7 +168,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack, floa
 	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
-		const auto& node = nodes[n];
+		auto const& node = nodes[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -184,7 +184,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack, floa
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				const auto p = props[i];
+				auto const p = props[i];
 				if (p->intersect(ray, node_stack, epsilon)) {
 					hit = true;
 					ray_max_t = simd::load_float(&ray.max_t);
@@ -196,7 +196,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack, floa
 	}
 
 	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-		const auto p = infinite_props_[i];
+		auto const p = infinite_props_[i];
 		if (p->intersect(ray, node_stack, epsilon)) {
 			hit = true;
 		}
@@ -223,7 +223,7 @@ bool BVH_wrapper::intersect_p(const scene::Ray& ray, shape::Node_stack& node_sta
 	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
-		const auto& node = nodes[n];
+		auto const& node = nodes[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (0 == node.num_primitives()) {
@@ -298,7 +298,7 @@ float BVH_wrapper::opacity(const scene::Ray& ray, Sampler_filter filter,
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				const auto p = props[i];
+				auto const p = props[i];
 				opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
 
 				if (opacity >= 1.f) {
@@ -311,7 +311,7 @@ float BVH_wrapper::opacity(const scene::Ray& ray, Sampler_filter filter,
 	}
 
 	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-		const auto p = infinite_props_[i];
+		auto const p = infinite_props_[i];
 		opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
 		if (opacity >= 1.f) {
 			return 1.f;
@@ -360,7 +360,7 @@ float3 BVH_wrapper::thin_absorption(const scene::Ray& ray, Sampler_filter filter
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				const auto p = props[i];
+				auto const p = props[i];
 				absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
 				if (math::all_greater_equal(absorption, 1.f)) {
 					return float3(1.f);
@@ -372,7 +372,7 @@ float3 BVH_wrapper::thin_absorption(const scene::Ray& ray, Sampler_filter filter
 	}
 
 	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-		const auto p = infinite_props_[i];
+		auto const p = infinite_props_[i];
 		absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
 		if (math::all_greater_equal(absorption, 1.f)) {
 			return float3(1.f);

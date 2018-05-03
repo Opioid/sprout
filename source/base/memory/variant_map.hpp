@@ -19,14 +19,14 @@ public:
 	bool query(std::string_view key, float& value) const;
 
 	template<typename T>
-	void set(const std::string& key, T value);
+	void set(std::string const& key, T value);
 
-	void set(const std::string& key, bool value);
-	void set(const std::string& key, int32_t value);
-	void set(const std::string& key, uint32_t value);
-	void set(const std::string& key, float value);
+	void set(std::string const& key, bool value);
+	void set(std::string const& key, int32_t value);
+	void set(std::string const& key, uint32_t value);
+	void set(std::string const& key, float value);
 
-	void inherit(const Variant_map& other, const std::string& key);
+	void inherit(const Variant_map& other, std::string const& key);
 	void inherit_except(const Variant_map& other, std::string_view key);
 
 	bool operator<(const Variant_map& other) const;

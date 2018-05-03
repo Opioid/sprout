@@ -10,7 +10,7 @@ class AABB;
 struct Simd_AABB {
 	Simd_AABB() = default;
 	Simd_AABB(const AABB& box);
-	Simd_AABB(const float* min, const float* max);
+	Simd_AABB(float const* min, float const* max);
 	Simd_AABB(FVector min, FVector max);
 
 	void merge_assign(const Simd_AABB& other);

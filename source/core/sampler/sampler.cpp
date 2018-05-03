@@ -19,7 +19,7 @@ Sampler::~Sampler() {
 
 void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
 					 uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) {
-	const uint32_t num_samples = num_iterations * num_samples_per_iteration;
+	uint32_t const num_samples = num_iterations * num_samples_per_iteration;
 
 	if (num_samples != num_samples_
 	||  num_samples_per_iteration != num_samples_per_iteration_
@@ -42,7 +42,7 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
 }
 
 void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) {
-	const uint32_t sample = iteration * num_samples_per_iteration_;
+	uint32_t const sample = iteration * num_samples_per_iteration_;
 
 	for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
 		current_sample_2D_[i] = sample;

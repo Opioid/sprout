@@ -10,7 +10,7 @@ class Identifiable {
 
 public:
 
-	Identifiable(const std::string& name) {
+	Identifiable(std::string const& name) {
 		type_id_ = id_manager.id(name);
 	}
 
@@ -18,7 +18,7 @@ public:
 		return type_id_;
 	}
 
-	static const std::string& name() {
+	static std::string const& name() {
 		return id_manager.name(type_id_);
 	}
 

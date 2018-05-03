@@ -11,7 +11,7 @@ void Uncharted::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t
 					  const image::Float4& source, image::Float4& destination) {
 	float norm = normalization_factor_;
 	for (int32_t i = begin; i < end; ++i) {
-		const float4& color = source.at(i);
+		float4 const& color = source.at(i);
 
 		destination.at(i) = float4(norm * tonemap_function(color[0]),
 								   norm * tonemap_function(color[1]),

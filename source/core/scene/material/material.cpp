@@ -129,7 +129,7 @@ bool Material::is_emissive() const {
 		return true;
 	}
 
-	const float3 e = average_radiance(1.f);
+	float3 const e = average_radiance(1.f);
 	return math::any_greater_zero(e);
 }
 
@@ -137,24 +137,24 @@ bool Material::is_two_sided() const {
 	return two_sided_;
 }
 
-void Material::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
+void Material::set_parameter(std::string const& /*name*/, const json::Value& /*value*/) {}
 
 float3 Material::rainbow_[Num_bands];
 
 void Material::init_rainbow() {
 	Spectrum::init(380.f, 720.f);
 
-//	const float start = Spectrum::start_wavelength();
-//	const float end   = Spectrum::end_wavelength();
+//	float const start = Spectrum::start_wavelength();
+//	float const end   = Spectrum::end_wavelength();
 
 	float3 sum_rgb(0.f);
 	for (int32_t i = 0; i < Num_bands; ++i) {
-	//	const float wl = start + (end - start) * ((static_cast<float>(i) + 0.5f) / nb);
+	//	float const wl = start + (end - start) * ((static_cast<float>(i) + 0.5f) / nb);
 		Spectrum temp;
 		temp.clear(0.f);
 	//	temp.set_at_wavelength(wl, 1.f);
 		temp.set_bin(i, 1.f);
-		const float3 rgb = spectrum::XYZ_to_linear_RGB(temp.normalized_XYZ());
+		float3 const rgb = spectrum::XYZ_to_linear_RGB(temp.normalized_XYZ());
 		rainbow_[i] = math::saturate(rgb);
 		sum_rgb += rgb;
 	}
@@ -170,15 +170,15 @@ void Material::init_rainbow() {
 }
 
 float3 Material::spectrum_at_wavelength(float lambda, float value) {
-	const float start = Spectrum::start_wavelength();
-	const float end   = Spectrum::end_wavelength();
-	const float nb    = static_cast<float>(Num_bands);
+	float const start = Spectrum::start_wavelength();
+	float const end   = Spectrum::end_wavelength();
+	float const nb    = static_cast<float>(Num_bands);
 
-	const uint32_t idx = static_cast<uint32_t>(((lambda - start) / (end - start)) * nb);
+	uint32_t const idx = static_cast<uint32_t>(((lambda - start) / (end - start)) * nb);
 	if (idx >= Num_bands) {
 		return float3::identity();
 	} else {
-		const float weight = value * (1.f / 3.f);
+		float const weight = value * (1.f / 3.f);
 		return weight * rainbow_[idx];
 	}
 }

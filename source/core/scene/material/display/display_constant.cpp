@@ -48,7 +48,7 @@ size_t Constant::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Constant::set_emission(const float3& radiance) {
+void Constant::set_emission(float3 const& radiance) {
 	emission_ = radiance;
 }
 

@@ -17,7 +17,7 @@
 
 namespace rendering::integrator::volume {
 
-Tracking_multi::Tracking_multi(rnd::Generator& rng, const take::Settings& take_settings) :
+Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings) :
 	Integrator(rng, take_settings) {}
 
 void Tracking_multi::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
@@ -25,15 +25,15 @@ void Tracking_multi::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_
 void Tracking_multi::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 /*
 static inline void max_probabilities(float mt,
-									 const float3& mu_a,
-									 const float3& mu_s,
-									 const float3& mu_n,
+									 float3 const& mu_a,
+									 float3 const& mu_s,
+									 float3 const& mu_n,
 									 float& pa, float& ps, float& pn,
 									 float3& wa, float3& ws, float3& wn) {
-	const float ma = math::max_component(mu_a);
-	const float ms = math::max_component(mu_s);
-	const float mn = math::max_component(mu_n);
-	const float c = 1.f / (ma + ms + mn);
+	float const ma = math::max_component(mu_a);
+	float const ms = math::max_component(mu_s);
+	float const mn = math::max_component(mu_n);
+	float const c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
@@ -45,16 +45,16 @@ static inline void max_probabilities(float mt,
 }
 
 static inline void max_history_probabilities(float mt,
-											 const float3& mu_a,
-											 const float3& mu_s,
-											 const float3& mu_n,
-											 const float3& w,
+											 float3 const& mu_a,
+											 float3 const& mu_s,
+											 float3 const& mu_n,
+											 float3 const& w,
 											 float& pa, float& ps, float& pn,
 											 float3& wa, float3& ws, float3& wn) {
-	const float ma = math::max_component(mu_a * w);
-	const float ms = math::max_component(mu_s * w);
-	const float mn = math::max_component(mu_n * w);
-	const float c = 1.f / (ma + ms + mn);
+	float const ma = math::max_component(mu_a * w);
+	float const ms = math::max_component(mu_s * w);
+	float const mn = math::max_component(mu_n * w);
+	float const c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
@@ -66,15 +66,15 @@ static inline void max_history_probabilities(float mt,
 }
 
 static inline void max_history_probabilities(float mt,
-											 const float3& mu_a,
-											 const float3& mu_s,
-											 const float3& mu_n,
-											 const float3& w,
+											 float3 const& mu_a,
+											 float3 const& mu_s,
+											 float3 const& mu_n,
+											 float3 const& w,
 											 float& pn, float3& wn) {
-	const float ma = math::max_component(mu_a * w);
-	const float ms = math::max_component(mu_s * w);
-	const float mn = math::max_component(mu_n * w);
-	const float c = 1.f / (ma + ms + mn);
+	float const ma = math::max_component(mu_a * w);
+	float const ms = math::max_component(mu_s * w);
+	float const mn = math::max_component(mu_n * w);
+	float const c = 1.f / (ma + ms + mn);
 
 	pn = mn * c;
 
@@ -82,15 +82,15 @@ static inline void max_history_probabilities(float mt,
 }
 
 static inline void avg_probabilities(float mt,
-									 const float3& mu_a,
-									 const float3& mu_s,
-									 const float3& mu_n,
+									 float3 const& mu_a,
+									 float3 const& mu_s,
+									 float3 const& mu_n,
 									 float& pa, float& ps, float& pn,
 									 float3& wa, float3& ws, float3& wn) {
-	const float ma = math::average(mu_a);
-	const float ms = math::average(mu_s);
-	const float mn = math::average(mu_n);
-	const float c = 1.f / (ma + ms + mn);
+	float const ma = math::average(mu_a);
+	float const ms = math::average(mu_s);
+	float const mn = math::average(mu_n);
+	float const c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
@@ -102,16 +102,16 @@ static inline void avg_probabilities(float mt,
 }
 
 static inline void avg_history_probabilities(float mt,
-											 const float3& mu_a,
-											 const float3& mu_s,
-											 const float3& mu_n,
-											 const float3& w,
+											 float3 const& mu_a,
+											 float3 const& mu_s,
+											 float3 const& mu_n,
+											 float3 const& w,
 											 float& pa, float& ps, float& pn,
 											 float3& wa, float3& ws, float3& wn) {
-	const float ma = 0.f;//math::average(mu_a * w);
-	const float ms = math::average(mu_s * w);
-	const float mn = math::average(mu_n * w);
-	const float c = 1.f / (ma + ms + mn);
+	float const ma = 0.f;//math::average(mu_a * w);
+	float const ms = math::average(mu_s * w);
+	float const mn = math::average(mu_n * w);
+	float const c = 1.f / (ma + ms + mn);
 
 	pa = ma * c;
 	ps = ms * c;
@@ -123,14 +123,14 @@ static inline void avg_history_probabilities(float mt,
 }
 
 static inline void avg_history_probabilities(float mt,
-											 const float3& mu_s,
-											 const float3& mu_n,
-											 const float3& w,
+											 float3 const& mu_s,
+											 float3 const& mu_n,
+											 float3 const& w,
 											 float& ps, float& pn,
 											 float3& ws, float3& wn) {
-	const float ms = math::average(mu_s * w);
-	const float mn = math::average(mu_n * w);
-	const float c = 1.f / (ms + mn);
+	float const ms = math::average(mu_s * w);
+	float const mn = math::average(mu_n * w);
+	float const c = 1.f / (ms + mn);
 
 	ps = ms * c;
 	pn = mn * c;
@@ -139,7 +139,7 @@ static inline void avg_history_probabilities(float mt,
 	wn = (mu_n / (mt * pn));
 }
 */
-float3 Tracking_multi::transmittance(const Ray& ray, Worker& worker) {
+float3 Tracking_multi::transmittance(Ray const& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
 
@@ -152,7 +152,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		return false;
 	}
 
-	const float d = ray.max_t;
+	float const d = ray.max_t;
 
 	if (d - ray.min_t < 0.0005f) {
 		li = float3(0.f);
@@ -163,13 +163,13 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 	SOFT_ASSERT(!worker.interface_stack().empty());
 
-	const auto interface = worker.interface_stack().top();
+	auto const interface = worker.interface_stack().top();
 
-	const auto& material = *interface->material();
+	auto const& material = *interface->material();
 
 	if (!material.is_scattering_volume()) {
 		// Basically the "glass" case
-		const float3 mu_a = material.absorption_coefficient(interface->uv, filter, worker);
+		float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
 		li = float3(0.f);
 		transmittance = attenuation(d, mu_a);
@@ -179,14 +179,14 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 	if (material.is_heterogeneous_volume()) {
 		Transformation temp;
-		const auto& transformation = interface->prop->transformation_at(ray.time, temp);
+		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 
-		const float mt = material.majorant_mu_t();
+		float const mt = material.majorant_mu_t();
 
 		float3 w(1.f);
 
 		for (float t = ray.min_t;;) {
-			const float r0 = rng_.random_float();
+			float const r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) / mt;
 			if (t > d) {
 				li = float3(0.f);
@@ -195,27 +195,27 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				return true;
 			}
 
-			const float3 p = ray.point(t);
+			float3 const p = ray.point(t);
 
 			float3 mu_a, mu_s;
 			material.collision_coefficients(p, transformation, filter, worker, mu_a, mu_s);
 
-			const float3 mu_t = mu_a + mu_s;
+			float3 const mu_t = mu_a + mu_s;
 
-			const float3 mu_n = float3(mt) - mu_t;
+			float3 const mu_n = float3(mt) - mu_t;
 
 //			float ps, pn;
 //			float3 ws, wn;
 //			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
 
-			const float ms = math::average(mu_s * w);
-			const float mn = math::average(mu_n * w);
-			const float c = 1.f / (ms + mn);
+			float const ms = math::average(mu_s * w);
+			float const mn = math::average(mu_n * w);
+			float const c = 1.f / (ms + mn);
 
-			const float ps = ms * c;
-			const float pn = mn * c;
+			float const ps = ms * c;
+			float const pn = mn * c;
 
-			const float r1 = rng_.random_float();
+			float const r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
 				SOFT_ASSERT(math::all_finite(ws));
 
@@ -225,7 +225,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
-				const float3 ws = mu_s / (mt * ps);
+				float3 const ws = mu_s / (mt * ps);
 
 				li = float3(0.f);
 			//	transmittance = float3(1.f);
@@ -233,7 +233,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				transmittance = w * ws;
 				return true;
 			} else {
-				const float3 wn = mu_n / (mt * pn);
+				float3 const wn = mu_n / (mt * pn);
 
 				SOFT_ASSERT(math::all_finite(wn));
 
@@ -244,17 +244,17 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		float3 mu_a, mu_s;
 		material.collision_coefficients(interface->uv, filter, worker, mu_a, mu_s);
 
-		const float3 mu_t = mu_a + mu_s;
+		float3 const mu_t = mu_a + mu_s;
 
-		const float mt  = math::max_component(mu_t);
-		const float imt = 1.f / mt;
+		float const mt  = math::max_component(mu_t);
+		float const imt = 1.f / mt;
 
-		const float3 mu_n = float3(mt) - mu_t;
+		float3 const mu_n = float3(mt) - mu_t;
 
 		float3 w(1.f);
 
 		for (float t = ray.min_t;;) {
-			const float r0 = rng_.random_float();
+			float const r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) * imt;
 			if (t > d) {
 				li = float3(0.f);
@@ -267,14 +267,14 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 	//		float3 ws, wn;
 	//		avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
 
-			const float ms = math::average(mu_s * w);
-			const float mn = math::average(mu_n * w);
-			const float c = 1.f / (ms + mn);
+			float const ms = math::average(mu_s * w);
+			float const mn = math::average(mu_n * w);
+			float const c = 1.f / (ms + mn);
 
-			const float ps = ms * c;
-			const float pn = mn * c;
+			float const ps = ms * c;
+			float const pn = mn * c;
 
-			const float r1 = rng_.random_float();
+			float const r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
 				intersection.prop = interface->prop;
 				intersection.geo.p = ray.point(t);
@@ -282,7 +282,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
-				const float3 ws = mu_s / (mt * ps);
+				float3 const ws = mu_s / (mt * ps);
 
 				li = float3(0.f);
 			//	transmittance = float3(1.f);
@@ -290,7 +290,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				transmittance = w * ws;
 				return true;
 			} else {
-				const float3 wn = mu_n / (mt * pn);
+				float3 const wn = mu_n / (mt * pn);
 
 				SOFT_ASSERT(math::all_finite(wn));
 
@@ -304,7 +304,7 @@ size_t Tracking_multi::num_bytes() const {
 	return sizeof(*this);
 }
 
-Tracking_multi_factory::Tracking_multi_factory(const take::Settings& take_settings,
+Tracking_multi_factory::Tracking_multi_factory(take::Settings const& take_settings,
 											   uint32_t num_integrators) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Tracking_multi>(num_integrators)) {}

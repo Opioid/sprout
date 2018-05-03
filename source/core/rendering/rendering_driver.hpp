@@ -42,7 +42,7 @@ public:
 
 	scene::camera::Camera& camera();
 
-	const scene::Scene& scene() const;
+	scene::Scene const& scene() const;
 
 	size_t num_bytes() const;
 

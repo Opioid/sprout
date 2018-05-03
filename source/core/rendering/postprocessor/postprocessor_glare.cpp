@@ -49,12 +49,12 @@ static inline float f3(float theta, float lambda) {
 }
 
 void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
-	const auto dim = camera.sensor_dimensions();
+	auto const dim = camera.sensor_dimensions();
 	dimensions_ = dim;
 	high_pass_ = memory::allocate_aligned<float3>(dim[0] * dim[1]);
 
 	// This seems a bit arbitrary
-	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
+	float const solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
 	kernel_dimensions_ = 2 * dim;
 	int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
@@ -209,7 +209,7 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 		//float intensity = intensity_;
 		Vector intensity = simd::set_float4(intensity_);
 
-		const auto d = destination.description().dimensions.xy();
+		auto const d = destination.description().dimensions.xy();
 
 		int32_t kd0 = kernel_dimensions_[0];
 

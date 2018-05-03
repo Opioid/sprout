@@ -27,7 +27,7 @@ public:
 
 	void store(int32_t index, T v);
 
-	const T& at(int32_t index) const;
+	T const& at(int32_t index) const;
 	T& at(int32_t index);
 
 	T load(int32_t x, int32_t y) const;
@@ -36,21 +36,21 @@ public:
 
 	T load_element(int32_t x, int32_t y, int32_t element) const;
 
-	const T& at(int32_t x, int32_t y) const;
+	T const& at(int32_t x, int32_t y) const;
 	T& at(int32_t x, int32_t y);
 
-	const T& at_element(int32_t x, int32_t y, int32_t element) const;
+	T const& at_element(int32_t x, int32_t y, int32_t element) const;
 	T& at_element(int32_t x, int32_t y, int32_t element);
 
 	T load(int32_t x, int32_t y, int32_t z) const;
 
-	const T& at(int32_t x, int32_t y, int32_t z) const;
+	T const& at(int32_t x, int32_t y, int32_t z) const;
 	T& at(int32_t x, int32_t y, int32_t z);
 
-	const T& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
+	T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 	T& at_element(int32_t x, int32_t y, int32_t z, int32_t element);
 
-	void gather(const int4& xy_xy1, T c[4]) const;
+	void gather(int4 const& xy_xy1, T c[4]) const;
 
 	void square_transpose();
 

@@ -28,7 +28,7 @@ float2 read_float2(const json::Value& value);
 float2 read_float2(const json::Value& value, std::string_view name, float2 default_value);
 
 float3 read_float3(const json::Value& value);
-float3 read_float3(const json::Value& value, std::string_view name, const float3& default_value);
+float3 read_float3(const json::Value& value, std::string_view name, float3 const& default_value);
 
 float4 read_float4(const rapidjson::Value& value);
 
@@ -47,13 +47,13 @@ uint3 read_uint3(const json::Value& value);
 
 // math::quaternion read_quaternion(const rapidjson::Value& value);
 
-float3x3 create_rotation_matrix(const float3& xyz);
+float3x3 create_rotation_matrix(float3 const& xyz);
 float3x3 read_rotation_matrix(const json::Value& value);
 math::Quaternion read_local_rotation(const json::Value& value);
 
 std::string read_string(const json::Value& value);
 std::string read_string(const json::Value& value, std::string_view name,
-						const std::string& default_value = "");
+						std::string const& default_value = "");
 
 void read_transformation(const json::Value& value, math::Transformation& transformation);
 

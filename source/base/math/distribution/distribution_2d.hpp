@@ -15,8 +15,8 @@ public:
 
 	using Distribution_impl = T;
 
-	void init(const float* data, int2 dimensions);
-	void init(const float* data, int2 dimensions, thread::Pool& pool);
+	void init(float const* data, int2 dimensions);
+	void init(float const* data, int2 dimensions, thread::Pool& pool);
 	void init(std::vector<Distribution_impl>& conditional);
 
 	struct Continuous { float2 uv; float pdf; };

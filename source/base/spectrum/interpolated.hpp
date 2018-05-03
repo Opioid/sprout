@@ -12,7 +12,7 @@ public:
 
 	Interpolated() = default;
 
-	Interpolated(const float* wavelengths, const float* intensities, size_t len);
+	Interpolated(float const* wavelengths, float const* intensities, size_t len);
 
 	float start_wavelength() const;
 	float end_wavelength() const;

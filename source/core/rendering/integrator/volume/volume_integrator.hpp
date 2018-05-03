@@ -14,10 +14,10 @@ class Integrator : public integrator::Integrator {
 
 public:
 
-	Integrator(rnd::Generator& rng, const take::Settings& settings);
+	Integrator(rnd::Generator& rng, take::Settings const& settings);
 	virtual ~Integrator();
 
-	virtual float3 transmittance(const Ray& ray, Worker& worker) = 0;
+	virtual float3 transmittance(Ray const& ray, Worker& worker) = 0;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,
@@ -28,16 +28,16 @@ class Factory {
 
 public:
 
-	Factory(const take::Settings& settings,	uint32_t num_integrators);
+	Factory(take::Settings const& settings,	uint32_t num_integrators);
 	virtual ~Factory();
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const = 0;
 
 protected:
 
-	const take::Settings& take_settings_;
+	take::Settings const& take_settings_;
 
-	const uint32_t num_integrators_;
+	uint32_t const num_integrators_;
 };
 
 }}

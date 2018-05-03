@@ -14,8 +14,8 @@ Provider::Provider() : resource::Provider<Image>("Image") {}
 
 Provider::~Provider() {}
 
-std::shared_ptr<Image> Provider::load(const std::string& filename,
-									  const memory::Variant_map& options,
+std::shared_ptr<Image> Provider::load(std::string const& filename,
+									  memory::Variant_map const& options,
 									  resource::Manager& manager) {
 	if ("proc:flakes" == filename) {
 		return flakes_provider_.create_normal_map(options);
@@ -55,9 +55,9 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 	throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
 }
 
-std::shared_ptr<Image> Provider::load(const void* /*data*/,
-									  const std::string& /*mount_folder*/,
-									  const memory::Variant_map& /*options*/,
+std::shared_ptr<Image> Provider::load(void const* /*data*/,
+									  std::string const& /*mount_folder*/,
+									  memory::Variant_map const& /*options*/,
 									  resource::Manager& /*manager*/) {
 	return nullptr;
 }

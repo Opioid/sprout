@@ -71,14 +71,14 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_color(const float3& a, const float3& b) {
+void Material::set_color(float3 const& a, float3 const& b) {
 	color_a_ = a;
 	color_b_ = b;
 }
 
 void Material::set_roughness(float roughness) {
 	roughness = ggx::clamp_roughness(roughness);
-	const float alpha = roughness * roughness;
+	float const alpha = roughness * roughness;
 	alpha_  = alpha;
 	alpha2_ = alpha * alpha;
 }
@@ -91,16 +91,16 @@ void Material::set_flakes_normal_map(const Texture_adapter& normal_map) {
 	flakes_normal_map_ = normal_map;
 }
 
-void Material::set_flakes_ior(const float3& ior) {
+void Material::set_flakes_ior(float3 const& ior) {
 	flakes_ior_ = ior;
 }
 
-void Material::set_flakes_absorption(const float3& absorption) {
+void Material::set_flakes_absorption(float3 const& absorption) {
 	flakes_absorption_ = absorption;
 }
 
 void Material::set_flakes_roughness(float roughness) {
-	const float alpha = roughness * roughness;
+	float const alpha = roughness * roughness;
 	flakes_alpha_  = alpha;
 	flakes_alpha2_ = alpha * alpha;
 }
@@ -109,14 +109,14 @@ void Material::set_coating_weight(float weight) {
 	coating_.weight_ = weight;
 }
 
-void Material::set_coating_color(const float3& color) {
+void Material::set_coating_color(float3 const& color) {
 	coating_.color_ = color;
 }
 
 void Material::set_clearcoat(float ior, float roughness) {
 	ior_ = ior;
 	coating_.f0_ = fresnel::schlick_f0(1.f, ior);
-	const float alpha = roughness * roughness;
+	float const alpha = roughness * roughness;
 	coating_.alpha_  = alpha;
 	coating_.alpha2_ = alpha * alpha;
 }

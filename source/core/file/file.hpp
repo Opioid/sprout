@@ -1,8 +1,7 @@
-#pragma once
+#ifndef SU_CORE_FILE_FILE_HPP
+#define SU_CORE_FILE_FILE_HPP
 
-#include <istream>
-#include <memory>
-#include <string>
+#include <iosfwd>
 
 namespace file {
 
@@ -17,3 +16,5 @@ enum class Type {
 Type query_type(std::istream& stream);
 
 }
+
+#endif

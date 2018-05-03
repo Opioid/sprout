@@ -61,7 +61,7 @@ public:
 
 protected:
 
-	const uint32_t num_samplers_;
+	uint32_t const num_samplers_;
 };
 
 }

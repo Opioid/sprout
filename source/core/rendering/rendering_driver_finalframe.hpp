@@ -31,7 +31,7 @@ private:
 						 float normalized_frame_slice,
 						 progress::Sink& progressor);
 
-	static uint32_t calculate_progress_range(const scene::Scene& scene,
+	static uint32_t calculate_progress_range(scene::Scene const& scene,
 											 const scene::camera::Camera& camera,
 											 uint32_t num_tiles,
 											 uint32_t num_samples_per_iteration);

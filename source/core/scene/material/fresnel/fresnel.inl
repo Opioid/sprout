@@ -7,7 +7,7 @@
 namespace scene::material::fresnel {
 
 static inline float schlick_f0(float n0, float n1) {
-	const float t = (n0 - n1) / (n0 + n1);
+	float const t = (n0 - n1) / (n0 + n1);
 	return t * t;
 }
 
@@ -18,14 +18,14 @@ static inline float schlick(float wo_dot_h, float f0) {
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-static inline float3 schlick(float wo_dot_h, const float3& f0) {
+static inline float3 schlick(float wo_dot_h, f_float3 f0) {
 	return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
 	// Gaussian approximation
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-static inline float3 conductor(float wo_dot_h, const float3& eta, const float3& k) {
+static inline float3 conductor(float wo_dot_h, f_float3 eta, f_float3 k) {
 	float3 tmp_f = eta * eta + k * k;
 
 	float wo_dot_h2 = wo_dot_h * wo_dot_h;
@@ -42,10 +42,10 @@ static inline float3 conductor(float wo_dot_h, const float3& eta, const float3& 
 }
 
 static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
-	const float r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t)
+	float const r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t)
 					/ (eta_t * cos_theta_i + eta_i * cos_theta_t);
 
-	const float r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t)
+	float const r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t)
 					/ (eta_i * cos_theta_i + eta_t * cos_theta_t);
 
 	return 0.5f * (r_p * r_p + r_o * r_o);
@@ -121,19 +121,19 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
 	return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
-static inline float3 schlick_blending(float wo_dot_h, const float3& a, const float3& b, float f0) {
+static inline float3 schlick_blending(float wo_dot_h, f_float3 a, f_float3 b, float f0) {
 	return math::lerp(a, b, schlick(wo_dot_h, f0));
 }
 
 inline Schlick::Schlick(float f0) : f0_(f0) {}
 
-inline Schlick::Schlick(const float3& f0) : f0_(f0) {}
+inline Schlick::Schlick(f_float3 f0) : f0_(f0) {}
 
 inline float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 
-inline Schlick_blending::Schlick_blending(const float3& a, const float3& b, float f0) :
+inline Schlick_blending::Schlick_blending(f_float3 a, f_float3 b, float f0) :
 	a_(a), b_(b), f0_(f0) {}
 
 inline float3 Schlick_blending::operator()(float wo_dot_h) const {
@@ -149,7 +149,7 @@ inline float3 Thinfilm::operator()(float wo_dot_h) const {
 	return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
 }
 
-inline Conductor::Conductor(const float3& eta, const float3& k) : eta_(eta), k_(k) {}
+inline Conductor::Conductor(f_float3 eta, f_float3 k) : eta_(eta), k_(k) {}
 
 inline float3 Conductor::operator()(float wo_dot_h) const {
 	return conductor(wo_dot_h, eta_, k_);
@@ -157,14 +157,14 @@ inline float3 Conductor::operator()(float wo_dot_h) const {
 
 inline Constant::Constant(float f) : f_(f) {}
 
-inline Constant::Constant(const float3& f) : f_(f) {}
+inline Constant::Constant(f_float3 f) : f_(f) {}
 
 inline float3 Constant::operator()(float /*wo_dot_h*/) const {
 	return f_;
 }
 
 template<typename T>
-Weighted<T>::Weighted(const T& fresnel, float weight) : fresnel_(fresnel), weight_(weight) {}
+Weighted<T>::Weighted(T const& fresnel, float weight) : fresnel_(fresnel), weight_(weight) {}
 
 template<typename T>
 float3 Weighted<T>::operator()(float wo_dot_h) const {

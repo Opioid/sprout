@@ -30,7 +30,7 @@ const material::Sample& Material_clearcoat::sample(f_float3 wo, const Renderstat
 void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	coating_.f0_ = fresnel::schlick_f0(1.f, ior);
 	roughness = ggx::clamp_roughness(roughness);
-	const float alpha = roughness * roughness;
+	float const alpha = roughness * roughness;
 	coating_.alpha_  = alpha;
 	coating_.alpha2_ = alpha * alpha;
 }
@@ -63,7 +63,7 @@ const material::Sample& Material_thinfilm::sample(f_float3 wo, const Renderstate
 void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) {
 	coating_.ior_ = ior;
 	roughness = ggx::clamp_roughness(roughness);
-	const float alpha = roughness * roughness;
+	float const alpha = roughness * roughness;
 	coating_.alpha_  = alpha;
 	coating_.alpha2_ = alpha * alpha;
 	coating_.thickness_ = thickness;

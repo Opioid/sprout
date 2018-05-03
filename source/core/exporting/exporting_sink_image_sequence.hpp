@@ -13,7 +13,7 @@ class Image_sequence : public Sink {
 
 public:
 
-	Image_sequence(const std::string& filename, std::unique_ptr<image::Writer> writer);
+	Image_sequence(std::string const& filename, std::unique_ptr<image::Writer> writer);
 
 	virtual void write(const image::Float4& image, uint32_t frame,
 					   thread::Pool& pool) override final;

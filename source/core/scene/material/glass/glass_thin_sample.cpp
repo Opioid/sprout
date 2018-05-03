@@ -21,7 +21,7 @@ bxdf::Result Sample_thin::evaluate(f_float3 /*wi*/) const {
 }
 
 void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
-	const float p = sampler.generate_sample_1D();
+	float const p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
 		BSDF::reflect(*this, layer_, sampler, result);
@@ -40,7 +40,7 @@ bool Sample_thin::is_translucent() const {
 	return true;
 }
 
-void Sample_thin::Layer::set(const float3& refraction_color, const float3& absorption_coefficient,
+void Sample_thin::Layer::set(float3 const& refraction_color, float3 const& absorption_coefficient,
 							 float ior, float ior_outside, float thickness) {
 	color_ = refraction_color;
 	absorption_coefficient_ = absorption_coefficient;
@@ -49,7 +49,7 @@ void Sample_thin::Layer::set(const float3& refraction_color, const float3& absor
 	thickness_ = thickness;
 }
 
-float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
+float Sample_thin::BSDF::reflect(const Sample_thin& sample, Layer const& layer,
 								 sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
 	float3 n = layer.n_;
 	float eta_i = 1.f / layer.ior_;
@@ -61,7 +61,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	float const n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
 	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -85,7 +85,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
 	return 1.f;
 }
 
-float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
+float Sample_thin::BSDF::refract(const Sample_thin& sample, Layer const& layer,
 								 sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
 	float3 n = layer.n_;
 	float eta_i = 1.f / layer.ior_;
@@ -97,7 +97,7 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	float const n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
 	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -111,7 +111,7 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 	// fresnel has to be the same value that would have been computed by BRDF
 	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
-	const float n_dot_wi = layer.clamp_n_dot(sample.wo_);
+	float const n_dot_wi = layer.clamp_n_dot(sample.wo_);
 	float approximated_distance = layer.thickness_ / n_dot_wi;
 	float3 attenuation = rendering::attenuation(approximated_distance,
 												layer.absorption_coefficient_);

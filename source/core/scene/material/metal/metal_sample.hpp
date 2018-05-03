@@ -9,14 +9,14 @@ class Sample_isotropic : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const override final;
+	virtual Layer const& base_layer() const override final;
 
 	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Layer : material::Sample::Layer {
-		void set(const float3& ior, const float3& absorption, float roughness);
+		void set(float3 const& ior, float3 const& absorption, float roughness);
 		float3 ior_;
 		float3 absorption_;
 		float alpha_;
@@ -30,14 +30,14 @@ class Sample_anisotropic : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const override final;
+	virtual Layer const& base_layer() const override final;
 
 	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Layer : material::Sample::Layer {
-		void set(const float3& ior, const float3& absorption, float2 roughness);
+		void set(float3 const& ior, float3 const& absorption, float2 roughness);
 
 		float3 ior_;
 		float3 absorption_;

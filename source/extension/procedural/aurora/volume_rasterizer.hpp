@@ -15,11 +15,11 @@ public:
 
 	void resolve(image::Byte3& target) const;
 
-	void set_brush(const float3& color);
+	void set_brush(float3 const& color);
 
 	void clear();
 
-	void splat(f_float3 position, const float3& color);
+	void splat(f_float3 position, float3 const& color);
 
 	float3* data();
 

@@ -19,17 +19,17 @@ public:
 
 	virtual size_t num_bytes() const override final;
 
-	void set_color(const float3& a, const float3& b);
+	void set_color(float3 const& a, float3 const& b);
 	void set_roughness(float roughness);
 
 	void set_flakes_mask(const Texture_adapter& mask);
 	void set_flakes_normal_map(const Texture_adapter& normal_map);
-	void set_flakes_ior(const float3& ior);
-	void set_flakes_absorption(const float3& absorption);
+	void set_flakes_ior(float3 const& ior);
+	void set_flakes_absorption(float3 const& absorption);
 	void set_flakes_roughness(float roughness);
 
 	void set_coating_weight(float weight);
-	void set_coating_color(const float3& color);
+	void set_coating_color(float3 const& color);
 
 	void set_clearcoat(float ior, float roughness);
 

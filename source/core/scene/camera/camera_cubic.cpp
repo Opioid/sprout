@@ -76,7 +76,7 @@ float Cubic::pixel_solid_angle() const {
 	return 1.f;
 }
 
-bool Cubic::generate_ray(const sampler::Camera_sample& sample,
+bool Cubic::generate_ray(sampler::Camera_sample const& sample,
 						 uint32_t view, scene::Ray& ray) const {
 	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -96,7 +96,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample,
 
 void Cubic::on_update(Worker& /*worker*/) {}
 
-void Cubic::set_parameter(const std::string& /*name*/,
+void Cubic::set_parameter(std::string const& /*name*/,
 						  const json::Value& /*value*/) {}
 
 }

@@ -49,10 +49,10 @@ public:
 	Loader(resource::Manager& manager, const Material_ptr& fallback_material);
     ~Loader();
 
-	bool load(const std::string& filename, const std::string& take_name, Scene& scene);
+	bool load(std::string const& filename, std::string const& take_name, Scene& scene);
 
-	void register_extension_provider(const std::string& name, entity::Extension_provider* provider);
-    void register_mesh_generator(const std::string& name, shape::triangle::Generator* generator);
+	void register_extension_provider(std::string const& name, entity::Extension_provider* provider);
+    void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
 
 	std::shared_ptr<shape::Shape> box();
 	std::shared_ptr<shape::Shape> canopy();
@@ -68,22 +68,22 @@ private:
 
 	void set_visibility(entity::Entity* entity, const json::Value& visibility_value);
 
-	prop::Prop* load_prop(const json::Value& prop_value, const std::string& name, Scene& scene);
+	prop::Prop* load_prop(const json::Value& prop_value, std::string const& name, Scene& scene);
 
 	void load_light(const json::Value& light_value, prop::Prop* prop, Scene& scene);
 
-	entity::Entity* load_extension(const std::string& type, const json::Value& extension_value,
-								   const std::string& name, Scene& scene);
+	entity::Entity* load_extension(std::string const& type, const json::Value& extension_value,
+								   std::string const& name, Scene& scene);
 
 	std::shared_ptr<shape::Shape> load_shape(const json::Value& shape_value);
 
-	std::shared_ptr<shape::Shape> shape(const std::string& type,
+	std::shared_ptr<shape::Shape> shape(std::string const& type,
 										const json::Value& shape_value) const;
 
 	void load_materials(const json::Value& materials_value, Scene& scene,
 						Materials& materials);
 
-	Material_ptr load_material(const std::string& name, Scene& scene);
+	Material_ptr load_material(std::string const& name, Scene& scene);
 
 	resource::Manager& resource_manager_;
 

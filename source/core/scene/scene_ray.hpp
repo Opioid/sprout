@@ -14,7 +14,7 @@ struct Ray : public math::Ray {
 //	using Properties = flags::Flags<Property>;
 
 	Ray() = default;
-	Ray(const float3& origin, const float3& direction,
+	Ray(float3 const& origin, float3 const& direction,
 		float min_t = 0.f, float max_t = 1.f, uint32_t depth = 0,
 		float time = 0.f, float wavelength = 0.f);
 

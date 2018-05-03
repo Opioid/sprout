@@ -25,11 +25,11 @@ public:
 	Provider();
 	~Provider();
 
-	virtual Material_ptr load(const std::string& filename, const memory::Variant_map& options,
+	virtual Material_ptr load(std::string const& filename, memory::Variant_map const& options,
 							  resource::Manager& manager) override final;
 
-	virtual Material_ptr load(const void* data, const std::string& mount_folder,
-							  const memory::Variant_map& options,
+	virtual Material_ptr load(void const* data, std::string const& mount_folder,
+							  memory::Variant_map const& options,
 							  resource::Manager& manager) override final;
 
 	virtual size_t num_bytes() const override final;
@@ -38,7 +38,7 @@ public:
 
 private:
 
-	Material_ptr load(const json::Value& value, const std::string& mount_folder,
+	Material_ptr load(const json::Value& value, std::string const& mount_folder,
 					  resource::Manager& manager);
 
 	Material_ptr load_cloth(const json::Value& cloth_value, resource::Manager& manager);
@@ -96,7 +96,7 @@ private:
 	static void read_coating_description(const json::Value& clearcoat_value,
 										 Coating_description& description);
 
-	static float3 read_hex_RGB(const std::string& text);
+	static float3 read_hex_RGB(std::string const& text);
 
 	static float3 read_color(const json::Value& color_value);
 

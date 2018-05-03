@@ -16,7 +16,7 @@ namespace scene::material::substitute::testing {
 
 struct Setup {
 	void test(f_float3 wi, f_float3 wo,
-			  const float3& t, const float3& b, const float3& n,
+			  float3 const& t, float3 const& b, float3 const& n,
 			  sampler::Sampler& sampler);
 
 	float3 color	  = float3(1.f);
@@ -114,14 +114,14 @@ void test() {
 
 	std::cout << "d == " << d << std::endl;
 
-	const float n_dot_wo = 1.f;
+	float const n_dot_wo = 1.f;
 	float g = ggx::geometric_visibility(n_dot_wo, n_dot_wo, ggx::Min_alpha2);
 	std::cout << "g == " << g << std::endl;
 	*/
 }
 
 void Setup::test(f_float3 wi, f_float3 wo,
-				 const float3& t, const float3& b, const float3& n,
+				 float3 const& t, float3 const& b, float3 const& n,
 				 sampler::Sampler& sampler) {
 	Sample sample;
 
@@ -133,7 +133,7 @@ void Setup::test(f_float3 wi, f_float3 wo,
 	sample.layer_.set_tangent_frame(t, b, n);
 
 	{
-		const auto result = sample.evaluate(wi);
+		auto const result = sample.evaluate(wi);
 		print(result);
 	}
 

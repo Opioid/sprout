@@ -96,7 +96,7 @@ private:
 
 	static uint32_t byteswap(uint32_t v);
 
-	static const uint32_t Signature_size = 8;
+	static uint32_t const Signature_size = 8;
 
 	static const std::array<uint8_t, Signature_size> Signature;
 };

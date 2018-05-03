@@ -33,7 +33,7 @@ float Spherical::pixel_solid_angle() const {
 	return 1.f;
 }
 
-bool Spherical::generate_ray(const sampler::Camera_sample& sample,
+bool Spherical::generate_ray(sampler::Camera_sample const& sample,
 							 uint32_t /*view*/, scene::Ray& ray) const {
 	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -62,6 +62,6 @@ bool Spherical::generate_ray(const sampler::Camera_sample& sample,
 
 void Spherical::on_update(Worker& /*worker*/) {}
 
-void Spherical::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
+void Spherical::set_parameter(std::string const& /*name*/, const json::Value& /*value*/) {}
 
 }

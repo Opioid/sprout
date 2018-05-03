@@ -24,7 +24,7 @@ const material::Sample& Glass_rough::sample(f_float3 wo, const Renderstate& rs,
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	if (normal_map_.is_valid()) {
-		const float3 n = sample_normal(wo, rs, normal_map_, sampler);
+		float3 const n = sample_normal(wo, rs, normal_map_, sampler);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -32,7 +32,7 @@ const material::Sample& Glass_rough::sample(f_float3 wo, const Renderstate& rs,
 
 	float alpha;
 	if (roughness_map_.is_valid()) {
-		const float roughness = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
+		float const roughness = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
 		alpha = roughness * roughness;
 	} else {
 		alpha = alpha_;
@@ -69,11 +69,11 @@ void Glass_rough::set_roughness_map(const Texture_adapter& roughness_map) {
 	roughness_map_ = roughness_map;
 }
 
-void Glass_rough::set_refraction_color(const float3& color) {
+void Glass_rough::set_refraction_color(float3 const& color) {
 	refraction_color_ = color;
 }
 
-void Glass_rough::set_attenuation(const float3& absorption_color, float distance) {
+void Glass_rough::set_attenuation(float3 const& absorption_color, float distance) {
 	absorption_color_ = absorption_color;
 
 	absorption_coefficient_ = extinction_coefficient(absorption_color, distance);

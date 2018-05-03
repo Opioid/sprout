@@ -60,7 +60,7 @@
 namespace take {
 
 std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& manager) {
-	const uint32_t num_threads = manager.thread_pool().num_threads();
+	uint32_t const num_threads = manager.thread_pool().num_threads();
 
 	auto root = json::parse(stream);
 
@@ -106,7 +106,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 		}
 
 		if (take->exporters.empty()) {
-			const auto d = take->view.camera->sensor().dimensions();
+			auto const d = take->view.camera->sensor().dimensions();
 
 			std::unique_ptr<image::Writer> writer =
 				std::make_unique<image::encoding::png::Writer>(d);
@@ -128,9 +128,9 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 	if (!take->surface_integrator_factory) {
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
-		const uint32_t min_bounces = 4;
-		const uint32_t max_bounces = 8;
-		const float path_termination_probability = 0.9f;
+		uint32_t const min_bounces = 4;
+		uint32_t const max_bounces = 8;
+		float const path_termination_probability = 0.9f;
 		const bool enable_caustics = false;
 
 		take->surface_integrator_factory = std::make_shared<
@@ -336,8 +336,8 @@ const rendering::sensor::filter::Filter*
 Loader::load_filter(const json::Value& filter_value) {
 	for (auto& n : filter_value.GetObject()) {
 		if ("Gaussian" == n.name) {
-			const float radius = json::read_float(n.value, "radius", 1.f);
-			const float alpha  = json::read_float(n.value, "alpha",  1.8f);
+			float const radius = json::read_float(n.value, "radius", 1.f);
+			float const alpha  = json::read_float(n.value, "alpha",  1.8f);
 
 			return new rendering::sensor::filter::Gaussian(radius, alpha);
 		}
@@ -401,22 +401,22 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 	for (auto& n : integrator_value.GetObject()) {
 		if ("AO" == n.name) {
-			const uint32_t num_samples = json::read_uint(n.value, "num_samples", 1);
-			const float radius = json::read_float(n.value, "radius", 1.f);
+			uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
+			float const radius = json::read_float(n.value, "radius", 1.f);
 			return std::make_shared<AO_factory>(settings, num_workers, num_samples, radius);
 		} else if ("Whitted" == n.name) {
-			const uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
+			uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
 															   light_sampling.num_samples);
 
 			return std::make_shared<Whitted_factory>(settings, num_workers, num_light_samples);
 		} else if ("PT" == n.name) {
-			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
+			uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
 														 default_min_bounces);
 
-			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
+			uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
 														 default_max_bounces);
 
-			const float path_termination_probability = json::read_float(
+			float const path_termination_probability = json::read_float(
 				n.value, "path_termination_probability", default_path_termination_probability);
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
@@ -425,16 +425,16 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 				settings, num_workers, min_bounces, max_bounces,
 				path_termination_probability, enable_caustics);
 		} else if ("PTDL" == n.name) {
-			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
+			uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
 														 default_min_bounces);
 
-			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
+			uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
 														 default_max_bounces);
 
-			const float path_termination_probability = json::read_float(
+			float const path_termination_probability = json::read_float(
 				n.value, "path_termination_probability", default_path_termination_probability);
 
-			const uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
+			uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
 															   light_sampling.num_samples);
 
 			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
@@ -443,13 +443,13 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 				settings, num_workers, min_bounces, max_bounces,
 				path_termination_probability, num_light_samples, enable_caustics);
 		} else if ("PTMIS" == n.name) {
-			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
+			uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
 														 default_min_bounces);
 
-			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
+			uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
 														 default_max_bounces);
 
-			const float path_termination_probability = json::read_float(
+			float const path_termination_probability = json::read_float(
 				n.value, "path_termination_probability", default_path_termination_probability);
 
 			load_light_sampling(n.value, light_sampling);
@@ -491,22 +491,22 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Aerial_perspective" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			float const step_size = json::read_float(n.value, "step_size", 1.f);
 			const bool shadows = json::read_bool(n.value, "shadows", true);
 
 			return std::make_shared<Aerial_perspective_factory>(settings, num_workers,
 																step_size, shadows);
 		} else if ("Emission" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			float const step_size = json::read_float(n.value, "step_size", 1.f);
 
 			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
 		} else if ("Flow_vis" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			float const step_size = json::read_float(n.value, "step_size", 1.f);
 
 			return std::make_shared<Flow_vis_factory>(settings, num_workers, step_size);
 		} else if ("Ray_marching" == n.name) {
-			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			const float step_probability = json::read_float(n.value, "step_probability", 0.9f);
+			float const step_size = json::read_float(n.value, "step_size", 1.f);
+			float const step_probability = json::read_float(n.value, "step_probability", 0.9f);
 
 			return std::make_shared<Ray_marching_single_factory>(settings, num_workers,
 																 step_size, step_probability);
@@ -537,7 +537,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 	pipeline.reserve(pp_value.Size());
 
 	for (auto& pp : pp_value.GetArray()) {
-		const auto n = pp.MemberBegin();
+		auto const n = pp.MemberBegin();
 
 		if ("tonemapper" == n->name) {
 			pipeline.add(load_tonemapper(n->value));
@@ -554,10 +554,10 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 
 			pipeline.add(std::make_unique<Backplate>(backplate));
 		} else if ("Bloom" == n->name) {
-			const float angle	  = json::read_float(n->value, "angle", 0.05f);
-			const float alpha	  = json::read_float(n->value, "alpha", 0.005f);
-			const float threshold = json::read_float(n->value, "threshold", 2.f);
-			const float intensity = json::read_float(n->value, "intensity", 0.1f);
+			float const angle	  = json::read_float(n->value, "angle", 0.05f);
+			float const alpha	  = json::read_float(n->value, "alpha", 0.005f);
+			float const threshold = json::read_float(n->value, "threshold", 2.f);
+			float const intensity = json::read_float(n->value, "intensity", 0.1f);
 
 			pipeline.add(std::make_unique<Bloom>(angle, alpha, threshold, intensity));
 		} else if ("Glare" == n->name) {
@@ -572,8 +572,8 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 				adaption = Glare::Adaption::Photopic;
 			}
 
-			const float threshold = json::read_float(n->value, "threshold", 2.f);
-			const float intensity = json::read_float(n->value, "intensity", 1.f);
+			float const threshold = json::read_float(n->value, "threshold", 2.f);
+			float const intensity = json::read_float(n->value, "intensity", 1.f);
 
 			pipeline.add(std::make_unique<Glare>(adaption, threshold, intensity));
 		} else if ("Glare2" == n->name) {
@@ -588,8 +588,8 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 				adaption = Glare2::Adaption::Photopic;
 			}
 
-			const float threshold = json::read_float(n->value, "threshold", 2.f);
-			const float intensity = json::read_float(n->value, "intensity", 1.f);
+			float const threshold = json::read_float(n->value, "threshold", 2.f);
+			float const intensity = json::read_float(n->value, "intensity", 1.f);
 
 			pipeline.add(std::make_unique<Glare2>(adaption, threshold, intensity));
 		} else if ("Glare3" == n->name) {
@@ -604,8 +604,8 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 				adaption = Glare3::Adaption::Photopic;
 			}
 
-			const float threshold = json::read_float(n->value, "threshold", 2.f);
-			const float intensity = json::read_float(n->value, "intensity", 1.f);
+			float const threshold = json::read_float(n->value, "threshold", 2.f);
+			float const intensity = json::read_float(n->value, "intensity", 1.f);
 
 			pipeline.add(std::make_unique<Glare3>(adaption, threshold, intensity));
 		}
@@ -618,21 +618,21 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 
 	for (auto& n : tonemapper_value.GetObject()) {
 		if ("ACES" == n.name) {
-			const float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
+			float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
 			return std::make_unique<Aces>(hdr_max);
 		} else if ("Generic" == n.name) {
-			const float contrast = json::read_float(n.value, "contrast", 1.15f);
-			const float shoulder = json::read_float(n.value, "shoulder", 0.99f);
-			const float mid_in   = json::read_float(n.value, "mid_in",   0.18f);
-			const float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
-			const float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
+			float const contrast = json::read_float(n.value, "contrast", 1.15f);
+			float const shoulder = json::read_float(n.value, "shoulder", 0.99f);
+			float const mid_in   = json::read_float(n.value, "mid_in",   0.18f);
+			float const mid_out  = json::read_float(n.value, "mid_out",  0.18f);
+			float const hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
 
 			return std::make_unique<Generic>(contrast, shoulder, mid_in, mid_out, hdr_max);
 		} else if ("Identity" == n.name) {
 			return std::make_unique<Identity>();
 		} else if ("Uncharted" == n.name) {
-			const float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
+			float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
 			return std::make_unique<Uncharted>(hdr_max);
 		}
@@ -642,7 +642,7 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 }
 
 bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
-	const auto export_node = parameters_value.FindMember("stereo");
+	auto const export_node = parameters_value.FindMember("stereo");
 	if (parameters_value.MemberEnd() == export_node) {
 		return false;
 	}
@@ -656,7 +656,7 @@ Loader::load_exporters(const json::Value& exporter_value, const View& view) {
 		return {};
 	}
 
-	const auto& camera = *view.camera;
+	auto const& camera = *view.camera;
 
 	std::vector<std::unique_ptr<exporting::Sink>> exporters;
 
@@ -710,7 +710,7 @@ void Loader::load_settings(const json::Value& settings_value, Settings& settings
 
 void Loader::load_light_sampling(const json::Value& parent_value,
 								 rendering::integrator::Light_sampling& sampling) {
-	const auto light_sampling_node = parent_value.FindMember("light_sampling");
+	auto const light_sampling_node = parent_value.FindMember("light_sampling");
 	if (parent_value.MemberEnd() == light_sampling_node) {
 		return;
 	}

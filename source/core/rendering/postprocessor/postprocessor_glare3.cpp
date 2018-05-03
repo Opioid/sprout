@@ -52,12 +52,12 @@ static inline float f3(float theta, float lambda) {
 }
 
 void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
-	const auto dim = camera.sensor_dimensions();
+	auto const dim = camera.sensor_dimensions();
 	dimensions_ = dim;
 	high_pass_ = memory::allocate_aligned<float3>(dim[0] * dim[1]);
 
 	// This seems a bit arbitrary
-	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
+	float const solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
 	kernel_dimensions_ = 2 * dim;
 	int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
@@ -169,16 +169,16 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		break;
 	}
 
-	const float a_n = scale[0] / a_sum;
-	const float b_n = scale[1] / b_sum;
-	const float c_n = scale[2] / c_sum;
+	float const a_n = scale[0] / a_sum;
+	float const b_n = scale[1] / b_sum;
+	float const c_n = scale[2] / c_sum;
 
 	if (Adaption::Photopic == adaption_) {
 		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
 			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c);
 		}
 	} else {
-		const float3 d_n = float3(scale[3]) / d_sum;
+		float3 const d_n = float3(scale[3]) / d_sum;
 
 		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
 			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
@@ -186,12 +186,12 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	}
 
 	// Gaussian blur
-	const float radius = 16.f; //static_cast<float>(std::max(dim[0], dim[1])) * 0.00125f;
+	float const radius = 16.f; //static_cast<float>(std::max(dim[0], dim[1])) * 0.00125f;
 	gauss_width_ = 2 * std::max(static_cast<int32_t>(radius + 0.5f), 1) + 1;
 
 	gauss_kernel_ = memory::allocate_aligned<K>(gauss_width_);
 
-	const float fr = radius + 0.5f;
+	float const fr = radius + 0.5f;
 	const math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), /*radius * 0.5f*/0.15f);
 
 	const int32_t ir = static_cast<int32_t>(radius);
@@ -199,8 +199,8 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	for (int32_t x = 0, len = gauss_width_; x < len; ++x) {
 		const int32_t o = -ir + x;
 
-		const float fo = static_cast<float>(o);
-		const float w = gauss(fo * fo);
+		float const fo = static_cast<float>(o);
+		float const w = gauss(fo * fo);
 
 		gauss_kernel_[x] = K{o, w};
 	}
@@ -215,11 +215,11 @@ size_t Glare3::num_bytes() const {
 void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 				   const image::Float4& source, image::Float4& destination) {
 	if (0 == pass) {
-		const float threshold = threshold_;
+		float const threshold = threshold_;
 
 		for (int32_t i = begin; i < end; ++i) {
-			const float3 color = source.at(i).xyz();
-			const float l = spectrum::luminance(color);
+			float3 const color = source.at(i).xyz();
+			float const l = spectrum::luminance(color);
 
 			if (l > threshold) {
 				high_pass_[i] = color;
@@ -228,16 +228,16 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 			}
 		}
 	} else if (1 == pass) {
-		const auto d = destination.description().dimensions.xy();
+		auto const d = destination.description().dimensions.xy();
 
-		const float fdm0 = static_cast<float>(d[0] - 1);
-		const float fdm1 = static_cast<float>(d[1] - 1);
+		float const fdm0 = static_cast<float>(d[0] - 1);
+		float const fdm1 = static_cast<float>(d[1] - 1);
 
 		const int32_t num_samples = 4096;//std::max(d[0], d[1]) * 2;
 
-		const float weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
+		float const weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
 
-		const float intensity = weight * intensity_;
+		float const intensity = weight * intensity_;
 		// const Vector intensity = simd::set_float4(intensity_);
 
 		const int32_t kd0 = kernel_dimensions_[0];
@@ -248,22 +248,22 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 			const int2 c = destination.coordinates_2(i);
 			const int2 kb = d - c;
 
-//			const float2 center = (float2(c) + float2(0.5f)) / float2(d);
+//			float2 const center = (float2(c) + float2(0.5f)) / float2(d);
 
-			const uint32_t r = rng.random_uint();
+			uint32_t const r = rng.random_uint();
 
 			float3 glare(0.f);
 			for (int32_t j = 0; j < num_samples; ++j) {
-//				const float r0 = rng.random_float();
-//				const float r1 = rng.random_float();
+//				float const r0 = rng.random_float();
+//				float const r1 = rng.random_float();
 
 //				const int32_t sx = static_cast<int32_t>(r0 * fdm0);
 //				const int32_t sy = static_cast<int32_t>(r1 * fdm1);
 
 				float2 uv = math::hammersley(j, num_samples, r);
 
-//				const float2 d = uv - center;
-//				const float scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
+//				float2 const d = uv - center;
+//				float const scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
 
 //				uv = scale * d + center;
 
@@ -276,7 +276,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 
 				const int32_t ki = kc[1] * kd0 + kc[0];
 
-				const float3 k = kernel_[ki];
+				float3 const k = kernel_[ki];
 
 				glare += k * high_pass_[si];
 			}
@@ -309,19 +309,19 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 	} else if (2 == pass) {
 		// vertical
 
-		const auto d = destination.description().dimensions.xy();
+		auto const d = destination.description().dimensions.xy();
 
 		for (int32_t i = begin; i < end; ++i) {
 			const int2 c = destination.coordinates_2(i);
 			float3 accum(0.f);
 			float weight_sum = 0.f;
 			for (int32_t j = 0, len = gauss_width_; j < len; ++j) {
-				const auto k = gauss_kernel_[j];
+				auto const k = gauss_kernel_[j];
 				int32_t kx = c[0] + k.o;
 
 				if (kx >= 0 && kx < d[0]) {
 					const int32_t si = c[1] * d[0] + kx;
-					const float3 v = destination.at(si).xyz();
+					float3 const v = destination.at(si).xyz();
 					accum += k.w * v;
 					weight_sum += k.w;
 				}
@@ -333,19 +333,19 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 	} else if (3 == pass) {
 		// horizontal
 
-		const auto d = destination.description().dimensions.xy();
+		auto const d = destination.description().dimensions.xy();
 
 		for (int32_t i = begin; i < end; ++i) {
 			const int2 c = destination.coordinates_2(i);
 			float3 accum(0.f);
 			float weight_sum = 0.f;
 			for (int32_t j = 0, len = gauss_width_; j < len; ++j) {
-				const auto k = gauss_kernel_[j];
+				auto const k = gauss_kernel_[j];
 				int32_t ky = c[1] + k.o;
 
 				if (ky >= 0 && ky < d[1]) {
 					const int32_t si = ky * d[0] + c[0];
-					const float3 v = high_pass_[si];
+					float3 const v = high_pass_[si];
 					accum += k.w * v;
 					weight_sum += k.w;
 				}

@@ -37,7 +37,7 @@ float Material::ior() const {
 	return 1.f;
 }
 
-void Material::set_attenuation(const float3& absorption_color, const float3& scattering_color,
+void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
 							   float distance) {
 	attenuation(absorption_color, scattering_color, distance,
 				absorption_coefficient_, scattering_coefficient_);

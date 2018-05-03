@@ -29,29 +29,29 @@ int32_t Filtered<Base, Clamp>::filter_radius_int() const {
 }
 
 template<class Base, class Clamp>
-int4 Filtered<Base, Clamp>::isolated_tile(const int4& tile) const {
+int4 Filtered<Base, Clamp>::isolated_tile(int4 const& tile) const {
 	const int32_t r = filter_radius_int();
 	return tile + int4(r, r, -r, -r);
 }
 
 template<class Base, class Clamp>
-void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, const float4& color,
-									   const int4& isolated_bounds, const int4& bounds) {
+void Filtered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, float4 const& color,
+									   int4 const& isolated_bounds, int4 const& bounds) {
 	const float4 clamped_color = clamp_.clamp(color);
 
 	const int32_t x = bounds[0] + sample.pixel[0];
 	const int32_t y = bounds[1] + sample.pixel[1];
 
-	const float ox = sample.pixel_uv[0] - 0.5f;
-	const float oy = sample.pixel_uv[1] - 0.5f;
+	float const ox = sample.pixel_uv[0] - 0.5f;
+	float const oy = sample.pixel_uv[1] - 0.5f;
 
-	const float wx0 = filter_->evaluate(ox + 1.f);
-	const float wx1 = filter_->evaluate(ox);
-	const float wx2 = filter_->evaluate(ox - 1.f);
+	float const wx0 = filter_->evaluate(ox + 1.f);
+	float const wx1 = filter_->evaluate(ox);
+	float const wx2 = filter_->evaluate(ox - 1.f);
 
-	const float wy0 = filter_->evaluate(oy + 1.f);
-	const float wy1 = filter_->evaluate(oy);
-	const float wy2 = filter_->evaluate(oy - 1.f);
+	float const wy0 = filter_->evaluate(oy + 1.f);
+	float const wy1 = filter_->evaluate(oy);
+	float const wy2 = filter_->evaluate(oy - 1.f);
 
 	// 1. row
 	add_weighted_pixel(int2(x - 1, y - 1), wx0 * wy0, clamped_color, isolated_bounds, bounds);
@@ -100,8 +100,8 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, con
 }
 
 template<class Base, class Clamp>
-void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, const float4& color,
-											   const int4& isolated_bounds, const int4& bounds) {
+void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4 const& color,
+											   int4 const& isolated_bounds, int4 const& bounds) {
 //	if (pixel[0] >= bounds[0] && pixel[0] <= bounds[2]
 //	&&	pixel[1] >= bounds[1] && pixel[1] <= bounds[3]) {
 
@@ -122,13 +122,13 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, const f
 
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
-												 const float4& color, const int4& isolated_bounds,
-												 const int4& bounds) {
+												 float4 const& color, int4 const& isolated_bounds,
+												 int4 const& bounds) {
 	// This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
 	if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2])
 	&&	static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
-		const float weight = filter_->evaluate(relative_offset);
+		float const weight = filter_->evaluate(relative_offset);
 
 		if (static_cast<uint32_t>(pixel[0] - isolated_bounds[0])
 		<=  static_cast<uint32_t>(isolated_bounds[2])

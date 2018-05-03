@@ -24,7 +24,7 @@ bool Null_light::sample(f_float3 /*p*/, f_float3 /*n*/,
 	return false;
 }
 
-float Null_light::pdf(const Ray& /*ray*/, const Intersection& /*intersection*/,
+float Null_light::pdf(Ray const& /*ray*/, const Intersection& /*intersection*/,
 					  bool /*total_sphere*/, Sampler_filter /*filter*/,
 					  const Worker& /*worker*/) const {
 	return 0.f;

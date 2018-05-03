@@ -46,7 +46,7 @@ size_t Material_overcast::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_overcast::set_emission(const float3& radiance) {
+void Material_overcast::set_emission(float3 const& radiance) {
 	color_ = radiance;
 }
 

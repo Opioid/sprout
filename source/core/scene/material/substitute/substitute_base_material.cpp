@@ -56,7 +56,7 @@ void Material_base::set_emission_map(const Texture_adapter& emission_map) {
 	emission_map_ = emission_map;
 }
 
-void Material_base::set_color(const float3& color) {
+void Material_base::set_color(float3 const& color) {
 	color_ = color;
 }
 

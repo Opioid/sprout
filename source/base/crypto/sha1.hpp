@@ -6,7 +6,7 @@
 
 namespace crypto::sha1 {
 
-std::vector<uint8_t> encode(const std::string& input);
+std::vector<uint8_t> encode(std::string const& input);
 
 class SHA1 {
 
@@ -15,7 +15,7 @@ public:
 	SHA1();
 	~SHA1();
 
-	void update(const std::string& s);
+	void update(std::string const& s);
 	void update(std::istream& is);
 
 	std::vector<uint8_t> final();
@@ -29,7 +29,7 @@ private:
 	void reset();
 	void transform(uint32_t block[Block_bytes]);
 
-	static void buffer_to_block(const std::string& buffer, uint32_t block[Block_bytes]);
+	static void buffer_to_block(std::string const& buffer, uint32_t block[Block_bytes]);
 	static void read(std::istream& is, std::string& s, size_t max);
 
 	uint64_t transforms_;

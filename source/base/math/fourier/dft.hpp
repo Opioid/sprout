@@ -9,17 +9,17 @@ namespace math {
 
 int32_t dft_size(int32_t num);
 
-void dft_1d(float2* result, const float* source, int32_t num);
+void dft_1d(float2* result, float const* source, int32_t num);
 
-void idft_1d(float* result, const float2* source, int32_t num);
+void idft_1d(float* result, float2 const* source, int32_t num);
 
-void dft_2d(float2* result, const float* source,
+void dft_2d(float2* result, float const* source,
 			int32_t width, int32_t height, thread::Pool& pool);
 
-void dft_2d(float2* result, const float* source, float2* temp,
+void dft_2d(float2* result, float const* source, float2* temp,
 			int32_t width, int32_t height, thread::Pool& pool);
 
-void idft_2d(float* result, const float2* source, float2* temp,
+void idft_2d(float* result, float2 const* source, float2* temp,
 			 int32_t width, int32_t height, thread::Pool& pool);
 
 }

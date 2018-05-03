@@ -43,7 +43,7 @@ Loader::Loader(resource::Manager& manager, const Material_ptr& fallback_material
 
 Loader::~Loader() {}
 
-bool Loader::load(const std::string& filename, const std::string& take_name, Scene& scene) {
+bool Loader::load(std::string const& filename, std::string const& take_name, Scene& scene) {
 	bool success = true;
 
 	try {
@@ -61,7 +61,7 @@ bool Loader::load(const std::string& filename, const std::string& take_name, Sce
 
 		auto root = json::parse(*stream_pointer);
 
-		if (const auto materials_node = root->FindMember("materials");
+		if (auto const materials_node = root->FindMember("materials");
 			root->MemberEnd() != materials_node) {
 			read_materials(materials_node->value);
 		}
@@ -87,12 +87,12 @@ bool Loader::load(const std::string& filename, const std::string& take_name, Sce
 	return success;
 }
 
-void Loader::register_extension_provider(const std::string& name,
+void Loader::register_extension_provider(std::string const& name,
 										 entity::Extension_provider* provider) {
 	extension_providers_[name] = provider;
 }
 
-void Loader::register_mesh_generator(const std::string& name,
+void Loader::register_mesh_generator(std::string const& name,
 									 shape::triangle::Generator* generator) {
     mesh_generators_[name] = generator;
 }
@@ -137,7 +137,7 @@ void Loader::load_entities(const json::Value& entities_value,
 	}
 
 	for (auto& e : entities_value.GetArray()) {
-		const auto type_node = e.FindMember("type");
+		auto const type_node = e.FindMember("type");
 		if (e.MemberEnd() == type_node) {
 			continue;
 		}
@@ -239,7 +239,7 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 }
 
 prop::Prop* Loader::load_prop(const json::Value& prop_value,
-							  const std::string& name, Scene& scene) {
+							  std::string const& name, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 	Materials materials;
 	const json::Value* visibility = nullptr;
@@ -280,7 +280,7 @@ prop::Prop* Loader::load_prop(const json::Value& prop_value,
 
 void Loader::load_light(const json::Value& /*light_value*/, prop::Prop* prop, Scene& scene) {
 	for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
-		if (const auto material = prop->material(i); material->is_emissive()) {
+		if (auto const material = prop->material(i); material->is_emissive()) {
 			if (prop->shape()->is_analytical() && material->has_emission_map()) {
 				scene.create_prop_image_light(prop, i);
 			} else {
@@ -290,8 +290,8 @@ void Loader::load_light(const json::Value& /*light_value*/, prop::Prop* prop, Sc
 	}
 }
 
-entity::Entity* Loader::load_extension(const std::string& type, const json::Value& extension_value,
-									   const std::string& name, Scene& scene) {
+entity::Entity* Loader::load_extension(std::string const& type, const json::Value& extension_value,
+									   std::string const& name, Scene& scene) {
 	if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
 		entity::Entity* entity = p->second->create_extension(extension_value, scene,
 															 resource_manager_);
@@ -315,7 +315,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value)
 	return nullptr;
 }
 
-std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
+std::shared_ptr<shape::Shape> Loader::shape(std::string const& type,
 											const json::Value& shape_value) const {
 	if ("Box" == type) {
 		return box_;
@@ -361,7 +361,7 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 	}
 }
 
-Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
+Material_ptr Loader::load_material(std::string const& name, Scene& scene) {
 	// First, check if we maybe already have cached the material.
 	if (auto material = resource_manager_.get<material::Material>(name); material) {
 		return material;
@@ -369,9 +369,9 @@ Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
 
 	try {
 		// Otherwise, see if it is among the locally defined materials.
-		if (const auto material_node = local_materials_.find(name);
+		if (auto const material_node = local_materials_.find(name);
 			local_materials_.end() != material_node) {
-			const void* data = reinterpret_cast<const void*>(material_node->second);
+			void const* data = reinterpret_cast<void const*>(material_node->second);
 
 			auto material = resource_manager_.load<material::Material>(name, data, mount_folder_);
 

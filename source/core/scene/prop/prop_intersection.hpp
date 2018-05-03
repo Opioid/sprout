@@ -37,10 +37,10 @@ struct Intersection {
 
 	float opacity(float time, Sampler_filter filter, const Worker& worker) const;
 
-	float3 thin_absorption(f_float3 wo, const float time,
+	float3 thin_absorption(f_float3 wo, float const time,
 						   Sampler_filter filter, Worker& worker) const;
 
-	const material::Sample& sample(f_float3 wo, const Ray& ray, Sampler_filter filter,
+	const material::Sample& sample(f_float3 wo, Ray const& ray, Sampler_filter filter,
 								   sampler::Sampler& sampler, Worker& worker) const;
 
 	bool same_hemisphere(f_float3 v) const;

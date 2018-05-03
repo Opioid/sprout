@@ -18,7 +18,7 @@ public:
 
 	virtual size_t num_bytes() const override final;
 
-	void set_color(const float3& color);
+	void set_color(float3 const& color);
 
 	static size_t sample_size();
 

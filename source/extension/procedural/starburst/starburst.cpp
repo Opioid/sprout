@@ -38,16 +38,16 @@ void render_dirt(image::Float1& signal);
 
 void render_aperture(const Aperture& aperture, Float1& signal);
 
-void centered_squared_magnitude(float* result, const float2* source,
+void centered_squared_magnitude(float* result, float2 const* source,
 								int32_t width, int32_t height);
 
-void squared_magnitude(float* result, const float2* source, int32_t width, int32_t height);
+void squared_magnitude(float* result, float2 const* source, int32_t width, int32_t height);
 
-void squared_magnitude_transposed(float* result, const float2* source, int32_t dimension);
+void squared_magnitude_transposed(float* result, float2 const* source, int32_t dimension);
 
-void diffraction(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
+void diffraction(Spectrum* result, float const* source, int32_t bin, int32_t resolution);
 
-void write_signal(const std::string& name, const Float1& signal);
+void write_signal(std::string const& name, const Float1& signal);
 
 void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
@@ -299,7 +299,7 @@ void render_aperture(const Aperture& aperture, Float1& signal) {
 	}
 }
 
-void centered_squared_magnitude(float* result, const float2* source,
+void centered_squared_magnitude(float* result, float2 const* source,
 								int32_t width, int32_t height) {
 	int32_t row_size = math::dft_size(width);
 
@@ -375,14 +375,14 @@ void centered_squared_magnitude(float* result, const float2* source,
 	}
 }
 
-void squared_magnitude(float* result, const float2* source, int32_t width, int32_t height) {
+void squared_magnitude(float* result, float2 const* source, int32_t width, int32_t height) {
 	for (int32_t i = 0, len = width * height; i < len; ++i) {
 		float mag = math::squared_length(source[i]);
 		result[i] = mag;
 	}
 }
 
-void squared_magnitude_transposed(float* result, const float2* source, int32_t dimension) {
+void squared_magnitude_transposed(float* result, float2 const* source, int32_t dimension) {
 	for (int32_t y = 0, i = 0; y < dimension; ++y) {
 		for (int32_t x = 0; x < dimension; ++x, ++i) {
 			float mag = math::squared_length(source[i]);
@@ -392,7 +392,7 @@ void squared_magnitude_transposed(float* result, const float2* source, int32_t d
 	}
 }
 
-void diffraction(Spectrum* result, const float* squared_magnitude,
+void diffraction(Spectrum* result, float const* squared_magnitude,
 				 int32_t bin, int32_t resolution) {
 	float fr = static_cast<float>(resolution);
 
@@ -438,8 +438,8 @@ void diffraction(Spectrum* result, const float* squared_magnitude,
 	}
 }
 
-void write_signal(const std::string& name, const Float1& signal) {
-	const auto d = signal.description().dimensions;
+void write_signal(std::string const& name, const Float1& signal) {
+	auto const d = signal.description().dimensions;
 
 	Byte1 image(Image::Description(Image::Type::Byte1, d));
 

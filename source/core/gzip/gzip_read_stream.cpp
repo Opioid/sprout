@@ -271,7 +271,7 @@ bool Filebuffer::init_z_stream() {
 
 Read_stream::Read_stream() : __istream_type(&stream_buffer_) {}
 
-//Read_stream::Read_stream(const std::string& name, std::ios_base::openmode mode) :
+//Read_stream::Read_stream(std::string const& name, std::ios_base::openmode mode) :
 //	__istream_type(&stream_buffer_)/*, name_(name)*/ {
 //	open(name.c_str(), mode);
 //}

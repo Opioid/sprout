@@ -18,7 +18,7 @@ Message_handler::Message_handler(rendering::Driver_progressive& driver,
 								 Camera& camera) :
 	driver_(driver), resource_manager_(resource_manager), camera_(camera) {}
 
-void Message_handler::handle(const std::string& message) {
+void Message_handler::handle(std::string const& message) {
 	if ("restart" == message) {
 		driver_.schedule_restart(false);
 	} else if ("md:[" == message.substr(0, 4)) {
@@ -99,7 +99,7 @@ std::string Message_handler::introduction() const {
 	std::ostringstream stream;
 	stream << "{";
 
-	const auto d = driver_.camera().sensor_dimensions();
+	auto const d = driver_.camera().sensor_dimensions();
 	stream << "\"resolution\":" << d << ",";
 
 	stream << "\"iteration\":" << driver_.iteration();
@@ -116,8 +116,8 @@ std::string Message_handler::iteration() const {
 	return stream.str();
 }
 
-void Message_handler::handle_entity(scene::entity::Entity* entity, const std::string& value,
-									const std::string& parameters, bool recompile) {
+void Message_handler::handle_entity(scene::entity::Entity* entity, std::string const& value,
+									std::string const& parameters, bool recompile) {
 	if (!entity) {
 		return;
 	}
@@ -142,8 +142,8 @@ void Message_handler::handle_entity(scene::entity::Entity* entity, const std::st
 }
 
 void Message_handler::handle_material(scene::material::Material* /*material*/,
-									  const std::string& /*value*/,
-									  const std::string& /*parameters*/) {
+									  std::string const& /*value*/,
+									  std::string const& /*parameters*/) {
 
 }
 

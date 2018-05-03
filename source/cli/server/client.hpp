@@ -13,10 +13,10 @@ public:
 	Client(net::Socket socket);
 	~Client();
 
-	bool run(const std::string& introduction);
+	bool run(std::string const& introduction);
 	void shutdown();
 
-	bool send(const std::string& text);
+	bool send(std::string const& text);
 	bool send(const char* data, size_t size);
 
 	bool pop_message(std::string& message);
@@ -25,7 +25,7 @@ private:
 
 	void loop();
 
-	void push_message(const std::string& message);
+	void push_message(std::string const& message);
 
 	Websocket websocket_;
 

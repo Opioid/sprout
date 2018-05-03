@@ -523,12 +523,12 @@ static inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 	float id;
 
 	{
-		const float m00_11 = m.r[0][0] * m.r[1][1];
-		const float m01_12 = m.r[0][1] * m.r[1][2];
-		const float m02_10 = m.r[0][2] * m.r[1][0];
-		const float m00_12 = m.r[0][0] * m.r[1][2];
-		const float m01_10 = m.r[0][1] * m.r[1][0];
-		const float m02_11 = m.r[0][2] * m.r[1][1];
+		float const m00_11 = m.r[0][0] * m.r[1][1];
+		float const m01_12 = m.r[0][1] * m.r[1][2];
+		float const m02_10 = m.r[0][2] * m.r[1][0];
+		float const m00_12 = m.r[0][0] * m.r[1][2];
+		float const m01_10 = m.r[0][1] * m.r[1][0];
+		float const m02_11 = m.r[0][2] * m.r[1][1];
 
 		id = 1.f / ((m00_11 * m.r[2][2] + m01_12 * m.r[2][0] + m02_10 * m.r[2][1]) -
 					(m00_12 * m.r[2][1] + m01_10 * m.r[2][2] + m02_11 * m.r[2][0]));
@@ -541,12 +541,12 @@ static inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 	}
 
 	{
-		const float m11_22 = m.r[1][1] * m.r[2][2];
-		const float m12_21 = m.r[1][2] * m.r[2][1];
-		const float m12_20 = m.r[1][2] * m.r[2][0];
-		const float m10_22 = m.r[1][0] * m.r[2][2];
-		const float m10_21 = m.r[1][0] * m.r[2][1];
-		const float m11_20 = m.r[1][1] * m.r[2][0];
+		float const m11_22 = m.r[1][1] * m.r[2][2];
+		float const m12_21 = m.r[1][2] * m.r[2][1];
+		float const m12_20 = m.r[1][2] * m.r[2][0];
+		float const m10_22 = m.r[1][0] * m.r[2][2];
+		float const m10_21 = m.r[1][0] * m.r[2][1];
+		float const m11_20 = m.r[1][1] * m.r[2][0];
 
 		o.r[0][0] = (m11_22 - m12_21) * id;
 		o.r[1][0] = (m12_20 - m10_22) * id;
@@ -556,12 +556,12 @@ static inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 	}
 
 	{
-		const float m02_21 = m.r[0][2] * m.r[2][1];
-		const float m01_22 = m.r[0][1] * m.r[2][2];
-		const float m00_22 = m.r[0][0] * m.r[2][2];
-		const float m02_20 = m.r[0][2] * m.r[2][0];
-		const float m01_20 = m.r[0][1] * m.r[2][0];
-		const float m00_21 = m.r[0][0] * m.r[2][1];
+		float const m02_21 = m.r[0][2] * m.r[2][1];
+		float const m01_22 = m.r[0][1] * m.r[2][2];
+		float const m00_22 = m.r[0][0] * m.r[2][2];
+		float const m02_20 = m.r[0][2] * m.r[2][0];
+		float const m01_20 = m.r[0][1] * m.r[2][0];
+		float const m00_21 = m.r[0][0] * m.r[2][1];
 
 		o.r[0][1] = (m02_21 - m01_22) * id;
 		o.r[1][1] = (m00_22 - m02_20) * id;
@@ -588,8 +588,8 @@ static inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
 }
 
 static inline void set_rotation_x(Matrix4x4f_a& m, float a) {
-	const float c = std::cos(a);
-	const float s = std::sin(a);
+	float const c = std::cos(a);
+	float const s = std::sin(a);
 
 	m.r[0][0] = 1.f; m.r[0][1] = 0.f; m.r[0][2] =  0.f; m.r[0][3] = 0.f;
 	m.r[1][0] = 0.f; m.r[1][1] = c;   m.r[1][2] = -s;   m.r[1][3] = 0.f;

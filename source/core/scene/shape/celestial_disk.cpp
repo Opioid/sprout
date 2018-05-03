@@ -18,15 +18,15 @@ Celestial_disk::Celestial_disk() {
 
 bool Celestial_disk::intersect(Ray& ray, const Transformation& transformation,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& n = transformation.rotation.r[2];
-	const float b = math::dot(n, ray.direction);
+	float3 const& n = transformation.rotation.r[2];
+	float const b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	const float radius = transformation.scale[0];
-	const float det = (b * b) - math::dot(n, n) + (radius * radius);
+	float const radius = transformation.scale[0];
+	float const det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		constexpr float hit_t = Almost_ray_max_t;
@@ -38,8 +38,8 @@ bool Celestial_disk::intersect(Ray& ray, const Transformation& transformation,
 		intersection.b = transformation.rotation.r[1];
 		intersection.n = n;
 
-		const float3 k = ray.direction - n;
-		const float3 sk = k / radius;
+		float3 const k = ray.direction - n;
+		float3 const sk = k / radius;
 		intersection.uv[0] = (math::dot(intersection.t, sk) + 1.f) * 0.5f;
 		intersection.uv[1] = (math::dot(intersection.b, sk) + 1.f) * 0.5f;
 
@@ -54,15 +54,15 @@ bool Celestial_disk::intersect(Ray& ray, const Transformation& transformation,
 
 bool Celestial_disk::intersect_fast(Ray& ray, const Transformation& transformation,
 									Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& n = transformation.rotation.r[2];
-	const float b = math::dot(n, ray.direction);
+	float3 const& n = transformation.rotation.r[2];
+	float const b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	const float radius = transformation.scale[0];
-	const float det = (b * b) - math::dot(n, n) + (radius * radius);
+	float const radius = transformation.scale[0];
+	float const det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		constexpr float hit_t = Almost_ray_max_t;
@@ -71,8 +71,8 @@ bool Celestial_disk::intersect_fast(Ray& ray, const Transformation& transformati
 		intersection.p = ray.point(hit_t);
 		intersection.geo_n = n;
 
-		const float3 k = ray.direction - n;
-		const float3 sk = k / radius;
+		float3 const k = ray.direction - n;
+		float3 const sk = k / radius;
 		intersection.uv[0] = (math::dot(intersection.t, sk) + 1.f) * 0.5f;
 		intersection.uv[1] = (math::dot(intersection.b, sk) + 1.f) * 0.5f;
 
@@ -87,15 +87,15 @@ bool Celestial_disk::intersect_fast(Ray& ray, const Transformation& transformati
 
 bool Celestial_disk::intersect(Ray& ray, const Transformation& transformation,
 							   Node_stack& /*node_stack*/, float& epsilon) const {
-	const float3& n = transformation.rotation.r[2];
-	const float b = math::dot(n, ray.direction);
+	float3 const& n = transformation.rotation.r[2];
+	float const b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	const float radius = transformation.scale[0];
-	const float det = (b * b) - math::dot(n, n) + (radius * radius);
+	float const radius = transformation.scale[0];
+	float const det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		ray.max_t = Almost_ray_max_t;
@@ -106,17 +106,17 @@ bool Celestial_disk::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Celestial_disk::intersect_p(const Ray& ray, const Transformation& transformation,
+bool Celestial_disk::intersect_p(Ray const& ray, const Transformation& transformation,
 								 Node_stack& /*node_stack*/) const {
-	const float3& n = transformation.rotation.r[2];
-	const float b = math::dot(n, ray.direction);
+	float3 const& n = transformation.rotation.r[2];
+	float const b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	const float radius = transformation.scale[0];
-	const float det = (b * b) - math::dot(n, n) + (radius * radius);
+	float const radius = transformation.scale[0];
+	float const det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		return true;
@@ -125,14 +125,14 @@ bool Celestial_disk::intersect_p(const Ray& ray, const Transformation& transform
 	return false;
 }
 
-float Celestial_disk::opacity(const Ray& /*ray*/, const Transformation& /*transformation*/,
+float Celestial_disk::opacity(Ray const& /*ray*/, const Transformation& /*transformation*/,
 							  const Materials& /*materials*/, Sampler_filter /*filter*/,
 							  const Worker& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
-float3 Celestial_disk::thin_absorption(const Ray& /*ray*/, const Transformation& /*transformation*/,
+float3 Celestial_disk::thin_absorption(Ray const& /*ray*/, const Transformation& /*transformation*/,
 									   const Materials& /*materials*/, Sampler_filter /*filter*/,
 									   const Worker& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
@@ -167,7 +167,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, f_float3 /*p*/,
 	return true;
 }
 
-float Celestial_disk::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+float Celestial_disk::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
 						  const Transformation& /*transformation*/,
 						  float area, bool /*two_sided*/, bool /*total_sphere*/) const {
 	return 1.f / area;
@@ -179,7 +179,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
 	return false;
 }
 
-float Celestial_disk::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
+float Celestial_disk::pdf_uv(Ray const& /*ray*/, const Intersection& /*intersection*/,
 							 const Transformation& /*transformation*/,
 							 float area, bool /*two_sided*/) const {
 	return 1.f / area;
@@ -190,7 +190,7 @@ float Celestial_disk::uv_weight(float2 /*uv*/) const {
 }
 
 float Celestial_disk::area(uint32_t /*part*/, f_float3 scale) const {
-	const float radius = scale[0];
+	float const radius = scale[0];
 	return math::Pi * (radius * radius);
 }
 

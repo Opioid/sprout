@@ -6,12 +6,12 @@
 
 namespace file {
 
-std::unique_ptr<std::istream> System::read_stream(const std::string& name) const {
+std::unique_ptr<std::istream> System::read_stream(std::string const& name) const {
 	std::string resolved_name;
 	return read_stream(name, resolved_name);
 }
 
-std::unique_ptr<std::istream> System::read_stream(const std::string& name,
+std::unique_ptr<std::istream> System::read_stream(std::string const& name,
 												  std::string& resolved_name) const {
 	auto stream = open_read_stream(name, resolved_name);
 	if (!stream) {
@@ -27,7 +27,7 @@ std::unique_ptr<std::istream> System::read_stream(const std::string& name,
 	return std::unique_ptr<std::istream>(stream);
 }
 
-void System::push_mount(const std::string& folder) {
+void System::push_mount(std::string const& folder) {
 	// We also have to push empty folders, otherwise popping gets complicated
 
 	std::stringstream stream;
@@ -44,7 +44,7 @@ void System::pop_mount() {
 	mount_folders_.pop_back();
 }
 
-std::istream* System::open_read_stream(const std::string& name, std::string& resolved_name) const {
+std::istream* System::open_read_stream(std::string const& name, std::string& resolved_name) const {
 	// TODO: Use something like std::filesytem::exists() when it is available
 
 	for (auto& f : mount_folders_) {

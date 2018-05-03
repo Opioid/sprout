@@ -196,7 +196,7 @@ bool Box::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Box::intersect_p(const Ray& ray, const Transformation& transformation,
+bool Box::intersect_p(Ray const& ray, const Transformation& transformation,
 					  Node_stack& /*node_stack*/) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
@@ -221,7 +221,7 @@ bool Box::intersect_p(const Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-float Box::opacity(const Ray& ray, const Transformation& transformation,
+float Box::opacity(Ray const& ray, const Transformation& transformation,
 				   const Materials& materials,
 				   Sampler_filter filter, const Worker& worker) const {
 	float3 v = transformation.position - ray.origin;
@@ -259,7 +259,7 @@ float Box::opacity(const Ray& ray, const Transformation& transformation,
 	return 0.f;
 }
 
-float3 Box::thin_absorption(const Ray& ray, const Transformation& transformation,
+float3 Box::thin_absorption(Ray const& ray, const Transformation& transformation,
 							const Materials& materials,
 							Sampler_filter filter, const Worker& worker) const {
 	float3 v = transformation.position - ray.origin;
@@ -310,39 +310,39 @@ bool Box::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
 bool Box::sample(uint32_t /*part*/, f_float3 p, const Transformation& transformation,
 				 float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
 				 uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample& sample) const {
-	const float3 axis = transformation.position - p;
-	const float axis_squared_length = math::squared_length(axis);
-	const float radius = transformation.scale[0];
-	const float radius_square = radius * radius;
-	const float sin_theta_max2 = radius_square / axis_squared_length;
+	float3 const axis = transformation.position - p;
+	float const axis_squared_length = math::squared_length(axis);
+	float const radius = transformation.scale[0];
+	float const radius_square = radius * radius;
+	float const sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);
 
-	const float axis_length = std::sqrt(axis_squared_length);
-	const float3 z = axis / axis_length;
+	float const axis_length = std::sqrt(axis_squared_length);
+	float3 const z = axis / axis_length;
 	float3 x, y;
 	math::orthonormal_basis(z, x, y);
 
-	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-	const float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
+	float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+	float3 const dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
 	sample.wi = dir;
 
 	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
-	const float d = axis_length - radius; // this is not accurate
+	float const d = axis_length - radius; // this is not accurate
 	sample.t = d;
 	sample.epsilon = 5e-4f * d;
 
 	return true;
 }
 
-float Box::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
+float Box::pdf(Ray const& ray, const shape::Intersection& /*intersection*/,
 			   const Transformation& transformation,
 			   float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
-	const float3 axis = transformation.position - ray.origin;
-	const float axis_squared_length = math::squared_length(axis);
-	const float radius_square = transformation.scale[0] * transformation.scale[0];
-	const float sin_theta_max2 = radius_square / axis_squared_length;
+	float3 const axis = transformation.position - ray.origin;
+	float const axis_squared_length = math::squared_length(axis);
+	float const radius_square = transformation.scale[0] * transformation.scale[0];
+	float const sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);
 
@@ -385,7 +385,7 @@ bool Box::sample(uint32_t /*part*/,  f_float3 p, float2 uv, const Transformation
 	return true;
 }
 
-float Box::pdf_uv(const Ray& ray, const Intersection& intersection,
+float Box::pdf_uv(Ray const& ray, const Intersection& intersection,
 				  const Transformation& /*transformation*/,
 				  float area, bool /*two_sided*/) const {
 //	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
@@ -395,15 +395,15 @@ float Box::pdf_uv(const Ray& ray, const Intersection& intersection,
 //	// sin_theta because of the uv weight
 //	float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
 
-	const float sin_theta = std::sin(intersection.uv[1] * math::Pi);
+	float const sin_theta = std::sin(intersection.uv[1] * math::Pi);
 
-	const float sl = ray.max_t * ray.max_t;
-	const float c = -math::dot(intersection.geo_n, ray.direction);
+	float const sl = ray.max_t * ray.max_t;
+	float const c = -math::dot(intersection.geo_n, ray.direction);
 	return sl / (c * area * sin_theta);
 }
 
 float Box::uv_weight(float2 uv) const {
-	const float sin_theta = std::sin(uv[1] * math::Pi);
+	float const sin_theta = std::sin(uv[1] * math::Pi);
 
 	if (0.f == sin_theta) {
 		// this case never seemed to be an issue?!

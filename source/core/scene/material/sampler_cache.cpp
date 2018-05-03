@@ -43,8 +43,8 @@ const Texture_sampler_2D& Sampler_cache::sampler_2D(uint32_t key, Sampler_filter
 	if (Sampler_filter::Undefined == filter) {
 		return *samplers_2D_[key];
 	} else {
-		const uint32_t address = key & static_cast<uint32_t>(Sampler_settings::Address_flat::Mask);
-		const uint32_t override_key = static_cast<uint32_t>(filter) | address;
+		uint32_t const address = key & static_cast<uint32_t>(Sampler_settings::Address_flat::Mask);
+		uint32_t const override_key = static_cast<uint32_t>(filter) | address;
 		return *samplers_2D_[override_key];
 	}
 }
@@ -53,8 +53,8 @@ const Texture_sampler_3D& Sampler_cache::sampler_3D(uint32_t key, Sampler_filter
 	if (Sampler_filter::Undefined == filter) {
 		return *samplers_3D_[key];
 	} else {
-		const uint32_t address = key & static_cast<uint32_t>(Sampler_settings::Address_flat::Mask);
-		const uint32_t override_key = static_cast<uint32_t>(filter) | address;
+		uint32_t const address = key & static_cast<uint32_t>(Sampler_settings::Address_flat::Mask);
+		uint32_t const override_key = static_cast<uint32_t>(filter) | address;
 		return *samplers_3D_[override_key];
 	}
 }

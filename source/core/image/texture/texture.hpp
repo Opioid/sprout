@@ -26,7 +26,7 @@ public:
 	int2 back_2() const;
 	const int3& back_3() const;
 	float2 dimensions_float2() const;
-	const float3& dimensions_float3() const;
+	float3 const& dimensions_float3() const;
 	int32_t num_elements() const;
 
 	virtual float  at_1(int32_t i) const = 0;
@@ -37,9 +37,9 @@ public:
 	virtual float3 at_3(int32_t x, int32_t y) const = 0;
 	virtual float4 at_4(int32_t x, int32_t y) const = 0;
 
-	virtual float4 gather_1(const int4& xy_xy1) const = 0;
-	virtual void   gather_2(const int4& xy_xy1, float2 c[4]) const = 0;
-	virtual void   gather_3(const int4& xy_xy1, float3 c[4]) const = 0;
+	virtual float4 gather_1(int4 const& xy_xy1) const = 0;
+	virtual void   gather_2(int4 const& xy_xy1, float2 c[4]) const = 0;
+	virtual void   gather_3(int4 const& xy_xy1, float3 c[4]) const = 0;
 
 	virtual float  at_element_1(int32_t x, int32_t y, int32_t element) const = 0;
 	virtual float2 at_element_2(int32_t x, int32_t y, int32_t element) const = 0;

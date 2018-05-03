@@ -31,7 +31,7 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) {
 void Sky::set_parameters(const json::Value& parameters) {
 	for (auto& n : parameters.GetObject()) {
 		if ("sun" == n.name) {
-			const float3 angles = json::read_float3(n.value, "rotation", float3::identity());
+			float3 const angles = json::read_float3(n.value, "rotation", float3::identity());
 			sun_rotation_ = json::create_rotation_matrix(angles);
 			implicit_rotation_ = false;
 		} else if ("ground_albedo" == n.name) {

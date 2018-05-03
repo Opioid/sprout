@@ -42,7 +42,7 @@ public:
 
 	bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const;
 
-	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
+	bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const;
 
 //	bool intersect_p(FVector ray_origin, FVector ray_direction,
 //					 FVector ray_inv_direction, FVector ray_mint_, FVector ray_max_t,
@@ -60,9 +60,9 @@ public:
 	void prepare_sampling(uint32_t part, uint32_t light_id,
 						  bool material_importance_sampling, thread::Pool& pool);
 
-	float opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const;
+	float opacity(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
 
-	float3 thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const;
+	float3 thin_absorption(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
 
 	float area(uint32_t part) const;
 	uint32_t light_id(uint32_t part) const;

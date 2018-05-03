@@ -37,7 +37,7 @@ public:
 
 	void update(const Scene& scene, Worker& worker);
 
-	virtual bool generate_ray(const sampler::Camera_sample& sample,
+	virtual bool generate_ray(sampler::Camera_sample const& sample,
 							  uint32_t view, Ray& ray) const = 0;
 
 	virtual void set_parameters(const json::Value& parameters) override final;
@@ -59,7 +59,7 @@ protected:
 
 	virtual void on_update(Worker& worker) = 0;
 
-	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;
+	virtual void set_parameter(std::string const& name, const json::Value& value) = 0;
 
 	virtual void on_set_transformation() override final;
 

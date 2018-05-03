@@ -22,7 +22,7 @@ void Bloom::init(const scene::camera::Camera& camera, thread::Pool& /*pool*/) {
 
 	kernel_.resize(width);
 
-	const float fr = static_cast<float>(radius) + 0.5f;
+	float const fr = static_cast<float>(radius) + 0.5f;
 	math::filter::Gaussian_functor gauss(fr * fr, alpha_);
 
 	for (int32_t x = 0; x < width; ++x) {
@@ -44,7 +44,7 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 	float threshold = threshold_;
 	float intensity = intensity_;
 
-	const auto d = destination.description().dimensions;
+	auto const d = destination.description().dimensions;
 
 	if (0 == pass) {
 		for (int32_t i = begin; i < end; ++i) {

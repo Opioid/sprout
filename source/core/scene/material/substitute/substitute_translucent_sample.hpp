@@ -15,7 +15,7 @@ public:
 
 	virtual bool is_translucent() const override final;
 
-	void set(const float3& diffuse_color, float thickness, float attenuation_distance);
+	void set(float3 const& diffuse_color, float thickness, float attenuation_distance);
 
 private:
 

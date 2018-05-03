@@ -15,7 +15,7 @@ Plane::Plane() {
 
 bool Plane::intersect(Ray& ray, const Transformation& transformation,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -47,7 +47,7 @@ bool Plane::intersect(Ray& ray, const Transformation& transformation,
 
 bool Plane::intersect_fast(Ray& ray, const Transformation& transformation,
 						   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -76,7 +76,7 @@ bool Plane::intersect_fast(Ray& ray, const Transformation& transformation,
 
 bool Plane::intersect(Ray& ray, const Transformation& transformation,
 					  Node_stack& /*node_stack*/, float& epsilon) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -91,9 +91,9 @@ bool Plane::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Plane::intersect_p(const Ray& ray, const Transformation& transformation,
+bool Plane::intersect_p(Ray const& ray, const Transformation& transformation,
 						Node_stack& /*node_stack*/) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -106,10 +106,10 @@ bool Plane::intersect_p(const Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-float Plane::opacity(const Ray& ray, const Transformation& transformation,
+float Plane::opacity(Ray const& ray, const Transformation& transformation,
 					 const Materials& materials,
 					 Sampler_filter filter, const Worker& worker) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -126,10 +126,10 @@ float Plane::opacity(const Ray& ray, const Transformation& transformation,
 	return 0.f;
 }
 
-float3 Plane::thin_absorption(const Ray& ray, const Transformation& transformation,
+float3 Plane::thin_absorption(Ray const& ray, const Transformation& transformation,
 							  const Materials& materials,
 							  Sampler_filter filter, const Worker& worker) const {
-	const float3& normal = transformation.rotation.r[2];
+	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -161,7 +161,7 @@ bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/,
 	return false;
 }
 
-float Plane::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+float Plane::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
 				 const Transformation& /*transformation*/,
 				 float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
 	return 0.f;
@@ -174,7 +174,7 @@ bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
 	return false;
 }
 
-float Plane::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
+float Plane::pdf_uv(Ray const& /*ray*/, const Intersection& /*intersection*/,
 					const Transformation& /*transformation*/,
 					float /*area*/, bool /*two_sided*/) const {
 	return 0.f;

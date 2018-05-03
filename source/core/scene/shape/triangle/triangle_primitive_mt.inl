@@ -190,7 +190,7 @@ static inline bool intersect(f_float3 a, f_float3 b, f_float3 c,
 }
 
 static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-							 const float* a, const float* b, const float* c,
+							 float const* a, float const* b, float const* c,
 							 Vector& u_out, Vector& v_out) {
 	using namespace math;
 
@@ -234,7 +234,7 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 }
 
 static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-							 const float* a, const float* b, const float* c) {
+							 float const* a, float const* b, float const* c) {
 	using namespace math;
 
 	Vector ap = simd::load_float4(a);
@@ -336,7 +336,7 @@ static inline bool intersect_p(f_float3 a, f_float3 b, f_float3 c, const math::R
 }
 
 static inline bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
-							   const float* a, const float* b, const float* c) {
+							   float const* a, float const* b, float const* c) {
 	// Implementation C
 	using namespace math;
 
@@ -373,7 +373,7 @@ static inline bool intersect_p(FVector origin, FVector direction, FVector min_t,
 }
 
 static inline void interpolate_p(f_float3 a, f_float3 b, f_float3 c, float2 uv, float3& p) {
-	const float w = 1.f - uv[0] - uv[1];
+	float const w = 1.f - uv[0] - uv[1];
 
 	p = w * a + uv[0] * b + uv[1] * c;
 }
@@ -383,9 +383,9 @@ static inline float area(f_float3 a, f_float3 b, f_float3 c) {
 }
 
 static inline float area(f_float3 a, f_float3 b, f_float3 c, f_float3 scale) {
-	const float3 sa = scale * a;
-	const float3 sb = scale * b;
-	const float3 sc = scale * c;
+	float3 const sa = scale * a;
+	float3 const sb = scale * b;
+	float3 const sc = scale * c;
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
@@ -393,7 +393,7 @@ static inline float2 interpolate_uv(const Shading_vertex_MT& a,
 									const Shading_vertex_MT& b,
 									const Shading_vertex_MT& c,
 									float2 uv) {
-	const float w = 1.f - uv[0] - uv[1];
+	float const w = 1.f - uv[0] - uv[1];
 
 	return w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
@@ -403,7 +403,7 @@ static inline void interpolate_data(const Shading_vertex_MT& a,
 									const Shading_vertex_MT& c,
 									float2 uv,
 									float3& n, float3& t, float2& tc) {
-	const float w = 1.f - uv[0] - uv[1];
+	float const w = 1.f - uv[0] - uv[1];
 
 	n  = math::normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
 	t  = math::normalize(w * a.t + uv[0] * b.t + uv[1] * c.t);
@@ -423,7 +423,7 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
 									float2 uv) {
-	const float w = 1.f - uv[0] - uv[1];
+	float const w = 1.f - uv[0] - uv[1];
 
 	return float2(w * a.n_u[3] + uv[0] * b.n_u[3] + uv[1] * c.n_u[3],
 				  w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
@@ -435,17 +435,17 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 									const Shading_vertex_MTC& c) {
 	const Vector w = math::sub(math::sub(simd::One, u), v);
 
-	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
+	float3 const auv(a.n_u[3], a.t_v[3], 0.f);
 	Vector va = simd::load_float4(auv.v);
 
-	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
+	float3 const buv(b.n_u[3], b.t_v[3], 0.f);
 	Vector vb = simd::load_float4(buv.v);
 
 	va = math::mul(w, va);
 	vb = math::mul(u, vb);
 	va = math::add(va, vb);
 
-	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
+	float3 const cuv(c.n_u[3], c.t_v[3], 0.f);
 	Vector vc = simd::load_float4(cuv.v);
 
 	vc = math::mul(v, vc);
@@ -461,7 +461,7 @@ static inline void interpolate_data(const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& c,
 									float2 uv,
 									float3& n, float3& t, float2& tc) {
-	const float w = 1.f - uv[0] - uv[1];
+	float const w = 1.f - uv[0] - uv[1];
 
 	const float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
 	const float4 t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
@@ -549,7 +549,7 @@ inline float4 snorm16_to_float(short4 v) {
 				  xnorm_to_float(v[3]));
 }
 
-inline short4 float_to_snorm16(const float3& v, float s) {
+inline short4 float_to_snorm16(float3 const& v, float s) {
 	return short4(encoding::float_to_snorm16(v[0]),
 				  encoding::float_to_snorm16(v[1]),
 				  encoding::float_to_snorm16(v[2]),

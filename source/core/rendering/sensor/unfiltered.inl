@@ -16,13 +16,13 @@ int32_t Unfiltered<Base, Clamp>::filter_radius_int() const {
 }
 
 template<class Base, class Clamp>
-int4 Unfiltered<Base, Clamp>::isolated_tile(const int4& tile) const {
+int4 Unfiltered<Base, Clamp>::isolated_tile(int4 const& tile) const {
 	return tile;
 }
 
 template<class Base, class Clamp>
-void Unfiltered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, const float4& color,
-										 const int4& /*isolated_bounds*/, const int4& bounds) {
+void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, float4 const& color,
+										 int4 const& /*isolated_bounds*/, int4 const& bounds) {
 	Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 

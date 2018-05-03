@@ -17,14 +17,14 @@ public:
 		float step_probability;
 	};
 
-	Ray_marching_single(rnd::Generator& rng, const take::Settings& take_settings,
+	Ray_marching_single(rnd::Generator& rng, take::Settings const& take_settings,
 						const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, Worker& worker) override final;
+	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,
@@ -34,7 +34,7 @@ public:
 
 private:
 
-	float3 estimate_direct_light(const Ray& ray, f_float3 position, Worker& worker);
+	float3 estimate_direct_light(Ray const& ray, f_float3 position, Worker& worker);
 
 	const Settings settings_;
 
@@ -45,7 +45,7 @@ class Ray_marching_single_factory : public Factory {
 
 public:
 
-	Ray_marching_single_factory(const take::Settings& take_settings, uint32_t num_integrators,
+	Ray_marching_single_factory(take::Settings const& take_settings, uint32_t num_integrators,
 								float step_size, float step_probability);
 
 	virtual ~Ray_marching_single_factory() override;

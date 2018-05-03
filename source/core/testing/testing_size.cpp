@@ -25,7 +25,7 @@
 namespace testing {
 
 template<typename T>
-void print_size(const std::string& name, size_t expected_size) {
+void print_size(std::string const& name, size_t expected_size) {
 	if (sizeof(T) != expected_size) {
 		std::cout << "ALARM: ";
 	}

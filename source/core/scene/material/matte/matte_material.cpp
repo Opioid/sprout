@@ -35,7 +35,7 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_color(const float3& color) {
+void Material::set_color(float3 const& color) {
 	color_ = color;
 }
 

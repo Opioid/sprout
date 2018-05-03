@@ -38,7 +38,7 @@ public:
 		float3 n_;
 	};
 
-	virtual const Layer& base_layer() const = 0;
+	virtual Layer const& base_layer() const = 0;
 
 	virtual bxdf::Result evaluate(f_float3 wi) const = 0;
 

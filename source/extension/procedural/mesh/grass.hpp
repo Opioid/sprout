@@ -26,7 +26,7 @@ public:
 
 private:
 
-	void add_blade(const float3& offset,
+	void add_blade(float3 const& offset,
 				   float rotation_y, float lean_factor, float width, float height,
 				   uint32_t vertex_offset,
 				   std::vector<scene::shape::triangle::Index_triangle>& triangles,

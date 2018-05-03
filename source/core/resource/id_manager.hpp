@@ -9,9 +9,9 @@ class ID_manager {
 
 public:
 
-	uint32_t id(const std::string& type_name);
+	uint32_t id(std::string const& type_name);
 
-	const std::string& name(uint32_t id) const;
+	std::string const& name(uint32_t id) const;
 
 private:
 

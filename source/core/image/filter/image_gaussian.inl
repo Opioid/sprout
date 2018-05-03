@@ -12,7 +12,7 @@ Gaussian<T>::Gaussian(float radius, float alpha) {
 
 	kernel_.resize(width);
 
-	const float fr = radius + 0.5f;
+	float const fr = radius + 0.5f;
 	math::filter::Gaussian_functor gauss(fr * fr, alpha);
 
 	const int32_t ir = static_cast<int32_t>(radius);
@@ -20,8 +20,8 @@ Gaussian<T>::Gaussian(float radius, float alpha) {
 	for (int32_t x = 0; x < width; ++x) {
 		const int32_t o = -ir + x;
 
-		const float fo = static_cast<float>(o);
-		const float w = gauss(fo * fo);
+		float const fo = static_cast<float>(o);
+		float const w = gauss(fo * fo);
 
 		kernel_[x] = K{o, w};
 	}
@@ -31,7 +31,7 @@ template<typename T>
 void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) {
 	scratch_.resize(target.description());
 
-	const auto d = target.description().dimensions;
+	auto const d = target.description().dimensions;
 
 	// vertical
 

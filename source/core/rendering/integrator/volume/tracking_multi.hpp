@@ -9,13 +9,13 @@ class alignas(64) Tracking_multi : public Integrator {
 
 public:
 
-	Tracking_multi(rnd::Generator& rng, const take::Settings& take_settings);
+	Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, Worker& worker) override final;
+	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
 						   Worker& worker, float3& li, float3& transmittance) override final;
@@ -30,7 +30,7 @@ class Tracking_multi_factory final : public Factory {
 
 public:
 
-	Tracking_multi_factory(const take::Settings& take_settings, uint32_t num_integrators);
+	Tracking_multi_factory(take::Settings const& take_settings, uint32_t num_integrators);
 
 	virtual ~Tracking_multi_factory() override final;
 

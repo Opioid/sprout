@@ -4,7 +4,7 @@ namespace resource {
 
 ID_manager id_manager;
 
-uint32_t ID_manager::id(const std::string& type_name) {
+uint32_t ID_manager::id(std::string const& type_name) {
 	auto& n = names();
 
 	for (uint32_t i = 0, len = static_cast<uint32_t>(n.size()); i < len; ++i) {
@@ -18,7 +18,7 @@ uint32_t ID_manager::id(const std::string& type_name) {
 	return static_cast<uint32_t>(n.size() - 1);
 }
 
-const std::string& ID_manager::name(uint32_t id) const {
+std::string const& ID_manager::name(uint32_t id) const {
 	return names()[id];
 }
 

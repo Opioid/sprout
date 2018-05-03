@@ -24,23 +24,23 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
 	// then we don't need to calculate the reflection.
 	// In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
-		const float n_dot_wi = layer_.clamp_reverse_n_dot(wi);
-		const float approximated_distance = thickness_ / n_dot_wi;
-		const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+		float const n_dot_wi = layer_.clamp_reverse_n_dot(wi);
+		float const approximated_distance = thickness_ / n_dot_wi;
+		float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 
 		// This is the least attempt we can do at energy conservation
-		const float n_dot_wo = layer_.clamp_reverse_n_dot(wo_);
-		const float f = layer_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
+		float const n_dot_wo = layer_.clamp_reverse_n_dot(wo_);
+		float const f = layer_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
-		const float pdf = n_dot_wi * (0.5f * math::Pi_inv);
+		float const pdf = n_dot_wi * (0.5f * math::Pi_inv);
 		return {
 			(n_dot_wi * math::Pi_inv * (1.f - f)) * (attenuation * layer_.diffuse_color_),
 			pdf
 		};
 	}
 
-	const float3 h = math::normalize(wo_ + wi);
-	const float wo_dot_h = clamp_dot(wo_, h);
+	float3 const h = math::normalize(wo_ + wi);
+	float const wo_dot_h = clamp_dot(wo_, h);
 
 	auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
 
@@ -54,20 +54,20 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
 void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 // No side check needed because the material is two-sided by definition.
 
-	const float p = sampler.generate_sample_1D();
+	float const p = sampler.generate_sample_1D();
 
 	if (thickness_ > 0.f) {
 		if (p < 0.5f) {
-			const float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
+			float const n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
 															   layer_, sampler, result);
 
 			// This is the least attempt we can do at energy conservation
-			const float n_dot_wo = layer_.clamp_n_dot(wo_);
-			const float f = layer_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
+			float const n_dot_wo = layer_.clamp_n_dot(wo_);
+			float const f = layer_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
 			result.wi *= -1.f;
-			const float approximated_distance = thickness_ / n_dot_wi;
-			const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+			float const approximated_distance = thickness_ / n_dot_wi;
+			float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 			result.reflection *= (n_dot_wi * (1.f  - f)) * attenuation;
 		} else {
 			if (p < 0.75f) {
@@ -91,7 +91,7 @@ bool Sample_translucent::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample_translucent::set(const float3& diffuse_color, float thickness,
+void Sample_translucent::set(float3 const& diffuse_color, float thickness,
 							 float attenuation_distance) {
 	thickness_ = thickness;
 

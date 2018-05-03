@@ -22,22 +22,22 @@ float3 Height::optical_depth(const Transformation& transformation, const math::A
 	// Because everything happens in world space there could be differences
 	// when the volume is rotated because the local aabb is never checked.
 
-	const float ay = rn.origin[1] + rn.min_t * rn.direction[1];
-	const float by = rn.origin[1] + rn.max_t * rn.direction[1];
+	float const ay = rn.origin[1] + rn.min_t * rn.direction[1];
+	float const by = rn.origin[1] + rn.max_t * rn.direction[1];
 
-	const float min_y = aabb.min()[1];
-	const float ha = ay - min_y;
-	const float hb = by - min_y;
+	float const min_y = aabb.min()[1];
+	float const ha = ay - min_y;
+	float const hb = by - min_y;
 
-	const float3 attenuation = absorption_coefficient_ + scattering_coefficient_;
+	float3 const attenuation = absorption_coefficient_ + scattering_coefficient_;
 
-	const float d = rn.max_t - rn.min_t;
+	float const d = rn.max_t - rn.min_t;
 
-	const float hb_ha = hb - ha;
+	float const hb_ha = hb - ha;
 
 	if (0.f == hb_ha) {
 		// special case where density stays exactly the same along the ray
-		const float3 result = d * (a_ * math::exp(-b_ * ha)) * attenuation;
+		float3 const result = d * (a_ * math::exp(-b_ * ha)) * attenuation;
 
 		SOFT_ASSERT(math::all_finite(result));
 
@@ -50,10 +50,10 @@ float3 Height::optical_depth(const Transformation& transformation, const math::A
 
 //	float3 result = d * ((fb - fa) / (hb - ha)) * attenuation;
 
-	const float fa = -math::exp(-b_ * ha);
-	const float fb = -math::exp(-b_ * hb);
+	float const fa = -math::exp(-b_ * ha);
+	float const fb = -math::exp(-b_ * hb);
 
-	const float3 result = d * ((a_ * (fb - fa) / b_) / (hb_ha)) * attenuation;
+	float3 const result = d * ((a_ * (fb - fa) / b_) / (hb_ha)) * attenuation;
 
 	SOFT_ASSERT(math::all_finite(result));
 
@@ -78,7 +78,7 @@ float Height::density(f_float3 p, const Transformation& transformation,
 	// p is in object space already
 
 	// calculate scaled height
-	const float height = transformation.scale[1] * (1.f + p[1]);
+	float const height = transformation.scale[1] * (1.f + p[1]);
 
 	return a_ * math::exp(-b_ * height);
 }

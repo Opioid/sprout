@@ -30,7 +30,7 @@ public:
 		bool  disable_caustics;
 	};
 
-	Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
+	Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
 				   const Settings& settings);
 
 	virtual ~Pathtracer_MIS() override final;
@@ -45,17 +45,17 @@ public:
 
 private:
 
-	float3 sample_lights(const Ray& ray, float ray_offset, Intersection& intersection,
+	float3 sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
 						 const Material_sample& material_sample, bool do_mis,
 						 Sampler_filter filter, Worker& worker);
 
-	float3 evaluate_light(const Light& light, float light_weight, const Ray& history,
+	float3 evaluate_light(const Light& light, float light_weight, Ray const& history,
 						  float ray_offset, uint32_t sampler_dimension, bool do_mis,
 						  const Intersection& intersection,
 						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
 
-	float3 evaluate_light(const Ray& ray, const Intersection& intersection,
+	float3 evaluate_light(Ray const& ray, const Intersection& intersection,
 						  Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
 						  Sampler_filter filter, Worker& worker, bool& pure_emissive);
 
@@ -79,7 +79,7 @@ class Pathtracer_MIS_factory final : public Factory {
 
 public:
 
-	Pathtracer_MIS_factory(const take::Settings& take_settings, uint32_t num_integrators,
+	Pathtracer_MIS_factory(take::Settings const& take_settings, uint32_t num_integrators,
 						   uint32_t min_bounces, uint32_t max_bounces,
 						   float path_termination_probability, Light_sampling light_sampling,
 						   bool enable_caustics);

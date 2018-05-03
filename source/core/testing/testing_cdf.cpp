@@ -15,19 +15,19 @@
 namespace testing { namespace cdf {
 
 template<typename T, typename U>
-void compare_distributions(const T& a, const U& b, float r);
+void compare_distributions(T const& a, const U& b, float r);
 
 template<typename T, typename U>
-void assert_distributions(const T& a, const U& b, float2 r);
+void assert_distributions(T const& a, const U& b, float2 r);
 
 template<typename T>
-void test_distribution(const T& d, const std::vector<float>& samples);
+void test_distribution(T const& d, const std::vector<float>& samples);
 
 template<typename T>
-void test_distribution(const T& d, const std::vector<float2>& samples);
+void test_distribution(T const& d, const std::vector<float2>& samples);
 
 template<typename T, typename U>
-void assert_distributions(const T& a, const U& b, const std::vector<float2>& samples);
+void assert_distributions(T const& a, const U& b, const std::vector<float2>& samples);
 
 template<typename T>
 void init(T& distribution, const image::texture::Float3& texture);
@@ -97,7 +97,7 @@ void test_1D() {
 	compare_distributions(a, e, 0.3f);
 
 //	float pdf;
-//	const float result = e.sample_discrete(0.5f, pdf);
+//	float const result = e.sample_discrete(0.5f, pdf);
 //	std::cout << result << " " << pdf << std::endl;
 }
 
@@ -166,18 +166,18 @@ void test_2D() {
 }
 
 template<typename T, typename U>
-void compare_distributions(const T& a, const U& b, float r) {
-	const auto a_d = a.sample_discrete(r);
+void compare_distributions(T const& a, const U& b, float r) {
+	auto const a_d = a.sample_discrete(r);
 
-	const auto a_r = a.sample_continuous(r);
+	auto const a_r = a.sample_continuous(r);
 
-	const float a_pdf_2 = a.pdf(r);
+	float const a_pdf_2 = a.pdf(r);
 
-	const auto b_d = b.sample_discrete(r);
+	auto const b_d = b.sample_discrete(r);
 
-	const auto b_r = b.sample_continuous(r);
+	auto const b_r = b.sample_continuous(r);
 
-	const float b_pdf_2 = b.pdf(r);
+	float const b_pdf_2 = b.pdf(r);
 
 	std::cout << "a(" << r << "): " << a_d.offset << ", " << a_r.offset << ", "
 			  << a_d.pdf << ", " << a_r.pdf << ", " << a_pdf_2 << std::endl;
@@ -187,12 +187,12 @@ void compare_distributions(const T& a, const U& b, float r) {
 }
 
 template<typename T, typename U>
-void assert_distributions(const T& a, const U& b, float2 r) {
+void assert_distributions(T const& a, const U& b, float2 r) {
 	float a_pdf;
-	const float2 a_r = a.sample_continuous(r, a_pdf);
+	float2 const a_r = a.sample_continuous(r, a_pdf);
 
 	float b_pdf;
-	const float2 b_r = b.sample_continuous(r, b_pdf);
+	float2 const b_r = b.sample_continuous(r, b_pdf);
 
 	if (a_r != b_r || std::abs(a_pdf - b_pdf) > 0.000001f) {
 		std::cout << "a(" << r << "): " << a_r << ", " << a_pdf << std::endl;
@@ -202,23 +202,23 @@ void assert_distributions(const T& a, const U& b, float2 r) {
 }
 
 template<typename T>
-void test_distribution(const T& d, const std::vector<float>& samples) {
-	const auto start = std::chrono::high_resolution_clock::now();
+void test_distribution(T const& d, const std::vector<float>& samples) {
+	auto const start = std::chrono::high_resolution_clock::now();
 
 	float accumulated_r = 0.f;
 	float accumulated_pdf = 0.f;
 
-	const float inv_num_samples = 1.f / static_cast<float>(samples.size());
+	float const inv_num_samples = 1.f / static_cast<float>(samples.size());
 
 	for (size_t i = 0, len = samples.size(); i < len; ++i) {
 		float pdf;
-		const float r = d.sample_continuous(samples[i], pdf);
+		float const r = d.sample_continuous(samples[i], pdf);
 
 		accumulated_r += inv_num_samples * r;
 		accumulated_pdf += inv_num_samples * pdf;
 	}
 
-	const auto duration = chrono::seconds_since(start);
+	auto const duration = chrono::seconds_since(start);
 
 	std::cout << "accumulated r: " << accumulated_r << std::endl;
 	std::cout << "accumulated pdf: " << accumulated_pdf << std::endl;
@@ -227,22 +227,22 @@ void test_distribution(const T& d, const std::vector<float>& samples) {
 }
 
 template<typename T>
-void test_distribution(const T& d, const std::vector<float2>& samples) {
-	const auto start = std::chrono::high_resolution_clock::now();
+void test_distribution(T const& d, const std::vector<float2>& samples) {
+	auto const start = std::chrono::high_resolution_clock::now();
 
 	float2 accumulated_r = 0.f;
 	float accumulated_pdf = 0.f;
 
-	const float inv_num_samples = 1.f / static_cast<float>(samples.size());
+	float const inv_num_samples = 1.f / static_cast<float>(samples.size());
 
 	for (size_t i = 0, len = samples.size(); i < len; ++i) {
-		const auto r = d.sample_continuous(samples[i]);
+		auto const r = d.sample_continuous(samples[i]);
 
 		accumulated_r += inv_num_samples * r.uv;
 		accumulated_pdf += inv_num_samples * r.pdf;
 	}
 
-	const auto duration = chrono::seconds_since(start);
+	auto const duration = chrono::seconds_since(start);
 
 	std::cout << "accumulated r: " << accumulated_r << std::endl;
 	std::cout << "accumulated pdf: " << accumulated_pdf << std::endl;
@@ -251,7 +251,7 @@ void test_distribution(const T& d, const std::vector<float2>& samples) {
 }
 
 template<typename T, typename U>
-void assert_distributions(const T& a, const U& b, const std::vector<float2>& samples) {
+void assert_distributions(T const& a, const U& b, const std::vector<float2>& samples) {
 	for (size_t i = 0, len = samples.size(); i < len; ++i) {
 		assert_distributions(a, b, samples[i]);
 	}
@@ -259,7 +259,7 @@ void assert_distributions(const T& a, const U& b, const std::vector<float2>& sam
 
 template<typename T>
 void init(T& distribution, const image::texture::Float3& texture) {
-	const auto d = texture.dimensions_2();
+	auto const d = texture.dimensions_2();
 
 	std::vector<typename T::Distribution_impl> conditional(d[1]);
 
@@ -267,7 +267,7 @@ void init(T& distribution, const image::texture::Float3& texture) {
 
 	for (int32_t y = 0; y < d[1]; ++y) {
 		for (int32_t x = 0; x < d[0]; ++x) {
-			const float3 radiance = texture.at_3(x, y);
+			float3 const radiance = texture.at_3(x, y);
 
 			luminance[x] = spectrum::luminance(radiance);
 		}

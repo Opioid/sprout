@@ -9,7 +9,7 @@ class Sample final : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const override final;
+	virtual Layer const& base_layer() const override final;
 
 	virtual bxdf::Result evaluate(f_float3 wi) const override final;
 

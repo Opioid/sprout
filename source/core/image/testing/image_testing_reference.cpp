@@ -29,7 +29,7 @@ float3 reference_normal(float2 p, float2 range) {
 
 	float3 v;
 
-	const float radius = 1.f - 0.5f * range[1];
+	float const radius = 1.f - 0.5f * range[1];
 	if (l < radius) {
 		v = float3(vx, vy, 1.f - l);
 	} else {

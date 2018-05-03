@@ -33,7 +33,7 @@ void Pipeline::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 }
 
 bool Pipeline::has_alpha_transparency(bool alpha_in) const {
-	for (const auto& pp : postprocessors_) {
+	for (auto const& pp : postprocessors_) {
 		alpha_in = pp->alpha_out(alpha_in);
 	}
 
@@ -65,7 +65,7 @@ void Pipeline::apply(const sensor::Sensor& sensor, image::Float4& target, thread
 
 size_t Pipeline::num_bytes() const {
 	size_t num_bytes = 0;
-	for (const auto& pp : postprocessors_) {
+	for (auto const& pp : postprocessors_) {
 		num_bytes += pp->num_bytes();
 	}
 

@@ -17,11 +17,11 @@ public:
 
 	bool handshake();
 
-	void ping(const std::string& text);
+	void ping(std::string const& text);
 
 	int receive(char* data, size_t size);
 
-	bool send(const std::string& text);
+	bool send(std::string const& text);
 
 	bool send(const char* data, size_t size);
 

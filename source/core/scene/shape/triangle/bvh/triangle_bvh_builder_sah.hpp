@@ -73,7 +73,7 @@ private:
 
 		float cost() const;
 
-		bool behind(const float* point) const;
+		bool behind(float const* point) const;
 
 		uint8_t axis() const;
 		bool spatial() const;
@@ -146,8 +146,8 @@ private:
 
 	uint32_t spatial_split_threshold_;
 
-	const uint32_t num_slices_;
-	const uint32_t sweep_threshold_;
+	uint32_t const num_slices_;
+	uint32_t const sweep_threshold_;
 };
 
 }}}}

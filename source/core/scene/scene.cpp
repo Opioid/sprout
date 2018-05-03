@@ -23,7 +23,7 @@
 
 namespace scene {
 
-Scene::Scene(const take::Settings& settings) : take_settings_(settings) {
+Scene::Scene(take::Settings const& settings) : take_settings_(settings) {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
 	infinite_props_.reserve(2);
@@ -60,7 +60,7 @@ Scene::~Scene() {
 		delete p;
 	}
 
-	for (const auto d : dummies_) {
+	for (auto const d : dummies_) {
 		delete d;
 	}
 }
@@ -88,11 +88,11 @@ bool Scene::intersect_volume(Ray& ray, Node_stack& node_stack,
 	return volume_bvh_.intersect_fast(ray, node_stack, intersection);
 }
 
-bool Scene::intersect_p(const Ray& ray, Node_stack& node_stack) const {
+bool Scene::intersect_p(Ray const& ray, Node_stack& node_stack) const {
 	return prop_bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
+float Scene::opacity(Ray const& ray, Sampler_filter filter, const Worker& worker) const {
 	if (has_masked_material_) {
 		return prop_bvh_.opacity(ray, filter, worker);
 	}
@@ -100,7 +100,7 @@ float Scene::opacity(const Ray& ray, Sampler_filter filter, const Worker& worker
 	return prop_bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
-float3 Scene::thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
+float3 Scene::thin_absorption(Ray const& ray, Sampler_filter filter, const Worker& worker) const {
 	if (has_tinted_shadow_) {
 		return prop_bvh_.thin_absorption(ray, filter, worker);
 	}
@@ -146,14 +146,14 @@ Scene::Light Scene::light(uint32_t id) const {
 	// but I think it is more efficient to handle those cases outside or implicitely.
 	SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
-	const float pdf = light_distribution_.pdf(id);
+	float const pdf = light_distribution_.pdf(id);
 	return { *lights_[id], pdf };
 }
 
 Scene::Light Scene::random_light(float random) const {
 	SOFT_ASSERT(!lights_.empty());
 
-	const auto l = light_distribution_.sample_discrete(random);
+	auto const l = light_distribution_.sample_discrete(random);
 
 	SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
 
@@ -165,8 +165,8 @@ bool Scene::has_volumes() const {
 }
 
 void Scene::tick(thread::Pool& thread_pool) {
-	const float simulation_time = static_cast<float>(simulation_time_);
-	const float tick_duration	= static_cast<float>(tick_duration_);
+	float const simulation_time = static_cast<float>(simulation_time_);
+	float const tick_duration	= static_cast<float>(tick_duration_);
 
 	for (auto m : materials_) {
 		m->tick(simulation_time, tick_duration);
@@ -208,7 +208,7 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 
 	const double first_tick_d = time_d - tick_offset_d;
 
-	const float first_tick = static_cast<float>(first_tick_d);
+	float const first_tick = static_cast<float>(first_tick_d);
 
 	for (auto a : animations_) {
 		a->seek(first_tick);
@@ -232,7 +232,7 @@ void Scene::compile(thread::Pool& pool) {
 	has_tinted_shadow_	 = false;
 
 	// handle changed transformations
-	for (const auto d : dummies_) {
+	for (auto const d : dummies_) {
 		d->calculate_world_transformation();
 	}
 
@@ -287,7 +287,7 @@ entity::Dummy* Scene::create_dummy() {
 	return dummy;
 }
 
-entity::Dummy* Scene::create_dummy(const std::string& name) {
+entity::Dummy* Scene::create_dummy(std::string const& name) {
 	entity::Dummy* dummy = create_dummy();
 
 	add_named_entity(dummy, name);
@@ -320,7 +320,7 @@ Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
 }
 
 prop::Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials,
-							   const std::string& name) {
+							   std::string const& name) {
 	prop::Prop* prop = create_prop(shape, materials);
 
 	add_named_entity(prop, name);
@@ -354,7 +354,7 @@ void Scene::add_extension(Entity* extension) {
 	entities_.push_back(extension);
 }
 
-void Scene::add_extension(Entity* extension, const std::string& name) {
+void Scene::add_extension(Entity* extension, std::string const& name) {
 	add_extension(extension);
 
 	add_named_entity(extension, name);
@@ -386,7 +386,7 @@ size_t Scene::num_bytes() const {
 	return num_bytes + sizeof(*this);
 }
 
-void Scene::add_named_entity(Entity* entity, const std::string& name) {
+void Scene::add_named_entity(Entity* entity, std::string const& name) {
 	if (!entity || name.empty()) {
 		return;
 	}

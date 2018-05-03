@@ -28,13 +28,13 @@ public:
 		Mask
 	};
 
-	virtual std::shared_ptr<Texture> load(const std::string& filename,
-										  const memory::Variant_map& options,
+	virtual std::shared_ptr<Texture> load(std::string const& filename,
+										  memory::Variant_map const& options,
 										  resource::Manager& manager) override final;
 
-	virtual std::shared_ptr<Texture> load(const void* data,
-										  const std::string& mount_folder,
-										  const memory::Variant_map& options,
+	virtual std::shared_ptr<Texture> load(void const* data,
+										  std::string const& mount_folder,
+										  memory::Variant_map const& options,
 										  resource::Manager& manager) override final;
 
 	virtual size_t num_bytes() const override final;

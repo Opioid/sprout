@@ -13,14 +13,14 @@ public:
 		float step_size;
 	};
 
-	Emission(rnd::Generator& rng, const take::Settings& take_settings,
+	Emission(rnd::Generator& rng, take::Settings const& take_settings,
 			 const Settings& settings);
 
-	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) override final;
+	virtual void prepare(scene::Scene const& scene, uint32_t num_samples_per_pixel) override final;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(const Ray& ray, Worker& worker) override final;
+	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
 	virtual bool integrate(Ray& ray, Intersection& intersection,
 						   Sampler_filter filter, Worker& worker,
@@ -35,7 +35,7 @@ class Emission_factory : public Factory {
 
 public:
 
-	Emission_factory(const take::Settings& settings, uint32_t num_integrators, float step_size);
+	Emission_factory(take::Settings const& settings, uint32_t num_integrators, float step_size);
 
 	virtual ~Emission_factory() override;
 

@@ -20,8 +20,8 @@ public:
 
 	void set_normal_map(const Texture_adapter& normal_map);
 
-	void set_ior(const float3& ior);
-	void set_absorption(const float3& absorption);
+	void set_ior(float3 const& ior);
+	void set_absorption(float3 const& absorption);
 	void set_roughness(float roughness);
 
 	static size_t sample_size();
@@ -53,8 +53,8 @@ public:
 	void set_normal_map(const Texture_adapter& normal_map);
 	void set_direction_map(const Texture_adapter& direction_map);
 
-	void set_ior(const float3& ior);
-	void set_absorption(const float3& absorption);
+	void set_ior(float3 const& ior);
+	void set_absorption(float3 const& absorption);
 	void set_roughness(float2 roughness);
 
 	static size_t sample_size();

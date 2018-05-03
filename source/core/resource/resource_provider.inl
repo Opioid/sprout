@@ -6,7 +6,7 @@
 namespace resource {
 
 template<typename T>
-Provider<T>::Provider(const std::string& name) : Identifiable<T>(name) {}
+Provider<T>::Provider(std::string const& name) : Identifiable<T>(name) {}
 
 template<typename T>
 Provider<T>::~Provider() {}

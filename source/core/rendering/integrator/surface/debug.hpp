@@ -21,7 +21,7 @@ public:
 		Vector vector;
 	};
 
-	Debug(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings);
+	Debug(rnd::Generator& rng, take::Settings const& take_settings, const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -42,7 +42,7 @@ class Debug_factory : public Factory {
 
 public:
 
-	Debug_factory(const take::Settings& take_settings, uint32_t num_integrators,
+	Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
 				  Debug::Settings::Vector vector);
 
 	~Debug_factory();

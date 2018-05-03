@@ -60,8 +60,8 @@ void Tile_queue::restart() {
 }
 
 bool Tile_queue::pop(int4& tile) {
-	//const uint32_t current = current_consume_++;
-	const uint32_t current = current_consume_.fetch_add(1, std::memory_order_relaxed);
+	//uint32_t const current = current_consume_++;
+	uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
 	if (current < num_tiles_) {
 		tile = tiles_[current];
@@ -71,8 +71,8 @@ bool Tile_queue::pop(int4& tile) {
 	return false;
 }
 
-void Tile_queue::push(const int4& tile) {
-	const uint32_t current = num_tiles_ - current_consume_--;
+void Tile_queue::push(int4 const& tile) {
+	uint32_t const current = num_tiles_ - current_consume_--;
 
 	tiles_[current] = tile;
 }

@@ -11,7 +11,7 @@
 
 namespace scene::shape::triangle {
 
-std::string extract_filename(const std::string& filename) {
+std::string extract_filename(std::string const& filename) {
 	size_t i = filename.find_last_of('/') + 1;
 	return filename.substr(i, filename.find_first_of('.') - i);
 }
@@ -28,7 +28,7 @@ void binary_tag(std::ostream& stream, size_t offset, size_t size) {
 	stream << "\"binary\":{\"offset\":" << offset <<",\"size\":" << size << "}";
 }
 
-void Exporter::write(const std::string& filename, const Json_handler& handler) {
+void Exporter::write(std::string const& filename, const Json_handler& handler) {
 	std::string out_name = extract_filename(filename) + ".sum";
 
 	std::cout << "Export " << out_name << std::endl;
@@ -53,12 +53,12 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	newline(jstream, 2);
 	jstream << "\"parts\":[";
 
-	const auto& parts = handler.parts();
+	auto const& parts = handler.parts();
 
 	for (size_t i = 0, len = parts.size(); i < len; ++i) {
 		newline(jstream, 3);
 
-		const auto& p = parts[i];
+		auto const& p = parts[i];
 		jstream << "{";
 		jstream << "\"start_index\":" << p.start_index << ",";
 		jstream << "\"num_indices\":" << p.num_indices << ",";
@@ -80,7 +80,7 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	jstream << "\"vertices\":{";
 
 	newline(jstream, 3);
-	const auto& vertices = handler.vertices();
+	auto const& vertices = handler.vertices();
 	size_t num_vertices = static_cast<uint32_t>(vertices.size());
 	size_t vertices_size = num_vertices * sizeof(Vertex);
 	binary_tag(jstream, 0, vertices_size);
@@ -176,7 +176,7 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	Compressed_vertex* cvs = new Compressed_vertex[vertices.size()];
 
 	for (size_t i = 0, len = vertices.size(); i < len; ++i) {
-		const auto& v = vertices[i];
+		auto const& v = vertices[i];
 		auto& cv = cvs[i];
 
 		cv.p = v.p;
@@ -189,14 +189,14 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 */
 	stream.write(reinterpret_cast<const char*>(vertices.data()), vertices_size);
 
-	const auto& triangles = handler.triangles();
+	auto const& triangles = handler.triangles();
 
 	if (4 == index_bytes) {
-		for (const auto& t : triangles) {
+		for (auto const& t : triangles) {
 			stream.write(reinterpret_cast<const char*>(t.i), 3 * sizeof(uint32_t));
 		}
 	} else {
-		for (const auto& t : triangles) {
+		for (auto const& t : triangles) {
 			uint16_t a = static_cast<uint16_t>(t.i[0]);
 			stream.write(reinterpret_cast<const char*>(&a), sizeof(uint16_t));
 			uint16_t b = static_cast<uint16_t>(t.i[1]);
