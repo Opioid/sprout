@@ -13,7 +13,7 @@ Plane::Plane() {
 	aabb_.set_min_max(float3::identity(), float3::identity());
 }
 
-bool Plane::intersect(Ray& ray, const Transformation& transformation,
+bool Plane::intersect(Ray& ray, Transformation const& transformation,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -45,7 +45,7 @@ bool Plane::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Plane::intersect_fast(Ray& ray, const Transformation& transformation,
+bool Plane::intersect_fast(Ray& ray, Transformation const& transformation,
 						   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -74,7 +74,7 @@ bool Plane::intersect_fast(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Plane::intersect(Ray& ray, const Transformation& transformation,
+bool Plane::intersect(Ray& ray, Transformation const& transformation,
 					  Node_stack& /*node_stack*/, float& epsilon) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -91,7 +91,7 @@ bool Plane::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Plane::intersect_p(Ray const& ray, const Transformation& transformation,
+bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
 						Node_stack& /*node_stack*/) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -106,7 +106,7 @@ bool Plane::intersect_p(Ray const& ray, const Transformation& transformation,
 	return false;
 }
 
-float Plane::opacity(Ray const& ray, const Transformation& transformation,
+float Plane::opacity(Ray const& ray, Transformation const& transformation,
 					 const Materials& materials,
 					 Sampler_filter filter, const Worker& worker) const {
 	float3 const& normal = transformation.rotation.r[2];
@@ -126,7 +126,7 @@ float Plane::opacity(Ray const& ray, const Transformation& transformation,
 	return 0.f;
 }
 
-float3 Plane::thin_absorption(Ray const& ray, const Transformation& transformation,
+float3 Plane::thin_absorption(Ray const& ray, Transformation const& transformation,
 							  const Materials& materials,
 							  Sampler_filter filter, const Worker& worker) const {
 	float3 const& normal = transformation.rotation.r[2];
@@ -148,34 +148,34 @@ float3 Plane::thin_absorption(Ray const& ray, const Transformation& transformati
 }
 
 bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 /*n*/,
-				   const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
+				   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 				   Node_stack& /*node_stack*/, Sample& /*sample*/) const {
 	return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/,
-				   const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
+				   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 				   Node_stack& /*node_stack*/, Sample& /*sample*/) const {
 	return false;
 }
 
 float Plane::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
-				 const Transformation& /*transformation*/,
+				 Transformation const& /*transformation*/,
 				 float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
 	return 0.f;
 }
 
 bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
-				   const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
+				   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				   Sample& sample) const {
 	sample.pdf = 0.f;
 	return false;
 }
 
 float Plane::pdf_uv(Ray const& /*ray*/, const Intersection& /*intersection*/,
-					const Transformation& /*transformation*/,
+					Transformation const& /*transformation*/,
 					float /*area*/, bool /*two_sided*/) const {
 	return 0.f;
 }

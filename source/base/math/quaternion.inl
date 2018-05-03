@@ -103,7 +103,7 @@ void set_rotation_z(Quaternion<T>& q, T a) {
 }
 
 template<typename T>
-void set_rotation(Quaternion<T>& q, const Vector3<T>& v, T a) {
+void set_rotation(Quaternion<T>& q, Vector3<T> const& v, T a) {
 	const T d = length(v);
 
 	const T s = std::sin(a * T(0.5)) / d;

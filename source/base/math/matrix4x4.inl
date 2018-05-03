@@ -41,7 +41,7 @@ Matrix4x4<T>::Matrix4x4(const Matrix3x3<T>& m) :
 	m30(T(0)),  m31(T(0)),  m32(T(0)),  m33(T(1)) {}
 
 template<typename T>
-Matrix4x4<T>::Matrix4x4(const Transformation& t) {
+Matrix4x4<T>::Matrix4x4(Transformation const& t) {
 	compose(*this, create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
@@ -117,7 +117,7 @@ Matrix4x4<T> operator*(T s, const Matrix4x4<T>& m) {
 }
 
 template<typename T>
-Vector3<T> operator*(const Vector3<T>& v, const Matrix4x4<T>& m) {
+Vector3<T> operator*(Vector3<T> const& v, const Matrix4x4<T>& m) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
@@ -141,14 +141,14 @@ Vector4<T> operator*(const Vector4<T>& v, const Matrix4x4<T>& m) {
 }
 
 template<typename T>
-Vector3<T> transform_vector(const Matrix4x4<T>& m, const Vector3<T>& v) {
+Vector3<T> transform_vector(const Matrix4x4<T>& m, Vector3<T> const& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
 template<typename T>
-Vector3<T> transform_point(const Matrix4x4<T>& m, const Vector3<T>& v) {
+Vector3<T> transform_point(const Matrix4x4<T>& m, Vector3<T> const& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
@@ -182,7 +182,7 @@ void get_origin(Vector3<T> &origin, const Matrix4x4<T>& m)
 }
 
 template<typename T>
-void set_origin(Matrix4x4<T>& m, const Vector3<T>& origin) {
+void set_origin(Matrix4x4<T>& m, Vector3<T> const& origin) {
 	m.m30 = origin.x; m.m31 = origin.y; m.m32 = origin.z;
 }
 
@@ -200,7 +200,7 @@ void set_scale(Matrix4x4<T>& m, T x, T y, T z) {
 }
 
 template<typename T>
-void set_scale(Matrix4x4<T>& m, const Vector3<T>& v) {
+void set_scale(Matrix4x4<T>& m, Vector3<T> const& v) {
 	m.m00 = v.x;  m.m01 = T(0); m.m02 = T(0); m.m03 = T(0);
 	m.m10 = T(0); m.m11 = v.y;  m.m12 = T(0); m.m13 = T(0);
 	m.m20 = T(0); m.m21 = T(0); m.m22 = v.z;  m.m23 = T(0);
@@ -208,7 +208,7 @@ void set_scale(Matrix4x4<T>& m, const Vector3<T>& v) {
 }
 
 template<typename T>
-void scale(Matrix4x4<T>& m, const Vector3<T>& v) {
+void scale(Matrix4x4<T>& m, Vector3<T> const& v) {
 	m.m00 *= v.x; m.m01 *= v.x; m.m02 *= v.x;
 	m.m10 *= v.y; m.m11 *= v.y; m.m12 *= v.y;
 	m.m20 *= v.z; m.m21 *= v.z; m.m22 *= v.z;
@@ -223,7 +223,7 @@ void set_translation(Matrix4x4<T>& m, T x, T y, T z) {
 }
 
 template<typename T>
-void set_translation(Matrix4x4<T>& m, const Vector3<T>& v) {
+void set_translation(Matrix4x4<T>& m, Vector3<T> const& v) {
 	m.m00 = T(1); m.m01 = T(0); m.m02 = T(0); m.m03 = T(0);
 	m.m10 = T(0); m.m11 = T(1); m.m12 = T(0); m.m13 = T(0);
 	m.m20 = T(0); m.m21 = T(0); m.m22 = T(1); m.m23 = T(0);
@@ -264,7 +264,7 @@ void set_rotation_z(Matrix4x4<T>& m, T a) {
 }
 
 template<typename T>
-void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a) {
+void set_rotation(Matrix4x4<T>& m, Vector3<T> const& v, T a) {
 	T c = std::cos(a);
 	T s = std::sin(a);
 	T t = T(1) - c;
@@ -389,8 +389,8 @@ Matrix4x4<T> affine_inverted(const Matrix4x4<T>& m) {
 template<typename T>
 void compose(Matrix4x4<T>& m,
 							const Matrix3x3<T>& basis,
-							const Vector3<T>& scale,
-							const Vector3<T>& origin) {
+							Vector3<T> const& scale,
+							Vector3<T> const& origin) {
 	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = T(0);
 	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = T(0);
 	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = T(0);
@@ -457,7 +457,7 @@ static inline Matrix4x4f_a compose(
 	return m;
 }
 
-inline Matrix4x4f_a::Matrix4x4f_a(const Transformation& t) {
+inline Matrix4x4f_a::Matrix4x4f_a(Transformation const& t) {
 	*this = compose(quaternion::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 

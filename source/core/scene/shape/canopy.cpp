@@ -20,7 +20,7 @@ Canopy::Canopy() {
 	aabb_.set_min_max(float3::identity(), float3::identity());
 }
 
-bool Canopy::intersect(Ray& ray, const Transformation& transformation,
+bool Canopy::intersect(Ray& ray, Transformation const& transformation,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	if (ray.max_t >= Ray_max_t) {
 		if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
@@ -55,7 +55,7 @@ bool Canopy::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Canopy::intersect_fast(Ray& ray, const Transformation& transformation,
+bool Canopy::intersect_fast(Ray& ray, Transformation const& transformation,
 							Node_stack& /*node_stack*/, Intersection& intersection) const {
 	if (ray.max_t >= Ray_max_t) {
 		if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
@@ -87,7 +87,7 @@ bool Canopy::intersect_fast(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Canopy::intersect(Ray& ray, const Transformation& transformation,
+bool Canopy::intersect(Ray& ray, Transformation const& transformation,
 					   Node_stack& /*node_stack*/, float& epsilon) const {
 	if (ray.max_t >= Ray_max_t) {
 		if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
@@ -103,20 +103,20 @@ bool Canopy::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Canopy::intersect_p(Ray const& /*ray*/, const Transformation& /*transformation*/,
+bool Canopy::intersect_p(Ray const& /*ray*/, Transformation const& /*transformation*/,
 						 Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
-float Canopy::opacity(Ray const& /*ray*/, const Transformation& /*transformation*/,
+float Canopy::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
 					  const Materials& /*materials*/, Sampler_filter /*filter*/,
 					  const Worker& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
-float3 Canopy::thin_absorption(Ray const& /*ray*/, const Transformation& /*transformation*/,
+float3 Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
 							   const Materials& /*materials*/, Sampler_filter /*filter*/,
 							   const Worker& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
@@ -124,14 +124,14 @@ float3 Canopy::thin_absorption(Ray const& /*ray*/, const Transformation& /*trans
 }
 
 bool Canopy::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
-					const Transformation& transformation, float area, bool two_sided,
+					Transformation const& transformation, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& node_stack, Sample& sample) const {
 	return Canopy::sample(part, p, transformation, area, two_sided,
 						  sampler, sampler_dimension, node_stack, sample);
 }
 
-bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, const Transformation& transformation,
+bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation const& transformation,
 					float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
@@ -155,13 +155,13 @@ bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, const Transformation& tra
 }
 
 float Canopy::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
-				  const Transformation& /*transformation*/,
+				  Transformation const& /*transformation*/,
 				  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
 	return 1.f / (2.f * math::Pi);
 }
 
 bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
-					const Transformation& transformation,
+					Transformation const& transformation,
 					float /*area*/, bool /*two_sided*/, Sample& sample) const {
 	float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
@@ -183,7 +183,7 @@ bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
 }
 
 float Canopy::pdf_uv(Ray const& /*ray*/, const Intersection& /*intersection*/,
-					 const Transformation& /*transformation*/,
+					 Transformation const& /*transformation*/,
 					 float /*area*/, bool /*two_sided*/) const {
 	return 1.f / (2.f * math::Pi);
 }

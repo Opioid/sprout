@@ -45,7 +45,7 @@ size_t Grid::num_bytes() const {
 	return sizeof(*this);
 }
 
-float Grid::density(f_float3 p, const Transformation& /*transformation*/,
+float Grid::density(f_float3 p, Transformation const& /*transformation*/,
 					Sampler_filter filter, const Worker& worker) const {
 	// p is in object space already
 
@@ -63,7 +63,7 @@ Emission_grid::Emission_grid(const Sampler_settings& sampler_settings,
 
 Emission_grid::~Emission_grid() {}
 
-float3 Emission_grid::emission(const math::Ray& ray,const Transformation& transformation,
+float3 Emission_grid::emission(const math::Ray& ray,Transformation const& transformation,
 							   float step_size, rnd::Generator& rng,
 							   Sampler_filter filter, const Worker& worker) const {
 	const math::Ray rn = ray.normalized();
@@ -104,7 +104,7 @@ Flow_vis_grid::Flow_vis_grid(const Sampler_settings& sampler_settings,
 
 Flow_vis_grid::~Flow_vis_grid() {}
 
-float3 Flow_vis_grid::emission(const math::Ray& ray,const Transformation& transformation,
+float3 Flow_vis_grid::emission(const math::Ray& ray,Transformation const& transformation,
 							   float step_size, rnd::Generator& rng,
 							   Sampler_filter filter, const Worker& worker) const {
 	const math::Ray rn = ray.normalized();

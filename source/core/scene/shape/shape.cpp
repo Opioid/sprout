@@ -11,11 +11,11 @@ const math::AABB& Shape::aabb() const {
 	return aabb_;
 }
 
-math::AABB Shape::transformed_aabb(const float4x4& m, const math::Transformation& /*t*/) const {
+math::AABB Shape::transformed_aabb(const float4x4& m, math::Transformation const& /*t*/) const {
 	return aabb_.transform(m);
 }
 
-math::AABB Shape::transformed_aabb(const math::Transformation& t) const {
+math::AABB Shape::transformed_aabb(math::Transformation const& t) const {
 	return transformed_aabb(float4x4(t), t);
 }
 
@@ -25,7 +25,7 @@ uint32_t Shape::num_parts() const {
 
 //bool Shape::intersect_p(FVector ray_origin, FVector ray_direction,
 //						FVector ray_min_t, FVector ray_max_t,
-//						const Transformation& transformation,
+//						Transformation const& transformation,
 //						Node_stack& node_stack) const {
 //	return false;
 //}

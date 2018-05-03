@@ -35,7 +35,7 @@ uint32_t Mesh::num_parts() const {
 	return tree_.num_parts();
 }
 
-bool Mesh::intersect(Ray& ray, const Transformation& transformation,
+bool Mesh::intersect(Ray& ray, Transformation const& transformation,
 					 Node_stack& node_stack, shape::Intersection& intersection) const {
 /*	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -135,7 +135,7 @@ bool Mesh::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Mesh::intersect_fast(Ray& ray, const Transformation& transformation,
+bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation,
 						  Node_stack& node_stack, shape::Intersection& intersection) const {
 	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 	Vector ray_origin = simd::load_float4(ray.origin.v);
@@ -182,7 +182,7 @@ bool Mesh::intersect_fast(Ray& ray, const Transformation& transformation,
 }
 
 
-bool Mesh::intersect(Ray& ray, const Transformation& transformation,
+bool Mesh::intersect(Ray& ray, Transformation const& transformation,
 					 Node_stack& node_stack, float& epsilon) const {
 	const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 	Vector ray_origin = simd::load_float4(ray.origin.v);
@@ -208,7 +208,7 @@ bool Mesh::intersect(Ray& ray, const Transformation& transformation,
 	return false;
 }
 
-bool Mesh::intersect_p(Ray const& ray, const Transformation& transformation,
+bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 					   Node_stack& node_stack) const {
 //	math::Ray tray;
 //	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -237,7 +237,7 @@ bool Mesh::intersect_p(Ray const& ray, const Transformation& transformation,
 
 //bool Mesh::intersect_p(FVector ray_origin, FVector ray_direction,
 //					   FVector ray_min_t, FVector ray_max_t,
-//					   const Transformation& transformation,
+//					   Transformation const& transformation,
 //					   Node_stack& node_stack) const {
 //	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 //	Vector tray_origin = math::transform_point(world_to_object, ray_origin);
@@ -251,7 +251,7 @@ bool Mesh::intersect_p(Ray const& ray, const Transformation& transformation,
 //							 ray_min_t, ray_max_t, ray_signs, node_stack);
 //}
 
-float Mesh::opacity(Ray const& ray, const Transformation& transformation,
+float Mesh::opacity(Ray const& ray, Transformation const& transformation,
 					const Materials& materials,
 					Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
@@ -263,7 +263,7 @@ float Mesh::opacity(Ray const& ray, const Transformation& transformation,
 	return tree_.opacity(tray, ray.time, materials, filter, worker);
 }
 
-float3 Mesh::thin_absorption(Ray const& ray, const Transformation& transformation,
+float3 Mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
 							 const Materials& materials,
 							 Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
@@ -275,14 +275,14 @@ float3 Mesh::thin_absorption(Ray const& ray, const Transformation& transformatio
 	return tree_.absorption(tray, ray.time, materials, filter, worker);
 }
 
-bool Mesh::sample(uint32_t part, f_float3 p, f_float3 /*n*/, const Transformation& transformation,
+bool Mesh::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
 				  float area, bool two_sided, sampler::Sampler& sampler,
 				  uint32_t sampler_dimension, Node_stack& node_stack, Sample& sample) const {
 	return Mesh::sample(part, p, transformation, area, two_sided,
 						sampler, sampler_dimension, node_stack, sample);
 }
 
-bool Mesh::sample(uint32_t part, f_float3 p, const Transformation& transformation,
+bool Mesh::sample(uint32_t part, f_float3 p, Transformation const& transformation,
 				  float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
@@ -323,7 +323,7 @@ bool Mesh::sample(uint32_t part, f_float3 p, const Transformation& transformatio
 }
 
 float Mesh::pdf(Ray const& ray, const shape::Intersection& intersection,
-				const Transformation& /*transformation*/,
+				Transformation const& /*transformation*/,
 				float area, bool two_sided, bool /*total_sphere*/) const {
 	float c = -math::dot(intersection.geo_n, ray.direction);
 
@@ -336,13 +336,13 @@ float Mesh::pdf(Ray const& ray, const shape::Intersection& intersection,
 }
 
 bool Mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
-				  const Transformation& /*transformation*/, float /*area*/, bool /*two_sided*/,
+				  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
 				  Sample& /*sample*/) const {
 	return false;
 }
 
 float Mesh::pdf_uv(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
-				   const Transformation& /*transformation*/,
+				   Transformation const& /*transformation*/,
 				   float /*area*/, bool /*two_sided*/) const {
 	return 0.f;
 }

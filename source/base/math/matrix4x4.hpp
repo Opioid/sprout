@@ -51,7 +51,7 @@ struct Matrix4x4 {
 
 	explicit Matrix4x4(const Matrix3x3<T>& m);
 
-	explicit Matrix4x4(const Transformation& t);
+	explicit Matrix4x4(Transformation const& t);
 
 	Matrix4x4 operator*(const Matrix4x4& o) const;
 
@@ -66,7 +66,7 @@ template<typename T>
 Matrix4x4<T> operator*(T s, const Matrix4x4<T>& m);
 
 template<typename T>
-Vector3<T> operator*(const Vector3<T>& v, const Matrix4x4<T>& m);
+Vector3<T> operator*(Vector3<T> const& v, const Matrix4x4<T>& m);
 
 template<typename T>
 Vector3<T> &operator*=(Vector3<T>& v, const Matrix4x4<T>& m);
@@ -75,10 +75,10 @@ template<typename T>
 Vector4<T> operator*(const Vector4<T>& v, const Matrix4x4<T>& m);
 
 template<typename T>
-Vector3<T> transform_vector(const Matrix4x4<T>& m, const Vector3<T>& v);
+Vector3<T> transform_vector(const Matrix4x4<T>& m, Vector3<T> const& v);
 
 template<typename T>
-Vector3<T> transform_point(const Matrix4x4<T>& m, const Vector3<T>& v);
+Vector3<T> transform_point(const Matrix4x4<T>& m, Vector3<T> const& v);
 
 template<typename T>
 void get_basis(Matrix3x3<T>& basis, const Matrix4x4<T>& m);
@@ -93,7 +93,7 @@ template<typename T>
 void get_origin(Vector3<T> &origin, const Matrix4x4<T>& m);
 
 template<typename T>
-void set_origin(Matrix4x4<T>& m, const Vector3<T>& origin);
+void set_origin(Matrix4x4<T>& m, Vector3<T> const& origin);
 
 template<typename T>
 Vector3<T> get_scale(const Matrix4x4<T>& m);
@@ -102,16 +102,16 @@ template<typename T>
 void set_scale(Matrix4x4<T>& m, T x, T y, T z);
 
 template<typename T>
-void set_scale(Matrix4x4<T>& m, const Vector3<T>& v);
+void set_scale(Matrix4x4<T>& m, Vector3<T> const& v);
 
 template<typename T>
-void scale(Matrix4x4<T>& m, const Vector3<T>& v);
+void scale(Matrix4x4<T>& m, Vector3<T> const& v);
 
 template<typename T>
 void set_translation(Matrix4x4<T>& m, T x, T y, T z);
 
 template<typename T>
-void set_translation(Matrix4x4<T>& m, const Vector3<T>& v);
+void set_translation(Matrix4x4<T>& m, Vector3<T> const& v);
 
 template<typename T>
 void set_rotation_x(Matrix4x4<T>& m, T a);
@@ -123,7 +123,7 @@ template<typename T>
 void set_rotation_z(Matrix4x4<T>& m, T a);
 
 template<typename T>
-void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a);
+void set_rotation(Matrix4x4<T>& m, Vector3<T> const& v, T a);
 
 template<typename T>
 Matrix4x4<T> transposed(const Matrix4x4<T>& m);
@@ -140,8 +140,8 @@ Matrix4x4<T> affine_inverted(const Matrix4x4<T>& m);
 template<typename T>
 void compose(Matrix4x4<T>& m,
 							const Matrix3x3<T>& basis,
-							const Vector3<T>& scale,
-							const Vector3<T>& origin);
+							Vector3<T> const& scale,
+							Vector3<T> const& origin);
 */
 /****************************************************************************
  *
@@ -159,7 +159,7 @@ struct alignas(16) Matrix4x4f_a {
 				 float m20, float m21, float m22, float m23,
 				 float m30, float m31, float m32, float m33);
 
-	explicit Matrix4x4f_a(const Transformation& t);
+	explicit Matrix4x4f_a(Transformation const& t);
 
 	Vector3f_a x() const;
 	Vector3f_a y() const;

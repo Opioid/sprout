@@ -94,7 +94,7 @@ struct alignas(16) Vector3f_a {
 	explicit constexpr Vector3f_a(const Vector2<float> xy, float z);
 
 	template<typename T>
-	explicit constexpr Vector3f_a(const Vector3<T>& a);
+	explicit constexpr Vector3f_a(Vector3<T> const& a);
 
 	constexpr Vector2<float> xy() const;
 

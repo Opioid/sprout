@@ -19,7 +19,7 @@ Matrix3x3<T>::Matrix3x3(T m00, T m01, T m02,
 	m20(m20), m21(m21), m22(m22) {}
 
 template<typename T>
-Matrix3x3<T>::Matrix3x3(const Vector3<T>& x, const Vector3<T>& y, const Vector3<T>& z) :
+Matrix3x3<T>::Matrix3x3(Vector3<T> const& x, Vector3<T> const& y, Vector3<T> const& z) :
 	x(x), y(y), z(z) {}
 
 template<typename T>
@@ -76,7 +76,7 @@ Matrix3x3<T> Matrix3x3<T>::identity() {
 }
 
 template<typename T>
-Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
+Vector3<T> operator*(Vector3<T> const& v, const Matrix3x3<T>& m) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
@@ -92,14 +92,14 @@ Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) {
 }
 
 template<typename T>
-Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
+Vector3<T> transform_vector(const Matrix3x3<T>& m, Vector3<T> const& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
 template<typename T>
-Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& v) {
+Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, Vector3<T> const& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
 					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
 					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
@@ -107,7 +107,7 @@ Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& 
 
 template<typename T>
 void transform_vectors(const Matrix3x3<T>& m,
-					   const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob) {
+					   Vector3<T> const& a, Vector3<T> const& b, Vector3<T>& oa, Vector3<T>& ob) {
 	oa.x = a.x * m.m00 + a.y * m.m10 + a.z * m.m20;
 	oa.y = a.x * m.m01 + a.y * m.m11 + a.z * m.m21;
 	oa.z = a.x * m.m02 + a.y * m.m12 + a.z * m.m22;
@@ -146,7 +146,7 @@ Matrix3x3<T> invert(const Matrix3x3<T>& m) {
 }
 
 template<typename T>
-void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up) {
+void set_look_at(Matrix3x3<T>& m, Vector3<T> const& dir, Vector3<T> const& up) {
 	Vector3<T> z = normalize(dir);
 	Vector3<T> x = normalize(cross(up, z));
 	Vector3<T> y = cross(z, x);
@@ -163,7 +163,7 @@ void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up) {
 }
 
 //template<typename T>
-//void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
+//void set_basis(Matrix3x3<T>& m, Vector3<T> const& v) {
 //	m.rows[2] = v;
 
 //	if (v.x < T(0.6) && v.x > -T(0.6)) {
@@ -186,14 +186,14 @@ void set_scale(Matrix3x3<T>& m, T x, T y, T z) {
 }
 
 template<typename T>
-void set_scale(Matrix3x3<T>& m, const Vector3<T>& v) {
+void set_scale(Matrix3x3<T>& m, Vector3<T> const& v) {
 	m.m00 = v.x;  m.m01 = T(0); m.m02 = T(0);
 	m.m10 = T(0); m.m11 = v.y;  m.m12 = T(0);
 	m.m20 = T(0); m.m21 = T(0); m.m22 = v.z;
 }
 
 template<typename T>
-void scale(Matrix3x3<T>& m, const Vector3<T>& v) {
+void scale(Matrix3x3<T>& m, Vector3<T> const& v) {
 	m.m00 *= v.x; m.m01 *= v.x; m.m02 *= v.x;
 	m.m10 *= v.y; m.m11 *= v.y; m.m12 *= v.y;
 	m.m20 *= v.z; m.m21 *= v.z; m.m22 *= v.z;
@@ -230,7 +230,7 @@ void set_rotation_z(Matrix3x3<T>& m, T a) {
 }
 
 template<typename T>
-void set_rotation(Matrix3x3<T>& m, const Vector3<T>& v, T a) {
+void set_rotation(Matrix3x3<T>& m, Vector3<T> const& v, T a) {
 	T c = std::cos(a);
 	T s = std::sin(a);
 	T t = T(1) - c;

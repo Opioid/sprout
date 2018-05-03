@@ -36,15 +36,15 @@ public:
 
 	virtual ~Light() {}
 
-	virtual const Transformation& transformation_at(
+	virtual Transformation const& transformation_at(
 			float time, Transformation& transformation) const = 0;
 
-	virtual bool sample(f_float3 p, float time, const Transformation& transformation,
+	virtual bool sample(f_float3 p, float time, Transformation const& transformation,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker, Sample& result) const = 0;
 
 	virtual bool sample(f_float3 p, f_float3 n,
-						float time, const Transformation& transformation, bool total_sphere,
+						float time, Transformation const& transformation, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, const Worker& worker, Sample& result) const = 0;
 

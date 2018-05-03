@@ -20,18 +20,18 @@ public:
 
 	virtual void set_parameters(json::Value const& parameters) = 0;
 
-	const math::Transformation& local_frame_a() const;
+	math::Transformation const& local_frame_a() const;
 
 	// Only the returned reference is guaranteed to contain the actual transformation data.
 	// This might or might not be the same reference which is passed as a parameter,
 	// depending on whether the entity is animated or not.
 	// This can sometimes avoid a relatively costly copy,
 	// while keeping the animated state out of the interface.
-	const Transformation& transformation_at(float tick_delta, Transformation& transformation) const;
+	Transformation const& transformation_at(float tick_delta, Transformation& transformation) const;
 
-	void set_transformation(const math::Transformation& t);
+	void set_transformation(math::Transformation const& t);
 
-	void tick(const Keyframe& frame);
+	void tick(Keyframe const& frame);
 
 	void calculate_world_transformation();
 
@@ -52,8 +52,8 @@ public:
 protected:
 
 	void propagate_transformation() const;
-	void inherit_transformation(const math::Transformation& a,
-								const math::Transformation& b,
+	void inherit_transformation(math::Transformation const& a,
+								math::Transformation const& b,
 								bool animated);
 
 	void add_sibling(Entity* node);

@@ -25,7 +25,7 @@ struct Matrix3x3 {
 			  T m10, T m11, T m12,
 			  T m20, T m21, T m22);
 		
-	Matrix3x3(const Vector3<T>& x, const Vector3<T>& y, const Vector3<T>& z);
+	Matrix3x3(Vector3<T> const& x, Vector3<T> const& y, Vector3<T> const& z);
 	
 	explicit Matrix3x3(const Matrix4x4<T>& m);
 
@@ -39,20 +39,20 @@ struct Matrix3x3 {
 };
 
 template<typename T>
-Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m);
+Vector3<T> operator*(Vector3<T> const& v, const Matrix3x3<T>& m);
 
 template<typename T>
 Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m);
 
 template<typename T>
-Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v);
+Vector3<T> transform_vector(const Matrix3x3<T>& m, Vector3<T> const& v);
 
 template<typename T>
-Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& v);
+Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, Vector3<T> const& v);
 
 template<typename T>
 void transform_vectors(const Matrix3x3<T>& m,
-					   const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob);
+					   Vector3<T> const& a, Vector3<T> const& b, Vector3<T>& oa, Vector3<T>& ob);
 
 template<typename T>
 Matrix3x3<T> normalize(const Matrix3x3<T>& m);
@@ -64,19 +64,19 @@ template<typename T>
 Matrix3x3<T> invert(const Matrix3x3<T>& m);
 
 template<typename T>
-void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up);
+void set_look_at(Matrix3x3<T>& m, Vector3<T> const& dir, Vector3<T> const& up);
 
 // template<typename T>
-// void set_basis(Matrix3x3<T>& m, const Vector3<T>& v);
+// void set_basis(Matrix3x3<T>& m, Vector3<T> const& v);
 
 template<typename T>
 void set_scale(Matrix3x3<T>& m, T x, T y, T z);
 
 template<typename T>
-void set_scale(Matrix3x3<T>& m, const Vector3<T>& v);
+void set_scale(Matrix3x3<T>& m, Vector3<T> const& v);
 
 template<typename T>
-void scale(Matrix3x3<T>& m, const Vector3<T>& v);
+void scale(Matrix3x3<T>& m, Vector3<T> const& v);
 
 template<typename T>
 void set_rotation_x(Matrix3x3<T>& m, T a);
@@ -88,7 +88,7 @@ template<typename T>
 void set_rotation_z(Matrix3x3<T>& m, T a);
 
 template<typename T>
-void set_rotation(Matrix3x3<T>& m, const Vector3<T>& v, T a);
+void set_rotation(Matrix3x3<T>& m, Vector3<T> const& v, T a);
 
 template<typename T>
 Matrix3x3<T> transposed(const Matrix3x3<T>& m);

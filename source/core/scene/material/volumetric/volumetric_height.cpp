@@ -12,7 +12,7 @@ namespace scene::material::volumetric {
 Height::Height(const Sampler_settings& sampler_settings) : Density(sampler_settings) {}
 
 /*
-float3 Height::optical_depth(const Transformation& transformation, const math::AABB& aabb,
+float3 Height::optical_depth(Transformation const& transformation, const math::AABB& aabb,
 							 const math::Ray& ray, float step_size, rnd::Generator& rng,
 							 Sampler_filter filter, const Worker& worker) const {
 	const math::Ray rn = ray.normalized();
@@ -73,7 +73,7 @@ size_t Height::num_bytes() const {
 	return sizeof(*this);
 }
 
-float Height::density(f_float3 p, const Transformation& transformation,
+float Height::density(f_float3 p, Transformation const& transformation,
 					  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	// p is in object space already
 

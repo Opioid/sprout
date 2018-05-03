@@ -34,42 +34,42 @@ public:
 
 	const math::AABB& aabb() const;
 
-	virtual math::AABB transformed_aabb(const float4x4& m, const math::Transformation& t) const;
-	virtual math::AABB transformed_aabb(const math::Transformation& t) const;
+	virtual math::AABB transformed_aabb(const float4x4& m, math::Transformation const& t) const;
+	virtual math::AABB transformed_aabb(math::Transformation const& t) const;
 
 	virtual uint32_t num_parts() const;
 
-	virtual bool intersect(Ray& ray, const Transformation& transformation,
+	virtual bool intersect(Ray& ray, Transformation const& transformation,
 						   Node_stack& node_stack, Intersection& intersection) const = 0;
 
-	virtual bool intersect_fast(Ray& ray, const Transformation& transformation,
+	virtual bool intersect_fast(Ray& ray, Transformation const& transformation,
 								Node_stack& node_stack, Intersection& intersection) const = 0;
 
-	virtual bool intersect(Ray& ray, const Transformation& transformation,
+	virtual bool intersect(Ray& ray, Transformation const& transformation,
 						   Node_stack& node_stack, float& epsilon) const = 0;
 
-	virtual bool intersect_p(Ray const& ray, const Transformation& transformation,
+	virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
 							 Node_stack& node_stack) const = 0;
 
 //	virtual bool intersect_p(FVector ray_origin, FVector ray_direction,
 //							 FVector ray_min_t, FVector ray_max_t,
-//							 const Transformation& transformation,
+//							 Transformation const& transformation,
 //							 Node_stack& node_stack) const;
 
-	virtual float opacity(Ray const& ray, const Transformation& transformation,
+	virtual float opacity(Ray const& ray, Transformation const& transformation,
 						  const Materials& materials,
 						  Sampler_filter filter, const Worker& worker) const = 0;
 
-	virtual float3 thin_absorption(Ray const& ray, const Transformation& transformation,
+	virtual float3 thin_absorption(Ray const& ray, Transformation const& transformation,
 								   const Materials& materials,
 								   Sampler_filter filter, const Worker& worker) const = 0;
 
 	virtual bool sample(uint32_t part, f_float3 p, f_float3 n,
-						const Transformation& transformation, float area, bool two_sided,
+						Transformation const& transformation, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
-	virtual bool sample(uint32_t part, f_float3 p, const Transformation& transformation,
+	virtual bool sample(uint32_t part, f_float3 p, Transformation const& transformation,
 						float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
@@ -77,17 +77,17 @@ public:
 	// Both pdf functions implicitely assume that the passed
 	// ray/intersection/transformation combination actually lead to a hit.
 	virtual float pdf(Ray const& ray, const Intersection& intersection,
-					  const Transformation& transformation,
+					  Transformation const& transformation,
 					  float area, bool two_sided, bool total_sphere) const = 0;
 
 	// The following two functions are used for textured lights
 	// and should have the uv weight baked in!
 	virtual bool sample(uint32_t part, f_float3 p, float2 uv,
-						const Transformation& transformation, float area,
+						Transformation const& transformation, float area,
 						bool two_sided, Sample& sample) const = 0;
 
 	virtual float pdf_uv(Ray const& ray, const Intersection& intersection,
-						 const Transformation& transformation,
+						 Transformation const& transformation,
 						 float area, bool two_sided) const = 0;
 
 	virtual float uv_weight(float2 uv) const = 0;

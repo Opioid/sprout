@@ -20,7 +20,7 @@ template<typename T>
 constexpr Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : v{xy[0], xy[1], z, w} {}
 
 template<typename T>
-constexpr Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
+constexpr Vector4<T>::Vector4(Vector3<T> const& xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
 
 template<typename T>
 constexpr Vector3<T> Vector4<T>::xyz() const {
@@ -38,12 +38,12 @@ constexpr T& Vector4<T>::operator[](uint32_t i) {
 }
 
 template<typename T>
-constexpr Vector4<T> Vector4<T>::operator+(const Vector4& v) const {
+constexpr Vector4<T> Vector4<T>::operator+(Vector4 const& v) const {
 	return Vector4(v[0] + v[0], v[1] + v[1], v[2] + v[2], v[3] + v[3]);
 }
 
 template<typename T>
-constexpr Vector4<T> Vector4<T>::operator*(const Vector4& v) const {
+constexpr Vector4<T> Vector4<T>::operator*(Vector4 const& v) const {
 	return Vector4(v[0] * v[0], v[1] * v[1], v[2] * v[2], v[3] * v[3]);
 }
 
@@ -54,13 +54,13 @@ constexpr Vector4<T> Vector4<T>::operator/(T s) const {
 }
 
 template<typename T>
-constexpr Vector4<T>& Vector4<T>::operator+=(const Vector4& a) {
+constexpr Vector4<T>& Vector4<T>::operator+=(Vector4 const& a) {
 	v[0] += a[0]; v[1] += a[1]; v[2] += a[2]; v[3] += a[3];
 	return *this;
 }
 
 template<typename T>
-constexpr Vector4<T>& Vector4<T>::operator-=(const Vector4& a) {
+constexpr Vector4<T>& Vector4<T>::operator-=(Vector4 const& a) {
 	v[0] -= a[0]; v[1] -= a[1]; v[2] -= a[2]; v[3] -= a[3];
 	return *this;
 }
@@ -191,20 +191,20 @@ inline constexpr int32_t& Vector4i_a::operator[](uint32_t i) {
 	return v[i];
 }
 
-static inline constexpr Vector4i_a operator+(const Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a operator+(Vector4i_a const& a, Vector4i_a const& b) {
 	return Vector4i_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
-static inline constexpr Vector4i_a operator*(const Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a operator*(Vector4i_a const& a, Vector4i_a const& b) {
 	return Vector4i_a(a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]);
 }
 
-static inline constexpr Vector4i_a& operator+=(Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a& operator+=(Vector4i_a& a, Vector4i_a const& b) {
 	a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; a[3] += b[3];
 	return a;
 }
 
-static inline constexpr Vector4i_a& operator-=(Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a& operator-=(Vector4i_a& a, Vector4i_a const& b) {
 	a[0] -= b[0]; a[1] -= b[1]; a[2] -= b[2]; a[3] -= b[3];
 	return a;
 }

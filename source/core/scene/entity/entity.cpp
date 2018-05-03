@@ -6,7 +6,7 @@ namespace scene::entity {
 
 Entity::~Entity() {}
 
-const math::Transformation& Entity::local_frame_a() const {
+math::Transformation const& Entity::local_frame_a() const {
 	return local_frame_a_.transformation;
 }
 
@@ -21,7 +21,7 @@ const Composed_transformation& Entity::transformation_at(float tick_delta,
 	return transformation;
 }
 
-void Entity::set_transformation(const math::Transformation& t) {
+void Entity::set_transformation(math::Transformation const& t) {
 	world_transformation_.set(t);
 
 	local_frame_a_.transformation = t;
@@ -37,7 +37,7 @@ void Entity::set_transformation(const math::Transformation& t) {
 	on_set_transformation();
 }
 
-void Entity::tick(const Keyframe& frame) {
+void Entity::tick(Keyframe const& frame) {
 	local_frame_a_ = local_frame_b_;
 	local_frame_b_ = frame;
 
@@ -122,8 +122,8 @@ void Entity::propagate_transformation() const {
 	}
 }
 
-void Entity::inherit_transformation(const math::Transformation& a,
-									const math::Transformation& b,
+void Entity::inherit_transformation(math::Transformation const& a,
+									math::Transformation const& b,
 									bool animated) {
 	if (next_) {
 		next_->inherit_transformation(a, b, animated);

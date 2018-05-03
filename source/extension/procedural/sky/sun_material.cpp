@@ -41,7 +41,7 @@ float3 Sun_material::average_radiance(float /*area*/) const {
 }
 
 void Sun_material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
-									const Transformation& /*transformation*/,
+									Transformation const& /*transformation*/,
 									float /*area*/, bool /*importance_sampling*/,
 									thread::Pool& /*pool*/) {
 	model_.init();

@@ -4,7 +4,7 @@
 
 namespace scene::entity {
 
-void Keyframe::interpolate(const Keyframe& other, float t, Keyframe& result) const {
+void Keyframe::interpolate(Keyframe const& other, float t, Keyframe& result) const {
 	result.transformation = math::lerp(transformation, other.transformation, t);
 
 	if (morphing.targets[0]       == morphing.targets[1]

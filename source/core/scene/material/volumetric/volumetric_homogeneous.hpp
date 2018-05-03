@@ -11,7 +11,7 @@ public:
 
 	Homogeneous(const Sampler_settings& sampler_settings);
 
-	virtual float3 emission(const math::Ray& ray, const Transformation& transformation,
+	virtual float3 emission(const math::Ray& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const override final;
 
@@ -21,7 +21,7 @@ public:
 	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const override final;
 
-	virtual void collision_coefficients(f_float3 p, const Transformation& transformation,
+	virtual void collision_coefficients(f_float3 p, Transformation const& transformation,
 										Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const override final;
 

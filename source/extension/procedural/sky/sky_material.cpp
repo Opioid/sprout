@@ -52,7 +52,7 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 }
 
 void Sky_material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
-									const Transformation& /*transformation*/,
+									Transformation const& /*transformation*/,
 									float /*area*/, bool /*importance_sampling*/,
 									thread::Pool& /*pool*/) {
 	model_.init();
@@ -117,7 +117,7 @@ float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter,
 }
 
 void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
-										  const Transformation& transformation, float /*area*/,
+										  Transformation const& transformation, float /*area*/,
 										  bool importance_sampling, thread::Pool& /*pool*/) {
 	if (!model_.init()) {
 		return;
@@ -203,7 +203,7 @@ size_t Sky_baked_material::num_bytes() const {
 		 + distribution_.num_bytes();
 }
 
-float3 Sky_baked_material::unclipped_canopy_mapping(const Transformation& transformation,
+float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& transformation,
 													float2 uv) {
 	float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 

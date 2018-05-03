@@ -92,7 +92,7 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 }
 
 float3 Material_subsurface::emission(const math::Ray& /*ray*/,
-									 const Transformation& /*transformation*/, float /*step_size*/,
+									 Transformation const& /*transformation*/, float /*step_size*/,
 									 rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
 									 const Worker& /*worker*/) const {
 	return float3::identity();
@@ -127,7 +127,7 @@ void Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filte
 }
 
 void Material_subsurface::collision_coefficients(f_float3 /*p*/,
-												 const Transformation& /*transformation*/,
+												 Transformation const& /*transformation*/,
 												 Sampler_filter /*filter*/,
 												 const Worker& /*worker*/,
 												 float3& mu_a, float3& mu_s) const {

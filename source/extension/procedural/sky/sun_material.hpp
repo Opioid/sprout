@@ -21,7 +21,7 @@ public:
 	virtual float3 average_radiance(float area) const override final;
 
 	virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
-								  const Transformation& transformation,
+								  Transformation const& transformation,
 								  float area, bool importance_sampling,
 								  thread::Pool& pool) override final;
 

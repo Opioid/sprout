@@ -22,7 +22,7 @@ public:
 	virtual float3 average_radiance(float area) const override final;
 
 	virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
-								  const Transformation& transformation,
+								  Transformation const& transformation,
 								  float area, bool importance_sampling,
 								  thread::Pool& pool) override final;
 
@@ -56,7 +56,7 @@ public:
 							   const scene::Worker& worker) const override final;
 
 	virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
-								  const Transformation& transformation,
+								  Transformation const& transformation,
 								  float area, bool importance_sampling,
 								  thread::Pool& pool) override final;
 
@@ -66,7 +66,7 @@ public:
 
 private:
 
-	static float3 unclipped_canopy_mapping(const Transformation& transformation, float2 uv);
+	static float3 unclipped_canopy_mapping(Transformation const& transformation, float2 uv);
 
 	Texture_adapter emission_map_;
 

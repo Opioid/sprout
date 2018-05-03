@@ -25,22 +25,22 @@ struct Vector4 {
 
 	explicit constexpr Vector4(Vector2<T> xy, T z, T w = T(1));
 
-	explicit constexpr Vector4(const Vector3<T>& xyz, T w = T(1));
+	explicit constexpr Vector4(Vector3<T> const& xyz, T w = T(1));
 
 	constexpr Vector3<T> xyz() const;
 
 	constexpr T operator[](uint32_t i) const;
 	constexpr T& operator[](uint32_t i);
 
-	constexpr Vector4 operator+(const Vector4& v) const;
+	constexpr Vector4 operator+(Vector4 const& v) const;
 
-	constexpr Vector4 operator*(const Vector4& v) const;
+	constexpr Vector4 operator*(Vector4 const& v) const;
 
 	constexpr Vector4 operator/(T s) const;
 
-	constexpr Vector4& operator+=(const Vector4& v);
+	constexpr Vector4& operator+=(Vector4 const& v);
 
-	constexpr Vector4& operator-=(const Vector4& v);
+	constexpr Vector4& operator-=(Vector4 const& v);
 
 	static constexpr Vector4 identity();
 };

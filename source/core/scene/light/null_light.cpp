@@ -9,7 +9,7 @@ const Light::Transformation& Null_light::transformation_at(
 	return transformation;
 }
 
-bool Null_light::sample(f_float3 /*p*/, float /*time*/, const Transformation& /*transformation*/,
+bool Null_light::sample(f_float3 /*p*/, float /*time*/, Transformation const& /*transformation*/,
 						sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 						Sampler_filter /*filter*/, const Worker& /*worker*/,
 						Sample& /*result*/) const {
@@ -17,7 +17,7 @@ bool Null_light::sample(f_float3 /*p*/, float /*time*/, const Transformation& /*
 }
 
 bool Null_light::sample(f_float3 /*p*/, f_float3 /*n*/,
-						float /*time*/, const Transformation& /*transformation*/,
+						float /*time*/, Transformation const& /*transformation*/,
 						bool /*total_sphere*/, sampler::Sampler& /*sampler*/,
 						uint32_t /*sampler_dimension*/, Sampler_filter /*filter*/,
 						const Worker& /*worker*/, Sample& /*result*/) const {

@@ -70,7 +70,7 @@ public:
 	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
 								   Sampler_filter filter, const Worker& worker) const;
 
-	virtual float3 emission( const math::Ray& ray, const Transformation& transformation,
+	virtual float3 emission( const math::Ray& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const;
 
@@ -80,7 +80,7 @@ public:
 	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const;
 
-	virtual void collision_coefficients(f_float3 p, const Transformation& transformation,
+	virtual void collision_coefficients(f_float3 p, Transformation const& transformation,
 										Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const;
 
@@ -90,7 +90,7 @@ public:
 	virtual bool is_scattering_volume() const;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
-								  const Transformation& transformation, float area,
+								  Transformation const& transformation, float area,
 								  bool importance_sampling, thread::Pool& pool);
 
 	virtual bool is_animated() const;

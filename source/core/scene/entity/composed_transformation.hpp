@@ -10,7 +10,7 @@ namespace math { struct Transformation; }
 namespace scene::entity {
 
 struct Composed_transformation {
-	void set(const math::Transformation& t);
+	void set(math::Transformation const& t);
 
 	float4x4 world_to_object;
 	float4x4 object_to_world;

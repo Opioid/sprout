@@ -95,7 +95,7 @@ float Emissionmap_animated::opacity(float2 uv, float /*time*/, Sampler_filter fi
 }
 
 void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
-											const Transformation& /*transformation*/,
+											Transformation const& /*transformation*/,
 											float /*area*/, bool importance_sampling,
 											thread::Pool& pool) {
 	if (average_emission_[0] >= 0.f) {

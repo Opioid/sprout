@@ -164,82 +164,82 @@ constexpr Vector3<T> Vector3<T>::identity() {
 }
 
 template<typename T>
-static Vector3<T> operator*(T s, const Vector3<T>& v) {
+static Vector3<T> operator*(T s, Vector3<T> const& v) {
 	return Vector3<T>(s * v[0], s * v[1], s * v[2]);
 }
 
 template<typename T>
-static T dot(const Vector3<T>& a, const Vector3<T>& b) {
+static T dot(Vector3<T> const& a, Vector3<T> const& b) {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 template<typename T>
-static T length(const Vector3<T>& v) {
+static T length(Vector3<T> const& v) {
 	return std::sqrt(dot(v, v));
 }
 
 template<typename T>
-static T squared_length(const Vector3<T>& v) {
+static T squared_length(Vector3<T> const& v) {
 	return dot(v, v);
 }
 
 template<typename T>
-static Vector3<T> normalize(const Vector3<T>& v) {
+static Vector3<T> normalize(Vector3<T> const& v) {
 	return v / length(v);
 }
 
 template<typename T>
-static Vector3<T> reciprocal(const Vector3<T>& v) {
+static Vector3<T> reciprocal(Vector3<T> const& v) {
 	return Vector3<T>(T(1) / v[0], T(1) / v[1], T(1) / v[2]);
 }
 
 template<typename T>
-static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+static Vector3<T> cross(Vector3<T> const& a, Vector3<T> const& b) {
 	return Vector3<T>(a[1] * b[2] - a[2] * b[1],
 					  a[2] * b[0] - a[0] * b[2],
 					  a[0] * b[1] - a[1] * b[0]);
 }
 
 template<typename T>
-static Vector3<T> project(const Vector3<T>& a, const Vector3<T>& b) {
+static Vector3<T> project(Vector3<T> const& a, Vector3<T> const& b) {
 	return dot(b, a) * b;
 }
 
 template<typename T>
-static T distance(const Vector3<T>& a, const Vector3<T>& b) {
+static T distance(Vector3<T> const& a, Vector3<T> const& b) {
 	return length(a - b);
 }
 
 template<typename T>
-static T squared_distance(const Vector3<T>& a, const Vector3<T>& b) {
+static T squared_distance(Vector3<T> const& a, Vector3<T> const& b) {
 	return squared_length(a - b);
 }
 
 template<typename T>
-Vector3<T> saturate(const Vector3<T>& v) {
+Vector3<T> saturate(Vector3<T> const& v) {
 	return Vector3<T>(std::min(std::max(v[0], T(0)), T(1)),
 					  std::min(std::max(v[1], T(0)), T(1)),
 					  std::min(std::max(v[2], T(0)), T(1)));
 }
 
 template<typename T>
-static Vector3<T> exp(const Vector3<T>& v) {
+static Vector3<T> exp(Vector3<T> const& v) {
 	return Vector3<T>(std::exp(v[0]), std::exp(v[1]), std::exp(v[2]));
 }
 
 template<typename T>
-static Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, T t) {
+static Vector3<T> lerp(Vector3<T> const& a, Vector3<T> const& b, T t) {
 	T u = T(1) - t;
 	return u * a + t * b;
 }
 
 template<typename T>
-static Vector3<T> reflect(const Vector3<T>& normal, const Vector3<T>& v) {
+static Vector3<T> reflect(Vector3<T> const& normal, Vector3<T> const& v) {
 	return T(2) * dot(v, normal) * normal - v;
 }
 
 template<typename T>
-static void orthonormal_basis(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b) {
+static void orthonormal_basis(Vector3<T> const& n, Vector3<T>& t, Vector3<T>& b) {
 	const T sign = std::copysign(T(1), n[2]);
 	const T c = -T(1) / (sign + n[2]);
 	const T d = n[0] * n[1] * c;
@@ -248,37 +248,37 @@ static void orthonormal_basis(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b)
 }
 
 template<typename T>
-static Vector3<T> min(const Vector3<T>& a, const Vector3<T>& b) {
+static Vector3<T> min(Vector3<T> const& a, Vector3<T> const& b) {
 	return Vector3<T>(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]));
 }
 
 template<typename T>
-static Vector3<T> max(const Vector3<T>& a, const Vector3<T>& b) {
+static Vector3<T> max(Vector3<T> const& a, Vector3<T> const& b) {
 	return Vector3<T>(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
 template<typename T>
-static Vector3<T> abs(const Vector3<T>& v) {
+static Vector3<T> abs(Vector3<T> const& v) {
 	return Vector3<T>(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]));
 }
 
 template<typename T>
-static bool any_negative(const Vector3<T>& v) {
+static bool any_negative(Vector3<T> const& v) {
 	return v[0] < T(0) || v[1] < T(0) || v[2] < T(0);
 }
 
 template<typename T>
-static bool any_greater_one(const Vector3<T>& v) {
+static bool any_greater_one(Vector3<T> const& v) {
 	return v[0] > T(1) || v[1] > T(1) || v[2] > T(1);
 }
 
 template<typename T>
-static bool any_nan(const Vector3<T>& v) {
+static bool any_nan(Vector3<T> const& v) {
 	return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]);
 }
 
 template<typename T>
-static bool any_inf(const Vector3<T>& v) {
+static bool any_inf(Vector3<T> const& v) {
 	return std::isinf(v[0]) || std::isinf(v[1]) || std::isinf(v[2]);
 }
 
@@ -294,7 +294,7 @@ inline constexpr Vector3f_a::Vector3f_a(const Vector2<float> xy, float z) :
 	v{xy[0], xy[1], z, 0.f} {}
 
 template<typename T>
-constexpr Vector3f_a::Vector3f_a(const Vector3<T>& a) :
+constexpr Vector3f_a::Vector3f_a(Vector3<T> const& a) :
 	v{float(a[0]), float(a[1]), float(a[2]), 0.f} {}
 
 inline constexpr Vector2<float> Vector3f_a::xy() const {

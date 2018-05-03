@@ -67,7 +67,7 @@ float3 Material::thin_absorption(f_float3 /*wo*/, f_float3 /*n*/, float2 uv, flo
 	return float3(opacity(uv, time, filter, worker));
 }
 
-float3 Material::emission(const math::Ray& /*ray*/, const Transformation& /*transformation*/,
+float3 Material::emission(const math::Ray& /*ray*/, Transformation const& /*transformation*/,
 						  float /*step_size*/, rnd::Generator& /*rng*/,
 						  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	return float3::identity();
@@ -85,7 +85,7 @@ void Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
 	mu_s = float3::identity();
 }
 
-void Material::collision_coefficients(f_float3 /*p*/, const Transformation& /*transformation*/,
+void Material::collision_coefficients(f_float3 /*p*/, Transformation const& /*transformation*/,
 									  Sampler_filter /*filter*/, const Worker& /*worker*/,
 									  float3& mu_a, float3& mu_s) const {
 	mu_a = float3::identity();
@@ -105,7 +105,7 @@ bool Material::is_scattering_volume() const {
 }
 
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
-								const Transformation& /*transformation*/, float /*area*/,
+								Transformation const& /*transformation*/, float /*area*/,
 								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
 
 bool Material::is_animated() const {

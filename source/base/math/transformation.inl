@@ -7,15 +7,15 @@
 
 namespace math {
 
-inline bool Transformation::operator==(const Transformation& o) const {
+inline bool Transformation::operator==(Transformation const& o) const {
 	return position == o.position && scale == o.scale && rotation == o.rotation;
 }
 
-inline bool Transformation::operator!=(const Transformation& o) const {
+inline bool Transformation::operator!=(Transformation const& o) const {
 	return position != o.position || scale != o.scale || rotation != o.rotation;
 }
 
-static inline Transformation lerp(const Transformation& a, const Transformation& b, float t) {
+static inline Transformation lerp(Transformation const& a, Transformation const& b, float t) {
 	return Transformation{
 		lerp(a.position, b.position, t),
 		lerp(a.scale, b.scale, t),

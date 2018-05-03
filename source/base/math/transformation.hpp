@@ -7,9 +7,9 @@
 namespace math {
 
 struct Transformation {
-	bool operator==(const Transformation& o) const;
+	bool operator==(Transformation const& o) const;
 
-	bool operator!=(const Transformation& o) const;
+	bool operator!=(Transformation const& o) const;
 
 	float3 position;
 	float3 scale;

@@ -9,7 +9,7 @@ namespace scene::material::volumetric {
 
 Density::Density(const Sampler_settings& sampler_settings) : Material(sampler_settings) {}
 
-float3 Density::emission(const math::Ray& /*ray*/, const Transformation& /*transformation*/,
+float3 Density::emission(const math::Ray& /*ray*/, Transformation const& /*transformation*/,
 						 float /*step_size*/, rnd::Generator& /*rng*/,
 						 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	return float3::identity();
@@ -21,7 +21,7 @@ void Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
 	mu_s = scattering_coefficient_;
 }
 
-void Density::collision_coefficients(f_float3 p, const Transformation& transformation,
+void Density::collision_coefficients(f_float3 p, Transformation const& transformation,
 									 Sampler_filter filter, const Worker& worker,
 									 float3& mu_a, float3& mu_s) const {
 	float3 const p_o = math::transform_point(p, transformation.world_to_object);

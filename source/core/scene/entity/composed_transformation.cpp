@@ -5,7 +5,7 @@
 
 namespace scene::entity {
 
-void Composed_transformation::set(const math::Transformation& t) {
+void Composed_transformation::set(math::Transformation const& t) {
 	rotation = math::quaternion::create_matrix3x3(t.rotation);
 	position = t.position;
 	scale = t.scale;

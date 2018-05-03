@@ -6,7 +6,7 @@
 namespace scene::entity {
 
 struct alignas(16) Keyframe {
-	void interpolate(const Keyframe& other, float t, Keyframe& result) const;
+	void interpolate(Keyframe const& other, float t, Keyframe& result) const;
 
 	math::Transformation transformation;
 
