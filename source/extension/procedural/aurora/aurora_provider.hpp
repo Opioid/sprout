@@ -42,8 +42,8 @@ private:
 
 	float3 aurora_volume_;
 
-	static constexpr float ground_to_bottom_ = 100000.f;
-	static constexpr float aurora_height_    = 200000.f;
+	static float constexpr ground_to_bottom_ = 100000.f;
+	static float constexpr aurora_height_    = 200000.f;
 };
 
 }

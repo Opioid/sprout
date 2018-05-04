@@ -60,14 +60,14 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
 	kernel_ = memory::allocate_aligned<float3>(kernel_size);
 
-	const spectrum::Interpolated CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
-	const spectrum::Interpolated CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
-	const spectrum::Interpolated CIE_Z(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Z_360_830_1nm, spectrum::CIE_XYZ_Num);
+	spectrum::Interpolated const CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
+	spectrum::Interpolated const CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
+	spectrum::Interpolated const CIE_Z(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Z_360_830_1nm, spectrum::CIE_XYZ_Num);
 
-	static constexpr float wl_start = 400.f;
-	static constexpr float wl_end = 700.f;
-	static constexpr int32_t wl_num_samples = 64;
-	static constexpr float wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
+	static float constexpr wl_start = 400.f;
+	static float constexpr wl_end = 700.f;
+	static int32_t constexpr wl_num_samples = 64;
+	static float constexpr wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
 	const	  float wl_norm = 1.f / CIE_Y.integrate(wl_start, wl_end);
 
 	struct F {

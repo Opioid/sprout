@@ -140,7 +140,7 @@ float2 Indexed_data<SV>::interpolate_uv(FVector u, FVector v, uint32_t index) co
 
 template<typename SV>
 float Indexed_data<SV>::bitangent_sign(uint32_t index) const {
-	static constexpr float signs[2] = { 1.f, -1.f };
+	static float constexpr signs[2] = { 1.f, -1.f };
 
 	return signs[triangles_[index].bts];
 }

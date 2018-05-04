@@ -127,7 +127,7 @@ public:
 
 	static float3 spectrum_at_wavelength(float lambda, float value = 1.f);
 
-	static constexpr int32_t Num_bands = 16;
+	static int32_t constexpr Num_bands = 16;
 
 	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 

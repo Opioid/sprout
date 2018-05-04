@@ -1218,7 +1218,7 @@ float3 Provider::read_hex_RGB(std::string const& text) {
 		return float3(0.f);
 	}
 
-	static constexpr int32_t hex_table[] = {
+	static int32_t constexpr hex_table[] = {
 		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		 0, 0, 0,1,2,3,4,5,6,7,8,9, 0, 0, 0, 0, 0, 0, 0,10,11,12,13,14,15, 0,

@@ -101,6 +101,8 @@ float3 Worker::transmittance(Ray const& ray) {
 	for (;;) {
 		bool const hit = scene_->intersect_volume(tray, node_stack_, intersection);
 
+		SOFT_ASSERT(tray.max_t > tray.min_t);
+
 		if (!interface_stack_.empty()) {
 			float3 const tr = volume_integrator_->transmittance(tray, *this);
 			transmittance *= math::saturate(tr);

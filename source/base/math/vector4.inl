@@ -170,7 +170,7 @@ static inline constexpr float dot(FVector4f_a a, FVector4f_a b) {
 inline constexpr Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
 		v{x, y, z, w} {}
 
-inline constexpr Vector4i_a::Vector4i_a(const Vector2<int32_t> xy, const Vector2<int32_t> zw) :
+inline constexpr Vector4i_a::Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw) :
 	v{xy[0], xy[1], zw[0], zw[1]} {}
 
 inline constexpr Vector4i_a::Vector4i_a(int32_t s) : v{s, s, s, s} {}

@@ -68,10 +68,10 @@ private:
 
 	sampler::Random sampler_;
 
-	static constexpr uint32_t Num_material_samplers = 3;
+	static uint32_t constexpr Num_material_samplers = 3;
 	sampler::Golden_ratio material_samplers_[Num_material_samplers];
 
-	static constexpr uint32_t Num_light_samplers = 3;
+	static uint32_t constexpr Num_light_samplers = 3;
 	sampler::Golden_ratio light_samplers_[Num_light_samplers];
 };
 

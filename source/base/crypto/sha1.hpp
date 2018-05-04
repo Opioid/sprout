@@ -22,9 +22,9 @@ public:
 
 private:
 
-	static constexpr uint32_t Digest_ints = 5;  // number of 32bit integers per SHA1 digest
-	static constexpr uint32_t Block_ints = 16;  // number of 32bit integers per SHA1 block
-	static constexpr uint32_t Block_bytes = Block_ints * 4;
+	static uint32_t constexpr Digest_ints = 5;  // number of 32bit integers per SHA1 digest
+	static uint32_t constexpr Block_ints = 16;  // number of 32bit integers per SHA1 block
+	static uint32_t constexpr Block_bytes = Block_ints * 4;
 
 	void reset();
 	void transform(uint32_t block[Block_bytes]);

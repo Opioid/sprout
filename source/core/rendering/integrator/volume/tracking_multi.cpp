@@ -152,6 +152,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		return false;
 	}
 
+	SOFT_ASSERT(ray.max_t > ray.min_t);
+
 	float const d = ray.max_t;
 
 	if (d - ray.min_t < 0.0005f) {
@@ -185,10 +187,13 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 		float3 w(1.f);
 
-		for (float t = ray.min_t;;) {
+		uint32_t i = Tracking::max_iterations_;
+		for (float t = ray.min_t;; --i) {
+		//	SOFT_ASSERT(i < 1024*1024);
+
 			float const r0 = rng_.random_float();
 			t = t -std::log(1.f - r0) / mt;
-			if (t > d) {
+			if (t > d || 0 == i) {
 				li = float3(0.f);
 				transmittance = w;
 			//	weight = float3(1.f);
@@ -217,8 +222,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 			float const r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
-				SOFT_ASSERT(math::all_finite(ws));
-
 				intersection.prop = interface->prop;
 				intersection.geo.p = p;
 				intersection.geo.uv = interface->uv;
@@ -226,6 +229,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				intersection.geo.subsurface = true;
 
 				float3 const ws = mu_s / (mt * ps);
+
+				SOFT_ASSERT(math::all_finite(ws));
 
 				li = float3(0.f);
 			//	transmittance = float3(1.f);

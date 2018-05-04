@@ -32,6 +32,9 @@ public:
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
 	static float3 transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker);
+
+	// Completely arbitrary and biased cutoff limit in order to prevent some worst case things
+	static uint32_t constexpr max_iterations_ = 1024 * 64;
 };
 
 }}

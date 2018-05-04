@@ -9,7 +9,7 @@ float3 heatmap(float x) {
 	static constexpr float3 colors[] = { {0.f, 0.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f},
 										 {1.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {1.f, 0.f, 0.f} };
 
-	static constexpr int32_t max_color = static_cast<int32_t>(std::size(colors) - 2);
+	static int32_t constexpr max_color = static_cast<int32_t>(std::size(colors) - 2);
 
 	const int32_t id = static_cast<int32_t>(x * static_cast<float>(max_color));
 	float const   ip = x * static_cast<float>(max_color) - static_cast<float>(id);

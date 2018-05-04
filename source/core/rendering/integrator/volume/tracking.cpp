@@ -25,6 +25,10 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
 	float const d = ray.max_t;
 
+	if (d - ray.min_t < 0.0005f) {
+		return float3(1.f);
+	}
+
 	if (material.is_heterogeneous_volume()) {
 		Transformation temp;
 		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
@@ -34,7 +38,9 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
 		float3 w(1.f);
 
-		for (float t = ray.min_t;;) {
+		// Completely arbitray limit
+		uint32_t i = max_iterations_;
+		for (float t = ray.min_t; i > 0; --i) {
 			float const r0 = rng.random_float();
 			t = t -std::log(1.f - r0) * imt;
 			if (t > d) {
@@ -53,6 +59,8 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
 			w *= imt * mu_n;
 		}
+
+		return w;
 	}
 
 	float3 mu_a, mu_s;

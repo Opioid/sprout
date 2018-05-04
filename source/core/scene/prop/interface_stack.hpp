@@ -50,7 +50,7 @@ public:
 
 private:
 
-	static constexpr int32_t Num_entries = 16;
+	static int32_t constexpr Num_entries = 16;
 
 	int32_t index_;
 	Interface* stack_;

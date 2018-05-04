@@ -29,12 +29,12 @@ public:
 
 	static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
 
-	static constexpr int32_t num_bands();
+	static int32_t constexpr num_bands();
 
-	static constexpr float wavelength_center(int32_t bin);
+	static float constexpr wavelength_center(int32_t bin);
 
-	static constexpr float start_wavelength();
-	static constexpr float end_wavelength();
+	static float constexpr start_wavelength();
+	static float constexpr end_wavelength();
 
 private:
 

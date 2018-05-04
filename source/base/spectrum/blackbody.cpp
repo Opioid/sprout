@@ -6,17 +6,17 @@
 namespace spectrum {
 
 float planck(float temperature, float wavelength) {
-	static constexpr float h = 6.62606896e-34f;   // Plank constant
-	static constexpr float c = 2.99792458e+8f;    // Speed of light
-	static constexpr float k = 1.38064880e-23f;   // Boltzmann constant
-	static constexpr float a = ((2.f * math::Pi) * h) * (c * c);
-	static constexpr float b = (h * c) / k;
+	static float constexpr h = 6.62606896e-34f;   // Plank constant
+	static float constexpr c = 2.99792458e+8f;    // Speed of light
+	static float constexpr k = 1.38064880e-23f;   // Boltzmann constant
+	static float constexpr a = ((2.f * math::Pi) * h) * (c * c);
+	static float constexpr b = (h * c) / k;
 	return (a * std::pow(wavelength, -5.f)) /
 		   (std::exp(b / (wavelength * temperature)) - 1.f);
 }
 
 // CIE color matching functions
-static constexpr float color_matching[][3] = {
+static float constexpr color_matching[][3] = {
 	{ 0.0014f, 0.0000f, 0.0065f }, { 0.0022f, 0.0001f, 0.0105f }, { 0.0042f, 0.0001f, 0.0201f },
 	{ 0.0076f, 0.0002f, 0.0362f }, { 0.0143f, 0.0004f, 0.0679f }, { 0.0232f, 0.0006f, 0.1102f },
 	{ 0.0435f, 0.0012f, 0.2074f }, { 0.0776f, 0.0022f, 0.3713f }, { 0.1344f, 0.0040f, 0.6456f },
@@ -47,10 +47,10 @@ static constexpr float color_matching[][3] = {
 };
 
 float3 blackbody(float temperature) {
-	static constexpr float wl_min = 380.f;
-	static constexpr float wl_max = 780.f;
-	static constexpr float wl_step = 5.f;
-	static constexpr uint32_t num_steps = static_cast<uint32_t>((wl_max - wl_min) / wl_step) + 1;
+	static float constexpr wl_min = 380.f;
+	static float constexpr wl_max = 780.f;
+	static float constexpr wl_step = 5.f;
+	static uint32_t constexpr num_steps = static_cast<uint32_t>((wl_max - wl_min) / wl_step) + 1;
 
 	float3 xyz(0.f);
 	for (uint32_t k = 0; k < num_steps; ++k) {
