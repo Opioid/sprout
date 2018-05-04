@@ -8,6 +8,7 @@
 #include "file/file_system.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
+#include <istream>
 
 namespace image  {
 
@@ -28,7 +29,7 @@ std::shared_ptr<Image> Provider::load(std::string const& filename,
 
 	auto& stream = *stream_pointer;
 
-	file::Type type = file::query_type(stream);
+	file::Type const type = file::query_type(stream);
 
 	if (file::Type::PNG == type) {
 		Channels channels = Channels::None;
