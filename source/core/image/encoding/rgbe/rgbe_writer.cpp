@@ -2,6 +2,7 @@
 #include "image/typed_image.inl"
 #include "base/math/vector4.inl"
 #include <cmath>
+#include <ostream>
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 
@@ -27,7 +28,7 @@ void Writer::write_header(std::ostream& stream, int2 dimensions) {
 
 void Writer::write_pixels(std::ostream& stream, Float4 const& image) {
 	auto const& d = image.description().dimensions;
-	for (uint32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+	for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
 		byte4 rgbe = float_to_rgbe(image.at(i));
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(byte4));
@@ -35,8 +36,8 @@ void Writer::write_pixels(std::ostream& stream, Float4 const& image) {
 }
 
 void Writer::write_pixels_rle(std::ostream& stream, Float4 const& image) {
-	uint32_t scanline_width = image.description().dimensions[0];
-	uint32_t num_scanlines  = image.description().dimensions[1];
+	int32_t const scanline_width = image.description().dimensions[0];
+	int32_t num_scanlines  = image.description().dimensions[1];
 
 	if (scanline_width < 8 || scanline_width > 0x7fff) {
 		// run length encoding is not allowed so write flat
@@ -56,7 +57,7 @@ void Writer::write_pixels_rle(std::ostream& stream, Float4 const& image) {
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(byte4));
 
-		for (uint32_t i = 0; i < scanline_width; ++i, ++current_pixel) {
+		for (int32_t i = 0; i < scanline_width; ++i, ++current_pixel) {
 			auto const& pixel = image.at(current_pixel);
 
 			rgbe = float_to_rgbe(pixel);
