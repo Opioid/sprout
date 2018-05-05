@@ -45,8 +45,7 @@ size_t Grid::num_bytes() const {
 	return sizeof(*this);
 }
 
-float Grid::density(f_float3 p, Transformation const& /*transformation*/,
-					Sampler_filter filter, const Worker& worker) const {
+float Grid::density(f_float3 p, Sampler_filter filter, const Worker& worker) const {
 	// p is in object space already
 
 	float3 p_g = 0.5f * (float3(1.f) + p);

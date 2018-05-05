@@ -33,6 +33,12 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 		Transformation temp;
 		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 
+		float3 const local_origin = math::transform_point(ray.origin,
+														  transformation.world_to_object);
+
+		float3 const local_dir = math::transform_vector(ray.direction,
+														transformation.world_to_object);
+
 		float const mt  = material.majorant_mu_t();
 		float const imt = 1.f / mt;
 
@@ -47,10 +53,10 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 				return w;
 			}
 
-			float3 const p = ray.point(t);
+			float3 const local_p = local_origin + t * local_dir;
 
 			float3 mu_a, mu_s;
-			material.collision_coefficients(p, transformation, Sampler_filter::Nearest,
+			material.collision_coefficients(local_p, Sampler_filter::Nearest,
 											worker, mu_a, mu_s);
 
 			float3 const mu_t = mu_a + mu_s;

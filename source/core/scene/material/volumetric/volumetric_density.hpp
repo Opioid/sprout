@@ -22,11 +22,13 @@ public:
 										Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const override final;
 
+	virtual void collision_coefficients(f_float3 p, Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const override final;
+
 private:
 
 	// expects p in object space!
-	virtual float density(f_float3 p, Transformation const& transformation,
-						  Sampler_filter filter, const Worker& worker) const = 0;
+	virtual float density(f_float3 p, Sampler_filter filter, const Worker& worker) const = 0;
 };
 
 }

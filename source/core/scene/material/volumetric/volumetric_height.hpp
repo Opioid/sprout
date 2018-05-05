@@ -5,6 +5,8 @@
 
 namespace scene::material::volumetric {
 
+/*
+
 class Height final : public Density {
 
 public:
@@ -23,6 +25,8 @@ private:
 	float a_ = 1.f;
 	float b_ = 1.f;
 };
+
+*/
 
 }
 

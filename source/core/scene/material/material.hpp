@@ -84,6 +84,9 @@ public:
 										Sampler_filter filter, const Worker& worker,
 										float3& mu_a, float3& mu_s) const;
 
+	virtual void collision_coefficients(f_float3 p, Sampler_filter filter, const Worker& worker,
+										float3& mu_a, float3& mu_s) const;
+
 	virtual float majorant_mu_t() const;
 
 	virtual bool is_heterogeneous_volume() const;

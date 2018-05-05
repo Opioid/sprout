@@ -92,6 +92,12 @@ void Material::collision_coefficients(f_float3 /*p*/, Transformation const& /*tr
 	mu_s = float3::identity();
 }
 
+void Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
+									  const Worker& /*worker*/, float3& mu_a, float3& mu_s) const {
+	mu_a = float3::identity();
+	mu_s = float3::identity();
+}
+
 float Material::majorant_mu_t() const {
 	return 0.f;
 }

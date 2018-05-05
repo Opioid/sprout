@@ -183,6 +183,12 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		Transformation temp;
 		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 
+		float3 const local_origin = math::transform_point(ray.origin,
+														  transformation.world_to_object);
+
+		float3 const local_dir = math::transform_vector(ray.direction,
+														transformation.world_to_object);
+
 		float const mt = material.majorant_mu_t();
 
 		float3 w(1.f);
@@ -200,10 +206,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				return true;
 			}
 
-			float3 const p = ray.point(t);
+			float3 const local_p = local_origin + t * local_dir;
 
 			float3 mu_a, mu_s;
-			material.collision_coefficients(p, transformation, filter, worker, mu_a, mu_s);
+			material.collision_coefficients(local_p, filter, worker, mu_a, mu_s);
 
 			float3 const mu_t = mu_a + mu_s;
 
@@ -223,7 +229,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 			float const r1 = rng_.random_float();
 			if (r1 <= 1.f - pn && ps > 0.f) {
 				intersection.prop = interface->prop;
-				intersection.geo.p = p;
+				intersection.geo.p = ray.point(t);
 				intersection.geo.uv = interface->uv;
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;

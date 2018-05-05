@@ -1083,13 +1083,13 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
 		material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
 		material->set_anisotropy(anisotropy);
 		return material;
-	} else if (a > 0.f && b > 0.f) {
+	} /*else if (a > 0.f && b > 0.f) {
 		auto material = std::make_shared<volumetric::Height>(sampler_settings);
 		material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
 		material->set_anisotropy(anisotropy);
 		material->set_a_b(a, b);
 		return material;
-	}
+	}*/
 
 	auto material = std::make_shared<volumetric::Homogeneous>(sampler_settings);
 	material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
