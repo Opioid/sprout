@@ -10,12 +10,12 @@ class Material_coating : public Material_base {
 
 public:
 
-	Material_coating(const Sampler_settings& sampler_settings, bool two_sided);
+	Material_coating(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual size_t num_bytes() const override final;
 
-	void set_coating_weight_map(const Texture_adapter& weight_map);
-	void set_coating_normal_map(const Texture_adapter& normal_map);
+	void set_coating_weight_map(Texture_adapter const& weight_map);
+	void set_coating_normal_map(Texture_adapter const& normal_map);
 
 	void set_coating_weight(float weight);
 	void set_coating_color(float3 const& color);
@@ -36,11 +36,11 @@ class Material_clearcoat : public Material_coating<coating::Clearcoat> {
 
 public:
 
-	Material_clearcoat(const Sampler_settings& sampler_settings, bool two_sided);
+	Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	void set_clearcoat(float ior, float roughness);
 
@@ -51,11 +51,11 @@ class Material_thinfilm : public Material_coating<coating::Thinfilm> {
 
 public:
 
-	Material_thinfilm(const Sampler_settings& sampler_settings, bool two_sided);
+	Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	void set_thinfilm(float ior, float roughness, float thickness);
 

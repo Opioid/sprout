@@ -38,11 +38,11 @@ public:
 	using Transformation = entity::Composed_transformation;
 	using Sampler_filter = Sampler_settings::Filter;
 
-	Material(const Sampler_settings& sampler_settings, bool two_sided);
+	Material(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual ~Material();
 
-	void set_mask(const Texture_adapter& mask);
+	void set_mask(Texture_adapter const& mask);
 
 	void set_parameters(json::Value const& parameters);
 
@@ -51,10 +51,10 @@ public:
 	virtual void tick(float absolute_time, float time_slice);
 
 	virtual const Sample& sample(f_float3 wo, const Renderstate& rs, Sampler_filter filter,
-								 sampler::Sampler& sampler, const Worker& worker) const = 0;
+								 sampler::Sampler& sampler, Worker const& worker) const = 0;
 
 	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
-								   Sampler_filter filter, const Worker& worker) const;
+								   Sampler_filter filter, Worker const& worker) const;
 
 	virtual float3 average_radiance(float area) const;
 
@@ -63,28 +63,28 @@ public:
 	struct Sample_2D { float2 uv; float pdf; };
 	virtual Sample_2D radiance_sample(float2 r2) const;
 
-	virtual float emission_pdf(float2 uv, Sampler_filter filter, const Worker& worker) const;
+	virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const;
 
-	virtual float opacity(float2 uv, float time, Sampler_filter filter, const Worker& worker) const;
+	virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const;
 
 	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
-								   Sampler_filter filter, const Worker& worker) const;
+								   Sampler_filter filter, Worker const& worker) const;
 
-	virtual float3 emission( const math::Ray& ray, Transformation const& transformation,
+	virtual float3 emission( math::Ray const& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, const Worker& worker) const;
+							Sampler_filter filter, Worker const& worker) const;
 
 	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-										  const Worker& worker) const;
+										  Worker const& worker) const;
 
-	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
+	virtual void collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker,
 										float3& mu_a, float3& mu_s) const;
 
 	virtual void collision_coefficients(f_float3 p, Transformation const& transformation,
-										Sampler_filter filter, const Worker& worker,
+										Sampler_filter filter, Worker const& worker,
 										float3& mu_a, float3& mu_s) const;
 
-	virtual void collision_coefficients(f_float3 p, Sampler_filter filter, const Worker& worker,
+	virtual void collision_coefficients(f_float3 p, Sampler_filter filter, Worker const& worker,
 										float3& mu_a, float3& mu_s) const;
 
 	virtual float majorant_mu_t() const;

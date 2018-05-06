@@ -11,7 +11,7 @@ const Light::Transformation& Null_light::transformation_at(
 
 bool Null_light::sample(f_float3 /*p*/, float /*time*/, Transformation const& /*transformation*/,
 						sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-						Sampler_filter /*filter*/, const Worker& /*worker*/,
+						Sampler_filter /*filter*/, Worker const& /*worker*/,
 						Sample& /*result*/) const {
 	return false;
 }
@@ -20,13 +20,13 @@ bool Null_light::sample(f_float3 /*p*/, f_float3 /*n*/,
 						float /*time*/, Transformation const& /*transformation*/,
 						bool /*total_sphere*/, sampler::Sampler& /*sampler*/,
 						uint32_t /*sampler_dimension*/, Sampler_filter /*filter*/,
-						const Worker& /*worker*/, Sample& /*result*/) const {
+						Worker const& /*worker*/, Sample& /*result*/) const {
 	return false;
 }
 
 float Null_light::pdf(Ray const& /*ray*/, const Intersection& /*intersection*/,
 					  bool /*total_sphere*/, Sampler_filter /*filter*/,
-					  const Worker& /*worker*/) const {
+					  Worker const& /*worker*/) const {
 	return 0.f;
 }
 

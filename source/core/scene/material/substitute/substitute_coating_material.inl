@@ -9,7 +9,7 @@
 namespace scene::material::substitute {
 
 template<typename Coating>
-Material_coating<Coating>::Material_coating(const Sampler_settings& sampler_settings,
+Material_coating<Coating>::Material_coating(Sampler_settings const& sampler_settings,
 											bool two_sided) :
 	Material_base(sampler_settings, two_sided) {}
 
@@ -19,12 +19,12 @@ size_t Material_coating<Coating>::num_bytes() const {
 }
 
 template<typename Coating>
-void Material_coating<Coating>::set_coating_weight_map(const Texture_adapter& weight_map) {
+void Material_coating<Coating>::set_coating_weight_map(Texture_adapter const& weight_map) {
 	coating_weight_map_ = weight_map;
 }
 
 template<typename Coating>
-void Material_coating<Coating>::set_coating_normal_map(const Texture_adapter& normal_map) {
+void Material_coating<Coating>::set_coating_normal_map(Texture_adapter const& normal_map) {
 	coating_normal_map_ = normal_map;
 }
 

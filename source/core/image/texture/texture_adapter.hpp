@@ -15,8 +15,8 @@ class Adapter {
 public:
 
 	Adapter();
-	Adapter(const std::shared_ptr<Texture>& texture);
-	Adapter(const std::shared_ptr<Texture>& texture, float2 scale);
+	Adapter(std::shared_ptr<Texture> const& texture);
+	Adapter(std::shared_ptr<Texture> const& texture, float2 scale);
 	~Adapter();
 
 	bool operator==(const Adapter& other) const;

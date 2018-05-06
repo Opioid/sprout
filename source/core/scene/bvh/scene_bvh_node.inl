@@ -32,7 +32,7 @@ inline void Node::set_leaf_node(uint32_t start_primitive, uint8_t num_primitives
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
 /*
-inline bool Node::intersect_p(const math::Ray& ray) const {
+inline bool Node::intersect_p(math::Ray const& ray) const {
 	int8_t sign_0 = ray.signs[0];
 	float min_t = (bounds[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
 	float max_t = (bounds[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;

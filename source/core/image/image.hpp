@@ -24,7 +24,7 @@ public:
 	struct Description {
 		Description() = default;
 		Description(Type type, int2 dimensions, int32_t num_elements = 1);
-		Description(Type type, const int3& dimensions, int32_t num_elements = 1);
+		Description(Type type, int3 const& dimensions, int32_t num_elements = 1);
 
 		size_t num_pixels() const;
 
@@ -37,10 +37,10 @@ public:
 	};
 
 	Image() = default;
-	Image(const Description& description);
+	Image(Description const& description);
 	virtual ~Image();
 
-	const Description& description() const;
+	Description const& description() const;
 
 	int2 dimensions2() const;
 	int32_t area() const;
@@ -52,7 +52,7 @@ public:
 
 protected:
 
-	void resize(const Description& description);
+	void resize(Description const& description);
 
 	Description description_;
 

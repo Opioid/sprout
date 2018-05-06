@@ -53,11 +53,11 @@ public:
 
 	virtual float opacity(Ray const& ray, Transformation const& transformation,
 						  const Materials& materials, Sampler_filter filter,
-						  const Worker& worker) const override final;
+						  Worker const& worker) const override final;
 
 	virtual float3 thin_absorption(Ray const& ray, Transformation const& transformation,
 								   const Materials& materials, Sampler_filter filter,
-								   const Worker& worker) const override final;
+								   Worker const& worker) const override final;
 
 	virtual bool sample(uint32_t part, f_float3 p, f_float3 n,
 						Transformation const& transformation, float area, bool two_sided,

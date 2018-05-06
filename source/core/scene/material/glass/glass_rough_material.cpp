@@ -11,12 +11,12 @@
 
 namespace scene::material::glass {
 
-Glass_rough::Glass_rough(const Sampler_settings& sampler_settings) :
+Glass_rough::Glass_rough(Sampler_settings const& sampler_settings) :
 	Material(sampler_settings, false) {}
 
 const material::Sample& Glass_rough::sample(f_float3 wo, const Renderstate& rs,
 											Sampler_filter filter, sampler::Sampler& /*sampler*/,
-											const Worker& worker) const {
+											Worker const& worker) const {
 	auto& sample = worker.sample<Sample_rough>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -45,7 +45,7 @@ const material::Sample& Glass_rough::sample(f_float3 wo, const Renderstate& rs,
 }
 
 float3 Glass_rough::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
-							   const Worker& /*worker*/) const {
+							   Worker const& /*worker*/) const {
 	return absorption_coefficient_;
 }
 
@@ -61,11 +61,11 @@ size_t Glass_rough::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Glass_rough::set_normal_map(const Texture_adapter& normal_map) {
+void Glass_rough::set_normal_map(Texture_adapter const& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Glass_rough::set_roughness_map(const Texture_adapter& roughness_map) {
+void Glass_rough::set_roughness_map(Texture_adapter const& roughness_map) {
 	roughness_map_ = roughness_map;
 }
 

@@ -52,7 +52,7 @@ inline bool Triangle_MT::intersect(math::Ray& ray, float2& uv) const {
 	return false;
 }
 
-inline bool Triangle_MT::intersect_p(const math::Ray& ray) const {
+inline bool Triangle_MT::intersect_p(math::Ray const& ray) const {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -274,7 +274,7 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 	return false;
 }
 
-static inline bool intersect_p(f_float3 a, f_float3 b, f_float3 c, const math::Ray& ray) {
+static inline bool intersect_p(f_float3 a, f_float3 b, f_float3 c, math::Ray const& ray) {
 	// Implementation A
 /*	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
@@ -665,7 +665,7 @@ inline bool intersect(const Vertex_MTC& a,
 inline bool intersect_p(const Vertex_MTC& a,
 						const Vertex_MTC& b,
 						const Vertex_MTC& c,
-						const math::Ray& ray) {
+						math::Ray const& ray) {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 

@@ -33,7 +33,7 @@ public:
 
 	bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
 
-	bool intersect_p(uint32_t index, const math::Ray& ray) const;
+	bool intersect_p(uint32_t index, math::Ray const& ray) const;
 
 	bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
 				   uint32_t index, Vector& u, Vector& v) const;
@@ -106,7 +106,7 @@ public:
 
 	bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
 
-	bool intersect_p(uint32_t index, const math::Ray& ray) const;
+	bool intersect_p(uint32_t index, math::Ray const& ray) const;
 
 	void interpolate_data(uint32_t index, float2 uv,
 						  float3& n, float3& t, float2& tc) const;
@@ -166,7 +166,7 @@ public:
 
 	bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
 
-	bool intersect_p(uint32_t index, const math::Ray& ray) const;
+	bool intersect_p(uint32_t index, math::Ray const& ray) const;
 
 	bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
 				   uint32_t index, Vector& u, Vector& v) const;

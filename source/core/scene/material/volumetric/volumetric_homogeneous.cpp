@@ -4,28 +4,28 @@
 
 namespace scene::material::volumetric {
 
-Homogeneous::Homogeneous(const Sampler_settings& sampler_settings) : Material(sampler_settings) {}
+Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) : Material(sampler_settings) {}
 
-float3 Homogeneous::emission(const math::Ray& /*ray*/, Transformation const& /*transformation*/,
+float3 Homogeneous::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
 							 float /*step_size*/, rnd::Generator& /*rng*/,
-							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+							 Sampler_filter /*filter*/, Worker const& /*worker*/) const {
 	return float3::identity();
 }
 
 float3 Homogeneous::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
-										   const Worker& /*worker*/) const {
+										   Worker const& /*worker*/) const {
 	return absorption_coefficient_;
 }
 
 void Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
-										 const Worker& /*worker*/,
+										 Worker const& /*worker*/,
 										 float3& mu_a, float3& mu_s) const {
 	mu_a = absorption_coefficient_;
 	mu_s = scattering_coefficient_;
 }
 
 void Homogeneous::collision_coefficients(f_float3 /*p*/, Transformation const& /*transformation*/,
-										 Sampler_filter /*filter*/, const Worker& /*worker*/,
+										 Sampler_filter /*filter*/, Worker const& /*worker*/,
 										 float3& mu_a, float3& mu_s) const {
 	mu_a = absorption_coefficient_;
 	mu_s = scattering_coefficient_;

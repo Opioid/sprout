@@ -1,4 +1,5 @@
 #include "volumetric_grid.hpp"
+#include "volumetric_octree_builder.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
@@ -20,17 +21,20 @@ Grid::~Grid() {}
 void Grid::compile() {
 	float max_density = 0.f;
 
-	auto const texture = grid_.texture();
+	auto const& texture = *grid_.texture();
 
-	const int3 d = texture->dimensions_3();
+	const int3 d = texture.dimensions_3();
 
 	for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
-		max_density = std::max(texture->at_1(i), max_density);
+		max_density = std::max(texture.at_1(i), max_density);
 	}
 
 	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
 	majorant_mu_t_ = max_density * math::max_component(extinction_coefficient);
+
+	Octree_builder builder;
+	builder.build(texture);
 }
 
 float Grid::majorant_mu_t() const {

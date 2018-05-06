@@ -46,7 +46,7 @@ public:
 	void set_split_node(uint32_t next_node, uint8_t axis);
 	void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives);
 
-//	bool intersect_p(const math::Ray& ray) const;
+//	bool intersect_p(math::Ray const& ray) const;
 
 	bool intersect_p(FVector origin, FVector inv_direction,
 					 FVector min_t, FVector max_t) const;

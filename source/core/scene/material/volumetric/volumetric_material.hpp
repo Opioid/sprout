@@ -9,12 +9,12 @@ class Material : public material::Material {
 
 public:
 
-	Material(const Sampler_settings& sampler_settings);
+	Material(Sampler_settings const& sampler_settings);
 	virtual ~Material() override;
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	virtual float ior() const override final;
 

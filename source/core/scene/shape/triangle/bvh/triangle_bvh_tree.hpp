@@ -60,17 +60,17 @@ public:
 				   FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
 				   Node_stack& node_stack) const;
 
-	bool intersect_p(const math::Ray& ray, Node_stack& node_stack) const;
+	bool intersect_p(math::Ray const& ray, Node_stack& node_stack) const;
 
 	bool intersect_p(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
 					 FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
 					 Node_stack& node_stack) const;
 
 	float opacity(math::Ray& ray, float time, const Materials& materials,
-				  material::Sampler_settings::Filter filter, const Worker& worker) const;
+				  material::Sampler_settings::Filter filter, Worker const& worker) const;
 
 	float3 absorption(math::Ray& ray, float time, const Materials& materials,
-					  material::Sampler_settings::Filter filter, const Worker& worker) const;
+					  material::Sampler_settings::Filter filter, Worker const& worker) const;
 
 	void interpolate_triangle_data(uint32_t index, float2 uv,
 								   float3& n, float3& t, float2& tc) const;

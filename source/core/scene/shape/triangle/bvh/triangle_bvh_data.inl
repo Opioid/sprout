@@ -37,7 +37,7 @@ bool Data<Intersection_triangle, Shading_triangle>::intersect(uint32_t index, ma
 
 template<typename Intersection_triangle, typename Shading_triangle>
 bool Data<Intersection_triangle, Shading_triangle>::intersect_p(uint32_t index,
-																const math::Ray& ray) const {
+																math::Ray const& ray) const {
 	return intersection_triangles_[index].intersect_p(ray);
 }
 

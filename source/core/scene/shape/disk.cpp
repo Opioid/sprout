@@ -153,7 +153,7 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
 
 float Disk::opacity(Ray const& ray, Transformation const& transformation,
 					const Materials& materials,
-					Sampler_filter filter, const Worker& worker) const {
+					Sampler_filter filter, Worker const& worker) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
@@ -182,7 +182,7 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation,
 
 float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
 							 const Materials& materials,
-							 Sampler_filter filter, const Worker& worker) const {
+							 Sampler_filter filter, Worker const& worker) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);

@@ -17,7 +17,7 @@ namespace scene::light {
 
 bool Prop_image_light::sample(f_float3 p, float time, Transformation const& transformation,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
-							  Sampler_filter filter, const Worker& worker, Sample& result) const {
+							  Sampler_filter filter, Worker const& worker, Sample& result) const {
 	auto const material = prop_->material(part_);
 
 	float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -46,7 +46,7 @@ bool Prop_image_light::sample(f_float3 p, float time, Transformation const& tran
 bool Prop_image_light::sample(f_float3 p, f_float3 n,
 							  float time, Transformation const& transformation, bool total_sphere,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
-							  Sampler_filter filter, const Worker& worker, Sample& result) const {
+							  Sampler_filter filter, Worker const& worker, Sample& result) const {
 	auto const material = prop_->material(part_);
 
 	float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -77,7 +77,7 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n,
 }
 
 float Prop_image_light::pdf(Ray const& ray, const Intersection& intersection, bool /*total_sphere*/,
-							Sampler_filter filter, const Worker& worker) const {
+							Sampler_filter filter, Worker const& worker) const {
 	entity::Composed_transformation temp;
 	auto const& transformation = prop_->transformation_at(ray.time, temp);
 

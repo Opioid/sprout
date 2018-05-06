@@ -10,11 +10,11 @@ class Material_subsurface final : public Material_base {
 
 public:
 
-	Material_subsurface(const Sampler_settings& sampler_settings);
+	Material_subsurface(Sampler_settings const& sampler_settings);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -25,18 +25,18 @@ public:
 
 	virtual void set_ior(float ior, float external_ior = 1.f) final override;
 
-	virtual float3 emission(const math::Ray& ray, Transformation const& transformation,
+	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, const Worker& worker) const override final;
+							Sampler_filter filter, Worker const& worker) const override final;
 
 	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-										  const Worker& worker) const override final;
+										  Worker const& worker) const override final;
 
-	virtual void collision_coefficients(float2 uv, Sampler_filter filter, const Worker& worker,
+	virtual void collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker,
 										float3& mu_a, float3& mu_s) const override final;
 
 	virtual void collision_coefficients(f_float3 p,Transformation const& transformation,
-										Sampler_filter filter, const Worker& worker,
+										Sampler_filter filter, Worker const& worker,
 										float3& mu_a, float3& mu_s) const override final;
 
 	static size_t sample_size();

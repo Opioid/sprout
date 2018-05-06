@@ -111,14 +111,14 @@ bool Canopy::intersect_p(Ray const& /*ray*/, Transformation const& /*transformat
 
 float Canopy::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
 					  const Materials& /*materials*/, Sampler_filter /*filter*/,
-					  const Worker& /*worker*/) const {
+					  Worker const& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
 float3 Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
 							   const Materials& /*materials*/, Sampler_filter /*filter*/,
-							   const Worker& /*worker*/) const {
+							   Worker const& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return float3(0.f);
 }

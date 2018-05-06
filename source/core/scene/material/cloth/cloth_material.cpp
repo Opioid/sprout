@@ -8,12 +8,12 @@
 
 namespace scene::material::cloth {
 
-Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
 										 Sampler_filter filter, sampler::Sampler& /*sampler*/,
-										 const Worker& worker) const {
+										 Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -48,11 +48,11 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_color_map(const Texture_adapter& color_map) {
+void Material::set_color_map(Texture_adapter const& color_map) {
 	color_map_ = color_map;
 }
 
-void Material::set_normal_map(const Texture_adapter& normal_map) {
+void Material::set_normal_map(Texture_adapter const& normal_map) {
 	normal_map_ = normal_map;
 }
 

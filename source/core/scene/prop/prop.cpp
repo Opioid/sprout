@@ -205,7 +205,7 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id,
 									   material_importance_sampling, pool);
 }
 
-float Prop::opacity(Ray const& ray, Sampler_filter filter, const Worker& worker) const {
+float Prop::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const {
 	if (!has_masked_material()) {
 		return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 	}
@@ -224,7 +224,7 @@ float Prop::opacity(Ray const& ray, Sampler_filter filter, const Worker& worker)
 	return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
 
-float3 Prop::thin_absorption(Ray const& ray, Sampler_filter filter, const Worker& worker) const {
+float3 Prop::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const {
 	if (!has_tinted_shadow()) {
 		return float3(opacity(ray, filter, worker));
 	}

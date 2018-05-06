@@ -260,7 +260,7 @@ bool BVH_wrapper::intersect_p(const scene::Ray& ray, shape::Node_stack& node_sta
 }
 
 float BVH_wrapper::opacity(const scene::Ray& ray, Sampler_filter filter,
-						   const Worker& worker) const {
+						   Worker const& worker) const {
 	auto& node_stack = worker.node_stack();
 
 	node_stack.clear();
@@ -322,7 +322,7 @@ float BVH_wrapper::opacity(const scene::Ray& ray, Sampler_filter filter,
 }
 
 float3 BVH_wrapper::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
-									const Worker& worker) const {
+									Worker const& worker) const {
 	auto& node_stack = worker.node_stack();
 
 	node_stack.clear();

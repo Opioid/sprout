@@ -13,8 +13,8 @@
 
 namespace scene::material::display {
 
-Emissionmap_animated::Emissionmap_animated(const Sampler_settings& sampler_settings,
-										   bool two_sided, const Texture_adapter& emission_map,
+Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings,
+										   bool two_sided, Texture_adapter const& emission_map,
 										   float emission_factor, float animation_duration) :
 	light::Emissionmap_animated(sampler_settings, two_sided,
 								emission_map, emission_factor, animation_duration)
@@ -23,7 +23,7 @@ Emissionmap_animated::Emissionmap_animated(const Sampler_settings& sampler_setti
 const material::Sample& Emissionmap_animated::sample(f_float3 wo, const Renderstate& rs,
 													 Sampler_filter filter,
 													 sampler::Sampler& /*sampler*/,
-													 const Worker& worker) const {
+													 Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);

@@ -232,7 +232,7 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
 
 float Sphere::opacity(Ray const& ray, Transformation const& transformation,
 					  const Materials& materials,
-					  Sampler_filter filter, const Worker& worker) const {
+					  Sampler_filter filter, Worker const& worker) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale[0];
@@ -270,7 +270,7 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation,
 
 float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformation,
 							   const Materials& materials,
-							   Sampler_filter filter, const Worker& worker) const {
+							   Sampler_filter filter, Worker const& worker) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale[0];

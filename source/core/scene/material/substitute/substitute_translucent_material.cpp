@@ -9,13 +9,13 @@
 
 namespace scene::material::substitute {
 
-Material_translucent::Material_translucent(const Sampler_settings& sampler_settings) :
+Material_translucent::Material_translucent(Sampler_settings const& sampler_settings) :
 	Material_base(sampler_settings, true) {}
 
 const material::Sample& Material_translucent::sample(f_float3 wo, const Renderstate& rs,
 													 Sampler_filter filter,
 													 sampler::Sampler& /*sampler*/,
-													 const Worker& worker) const {
+													 Worker const& worker) const {
 	auto& sample = worker.sample<Sample_translucent>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);

@@ -9,15 +9,15 @@ class Constant : public Material {
 
 public:
 
-	Constant(const Sampler_settings& sampler_settings, bool two_sided);
+	Constant(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
 								   Sampler_filter filter,
-								   const Worker& worker) const override final;
+								   Worker const& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 

@@ -9,12 +9,12 @@
 
 namespace scene::material::metallic_paint {
 
-Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
 										 Sampler_filter filter, sampler::Sampler& /*sampler*/,
-										 const Worker& worker) const {
+										 Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -83,11 +83,11 @@ void Material::set_roughness(float roughness) {
 	alpha2_ = alpha * alpha;
 }
 
-void Material::set_flakes_mask(const Texture_adapter& mask) {
+void Material::set_flakes_mask(Texture_adapter const& mask) {
 	flakes_mask_ = mask;
 }
 
-void Material::set_flakes_normal_map(const Texture_adapter& normal_map) {
+void Material::set_flakes_normal_map(Texture_adapter const& normal_map) {
 	flakes_normal_map_ = normal_map;
 }
 

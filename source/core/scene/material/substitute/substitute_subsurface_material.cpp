@@ -12,13 +12,13 @@
 
 namespace scene::material::substitute {
 
-Material_subsurface::Material_subsurface(const Sampler_settings& sampler_settings) :
+Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings) :
 	Material_base(sampler_settings, false) {}
 
 const material::Sample& Material_subsurface::sample(f_float3 wo, const Renderstate& rs,
 													Sampler_filter filter,
 													sampler::Sampler& /*sampler*/,
-													const Worker& worker) const {
+													Worker const& worker) const {
 	if (rs.subsurface) {
 		auto& sample = worker.sample<volumetric::Sample>();
 
@@ -91,15 +91,15 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 	sior_.eta_t_ = ior / external_ior;
 }
 
-float3 Material_subsurface::emission(const math::Ray& /*ray*/,
+float3 Material_subsurface::emission(math::Ray const& /*ray*/,
 									 Transformation const& /*transformation*/, float /*step_size*/,
 									 rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
-									 const Worker& /*worker*/) const {
+									 Worker const& /*worker*/) const {
 	return float3::identity();
 }
 
 float3 Material_subsurface::absorption_coefficient(float2 uv, Sampler_filter filter,
-												   const Worker& worker) const {
+												   Worker const& worker) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 		float3 const color = color_map_.sample_3(sampler, uv);
@@ -111,7 +111,7 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Sampler_filter fil
 }
 
 void Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
-												 const Worker& worker,
+												 Worker const& worker,
 												 float3& mu_a, float3& mu_s) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -129,7 +129,7 @@ void Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filte
 void Material_subsurface::collision_coefficients(f_float3 /*p*/,
 												 Transformation const& /*transformation*/,
 												 Sampler_filter /*filter*/,
-												 const Worker& /*worker*/,
+												 Worker const& /*worker*/,
 												 float3& mu_a, float3& mu_s) const {
 	mu_a = absorption_coefficient_;
 	mu_s = scattering_coefficient_;

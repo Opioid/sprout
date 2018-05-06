@@ -9,12 +9,12 @@
 
 namespace scene::material::substitute {
 
-Material_base::Material_base(const Sampler_settings& sampler_settings, bool two_sided) :
+Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 float3 Material_base::sample_radiance(f_float3 /*wi*/, float2 uv, float /*area*/,
 									  float /*time*/, Sampler_filter filter,
-									  const Worker& worker) const {
+									  Worker const& worker) const {
 	if (emission_map_.is_valid()) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -40,19 +40,19 @@ float Material_base::ior() const {
 	return ior_;
 }
 
-void Material_base::set_color_map(const Texture_adapter& color_map) {
+void Material_base::set_color_map(Texture_adapter const& color_map) {
 	color_map_ = color_map;
 }
 
-void Material_base::set_normal_map(const Texture_adapter& normal_map) {
+void Material_base::set_normal_map(Texture_adapter const& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material_base::set_surface_map(const Texture_adapter& surface_map) {
+void Material_base::set_surface_map(Texture_adapter const& surface_map) {
 	surface_map_ = surface_map;
 }
 
-void Material_base::set_emission_map(const Texture_adapter& emission_map) {
+void Material_base::set_emission_map(Texture_adapter const& emission_map) {
 	emission_map_ = emission_map;
 }
 

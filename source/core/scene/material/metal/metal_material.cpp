@@ -10,13 +10,13 @@
 
 namespace scene::material::metal {
 
-Material_isotropic::Material_isotropic(const Sampler_settings& sampler_settings, bool two_sided) :
+Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided) :
 	Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material_isotropic::sample(f_float3 wo, const Renderstate& rs,
 												   Sampler_filter filter,
 												   sampler::Sampler& /*sampler*/,
-												   const Worker& worker) const {
+												   Worker const& worker) const {
 	auto& sample = worker.sample<Sample_isotropic>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -42,7 +42,7 @@ size_t Material_isotropic::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_isotropic::set_normal_map(const Texture_adapter& normal_map) {
+void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) {
 	normal_map_ = normal_map;
 }
 
@@ -62,14 +62,14 @@ size_t Material_isotropic::sample_size() {
 	return sizeof(Sample_isotropic);
 }
 
-Material_anisotropic::Material_anisotropic(const Sampler_settings& sampler_settings,
+Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings,
 										   bool two_sided) :
 	Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material_anisotropic::sample(f_float3 wo, const Renderstate& rs,
 													 Sampler_filter filter,
 													 sampler::Sampler& /*sampler*/,
-													 const Worker& worker) const {
+													 Worker const& worker) const {
 	auto& sample = worker.sample<Sample_anisotropic>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -104,11 +104,11 @@ size_t Material_anisotropic::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_anisotropic::set_normal_map(const Texture_adapter& normal_map) {
+void Material_anisotropic::set_normal_map(Texture_adapter const& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(const Texture_adapter& direction_map) {
+void Material_anisotropic::set_direction_map(Texture_adapter const& direction_map) {
 	direction_map_ = direction_map;
 }
 

@@ -22,7 +22,7 @@ public:
 
 	bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
 
-	bool intersect_p(uint32_t index, const math::Ray& ray) const;
+	bool intersect_p(uint32_t index, math::Ray const& ray) const;
 
 	bool intersect_p(FVector origin,
 					 FVector direction,

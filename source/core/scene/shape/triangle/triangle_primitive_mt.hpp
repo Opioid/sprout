@@ -24,7 +24,7 @@ struct Triangle_MT {
 	uint32_t material_index;
 
 	bool intersect(math::Ray& ray, float2& uv) const;
-	bool intersect_p(const math::Ray& ray) const;
+	bool intersect_p(math::Ray const& ray) const;
 
 	void interpolate(float2 uv, float3& p, float3& n, float2& tc) const;
 	void interpolate(float2 uv, float3& p, float2& tc) const;

@@ -10,15 +10,15 @@ class Material_overcast : public Material {
 
 public:
 
-	Material_overcast(const Sampler_settings& sampler_settings, bool two_sided);
+	Material_overcast(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
 								   Sampler_filter filter,
-								   const Worker& worker) const override final;
+								   Worker const& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 

@@ -9,18 +9,18 @@ class Atmosphere final : public Material {
 
 public:
 
-	Atmosphere(const Sampler_settings& sampler_settings);
+	Atmosphere(Sampler_settings const& sampler_settings);
 
-	virtual float3 emission(Transformation const& transformation, const math::Ray& ray,
+	virtual float3 emission(Transformation const& transformation, math::Ray const& ray,
 							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, const Worker& worker) const override final;
+							Sampler_filter filter, Worker const& worker) const override final;
 
 	virtual float3 optical_depth(Transformation const& transformation, const math::AABB& aabb,
-								 const math::Ray& ray, float step_size, rnd::Generator& rng,
-								 Sampler_filter filter, const Worker& worker) const override final;
+								 math::Ray const& ray, float step_size, rnd::Generator& rng,
+								 Sampler_filter filter, Worker const& worker) const override final;
 
 	virtual float3 scattering(Transformation const& transformation, f_float3 p,
-							  Sampler_filter filter, const Worker& worker) const override final;
+							  Sampler_filter filter, Worker const& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
 };

@@ -6,12 +6,12 @@
 
 namespace scene::material::mix {
 
-Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
                                          Sampler_filter filter, sampler::Sampler& sampler,
-                                         const Worker& worker) const {
+                                         Worker const& worker) const {
 	auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);
 	float const mask = mask_.sample_1(texture_sampler, rs.uv);
 
@@ -23,7 +23,7 @@ const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
 }
 
 float Material::opacity(float2 /*uv*/, float /*time*/, Sampler_filter /*filter*/,
-						const Worker& /*worker*/) const {
+						Worker const& /*worker*/) const {
 	return 1.f;
 }
 

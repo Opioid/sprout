@@ -10,12 +10,12 @@
 
 namespace scene::material::glass {
 
-Glass::Glass(const Sampler_settings& sampler_settings) :
+Glass::Glass(Sampler_settings const& sampler_settings) :
 	Material(sampler_settings, false) {}
 
 const material::Sample& Glass::sample(f_float3 wo, const Renderstate& rs,
 									  Sampler_filter filter, sampler::Sampler& /*sampler*/,
-									  const Worker& worker) const {
+									  Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -34,7 +34,7 @@ const material::Sample& Glass::sample(f_float3 wo, const Renderstate& rs,
 }
 
 float3 Glass::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
-									 const Worker& /*worker*/) const {
+									 Worker const& /*worker*/) const {
 	return absorption_coefficient_;
 }
 
@@ -50,7 +50,7 @@ size_t Glass::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Glass::set_normal_map(const Texture_adapter& normal_map) {
+void Glass::set_normal_map(Texture_adapter const& normal_map) {
 	normal_map_ = normal_map;
 }
 

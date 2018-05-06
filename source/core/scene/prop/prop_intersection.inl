@@ -25,7 +25,7 @@ inline float Intersection::area() const {
 	return prop->area(geo.part);
 }
 
-inline float Intersection::opacity(float time, Sampler_filter filter, const Worker& worker) const {
+inline float Intersection::opacity(float time, Sampler_filter filter, Worker const& worker) const {
 	return material()->opacity(geo.uv, time, filter, worker);
 }
 

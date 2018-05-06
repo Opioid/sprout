@@ -29,7 +29,7 @@ Sky_material::Sky_material(Model& model) : Material(model) {}
 const material::Sample& Sky_material::sample(f_float3 wo, const Renderstate& rs,
 											 Sampler_filter /*filter*/,
 											 sampler::Sampler& /*sampler*/,
-											 const Worker& worker) const {
+											 Worker const& worker) const {
 	auto& sample = worker.sample<material::light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -43,7 +43,7 @@ const material::Sample& Sky_material::sample(f_float3 wo, const Renderstate& rs,
 
 float3 Sky_material::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
 									 float /*time*/, Sampler_filter /*filter*/,
-									 const Worker& /*worker*/) const {
+									 Worker const& /*worker*/) const {
 	return model_.evaluate_sky(wi);
 }
 
@@ -73,7 +73,7 @@ Sky_baked_material::~Sky_baked_material() {}
 const material::Sample& Sky_baked_material::sample(f_float3 wo, const Renderstate& rs,
 												   Sampler_filter filter,
 												   sampler::Sampler& /*sampler*/,
-												   const Worker& worker) const {
+												   Worker const& worker) const {
 	auto& sample = worker.sample<material::light::Sample>();
 
 	auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -90,7 +90,7 @@ const material::Sample& Sky_baked_material::sample(f_float3 wo, const Renderstat
 
 float3 Sky_baked_material::sample_radiance(f_float3 /*wi*/, float2 uv, float /*area*/,
 										   float /*time*/, Sampler_filter filter,
-										   const Worker& worker) const {
+										   Worker const& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 	return emission_map_.sample_3(sampler, uv);
 }
@@ -110,7 +110,7 @@ Material::Sample_2D Sky_baked_material::radiance_sample(float2 r2) const {
 }
 
 float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter,
-									   const Worker& worker) const {
+									   Worker const& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;

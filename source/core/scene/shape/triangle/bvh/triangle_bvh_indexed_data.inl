@@ -43,7 +43,7 @@ bool Indexed_data<SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) con
 }
 
 template<typename SV>
-bool Indexed_data<SV>::intersect_p(uint32_t index, const math::Ray& ray) const {
+bool Indexed_data<SV>::intersect_p(uint32_t index, math::Ray const& ray) const {
 	auto const tri = triangles_[index];
 	float3 const a = intersection_vertices_[tri.a];
 	float3 const b = intersection_vertices_[tri.b];
@@ -303,7 +303,7 @@ bool Indexed_data_interleaved<V>::intersect(uint32_t index, math::Ray& ray, floa
 }
 
 template<typename V>
-bool Indexed_data_interleaved<V>::intersect_p(uint32_t index, const math::Ray& ray) const {
+bool Indexed_data_interleaved<V>::intersect_p(uint32_t index, math::Ray const& ray) const {
 	auto const& tri = triangles_[index];
 	const V& a = vertices_[tri.a];
 	const V& b = vertices_[tri.b];
@@ -472,7 +472,7 @@ bool Hybrid_data<IV, SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) 
 }
 
 template<typename IV, typename SV>
-bool Hybrid_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) const {
+bool Hybrid_data<IV, SV>::intersect_p(uint32_t index, math::Ray const& ray) const {
 	uint32_t const vi = index * 3;
 	const IV& a = intersection_vertices_[vi + 0];
 	const IV& b = intersection_vertices_[vi + 1];

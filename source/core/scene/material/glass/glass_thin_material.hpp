@@ -8,15 +8,15 @@ class Glass_thin : public Material {
 
 public:
 
-	Glass_thin(const Sampler_settings& sampler_settings);
+	Glass_thin(Sampler_settings const& sampler_settings);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
 								   Sampler_filter filter,
-								   const Worker& worker) const override final;
+								   Worker const& worker) const override final;
 
 	virtual float ior() const override final;
 
@@ -26,7 +26,7 @@ public:
 
 	virtual size_t num_bytes() const override final;
 
-	void set_normal_map(const Texture_adapter& normal_map);
+	void set_normal_map(Texture_adapter const& normal_map);
 
 	void set_refraction_color(float3 const& color);
 	void set_attenuation(float3 const& absorption_color, float distance);

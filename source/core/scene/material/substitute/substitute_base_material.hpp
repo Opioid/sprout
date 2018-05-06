@@ -9,11 +9,11 @@ class Material_base : public material::Material {
 
 public:
 
-	Material_base(const Sampler_settings& sampler_settings, bool two_sided);
+	Material_base(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
 								   Sampler_filter filter,
-								   const Worker& worker) const override final;
+								   Worker const& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -21,10 +21,10 @@ public:
 
 	virtual float ior() const override final;
 
-	void set_color_map(const Texture_adapter& color_map);
-	void set_normal_map(const Texture_adapter& normal_map);
-	void set_surface_map(const Texture_adapter& surface_map);
-	void set_emission_map(const Texture_adapter& emission_map);
+	void set_color_map(Texture_adapter const& color_map);
+	void set_normal_map(Texture_adapter const& normal_map);
+	void set_surface_map(Texture_adapter const& surface_map);
+	void set_emission_map(Texture_adapter const& emission_map);
 
 	void set_color(float3 const& color);
 	virtual void set_ior(float ior, float external_ior = 1.f);

@@ -8,18 +8,18 @@ class Material : public material::Material {
 
 public:
 
-	Material(const Sampler_settings& sampler_settings, bool two_sided);
+	Material(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	virtual float ior() const override final;
 
 	virtual size_t num_bytes() const override final;
 
-	void set_color_map(const Texture_adapter& color_map);
-	void set_normal_map(const Texture_adapter& normal_map);
+	void set_color_map(Texture_adapter const& color_map);
+	void set_normal_map(Texture_adapter const& normal_map);
 
 	void set_color(float3 const& color);
 

@@ -13,12 +13,12 @@
 
 namespace scene::material::display {
 
-Emissionmap::Emissionmap(const Sampler_settings& sampler_settings, bool two_sided) :
+Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_sided) :
 	light::Emissionmap(sampler_settings, two_sided) {}
 
 const material::Sample& Emissionmap::sample(f_float3 wo, const Renderstate& rs,
 											Sampler_filter filter, sampler::Sampler& /*sampler*/,
-											const Worker& worker) const {
+											Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);

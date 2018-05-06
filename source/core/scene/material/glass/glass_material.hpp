@@ -9,14 +9,14 @@ class Glass : public Material {
 
 public:
 
-	Glass(const Sampler_settings& sampler_settings);
+	Glass(Sampler_settings const& sampler_settings);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override;
+										   Worker const& worker) const override;
 
 	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-							  const Worker& worker) const override final;
+							  Worker const& worker) const override final;
 
 	virtual float ior() const override final;
 
@@ -24,7 +24,7 @@ public:
 
 	virtual size_t num_bytes() const override;
 
-	void set_normal_map(const Texture_adapter& normal_map);
+	void set_normal_map(Texture_adapter const& normal_map);
 
 	void set_refraction_color(float3 const& color);
 	void set_attenuation(float3 const& absorption_color, float distance);

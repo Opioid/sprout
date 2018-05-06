@@ -60,9 +60,9 @@ public:
 	void prepare_sampling(uint32_t part, uint32_t light_id,
 						  bool material_importance_sampling, thread::Pool& pool);
 
-	float opacity(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
+	float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
-	float3 thin_absorption(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
+	float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
 	float area(uint32_t part) const;
 	uint32_t light_id(uint32_t part) const;

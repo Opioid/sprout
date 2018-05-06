@@ -8,14 +8,14 @@
 
 namespace scene::material::volumetric {
 
-Material::Material(const Sampler_settings& sampler_settings) :
+Material::Material(Sampler_settings const& sampler_settings) :
 	material::Material(sampler_settings, true) {}
 
 Material::~Material() {}
 
 const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
 										 Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-										 const Worker& worker) const {
+										 Worker const& worker) const {
 	if (rs.subsurface) {
 		auto& sample = worker.sample<Sample>();
 

@@ -7,13 +7,13 @@
 
 namespace scene::material::substitute {
 
-Material_clearcoat::Material_clearcoat(const Sampler_settings& sampler_settings, bool two_sided) :
+Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided) :
 	Material_coating<coating::Clearcoat>(sampler_settings, two_sided) {}
 
 const material::Sample& Material_clearcoat::sample(f_float3 wo, const Renderstate& rs,
 												   Sampler_filter filter,
 												   sampler::Sampler& /*sampler*/,
-												   const Worker& worker) const{
+												   Worker const& worker) const{
 	auto& sample = worker.sample<Sample_clearcoat>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -40,13 +40,13 @@ size_t Material_clearcoat::sample_size() {
 }
 
 
-Material_thinfilm::Material_thinfilm(const Sampler_settings& sampler_settings, bool two_sided) :
+Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided) :
 	Material_coating<coating::Thinfilm>(sampler_settings, two_sided) {}
 
 const material::Sample& Material_thinfilm::sample(f_float3 wo, const Renderstate& rs,
 												  Sampler_filter filter,
 												  sampler::Sampler& /*sampler*/,
-												  const Worker& worker) const {
+												  Worker const& worker) const {
 	auto& sample = worker.sample<Sample_thinfilm>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);

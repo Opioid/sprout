@@ -75,9 +75,9 @@ public:
 
 	bool intersect_p(Ray const& ray, Node_stack& node_stack) const;
 
-	float opacity(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
+	float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
-	float3 thin_absorption(Ray const& ray, Sampler_filter filter, const Worker& worker) const;
+	float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
 	float tick_duration() const;
 	float simulation_time() const;

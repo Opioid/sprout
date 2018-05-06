@@ -7,22 +7,22 @@
 
 namespace scene::material::volumetric {
 
-Density::Density(const Sampler_settings& sampler_settings) : Material(sampler_settings) {}
+Density::Density(Sampler_settings const& sampler_settings) : Material(sampler_settings) {}
 
-float3 Density::emission(const math::Ray& /*ray*/, Transformation const& /*transformation*/,
+float3 Density::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
 						 float /*step_size*/, rnd::Generator& /*rng*/,
-						 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+						 Sampler_filter /*filter*/, Worker const& /*worker*/) const {
 	return float3::identity();
 }
 
 void Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
-									 const Worker& /*worker*/, float3& mu_a, float3& mu_s) const {
+									 Worker const& /*worker*/, float3& mu_a, float3& mu_s) const {
 	mu_a = absorption_coefficient_;
 	mu_s = scattering_coefficient_;
 }
 
 void Density::collision_coefficients(f_float3 p, Transformation const& transformation,
-									 Sampler_filter filter, const Worker& worker,
+									 Sampler_filter filter, Worker const& worker,
 									 float3& mu_a, float3& mu_s) const {
 	float3 const p_o = math::transform_point(p, transformation.world_to_object);
 
@@ -32,7 +32,7 @@ void Density::collision_coefficients(f_float3 p, Transformation const& transform
 	mu_s = d * scattering_coefficient_;
 }
 
-void Density::collision_coefficients(f_float3 p, Sampler_filter filter, const Worker& worker,
+void Density::collision_coefficients(f_float3 p, Sampler_filter filter, Worker const& worker,
 									 float3& mu_a, float3& mu_s) const {
 	float const d = density(p, filter, worker);
 

@@ -9,13 +9,13 @@
 
 namespace scene::material {
 
-Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided) :
 	sampler_key_(sampler_settings.key()),
 	two_sided_(two_sided) {}
 
 Material::~Material() {}
 
-void Material::set_mask(const Texture_adapter& mask) {
+void Material::set_mask(Texture_adapter const& mask) {
 	mask_ = mask;
 }
 
@@ -31,7 +31,7 @@ void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
 float3 Material::sample_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/,
 								 float /*time*/, Sampler_filter /*filter*/,
-								 const Worker& /*worker*/) const {
+								 Worker const& /*worker*/) const {
 	return float3(0.f);
 }
 
@@ -48,12 +48,12 @@ Material::Sample_2D Material::radiance_sample(float2 r2) const {
 }
 
 float Material::emission_pdf(float2 /*uv*/, Sampler_filter /*filter*/,
-							 const Worker& /*worker*/) const {
+							 Worker const& /*worker*/) const {
 	return 1.f;
 }
 
 float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter,
-						const Worker& worker) const {
+						Worker const& worker) const {
 	if (mask_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key_, filter);
 		return mask_.sample_1(sampler, uv);
@@ -63,37 +63,37 @@ float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter,
 }
 
 float3 Material::thin_absorption(f_float3 /*wo*/, f_float3 /*n*/, float2 uv, float time,
-								 Sampler_filter filter, const Worker& worker) const {
+								 Sampler_filter filter, Worker const& worker) const {
 	return float3(opacity(uv, time, filter, worker));
 }
 
-float3 Material::emission(const math::Ray& /*ray*/, Transformation const& /*transformation*/,
+float3 Material::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
 						  float /*step_size*/, rnd::Generator& /*rng*/,
-						  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+						  Sampler_filter /*filter*/, Worker const& /*worker*/) const {
 	return float3::identity();
 }
 
 float3 Material::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
-							const Worker& /*worker*/) const {
+							Worker const& /*worker*/) const {
 	return float3::identity();
 }
 
 void Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
-									  const Worker& /*worker*/,
+									  Worker const& /*worker*/,
 									  float3& mu_a, float3& mu_s) const {
 	mu_a = float3::identity();
 	mu_s = float3::identity();
 }
 
 void Material::collision_coefficients(f_float3 /*p*/, Transformation const& /*transformation*/,
-									  Sampler_filter /*filter*/, const Worker& /*worker*/,
+									  Sampler_filter /*filter*/, Worker const& /*worker*/,
 									  float3& mu_a, float3& mu_s) const {
 	mu_a = float3::identity();
 	mu_s = float3::identity();
 }
 
 void Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
-									  const Worker& /*worker*/, float3& mu_a, float3& mu_s) const {
+									  Worker const& /*worker*/, float3& mu_a, float3& mu_s) const {
 	mu_a = float3::identity();
 	mu_s = float3::identity();
 }

@@ -10,11 +10,11 @@
 namespace scene::material::volumetric {
 
 /*
-Height::Height(const Sampler_settings& sampler_settings) : Density(sampler_settings) {}
+Height::Height(Sampler_settings const& sampler_settings) : Density(sampler_settings) {}
 
 float3 Height::optical_depth(Transformation const& transformation, const math::AABB& aabb,
-							 const math::Ray& ray, float step_size, rnd::Generator& rng,
-							 Sampler_filter filter, const Worker& worker) const {
+							 math::Ray const& ray, float step_size, rnd::Generator& rng,
+							 Sampler_filter filter, Worker const& worker) const {
 	const math::Ray rn = ray.normalized();
 
 	// This is an optimization of the generic stochastic method
@@ -74,7 +74,7 @@ size_t Height::num_bytes() const {
 }
 
 float Height::density(f_float3 p, Transformation const& transformation,
-					  Sampler_filter filter, const Worker& worker) const {
+					  Sampler_filter filter, Worker const& worker) const {
 	// p is in object space already
 
 	// calculate scaled height

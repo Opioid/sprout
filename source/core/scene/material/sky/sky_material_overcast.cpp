@@ -6,14 +6,14 @@
 
 namespace scene::material::sky {
 
-Material_overcast::Material_overcast(const Sampler_settings& sampler_settings,
+Material_overcast::Material_overcast(Sampler_settings const& sampler_settings,
 									 bool two_sided) :
 	Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material_overcast::sample(f_float3 wo, const Renderstate& rs,
 												  Sampler_filter /*filter*/,
 												  sampler::Sampler& /*sampler*/,
-												  const Worker& worker) const {
+												  Worker const& worker) const {
 	auto& sample = worker.sample<light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -26,7 +26,7 @@ const material::Sample& Material_overcast::sample(f_float3 wo, const Renderstate
 
 float3 Material_overcast::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
 										  float /*time*/, Sampler_filter /*filter*/,
-										  const Worker& /*worker*/) const {
+										  Worker const& /*worker*/) const {
 	return overcast(wi);
 }
 

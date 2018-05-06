@@ -25,7 +25,7 @@ bool Data_interleaved<Triangle>::intersect(uint32_t index, math::Ray& ray, float
 }
 
 template<typename Triangle>
-bool Data_interleaved<Triangle>::intersect_p(uint32_t index, const math::Ray& ray) const {
+bool Data_interleaved<Triangle>::intersect_p(uint32_t index, math::Ray const& ray) const {
     return triangles_[index].intersect_p(ray);
 }
 

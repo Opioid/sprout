@@ -8,12 +8,12 @@
 
 namespace scene::material::debug {
 
-Material::Material(const Sampler_settings& sampler_settings) :
+Material::Material(Sampler_settings const& sampler_settings) :
 	material::Material(sampler_settings, true) {}
 
 const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
 										 Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-										 const Worker& worker) const {
+										 Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);

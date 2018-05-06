@@ -9,11 +9,11 @@ class Material : public material::Material {
 
 public:
 
-	Material(const Sampler_settings& sampler_settings, bool two_sided);
+	Material(Sampler_settings const& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
-										   const Worker& worker) const override final;
+										   Worker const& worker) const override final;
 
 	virtual float ior() const override final;
 
@@ -22,8 +22,8 @@ public:
 	void set_color(float3 const& a, float3 const& b);
 	void set_roughness(float roughness);
 
-	void set_flakes_mask(const Texture_adapter& mask);
-	void set_flakes_normal_map(const Texture_adapter& normal_map);
+	void set_flakes_mask(Texture_adapter const& mask);
+	void set_flakes_normal_map(Texture_adapter const& normal_map);
 	void set_flakes_ior(float3 const& ior);
 	void set_flakes_absorption(float3 const& absorption);
 	void set_flakes_roughness(float roughness);

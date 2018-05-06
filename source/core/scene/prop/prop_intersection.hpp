@@ -35,7 +35,7 @@ struct Intersection {
 
 	float area() const;
 
-	float opacity(float time, Sampler_filter filter, const Worker& worker) const;
+	float opacity(float time, Sampler_filter filter, Worker const& worker) const;
 
 	float3 thin_absorption(f_float3 wo, float const time,
 						   Sampler_filter filter, Worker& worker) const;

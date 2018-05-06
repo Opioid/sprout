@@ -41,22 +41,22 @@ public:
 
 	virtual bool sample(f_float3 p, float time, Transformation const& transformation,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
-						Sampler_filter filter, const Worker& worker, Sample& result) const = 0;
+						Sampler_filter filter, Worker const& worker, Sample& result) const = 0;
 
 	virtual bool sample(f_float3 p, f_float3 n,
 						float time, Transformation const& transformation, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
-						Sampler_filter filter, const Worker& worker, Sample& result) const = 0;
+						Sampler_filter filter, Worker const& worker, Sample& result) const = 0;
 
 	bool sample(f_float3 p, f_float3 n, float time, bool total_sphere,
 				sampler::Sampler& sampler, uint32_t sampler_dimension,
-				Sampler_filter filter, const Worker& worker, Sample& result) const;
+				Sampler_filter filter, Worker const& worker, Sample& result) const;
 
 	bool sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-				Sampler_filter filter, const Worker& worker, Sample& result) const;
+				Sampler_filter filter, Worker const& worker, Sample& result) const;
 
 	virtual float pdf(Ray const& ray, const Intersection& intersection, bool total_sphere,
-					  Sampler_filter filter, const Worker& worker) const = 0;
+					  Sampler_filter filter, Worker const& worker) const = 0;
 
 	virtual float3 power(const math::AABB& scene_bb) const = 0;
 
