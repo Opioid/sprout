@@ -37,7 +37,7 @@ int2 Texture::back_2() const {
 	return back_.xy();
 }
 
-const int3& Texture::back_3() const {
+int3 const& Texture::back_3() const {
 	return back_;
 }
 

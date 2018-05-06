@@ -10,7 +10,7 @@ class Volume_rasterizer {
 
 public:
 
-	Volume_rasterizer(const int3& dimensions);
+	Volume_rasterizer(int3 const& dimensions);
 	~Volume_rasterizer();
 
 	void resolve(image::Byte3& target) const;

@@ -9,7 +9,7 @@
 
 namespace procedural::aurora {
 
-Volume_filter::Volume_filter(const int3& dimensions, float radius, float alpha,
+Volume_filter::Volume_filter(int3 const& dimensions, float radius, float alpha,
 							 uint32_t num_buckets) :
 	dimensions_(dimensions),
 	kernel_width_(static_cast<int32_t>(radius + 0.5f) * 2 + 1),

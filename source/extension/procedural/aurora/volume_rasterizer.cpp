@@ -7,7 +7,7 @@
 
 namespace procedural::aurora {
 
-Volume_rasterizer::Volume_rasterizer(const int3& dimensions) :
+Volume_rasterizer::Volume_rasterizer(int3 const& dimensions) :
 	dimensions_(dimensions),
 	area_(dimensions[0] * dimensions[1]),
 	samples_(memory::allocate_aligned<float3>(dimensions[0] * dimensions[1] * dimensions[2])) {}

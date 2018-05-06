@@ -8,7 +8,7 @@ Image::Description::Description(Type type, int2 dimensions, int32_t num_elements
 	dimensions(dimensions, 1),
 	num_elements(num_elements) {}
 
-Image::Description::Description(Type type, const int3& dimensions, int32_t num_elements) :
+Image::Description::Description(Type type, int3 const& dimensions, int32_t num_elements) :
 	type(type),
 	dimensions(dimensions),
 	num_elements(num_elements) {}
@@ -38,7 +38,7 @@ uint32_t Image::Description::num_channels() const {
 	}
 }
 
-Image::Image(const Description& description) :
+Image::Image(Description const& description) :
 	description_(description),
 	area_(description.dimensions[0] * description.dimensions[1]),
 	volume_(description.dimensions[0] * description.dimensions[1] * description.dimensions[2]) {}
@@ -68,7 +68,7 @@ int2 Image::coordinates_2(int32_t index) const {
 	return c;
 }
 
-void Image::resize(const Description& description) {
+void Image::resize(Description const& description) {
 	description_ = description;
 	area_ = description.dimensions[0] * description.dimensions[1];
 	volume_ = description.dimensions[0] * description.dimensions[1] * description.dimensions[2];
