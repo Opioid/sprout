@@ -71,10 +71,15 @@ Vector3<T> Vector3<T>::operator*(const Vector3& a) const {
 	return Vector3(v[0] * a[0], v[1] * a[1], v[2] * a[2]);
 }
 
+template<>
+inline Vector3<float> Vector3<float>::operator/(float s) const {
+	float const is = 1.f / s;
+	return Vector3<float>(is * v[0], is * v[1], is * v[2]);
+}
+
 template<typename T>
 Vector3<T> Vector3<T>::operator/(T s) const {
-	T is = T(1) / s;
-	return Vector3(is * v[0], is * v[1], is * v[2]);
+	return Vector3(v[0] / s, v[1] / s, v[2] / s);
 }
 
 template<typename T>

@@ -12,19 +12,18 @@
 
 namespace scene::material::volumetric {
 
-Grid::Grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid) :
+Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) :
 	Density(sampler_settings), grid_(grid) {
 }
 
 Grid::~Grid() {}
 
 void Grid::compile() {
-	float max_density = 0.f;
-
 	auto const& texture = *grid_.texture();
 
 	const int3 d = texture.dimensions_3();
 
+	float max_density = 0.f;
 	for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
 		max_density = std::max(texture.at_1(i), max_density);
 	}
@@ -49,7 +48,7 @@ size_t Grid::num_bytes() const {
 	return sizeof(*this);
 }
 
-float Grid::density(f_float3 p, Sampler_filter filter, const Worker& worker) const {
+float Grid::density(f_float3 p, Sampler_filter filter, Worker const& worker) const {
 	// p is in object space already
 
 	float3 p_g = 0.5f * (float3(1.f) + p);
@@ -60,15 +59,15 @@ float Grid::density(f_float3 p, Sampler_filter filter, const Worker& worker) con
 	return grid_.sample_1(sampler, p_g);
 }
 
-Emission_grid::Emission_grid(const Sampler_settings& sampler_settings,
-							 const Texture_adapter& grid) :
+Emission_grid::Emission_grid(Sampler_settings const& sampler_settings,
+							 Texture_adapter const& grid) :
 	Material(sampler_settings), grid_(grid) {}
 
 Emission_grid::~Emission_grid() {}
 
-float3 Emission_grid::emission(const math::Ray& ray,Transformation const& transformation,
+float3 Emission_grid::emission(math::Ray const& ray,Transformation const& transformation,
 							   float step_size, rnd::Generator& rng,
-							   Sampler_filter filter, const Worker& worker) const {
+							   Sampler_filter filter, Worker const& worker) const {
 	const math::Ray rn = ray.normalized();
 
 	float min_t = rn.min_t + rng.random_float() * step_size;
@@ -90,7 +89,7 @@ size_t Emission_grid::num_bytes() const {
 	return sizeof(*this);
 }
 
-float3 Emission_grid::emission(f_float3 p, Sampler_filter filter, const Worker& worker) const {
+float3 Emission_grid::emission(f_float3 p, Sampler_filter filter, Worker const& worker) const {
 	// p is in object space already
 
 	float3 p_g = 0.5f * (float3(1.f) + p);
@@ -101,15 +100,15 @@ float3 Emission_grid::emission(f_float3 p, Sampler_filter filter, const Worker& 
 	return 0.00001f * grid_.sample_3(sampler, p_g);
 }
 
-Flow_vis_grid::Flow_vis_grid(const Sampler_settings& sampler_settings,
-							 const Texture_adapter& grid) :
+Flow_vis_grid::Flow_vis_grid(Sampler_settings const& sampler_settings,
+							 Texture_adapter const& grid) :
 	Material(sampler_settings), grid_(grid) {}
 
 Flow_vis_grid::~Flow_vis_grid() {}
 
-float3 Flow_vis_grid::emission(const math::Ray& ray,Transformation const& transformation,
+float3 Flow_vis_grid::emission(math::Ray const& ray,Transformation const& transformation,
 							   float step_size, rnd::Generator& rng,
-							   Sampler_filter filter, const Worker& worker) const {
+							   Sampler_filter filter, Worker const& worker) const {
 	const math::Ray rn = ray.normalized();
 
 	float min_t = rn.min_t + rng.random_float() * step_size;
@@ -147,7 +146,7 @@ size_t Flow_vis_grid::num_bytes() const {
 	return sizeof(*this);
 }
 
-float Flow_vis_grid::density(f_float3 p, Sampler_filter filter, const Worker& worker) const {
+float Flow_vis_grid::density(f_float3 p, Sampler_filter filter, Worker const& worker) const {
 	// p is in object space already
 
 	float3 p_g = 0.5f * (float3(1.f) + p);
@@ -158,7 +157,7 @@ float Flow_vis_grid::density(f_float3 p, Sampler_filter filter, const Worker& wo
 	return grid_.sample_1(sampler, p_g);
 }
 
-float3 Flow_vis_grid::emission(f_float3 p, Sampler_filter filter, const Worker& worker) const {
+float3 Flow_vis_grid::emission(f_float3 p, Sampler_filter filter, Worker const& worker) const {
 	// p is in object space already
 
 	float3 p_g = 0.5f * (float3(1.f) + p);

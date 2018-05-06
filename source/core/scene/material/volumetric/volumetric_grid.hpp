@@ -10,7 +10,7 @@ class Grid final : public Density {
 
 public:
 
-	Grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid);
+	Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
 
 	virtual ~Grid() override final;
 
@@ -25,7 +25,7 @@ public:
 private:
 
 	virtual float density(f_float3 p, Sampler_filter filter,
-						  const Worker& worker) const override final;
+						  Worker const& worker) const override final;
 
 	Texture_adapter grid_;
 
@@ -36,19 +36,19 @@ class Emission_grid final : public Material {
 
 public:
 
-	Emission_grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid);
+	Emission_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
 
 	virtual ~Emission_grid() override final;
 
-	virtual float3 emission(const math::Ray& ray, Transformation const& transformation,
+	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, const Worker& worker) const override final;
+							Sampler_filter filter, Worker const& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float3 emission(f_float3 p, Sampler_filter filter, const Worker& worker) const;
+	float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
 
 	Texture_adapter grid_;
 };
@@ -57,21 +57,21 @@ class Flow_vis_grid final : public Material {
 
 public:
 
-	Flow_vis_grid(const Sampler_settings& sampler_settings, const Texture_adapter& grid);
+	Flow_vis_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
 
 	virtual ~Flow_vis_grid() override final;
 
-	virtual float3 emission(const math::Ray& ray, Transformation const& transformation,
+	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, const Worker& worker) const override final;
+							Sampler_filter filter, Worker const& worker) const override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float density(f_float3 p, Sampler_filter filter, const Worker& worker) const;
+	float density(f_float3 p, Sampler_filter filter, Worker const& worker) const;
 
-	float3 emission(f_float3 p, Sampler_filter filter, const Worker& worker) const;
+	float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
 
 	Texture_adapter grid_;
 };
