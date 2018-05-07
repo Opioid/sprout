@@ -86,7 +86,7 @@ float Prop_light::pdf(Ray const& ray, const Intersection& intersection, bool tot
 	return prop_->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
 }
 
-float3 Prop_light::power(const math::AABB& scene_bb) const {
+float3 Prop_light::power(math::AABB const& scene_bb) const {
 	float const area = prop_->area(part_);
 
 	float3 const radiance = prop_->material(part_)->average_radiance(area);

@@ -14,7 +14,7 @@ class AABB {
 public:
 
 	AABB() = default;
-	constexpr AABB(float3 const& min, float3 const& max);
+	constexpr AABB(f_float3 min, f_float3 max);
 	AABB(FVector min, FVector max);
 
 	float3 const& min() const;
@@ -33,8 +33,8 @@ public:
 	bool intersect_p(FVector ray_origin, FVector ray_inv_direction,
 					 FVector ray_min_t, FVector ray_max_t) const;
 
-	bool intersect_p(Ray const& ray, float& min_t, float& max_t) const;
-	bool intersect_p(Ray const& ray, float& hit_t, bool& inside) const;
+	bool intersect_p(Ray const& ray, float& hit_t) const;
+	bool intersect_inside(Ray const& ray, float& hit_t) const;
 
 	void set_min_max(float3 const& min, float3 const& max);
 	void set_min_max(FVector min, FVector max);
@@ -43,13 +43,13 @@ public:
 
 	AABB transform(const Matrix4x4f_a& m) const;
 
-	AABB merge(const AABB& other) const;
-	void merge_assign(const AABB& other);
+	AABB merge(AABB const& other) const;
+	void merge_assign(AABB const& other);
 
 	void clip_min(float d, uint8_t axis);
 	void clip_max(float d, uint8_t axis);
 
-	bool operator==(const AABB& other) const;
+	bool operator==(AABB const& other) const;
 
 	static constexpr AABB empty();
 	static constexpr AABB infinite();

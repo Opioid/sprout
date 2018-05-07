@@ -13,6 +13,8 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_homogeneous.hpp"	
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_material.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_material.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/volumetric_octree.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/volumetric_octree.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_octree_builder.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_octree_builder.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/volumetric_sample.cpp"

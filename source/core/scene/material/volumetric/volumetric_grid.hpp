@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 
 #include "volumetric_density.hpp"
+#include "volumetric_octree.hpp"
 #include "image/texture/texture_adapter.hpp"
 
 namespace scene::material::volumetric {
@@ -18,6 +19,8 @@ public:
 
 	virtual float majorant_mu_t() const override final;
 
+	virtual Octree const* octree() const override final;
+
 	virtual bool  is_heterogeneous_volume() const override final;
 
 	virtual size_t num_bytes() const override final;
@@ -30,6 +33,8 @@ private:
 	Texture_adapter grid_;
 
 	float majorant_mu_t_;
+
+	Octree tree_;
 };
 
 class Emission_grid final : public Material {

@@ -9,7 +9,7 @@ class AABB;
 
 struct Simd_AABB {
 	Simd_AABB() = default;
-	Simd_AABB(const AABB& box);
+	Simd_AABB(AABB const& box);
 	Simd_AABB(float const* min, float const* max);
 	Simd_AABB(FVector min, FVector max);
 

@@ -24,24 +24,21 @@ public:
 
 	bvh::Tree<Prop>& tree();
 
-	void set_infinite_props(const std::vector<Prop*>& infite_props);
+	void set_infinite_props(std::vector<Prop*> const& infite_props);
 
-	const math::AABB& aabb() const;
+	math::AABB const& aabb() const;
 
-	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-				   Intersection& intersection) const;
+	bool intersect(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect_fast(scene::Ray& ray, shape::Node_stack& node_stack,
-						Intersection& intersection) const;
+	bool intersect_fast(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, float& epsilon) const;
+	bool intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const;
 
-	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
+	bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, Sampler_filter filter, Worker const& worker) const;
+	float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
-	float3 thin_absorption(const scene::Ray& ray, Sampler_filter filter,
-						   Worker const& worker) const;
+	float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
 private:
 

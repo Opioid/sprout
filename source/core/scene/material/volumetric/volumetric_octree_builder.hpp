@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_MATERIAL_VOLUMETRIC_OCTREE_BUILDER_HPP
 #define SU_CORE_SCENE_MATERIAL_VOLUMETRIC_OCTREE_BUILDER_HPP
 
+#include "volumetric_octree.hpp"
 #include "base/math/vector3.hpp"
 
 namespace image::texture { class Texture; }
@@ -11,18 +12,12 @@ class Octree_builder {
 
 public:
 
-	void build(image::texture::Texture const& texture);
+	void build(Octree& tree, image::texture::Texture const& texture, float max_extinction);
 
 private:
 
-	struct Box {
-		Box() = default;
-		Box(int3 const& min, int3 const& max);
-
-		int3 bounds[2];
-	};
-
-	void split(image::texture::Texture const& texture, Box const& box, uint32_t depth);
+	void split(Build_node* node, Box const& box, image::texture::Texture const& texture,
+			   float max_extinction, uint32_t depth);
 };
 
 }

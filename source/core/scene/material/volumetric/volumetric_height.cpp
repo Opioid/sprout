@@ -12,7 +12,7 @@ namespace scene::material::volumetric {
 /*
 Height::Height(Sampler_settings const& sampler_settings) : Density(sampler_settings) {}
 
-float3 Height::optical_depth(Transformation const& transformation, const math::AABB& aabb,
+float3 Height::optical_depth(Transformation const& transformation, math::AABB const& aabb,
 							 math::Ray const& ray, float step_size, rnd::Generator& rng,
 							 Sampler_filter filter, Worker const& worker) const {
 	const math::Ray rn = ray.normalized();

@@ -30,7 +30,7 @@ float Null_light::pdf(Ray const& /*ray*/, const Intersection& /*intersection*/,
 	return 0.f;
 }
 
-float3 Null_light::power(const math::AABB& /*scene_bb*/) const {
+float3 Null_light::power(math::AABB const& /*scene_bb*/) const {
 	return float3::identity();
 }
 

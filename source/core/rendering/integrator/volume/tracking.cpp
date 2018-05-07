@@ -2,6 +2,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
@@ -30,6 +31,34 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 	}
 
 	if (material.is_heterogeneous_volume()) {
+		auto const tree = material.octree();
+
+		if (tree && tree->root_.children[0]) {
+			Transformation temp;
+			auto const& transformation = interface->prop->transformation_at(ray.time, temp);
+
+			float3 const local_origin = math::transform_point(ray.origin,
+															  transformation.world_to_object);
+
+			float3 const local_dir = math::transform_vector(ray.direction,
+															transformation.world_to_object);
+
+			Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+
+			float3 w(1.f);
+			for (;;) {
+				float mt;
+				if (!tree->intersect(local_ray, mt)) {
+					return w;
+				}
+
+				w *= track(local_ray, mt, material, Sampler_filter::Nearest, rng, worker);
+
+				local_ray.min_t = local_ray.max_t + 0.00001f;
+				local_ray.max_t = d;
+			}
+		}
+
 		Transformation temp;
 		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 
@@ -75,6 +104,42 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 	float3 const mu_t = mu_a + mu_s;
 
 	return attenuation(d, mu_t);
+}
+
+float3 Tracking::track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
+					   rnd::Generator& rng, Worker& worker) {
+	float3 w(1.f);
+
+	if (0.f == mt) {
+		return w;
+	}
+
+	float const imt = 1.f / mt;
+
+	float const d = ray.max_t;
+
+	// Completely arbitray limit
+	uint32_t i = max_iterations_;
+	for (float t = ray.min_t; /*i > 0*/; --i) {
+		float const r0 = rng.random_float();
+		t = t -std::log(1.f - r0) * imt;
+		if (t > d) {
+			return w;
+		}
+
+		float3 const local_p = ray.point(t);
+
+		float3 mu_a, mu_s;
+		material.collision_coefficients(local_p, filter, worker, mu_a, mu_s);
+
+		float3 const mu_t = mu_a + mu_s;
+
+		float3 const mu_n = float3(mt) - mu_t;
+
+		w *= imt * mu_n;
+	}
+
+	return w;
 }
 
 }

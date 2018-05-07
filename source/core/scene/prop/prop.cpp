@@ -140,7 +140,7 @@ shape::Shape* Prop::shape() {
 	return shape_.get();
 }
 
-const math::AABB& Prop::aabb() const {
+math::AABB const& Prop::aabb() const {
 	return aabb_;
 }
 

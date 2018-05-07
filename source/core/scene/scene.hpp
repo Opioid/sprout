@@ -65,7 +65,7 @@ public:
 
 	void finish();
 
-	const math::AABB& aabb() const;
+	math::AABB const& aabb() const;
 
 	bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
 

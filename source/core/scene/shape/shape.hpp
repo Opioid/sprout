@@ -32,7 +32,7 @@ public:
 
 	virtual ~Shape();
 
-	const math::AABB& aabb() const;
+	math::AABB const& aabb() const;
 
 	virtual math::AABB transformed_aabb(const float4x4& m, math::Transformation const& t) const;
 	virtual math::AABB transformed_aabb(math::Transformation const& t) const;

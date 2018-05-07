@@ -78,8 +78,8 @@ private:
 		uint8_t axis() const;
 		bool spatial() const;
 
-		const math::AABB& aabb_0() const;
-		const math::AABB& aabb_1() const;
+		math::AABB const& aabb_0() const;
+		math::AABB const& aabb_1() const;
 
 		uint32_t num_side_0() const;
 		uint32_t num_side_1() const;
@@ -117,10 +117,10 @@ private:
 		Build_node* children[2];
 	};
 
-	void split(Build_node* node, References& references, const math::AABB& aabb,
+	void split(Build_node* node, References& references, math::AABB const& aabb,
 			   uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool);
 
-	Split_candidate splitting_plane(const References& references, const math::AABB& aabb,
+	Split_candidate splitting_plane(const References& references, math::AABB const& aabb,
 									uint32_t depth, bool& exhausted, thread::Pool& thread_pool);
 
 	template<typename Data>

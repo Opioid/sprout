@@ -97,7 +97,7 @@ void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_sh
 }
 
 template<typename T>
-Split_candidate<T> Builder<T>::splitting_plane(const math::AABB& /*aabb*/, index begin, index end) {
+Split_candidate<T> Builder<T>::splitting_plane(math::AABB const& /*aabb*/, index begin, index end) {
 	split_candidates_.clear();
 
 	float3 average = float3::identity();

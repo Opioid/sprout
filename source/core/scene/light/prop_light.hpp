@@ -32,7 +32,7 @@ public:
 	virtual float pdf(Ray const& ray, const Intersection& intersection, bool total_sphere,
 					  Sampler_filter filter, Worker const& worker) const override;
 
-	virtual float3 power(const math::AABB& scene_bb) const override final;
+	virtual float3 power(math::AABB const& scene_bb) const override final;
 
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override;
 

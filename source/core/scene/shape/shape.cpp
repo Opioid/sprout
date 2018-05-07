@@ -7,7 +7,7 @@ namespace scene::shape {
 
 Shape::~Shape() {}
 
-const math::AABB& Shape::aabb() const {
+math::AABB const& Shape::aabb() const {
 	return aabb_;
 }
 

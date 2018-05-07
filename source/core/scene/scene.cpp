@@ -71,7 +71,7 @@ void Scene::finish() {
 	}
 }
 
-const math::AABB& Scene::aabb() const {
+math::AABB const& Scene::aabb() const {
 	return prop_bvh_.aabb();
 }
 

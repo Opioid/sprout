@@ -15,7 +15,7 @@ public:
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, Worker const& worker) const override final;
 
-	virtual float3 optical_depth(Transformation const& transformation, const math::AABB& aabb,
+	virtual float3 optical_depth(Transformation const& transformation, math::AABB const& aabb,
 								 math::Ray const& ray, float step_size, rnd::Generator& rng,
 								 Sampler_filter filter, Worker const& worker) const override final;
 

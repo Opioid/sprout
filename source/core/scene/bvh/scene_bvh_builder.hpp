@@ -45,7 +45,7 @@ private:
 	void split(Build_node* node, index begin, index end, uint32_t max_shapes,
 			   std::vector<T*>& out_props);
 
-	Split_candidate<T> splitting_plane(const math::AABB& aabb, index begin, index end);
+	Split_candidate<T> splitting_plane(math::AABB const& aabb, index begin, index end);
 
 	void serialize(Build_node* node);
 

@@ -30,14 +30,20 @@ void Grid::compile() {
 
 	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-	majorant_mu_t_ = max_density * math::max_component(extinction_coefficient);
+	float const max_extinction = math::max_component(extinction_coefficient);
+
+	majorant_mu_t_ = max_density * max_extinction;
 
 	Octree_builder builder;
-	builder.build(texture);
+	builder.build(tree_, texture, max_extinction);
 }
 
 float Grid::majorant_mu_t() const {
 	return majorant_mu_t_;
+}
+
+Octree const* Grid::octree() const {
+	return &tree_;
 }
 
 bool Grid::is_heterogeneous_volume() const {
@@ -52,7 +58,6 @@ float Grid::density(f_float3 p, Sampler_filter filter, Worker const& worker) con
 	// p is in object space already
 
 	float3 p_g = 0.5f * (float3(1.f) + p);
-	p_g[1] = 1.f - p_g[1];
 
 	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 

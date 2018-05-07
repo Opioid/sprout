@@ -51,7 +51,7 @@ public:
 	const shape::Shape* shape() const;
 	shape::Shape* shape();
 
-	const math::AABB& aabb() const;
+	math::AABB const& aabb() const;
 
 	void set_shape_and_materials(const Shape_ptr& shape, const Materials& materials);
 

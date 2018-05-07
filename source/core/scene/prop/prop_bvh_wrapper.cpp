@@ -13,16 +13,16 @@ bvh::Tree<Prop>& BVH_wrapper::tree() {
 	return tree_;
 }
 
-void BVH_wrapper::set_infinite_props(const std::vector<Prop*>& infite_props) {
+void BVH_wrapper::set_infinite_props(std::vector<Prop*> const& infite_props) {
 	num_infinite_props_ = static_cast<uint32_t>(infite_props.size());
 	infinite_props_	 = infite_props.data();
 }
 
-const math::AABB& BVH_wrapper::aabb() const {
+math::AABB const& BVH_wrapper::aabb() const {
 	return tree_.aabb_;
 }
 
-bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
+bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
 							Intersection& intersection) const {
 	bool hit = false;
 	const Prop* prop = nullptr;
@@ -85,7 +85,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	return hit;
 }
 
-bool BVH_wrapper::intersect_fast(scene::Ray& ray, shape::Node_stack& node_stack,
+bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
 								 Intersection& intersection) const {
 	bool hit = false;
 	const Prop* prop = nullptr;
@@ -148,7 +148,7 @@ bool BVH_wrapper::intersect_fast(scene::Ray& ray, shape::Node_stack& node_stack,
 	return hit;
 }
 
-bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack, float& epsilon) const {
+bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const {
 	bool hit = false;
 
 	node_stack.clear();
@@ -205,7 +205,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack, floa
 	return hit;
 }
 
-bool BVH_wrapper::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
+bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) const {
 	node_stack.clear();
 	if (0 != tree_.num_nodes_) {
 		node_stack.push(0);
@@ -259,8 +259,7 @@ bool BVH_wrapper::intersect_p(const scene::Ray& ray, shape::Node_stack& node_sta
 	return false;
 }
 
-float BVH_wrapper::opacity(const scene::Ray& ray, Sampler_filter filter,
-						   Worker const& worker) const {
+float BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const {
 	auto& node_stack = worker.node_stack();
 
 	node_stack.clear();
@@ -321,7 +320,7 @@ float BVH_wrapper::opacity(const scene::Ray& ray, Sampler_filter filter,
 	return opacity;
 }
 
-float3 BVH_wrapper::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
+float3 BVH_wrapper::thin_absorption(Ray const& ray, Sampler_filter filter,
 									Worker const& worker) const {
 	auto& node_stack = worker.node_stack();
 

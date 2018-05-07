@@ -102,6 +102,10 @@ float Material::majorant_mu_t() const {
 	return 0.f;
 }
 
+volumetric::Octree const* Material::octree() const {
+	return nullptr;
+}
+
 bool Material::is_heterogeneous_volume() const {
 	return false;
 }
