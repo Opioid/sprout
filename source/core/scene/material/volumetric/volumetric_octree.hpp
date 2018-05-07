@@ -31,11 +31,15 @@ public:
 
 	Octree();
 
+	void set_dimensions(int3 const& dimensions);
+
 	bool intersect(Ray& ray, float& majorant_mu_t) const;
 
 	Build_node root_;
 
 	int3 dimensions_;
+
+	float3 inv_2_dimensions_;
 
 private:
 

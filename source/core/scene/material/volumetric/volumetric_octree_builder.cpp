@@ -15,6 +15,7 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 
 	split(&tree.root_, box, texture, max_extinction, 0);
 
+	tree.set_dimensions(d);
 	tree.dimensions_ = d;
 }
 

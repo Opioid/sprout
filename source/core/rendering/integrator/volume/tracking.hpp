@@ -39,13 +39,15 @@ public:
 	// Completely arbitrary and biased cutoff limit in order to prevent some worst case things
 	static uint32_t constexpr max_iterations_ = 1024 * 64;
 
+	static bool track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
+					  rnd::Generator& rng, Worker& worker, float& t, float3& w);
+
 private:
 
 	static float3 track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
-						rnd::Generator& rng,  Worker& worker);
+						rnd::Generator& rng, Worker& worker);
 };
 
 }}
 
 #endif
-

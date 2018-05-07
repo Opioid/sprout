@@ -42,7 +42,7 @@ float Grid::majorant_mu_t() const {
 	return majorant_mu_t_;
 }
 
-Octree const* Grid::octree() const {
+Octree const* Grid::volume_octree() const {
 	return &tree_;
 }
 

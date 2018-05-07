@@ -31,7 +31,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 	}
 
 	if (material.is_heterogeneous_volume()) {
-		auto const tree = material.octree();
+		auto const tree = material.volume_octree();
 
 		if (tree && tree->root_.children[0]) {
 			Transformation temp;
@@ -106,6 +106,57 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 	return attenuation(d, mu_t);
 }
 
+bool Tracking::track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
+					 rnd::Generator& rng, Worker& worker, float& t_out, float3& w) {
+	if (0.f == mt) {
+		return false;
+	}
+
+	float3 lw = w;
+
+	float const d = ray.max_t;
+
+	for (float t = ray.min_t;;) {
+		float const r0 = rng.random_float();
+		t = t -std::log(1.f - r0) / mt;
+		if (t > d) {
+			w = lw;
+			return false;
+		}
+
+		float3 const local_p = ray.point(t);
+
+		float3 mu_a, mu_s;
+		material.collision_coefficients(local_p, filter, worker, mu_a, mu_s);
+
+		float3 const mu_t = mu_a + mu_s;
+
+		float3 const mu_n = float3(mt) - mu_t;
+
+		float const ms = math::average(mu_s * lw);
+		float const mn = math::average(mu_n * lw);
+		float const c = 1.f / (ms + mn);
+
+		float const ps = ms * c;
+		float const pn = mn * c;
+
+		float const r1 = rng.random_float();
+		if (r1 <= 1.f - pn && ps > 0.f) {
+			float3 const ws = mu_s / (mt * ps);
+
+			t_out = t;
+			w = lw * ws;
+			return true;
+		} else {
+			float3 const wn = mu_n / (mt * pn);
+
+			SOFT_ASSERT(math::all_finite(wn));
+
+			lw *= wn;
+		}
+	}
+}
+
 float3 Tracking::track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
 					   rnd::Generator& rng, Worker& worker) {
 	float3 w(1.f);
@@ -118,9 +169,7 @@ float3 Tracking::track(Ray const& ray, float mt, Material const& material, Sampl
 
 	float const d = ray.max_t;
 
-	// Completely arbitray limit
-	uint32_t i = max_iterations_;
-	for (float t = ray.min_t; /*i > 0*/; --i) {
+	for (float t = ray.min_t;;) {
 		float const r0 = rng.random_float();
 		t = t -std::log(1.f - r0) * imt;
 		if (t > d) {

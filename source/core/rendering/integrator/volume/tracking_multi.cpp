@@ -184,7 +184,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 	}
 
 	if (material.is_heterogeneous_volume()) {
-		auto const tree = material.octree();
+		auto const tree = material.volume_octree();
 
 		if (tree && tree->root_.children[0]) {
 			Transformation temp;
@@ -208,7 +208,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				}
 
 				float t;
-				if (track(local_ray, mt, material, filter, worker, t, w)) {
+				if (Tracking::track(local_ray, mt, material, filter, rng_, worker, t, w)) {
 					intersection.prop = interface->prop;
 					intersection.geo.p = ray.point(t);
 					intersection.geo.uv = interface->uv;
@@ -216,17 +216,12 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 					intersection.geo.subsurface = true;
 
 					li = float3(0.f);
-					transmittance = /*total_w **/ w;
+					transmittance = w;
 					return true;
 				}
 
 				local_ray.min_t = local_ray.max_t + 0.00001f;
 				local_ray.max_t = d;
-
-			//	li = float3(0.f);
-			//	transmittance = w;
-
-			//	return true;
 			}
 		}
 
@@ -363,58 +358,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 size_t Tracking_multi::num_bytes() const {
 	return sizeof(*this);
-}
-
-bool Tracking_multi::track(Ray const& ray, float mt, Material const& material,
-						   Sampler_filter filter, Worker& worker,
-						   float& t_out, float3& w) const {
-	if (0.f == mt) {
-		return false;
-	}
-
-	float3 lw = w;
-
-	float const d = ray.max_t;
-
-	for (float t = ray.min_t;;) {
-		float const r0 = rng_.random_float();
-		t = t -std::log(1.f - r0) / mt;
-		if (t > d) {
-			w = lw;
-			return false;
-		}
-
-		float3 const local_p = ray.point(t);
-
-		float3 mu_a, mu_s;
-		material.collision_coefficients(local_p, filter, worker, mu_a, mu_s);
-
-		float3 const mu_t = mu_a + mu_s;
-
-		float3 const mu_n = float3(mt) - mu_t;
-
-		float const ms = math::average(mu_s * lw);
-		float const mn = math::average(mu_n * lw);
-		float const c = 1.f / (ms + mn);
-
-		float const ps = ms * c;
-		float const pn = mn * c;
-
-		float const r1 = rng_.random_float();
-		if (r1 <= 1.f - pn && ps > 0.f) {
-			float3 const ws = mu_s / (mt * ps);
-
-			t_out = t;
-			w = lw * ws;
-			return true;
-		} else {
-			float3 const wn = mu_n / (mt * pn);
-
-			SOFT_ASSERT(math::all_finite(wn));
-
-			lw *= wn;
-		}
-	}
 }
 
 Tracking_multi_factory::Tracking_multi_factory(take::Settings const& take_settings,

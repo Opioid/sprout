@@ -1,9 +1,11 @@
 #include "tracking_single.hpp"
 #include "tracking.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
@@ -168,13 +170,6 @@ float3 Tracking_single::transmittance(Ray const& ray, Worker& worker) {
 bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 								Sampler_filter filter, Worker& worker,
 								float3& li, float3& transmittance) {
-//	weight = float3(1.f);
-
-	Transformation temp;
-	auto const& transformation = intersection.prop->transformation_at(ray.time, temp);
-
-	auto const& material = *intersection.material();
-
 	bool const hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
 	if (!hit) {
 		li = float3(0.f);
@@ -182,11 +177,72 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 		return false;
 	}
 
+	SOFT_ASSERT(ray.max_t > ray.min_t);
+
 	float const d = ray.max_t;
 
-	constexpr bool use_heterogeneous_algorithm = true;
+	if (d - ray.min_t < 0.0005f) {
+		li = float3(0.f);
+		transmittance = float3(1.f);
+	//	weight = float3(1.f);
+		return true;
+	}
 
-	if (use_heterogeneous_algorithm) {
+	SOFT_ASSERT(!worker.interface_stack().empty());
+
+	auto const interface = worker.interface_stack().top();
+
+	auto const& material = *intersection.material();
+
+	if (!material.is_scattering_volume()) {
+		// Basically the "glass" case
+		float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
+
+		li = float3(0.f);
+		transmittance = attenuation(d, mu_a);
+	//	weight = float3(1.f);
+		return true;
+	}
+
+	if (material.is_heterogeneous_volume()) {
+		auto const tree = material.volume_octree();
+
+		if (tree && tree->root_.children[0]) {
+			Transformation temp;
+			auto const& transformation = interface->prop->transformation_at(ray.time, temp);
+
+			float3 const local_origin = math::transform_point(ray.origin,
+															  transformation.world_to_object);
+
+			float3 const local_dir = math::transform_vector(ray.direction,
+															transformation.world_to_object);
+
+			Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+
+			float3 w(1.f);
+			for (;;) {
+				float mt;
+				if (!tree->intersect(local_ray, mt)) {
+					li = float3(0.f);
+					transmittance = w;
+					return true;
+				}
+
+				float t;
+				if (Tracking::track(local_ray, mt, material, filter, rng_, worker, t, w)) {
+					li = w * direct_light(ray, ray.point(t), intersection, worker);
+					transmittance = float3(0.f);
+					return true;
+				}
+
+				local_ray.min_t = local_ray.max_t + 0.00001f;
+				local_ray.max_t = d;
+			}
+		}
+
+		Transformation temp;
+		auto const& transformation = intersection.prop->transformation_at(ray.time, temp);
+
 		float3 w(1.f);
 		float t = 0.f;
 
@@ -195,8 +251,8 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 			float const r = rng_.random_float();
 			t = t -std::log(1.f - r) / mt;
 			if (t > d) {
-				transmittance = w;
 				li = float3(0.f);
+				transmittance = w;
 				return true;
 			}
 

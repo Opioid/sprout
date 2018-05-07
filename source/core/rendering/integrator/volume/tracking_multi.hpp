@@ -22,11 +22,6 @@ public:
 
 	virtual size_t num_bytes() const override final;
 
-private:
-
-	bool track(Ray const& ray, float mt, Material const& material,
-			   Sampler_filter filter, Worker& worker, float& t, float3& w) const;
-
 };
 
 class Tracking_multi_factory final : public Factory {

@@ -91,7 +91,7 @@ public:
 
 	virtual float majorant_mu_t() const;
 
-	virtual volumetric::Octree const* octree() const;
+	virtual volumetric::Octree const* volume_octree() const;
 
 	virtual bool is_heterogeneous_volume() const;
 	virtual bool is_scattering_volume() const;

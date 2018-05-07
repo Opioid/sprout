@@ -19,7 +19,7 @@ public:
 
 	virtual float majorant_mu_t() const override final;
 
-	virtual Octree const* octree() const override final;
+	virtual Octree const* volume_octree() const override final;
 
 	virtual bool  is_heterogeneous_volume() const override final;
 
