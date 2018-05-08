@@ -62,6 +62,6 @@ bool Spherical::generate_ray(sampler::Camera_sample const& sample,
 
 void Spherical::on_update(Worker& /*worker*/) {}
 
-void Spherical::set_parameter(std::string const& /*name*/, json::Value const& /*value*/) {}
+void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 
 }

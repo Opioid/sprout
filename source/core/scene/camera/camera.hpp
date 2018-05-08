@@ -59,7 +59,7 @@ protected:
 
 	virtual void on_update(Worker& worker) = 0;
 
-	virtual void set_parameter(std::string const& name, json::Value const& value) = 0;
+	virtual void set_parameter(std::string_view name, json::Value const& value) = 0;
 
 	virtual void on_set_transformation() override final;
 

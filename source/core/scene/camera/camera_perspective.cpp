@@ -142,7 +142,7 @@ void Perspective::update_focus(Worker& worker) {
 	}
 }
 
-void Perspective::set_parameter(std::string const& name, json::Value const& value) {
+void Perspective::set_parameter(std::string_view name, json::Value const& value) {
 	if ("fov" == name) {
 		set_fov(math::degrees_to_radians(json::read_float(value)));
 	} else if ("lens" == name) {
@@ -157,7 +157,7 @@ void Perspective::set_parameter(std::string const& name, json::Value const& valu
 }
 
 void Perspective::load_lens(json::Value const& lens_value, Lens& lens) {
-	for (auto& n : lens_value.GetObject()) {
+	for (auto const& n : lens_value.GetObject()) {
 		if ("angle" == n.name) {
 			lens.angle = json::read_float(n.value);
 		} else if ("shift" == n.name) {
@@ -173,7 +173,7 @@ void Perspective::load_lens(json::Value const& lens_value, Lens& lens) {
 void Perspective::load_focus(json::Value const& focus_value, Focus& focus) {
 	focus.use_point = false;
 
-	for (auto& n : focus_value.GetObject()) {
+	for (auto const& n : focus_value.GetObject()) {
 		if ("point" == n.name) {
 			focus.point = json::read_float3(n.value);
 			focus.use_point = true;

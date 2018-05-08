@@ -22,14 +22,14 @@ class Typed_cache : public Cache {
 public:
 
 	Typed_cache(Provider<T>& provider);
-	~Typed_cache();
+	virtual ~Typed_cache() override final;
 
 	std::shared_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
 							Manager& manager);
 
 	std::shared_ptr<T> load(std::string const& name, void const* data,
-							std::string const& mount_folder,
-							memory::Variant_map const& options, Manager& manager);
+							std::string_view mount_folder, memory::Variant_map const& options,
+							Manager& manager);
 
 	std::shared_ptr<T> get(std::string const& filename, memory::Variant_map const& options);
 

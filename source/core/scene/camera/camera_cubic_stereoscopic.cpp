@@ -108,8 +108,7 @@ void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) 
 
 void Cubic_stereoscopic::on_update(Worker& /*worker*/) {}
 
-void Cubic_stereoscopic::set_parameter(std::string const& name,
-									   json::Value const& value) {
+void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
 	if ("stereo" == name) {
 		for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
 			std::string const node_name = n->name.GetString();

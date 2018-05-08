@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RESOURCE_ID_MANAGER_HPP
+#define SU_CORE_RESOURCE_ID_MANAGER_HPP
 
 #include <vector>
 #include <string>
@@ -21,3 +22,5 @@ private:
 extern ID_manager id_manager;
 
 }
+
+#endif

@@ -74,8 +74,7 @@ bool Spherical_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
 
 void Spherical_stereoscopic::on_update(Worker& /*worker*/) {}
 
-void Spherical_stereoscopic::set_parameter(std::string const& name,
-										   json::Value const& value) {
+void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
 	if ("stereo" == name) {
 		for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
 			std::string const node_name = n->name.GetString();

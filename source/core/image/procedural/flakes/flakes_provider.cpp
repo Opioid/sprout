@@ -7,9 +7,8 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/variant_map.inl"
 #include "base/random/generator.inl"
-#include <iostream>
 
-namespace image { namespace procedural { namespace flakes {
+namespace image::procedural::flakes {
 
 std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& options) {
 	Properties props(options);
@@ -100,4 +99,4 @@ Provider::Properties::Properties(memory::Variant_map const& options) :
 	num_flakes = static_cast<uint32_t>(density / (size * size) + 0.5f);
 }
 
-}}}
+}

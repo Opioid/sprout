@@ -48,7 +48,7 @@ private:
 
 	void update_focus(Worker& worker);
 
-	virtual void set_parameter(std::string const& name, json::Value const& value) override final;
+	virtual void set_parameter(std::string_view name, json::Value const& value) override final;
 
 	static void load_lens(json::Value const& lens_value, Lens& lens);
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_PROCEDURAL_FLAKES_PROVIDER_HPP
+#define SU_CORE_IMAGE_PROCEDURAL_FLAKES_PROVIDER_HPP
 
 #include "base/math/vector2.hpp"
 #include <memory>
@@ -9,7 +10,7 @@ namespace image {
 
 class Image;
 
-namespace procedural { namespace flakes {
+namespace procedural::flakes {
 
 class Provider {
 
@@ -32,4 +33,6 @@ private:
 	};
 };
 
-}}}
+}}
+
+#endif

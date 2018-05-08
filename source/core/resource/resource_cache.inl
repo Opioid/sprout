@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RESOURCE_CACHE_INL
+#define SU_CORE_RESOURCE_CACHE_INL
 
 #include "resource_cache.hpp"
 #include "file/file_system.hpp"
@@ -46,7 +47,7 @@ std::shared_ptr<T> Typed_cache<T>::load(std::string const& filename,
 
 template<typename T>
 std::shared_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
-										std::string const& mount_folder,
+										std::string_view mount_folder,
 										memory::Variant_map const& options, Manager& manager) {
 	auto key = std::make_pair(name, options);
 
@@ -95,3 +96,5 @@ size_t Typed_cache<T>::num_bytes() const {
 }
 
 }
+
+#endif
