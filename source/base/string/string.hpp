@@ -27,15 +27,20 @@ static inline bool is_space(char c) {
 }
 
 static inline void trim(std::string& text) {
-	auto begin = std::find_if_not(text.begin(),  text.end(),  is_space);
-	auto end   = std::find_if_not(text.rbegin(), text.rend(), is_space).base();
+	auto const begin = std::find_if_not(text.begin(),  text.end(),  is_space);
+	auto const end   = std::find_if_not(text.rbegin(), text.rend(), is_space).base();
 
 	text.assign(begin, end);
 }
 
 static inline std::string parent_directory(std::string const& filename) {
-	size_t i = filename.find_last_of('/');
+	size_t const i = filename.find_last_of('/');
 	return filename.substr(0, i + 1);
+}
+
+static inline std::string suffix(std::string const& filename) {
+	size_t const i = filename.find_last_of('.');
+	return filename.substr(i + 1, std::string::npos);
 }
 
 static inline std::string print_bytes(size_t num_bytes) {

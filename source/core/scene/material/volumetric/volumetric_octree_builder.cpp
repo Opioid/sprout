@@ -36,8 +36,6 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 	}
 
 	if (max_depth == depth || 0.f == max_density) {
-
-
 		node->majorant_mu_t = max_density * max_extinction;
 
 		for (uint32_t i = 0; i < 8; ++i) {

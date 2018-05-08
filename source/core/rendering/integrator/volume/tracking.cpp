@@ -31,22 +31,20 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 	}
 
 	if (material.is_heterogeneous_volume()) {
-		auto const tree = material.volume_octree();
+		Transformation temp;
+		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 
-		if (tree && tree->root_.children[0]) {
-			Transformation temp;
-			auto const& transformation = interface->prop->transformation_at(ray.time, temp);
+		float3 const local_origin = math::transform_point(ray.origin,
+														  transformation.world_to_object);
 
-			float3 const local_origin = math::transform_point(ray.origin,
-															  transformation.world_to_object);
+		float3 const local_dir = math::transform_vector(ray.direction,
+														transformation.world_to_object);
 
-			float3 const local_dir = math::transform_vector(ray.direction,
-															transformation.world_to_object);
-
+		if (auto const tree = material.volume_octree(); tree && tree->root_.children[0]) {
 			Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);
-			for (;;) {
+			for (;local_ray.min_t < d;) {
 				float mt;
 				if (!tree->intersect(local_ray, mt)) {
 					return w;
@@ -57,16 +55,9 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 				local_ray.min_t = local_ray.max_t + 0.00001f;
 				local_ray.max_t = d;
 			}
+
+			return w;
 		}
-
-		Transformation temp;
-		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
-
-		float3 const local_origin = math::transform_point(ray.origin,
-														  transformation.world_to_object);
-
-		float3 const local_dir = math::transform_vector(ray.direction,
-														transformation.world_to_object);
 
 		float const mt  = material.majorant_mu_t();
 		float const imt = 1.f / mt;

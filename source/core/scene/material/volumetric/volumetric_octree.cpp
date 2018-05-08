@@ -32,7 +32,9 @@ bool Octree::intersect(Ray& ray, Build_node const* node, Box const& box,
 
 	float hit_t;
 	if (aabb.intersect_inside(ray, hit_t)) {
-		ray.max_t = hit_t;
+		if (ray.max_t > hit_t) {
+			ray.max_t = hit_t;
+		}
 
 		if (!node->children[0]) {
 			majorant_mu_t = node->majorant_mu_t;

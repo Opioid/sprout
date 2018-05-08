@@ -6,6 +6,7 @@
 #include "encoding/rgbe/rgbe_reader.hpp"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
+#include "string/string.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
 #include <istream>
@@ -50,11 +51,13 @@ std::shared_ptr<Image> Provider::load(std::string const& filename,
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);
 	} else if (file::Type::Undefined == type) {
+		if ("raw" == string::suffix(filename)) {
+			encoding::raw::Reader reader;
+			return reader.read(stream);
+		}
+
 		encoding::json::Reader reader;
 		return reader.read(stream);
-
-	//	encoding::raw::Reader reader;
-	//	return reader.read(stream);
 	}
 
 	throw std::runtime_error("Image type for \"" + filename + "\" not recognized");

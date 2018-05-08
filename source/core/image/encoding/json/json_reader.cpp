@@ -31,13 +31,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 		throw std::runtime_error("No image data");
 	}
 
-
 	Image::Description description(Image::Type::Float1, dimensions);
 
 	auto volume = std::make_shared<Float1>(description);
-
-//	int32_t const num_bytes = dimensions[0] * dimensions[1] * dimensions[2];
-//	stream.read(reinterpret_cast<char*>(volume->data()), num_bytes);
 
 	int32_t i = 0;
 	for (auto& v : data_node->value.GetArray()) {

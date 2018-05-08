@@ -17,8 +17,8 @@ public:
 	constexpr AABB(f_float3 min, f_float3 max);
 	AABB(FVector min, FVector max);
 
-	float3 const& min() const;
-	float3 const& max() const;
+	f_float3 min() const;
+	f_float3 max() const;
 
 	float3 position() const;
 	float3 halfsize() const;
@@ -36,7 +36,7 @@ public:
 	bool intersect_p(Ray const& ray, float& hit_t) const;
 	bool intersect_inside(Ray const& ray, float& hit_t) const;
 
-	void set_min_max(float3 const& min, float3 const& max);
+	void set_min_max(f_float3 min, f_float3 max);
 	void set_min_max(FVector min, FVector max);
 
 	void insert(f_float3 p);
