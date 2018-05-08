@@ -23,18 +23,20 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 						   float max_extinction, uint32_t depth) {
 	static uint32_t constexpr max_depth = 3;
 
-	if (max_depth == depth) {
-		float min_density = 1.f;
-		float max_density = 0.f;
-		for (int32_t z = box.bounds[0][2], mz = box.bounds[1][2]; z < mz; ++z) {
-			for (int32_t y = box.bounds[0][1], my = box.bounds[1][1]; y < my; ++y) {
-				for (int32_t x = box.bounds[0][0], mx = box.bounds[1][0]; x < mx; ++x) {
-					float const density = texture.at_1(x, y, z);
-					min_density = std::min(density, min_density);
-					max_density = std::max(density, max_density);
-				}
+	float min_density = 1.f;
+	float max_density = 0.f;
+	for (int32_t z = box.bounds[0][2], mz = box.bounds[1][2]; z < mz; ++z) {
+		for (int32_t y = box.bounds[0][1], my = box.bounds[1][1]; y < my; ++y) {
+			for (int32_t x = box.bounds[0][0], mx = box.bounds[1][0]; x < mx; ++x) {
+				float const density = texture.at_1(x, y, z);
+				min_density = std::min(density, min_density);
+				max_density = std::max(density, max_density);
 			}
 		}
+	}
+
+	if (max_depth == depth || 0.f == max_density) {
+
 
 		node->majorant_mu_t = max_density * max_extinction;
 
