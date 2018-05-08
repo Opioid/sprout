@@ -18,17 +18,17 @@ using Material_ptr = std::shared_ptr<Material>;
 
 struct Sampler_settings;
 
-class Provider : public resource::Provider<Material> {
+class Provider final : public resource::Provider<Material> {
 
 public:
 
 	Provider();
-	~Provider();
+	virtual ~Provider() override final;
 
 	virtual Material_ptr load(std::string const& filename, memory::Variant_map const& options,
 							  resource::Manager& manager) override final;
 
-	virtual Material_ptr load(void const* data, std::string const& mount_folder,
+	virtual Material_ptr load(void const* data, std::string_view mount_folder,
 							  memory::Variant_map const& options,
 							  resource::Manager& manager) override final;
 
@@ -38,7 +38,7 @@ public:
 
 private:
 
-	Material_ptr load(json::Value const& value, std::string const& mount_folder,
+	Material_ptr load(json::Value const& value, std::string_view mount_folder,
 					  resource::Manager& manager);
 
 	Material_ptr load_cloth(json::Value const& cloth_value, resource::Manager& manager);

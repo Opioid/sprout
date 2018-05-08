@@ -40,7 +40,7 @@ std::shared_ptr<animation::Animation> load_keyframes(
 
 	animation->init(keyframes_value.Size());
 
-	for (auto& k : keyframes_value.GetArray()) {
+	for (auto const& k : keyframes_value.GetArray()) {
 		entity::Keyframe keyframe;
 		keyframe.transformation = default_transformation;
 

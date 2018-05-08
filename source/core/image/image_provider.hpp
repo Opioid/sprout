@@ -21,7 +21,7 @@ public:
 										resource::Manager& manager) override final;
 
 	virtual std::shared_ptr<Image> load(void const* data,
-										std::string const& mount_folder,
+										std::string_view mount_folder,
 										memory::Variant_map const& options,
 										resource::Manager& manager) override final;
 

@@ -59,7 +59,7 @@ Material_ptr Provider::load(std::string const& filename, memory::Variant_map con
 	return load(*root, string::parent_directory(resolved_name), manager);
 }
 
-Material_ptr Provider::load(void const* data, std::string const& mount_folder,
+Material_ptr Provider::load(void const* data, std::string_view mount_folder,
 							memory::Variant_map const& /*options*/, resource::Manager& manager) {
 	json::Value const* value = reinterpret_cast<json::Value const*>(data);
 
@@ -74,7 +74,7 @@ Material_ptr Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-Material_ptr Provider::load(json::Value const& value, std::string const& mount_folder,
+Material_ptr Provider::load(json::Value const& value, std::string_view mount_folder,
 							resource::Manager& manager) {
 	json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
 	if (value.MemberEnd() == rendering_node) {
@@ -141,7 +141,7 @@ Material_ptr Provider::load_cloth(json::Value const& cloth_value, resource::Mana
 		} else if ("two_sided" == n.name) {
 			two_sided = json::read_bool(n.value);
 		} else if ("textures" == n.name) {
-			for (auto& tn : n.value.GetArray()) {
+			for (auto const& tn : n.value.GetArray()) {
 				Texture_description texture_description;
 				read_texture_description(tn, texture_description);
 
@@ -182,9 +182,9 @@ Material_ptr Provider::load_debug(json::Value const& debug_value, resource::Mana
 
 	Texture_adapter mask;
 
-	for (auto& n : debug_value.GetObject()) {
+	for (auto const& n : debug_value.GetObject()) {
 		 if ("textures" == n.name) {
-			for (auto& tn : n.value.GetArray()) {
+			for (auto const& tn : n.value.GetArray()) {
 				Texture_description texture_description;
 				read_texture_description(tn, texture_description);
 

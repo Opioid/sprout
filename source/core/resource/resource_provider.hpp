@@ -23,7 +23,7 @@ public:
 									Manager& manager) = 0;
 
 	virtual std::shared_ptr<T> load(void const* data,
-									std::string const& mount_folder,
+									std::string_view mount_folder,
 									memory::Variant_map const& options,
 									Manager& manager) = 0;
 

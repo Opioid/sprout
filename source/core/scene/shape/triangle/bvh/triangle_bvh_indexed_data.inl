@@ -217,7 +217,7 @@ void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) 
 }
 
 template<typename SV>
-void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, const Vertices& vertices) {
+void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertices const& vertices) {
 	uint32_t const num_vertices = static_cast<uint32_t>(vertices.size());
 
 	if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
@@ -244,7 +244,7 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, const Vertices
 
 template<typename SV>
 void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
-										uint32_t material_index, const Vertices& vertices) {
+										uint32_t material_index, Vertices const& vertices) {
 	float bitanget_sign = 1.f;
 
 	if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f)
@@ -393,7 +393,7 @@ void Indexed_data_interleaved<V>::sample(uint32_t index, float2 r2, float3& p, f
 
 template<typename V>
 void Indexed_data_interleaved<V>::allocate_triangles(uint32_t num_triangles,
-													 const Vertices& vertices) {
+													 Vertices const& vertices) {
 	num_triangles_ = num_triangles;
 	current_triangle_ = 0;
 	num_vertices_ = static_cast<uint32_t>(vertices.size());
@@ -411,7 +411,7 @@ void Indexed_data_interleaved<V>::allocate_triangles(uint32_t num_triangles,
 
 template<typename V>
 void Indexed_data_interleaved<V>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
-											   uint32_t material_index, const Vertices& vertices) {
+											   uint32_t material_index, Vertices const& vertices) {
 	float bitanget_sign = 1.f;
 
 	if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f)
@@ -650,7 +650,7 @@ void Hybrid_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& t
 }
 
 template<typename IV, typename SV>
-void Hybrid_data<IV, SV>::allocate_triangles(uint32_t num_triangles, const Vertices& vertices) {
+void Hybrid_data<IV, SV>::allocate_triangles(uint32_t num_triangles, Vertices const& vertices) {
 	uint32_t const num_intersection_vertices = num_triangles * 3;
 	uint32_t const num_shading_vertices = static_cast<uint32_t>(vertices.size());
 
@@ -677,7 +677,7 @@ void Hybrid_data<IV, SV>::allocate_triangles(uint32_t num_triangles, const Verti
 
 template<typename IV, typename SV>
 void Hybrid_data<IV, SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
-									   uint32_t material_index, const Vertices& vertices) {
+									   uint32_t material_index, Vertices const& vertices) {
 	uint32_t const v = current_triangle_ * 3;
 	intersection_vertices_[v + 0].p = float3(vertices[a].p);
 	intersection_vertices_[v + 1].p = float3(vertices[b].p);

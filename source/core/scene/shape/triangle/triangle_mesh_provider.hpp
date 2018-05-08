@@ -33,25 +33,25 @@ public:
 										resource::Manager& manager) override final;
 
 	virtual std::shared_ptr<Shape> load(void const* data,
-										std::string const& mount_folder,
+										std::string_view mount_folder,
 										memory::Variant_map const& options,
 										resource::Manager& manager) override final;
 
 	virtual size_t num_bytes() const override final;
 
-	static std::shared_ptr<Shape> create_mesh(const Triangles& triangles, const Vertices& vertices,
+	static std::shared_ptr<Shape> create_mesh(Triangles const& triangles, Vertices const& vertices,
 											  uint32_t num_parts, thread::Pool& thread_pool);
 
 private:
 
 	std::shared_ptr<Shape> load_morphable_mesh(std::string const& filename,
-											   const Strings& morph_targets,
+											   Strings const& morph_targets,
 											   resource::Manager& manager);
 
-	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
+	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
 						  thread::Pool& thread_pool);
 
-//	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
+//	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
 //						  BVH_preset bvh_preset, thread::Pool& thread_pool);
 
 	static std::shared_ptr<Shape> load_binary(std::istream& stream, thread::Pool& thread_pool);

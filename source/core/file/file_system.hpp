@@ -17,7 +17,7 @@ public:
 	std::unique_ptr<std::istream> read_stream(std::string const& name,
 											  std::string& resolved_name) const;
 
-	void push_mount(std::string const& folder);
+	void push_mount(std::string_view folder);
 	void pop_mount();
 
 private:

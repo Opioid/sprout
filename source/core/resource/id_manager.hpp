@@ -11,7 +11,7 @@ public:
 
 	uint32_t id(std::string const& type_name);
 
-	std::string const& name(uint32_t id) const;
+	std::string_view name(uint32_t id) const;
 
 private:
 

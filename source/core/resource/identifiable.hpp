@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RESOURCE_IDENTIFIABLE_HPP
+#define SU_CORE_RESOURCE_IDENTIFIABLE_HPP
 
 #include "id_manager.hpp"
 #include <string>
@@ -18,7 +19,7 @@ public:
 		return type_id_;
 	}
 
-	static std::string const& name() {
+	static std::string_view name() {
 		return id_manager.name(type_id_);
 	}
 
@@ -30,3 +31,5 @@ private:
 template<typename T> uint32_t Identifiable<T>::type_id_ = 0xFFFFFF;
 
 }
+
+#endif

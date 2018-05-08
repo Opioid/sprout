@@ -64,7 +64,7 @@ std::shared_ptr<Image> Provider::load(std::string const& filename,
 }
 
 std::shared_ptr<Image> Provider::load(void const* /*data*/,
-									  std::string const& /*mount_folder*/,
+									  std::string_view /*mount_folder*/,
 									  memory::Variant_map const& /*options*/,
 									  resource::Manager& /*manager*/) {
 	return nullptr;

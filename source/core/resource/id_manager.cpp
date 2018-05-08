@@ -18,7 +18,7 @@ uint32_t ID_manager::id(std::string const& type_name) {
 	return static_cast<uint32_t>(n.size() - 1);
 }
 
-std::string const& ID_manager::name(uint32_t id) const {
+std::string_view ID_manager::name(uint32_t id) const {
 	return names()[id];
 }
 

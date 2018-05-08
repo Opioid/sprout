@@ -136,7 +136,7 @@ void Loader::load_entities(json::Value const& entities_value,
 		return;
 	}
 
-	for (auto& e : entities_value.GetArray()) {
+	for (auto const& e : entities_value.GetArray()) {
 		auto const type_node = e.FindMember("type");
 		if (e.MemberEnd() == type_node) {
 			continue;
@@ -356,7 +356,7 @@ void Loader::load_materials(json::Value const& materials_value, Scene& scene,
 
 	materials.reserve(materials_value.Size());
 
-	for (auto& m : materials_value.GetArray()) {
+	for (auto const& m : materials_value.GetArray()) {
 		materials.push_back(load_material(m.GetString(), scene));
 	}
 }

@@ -536,7 +536,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
 
 	pipeline.reserve(pp_value.Size());
 
-	for (auto& pp : pp_value.GetArray()) {
+	for (auto const& pp : pp_value.GetArray()) {
 		auto const n = pp.MemberBegin();
 
 		if ("tonemapper" == n->name) {

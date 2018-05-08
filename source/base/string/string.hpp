@@ -38,7 +38,7 @@ static inline std::string parent_directory(std::string const& filename) {
 	return filename.substr(0, i + 1);
 }
 
-static inline std::string suffix(std::string const& filename) {
+static inline std::string_view suffix(std::string_view filename) {
 	size_t const i = filename.find_last_of('.');
 	return filename.substr(i + 1, std::string::npos);
 }

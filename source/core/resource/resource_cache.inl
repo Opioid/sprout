@@ -5,6 +5,7 @@
 #include "base/memory/variant_map.inl"
 #include "core/logging/logging.hpp"
 #include <sstream>
+#include <string_view>
 
 namespace resource {
 

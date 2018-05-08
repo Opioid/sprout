@@ -130,7 +130,7 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
 }
 
 std::shared_ptr<Shape> Provider::load(void const* /*data*/,
-									  std::string const& /*mount_folder*/,
+									  std::string_view /*mount_folder*/,
 									  memory::Variant_map const& /*options*/,
 									  resource::Manager& /*manager*/) {
 	return nullptr;
@@ -140,7 +140,7 @@ size_t Provider::num_bytes() const {
 	return sizeof(*this);
 }
 
-std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const Vertices& vertices,
+std::shared_ptr<Shape> Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
 											 uint32_t num_parts, thread::Pool& thread_pool) {
 	if (triangles.empty() || vertices.empty() || !num_parts) {
 		throw std::runtime_error("No mesh data");
@@ -164,7 +164,7 @@ std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const V
 }
 
 std::shared_ptr<Shape> Provider::load_morphable_mesh(std::string const& filename,
-													 const Strings& morph_targets,
+													 Strings const& morph_targets,
 													 resource::Manager& manager) {
 	auto collection = std::make_shared<Morph_target_collection>();
 
@@ -236,7 +236,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(std::string const& filename
 	return mesh;
 }
 
-void Provider::build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
+void Provider::build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
 						 thread::Pool& thread_pool) {
 	bvh::Builder_SAH builder(16, 64);
 	builder.build(mesh.tree(), triangles, vertices, 4, thread_pool);
@@ -245,11 +245,11 @@ void Provider::build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices&
 }
 
 template<typename Index>
-void fill_triangles(const std::vector<Part>& parts, const Index* indices,
+void fill_triangles(const std::vector<Part>& parts, Index const* indices,
 					std::vector<Index_triangle>& triangles) {
-	for (auto& p : parts) {
-		uint32_t triangles_start = p.start_index / 3;
-		uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+	for (auto const& p : parts) {
+		uint32_t const triangles_start = p.start_index / 3;
+		uint32_t const triangles_end = (p.start_index + p.num_indices) / 3;
 
 		for (uint32_t i = triangles_start; i < triangles_end; ++i) {
 			triangles[i].i[0] = static_cast<uint32_t>(indices[i * 3 + 0]);
@@ -292,20 +292,20 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 	for (auto& n : geometry_value.GetObject()) {
 		if ("parts" == n.name) {
-			for (auto& pn : n.value.GetArray()) {
+			for (auto const& pn : n.value.GetArray()) {
 				parts.emplace_back(json::read_uint(pn, "start_index"),
 								   json::read_uint(pn, "num_indices"),
 								   json::read_uint(pn, "material_index"));
 			}
 		} else if ("vertices" == n.name) {
-			for (auto& vn : n.value.GetObject()) {
+			for (auto const& vn : n.value.GetObject()) {
 				if ("binary" == vn.name) {
 					vertices_offset = json::read_uint(vn.value, "offset");
 					vertices_size   = json::read_uint(vn.value, "size");
 				}
 			}
 		} else if ("indices" == n.name) {
-			for (auto& in : n.value.GetObject()) {
+			for (auto const& in : n.value.GetObject()) {
 				if ("binary" == in.name) {
 					indices_offset = json::read_uint(in.value, "offset");
 					indices_size   = json::read_uint(in.value, "size");

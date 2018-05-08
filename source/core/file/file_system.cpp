@@ -3,6 +3,7 @@
 #include "gzip/gzip_read_stream.hpp"
 #include <fstream>
 #include <sstream>
+#include <string_view>
 
 namespace file {
 
@@ -27,7 +28,7 @@ std::unique_ptr<std::istream> System::read_stream(std::string const& name,
 	return std::unique_ptr<std::istream>(stream);
 }
 
-void System::push_mount(std::string const& folder) {
+void System::push_mount(std::string_view folder) {
 	// We also have to push empty folders, otherwise popping gets complicated
 
 	std::stringstream stream;
@@ -47,7 +48,7 @@ void System::pop_mount() {
 std::istream* System::open_read_stream(std::string const& name, std::string& resolved_name) const {
 	// TODO: Use something like std::filesytem::exists() when it is available
 
-	for (auto& f : mount_folders_) {
+	for (auto const& f : mount_folders_) {
 		// Ignore empty folders, because this is handled explicitely
 		if (f.empty()) {
 			continue;

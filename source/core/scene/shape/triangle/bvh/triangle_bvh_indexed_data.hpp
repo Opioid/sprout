@@ -64,10 +64,10 @@ public:
 
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
-	void allocate_triangles(uint32_t num_triangles, const Vertices& vertices);
+	void allocate_triangles(uint32_t num_triangles, Vertices const& vertices);
 
 	void add_triangle(uint32_t a, uint32_t b, uint32_t c,
-					  uint32_t material_index, const Vertices& vertices);
+					  uint32_t material_index, Vertices const& vertices);
 
 	size_t num_bytes() const;
 
@@ -123,10 +123,10 @@ public:
 
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
-	void allocate_triangles(uint32_t num_triangles, const Vertices& vertices);
+	void allocate_triangles(uint32_t num_triangles, Vertices const& vertices);
 
 	void add_triangle(uint32_t a, uint32_t b, uint32_t c,
-					  uint32_t material_index, const Vertices& vertices);
+					  uint32_t material_index, Vertices const& vertices);
 
 	size_t num_bytes() const;
 
@@ -197,10 +197,10 @@ public:
 
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
-	void allocate_triangles(uint32_t num_triangles, const Vertices& vertices);
+	void allocate_triangles(uint32_t num_triangles, Vertices const& vertices);
 
 	void add_triangle(uint32_t a, uint32_t b, uint32_t c,
-					  uint32_t material_index, const Vertices& vertices);
+					  uint32_t material_index, Vertices const& vertices);
 
 	size_t num_bytes() const;
 

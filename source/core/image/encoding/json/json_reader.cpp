@@ -36,12 +36,11 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	auto volume = std::make_shared<Float1>(description);
 
 	int32_t i = 0;
-	for (auto& v : data_node->value.GetArray()) {
+	for (auto const& v : data_node->value.GetArray()) {
 		volume->at(i++) = v.GetFloat();
 	}
 
 	return volume;
-
 }
 
 }
