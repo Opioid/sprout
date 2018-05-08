@@ -12,12 +12,6 @@ struct Ray;
 
 namespace material::volumetric {
 
-struct Build_node {
-	Build_node* children[8];
-
-	float majorant_mu_t;
-};
-
 struct Box {
 	Box() = default;
 	Box(int3 const& min, int3 const& max);
@@ -29,22 +23,31 @@ class Octree {
 
 public:
 
+	struct Node {
+		uint32_t children;
+
+		float majorant_mu_t;
+	};
+
 	Octree();
+	~Octree();
+
+	Node* allocate_nodes(uint32_t num_nodes);
 
 	void set_dimensions(int3 const& dimensions);
 
 	bool intersect(Ray& ray, float& majorant_mu_t) const;
 
-	Build_node root_;
+private:
+
+	bool intersect(Ray& ray, uint32_t node_id, Box const& aabb, float& majorant_mu_t) const;
+
+	uint32_t num_nodes_;
+	Node*    nodes_;
 
 	int3 dimensions_;
 
 	float3 inv_2_dimensions_;
-
-private:
-
-	bool intersect(Ray& ray, Build_node const* node, Box const& aabb,
-				   float& majorant_mu_t) const;
 };
 
 }}

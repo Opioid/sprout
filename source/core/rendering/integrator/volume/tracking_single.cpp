@@ -205,9 +205,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 	}
 
 	if (material.is_heterogeneous_volume()) {
-		auto const tree = material.volume_octree();
-
-		if (tree && tree->root_.children[0]) {
+		if (auto const tree = material.volume_octree(); tree) {
 			Transformation temp;
 			auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 

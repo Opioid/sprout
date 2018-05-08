@@ -7,21 +7,35 @@
 
 namespace scene::material::volumetric {
 
+Octree_builder::Build_node::~Build_node() {
+	for (uint32_t i = 0; i < 8; ++i) {
+		delete children[i];
+	}
+}
+
 void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 						   float max_extinction) {
 	const int3 d = texture.dimensions_3();
 
 	Box box(int3(0), d);
 
-	split(&tree.root_, box, texture, max_extinction, 0);
+	num_nodes_ = 1;
+
+	Build_node root;
+
+	split(&root, box, texture, max_extinction, 0);
 
 	tree.set_dimensions(d);
-	tree.dimensions_ = d;
+
+	nodes_ = tree.allocate_nodes(num_nodes_);
+
+	uint32_t next = 1;
+	serialize(&root, 0, next);
 }
 
 void Octree_builder::split(Build_node* node, Box const& box, image::texture::Texture const& texture,
 						   float max_extinction, uint32_t depth) {
-	static uint32_t constexpr max_depth = 3;
+	static uint32_t constexpr max_depth = 4;
 
 	float min_density = 1.f;
 	float max_density = 0.f;
@@ -113,6 +127,26 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 
 		node->children[7] = new Build_node;
 		split(node->children[7], sub, texture, max_extinction, depth);
+	}
+
+	num_nodes_ += 8;
+}
+
+void Octree_builder::serialize(Build_node* node, uint32_t current, uint32_t& next) {
+	auto& n = nodes_[current];
+
+	if (node->children[0]) {
+		n.children = next + 0;
+
+		current = next;
+		next += 8;
+
+		for (uint32_t i = 0; i < 8; ++i) {
+			serialize(node->children[i], current + i, next);
+		}
+	} else {
+		n.children = 0;
+		n.majorant_mu_t = node->majorant_mu_t;
 	}
 }
 
