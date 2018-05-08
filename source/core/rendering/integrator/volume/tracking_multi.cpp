@@ -187,13 +187,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		Transformation temp;
 		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 
-		float3 const local_origin = math::transform_point(ray.origin,
-														  transformation.world_to_object);
+		float3 const local_origin = transformation.world_to_object_point(ray.origin);
+		float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-		float3 const local_dir = math::transform_vector(ray.direction,
-														transformation.world_to_object);
-
-		if (auto const tree = material.volume_octree(); tree && tree->root_.children[0]) {
+		if (auto const tree = material.volume_octree(); tree) {
 			Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);

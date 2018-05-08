@@ -436,10 +436,9 @@ static inline Matrix4x4f_a compose(
 	return m;
 }
 
-static inline Matrix4x4f_a compose(
-						   const Matrix4x4f_a& basis,
-						   const Vector3f_a& scale,
-						   const Vector3f_a& origin) {
+static inline Matrix4x4f_a compose(const Matrix4x4f_a& basis,
+								   const Vector3f_a& scale,
+								   const Vector3f_a& origin) {
 	Matrix4x4f_a m;
 
 	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
@@ -499,19 +498,19 @@ static inline Matrix4x4f_a operator*(const Matrix4x4f_a& a, const Matrix4x4f_a& 
 						(a.r[3][0] * b.r[0][3] + a.r[3][1] * b.r[1][3]) + (a.r[3][2] * b.r[2][3] + a.r[3][3] * b.r[3][3]));
 }
 
-static inline Vector3f_a transform_vector(const Vector3f_a& v, const Matrix4x4f_a& m) {
+static inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector_transposed(const Vector3f_a& v, const Matrix4x4f_a& m) {
+static inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
 					  v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
 					  v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_point(const Vector3f_a& v, const Matrix4x4f_a& m) {
+static inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a((v[0] * m.r[0][0] + v[1] * m.r[1][0]) + (v[2] * m.r[2][0] + m.r[3][0]),
 					  (v[0] * m.r[0][1] + v[1] * m.r[1][1]) + (v[2] * m.r[2][1] + m.r[3][1]),
 					  (v[0] * m.r[0][2] + v[1] * m.r[1][2]) + (v[2] * m.r[2][2] + m.r[3][2]));
