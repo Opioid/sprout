@@ -89,7 +89,7 @@ int main(int argc, char const* argv[]) {
 	uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 	uint32_t num_workers;
 	if (args.threads <= 0) {
-		const int32_t num_threads = static_cast<int32_t>(available_threads) + args.threads;
+		int32_t const num_threads = static_cast<int32_t>(available_threads) + args.threads;
 		num_workers = static_cast<uint32_t>(std::max(num_threads, 1));
 	} else {
 		num_workers = std::min(available_threads, static_cast<uint32_t>(std::max(args.threads, 1)));

@@ -101,7 +101,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 		}
 
 		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			const int32_t o = i * info.num_channels;
+			int32_t const o = i * info.num_channels;
 
 			int8_t color = info.buffer[o + c];
 
@@ -119,10 +119,10 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
 		byte2 color(0, 0);
 
-		const int32_t max_channels = std::min(2, info.num_channels);
+		int32_t const max_channels = std::min(2, info.num_channels);
 
 		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			const int32_t o = i * info.num_channels;
+			int32_t const o = i * info.num_channels;
 			for (int32_t c = 0; c < max_channels; ++c) {
 				color.v[c] = info.buffer[o + c];
 			}
@@ -137,10 +137,10 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
 		byte3 color(0, 0, 0);
 
-		const int32_t max_channels = std::min(3, info.num_channels);
+		int32_t const max_channels = std::min(3, info.num_channels);
 
 		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			const int32_t o = i * info.num_channels;
+			int32_t const o = i * info.num_channels;
 			for (int32_t c = 0; c < max_channels; ++c) {
 				color.v[c] = info.buffer[o + c];
 			}

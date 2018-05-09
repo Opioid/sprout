@@ -7,11 +7,11 @@
 
 namespace scene::prop {
 
-const material::Material* Interface::material() const {
+material::Material const* Interface::material() const {
 	return prop->material(part);
 }
 
-bool Interface::matches(const Intersection& intersection) const {
+bool Interface::matches(Intersection const& intersection) const {
 	return prop == intersection.prop && part == intersection.geo.part;
 }
 
@@ -21,10 +21,10 @@ Interface_stack::~Interface_stack() {
 	memory::free_aligned(stack_);
 }
 
-void Interface_stack::operator=(const Interface_stack& other) {
+void Interface_stack::operator=(Interface_stack const& other) {
 	index_ = other.index_;
 
-	for (uint32_t i = 0, len = index_; i < len; ++i) {
+	for (int32_t i = 0, len = index_; i < len; ++i) {
 		stack_[i] = other.stack_[i];
 	}
 }
@@ -61,29 +61,15 @@ float Interface_stack::top_ior() const {
 	return 1.f;
 }
 
-void Interface_stack::push(const Intersection& intersection) {
+void Interface_stack::push(Intersection const& intersection) {
 	if (index_ < Num_entries - 1) {
 		stack_[index_] = {intersection.prop, intersection.geo.uv, intersection.geo.part};
 		++index_;
 	}
 }
 
-void Interface_stack::remove(const Intersection& intersection) {
-	const int32_t back = index_ - 1;
-	for (int32_t i = back; i >= 0; --i) {
-		if (stack_[i].matches(intersection)) {
-			for (int32_t j = i; j < back; ++j) {
-				stack_[j] = stack_[j + 1];
-			}
-
-			--index_;
-			return;
-		}
-	}
-}
-
-bool Interface_stack::remove_p(const Intersection& intersection) {
-	const int32_t back = index_ - 1;
+bool Interface_stack::remove(Intersection const& intersection) {
+	int32_t const back = index_ - 1;
 	for (int32_t i = back; i >= 0; --i) {
 		if (stack_[i].matches(intersection)) {
 			for (int32_t j = i; j < back; ++j) {
@@ -97,7 +83,6 @@ bool Interface_stack::remove_p(const Intersection& intersection) {
 
 	return false;
 }
-
 
 void Interface_stack::pop() {
 	if (index_ > 0) {

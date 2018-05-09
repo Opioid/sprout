@@ -29,7 +29,7 @@ private:
 	float3 direct_light(Ray const& ray, f_float3 position, Worker& worker);
 
 	float3 direct_light(Ray const& ray, f_float3 position,
-						const Intersection& intersection, Worker& worker);
+						Intersection const& intersection, Worker& worker);
 
 	sampler::Random sampler_;
 };

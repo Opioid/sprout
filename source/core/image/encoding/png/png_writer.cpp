@@ -86,7 +86,7 @@ bool Writer::write(std::string const& name, float const* data, int2 dimensions, 
 		return false;
 	}
 
-	const int32_t area = dimensions[0] * dimensions[1];
+	int32_t const area = dimensions[0] * dimensions[1];
 	std::vector<uint8_t> bytes(area);
 
 	for (int32_t i = 0; i < area; ++i) {
@@ -115,7 +115,7 @@ bool Writer::write(std::string const& name, float2 const* data, int2 dimensions,
 		return false;
 	}
 
-	const int32_t area = dimensions[0] * dimensions[1];
+	int32_t const area = dimensions[0] * dimensions[1];
 	std::vector<byte3> bytes(area);
 
 	for (int32_t i = 0; i < area; ++i) {

@@ -90,9 +90,9 @@ float3 Linear_3D<Address_mode>::map(const Texture& texture, float3 const& uvw,
 	float const fv = std::floor(v);
 	float const fw = std::floor(w);
 
-	const int32_t x = static_cast<int32_t>(fu);
-	const int32_t y = static_cast<int32_t>(fv);
-	const int32_t z = static_cast<int32_t>(fw);
+	int32_t const x = static_cast<int32_t>(fu);
+	int32_t const y = static_cast<int32_t>(fv);
+	int32_t const z = static_cast<int32_t>(fw);
 
 	xyz[0] = Address_mode::lower_bound(x, b[0]);
 	xyz[1] = Address_mode::lower_bound(y, b[1]);

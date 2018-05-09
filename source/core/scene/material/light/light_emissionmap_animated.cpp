@@ -114,7 +114,7 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 
 		float2 const rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
 
-		const int32_t element = element_;
+		int32_t const element = element_;
 
 		float const ef = emission_factor_;
 

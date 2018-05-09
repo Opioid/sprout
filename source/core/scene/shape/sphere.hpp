@@ -47,7 +47,7 @@ public:
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const override final;
 
-	virtual float pdf(Ray const& ray, const Intersection& intersection,
+	virtual float pdf(Ray const& ray, Intersection const& intersection,
 					  Transformation const& transformation,
 					  float area, bool two_sided, bool total_sphere) const override final;
 
@@ -55,7 +55,7 @@ public:
 						Transformation const& transformation, float area, bool two_sided,
 						Sample& sample) const override final;
 
-	virtual float pdf_uv(Ray const& ray, const Intersection& intersection,
+	virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
 						 Transformation const& transformation,
 						 float area, bool two_sided) const override final;
 

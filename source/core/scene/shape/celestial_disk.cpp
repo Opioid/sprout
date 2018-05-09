@@ -179,7 +179,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
 	return false;
 }
 
-float Celestial_disk::pdf_uv(Ray const& /*ray*/, const Intersection& /*intersection*/,
+float Celestial_disk::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
 							 Transformation const& /*transformation*/,
 							 float area, bool /*two_sided*/) const {
 	return 1.f / area;

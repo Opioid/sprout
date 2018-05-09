@@ -332,7 +332,7 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
 	return true;
 }
 
-float Rectangle::pdf_uv(Ray const& ray, const Intersection& intersection,
+float Rectangle::pdf_uv(Ray const& ray, Intersection const& intersection,
 						Transformation const& transformation,
 						float area, bool two_sided) const {
 	return pdf(ray, intersection, transformation, area, two_sided, false);

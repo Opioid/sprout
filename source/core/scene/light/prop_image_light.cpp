@@ -76,7 +76,7 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n,
 	return false;
 }
 
-float Prop_image_light::pdf(Ray const& ray, const Intersection& intersection, bool /*total_sphere*/,
+float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bool /*total_sphere*/,
 							Sampler_filter filter, Worker const& worker) const {
 	entity::Composed_transformation temp;
 	auto const& transformation = prop_->transformation_at(ray.time, temp);

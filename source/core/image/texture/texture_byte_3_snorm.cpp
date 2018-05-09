@@ -94,9 +94,9 @@ void Byte3_snorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {
 				  encoding::cached_snorm_to_float(v[3][1]),
 				  encoding::cached_snorm_to_float(v[3][2]));*/
 
-	const int32_t width = image_.description().dimensions[0];
+	int32_t const width = image_.description().dimensions[0];
 
-	const int32_t y0 = width * xy_xy1[1];
+	int32_t const y0 = width * xy_xy1[1];
 
 	const byte3 v0 = image_.load(y0 + xy_xy1[0]);
 	c[0] = float3(encoding::cached_snorm_to_float(v0[0]),
@@ -108,7 +108,7 @@ void Byte3_snorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {
 				  encoding::cached_snorm_to_float(v1[1]),
 				  encoding::cached_snorm_to_float(v1[2]));
 
-	const int32_t y1 = width * xy_xy1[3];
+	int32_t const y1 = width * xy_xy1[3];
 
 	const byte3 v2 = image_.load(y1 + xy_xy1[0]);
 	c[2] = float3(encoding::cached_snorm_to_float(v2[0]),

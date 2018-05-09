@@ -24,7 +24,7 @@ bool Null_light::sample(f_float3 /*p*/, f_float3 /*n*/,
 	return false;
 }
 
-float Null_light::pdf(Ray const& /*ray*/, const Intersection& /*intersection*/,
+float Null_light::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
 					  bool /*total_sphere*/, Sampler_filter /*filter*/,
 					  Worker const& /*worker*/) const {
 	return 0.f;
@@ -36,7 +36,7 @@ float3 Null_light::power(math::AABB const& /*scene_bb*/) const {
 
 void Null_light::prepare_sampling(uint32_t /*light_id*/, thread::Pool& /*pool*/) {}
 
-bool Null_light::equals(const Prop* /*prop*/, uint32_t /*part*/) const {
+bool Null_light::equals(Prop const* /*prop*/, uint32_t /*part*/) const {
 	return false;
 }
 

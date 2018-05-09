@@ -385,7 +385,7 @@ bool Box::sample(uint32_t /*part*/,  f_float3 p, float2 uv, Transformation const
 	return true;
 }
 
-float Box::pdf_uv(Ray const& ray, const Intersection& intersection,
+float Box::pdf_uv(Ray const& ray, Intersection const& intersection,
 				  Transformation const& /*transformation*/,
 				  float area, bool /*two_sided*/) const {
 //	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);

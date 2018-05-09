@@ -15,11 +15,11 @@
 
 namespace scene::shape::testing {
 
-void print(const Intersection& intersection);
+void print(Intersection const& intersection);
 
 void print_vector(float3 const& v);
 
-bool check(const Intersection& intersection,
+bool check(Intersection const& intersection,
 		   const entity::Composed_transformation& /*transformation*/,
 		   Ray const& /*ray*/) {
 	if (!std::isfinite(math::length(intersection.b))) {
@@ -107,7 +107,7 @@ void test() {
 //	}
 }
 
-void print(const Intersection& intersection) {
+void print(Intersection const& intersection) {
 	std::cout << "n: "; print_vector(intersection.n);
 	std::cout << "t: "; print_vector(intersection.t);
 	std::cout << "b: "; print_vector(intersection.b);

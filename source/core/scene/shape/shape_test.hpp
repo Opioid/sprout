@@ -16,7 +16,7 @@ struct Sample;
 
 namespace testing {
 
-bool check(const Intersection& intersection,
+bool check(Intersection const& intersection,
 		   const entity::Composed_transformation& transformation,
 		   Ray const& ray);
 

@@ -58,13 +58,13 @@ public:
 
 	float3 tinted_visibility(Ray const& ray, Sampler_filter filter);
 
-	float3 tinted_visibility(Ray& ray, const Intersection& intersection, Sampler_filter filter);
+	float3 tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter);
 
 	sampler::Sampler* sampler();
 
 	scene::prop::Interface_stack& interface_stack();
 
-	void interface_change(f_float3 dir, const Intersection& intersection);
+	void interface_change(f_float3 dir, Intersection const& intersection);
 
 protected:
 

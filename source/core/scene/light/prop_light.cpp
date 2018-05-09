@@ -74,7 +74,7 @@ bool Prop_light::sample(f_float3 p, f_float3 n,
 	return true;
 }
 
-float Prop_light::pdf(Ray const& ray, const Intersection& intersection, bool total_sphere,
+float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
 					  Sampler_filter /*filter*/, Worker const& /*worker*/) const {
 	entity::Composed_transformation temp;
 	auto const& transformation = prop_->transformation_at(ray.time, temp);
@@ -102,7 +102,7 @@ void Prop_light::prepare_sampling(uint32_t light_id, thread::Pool& pool) {
 	prop_->prepare_sampling(part_, light_id, false, pool);
 }
 
-bool Prop_light::equals(const Prop* prop, uint32_t part) const {
+bool Prop_light::equals(Prop const* prop, uint32_t part) const {
 	return prop_ == prop && part_ == part;
 }
 

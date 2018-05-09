@@ -281,7 +281,7 @@ bool Disk::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
 	return false;
 }
 
-float Disk::pdf_uv(Ray const& /*ray*/, const Intersection& /*intersection*/,
+float Disk::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
 				   Transformation const& /*transformation*/,
 				   float /*area*/, bool /*two_sided*/) const {
 	return 0.f;

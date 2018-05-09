@@ -36,7 +36,7 @@ float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(const Texture& textur
 														   int32_t element) const {
 	const int2 xy = map(texture, uv);
 
-	const int32_t min_element = std::min(texture.num_elements() - 1, element);
+	int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
 	return texture.at_element_1(xy[0], xy[1], min_element);
 }
@@ -46,7 +46,7 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(const Texture& textu
 															int32_t element) const {
 	const int2 xy = map(texture, uv);
 
-	const int32_t min_element = std::min(texture.num_elements() - 1, element);
+	int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
 	return texture.at_element_2(xy[0], xy[1], min_element);
 }
@@ -56,7 +56,7 @@ float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(const Texture& textu
 															int32_t element) const {
 	const int2 xy = map(texture, uv);
 
-	const int32_t min_element = std::min(texture.num_elements() - 1, element);
+	int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
 	return texture.at_element_3(xy[0], xy[1], min_element);
 }

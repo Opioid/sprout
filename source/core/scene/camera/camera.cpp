@@ -37,7 +37,7 @@ void Camera::update(const Scene& scene, Worker& worker) {
 			}
 
 			if (intersection.same_hemisphere(ray.direction)) {
-				if (!interfaces_.remove_p(intersection)) {
+				if (!interfaces_.remove(intersection)) {
 					interface_stack_.push(intersection);
 				}
 			} else {
@@ -83,7 +83,7 @@ void Camera::set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor) {
 	sensor_ = std::move(sensor);
 }
 
-const prop::Interface_stack& Camera::interface_stack() const {
+prop::Interface_stack const& Camera::interface_stack() const {
 	return interface_stack_;
 }
 

@@ -40,14 +40,14 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 
 
 	return bilinear(c, st[0], st[1]);
 
-//	const int32_t width = texture.width();
+//	int32_t const width = texture.width();
 
-//	const int32_t y0 = width * xy_xy1[1];
+//	int32_t const y0 = width * xy_xy1[1];
 
 //	float3 const c0 = texture.at_3(y0 + xy_xy1[0]);
 //	float3 const c1 = texture.at_3(y0 + xy_xy1[2]);
 
-//	const int32_t y1 = width * xy_xy1[3];
+//	int32_t const y1 = width * xy_xy1[3];
 
 //	float3 const c2 = texture.at_3(y1 + xy_xy1[0]);
 //	float3 const c3 = texture.at_3(y1 + xy_xy1[2]);
@@ -77,7 +77,7 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(const Texture& texture, float2 
 	int4 xy_xy1;
 	float2 const st = map(texture, uv, xy_xy1);
 
-	const int32_t min_element = std::min(texture.num_elements() - 1, element);
+	int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
 	float2 const c00 = texture.at_element_2(xy_xy1[0], xy_xy1[1], min_element);
 	float2 const c01 = texture.at_element_2(xy_xy1[2], xy_xy1[1], min_element);
@@ -93,7 +93,7 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 
 	int4 xy_xy1;
 	float2 const st = map(texture, uv, xy_xy1);
 
-	const int32_t min_element = std::min(texture.num_elements() - 1, element);
+	int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
 	float3 const c00 = texture.at_element_3(xy_xy1[0], xy_xy1[1], min_element);
 	float3 const c01 = texture.at_element_3(xy_xy1[2], xy_xy1[1], min_element);
@@ -119,8 +119,8 @@ float2 Linear_2D<Address_U, Address_V>::map(const Texture& texture, float2 uv, i
 	float const fu = std::floor(u);
 	float const fv = std::floor(v);
 
-	const int32_t x = static_cast<int32_t>(fu);
-	const int32_t y = static_cast<int32_t>(fv);
+	int32_t const x = static_cast<int32_t>(fu);
+	int32_t const y = static_cast<int32_t>(fv);
 
 	xy_xy1[0] = Address_U::lower_bound(x, b[0]);
 	xy_xy1[1] = Address_V::lower_bound(y, b[1]);

@@ -25,7 +25,7 @@ math::AABB const& BVH_wrapper::aabb() const {
 bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
 							Intersection& intersection) const {
 	bool hit = false;
-	const Prop* prop = nullptr;
+	Prop const* prop = nullptr;
 
 	node_stack.clear();
 	if (0 != tree_.num_nodes_) {
@@ -88,7 +88,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
 bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
 								 Intersection& intersection) const {
 	bool hit = false;
-	const Prop* prop = nullptr;
+	Prop const* prop = nullptr;
 
 	node_stack.clear();
 	if (0 != tree_.num_nodes_) {

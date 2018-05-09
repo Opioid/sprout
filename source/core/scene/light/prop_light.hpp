@@ -29,14 +29,14 @@ public:
 						Sampler_filter filter, Worker const& worker,
 						Sample& result) const override;
 
-	virtual float pdf(Ray const& ray, const Intersection& intersection, bool total_sphere,
+	virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
 					  Sampler_filter filter, Worker const& worker) const override;
 
 	virtual float3 power(math::AABB const& scene_bb) const override final;
 
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override;
 
-	virtual bool equals(const Prop* prop, uint32_t part) const override final;
+	virtual bool equals(Prop const* prop, uint32_t part) const override final;
 
 protected:
 

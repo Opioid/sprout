@@ -6,7 +6,7 @@
 namespace image {
 
 float3 average_and_max_3(Float4 const& image, float3& max) {
-	const int32_t len = image.volume();
+	int32_t const len = image.volume();
 
 	float const ilen = 1.f / static_cast<float>(len);
 
@@ -26,7 +26,7 @@ float3 average_and_max_3(Float4 const& image, float3& max) {
 }
 
 float average_and_max_luminance(Float4 const& image, float& max) {
-	const int32_t len = image.volume();
+	int32_t const len = image.volume();
 
 	float const ilen = 1.f / static_cast<float>(len);
 

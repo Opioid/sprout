@@ -30,9 +30,9 @@ public:
 
 private:
 
-	float3 shade(Ray const& ray, const Intersection& intersection, Worker& worker);
+	float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker);
 
-	float3 estimate_direct_light(Ray const& ray, const Intersection& intersection,
+	float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
 								 const Material_sample& material_sample, Worker& worker);
 
 	const Settings settings_;

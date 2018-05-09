@@ -255,7 +255,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
 float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ray const& history,
 									  float ray_offset, uint32_t sampler_dimension, bool do_mis,
-									  const Intersection& intersection,
+									  Intersection const& intersection,
 									  const Material_sample& material_sample,
 									  Sampler_filter filter, Worker& worker) {
 	// Light source importance sample
@@ -291,7 +291,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 	return float3(0.f);
 }
 
-float3 Pathtracer_MIS::evaluate_light(Ray const& ray, const Intersection& intersection,
+float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& intersection,
 									  Bxdf_sample sample_result, bool treat_as_singular,
 									  bool is_translucent, Sampler_filter filter,
 									  Worker& worker, bool& pure_emissive) {

@@ -36,7 +36,7 @@ static float map(int32_t b, float tc, int2& x_x1) {
 
 	float const fu = std::floor(u);
 
-	const int32_t x = static_cast<int32_t>(fu);
+	int32_t const x = static_cast<int32_t>(fu);
 
 	x_x1[0] = x < 0 ? 0 : x;
 	x_x1[1] = x >= b ? b : x + 1;
@@ -50,7 +50,7 @@ static T sample(const T* source, int32_t w, int32_t b, float tc, int32_t y) {
 	float const s  = map(b, tc, x_x1);
 	float const _s = 1.f - s;
 
-	const int32_t y0 = w * y;
+	int32_t const y0 = w * y;
 	T c0 = source[y0 + x_x1[0]];
 	T c1 = source[y0 + x_x1[1]];
 
@@ -160,8 +160,8 @@ private:
 template<typename Source, typename T>
 static void fdft(image::Float2& destination, const Source& source, const Row& row,
 				 float alpha, uint32_t id, int32_t begin, int32_t end) {
-	const int32_t d = destination.description().dimensions[0];
-	const int32_t b = d - 1;
+	int32_t const d = destination.description().dimensions[0];
+	int32_t const b = d - 1;
 
 	float const m = float(d);
 	float const sqrt_m = std::sqrt(m);

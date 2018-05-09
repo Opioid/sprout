@@ -36,7 +36,7 @@ public:
 
 private:
 
-	float3 direct_light(Ray const& ray, const Intersection& intersection,
+	float3 direct_light(Ray const& ray, Intersection const& intersection,
 						const Material_sample& material_sample,
 						Sampler_filter filter, Worker& worker);
 

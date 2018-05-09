@@ -405,7 +405,7 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation con
 	return true;
 }
 
-float Sphere::pdf_uv(Ray const& ray, const Intersection& intersection,
+float Sphere::pdf_uv(Ray const& ray, Intersection const& intersection,
 					 Transformation const& /*transformation*/,
 					 float area, bool /*two_sided*/) const {
 //	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);

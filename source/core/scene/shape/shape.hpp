@@ -76,7 +76,7 @@ public:
 
 	// Both pdf functions implicitely assume that the passed
 	// ray/intersection/transformation combination actually lead to a hit.
-	virtual float pdf(Ray const& ray, const Intersection& intersection,
+	virtual float pdf(Ray const& ray, Intersection const& intersection,
 					  Transformation const& transformation,
 					  float area, bool two_sided, bool total_sphere) const = 0;
 
@@ -86,7 +86,7 @@ public:
 						Transformation const& transformation, float area,
 						bool two_sided, Sample& sample) const = 0;
 
-	virtual float pdf_uv(Ray const& ray, const Intersection& intersection,
+	virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
 						 Transformation const& transformation,
 						 float area, bool two_sided) const = 0;
 

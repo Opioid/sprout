@@ -8,17 +8,17 @@ namespace image { namespace filter {
 
 template<typename T>
 Gaussian<T>::Gaussian(float radius, float alpha) {
-	const int32_t width = 2 * static_cast<int32_t>(radius + 0.5f) + 1;
+	int32_t const width = 2 * static_cast<int32_t>(radius + 0.5f) + 1;
 
 	kernel_.resize(width);
 
 	float const fr = radius + 0.5f;
 	math::filter::Gaussian_functor gauss(fr * fr, alpha);
 
-	const int32_t ir = static_cast<int32_t>(radius);
+	int32_t const ir = static_cast<int32_t>(radius);
 
 	for (int32_t x = 0; x < width; ++x) {
-		const int32_t o = -ir + x;
+		int32_t const o = -ir + x;
 
 		float const fo = static_cast<float>(o);
 		float const w = gauss(fo * fo);

@@ -132,7 +132,7 @@ float3 Worker::tinted_visibility(Ray const& ray, Sampler_filter filter) {
 	return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
 }
 
-float3 Worker::tinted_visibility(Ray& ray, const Intersection& intersection,
+float3 Worker::tinted_visibility(Ray& ray, Intersection const& intersection,
 								 Sampler_filter filter) {
 	if (intersection.geo.subsurface && intersection.material()->ior() > 1.f) {
 		float const ray_max_t = ray.max_t;
@@ -161,7 +161,7 @@ scene::prop::Interface_stack& Worker::interface_stack() {
 	return interface_stack_;
 }
 
-void Worker::interface_change(f_float3 dir, const Intersection& intersection) {
+void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
 	if (intersection.same_hemisphere(dir)) {
 		interface_stack_.remove(intersection);
 	} else if (interface_stack_.top_ior() == 1.f

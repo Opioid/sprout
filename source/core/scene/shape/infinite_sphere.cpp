@@ -200,7 +200,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
 	return true;
 }
 
-float Infinite_sphere::pdf_uv(Ray const& /*ray*/, const Intersection& intersection,
+float Infinite_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& intersection,
 							  Transformation const& /*transformation*/,
 							  float /*area*/, bool /*two_sided*/) const {
 //	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);

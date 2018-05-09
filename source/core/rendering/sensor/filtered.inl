@@ -30,7 +30,7 @@ int32_t Filtered<Base, Clamp>::filter_radius_int() const {
 
 template<class Base, class Clamp>
 int4 Filtered<Base, Clamp>::isolated_tile(int4 const& tile) const {
-	const int32_t r = filter_radius_int();
+	int32_t const r = filter_radius_int();
 	return tile + int4(r, r, -r, -r);
 }
 
@@ -39,8 +39,8 @@ void Filtered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, flo
 									   int4 const& isolated_bounds, int4 const& bounds) {
 	const float4 clamped_color = clamp_.clamp(color);
 
-	const int32_t x = bounds[0] + sample.pixel[0];
-	const int32_t y = bounds[1] + sample.pixel[1];
+	int32_t const x = bounds[0] + sample.pixel[0];
+	int32_t const y = bounds[1] + sample.pixel[1];
 
 	float const ox = sample.pixel_uv[0] - 0.5f;
 	float const oy = sample.pixel_uv[1] - 0.5f;

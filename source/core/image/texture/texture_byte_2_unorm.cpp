@@ -73,9 +73,9 @@ void Byte2_unorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
 	c[3] = float2(encoding::cached_unorm_to_float(v[2][0]),
 				  encoding::cached_unorm_to_float(v[2][1]));*/
 
-	const int32_t width = image_.description().dimensions[0];
+	int32_t const width = image_.description().dimensions[0];
 
-	const int32_t y0 = width * xy_xy1[1];
+	int32_t const y0 = width * xy_xy1[1];
 
 	const byte2 v0 = image_.load(y0 + xy_xy1[0]);
 	c[0] = float2(encoding::cached_unorm_to_float(v0[0]),
@@ -85,7 +85,7 @@ void Byte2_unorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
 	c[1] = float2(encoding::cached_unorm_to_float(v1[0]),
 				  encoding::cached_unorm_to_float(v1[1]));
 
-	const int32_t y1 = width * xy_xy1[3];
+	int32_t const y1 = width * xy_xy1[3];
 
 	const byte2 v2 = image_.load(y1 + xy_xy1[0]);
 	c[2] = float2(encoding::cached_unorm_to_float(v2[0]),

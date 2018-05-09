@@ -14,11 +14,11 @@ struct Intersection;
 class Prop;
 
 struct Interface {
-	const material::Material* material() const;
+	material::Material const* material() const;
 
-	bool matches(const Intersection& intersection) const;
+	bool matches(Intersection const& intersection) const;
 
-	const Prop* prop;
+	Prop const* prop;
 	float2		uv;
 	uint32_t	part;
 };
@@ -30,7 +30,7 @@ public:
 	Interface_stack();
 	~Interface_stack();
 
-	void operator=(const Interface_stack& other);
+	void operator=(Interface_stack const& other);
 
 	void swap(Interface_stack& other);
 
@@ -42,9 +42,8 @@ public:
 
 	float top_ior() const;
 
-	void push(const Intersection& intersection);
-	void remove(const Intersection& intersection);
-	bool remove_p(const Intersection& intersection);
+	void push(Intersection const& intersection);
+	bool remove(Intersection const& intersection);
 	void pop();
 
 

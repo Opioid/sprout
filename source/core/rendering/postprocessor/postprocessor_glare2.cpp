@@ -87,7 +87,7 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 	auto const dim = camera.sensor_dimensions();
 	kernel_dimensions_ = 2 * dim;
-	const int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
+	int32_t const kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
 
 	std::vector<F> f(kernel_size);
 
@@ -136,7 +136,7 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 					init.d_sum += d;
 				}
 
-				const int32_t i = y * kernel_dimensions_[0] + x;
+				int32_t const i = y * kernel_dimensions_[0] + x;
 				f[i] = F{ a, b, c, d };
 			}
 		}
@@ -206,7 +206,7 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		}
 	}
 
-	const int32_t kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
+	int32_t const kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
 
 	kernel_dft_r_ = memory::allocate_aligned<float2>(kernel_dft_size);
 	kernel_dft_g_ = memory::allocate_aligned<float2>(kernel_dft_size);
@@ -290,7 +290,7 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 //	image::encoding::png::Writer::write("high_pass_g.png", high_pass_g_, dim, 16.f);
 //	image::encoding::png::Writer::write("high_pass_b.png", high_pass_b_, dim, 16.f);
 
-	const int32_t kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
+	int32_t const kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
 
 	math::dft_2d(high_pass_dft_r_, high_pass_r_, temp_, dim[0], dim[1], pool);
 	math::dft_2d(high_pass_dft_g_, high_pass_g_, temp_, dim[0], dim[1], pool);
@@ -331,9 +331,9 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
 					const int2 sc = int2(x, y) - offset;
 
-					const int32_t iy = (y + source_dim[1]) % dim[1];
-					const int32_t ix = (x + source_dim[0]) % dim[0];
-					const int32_t i = iy * dim[0] + ix;
+					int32_t const iy = (y + source_dim[1]) % dim[1];
+					int32_t const ix = (x + source_dim[0]) % dim[0];
+					int32_t const i = iy * dim[0] + ix;
 
 					auto const& s = source.at(sc[0], sc[1]);
 					float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);

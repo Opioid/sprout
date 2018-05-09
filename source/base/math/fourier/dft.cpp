@@ -15,8 +15,8 @@ int32_t dft_size(int32_t num) {
 void dft_1d(float2* result, float const* source, int32_t num) {
 	float const af = (-2.f * Pi) / static_cast<float>(num);
 
-	const int32_t r  = num % 4;
-	const int32_t m4 = num - r;
+	int32_t const r  = num % 4;
+	int32_t const m4 = num - r;
 
 	const float4 zott = float4(0.f, 1.f, 2.f, 3.f);
 	const Vector zv = simd::load_float4(zott.v);
@@ -66,7 +66,7 @@ void idft_1d(float* result, float2 const* source, int32_t num) {
 
 		float const a = af * static_cast<float>(x);
 
-		const int32_t len = num / 2;
+		int32_t const len = num / 2;
 		for (int32_t k = 1; k < len; ++k) {
 			float const b = a * static_cast<float>(k);
 
@@ -127,12 +127,12 @@ void dft_2d(float2* result, float const* source, float2* tmp,
 					float cos_a;
 					math::sincos(angle, sin_a, cos_a);
 
-					const int32_t g = t * row_size + x;
+					int32_t const g = t * row_size + x;
 					sum[0] +=  tmp[g][0] * cos_a + tmp[g][1] * sin_a;
 					sum[1] += -tmp[g][0] * sin_a + tmp[g][1] * cos_a;
 				}
 
-				const int32_t c = k * row_size + x;
+				int32_t const c = k * row_size + x;
 				result[c] = sum;
 			}
 		}
@@ -158,12 +158,12 @@ void idft_2d(float* result, float2 const* source, float2* tmp,
 					float cos_a;
 					math::sincos(angle, sin_a, cos_a);
 
-					const int32_t g = t * row_size + x;
+					int32_t const g = t * row_size + x;
 					sum[0] +=  source[g][0] * cos_a + source[g][1] * sin_a;
 					sum[1] += -source[g][0] * sin_a + source[g][1] * cos_a;
 				}
 
-				const int32_t c = k * row_size + x;
+				int32_t const c = k * row_size + x;
 				tmp[c] = sum;// / static_cast<float>(height);
 			}
 		}

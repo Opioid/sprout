@@ -47,7 +47,7 @@ public:
 	rendering::sensor::Sensor& sensor() const;
 	void set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor);
 
-	const prop::Interface_stack& interface_stack() const;
+	prop::Interface_stack const& interface_stack() const;
 
 	float frame_duration() const;
 	void set_frame_duration(float frame_duration);
@@ -69,13 +69,12 @@ protected:
 	std::unique_ptr<rendering::sensor::Sensor> sensor_;
 
 	prop::Interface_stack interface_stack_;
+	prop::Interface_stack interfaces_;
 
 	int32_t filter_radius_ = 0;
 
 	float frame_duration_ = 0.f;
 	bool motion_blur_ = true;
-
-	prop::Interface_stack interfaces_;
 };
 
 }}

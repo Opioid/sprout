@@ -66,86 +66,86 @@ T& Typed_image<T>::at(int32_t index) {
 
 template<typename T>
 T Typed_image<T>::load(int32_t x, int32_t y) const {
-	const int32_t i = y * description_.dimensions[0] + x;
+	int32_t const i = y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 void Typed_image<T>::store(int32_t x, int32_t y, T v) {
-	const int32_t i = y * description_.dimensions[0] + x;
+	int32_t const i = y * description_.dimensions[0] + x;
 	data_[i] = v;
 }
 
 template<typename T>
 T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const {
-	const int32_t i = element * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = element * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T const& Typed_image<T>::at(int32_t x, int32_t y) const {
-	const int32_t i = y * description_.dimensions[0] + x;
+	int32_t const i = y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at(int32_t x, int32_t y) {
-	const int32_t i = y * description_.dimensions[0] + x;
+	int32_t const i = y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
-	const int32_t i = element * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = element * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) {
-	const int32_t i = element * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = element * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const {
-	const int32_t i = z * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
-	const int32_t i = z * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) {
-	const int32_t i = z * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const {
-	const int32_t i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) {
-	const int32_t i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
+	int32_t const i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const {
-	const int32_t width = description_.dimensions[0];
+	int32_t const width = description_.dimensions[0];
 
-	const int32_t y0 = width * xy_xy1[1];
+	int32_t const y0 = width * xy_xy1[1];
 
 	c[0] = data_[y0 + xy_xy1[0]];
 	c[1] = data_[y0 + xy_xy1[2]];
 
-	const int32_t y1 = width * xy_xy1[3];
+	int32_t const y1 = width * xy_xy1[3];
 
 	c[2] = data_[y1 + xy_xy1[0]];
 	c[3] = data_[y1 + xy_xy1[2]];
@@ -153,11 +153,11 @@ void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const {
 
 template<typename T>
 void Typed_image<T>::square_transpose() {
-	const int32_t n = description_.dimensions[0];
+	int32_t const n = description_.dimensions[0];
 	for (int32_t y = 0, height = n - 2; y < height; ++y) {
 		for (int32_t x = y + 1, width = n -1; x < width; ++x) {
-			const int32_t a = y * n + x;
-			const int32_t b = x * n + y;
+			int32_t const a = y * n + x;
+			int32_t const b = x * n + y;
 			std::swap(data_[a], data_[b]);
 		}
 	}

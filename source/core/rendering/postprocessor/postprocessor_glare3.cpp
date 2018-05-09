@@ -194,10 +194,10 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	float const fr = radius + 0.5f;
 	const math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), /*radius * 0.5f*/0.15f);
 
-	const int32_t ir = static_cast<int32_t>(radius);
+	int32_t const ir = static_cast<int32_t>(radius);
 
 	for (int32_t x = 0, len = gauss_width_; x < len; ++x) {
-		const int32_t o = -ir + x;
+		int32_t const o = -ir + x;
 
 		float const fo = static_cast<float>(o);
 		float const w = gauss(fo * fo);
@@ -233,14 +233,14 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 		float const fdm0 = static_cast<float>(d[0] - 1);
 		float const fdm1 = static_cast<float>(d[1] - 1);
 
-		const int32_t num_samples = 4096;//std::max(d[0], d[1]) * 2;
+		int32_t const num_samples = 4096;//std::max(d[0], d[1]) * 2;
 
 		float const weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
 
 		float const intensity = weight * intensity_;
 		// const Vector intensity = simd::set_float4(intensity_);
 
-		const int32_t kd0 = kernel_dimensions_[0];
+		int32_t const kd0 = kernel_dimensions_[0];
 
 		rnd::Generator rng(0, id);
 
@@ -257,8 +257,8 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 //				float const r0 = rng.random_float();
 //				float const r1 = rng.random_float();
 
-//				const int32_t sx = static_cast<int32_t>(r0 * fdm0);
-//				const int32_t sy = static_cast<int32_t>(r1 * fdm1);
+//				int32_t const sx = static_cast<int32_t>(r0 * fdm0);
+//				int32_t const sy = static_cast<int32_t>(r1 * fdm1);
 
 				float2 uv = math::hammersley(j, num_samples, r);
 
@@ -267,14 +267,14 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 
 //				uv = scale * d + center;
 
-				const int32_t sx = static_cast<int32_t>(uv[0] * fdm0);
-				const int32_t sy = static_cast<int32_t>(uv[1] * fdm1);
+				int32_t const sx = static_cast<int32_t>(uv[0] * fdm0);
+				int32_t const sy = static_cast<int32_t>(uv[1] * fdm1);
 
-				const int32_t si = sy * d[0] + sx;
+				int32_t const si = sy * d[0] + sx;
 
 				const int2 kc = kb + int2(sx, sy);
 
-				const int32_t ki = kc[1] * kd0 + kc[0];
+				int32_t const ki = kc[1] * kd0 + kc[0];
 
 				float3 const k = kernel_[ki];
 
@@ -320,14 +320,14 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 				int32_t kx = c[0] + k.o;
 
 				if (kx >= 0 && kx < d[0]) {
-					const int32_t si = c[1] * d[0] + kx;
+					int32_t const si = c[1] * d[0] + kx;
 					float3 const v = destination.at(si).xyz();
 					accum += k.w * v;
 					weight_sum += k.w;
 				}
 			}
 
-			const int32_t di = c[1] * d[0] + c[0];
+			int32_t const di = c[1] * d[0] + c[0];
 			high_pass_[di] = accum / weight_sum;
 		}
 	} else if (3 == pass) {
@@ -344,7 +344,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 				int32_t ky = c[1] + k.o;
 
 				if (ky >= 0 && ky < d[1]) {
-					const int32_t si = ky * d[0] + c[0];
+					int32_t const si = ky * d[0] + c[0];
 					float3 const v = high_pass_[si];
 					accum += k.w * v;
 					weight_sum += k.w;

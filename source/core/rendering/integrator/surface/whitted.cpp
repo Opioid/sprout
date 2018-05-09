@@ -63,7 +63,7 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	return shade(ray, intersection, worker);
 }
 
-float3 Whitted::shade(Ray const& ray, const Intersection& intersection, Worker& worker) {
+float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& worker) {
 	float3 result(0.f);
 
 	float3 const wo = -ray.direction;
@@ -83,7 +83,7 @@ float3 Whitted::shade(Ray const& ray, const Intersection& intersection, Worker& 
 	return result;
 }
 
-float3 Whitted::estimate_direct_light(Ray const& ray, const Intersection& intersection,
+float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& intersection,
 									  const Material_sample& material_sample, Worker& worker) {
 	float3 result(0.f);
 

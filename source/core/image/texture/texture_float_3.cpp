@@ -60,9 +60,9 @@ void Float3::gather_3(int4 const& xy_xy1, float3 c[4]) const {
 	c[2] = float3(v[2]);
 	c[3] = float3(v[3]);*/
 
-	const int32_t width = image_.description().dimensions[0];
+	int32_t const width = image_.description().dimensions[0];
 
-	const int32_t y0 = width * xy_xy1[1];
+	int32_t const y0 = width * xy_xy1[1];
 
 	const packed_float3 v0 = image_.load(y0 + xy_xy1[0]);
 	c[0] = float3(v0);
@@ -70,7 +70,7 @@ void Float3::gather_3(int4 const& xy_xy1, float3 c[4]) const {
 	const packed_float3 v1 = image_.load(y0 + xy_xy1[2]);
 	c[1] = float3(v1);
 
-	const int32_t y1 = width * xy_xy1[3];
+	int32_t const y1 = width * xy_xy1[3];
 
 	const packed_float3 v2 = image_.load(y1 + xy_xy1[0]);
 	c[2] = float3(v2);
