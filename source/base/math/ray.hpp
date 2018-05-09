@@ -17,7 +17,7 @@ private:
 
 public:
 
-	void set_direction(float3 const& v);
+	void set_direction(f_float3 v);
 
 	float3 point(float t) const;
 

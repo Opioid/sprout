@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_RAY_HPP
 #define SU_CORE_SCENE_RAY_HPP
 
-#include "base/flags/flags.hpp"
+//#include "base/flags/flags.hpp"
 #include "base/math/ray.hpp"
 
 namespace scene {

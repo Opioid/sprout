@@ -40,7 +40,7 @@ inline Ray::Ray(f_float3 origin, f_float3 direction, f_float3 inv_direction,
 	max_t(max_t),
 	signs{sign_x, sign_y, sign_z} {}
 
-inline void Ray::set_direction(float3 const& v) {
+inline void Ray::set_direction(f_float3 v) {
 	direction = v;
 	inv_direction = reciprocal(v);
 
