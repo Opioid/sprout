@@ -1,7 +1,7 @@
 target_sources(core
 	PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/composed_transformation.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/composed_transformation.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/composed_transformation.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/dummy.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/dummy.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/entity_extension_provider.hpp"

@@ -3,6 +3,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 #include "base/math/aabb.inl"

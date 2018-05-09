@@ -5,7 +5,9 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
+#include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 #include "base/math/aabb.inl"
@@ -243,10 +245,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 			float3 const local_p = local_origin + t * local_dir;
 
-			float3 mu_a, mu_s;
-			material.collision_coefficients(local_p, filter, worker, mu_a, mu_s);
+			auto const mu = material.collision_coefficients(local_p, filter, worker);
 
-			float3 const mu_t = mu_a + mu_s;
+			float3 const mu_t = mu.a + mu.s;
 
 			float3 const mu_n = float3(mt) - mu_t;
 
@@ -254,7 +255,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 //			float3 ws, wn;
 //			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
 
-			float const ms = math::average(mu_s * w);
+			float const ms = math::average(mu.s * w);
 			float const mn = math::average(mu_n * w);
 			float const c = 1.f / (ms + mn);
 
@@ -269,7 +270,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
-				float3 const ws = mu_s / (mt * ps);
+				float3 const ws = mu.s / (mt * ps);
 
 				SOFT_ASSERT(math::all_finite(ws));
 
@@ -287,10 +288,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 			}
 		}
 	} else {
-		float3 mu_a, mu_s;
-		material.collision_coefficients(interface->uv, filter, worker, mu_a, mu_s);
+		auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
-		float3 const mu_t = mu_a + mu_s;
+		float3 const mu_t = mu.a + mu.s;
 
 		float const mt  = math::max_component(mu_t);
 		float const imt = 1.f / mt;
@@ -313,7 +313,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 	//		float3 ws, wn;
 	//		avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
 
-			float const ms = math::average(mu_s * w);
+			float const ms = math::average(mu.s * w);
 			float const mn = math::average(mu_n * w);
 			float const c = 1.f / (ms + mn);
 
@@ -328,7 +328,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				intersection.geo.part = interface->part;
 				intersection.geo.subsurface = true;
 
-				float3 const ws = mu_s / (mt * ps);
+				float3 const ws = mu.s / (mt * ps);
 
 				li = float3(0.f);
 			//	transmittance = float3(1.f);

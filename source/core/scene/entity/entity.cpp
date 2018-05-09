@@ -1,4 +1,5 @@
 #include "entity.hpp"
+#include "composed_transformation.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/transformation.inl"
 

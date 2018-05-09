@@ -110,29 +110,31 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Sampler_filter fil
 	return absorption_coefficient_;
 }
 
-void Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
-												 Worker const& worker,
-												 float3& mu_a, float3& mu_s) const {
+Material::CE Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
+												 Worker const& worker) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 		float3 const color = color_map_.sample_3(sampler, uv);
 
+		float3 mu_a, mu_s;
 		attenuation(color, attenuation_distance_, mu_a, mu_s);
 
-		return;
+		return {mu_a, mu_s};
 	}
 
-	mu_a = absorption_coefficient_;
-	mu_s = scattering_coefficient_;
+	return {absorption_coefficient_, scattering_coefficient_};
 }
 
-void Material_subsurface::collision_coefficients(f_float3 /*p*/,
-												 Transformation const& /*transformation*/,
-												 Sampler_filter /*filter*/,
-												 Worker const& /*worker*/,
-												 float3& mu_a, float3& mu_s) const {
-	mu_a = absorption_coefficient_;
-	mu_s = scattering_coefficient_;
+Material::CE Material_subsurface::collision_coefficients(f_float3 /*p*/,
+														 Transformation const& /*transformation*/,
+														 Sampler_filter /*filter*/,
+														 Worker const& /*worker*/) const {
+	return {absorption_coefficient_, scattering_coefficient_};
+}
+
+Material::CE Material_subsurface::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
+														 Worker const& /*worker*/) const {
+	return {absorption_coefficient_, scattering_coefficient_};
 }
 
 size_t Material_subsurface::sample_size() {

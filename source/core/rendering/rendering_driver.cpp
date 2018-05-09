@@ -4,6 +4,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/camera/camera.hpp"
+#include "scene/prop/interface_stack.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "take/take.hpp"
 #include "take/take_view.hpp"

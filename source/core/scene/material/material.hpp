@@ -79,15 +79,18 @@ public:
 	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
 										  Worker const& worker) const;
 
-	virtual void collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker,
-										float3& mu_a, float3& mu_s) const;
+	struct CE {
+		float3 a, s;
+	};
 
-	virtual void collision_coefficients(f_float3 p, Transformation const& transformation,
-										Sampler_filter filter, Worker const& worker,
-										float3& mu_a, float3& mu_s) const;
+	virtual CE collision_coefficients(float2 uv, Sampler_filter filter,
+									  Worker const& worker) const;
 
-	virtual void collision_coefficients(f_float3 p, Sampler_filter filter, Worker const& worker,
-										float3& mu_a, float3& mu_s) const;
+	virtual CE collision_coefficients(f_float3 p, Transformation const& transformation,
+									  Sampler_filter filter, Worker const& worker) const;
+
+	virtual CE collision_coefficients(f_float3 p, Sampler_filter filter,
+									  Worker const& worker) const;
 
 	virtual float majorant_mu_t() const;
 

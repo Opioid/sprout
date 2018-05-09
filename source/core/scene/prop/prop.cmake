@@ -1,11 +1,11 @@
 target_sources(core
 	PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/interface_stack.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/interface_stack.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/interface_stack.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/prop.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/prop.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/prop_bvh_wrapper.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/prop_bvh_wrapper.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/prop_intersection.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/prop_intersection.inl"
-	"${CMAKE_CURRENT_LIST_DIR}/prop_intersection.hpp"	
 	)  

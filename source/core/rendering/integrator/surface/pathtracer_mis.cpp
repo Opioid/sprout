@@ -9,6 +9,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
+#include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
@@ -16,9 +17,6 @@
 #include "base/spectrum/rgb.hpp"
 
 #include "base/debug/assert.hpp"
-
-#include <iostream>
-#include "base/math/print.hpp"
 
 namespace rendering::integrator::surface {
 

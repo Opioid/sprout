@@ -2,7 +2,9 @@
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
+#include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
@@ -70,11 +72,10 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
 			float3 const local_p = local_origin + t * local_dir;
 
-			float3 mu_a, mu_s;
-			material.collision_coefficients(local_p, Sampler_filter::Nearest,
-											worker, mu_a, mu_s);
+			auto const mu = material.collision_coefficients(local_p, Sampler_filter::Nearest,
+															worker);
 
-			float3 const mu_t = mu_a + mu_s;
+			float3 const mu_t = mu.a + mu.s;
 
 			float3 const mu_n = float3(mt) - mu_t;
 
@@ -84,10 +85,9 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 		return w;
 	}
 
-	float3 mu_a, mu_s;
-	material.collision_coefficients(interface->uv, Sampler_filter::Nearest, worker, mu_a, mu_s);
+	auto const mu = material.collision_coefficients(interface->uv, Sampler_filter::Nearest, worker);
 
-	float3 const mu_t = mu_a + mu_s;
+	float3 const mu_t = mu.a + mu.s;
 
 	return attenuation(d, mu_t);
 }
@@ -113,14 +113,13 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
 
 		float3 const local_p = ray.point(t);
 
-		float3 mu_a, mu_s;
-		material.collision_coefficients(local_p, filter, worker, mu_a, mu_s);
+		auto const mu = material.collision_coefficients(local_p, filter, worker);
 
-		float3 const mu_t = mu_a + mu_s;
+		float3 const mu_t = mu.a + mu.s;
 
 		float3 const mu_n = float3(mt) - mu_t;
 
-		float const ms = math::average(mu_s * lw);
+		float const ms = math::average(mu.s * lw);
 		float const mn = math::average(mu_n * lw);
 		float const c = 1.f / (ms + mn);
 
@@ -129,7 +128,7 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
 
 		float const r1 = rng.random_float();
 		if (r1 <= 1.f - pn && ps > 0.f) {
-			float3 const ws = mu_s / (mt * ps);
+			float3 const ws = mu.s / (mt * ps);
 
 			t_out = t;
 			w = lw * ws;
@@ -165,10 +164,9 @@ float3 Tracking::track(math::Ray const& ray, float mt, Material const& material,
 
 		float3 const local_p = ray.point(t);
 
-		float3 mu_a, mu_s;
-		material.collision_coefficients(local_p, filter, worker, mu_a, mu_s);
+		auto const mu = material.collision_coefficients(local_p, filter, worker);
 
-		float3 const mu_t = mu_a + mu_s;
+		float3 const mu_t = mu.a + mu.s;
 
 		float3 const mu_n = float3(mt) - mu_t;
 

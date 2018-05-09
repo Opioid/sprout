@@ -8,6 +8,7 @@
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
+#include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 #include "base/math/aabb.inl"
@@ -32,7 +33,7 @@ void Tracking_single::prepare(const Scene& /*scene*/, uint32_t num_samples_per_p
 }
 
 void Tracking_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
-
+/*
 static inline void max_probabilities(float mt,
 									 float3 const& mu_a,
 									 float3 const& mu_s,
@@ -130,7 +131,7 @@ static inline void avg_history_probabilities(float mt,
 	ws = (mu_s / (mt * ps));
 	wn = (mu_n / (mt * pn));
 }
-
+*/
 static inline void avg_history_probabilities(float mt,
 											 float3 const& mu_s,
 											 float3 const& mu_n,
@@ -147,7 +148,7 @@ static inline void avg_history_probabilities(float mt,
 	ws = (mu_s / (mt * ps));
 	wn = (mu_n / (mt * pn));
 }
-
+/*
 static inline void avg_history_probabilities(float mt,
 											 float3 const& mu_s,
 											 float3 const& mu_n,
@@ -162,7 +163,7 @@ static inline void avg_history_probabilities(float mt,
 
 	wn = (mu_n / (mt * pn));
 }
-
+*/
 float3 Tracking_single::transmittance(Ray const& ray, Worker& worker) {
 	return Tracking::transmittance(ray, rng_, worker);
 }
@@ -256,10 +257,9 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 
 			float3 const p = ray.point(ray.min_t + t);
 
-			float3 mu_a, mu_s;
-			material.collision_coefficients(p, transformation, filter, worker, mu_a, mu_s);
+			auto const mu = material.collision_coefficients(p, transformation, filter, worker);
 
-			float3 const mu_t = mu_a + mu_s;
+			float3 const mu_t = mu.a + mu.s;
 
 			float3 const mu_n = float3(mt) - mu_t;
 
@@ -267,7 +267,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 			float3 ws, wn;
 			//avg_probabilities(mt, mu_a, mu_s, mu_n, pa, ps, pn, wa, ws, wn);
 
-			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
+			avg_history_probabilities(mt, mu.s, mu_n, w, ps, pn, ws, wn);
 
 			float const r2 = rng_.random_float();
 			if (r2 <= 1.f - pn) {
@@ -292,12 +292,11 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 			}
 		}
 	} else {
-		float3 mu_a, mu_s;
-		material.collision_coefficients(float2(0.f), filter, worker, mu_a, mu_s);
+		auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
 
-		float3 const extinction = mu_a + mu_s;
+		float3 const extinction = mu.a + mu.s;
 
-		float3 const scattering_albedo = mu_s / extinction;
+		float3 const scattering_albedo = mu.s / extinction;
 
 		transmittance = math::exp(-d * extinction);
 

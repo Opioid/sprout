@@ -9,6 +9,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
+#include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"

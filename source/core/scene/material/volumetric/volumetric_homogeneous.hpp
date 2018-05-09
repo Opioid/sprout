@@ -18,12 +18,15 @@ public:
 	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
 										  Worker const& worker) const override final;
 
-	virtual void collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker,
-										float3& mu_a, float3& mu_s) const override final;
+	virtual CE collision_coefficients(float2 uv, Sampler_filter filter,
+									  Worker const& worker) const override final;
 
-	virtual void collision_coefficients(f_float3 p, Transformation const& transformation,
-										Sampler_filter filter, Worker const& worker,
-										float3& mu_a, float3& mu_s) const override final;
+	virtual CE collision_coefficients(f_float3 p, Transformation const& transformation,
+									  Sampler_filter filter,
+									  Worker const& worker) const override final;
+
+	virtual CE collision_coefficients(f_float3 p, Sampler_filter filter,
+									  Worker const& worker) const override final;
 
 	virtual float majorant_mu_t() const override final;
 

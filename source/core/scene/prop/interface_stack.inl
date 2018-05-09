@@ -1,3 +1,6 @@
+#ifndef SU_CORE_SCENE_PROP_INTERFACE_STACK_INL
+#define SU_CORE_SCENE_PROP_INTERFACE_STACK_INL
+
 #include "interface_stack.hpp"
 #include "prop.hpp"
 #include "prop_intersection.hpp"
@@ -7,21 +10,21 @@
 
 namespace scene::prop {
 
-material::Material const* Interface_stack::Interface::material() const {
+inline material::Material const* Interface_stack::Interface::material() const {
 	return prop->material(part);
 }
 
-bool Interface_stack::Interface::matches(Intersection const& intersection) const {
+inline bool Interface_stack::Interface::matches(Intersection const& intersection) const {
 	return prop == intersection.prop && part == intersection.geo.part;
 }
 
-Interface_stack::Interface_stack() : stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
+inline Interface_stack::Interface_stack() : stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
 
-Interface_stack::~Interface_stack() {
+inline Interface_stack::~Interface_stack() {
 	memory::free_aligned(stack_);
 }
 
-void Interface_stack::operator=(Interface_stack const& other) {
+inline void Interface_stack::operator=(Interface_stack const& other) {
 	index_ = other.index_;
 
 	for (int32_t i = 0, len = index_; i < len; ++i) {
@@ -29,7 +32,7 @@ void Interface_stack::operator=(Interface_stack const& other) {
 	}
 }
 
-void Interface_stack::swap(Interface_stack& other) {
+inline void Interface_stack::swap(Interface_stack& other) {
 	Interface* temp = stack_;
 	stack_ = other.stack_;
 	other.stack_ = temp;
@@ -37,15 +40,15 @@ void Interface_stack::swap(Interface_stack& other) {
 	index_ = other.index_;
 }
 
-bool Interface_stack::empty() const {
+inline bool Interface_stack::empty() const {
 	return 0 == index_;
 }
 
-void Interface_stack::clear() {
+inline void Interface_stack::clear() {
 	index_ = 0;
 }
 
-Interface_stack::Interface const* Interface_stack::top() const {
+inline Interface_stack::Interface const* Interface_stack::top() const {
 	if (index_ > 0) {
 		return &stack_[index_ - 1];
 	}
@@ -53,7 +56,7 @@ Interface_stack::Interface const* Interface_stack::top() const {
 	return nullptr;
 }
 
-float Interface_stack::top_ior() const {
+inline float Interface_stack::top_ior() const {
 	if (index_ > 0) {
 		return stack_[index_ - 1].material()->ior();
 	}
@@ -61,14 +64,14 @@ float Interface_stack::top_ior() const {
 	return 1.f;
 }
 
-void Interface_stack::push(Intersection const& intersection) {
+inline void Interface_stack::push(Intersection const& intersection) {
 	if (index_ < Num_entries - 1) {
 		stack_[index_] = {intersection.prop, intersection.geo.uv, intersection.geo.part};
 		++index_;
 	}
 }
 
-bool Interface_stack::remove(Intersection const& intersection) {
+inline bool Interface_stack::remove(Intersection const& intersection) {
 	int32_t const back = index_ - 1;
 	for (int32_t i = back; i >= 0; --i) {
 		if (stack_[i].matches(intersection)) {
@@ -84,10 +87,12 @@ bool Interface_stack::remove(Intersection const& intersection) {
 	return false;
 }
 
-void Interface_stack::pop() {
+inline void Interface_stack::pop() {
 	if (index_ > 0) {
 		--index_;
 	}
 }
 
 }
+
+#endif
