@@ -26,14 +26,14 @@ inline uint32_t Generator::advance_pcg32() {
 	const uint64_t oldstate = state_;
 
 	// Advance internal state
-	state_ = oldstate * 6364136223846793005ULL + (inc_ | 1);
+	state_ = oldstate * 6364136223846793005ull + (inc_ | 1);
 
 	// Calculate output function (XSH RR), uses old state for max ILP
-	uint32_t const xorshifted = static_cast<uint32_t>(((oldstate >> 18u) ^ oldstate) >> 27u);
+	uint32_t const xorshifted = static_cast<uint32_t>(((oldstate >> 18ull) ^ oldstate) >> 27ull);
 
-	uint32_t const rot = static_cast<uint32_t>(oldstate >> 59u);
+	uint32_t const rot = static_cast<uint32_t>(oldstate >> 59ull);
 
-	return (xorshifted >> rot) | (xorshifted << ((0xFFFFFFFF - rot) & 31));
+	return (xorshifted >> rot) | (xorshifted << ((0xFFFFFFFFu - rot) & 31u));
 }
 
 }
