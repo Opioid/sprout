@@ -7,11 +7,11 @@
 
 namespace scene::prop {
 
-material::Material const* Interface::material() const {
+material::Material const* Interface_stack::Interface::material() const {
 	return prop->material(part);
 }
 
-bool Interface::matches(Intersection const& intersection) const {
+bool Interface_stack::Interface::matches(Intersection const& intersection) const {
 	return prop == intersection.prop && part == intersection.geo.part;
 }
 
@@ -45,7 +45,7 @@ void Interface_stack::clear() {
 	index_ = 0;
 }
 
-const Interface* Interface_stack::top() const {
+Interface_stack::Interface const* Interface_stack::top() const {
 	if (index_ > 0) {
 		return &stack_[index_ - 1];
 	}
