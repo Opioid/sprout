@@ -36,7 +36,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 		float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
 		if (auto const tree = material.volume_octree(); tree) {
-			Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+			math::Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);
 			for (;local_ray.min_t < d;) {
@@ -92,8 +92,9 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 	return attenuation(d, mu_t);
 }
 
-bool Tracking::track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
-					 rnd::Generator& rng, Worker& worker, float& t_out, float3& w) {
+bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
+					 Sampler_filter filter, rnd::Generator& rng, Worker& worker,
+					 float& t_out, float3& w) {
 	if (0.f == mt) {
 		return false;
 	}
@@ -143,8 +144,8 @@ bool Tracking::track(Ray const& ray, float mt, Material const& material, Sampler
 	}
 }
 
-float3 Tracking::track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
-					   rnd::Generator& rng, Worker& worker) {
+float3 Tracking::track(math::Ray const& ray, float mt, Material const& material,
+					   Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
 	float3 w(1.f);
 
 	if (0.f == mt) {

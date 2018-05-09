@@ -7,6 +7,7 @@
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/aabb.inl"
+#include "base/math/ray.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 

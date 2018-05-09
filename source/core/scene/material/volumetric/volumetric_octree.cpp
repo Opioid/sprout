@@ -1,5 +1,4 @@
 #include "volumetric_octree.hpp"
-#include "scene/scene_ray.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
@@ -34,13 +33,13 @@ bool Octree::is_valid() const {
 	return 0 != num_nodes_;
 }
 
-bool Octree::intersect(Ray& ray, float& majorant_mu_t) const {
+bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 	Box const box(int3(0), (dimensions_));
 
 	return intersect(ray, 0u, box, majorant_mu_t);
 }
 
-bool Octree::intersect(Ray& ray, uint32_t node_id, Box const& box,
+bool Octree::intersect(math::Ray& ray, uint32_t node_id, Box const& box,
 					   float& majorant_mu_t) const {
 	float3 const min = inv_2_dimensions_ * float3(box.bounds[0]) - float3(1.f);
 	float3 const max = inv_2_dimensions_ * float3(box.bounds[1]) - float3(1.f);

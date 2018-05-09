@@ -4,13 +4,11 @@
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
 
+namespace math { struct Ray; }
+
 namespace image::texture { class Texture; }
 
-namespace scene {
-
-struct Ray;
-
-namespace material::volumetric {
+namespace scene::material::volumetric {
 
 struct Box {
 	Box() = default;
@@ -38,11 +36,11 @@ public:
 
 	bool is_valid() const;
 
-	bool intersect(Ray& ray, float& majorant_mu_t) const;
+	bool intersect(math::Ray& ray, float& majorant_mu_t) const;
 
 private:
 
-	bool intersect(Ray& ray, uint32_t node_id, Box const& aabb, float& majorant_mu_t) const;
+	bool intersect(math::Ray& ray, uint32_t node_id, Box const& aabb, float& majorant_mu_t) const;
 
 	uint32_t num_nodes_;
 	Node*    nodes_;
@@ -52,6 +50,6 @@ private:
 	float3 inv_2_dimensions_;
 };
 
-}}
+}
 
 #endif

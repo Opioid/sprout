@@ -4,6 +4,8 @@
 #include "scene/material/sampler_settings.hpp"
 #include "base/math/vector3.hpp"
 
+namespace math { struct Ray; }
+
 namespace rnd { class Generator; }
 
 namespace scene {
@@ -39,13 +41,14 @@ public:
 	// Completely arbitrary and biased cutoff limit in order to prevent some worst case things
 	static uint32_t constexpr max_iterations_ = 1024 * 64;
 
-	static bool track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
-					  rnd::Generator& rng, Worker& worker, float& t, float3& w);
+	static bool track(math::Ray const& ray, float mt, Material const& material,
+					  Sampler_filter filter, rnd::Generator& rng, Worker& worker,
+					  float& t, float3& w);
 
 private:
 
-	static float3 track(Ray const& ray, float mt, Material const& material, Sampler_filter filter,
-						rnd::Generator& rng, Worker& worker);
+	static float3 track(math::Ray const& ray, float mt, Material const& material,
+						Sampler_filter filter, rnd::Generator& rng, Worker& worker);
 };
 
 }}
