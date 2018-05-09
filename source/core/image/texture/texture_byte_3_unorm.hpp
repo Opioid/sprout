@@ -10,7 +10,7 @@ class Byte3_unorm final : public Texture {
 
 public:
 
-	Byte3_unorm(const std::shared_ptr<Image>& image);
+	Byte3_unorm(std::shared_ptr<Image> const& image);
 
 	virtual float  at_1(int32_t i) const override final;
 	virtual float3 at_3(int32_t i) const override final;

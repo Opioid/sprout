@@ -10,7 +10,7 @@ class Float1 final : public Texture {
 
 public:
 
-	Float1(const std::shared_ptr<Image>& image);
+	Float1(std::shared_ptr<Image> const& image);
 
 	virtual float  at_1(int32_t i) const override final;
 	virtual float3 at_3(int32_t i) const override final;

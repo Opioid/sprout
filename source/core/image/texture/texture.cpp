@@ -4,7 +4,7 @@
 
 namespace image::texture {
 
-Texture::Texture(const std::shared_ptr<Image>& image) :
+Texture::Texture(std::shared_ptr<Image> const& image) :
 	untyped_image_(image),
 	back_(int3(image->description().dimensions[0] - 1,
 			   image->description().dimensions[1] - 1,

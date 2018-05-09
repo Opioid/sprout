@@ -5,7 +5,7 @@
 
 namespace image::texture {
 
-Byte3_sRGB::Byte3_sRGB(const std::shared_ptr<Image>& image) :
+Byte3_sRGB::Byte3_sRGB(std::shared_ptr<Image> const& image) :
 	Texture(image),
 	image_(*static_cast<const Byte3*>(image.get())) {}
 

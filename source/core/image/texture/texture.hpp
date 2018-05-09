@@ -14,7 +14,7 @@ class Texture {
 
 public:
 
-	Texture(const std::shared_ptr<Image>& image);
+	Texture(std::shared_ptr<Image> const& image);
 	virtual ~Texture();
 
 	const Image* image() const;
