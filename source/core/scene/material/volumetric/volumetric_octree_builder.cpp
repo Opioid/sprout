@@ -37,13 +37,13 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 						   float max_extinction, uint32_t depth) {
 	static uint32_t constexpr max_depth = 4;
 
-	float min_density = 1.f;
+//	float min_density = 1.f;
 	float max_density = 0.f;
 	for (int32_t z = box.bounds[0][2], mz = box.bounds[1][2]; z < mz; ++z) {
 		for (int32_t y = box.bounds[0][1], my = box.bounds[1][1]; y < my; ++y) {
 			for (int32_t x = box.bounds[0][0], mx = box.bounds[1][0]; x < mx; ++x) {
 				float const density = texture.at_1(x, y, z);
-				min_density = std::min(density, min_density);
+	//			min_density = std::min(density, min_density);
 				max_density = std::max(density, max_density);
 			}
 		}
@@ -56,9 +56,9 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 			node->children[i] = nullptr;
 		}
 
-		std::cout << box.bounds[0] << ", " << box.bounds[1] << ": "
-				  << "min = " << min_density * max_extinction << ", "
-				  << "max = " << node->majorant_mu_t << std::endl;
+//		std::cout << box.bounds[0] << ", " << box.bounds[1] << ": "
+//				  << "min = " << min_density * max_extinction << ", "
+//				  << "max = " << node->majorant_mu_t << std::endl;
 
 		return;
 	}
