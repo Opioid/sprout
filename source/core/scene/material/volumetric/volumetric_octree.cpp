@@ -8,8 +8,7 @@ namespace scene::material::volumetric {
 
 Box::Box(int3 const& min, int3 const& max) : bounds{min, max} {}
 
-Octree::Octree() : num_nodes_(0), nodes_(nullptr)
-{}
+Octree::Octree() : num_nodes_(0), nodes_(nullptr) {}
 
 Octree::~Octree() {
 	memory::free_aligned(nodes_);
@@ -29,6 +28,10 @@ Octree::Node* Octree::allocate_nodes(uint32_t num_nodes) {
 void Octree::set_dimensions(int3 const& dimensions) {
 	dimensions_ = dimensions;
 	inv_2_dimensions_ = 2.f / float3(dimensions);
+}
+
+bool Octree::is_valid() const {
+	return 0 != num_nodes_;
 }
 
 bool Octree::intersect(Ray& ray, float& majorant_mu_t) const {

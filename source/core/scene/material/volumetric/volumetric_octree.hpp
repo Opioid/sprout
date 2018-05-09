@@ -36,6 +36,8 @@ public:
 
 	void set_dimensions(int3 const& dimensions);
 
+	bool is_valid() const;
+
 	bool intersect(Ray& ray, float& majorant_mu_t) const;
 
 private:
