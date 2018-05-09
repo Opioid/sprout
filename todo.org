@@ -1,21 +1,24 @@
 * Backlog
 
-** Miscellaneous [1/1]
+** Miscellaneous [2/3]
 
 *** DONE PCG Random Number Generator 
 [[http://www.pcg-random.org/]]
 
-*** Replace #pragma once with #define guards
+*** DONE Replace #pragma once with #define guards
 
-** Integrators [0/1]
+*** TODO Investigate clang optimization report
+-fsave-optimization-record
 
-*** TODO Subsurface scattering [1/2]
+** Integrators [1/1]
+
+*** DONE Subsurface scattering [2/2]
 - [X] Implement single scattering
   - [X] Direct light only
   - [X] Indirect illumination
-- [ ] Implement multiple scattering
-  - [ ] Monte-carlo integrator
-  - [ ] Next event estimation
+- [X] Implement multiple scattering
+  - [X] Monte-carlo integrator
+  - [X] Next event estimation
 
 ** Materials [0/3]
 
