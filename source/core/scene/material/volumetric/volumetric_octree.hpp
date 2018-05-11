@@ -30,7 +30,7 @@ public:
 	Octree();
 	~Octree();
 
-	Node* allocate_nodes(uint32_t num_nodes);
+	Node* allocate_nodes(uint32_t num_nodes, uint32_t deepest_uniform_level);
 
 	void set_dimensions(int3 const& dimensions);
 
@@ -40,9 +40,13 @@ public:
 
 private:
 
-	bool intersect(math::Ray& ray, uint32_t node_id, Box const& aabb, float& majorant_mu_t) const;
+	bool intersect(math::Ray& ray, uint32_t node_id, Box const& box, float& majorant_mu_t) const;
+
+	void intersect_children(math::Ray& ray, Node const& node, Box const& box,
+							float& majorant_mu_t) const;
 
 	uint32_t num_nodes_;
+	uint32_t deepest_uniform_level_;
 	Node*    nodes_;
 
 	int3 dimensions_;

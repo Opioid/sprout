@@ -31,6 +31,8 @@ private:
 
 	uint32_t num_nodes_;
 
+	uint32_t deepest_uniform_level_;
+
 	Octree::Node* nodes_;
 };
 
