@@ -22,9 +22,8 @@ public:
 
 	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
-	virtual bool integrate(Ray& ray, Intersection& intersection,
-						   Sampler_filter filter, Worker& worker,
-						   float3& li, float3& transmittance) override final;
+	virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
+						   Worker& worker, float3& li, float3& transmittance) override final;
 
 	virtual size_t num_bytes() const override final;
 
