@@ -18,9 +18,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace rendering::integrator::volume {
 
 Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings) :

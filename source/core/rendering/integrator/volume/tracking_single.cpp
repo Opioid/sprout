@@ -5,6 +5,7 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -16,9 +17,6 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-
-#include <iostream>
-#include "math/print.hpp"
 
 #include "base/debug/assert.hpp"
 
