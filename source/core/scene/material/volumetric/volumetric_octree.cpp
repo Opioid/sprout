@@ -37,10 +37,10 @@ bool Octree::is_valid() const {
 }
 
 bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
-//	Box const box(int3(0), (dimensions_));
+	Box const box(int3(0), (dimensions_));
 
-//	return intersect(ray, 0, box, majorant_mu_t);
-
+	return intersect(ray, 0, box, majorant_mu_t);
+/*
 	auto const p = ray.point(ray.min_t);
 
 	int3 v = int3(0.5f * float3(dimensions_) * (p + float3(1.f)));
@@ -51,7 +51,7 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 
 	Box box(int3(0), (dimensions_));
 
-	int32_t index = 0;
+	uint32_t index = 0;
 
 	for (uint32_t l = 0, len = deepest_uniform_level_; l < len; ++l) {
 		int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
@@ -103,7 +103,7 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 
 	intersect_children(ray, node, box, majorant_mu_t);
 
-	return true;
+	return true;*/
 }
 
 bool Octree::intersect(math::Ray& ray, uint32_t node_id, Box const& box,

@@ -257,7 +257,8 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 
 			float3 const p = ray.point(ray.min_t + t);
 
-			auto const mu = material.collision_coefficients(p, transformation, filter, worker);
+			float3 const local_p = transformation.world_to_object_point(p);
+			auto const mu = material.collision_coefficients(local_p, filter, worker);
 
 			float3 const mu_t = mu.a + mu.s;
 

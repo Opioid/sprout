@@ -8,8 +8,6 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/heatmap.hpp"
 
-#include <iostream>
-
 namespace scene::material::volumetric {
 
 Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) :

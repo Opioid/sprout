@@ -21,15 +21,6 @@ Material::CE Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*fil
 	return {absorption_coefficient_, scattering_coefficient_};
 }
 
-Material::CE Density::collision_coefficients(f_float3 p, Transformation const& transformation,
-											 Sampler_filter filter, Worker const& worker) const {
-	float3 const p_o = math::transform_point(p, transformation.world_to_object);
-
-	float const d = density(p_o, filter, worker);
-
-	return  {d * absorption_coefficient_, d * scattering_coefficient_};
-}
-
 Material::CE Density::collision_coefficients(f_float3 p, Sampler_filter filter,
 											 Worker const& worker) const {
 	float const d = density(p, filter, worker);

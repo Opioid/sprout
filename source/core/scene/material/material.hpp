@@ -86,9 +86,6 @@ public:
 	virtual CE collision_coefficients(float2 uv, Sampler_filter filter,
 									  Worker const& worker) const;
 
-	virtual CE collision_coefficients(f_float3 p, Transformation const& transformation,
-									  Sampler_filter filter, Worker const& worker) const;
-
 	virtual CE collision_coefficients(f_float3 p, Sampler_filter filter,
 									  Worker const& worker) const;
 

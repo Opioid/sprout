@@ -83,13 +83,6 @@ Material::CE Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*fi
 	return {float3::identity(), float3::identity()};
 }
 
-Material::CE Material::collision_coefficients(f_float3 /*p*/,
-											  Transformation const& /*transformation*/,
-											  Sampler_filter /*filter*/,
-											  Worker const& /*worker*/) const {
-	return {float3::identity(), float3::identity()};
-}
-
 Material::CE Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
 											  Worker const& /*worker*/) const {
 	return {float3::identity(), float3::identity()};

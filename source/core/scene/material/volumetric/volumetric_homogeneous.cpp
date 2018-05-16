@@ -22,13 +22,6 @@ Material::CE Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /
 	return {absorption_coefficient_, scattering_coefficient_};
 }
 
-Material::CE Homogeneous::collision_coefficients(f_float3 /*p*/,
-												 Transformation const& /*transformation*/,
-												 Sampler_filter /*filter*/,
-												 Worker const& /*worker*/) const {
-	return {absorption_coefficient_, scattering_coefficient_};
-}
-
 Material::CE Homogeneous::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
 												 Worker const& /*worker*/) const {
 	return {absorption_coefficient_, scattering_coefficient_};

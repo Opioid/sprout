@@ -1,19 +1,56 @@
 #include "substitute_subsurface_material.hpp"
 #include "substitute_base_sample.inl"
 #include "substitute_base_material.inl"
-#include "scene/material/material_attenuation.hpp"
-#include "scene/material/volumetric/volumetric_sample.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
+#include "scene/material/material_attenuation.hpp"
+#include "scene/material/volumetric/volumetric_octree_builder.hpp"
+#include "scene/material/volumetric/volumetric_sample.hpp"
+#include "scene/entity/composed_transformation.hpp"
+#include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector4.inl"
+#include "base/spectrum/heatmap.hpp"
 
 #include "scene/material/null/null_sample.hpp"
+
+#include <iostream>
 
 namespace scene::material::substitute {
 
 Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings) :
 	Material_base(sampler_settings, false) {}
+
+void Material_subsurface::compile() {
+//	if (density_map_.is_valid()) {
+//		auto const& texture = *density_map_.texture();
+
+//		const int3 d = texture.dimensions_3();
+
+//		float max_density = 0.f;
+//		for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
+//			max_density = std::max(texture.at_1(i), max_density);
+//		}
+
+//		float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
+
+//		float const max_extinction = math::max_component(extinction_coefficient);
+
+//		majorant_mu_t_ = max_density * max_extinction;
+
+//		volumetric::Octree_builder builder;
+//		builder.build(tree_, texture, max_extinction);
+//	}
+
+	attenuation(float3(0.25f), attenuation_distance_,
+				absorption_coefficient_, scattering_coefficient_);
+
+	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
+
+	float const max_extinction = math::max_component(extinction_coefficient);
+
+	majorant_mu_t_ = max_extinction;
+}
 
 const material::Sample& Material_subsurface::sample(f_float3 wo, const Renderstate& rs,
 													Sampler_filter filter,
@@ -24,22 +61,7 @@ const material::Sample& Material_subsurface::sample(f_float3 wo, const Rendersta
 
 		sample.set_basis(rs.geo_n, wo);
 
-//		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-
-//		if (color_map_.is_valid()) {
-//			auto& sampler = worker.sampler_2D(sampler_key(), filter);
-//			float3 const color = color_map_.sample_3(sampler, rs.uv);
-
-//			float3 absorption_coefficient;
-//			float3 scattering_coefficient;
-
-//			attenuation(color, attenuation_distance_,
-//						absorption_coefficient, scattering_coefficient);
-
-//			sample.set(absorption_coefficient, scattering_coefficient, anisotropy_);
-//		} else {
-			sample.set(anisotropy_);
-//		}
+		sample.set(anisotropy_);
 
 		return sample;
 	}
@@ -53,18 +75,14 @@ const material::Sample& Material_subsurface::sample(f_float3 wo, const Rendersta
 	sample.set(anisotropy_, sior_);
 
 	return sample;
-
-//	auto& sample = worker.sample<null::Sample>();
-
-//	sample.set_basis(rs.geo_n, wo);
-
-//	sample.set(absorption_coefficient_, scattering_coefficient_, anisotropy_);
-
-//	return sample;
 }
 
 size_t Material_subsurface::num_bytes() const {
 	return sizeof(*this);
+}
+
+void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
+	density_map_ = density_map;
 }
 
 void Material_subsurface::set_attenuation(float3 const& absorption_color,
@@ -111,13 +129,31 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Sampler_filter fil
 }
 
 Material::CE Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
-												 Worker const& worker) const {
+														 Worker const& worker) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 		float3 const color = color_map_.sample_3(sampler, uv);
 
 		float3 mu_a, mu_s;
 		attenuation(color, attenuation_distance_, mu_a, mu_s);
+std::cout << "here" << std::endl;
+		return {mu_a, mu_s};
+	}
+
+	return {absorption_coefficient_, scattering_coefficient_};
+}
+
+Material::CE Material_subsurface::collision_coefficients(f_float3 p, Sampler_filter filter,
+														 Worker const& worker) const {
+	if (density_map_.is_valid()) {
+	//	float const d = density(p, filter, worker);
+
+	//	return  {d * absorption_coefficient_, d * scattering_coefficient_};
+
+		float3 const c = color(p, filter, worker);
+
+		float3 mu_a, mu_s;
+		attenuation(c, attenuation_distance_, mu_a, mu_s);
 
 		return {mu_a, mu_s};
 	}
@@ -125,20 +161,40 @@ Material::CE Material_subsurface::collision_coefficients(float2 uv, Sampler_filt
 	return {absorption_coefficient_, scattering_coefficient_};
 }
 
-Material::CE Material_subsurface::collision_coefficients(f_float3 /*p*/,
-														 Transformation const& /*transformation*/,
-														 Sampler_filter /*filter*/,
-														 Worker const& /*worker*/) const {
-	return {absorption_coefficient_, scattering_coefficient_};
+float Material_subsurface::majorant_mu_t() const {
+	return majorant_mu_t_;
 }
 
-Material::CE Material_subsurface::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
-														 Worker const& /*worker*/) const {
-	return {absorption_coefficient_, scattering_coefficient_};
+volumetric::Octree const* Material_subsurface::volume_octree() const {
+	return nullptr;// &tree_;
+}
+
+bool Material_subsurface::is_heterogeneous_volume() const {
+	return density_map_.is_valid();
 }
 
 size_t Material_subsurface::sample_size() {
 	return sizeof(Sample_subsurface);
+}
+
+float Material_subsurface::density(f_float3 p, Sampler_filter filter, Worker const& worker) const {
+	// p is in object space already
+
+	float3 p_g = 0.5f * (float3(1.f) + p);
+
+	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
+
+	return density_map_.sample_1(sampler, p_g);
+}
+
+float3 Material_subsurface::color(f_float3 p, Sampler_filter filter, Worker const& worker) const {
+	float3 p_g = 0.5f * (float3(1.f) + p);
+
+//	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
+
+//	float const d = std::min(16.f * density_map_.sample_1(sampler, p_g), 1.f);
+
+	return math::max(spectrum::heatmap(p_g[0] + 0.15f), 0.25f);
 }
 
 }
