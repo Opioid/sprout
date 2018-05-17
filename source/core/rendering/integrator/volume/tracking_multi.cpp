@@ -18,15 +18,12 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace rendering::integrator::volume {
 
 Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings) :
 	Integrator(rng, take_settings) {}
 
-void Tracking_multi::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
 void Tracking_multi::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 /*
@@ -158,8 +155,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		return false;
 	}
 
-	SOFT_ASSERT(ray.max_t > ray.min_t);
-
 	float const d = ray.max_t;
 
 	if (d - ray.min_t < 0.0005f) {
@@ -168,6 +163,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 	//	weight = float3(1.f);
 		return true;
 	}
+
+	SOFT_ASSERT(ray.max_t > ray.min_t);
 
 	SOFT_ASSERT(!worker.interface_stack().empty());
 

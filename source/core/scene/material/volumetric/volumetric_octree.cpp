@@ -6,8 +6,6 @@
 
 namespace scene::material::volumetric {
 
-Box::Box(int3 const& min, int3 const& max) : bounds{min, max} {}
-
 Octree::Octree() : num_nodes_(0), nodes_(nullptr) {}
 
 Octree::~Octree() {
@@ -37,21 +35,25 @@ bool Octree::is_valid() const {
 }
 
 bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
-//	Box const box(int3(0), (dimensions_));
+//	Box const box{{int3(0), dimensions_}};
 
 //	return intersect(ray, 0, box, majorant_mu_t);
 
-	auto const p = ray.point(ray.min_t);
+	float3 const p = ray.point(ray.min_t) + float3(1.f);
 
-	int3 v = int3(0.5f * float3(dimensions_) * (p + float3(1.f)));
+	if (math::any_negative(p)) {
+		return false;
+	}
 
-	v[0] = std::min(v[0], dimensions_[0] - 1);
-	v[1] = std::min(v[1], dimensions_[1] - 1);
-	v[2] = std::min(v[2], dimensions_[2] - 1);
+	int3 const v = int3((0.5f * float3(dimensions_)) * p);
 
-	Box box(int3(0), (dimensions_));
+	if (math::any_greater_equal(v, dimensions_)) {
+		return false;
+	}
+/*
+	Box box{{int3(0), dimensions_}};
 
-	int32_t index = 0;
+	uint32_t index = 0;
 
 	for (uint32_t l = 0, len = deepest_uniform_level_; l < len; ++l) {
 		int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
@@ -82,6 +84,20 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 		}
 	}
 
+
+//	{
+//		float3 const min = inv_2_dimensions_ * float3(box.bounds[0]) - float3(1.f);
+//		float3 const max = inv_2_dimensions_ * float3(box.bounds[1]) - float3(1.f);
+
+//		math::AABB aabb(min, max);
+
+//		float hit_t;
+//		if (!aabb.intersect_inside(ray, hit_t)) {
+//			float3 const ping = ray.point(ray.min_t);
+//			return false;
+//		}
+//	}
+
 	auto const& node = nodes_[index];
 
 	if (0 == node.children) {
@@ -102,6 +118,62 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 	}
 
 	intersect_children(ray, node, box, majorant_mu_t);
+
+	return true;
+*/
+
+	Box box{{int3(0), dimensions_}};
+
+	uint32_t index = 0;
+
+	for (uint32_t l = 0;; ++l) {
+		int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
+
+		int3 const middle = box.bounds[0] + half;
+
+		uint32_t children = nodes_[index].children;
+
+		if (0 == children) {
+			break;
+		}
+
+		index = children;
+
+		if (v[0] < middle[0]) {
+			box.bounds[1][0] = middle[0];
+		} else {
+			box.bounds[0][0] = middle[0];
+			index += 1;
+		}
+
+		if (v[1] < middle[1]) {
+			box.bounds[1][1] = middle[1];
+		} else {
+			box.bounds[0][1] = middle[1];
+			index += 2;
+		}
+
+		if (v[2] < middle[2]) {
+			box.bounds[1][2] = middle[2];
+		} else {
+			box.bounds[0][2] = middle[2];
+			index  += 4;
+		}
+	}
+
+	float3 const min = inv_2_dimensions_ * float3(box.bounds[0]) - float3(1.f);
+	float3 const max = inv_2_dimensions_ * float3(box.bounds[1]) - float3(1.f);
+
+	math::AABB aabb(min, max);
+
+	float hit_t;
+	if (aabb.intersect_inside(ray, hit_t)) {
+		if (ray.max_t > hit_t) {
+			ray.max_t = hit_t;
+		}
+	}
+
+	majorant_mu_t = nodes_[index].majorant_mu_t;
 
 	return true;
 }
@@ -140,34 +212,34 @@ void Octree::intersect_children(math::Ray& ray, Node const& node, Box const& box
 
 	int3 const middle = box.bounds[0] + half;
 
-	Box const sub0(box.bounds[0], middle);
+	Box const sub0{{box.bounds[0], middle}};
 	intersect(ray, node.children + 0, sub0, majorant_mu_t);
 
-	Box const sub1(int3(middle[0], box.bounds[0][1], box.bounds[0][2]),
-				   int3(box.bounds[1][0], middle[1], middle[2]));
+	Box const sub1{{int3(middle[0], box.bounds[0][1], box.bounds[0][2]),
+					int3(box.bounds[1][0], middle[1], middle[2])}};
 	intersect(ray, node.children + 1, sub1, majorant_mu_t);
 
-	Box const sub2(int3(box.bounds[0][0], middle[1], box.bounds[0][2]),
-				   int3(middle[0], box.bounds[1][1], middle[2]));
+	Box const sub2{{int3(box.bounds[0][0], middle[1], box.bounds[0][2]),
+					int3(middle[0], box.bounds[1][1], middle[2])}};
 	intersect(ray, node.children + 2, sub2, majorant_mu_t);
 
-	Box const sub3(int3(middle[0], middle[1], box.bounds[0][2]),
-				   int3(box.bounds[1][0], box.bounds[1][1], middle[2]));
+	Box const sub3{{int3(middle[0], middle[1], box.bounds[0][2]),
+					int3(box.bounds[1][0], box.bounds[1][1], middle[2])}};
 	intersect(ray, node.children + 3, sub3, majorant_mu_t);
 
-	Box const sub4(int3(box.bounds[0][0], box.bounds[0][1], middle[2]),
-				   int3(middle[0], middle[1], box.bounds[1][2]));
+	Box const sub4{{int3(box.bounds[0][0], box.bounds[0][1], middle[2]),
+					int3(middle[0], middle[1], box.bounds[1][2])}};
 	intersect(ray, node.children + 4, sub4, majorant_mu_t);
 
-	Box const sub5(int3(middle[0], box.bounds[0][1], middle[2]),
-				   int3(box.bounds[1][0], middle[1], box.bounds[1][2]));
+	Box const sub5{{int3(middle[0], box.bounds[0][1], middle[2]),
+					int3(box.bounds[1][0], middle[1], box.bounds[1][2])}};
 	intersect(ray, node.children + 5, sub5, majorant_mu_t);
 
-	Box const sub6(int3(box.bounds[0][0], middle[1], middle[2]),
-				   int3(middle[0], box.bounds[1][1], box.bounds[1][2]));
+	Box const sub6{{int3(box.bounds[0][0], middle[1], middle[2]),
+					int3(middle[0], box.bounds[1][1], box.bounds[1][2])}};
 	intersect(ray, node.children + 6, sub6, majorant_mu_t);
 
-	Box const sub7(middle, box.bounds[1]);
+	Box const sub7{{middle, box.bounds[1]}};
 	intersect(ray, node.children + 7, sub7, majorant_mu_t);
 }
 

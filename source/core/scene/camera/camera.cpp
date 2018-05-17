@@ -19,7 +19,7 @@ Camera::Camera(int2 resolution) : resolution_(resolution) {}
 
 Camera::~Camera() {}
 
-void Camera::update(const Scene& scene, Worker& worker) {
+void Camera::update(Scene const& scene, Worker& worker) {
 	calculate_world_transformation();
 
 	interface_stack_.clear();

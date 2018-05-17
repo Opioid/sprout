@@ -126,14 +126,14 @@ bool Celestial_disk::intersect_p(Ray const& ray, Transformation const& transform
 }
 
 float Celestial_disk::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
-							  const Materials& /*materials*/, Sampler_filter /*filter*/,
+							  Materials const& /*materials*/, Sampler_filter /*filter*/,
 							  Worker const& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
 float3 Celestial_disk::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-									   const Materials& /*materials*/, Sampler_filter /*filter*/,
+									   Materials const& /*materials*/, Sampler_filter /*filter*/,
 									   Worker const& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return float3(0.f);

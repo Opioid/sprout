@@ -33,13 +33,12 @@ public:
 	~Worker();
 
 	void init(uint32_t id, take::Settings const& settings,
-			  const Scene& scene, uint32_t max_sample_size);
+			  Scene const& scene, uint32_t max_sample_size);
 
 	uint32_t id() const;
 
 	bool intersect(Ray& ray, Intersection& intersection) const;
 	bool intersect(Ray& ray, float& epsilon) const;
-	bool intersect(const prop::Prop* prop, Ray& ray, Intersection& intersection) const;
 
 	bool resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter);
 
@@ -50,7 +49,7 @@ public:
 
 	float masked_visibility(Ray const& ray, Sampler_filter filter) const;
 
-	const Scene& scene() const;
+	Scene const& scene() const;
 
 	shape::Node_stack& node_stack() const;
 
@@ -58,9 +57,9 @@ public:
 
 	template<typename T> T& sample() const;
 
-	const Texture_sampler_2D& sampler_2D(uint32_t key, Sampler_filter filter) const;
+	Texture_sampler_2D const& sampler_2D(uint32_t key, Sampler_filter filter) const;
 
-	const Texture_sampler_3D& sampler_3D(uint32_t key, Sampler_filter filter) const;
+	Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const;
 
 private:
 

@@ -29,7 +29,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, const Material_ptr& fallback_material) :
+Loader::Loader(resource::Manager& manager, Material_ptr const& fallback_material) :
 	resource_manager_(manager),
 	box_(std::make_shared<shape::Box>()),
 	canopy_(std::make_shared<shape::Canopy>()),

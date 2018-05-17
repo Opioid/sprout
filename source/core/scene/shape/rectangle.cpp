@@ -170,7 +170,7 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation
 }
 
 float Rectangle::opacity(Ray const& ray, Transformation const& transformation,
-						 const Materials& materials,
+						 Materials const& materials,
 						 Sampler_filter filter, Worker const& worker) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
@@ -204,7 +204,7 @@ float Rectangle::opacity(Ray const& ray, Transformation const& transformation,
 }
 
 float3 Rectangle::thin_absorption(Ray const& ray, Transformation const& transformation,
-								  const Materials& materials,
+								  Materials const& materials,
 								  Sampler_filter filter, Worker const& worker) const {
 	float3 const& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);

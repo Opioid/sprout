@@ -9,7 +9,7 @@ namespace scene::material::mix {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
-const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs,
                                          Sampler_filter filter, sampler::Sampler& sampler,
                                          Worker const& worker) const {
 	auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);
@@ -39,7 +39,7 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_materials(const Material_ptr& a, const Material_ptr& b) {
+void Material::set_materials(Material_ptr const& a, Material_ptr const& b) {
 	material_a_ = a;
 	material_b_ = b;
 }

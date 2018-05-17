@@ -809,6 +809,7 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 	Texture_adapter surface_map;
 	Texture_adapter emission_map;
 	Texture_adapter mask;
+	Texture_adapter density_map;
 	bool two_sided = false;
 	float3 color(0.6f, 0.6f, 0.6f);
 	bool use_absorption_color = false;
@@ -882,6 +883,9 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 				} else if ("Mask" == texture_description.usage) {
 					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
+				} else if ("Density" == texture_description.usage) {
+					options.set("usage", image::texture::Provider::Usage::Mask);
+					density_map = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == n.name) {
@@ -970,7 +974,7 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 
 			return material;
 		}
-	} else if (attenuation_distance > 0.f) {
+	} else if (attenuation_distance > 0.f || density_map.is_valid()) {
 		auto material = std::make_shared<substitute::Material_subsurface>(sampler_settings);
 
 		material->set_mask(mask);
@@ -978,6 +982,7 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 		material->set_normal_map(normal_map);
 		material->set_surface_map(surface_map);
 		material->set_emission_map(emission_map);
+		material->set_density_map(density_map);
 
 		material->set_color(color);
 		material->set_attenuation(use_absorption_color ? absorption_color : color,

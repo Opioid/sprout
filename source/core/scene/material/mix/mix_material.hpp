@@ -10,7 +10,7 @@ public:
 
 	Material(Sampler_settings const& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
 	                                       Sampler_filter filter, sampler::Sampler& sampler,
 										   Worker const& worker) const override final;
 
@@ -23,7 +23,7 @@ public:
 
 	virtual size_t num_bytes() const override final;
 
-	void set_materials(const Material_ptr& a, const Material_ptr& b);
+	void set_materials(Material_ptr const& a, Material_ptr const& b);
 
 private:
 

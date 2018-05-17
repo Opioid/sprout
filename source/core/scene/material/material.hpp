@@ -52,7 +52,7 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice);
 
-	virtual const Sample& sample(f_float3 wo, const Renderstate& rs, Sampler_filter filter,
+	virtual const Sample& sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
 								 sampler::Sampler& sampler, Worker const& worker) const = 0;
 
 	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
@@ -72,24 +72,19 @@ public:
 	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
 								   Sampler_filter filter, Worker const& worker) const;
 
-	virtual float3 emission( math::Ray const& ray, Transformation const& transformation,
+	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, Worker const& worker) const;
 
 	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
 										  Worker const& worker) const;
 
-	struct CE {
-		float3 a, s;
-	};
+	struct CC { float3 a, s; };
 
-	virtual CE collision_coefficients(float2 uv, Sampler_filter filter,
+	virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
 									  Worker const& worker) const;
 
-	virtual CE collision_coefficients(f_float3 p, Transformation const& transformation,
-									  Sampler_filter filter, Worker const& worker) const;
-
-	virtual CE collision_coefficients(f_float3 p, Sampler_filter filter,
+	virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
 									  Worker const& worker) const;
 
 	virtual float majorant_mu_t() const;
@@ -99,7 +94,7 @@ public:
 	virtual bool is_heterogeneous_volume() const;
 	virtual bool is_scattering_volume() const;
 
-	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
+	virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
 								  Transformation const& transformation, float area,
 								  bool importance_sampling, thread::Pool& pool);
 

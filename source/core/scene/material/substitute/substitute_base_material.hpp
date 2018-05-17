@@ -37,8 +37,8 @@ protected:
 	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 
 	template<typename Sample>
-	void set_sample(f_float3 wo, const Renderstate& rs,
-					const Texture_sampler_2D& sampler, Sample& sample) const;
+	void set_sample(f_float3 wo, Renderstate const& rs,
+					Texture_sampler_2D const& sampler, Sample& sample) const;
 
 	Texture_adapter color_map_;
 	Texture_adapter normal_map_;

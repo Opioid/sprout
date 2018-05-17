@@ -35,7 +35,7 @@ public:
 
 	virtual float pixel_solid_angle() const = 0;
 
-	void update(const Scene& scene, Worker& worker);
+	void update(Scene const& scene, Worker& worker);
 
 	virtual bool generate_ray(sampler::Camera_sample const& sample,
 							  uint32_t view, Ray& ray) const = 0;

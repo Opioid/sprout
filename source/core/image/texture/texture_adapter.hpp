@@ -23,27 +23,27 @@ public:
 
 	bool is_valid() const;
 
-	const Texture* texture() const;
+	Texture const* texture() const;
 
 	using Sampler_2D = sampler::Sampler_2D;
 
-	float  sample_1(const Sampler_2D& sampler, float2 uv) const;
-	float2 sample_2(const Sampler_2D& sampler, float2 uv) const;
-	float3 sample_3(const Sampler_2D& sampler, float2 uv) const;
+	float  sample_1(Sampler_2D const& sampler, float2 uv) const;
+	float2 sample_2(Sampler_2D const& sampler, float2 uv) const;
+	float3 sample_3(Sampler_2D const& sampler, float2 uv) const;
 
-	float  sample_1(const Sampler_2D& sampler, float2 uv, int32_t element) const;
-	float2 sample_2(const Sampler_2D& sampler, float2 uv, int32_t element) const;
-	float3 sample_3(const Sampler_2D& sampler, float2 uv, int32_t element) const;
+	float  sample_1(Sampler_2D const& sampler, float2 uv, int32_t element) const;
+	float2 sample_2(Sampler_2D const& sampler, float2 uv, int32_t element) const;
+	float3 sample_3(Sampler_2D const& sampler, float2 uv, int32_t element) const;
 
-	float2 address(const Sampler_2D& sampler, float2 uv) const;
+	float2 address(Sampler_2D const& sampler, float2 uv) const;
 
 	using Sampler_3D = sampler::Sampler_3D;
 
-	float  sample_1(const Sampler_3D& sampler, float3 const& uvw) const;
-	float2 sample_2(const Sampler_3D& sampler, float3 const& uvw) const;
-	float3 sample_3(const Sampler_3D& sampler, float3 const& uvw) const;
+	float  sample_1(Sampler_3D const& sampler, float3 const& uvw) const;
+	float2 sample_2(Sampler_3D const& sampler, float3 const& uvw) const;
+	float3 sample_3(Sampler_3D const& sampler, float3 const& uvw) const;
 
-	float3 address(const Sampler_3D& sampler, float3 const& uvw) const;
+	float3 address(Sampler_3D const& sampler, float3 const& uvw) const;
 
 private:
 

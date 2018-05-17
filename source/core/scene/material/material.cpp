@@ -78,19 +78,12 @@ float3 Material::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/
 	return float3::identity();
 }
 
-Material::CE Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+Material::CC Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
 											  Worker const& /*worker*/) const {
 	return {float3::identity(), float3::identity()};
 }
 
-Material::CE Material::collision_coefficients(f_float3 /*p*/,
-											  Transformation const& /*transformation*/,
-											  Sampler_filter /*filter*/,
-											  Worker const& /*worker*/) const {
-	return {float3::identity(), float3::identity()};
-}
-
-Material::CE Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
+Material::CC Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
 											  Worker const& /*worker*/) const {
 	return {float3::identity(), float3::identity()};
 }
@@ -111,7 +104,7 @@ bool Material::is_scattering_volume() const {
 	return true;
 }
 
-void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+void Material::prepare_sampling(shape::Shape const& /*shape*/, uint32_t /*part*/,
 								Transformation const& /*transformation*/, float /*area*/,
 								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
 

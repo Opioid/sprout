@@ -23,8 +23,8 @@ public:
 protected:
 
 	template<typename Sample>
-	void set_coating_basis(f_float3 wo, const Renderstate& rs,
-						   const Texture_sampler_2D& sampler, Sample& sample) const;
+	void set_coating_basis(f_float3 wo, Renderstate const& rs,
+						   Texture_sampler_2D const& sampler, Sample& sample) const;
 
 	Texture_adapter coating_weight_map_;
 	Texture_adapter coating_normal_map_;
@@ -38,7 +38,7 @@ public:
 
 	Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   Worker const& worker) const override final;
 
@@ -53,7 +53,7 @@ public:
 
 	Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   Worker const& worker) const override final;
 

@@ -10,7 +10,7 @@ namespace scene::material::substitute {
 Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided) :
 	Material_coating<coating::Clearcoat>(sampler_settings, two_sided) {}
 
-const material::Sample& Material_clearcoat::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Material_clearcoat::sample(f_float3 wo, Renderstate const& rs,
 												   Sampler_filter filter,
 												   sampler::Sampler& /*sampler*/,
 												   Worker const& worker) const{
@@ -43,7 +43,7 @@ size_t Material_clearcoat::sample_size() {
 Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided) :
 	Material_coating<coating::Thinfilm>(sampler_settings, two_sided) {}
 
-const material::Sample& Material_thinfilm::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Material_thinfilm::sample(f_float3 wo, Renderstate const& rs,
 												  Sampler_filter filter,
 												  sampler::Sampler& /*sampler*/,
 												  Worker const& worker) const {

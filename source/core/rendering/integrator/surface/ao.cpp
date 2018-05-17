@@ -16,7 +16,7 @@ AO::AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const&
 	settings_(settings),
 	sampler_(rng) {}
 
-void AO::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 

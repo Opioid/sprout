@@ -5,6 +5,7 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -17,9 +18,6 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-#include <iostream>
-#include "math/print.hpp"
-
 #include "base/debug/assert.hpp"
 
 namespace rendering::integrator::volume {
@@ -28,7 +26,7 @@ Tracking_single::Tracking_single(rnd::Generator& rng, take::Settings const& take
 	Integrator(rng, take_settings),
 	sampler_(rng) {}
 
-void Tracking_single::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
@@ -257,7 +255,8 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 
 			float3 const p = ray.point(ray.min_t + t);
 
-			auto const mu = material.collision_coefficients(p, transformation, filter, worker);
+			float3 const local_p = transformation.world_to_object_point(p);
+			auto const mu = material.collision_coefficients(local_p, filter, worker);
 
 			float3 const mu_t = mu.a + mu.s;
 

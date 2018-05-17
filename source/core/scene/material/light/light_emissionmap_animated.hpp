@@ -18,7 +18,7 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice) override final;
 
-	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   Worker const& worker) const override;
 
@@ -40,7 +40,7 @@ public:
 	virtual float opacity(float2 uv, float time, Sampler_filter filter,
 						  Worker const& worker) const override final;
 
-	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
+	virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
 								  Transformation const& transformation,
 								  float area, bool importance_sampling,
 								  thread::Pool& pool) override final;

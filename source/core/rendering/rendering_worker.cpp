@@ -48,8 +48,7 @@ float4 Worker::li(Ray& ray, const scene::prop::Interface_stack& interface_stack)
 	scene::prop::Intersection intersection;
 
 	if (!interface_stack_.empty()) {
-		float3 vli;
-		float3 vtr;
+		float3 vli, vtr;
 		if (!volume_integrator_->integrate(ray, intersection, Sampler_filter::Undefined, *this,
 										   vli, vtr)) {
 			return float4(vli, spectrum::luminance(vli));

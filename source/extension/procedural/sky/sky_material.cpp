@@ -26,7 +26,7 @@ using namespace scene;
 
 Sky_material::Sky_material(Model& model) : Material(model) {}
 
-const material::Sample& Sky_material::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Sky_material::sample(f_float3 wo, Renderstate const& rs,
 											 Sampler_filter /*filter*/,
 											 sampler::Sampler& /*sampler*/,
 											 Worker const& worker) const {
@@ -51,7 +51,7 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky(model_.zenith());
 }
 
-void Sky_material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+void Sky_material::prepare_sampling(shape::Shape const& /*shape*/, uint32_t /*part*/,
 									Transformation const& /*transformation*/,
 									float /*area*/, bool /*importance_sampling*/,
 									thread::Pool& /*pool*/) {
@@ -70,7 +70,7 @@ Sky_baked_material::Sky_baked_material(Model& model) : Material(model) {}
 
 Sky_baked_material::~Sky_baked_material() {}
 
-const material::Sample& Sky_baked_material::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Sky_baked_material::sample(f_float3 wo, Renderstate const& rs,
 												   Sampler_filter filter,
 												   sampler::Sampler& /*sampler*/,
 												   Worker const& worker) const {
@@ -116,7 +116,7 @@ float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter,
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
+void Sky_baked_material::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
 										  Transformation const& transformation, float /*area*/,
 										  bool importance_sampling, thread::Pool& /*pool*/) {
 	if (!model_.init()) {
