@@ -142,7 +142,7 @@ void Octree_builder::serialize(Build_node* node, uint32_t current, uint32_t& nex
 	auto& n = nodes_[current];
 
 	if (node->children[0]) {
-		n.children = next + 0;
+		n.children = next;
 
 		current = next;
 		next += 8;
