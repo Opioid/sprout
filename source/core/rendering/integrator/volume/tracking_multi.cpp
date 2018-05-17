@@ -155,8 +155,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		return false;
 	}
 
-	SOFT_ASSERT(ray.max_t > ray.min_t);
-
 	float const d = ray.max_t;
 
 	if (d - ray.min_t < 0.0005f) {
@@ -165,6 +163,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 	//	weight = float3(1.f);
 		return true;
 	}
+
+	SOFT_ASSERT(ray.max_t > ray.min_t);
 
 	SOFT_ASSERT(!worker.interface_stack().empty());
 

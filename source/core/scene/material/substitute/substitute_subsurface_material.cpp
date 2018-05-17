@@ -22,34 +22,34 @@ Material_subsurface::Material_subsurface(Sampler_settings const& sampler_setting
 	Material_base(sampler_settings, false) {}
 
 void Material_subsurface::compile() {
-//	if (density_map_.is_valid()) {
-//		auto const& texture = *density_map_.texture();
+	if (density_map_.is_valid()) {
+		auto const& texture = *density_map_.texture();
 
-//		const int3 d = texture.dimensions_3();
+		const int3 d = texture.dimensions_3();
 
-//		float max_density = 0.f;
-//		for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
-//			max_density = std::max(texture.at_1(i), max_density);
-//		}
+		float max_density = 0.f;
+		for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
+			max_density = std::max(texture.at_1(i), max_density);
+		}
 
-//		float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
+		float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-//		float const max_extinction = math::max_component(extinction_coefficient);
+		float const max_extinction = math::max_component(extinction_coefficient);
 
-//		majorant_mu_t_ = max_density * max_extinction;
+		majorant_mu_t_ = max_density * max_extinction;
 
-//		volumetric::Octree_builder builder;
-//		builder.build(tree_, texture, max_extinction);
-//	}
+		volumetric::Octree_builder builder;
+		builder.build(tree_, texture, max_extinction);
+	}
 
-	attenuation(float3(0.25f), attenuation_distance_,
-				absorption_coefficient_, scattering_coefficient_);
+//	attenuation(float3(0.25f), attenuation_distance_,
+//				absorption_coefficient_, scattering_coefficient_);
 
-	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
+//	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-	float const max_extinction = math::max_component(extinction_coefficient);
+//	float const max_extinction = math::max_component(extinction_coefficient);
 
-	majorant_mu_t_ = max_extinction;
+//	majorant_mu_t_ = max_extinction;
 }
 
 const material::Sample& Material_subsurface::sample(f_float3 wo, Renderstate const& rs,
@@ -145,23 +145,23 @@ Material::CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filt
 
 Material::CC Material_subsurface::collision_coefficients(f_float3 p, Sampler_filter filter,
 														 Worker const& worker) const {
-	SOFT_ASSERT(density_map_.is_valid);
+	SOFT_ASSERT(density_map_.is_valid());
 
-	//	float const d = density(p, filter, worker);
+	float const d = density(p, filter, worker);
 
-	//	return  {d * absorption_coefficient_, d * scattering_coefficient_};
+	return  {d * absorption_coefficient_, d * scattering_coefficient_};
 
-	float3 p_g = 0.5f * (float3(1.f) + p);
+//	float3 p_g = 0.5f * (float3(1.f) + p);
 
-	float const x = 1.f - (p_g[1] - 0.2f);
-	float const d = std::clamp(x * x, 0.01f, 1.f);
+//	float const x = 1.f - (p_g[1] - 0.2f);
+//	float const d = std::clamp(x * x, 0.01f, 1.f);
 
-	float3 const c = color(p, filter, worker);
+//	float3 const c = color(p, filter, worker);
 
-	float3 mu_a, mu_s;
-	attenuation(c, attenuation_distance_, mu_a, mu_s);
+//	float3 mu_a, mu_s;
+//	attenuation(c, attenuation_distance_, mu_a, mu_s);
 
-	return {d * mu_a, d * mu_s};
+//	return {d * mu_a, d * mu_s};
 }
 
 float Material_subsurface::majorant_mu_t() const {
@@ -169,7 +169,8 @@ float Material_subsurface::majorant_mu_t() const {
 }
 
 volumetric::Octree const* Material_subsurface::volume_octree() const {
-	return nullptr;// &tree_;
+//	return nullptr;
+	return &tree_;
 }
 
 bool Material_subsurface::is_heterogeneous_volume() const {

@@ -278,6 +278,16 @@ static bool any_greater_one(Vector3<T> const& v) {
 }
 
 template<typename T>
+static constexpr bool any_greater_equal(Vector3<T> const& a, Vector3<T> const& b) {
+	return a[0] >= b[0] || a[1] >= b[1] || a[2] >= b[2];
+}
+
+template<typename T>
+static constexpr bool any_lesser(Vector3<T> const& a, Vector3<T> const& b) {
+	return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
+}
+
+template<typename T>
 static bool any_nan(Vector3<T> const& v) {
 	return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]);
 }
