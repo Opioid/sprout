@@ -86,7 +86,7 @@ public:
 	Entity* entity(size_t index) const;
 	Entity* entity(std::string_view name) const;
 
-	const std::vector<light::Light*>& lights() const;
+	std::vector<light::Light*> const& lights() const;
 
 	struct Light { const light::Light& ref; float pdf; };
 	Light light(uint32_t id) const;

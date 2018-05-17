@@ -14,7 +14,7 @@ namespace scene::prop {
 
 Prop::~Prop() {}
 
-void Prop::set_shape_and_materials(Shape_ptr const& shape, const Materials& materials) {
+void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& materials) {
 	set_shape(shape);
 
 	parts_.resize(shape->num_parts());

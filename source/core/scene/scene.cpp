@@ -137,7 +137,7 @@ entity::Entity* Scene::entity(std::string_view name) const {
 	return e->second;
 }
 
-const std::vector<light::Light*>& Scene::lights() const {
+std::vector<light::Light*> const& Scene::lights() const {
 	return lights_;
 }
 
@@ -295,7 +295,7 @@ entity::Dummy* Scene::create_dummy(std::string const& name) {
 	return dummy;
 }
 
-Prop* Scene::create_prop(Shape_ptr const& shape, const Materials& materials) {
+Prop* Scene::create_prop(Shape_ptr const& shape, Materials const& materials) {
 	prop::Prop* prop = new prop::Prop;
 
 	prop->set_shape_and_materials(shape, materials);
@@ -319,7 +319,7 @@ Prop* Scene::create_prop(Shape_ptr const& shape, const Materials& materials) {
 	return prop;
 }
 
-prop::Prop* Scene::create_prop(Shape_ptr const& shape, const Materials& materials,
+prop::Prop* Scene::create_prop(Shape_ptr const& shape, Materials const& materials,
 							   std::string const& name) {
 	prop::Prop* prop = create_prop(shape, materials);
 
@@ -364,7 +364,7 @@ void Scene::add_material(Material_ptr const& material) {
 	materials_.push_back(material);
 }
 
-void Scene::add_animation(const std::shared_ptr<animation::Animation>& animation) {
+void Scene::add_animation(std::shared_ptr<animation::Animation> const& animation) {
     animations_.push_back(animation);
 }
 
