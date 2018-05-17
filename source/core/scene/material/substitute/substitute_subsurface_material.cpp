@@ -136,7 +136,7 @@ Material::CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filt
 
 		float3 mu_a, mu_s;
 		attenuation(color, attenuation_distance_, mu_a, mu_s);
-std::cout << "here" << std::endl;
+
 		return {mu_a, mu_s};
 	}
 

@@ -22,9 +22,9 @@ public:
 	Sampler_cache();
 	~Sampler_cache();
 
-	const Texture_sampler_2D& sampler_2D(uint32_t key, Sampler_filter filter) const;
+	Texture_sampler_2D const& sampler_2D(uint32_t key, Sampler_filter filter) const;
 
-	const Texture_sampler_3D& sampler_3D(uint32_t key, Sampler_filter filter) const;
+	Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const;
 
 private:
 

@@ -26,7 +26,7 @@ Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_set
 	settings_(settings),
 	sampler_(rng) {}
 
-void Pathtracer_DL::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Pathtracer_DL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 

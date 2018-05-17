@@ -30,7 +30,7 @@ Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_s
 
 Pathtracer_MIS::~Pathtracer_MIS() {}
 
-void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
+void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
 	uint32_t const num_lights = static_cast<uint32_t>(scene.lights().size());
 
 	num_lights_reciprocal_ = num_lights > 0 ? 1.f / static_cast<float>(num_lights) : 0.f;

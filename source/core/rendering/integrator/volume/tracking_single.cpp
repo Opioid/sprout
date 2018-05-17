@@ -26,7 +26,7 @@ Tracking_single::Tracking_single(rnd::Generator& rng, take::Settings const& take
 	Integrator(rng, take_settings),
 	sampler_(rng) {}
 
-void Tracking_single::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 

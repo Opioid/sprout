@@ -19,7 +19,7 @@ using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 Worker::Worker() : node_stack_(128 + 16) {}
 
 void Worker::init(uint32_t id, take::Settings const& settings,
-				  const Scene& scene, uint32_t max_sample_size) {
+				  Scene const& scene, uint32_t max_sample_size) {
 	id_ = id;
 	rng_ = rnd::Generator(0, id);
 	settings_ = settings;
@@ -40,15 +40,6 @@ bool Worker::intersect(Ray& ray, Intersection& intersection) const {
 
 bool Worker::intersect(Ray& ray, float& epsilon) const {
 	return scene_->intersect(ray, node_stack_, epsilon);
-}
-
-bool Worker::intersect(const prop::Prop* prop, Ray& ray, Intersection& intersection) const {
-	bool const hit = prop->intersect(ray, node_stack_, intersection.geo);
-	if (hit) {
-		intersection.prop = prop;
-	}
-
-	return hit;
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter) {
@@ -96,7 +87,7 @@ float Worker::masked_visibility(Ray const& ray, Sampler_filter filter) const {
 	return 1.f - scene_->opacity(ray, filter, *this);
 }
 
-const Scene& Worker::scene() const {
+Scene const& Worker::scene() const {
 	return *scene_;
 }
 
@@ -108,11 +99,11 @@ material::Sample_cache& Worker::sample_cache() const {
 	return sample_cache_;
 }
 
-const Texture_sampler_2D& Worker::sampler_2D(uint32_t key, Sampler_filter filter) const {
+Texture_sampler_2D const& Worker::sampler_2D(uint32_t key, Sampler_filter filter) const {
 	return sampler_cache_.sampler_2D(key, filter);
 }
 
-const Texture_sampler_3D& Worker::sampler_3D(uint32_t key, Sampler_filter filter) const {
+Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Sampler_filter filter) const {
 	return sampler_cache_.sampler_3D(key, filter);
 }
 

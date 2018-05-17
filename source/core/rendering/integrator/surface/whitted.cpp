@@ -22,7 +22,7 @@ Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings,
 	settings_(settings),
 	sampler_(rng) {}
 
-void Whitted::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
+void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
 	uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
 	sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
 }
