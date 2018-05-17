@@ -39,7 +39,7 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_materials(const Material_ptr& a, const Material_ptr& b) {
+void Material::set_materials(Material_ptr const& a, Material_ptr const& b) {
 	material_a_ = a;
 	material_b_ = b;
 }

@@ -17,12 +17,12 @@ float3 Homogeneous::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filte
 	return absorption_coefficient_;
 }
 
-Material::CE Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+Material::CC Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
 												 Worker const& /*worker*/) const {
 	return {absorption_coefficient_, scattering_coefficient_};
 }
 
-Material::CE Homogeneous::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
+Material::CC Homogeneous::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
 												 Worker const& /*worker*/) const {
 	return {absorption_coefficient_, scattering_coefficient_};
 }

@@ -128,7 +128,7 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Sampler_filter fil
 	return absorption_coefficient_;
 }
 
-Material::CE Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
+Material::CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
 														 Worker const& worker) const {
 	if (color_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -143,22 +143,25 @@ std::cout << "here" << std::endl;
 	return {absorption_coefficient_, scattering_coefficient_};
 }
 
-Material::CE Material_subsurface::collision_coefficients(f_float3 p, Sampler_filter filter,
+Material::CC Material_subsurface::collision_coefficients(f_float3 p, Sampler_filter filter,
 														 Worker const& worker) const {
-	if (density_map_.is_valid()) {
+	SOFT_ASSERT(density_map_.is_valid);
+
 	//	float const d = density(p, filter, worker);
 
 	//	return  {d * absorption_coefficient_, d * scattering_coefficient_};
 
-		float3 const c = color(p, filter, worker);
+	float3 p_g = 0.5f * (float3(1.f) + p);
 
-		float3 mu_a, mu_s;
-		attenuation(c, attenuation_distance_, mu_a, mu_s);
+	float const x = 1.f - (p_g[1] - 0.2f);
+	float const d = std::clamp(x * x, 0.01f, 1.f);
 
-		return {mu_a, mu_s};
-	}
+	float3 const c = color(p, filter, worker);
 
-	return {absorption_coefficient_, scattering_coefficient_};
+	float3 mu_a, mu_s;
+	attenuation(c, attenuation_distance_, mu_a, mu_s);
+
+	return {d * mu_a, d * mu_s};
 }
 
 float Material_subsurface::majorant_mu_t() const {
@@ -194,7 +197,12 @@ float3 Material_subsurface::color(f_float3 p, Sampler_filter filter, Worker cons
 
 //	float const d = std::min(16.f * density_map_.sample_1(sampler, p_g), 1.f);
 
-	return math::max(spectrum::heatmap(p_g[0] + 0.15f), 0.25f);
+	float const x = 1.f - (p_g[1] - 0.5f);
+	float const d = std::clamp(x * x, 0.1f, 1.f);
+
+//	return float3(d);
+
+	return math::max(d * spectrum::heatmap(p_g[0] + 0.15f), 0.25f);
 }
 
 }

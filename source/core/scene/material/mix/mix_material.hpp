@@ -23,7 +23,7 @@ public:
 
 	virtual size_t num_bytes() const override final;
 
-	void set_materials(const Material_ptr& a, const Material_ptr& b);
+	void set_materials(Material_ptr const& a, Material_ptr const& b);
 
 private:
 

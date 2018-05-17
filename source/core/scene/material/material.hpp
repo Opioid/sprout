@@ -72,21 +72,19 @@ public:
 	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
 								   Sampler_filter filter, Worker const& worker) const;
 
-	virtual float3 emission( math::Ray const& ray, Transformation const& transformation,
+	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
 							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, Worker const& worker) const;
 
 	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
 										  Worker const& worker) const;
 
-	struct CE {
-		float3 a, s;
-	};
+	struct CC { float3 a, s; };
 
-	virtual CE collision_coefficients(float2 uv, Sampler_filter filter,
+	virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
 									  Worker const& worker) const;
 
-	virtual CE collision_coefficients(f_float3 p, Sampler_filter filter,
+	virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
 									  Worker const& worker) const;
 
 	virtual float majorant_mu_t() const;

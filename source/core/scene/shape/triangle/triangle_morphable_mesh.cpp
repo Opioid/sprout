@@ -143,7 +143,7 @@ bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transform
 }
 
 float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformation,
-							  const Materials& materials,
+							  Materials const& materials,
 							  Sampler_filter filter, Worker const& worker) const {
 	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -155,7 +155,7 @@ float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformati
 }
 
 float3 Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
-									   const Materials& materials,
+									   Materials const& materials,
 									   Sampler_filter filter, Worker const& worker) const {
 	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);

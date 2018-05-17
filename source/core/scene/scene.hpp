@@ -102,9 +102,9 @@ public:
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(std::string const& name);
 
-	Prop* create_prop(const Shape_ptr& shape, const Materials& materials);
+	Prop* create_prop(Shape_ptr const& shape, Materials const& materials);
 
-	Prop* create_prop(const Shape_ptr& shape, const Materials& materials,
+	Prop* create_prop(Shape_ptr const& shape, Materials const& materials,
 					  std::string const& name);
 
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
@@ -113,8 +113,8 @@ public:
 	void add_extension(Entity* extension);
 	void add_extension(Entity* extension, std::string const& name);
 
-	void add_material(const Material_ptr& material);
-	void add_animation(const std::shared_ptr<animation::Animation>& animation);
+	void add_material(Material_ptr const& material);
+	void add_animation(std::shared_ptr<animation::Animation> const& animation);
 
 	void create_animation_stage(Entity* entity, animation::Animation* animation);
 

@@ -11,9 +11,6 @@ namespace image::texture { class Texture; }
 namespace scene::material::volumetric {
 
 struct Box {
-	Box() = default;
-	Box(int3 const& min, int3 const& max);
-
 	int3 bounds[2];
 };
 

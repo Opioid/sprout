@@ -78,12 +78,12 @@ float3 Material::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/
 	return float3::identity();
 }
 
-Material::CE Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+Material::CC Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
 											  Worker const& /*worker*/) const {
 	return {float3::identity(), float3::identity()};
 }
 
-Material::CE Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
+Material::CC Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
 											  Worker const& /*worker*/) const {
 	return {float3::identity(), float3::identity()};
 }

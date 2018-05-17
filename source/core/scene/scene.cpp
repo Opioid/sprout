@@ -295,7 +295,7 @@ entity::Dummy* Scene::create_dummy(std::string const& name) {
 	return dummy;
 }
 
-Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
+Prop* Scene::create_prop(Shape_ptr const& shape, const Materials& materials) {
 	prop::Prop* prop = new prop::Prop;
 
 	prop->set_shape_and_materials(shape, materials);
@@ -319,7 +319,7 @@ Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials) {
 	return prop;
 }
 
-prop::Prop* Scene::create_prop(const Shape_ptr& shape, const Materials& materials,
+prop::Prop* Scene::create_prop(Shape_ptr const& shape, const Materials& materials,
 							   std::string const& name) {
 	prop::Prop* prop = create_prop(shape, materials);
 
@@ -360,7 +360,7 @@ void Scene::add_extension(Entity* extension, std::string const& name) {
 	add_named_entity(extension, name);
 }
 
-void Scene::add_material(const Material_ptr& material) {
+void Scene::add_material(Material_ptr const& material) {
 	materials_.push_back(material);
 }
 
