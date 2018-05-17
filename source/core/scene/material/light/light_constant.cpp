@@ -11,7 +11,7 @@ namespace scene::material::light {
 Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided) :
 	Material(sampler_settings, two_sided) {}
 
-const material::Sample& Constant::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Constant::sample(f_float3 wo, Renderstate const& rs,
 										 Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
 										 Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();

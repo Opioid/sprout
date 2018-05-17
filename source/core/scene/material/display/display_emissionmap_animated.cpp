@@ -20,7 +20,7 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
 								emission_map, emission_factor, animation_duration)
 {}
 
-const material::Sample& Emissionmap_animated::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Emissionmap_animated::sample(f_float3 wo, Renderstate const& rs,
 													 Sampler_filter filter,
 													 sampler::Sampler& /*sampler*/,
 													 Worker const& worker) const {

@@ -13,7 +13,7 @@ Material::Material(Sampler_settings const& sampler_settings) :
 
 Material::~Material() {}
 
-const material::Sample& Material::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs,
 										 Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
 										 Worker const& worker) const {
 	if (rs.subsurface) {

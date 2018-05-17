@@ -52,7 +52,7 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice);
 
-	virtual const Sample& sample(f_float3 wo, const Renderstate& rs, Sampler_filter filter,
+	virtual const Sample& sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
 								 sampler::Sampler& sampler, Worker const& worker) const = 0;
 
 	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
@@ -94,7 +94,7 @@ public:
 	virtual bool is_heterogeneous_volume() const;
 	virtual bool is_scattering_volume() const;
 
-	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
+	virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
 								  Transformation const& transformation, float area,
 								  bool importance_sampling, thread::Pool& pool);
 

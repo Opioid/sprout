@@ -27,51 +27,51 @@ inline bool Adapter::is_valid() const {
 	return !texture_ == false;
 }
 
-inline const Texture* Adapter::texture() const {
+inline Texture const* Adapter::texture() const {
 	return texture_.get();
 }
 
-inline float Adapter::sample_1(const Sampler_2D& sampler, float2 uv) const {
+inline float Adapter::sample_1(Sampler_2D const& sampler, float2 uv) const {
 	return sampler.sample_1(*texture_, scale_ * uv);
 }
 
-inline float2 Adapter::sample_2(const Sampler_2D& sampler, float2 uv) const {
+inline float2 Adapter::sample_2(Sampler_2D const& sampler, float2 uv) const {
 	return sampler.sample_2(*texture_, scale_ * uv);
 }
 
-inline float3 Adapter::sample_3(const Sampler_2D& sampler, float2 uv) const {
+inline float3 Adapter::sample_3(Sampler_2D const& sampler, float2 uv) const {
 	return sampler.sample_3(*texture_, scale_ * uv);
 }
 
-inline float Adapter::sample_1(const Sampler_2D& sampler, float2 uv, int32_t element) const {
+inline float Adapter::sample_1(Sampler_2D const& sampler, float2 uv, int32_t element) const {
 	return sampler.sample_1(*texture_, scale_ * uv, element);
 }
 
-inline float2 Adapter::sample_2(const Sampler_2D& sampler, float2 uv, int32_t element) const {
+inline float2 Adapter::sample_2(Sampler_2D const& sampler, float2 uv, int32_t element) const {
 	return sampler.sample_2(*texture_, scale_ * uv, element);
 }
 
-inline float3 Adapter::sample_3(const Sampler_2D& sampler, float2 uv, int32_t element) const {
+inline float3 Adapter::sample_3(Sampler_2D const& sampler, float2 uv, int32_t element) const {
 	return sampler.sample_3(*texture_, scale_ * uv, element);
 }
 
-inline float2 Adapter::address(const Sampler_2D& sampler, float2 uv) const {
+inline float2 Adapter::address(Sampler_2D const& sampler, float2 uv) const {
 	return sampler.address(scale_ * uv);
 }
 
-inline float Adapter::sample_1(const Sampler_3D& sampler, float3 const& uvw) const {
+inline float Adapter::sample_1(Sampler_3D const& sampler, float3 const& uvw) const {
 	return sampler.sample_1(*texture_, uvw);
 }
 
-inline float2 Adapter::sample_2(const Sampler_3D& sampler, float3 const& uvw) const {
+inline float2 Adapter::sample_2(Sampler_3D const& sampler, float3 const& uvw) const {
 	return sampler.sample_2(*texture_, uvw);
 }
 
-inline float3 Adapter::sample_3(const Sampler_3D& sampler, float3 const& uvw) const {
+inline float3 Adapter::sample_3(Sampler_3D const& sampler, float3 const& uvw) const {
 	return sampler.sample_3(*texture_, uvw);
 }
 
-inline float3 Adapter::address(const Sampler_3D& sampler, float3 const& uvw) const {
+inline float3 Adapter::address(Sampler_3D const& sampler, float3 const& uvw) const {
 	return sampler.address(uvw);
 }
 

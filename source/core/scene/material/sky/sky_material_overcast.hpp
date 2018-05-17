@@ -12,7 +12,7 @@ public:
 
 	Material_overcast(Sampler_settings const& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(f_float3 wo, const Renderstate& rs,
+	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
 										   Sampler_filter filter, sampler::Sampler& sampler,
 										   Worker const& worker) const override final;
 

@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_HELPER_HPP
 
 #include "image/texture/texture_types.hpp"
+#include "image/texture/texture_adapter.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "base/math/vector3.inl"
 
@@ -13,9 +14,9 @@
 namespace scene::material {
 
 static inline float3 sample_normal(f_float3 wo,
-								   const Renderstate& rs,
-								   const image::texture::Adapter& map,
-								   const image::texture::sampler::Sampler_2D& sampler) {
+								   Renderstate const& rs,
+								   image::texture::Adapter const& map,
+								   image::texture::sampler::Sampler_2D const& sampler) {
 	float3 const nm = map.sample_3(sampler, rs.uv);
 	float3 const n  = math::normalize(rs.tangent_to_world(nm));
 

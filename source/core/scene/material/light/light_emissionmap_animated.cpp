@@ -34,7 +34,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 	}
 }
 
-const material::Sample& Emissionmap_animated::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Emissionmap_animated::sample(f_float3 wo, Renderstate const& rs,
 													 Sampler_filter filter,
 													 sampler::Sampler& /*sampler*/,
 													 Worker const& worker) const {
@@ -94,7 +94,7 @@ float Emissionmap_animated::opacity(float2 uv, float /*time*/, Sampler_filter fi
 	}
 }
 
-void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
+void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
 											Transformation const& /*transformation*/,
 											float /*area*/, bool importance_sampling,
 											thread::Pool& pool) {

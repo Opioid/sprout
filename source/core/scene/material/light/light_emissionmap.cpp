@@ -19,7 +19,7 @@ Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_side
 
 Emissionmap::~Emissionmap() {}
 
-const material::Sample& Emissionmap::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Emissionmap::sample(f_float3 wo, Renderstate const& rs,
 											Sampler_filter filter, sampler::Sampler& /*sampler*/,
 											Worker const& worker) const {
 	auto& sample = worker.sample<Sample>();
@@ -67,7 +67,7 @@ float Emissionmap::emission_pdf(float2 uv, Sampler_filter filter, Worker const& 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
+void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
 								   Transformation const& /*transformation*/,
 								   float /*area*/, bool importance_sampling,
 								   thread::Pool& pool) {

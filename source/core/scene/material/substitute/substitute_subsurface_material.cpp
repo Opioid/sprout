@@ -52,7 +52,7 @@ void Material_subsurface::compile() {
 	majorant_mu_t_ = max_extinction;
 }
 
-const material::Sample& Material_subsurface::sample(f_float3 wo, const Renderstate& rs,
+const material::Sample& Material_subsurface::sample(f_float3 wo, Renderstate const& rs,
 													Sampler_filter filter,
 													sampler::Sampler& /*sampler*/,
 													Worker const& worker) const {
