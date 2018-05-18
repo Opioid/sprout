@@ -12,9 +12,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace rendering::integrator::volume {
 
 // Code for hetereogeneous transmittance from:
