@@ -164,8 +164,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 		return true;
 	}
 
-	SOFT_ASSERT(ray.max_t > ray.min_t);
-
 	SOFT_ASSERT(!worker.interface_stack().empty());
 
 	auto const interface = worker.interface_stack().top();
@@ -194,24 +192,19 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
 			float3 w(1.f);
 			for (;local_ray.min_t < d;) {
-				float mt;
-				if (!tree->intersect(local_ray, mt)) {
-					li = float3(0.f);
-					transmittance = w;
-					return true;
-				}
+				if (float mt; tree->intersect(local_ray, mt)) {
+					if (float t; Tracking::track(local_ray, mt, material, filter,
+												 rng_, worker, t, w)) {
+						intersection.prop = interface->prop;
+						intersection.geo.p = ray.point(t);
+						intersection.geo.uv = interface->uv;
+						intersection.geo.part = interface->part;
+						intersection.geo.subsurface = true;
 
-				float t;
-				if (Tracking::track(local_ray, mt, material, filter, rng_, worker, t, w)) {
-					intersection.prop = interface->prop;
-					intersection.geo.p = ray.point(t);
-					intersection.geo.uv = interface->uv;
-					intersection.geo.part = interface->part;
-					intersection.geo.subsurface = true;
-
-					li = float3(0.f);
-					transmittance = w;
-					return true;
+						li = float3(0.f);
+						transmittance = w;
+						return true;
+					}
 				}
 
 				local_ray.min_t = local_ray.max_t + 0.00001f;

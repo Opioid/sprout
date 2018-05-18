@@ -27,7 +27,7 @@ public:
 	Octree();
 	~Octree();
 
-	Node* allocate_nodes(uint32_t num_nodes, uint32_t deepest_uniform_level);
+	Node* allocate_nodes(uint32_t num_nodes);
 
 	void set_dimensions(int3 const& dimensions);
 
@@ -43,7 +43,6 @@ private:
 							float& majorant_mu_t) const;
 
 	uint32_t num_nodes_;
-	uint32_t deepest_uniform_level_;
 	Node*    nodes_;
 
 	int3 dimensions_;

@@ -4,6 +4,9 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene::material::volumetric {
 
 Octree::Octree() : num_nodes_(0), nodes_(nullptr) {}
@@ -12,15 +15,13 @@ Octree::~Octree() {
 	memory::free_aligned(nodes_);
 }
 
-Octree::Node* Octree::allocate_nodes(uint32_t num_nodes, uint32_t deepest_uniform_level) {
+Octree::Node* Octree::allocate_nodes(uint32_t num_nodes) {
 	if (num_nodes != num_nodes_) {
 		num_nodes_ = num_nodes;
 
 		memory::free_aligned(nodes_);
 		nodes_ = memory::allocate_aligned<Node>(num_nodes);
 	}
-
-	deepest_uniform_level_ = deepest_uniform_level;
 
 	return nodes_;
 }
@@ -35,9 +36,11 @@ bool Octree::is_valid() const {
 }
 
 bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
-//	Box const box{{int3(0), dimensions_}};
+//	{
+//		Box const box{{int3(0), dimensions_}};
 
-//	return intersect(ray, 0, box, majorant_mu_t);
+//		return intersect(ray, 0, box, majorant_mu_t);
+//	}
 
 	float3 const p = ray.point(ray.min_t) + float3(1.f);
 
@@ -50,87 +53,12 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 	if (math::any_greater_equal(v, dimensions_)) {
 		return false;
 	}
-/*
-	Box box{{int3(0), dimensions_}};
-
-	uint32_t index = 0;
-
-	for (uint32_t l = 0, len = deepest_uniform_level_; l < len; ++l) {
-		int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
-
-		int3 const middle = box.bounds[0] + half;
-
-		index = nodes_[index].children;
-
-		if (v[0] < middle[0]) {
-			box.bounds[1][0] = middle[0];
-		} else {
-			box.bounds[0][0] = middle[0];
-			index += 1;
-		}
-
-		if (v[1] < middle[1]) {
-			box.bounds[1][1] = middle[1];
-		} else {
-			box.bounds[0][1] = middle[1];
-			index += 2;
-		}
-
-		if (v[2] < middle[2]) {
-			box.bounds[1][2] = middle[2];
-		} else {
-			box.bounds[0][2] = middle[2];
-			index  += 4;
-		}
-	}
-
-
-//	{
-//		float3 const min = inv_2_dimensions_ * float3(box.bounds[0]) - float3(1.f);
-//		float3 const max = inv_2_dimensions_ * float3(box.bounds[1]) - float3(1.f);
-
-//		math::AABB aabb(min, max);
-
-//		float hit_t;
-//		if (!aabb.intersect_inside(ray, hit_t)) {
-//			float3 const ping = ray.point(ray.min_t);
-//			return false;
-//		}
-//	}
-
-	auto const& node = nodes_[index];
-
-	if (0 == node.children) {
-		float3 const min = inv_2_dimensions_ * float3(box.bounds[0]) - float3(1.f);
-		float3 const max = inv_2_dimensions_ * float3(box.bounds[1]) - float3(1.f);
-
-		math::AABB aabb(min, max);
-
-		float hit_t;
-		if (aabb.intersect_inside(ray, hit_t)) {
-			if (ray.max_t > hit_t) {
-				ray.max_t = hit_t;
-			}
-		}
-
-		majorant_mu_t = node.majorant_mu_t;
-		return true;
-	}
-
-	intersect_children(ray, node, box, majorant_mu_t);
-
-	return true;
-*/
 
 	Box box{{int3(0), dimensions_}};
 
 	uint32_t index = 0;
 
-	for (uint32_t l = 0;; ++l) {
-		int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
-
-		int3 const middle = box.bounds[0] + half;
-
+	for (uint32_t l = 0;; ++l) {		
 		uint32_t children = nodes_[index].children;
 
 		if (0 == children) {
@@ -139,6 +67,10 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 
 		index = children;
 
+		int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
+
+		int3 const middle = box.bounds[0] + half;
+
 		if (v[0] < middle[0]) {
 			box.bounds[1][0] = middle[0];
 		} else {
@@ -157,7 +89,7 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 			box.bounds[1][2] = middle[2];
 		} else {
 			box.bounds[0][2] = middle[2];
-			index  += 4;
+			index += 4;
 		}
 	}
 
@@ -171,6 +103,31 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 		if (ray.max_t > hit_t) {
 			ray.max_t = hit_t;
 		}
+	} else {
+		ray.max_t = ray.min_t;
+		return false;
+//		Box const boxi{{int3(0), dimensions_}};
+//		float mu_t;
+//		math::Ray tray = ray;
+//		intersect(tray, 0, boxi, mu_t);
+
+
+//		if (tray.max_t < ray.max_t) {
+
+//			std::cout << ray.max_t << " vs " << tray.max_t << std::endl;
+
+
+//			std::cout << "damn" << std::endl;
+
+//			float3 const of = ray.point(ray.min_t);
+//			std::cout << "of: " << of << std::endl;
+//			std::cout << "minf: " << min << std::endl;
+//			std::cout << "maxf: " << max << std::endl;
+
+//			std::cout << "oi: " << v << std::endl;
+//			std::cout << "mini: " << box.bounds[0] << std::endl;
+//			std::cout << "maxi: " << box.bounds[1] << std::endl;
+//		}
 	}
 
 	majorant_mu_t = nodes_[index].majorant_mu_t;

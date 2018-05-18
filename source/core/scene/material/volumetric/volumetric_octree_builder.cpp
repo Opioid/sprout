@@ -21,15 +21,13 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 
 	num_nodes_ = 1;
 
-	deepest_uniform_level_ = 0xFFFFFFFF;
-
 	Build_node root;
 
 	split(&root, box, texture, max_extinction, 0);
 
 	tree.set_dimensions(d);
 
-	nodes_ = tree.allocate_nodes(num_nodes_, deepest_uniform_level_);
+	nodes_ = tree.allocate_nodes(num_nodes_);
 
 	uint32_t next = 1;
 	serialize(&root, 0, next);
@@ -63,10 +61,6 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 //		std::cout << box.bounds[0] << ", " << box.bounds[1] << ": "
 //				  << "min = " << min_density * max_extinction << ", "
 //				  << "max = " << node->majorant_mu_t << std::endl;
-
-		if (0xFFFFFFFF == deepest_uniform_level_) {
-			deepest_uniform_level_ = depth;
-		}
 
 		return;
 	}

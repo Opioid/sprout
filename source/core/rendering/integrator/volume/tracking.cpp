@@ -12,6 +12,9 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace rendering::integrator::volume {
 
 // Code for hetereogeneous transmittance from:
@@ -42,12 +45,11 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
 			float3 w(1.f);
 			for (;local_ray.min_t < d;) {
-				float mt;
-				if (!tree->intersect(local_ray, mt)) {
-					return w;
+				if (float mt; tree->intersect(local_ray, mt)) {
+					w *= track(local_ray, mt, material, Sampler_filter::Nearest, rng, worker);
 				}
 
-				w *= track(local_ray, mt, material, Sampler_filter::Nearest, rng, worker);
+			//	SOFT_ASSERT(math::all_finite(w));
 
 				local_ray.min_t = local_ray.max_t + 0.00001f;
 				local_ray.max_t = d;
@@ -129,6 +131,8 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
 		float const r1 = rng.random_float();
 		if (r1 <= 1.f - pn && ps > 0.f) {
 			float3 const ws = mu.s / (mt * ps);
+
+			SOFT_ASSERT(math::all_finite(ws));
 
 			t_out = t;
 			w = lw * ws;

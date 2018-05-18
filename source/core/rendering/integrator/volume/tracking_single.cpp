@@ -176,8 +176,6 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 		return false;
 	}
 
-	SOFT_ASSERT(ray.max_t > ray.min_t);
-
 	float const d = ray.max_t;
 
 	if (d - ray.min_t < 0.0005f) {
@@ -208,33 +206,29 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 			Transformation temp;
 			auto const& transformation = interface->prop->transformation_at(ray.time, temp);
 
-			float3 const local_origin = math::transform_point(ray.origin,
-															  transformation.world_to_object);
-
-			float3 const local_dir = math::transform_vector(ray.direction,
-															transformation.world_to_object);
+			float3 const local_origin = transformation.world_to_object_point(ray.origin);
+			float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
 			Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);
-			for (;;) {
-				float mt;
-				if (!tree->intersect(local_ray, mt)) {
-					li = float3(0.f);
-					transmittance = w;
-					return true;
-				}
-
-				float t;
-				if (Tracking::track(local_ray, mt, material, filter, rng_, worker, t, w)) {
-					li = w * direct_light(ray, ray.point(t), intersection, worker);
-					transmittance = float3(0.f);
-					return true;
+			for (;local_ray.min_t < d;) {
+				if (float mt; tree->intersect(local_ray, mt)) {
+					if (float t; Tracking::track(local_ray, mt, material, filter,
+												 rng_, worker, t, w)) {
+						li = w * direct_light(ray, ray.point(t), intersection, worker);
+						transmittance = float3(0.f);
+						return true;
+					}
 				}
 
 				local_ray.min_t = local_ray.max_t + 0.00001f;
 				local_ray.max_t = d;
 			}
+
+			li = float3(0.f);
+			transmittance = w;
+			return true;
 		}
 
 		Transformation temp;
