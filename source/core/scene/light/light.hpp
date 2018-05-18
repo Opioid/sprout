@@ -4,7 +4,7 @@
 #include "scene/material/sampler_settings.hpp"
 #include "base/math/vector.hpp"
 
-namespace math { class AABB; }
+namespace math { struct AABB; }
 
 namespace image::texture::sampler { class Sampler_2D; }
 

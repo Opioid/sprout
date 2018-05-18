@@ -10,7 +10,7 @@
 namespace image::texture::sampler {
 
 template<typename Address_mode>
-float Linear_3D<Address_mode>::sample_1(const Texture& texture, float3 const& uvw) const {
+float Linear_3D<Address_mode>::sample_1(Texture const& texture, f_float3 uvw) const {
 	int3 xyz, xyz1;
 	float3 const stu = map(texture, uvw, xyz, xyz1);
 
@@ -30,7 +30,7 @@ float Linear_3D<Address_mode>::sample_1(const Texture& texture, float3 const& uv
 }
 
 template<typename Address_mode>
-float2 Linear_3D<Address_mode>::sample_2(const Texture& texture, float3 const& uvw) const {
+float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, f_float3 uvw) const {
 	int3 xyz, xyz1;
 	float3 const stu = map(texture, uvw, xyz, xyz1);
 
@@ -50,7 +50,7 @@ float2 Linear_3D<Address_mode>::sample_2(const Texture& texture, float3 const& u
 }
 
 template<typename Address_mode>
-float3 Linear_3D<Address_mode>::sample_3(const Texture& texture, float3 const& uvw) const {
+float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, f_float3 uvw) const {
 	int3 xyz, xyz1;
 	float3 const stu = map(texture, uvw, xyz, xyz1);
 
@@ -70,15 +70,14 @@ float3 Linear_3D<Address_mode>::sample_3(const Texture& texture, float3 const& u
 }
 
 template<typename Address_mode>
-float3 Linear_3D<Address_mode>::address(float3 const& uvw) const {
+float3 Linear_3D<Address_mode>::address(f_float3 uvw) const {
 	return float3(Address_mode::f(uvw[0]),
 				  Address_mode::f(uvw[1]),
 				  Address_mode::f(uvw[2]));
 }
 
 template<typename Address_mode>
-float3 Linear_3D<Address_mode>::map(const Texture& texture, float3 const& uvw,
-									int3& xyz, int3& xyz1) {
+float3 Linear_3D<Address_mode>::map(Texture const& texture, f_float3 uvw, int3& xyz, int3& xyz1) {
 	auto const& b = texture.back_3();
 	auto const& d = texture.dimensions_float3();
 

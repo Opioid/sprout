@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace math { struct Ray; class AABB; }
+namespace math { struct Ray; struct AABB; }
 
 namespace rnd { class Generator; }
 

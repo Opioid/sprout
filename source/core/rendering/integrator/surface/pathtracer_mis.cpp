@@ -99,7 +99,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		result += throughput * sample_lights(ray, ray_offset, intersection,
 											 material_sample, do_mis, filter, worker);
 
-		SOFT_ASSERT(math::all_finite_and_positive(result));
+		SOFT_ASSERT(math::all_finite/*_and_positive*/(result));
 
 		float const previous_bxdf_pdf = sample_result.pdf;
 
@@ -164,7 +164,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			break;
 		}
 
-		SOFT_ASSERT(math::all_finite_and_positive(result));
+		SOFT_ASSERT(math::all_finite/*_and_positive*/(result));
 
 		if (!material_sample.ior_greater_one() && !treat_as_singular) {
 			sample_result.pdf = previous_bxdf_pdf;
@@ -271,12 +271,12 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
 	float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 
-	SOFT_ASSERT(math::all_finite_and_positive(tv));
+	SOFT_ASSERT(math::all_finite/*_and_positive*/(tv));
 
 	if (math::any_greater_zero(tv)) {
 		float3 const tr = worker.transmittance(shadow_ray);
 
-		SOFT_ASSERT(math::all_finite_and_positive(tr));
+		SOFT_ASSERT(math::all_finite/*_and_positive*/(tr));
 
 		auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 

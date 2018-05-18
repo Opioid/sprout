@@ -9,10 +9,7 @@ namespace math {
 
 struct Ray;
 	
-class AABB {
-
-public:
-
+struct AABB {
 	AABB() = default;
 	constexpr AABB(f_float3 min, f_float3 max);
 	AABB(FVector min, FVector max);
@@ -54,9 +51,7 @@ public:
 	static constexpr AABB empty();
 	static constexpr AABB infinite();
 
-private:
-
-	float3 bounds_[2];
+	float3 bounds[2];
 };
 
 }

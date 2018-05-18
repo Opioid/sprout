@@ -11,43 +11,43 @@
 
 namespace math {
 
-inline constexpr AABB::AABB(f_float3 min, f_float3 max) : bounds_{min, max} {}
+inline constexpr AABB::AABB(f_float3 min, f_float3 max) : bounds{min, max} {}
 
 inline AABB::AABB(FVector min, FVector max) {
-	simd::store_float4(bounds_[0].v, min);
-	simd::store_float4(bounds_[1].v, max);
+	simd::store_float4(bounds[0].v, min);
+	simd::store_float4(bounds[1].v, max);
 }
 
 inline f_float3 AABB::min() const {
-	return bounds_[0];
+	return bounds[0];
 }
 
 inline f_float3 AABB::max() const {
-	return bounds_[1];
+	return bounds[1];
 }
 
 inline float3 AABB::position() const {
-	return 0.5f * (bounds_[0] + bounds_[1]);
+	return 0.5f * (bounds[0] + bounds[1]);
 }
 
 inline float3 AABB::halfsize() const {
-	return 0.5f * (bounds_[1] - bounds_[0]);
+	return 0.5f * (bounds[1] - bounds[0]);
 }
 
 inline float AABB::surface_area() const {
-	float3 const d = bounds_[1] - bounds_[0];
+	float3 const d = bounds[1] - bounds[0];
 	return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);
 }
 
 inline float AABB::volume() const {
-	float3 const d = bounds_[1] - bounds_[0];
+	float3 const d = bounds[1] - bounds[0];
 	return d[0] * d[1] * d[2];
 }
 
 inline bool AABB::intersect(f_float3 p) const {
-	if (p[0] >= bounds_[0][0] && p[0] <= bounds_[1][0]
-	&&  p[1] >= bounds_[0][1] && p[1] <= bounds_[1][1]
-	&&  p[2] >= bounds_[0][2] && p[2] <= bounds_[1][2]) {
+	if (p[0] >= bounds[0][0] && p[0] <= bounds[1][0]
+	&&  p[1] >= bounds[0][1] && p[1] <= bounds[1][1]
+	&&  p[2] >= bounds[0][2] && p[2] <= bounds[1][2]) {
 		return true;
 	}
 
@@ -59,12 +59,12 @@ inline bool AABB::intersect(f_float3 p) const {
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
 inline bool AABB::intersect_p(Ray const& ray) const {
 /*	int8_t sign_0 = ray.signs[0];
-	float min_t = (bounds_[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
-	float max_t = (bounds_[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
+	float min_t = (bounds[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
+	float max_t = (bounds[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
 
 	int8_t sign_1 = ray.signs[1];
-	float min_ty = (bounds_[    sign_1][1] - ray.origin[1]) * ray.inv_direction[1];
-	float max_ty = (bounds_[1 - sign_1][1] - ray.origin[1]) * ray.inv_direction[1];
+	float min_ty = (bounds[    sign_1][1] - ray.origin[1]) * ray.inv_direction[1];
+	float max_ty = (bounds[1 - sign_1][1] - ray.origin[1]) * ray.inv_direction[1];
 
 	if (min_t > max_ty || min_ty > max_t) {
 		return false;
@@ -79,8 +79,8 @@ inline bool AABB::intersect_p(Ray const& ray) const {
 	}
 
 	int8_t sign_2 = ray.signs[2];
-	float min_tz = (bounds_[    sign_2][2] - ray.origin[2]) * ray.inv_direction[2];
-	float max_tz = (bounds_[1 - sign_2][2] - ray.origin[2]) * ray.inv_direction[2];
+	float min_tz = (bounds[    sign_2][2] - ray.origin[2]) * ray.inv_direction[2];
+	float max_tz = (bounds[1 - sign_2][2] - ray.origin[2]) * ray.inv_direction[2];
 
 	if (min_t > max_tz || min_tz > max_t) {
 		return false;
@@ -101,8 +101,8 @@ inline bool AABB::intersect_p(Ray const& ray) const {
 	Vector ray_min_t		 = simd::load_float(&ray.min_t);
 	Vector ray_max_t		 = simd::load_float(&ray.max_t);
 
-	const Vector bb_min = simd::load_float4(bounds_[0].v);
-	const Vector bb_max = simd::load_float4(bounds_[1].v);
+	const Vector bb_min = simd::load_float4(bounds[0].v);
+	const Vector bb_max = simd::load_float4(bounds[1].v);
 
 	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
@@ -134,8 +134,8 @@ inline bool AABB::intersect_p(Ray const& ray) const {
 
 inline bool AABB::intersect_p(FVector ray_origin, FVector ray_inv_direction,
 							  FVector ray_min_t, FVector ray_max_t) const {
-	const Vector bb_min = simd::load_float4(bounds_[0].v);
-	const Vector bb_max = simd::load_float4(bounds_[1].v);
+	const Vector bb_min = simd::load_float4(bounds[0].v);
+	const Vector bb_max = simd::load_float4(bounds[1].v);
 
 	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
@@ -171,8 +171,8 @@ inline bool AABB::intersect_p(Ray const& ray, float& hit_t) const {
 	Vector ray_min_t		 = simd::load_float(&ray.min_t);
 	Vector ray_max_t		 = simd::load_float(&ray.max_t);
 
-	const Vector bb_min = simd::load_float4(bounds_[0].v);
-	const Vector bb_max = simd::load_float4(bounds_[1].v);
+	const Vector bb_min = simd::load_float4(bounds[0].v);
+	const Vector bb_max = simd::load_float4(bounds[1].v);
 
 	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
@@ -217,8 +217,8 @@ inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const {
 	Vector const ray_min_t		   = simd::load_float(&ray.min_t);
 	Vector const ray_max_t		   = simd::load_float(&ray.max_t);
 
-	Vector const bb_min = simd::load_float4(bounds_[0].v);
-	Vector const bb_max = simd::load_float4(bounds_[1].v);
+	Vector const bb_min = simd::load_float4(bounds[0].v);
+	Vector const bb_max = simd::load_float4(bounds[1].v);
 
 	Vector const l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
 	Vector const l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
@@ -259,32 +259,32 @@ inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const {
 }
 
 inline void AABB::set_min_max(f_float3 min, f_float3 max) {
-	bounds_[0] = min;
-	bounds_[1] = max;
+	bounds[0] = min;
+	bounds[1] = max;
 }
 
 inline void AABB::set_min_max(FVector min, FVector max) {
-	simd::store_float4(bounds_[0].v, min);
-	simd::store_float4(bounds_[1].v, max);
+	simd::store_float4(bounds[0].v, min);
+	simd::store_float4(bounds[1].v, max);
 }
 
 inline void AABB::insert(f_float3 p) {
-	bounds_[0] = math::min(p, bounds_[0]);
-	bounds_[1] = math::max(p, bounds_[1]);
+	bounds[0] = math::min(p, bounds[0]);
+	bounds[1] = math::max(p, bounds[1]);
 }
 
 inline AABB AABB::transform(const Matrix4x4f_a& m) const {
 	float3 mx = m.x();
-	float3 xa = bounds_[0][0] * mx;
-	float3 xb = bounds_[1][0] * mx;
+	float3 xa = bounds[0][0] * mx;
+	float3 xb = bounds[1][0] * mx;
 
 	float3 my = m.y();
-	float3 ya = bounds_[0][1] * my;
-	float3 yb = bounds_[1][1] * my;
+	float3 ya = bounds[0][1] * my;
+	float3 yb = bounds[1][1] * my;
 
 	float3 mz = m.z();
-	float3 za = bounds_[0][2] * mz;
-	float3 zb = bounds_[1][2] * mz;
+	float3 za = bounds[0][2] * mz;
+	float3 zb = bounds[1][2] * mz;
 
 	float3 mw = m.w();
 
@@ -293,25 +293,25 @@ inline AABB AABB::transform(const Matrix4x4f_a& m) const {
 }
 
 inline AABB AABB::merge(AABB const& other) const {
-	return AABB(math::min(bounds_[0], other.bounds_[0]),
-				math::max(bounds_[1], other.bounds_[1]));
+	return AABB(math::min(bounds[0], other.bounds[0]),
+				math::max(bounds[1], other.bounds[1]));
 }
 
 inline void AABB::merge_assign(AABB const& other) {
-	bounds_[0] = math::min(bounds_[0], other.bounds_[0]);
-	bounds_[1] = math::max(bounds_[1], other.bounds_[1]);
+	bounds[0] = math::min(bounds[0], other.bounds[0]);
+	bounds[1] = math::max(bounds[1], other.bounds[1]);
 }
 
 inline void AABB::clip_min(float d, uint8_t axis) {
-	bounds_[0].v[axis] = std::max(d, bounds_[0][axis]);
+	bounds[0].v[axis] = std::max(d, bounds[0][axis]);
 }
 
 inline void AABB::clip_max(float d, uint8_t axis) {
-	bounds_[1].v[axis] = std::min(d, bounds_[1][axis]);
+	bounds[1].v[axis] = std::min(d, bounds[1][axis]);
 }
 
 inline bool AABB::operator==(AABB const& other) const {
-	return bounds_[0] == other.bounds_[0] && bounds_[1] == other.bounds_[1];
+	return bounds[0] == other.bounds[0] && bounds[1] == other.bounds[1];
 }
 
 inline constexpr AABB AABB::empty() {

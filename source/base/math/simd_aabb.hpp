@@ -5,7 +5,7 @@
 
 namespace math {
 
-class AABB;
+struct AABB;
 
 struct Simd_AABB {
 	Simd_AABB() = default;

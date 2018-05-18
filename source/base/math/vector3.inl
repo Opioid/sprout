@@ -283,6 +283,11 @@ static constexpr bool any_greater_equal(Vector3<T> const& a, Vector3<T> const& b
 }
 
 template<typename T>
+static constexpr bool any_lesser(Vector3<T> const& a, T s) {
+	return a[0] < s || a[1] < s || a[2] < s;
+}
+
+template<typename T>
 static constexpr bool any_lesser(Vector3<T> const& a, Vector3<T> const& b) {
 	return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
 }
@@ -678,6 +683,10 @@ static inline constexpr bool any_greater_zero(FVector3f_a v) {
 
 static inline constexpr bool any_greater_one(FVector3f_a v) {
 	return v[0] > 1.f || v[1] > 1.f || v[2] > 1.f;
+}
+
+static inline constexpr bool any_greater_equal(FVector3f_a a, FVector3f_a b) {
+	return a[0] > b[0] || a[1] > b[1] || a[2] > b[2];
 }
 
 static inline constexpr bool any_lesser_one(FVector3f_a v) {

@@ -8,7 +8,7 @@
 namespace image::texture::sampler {
 
 template<typename Address_mode_U, typename Address_mode_V>
-float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(const Texture& texture,
+float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& texture,
 														   float2 uv) const {
 	const int2 xy = map(texture, uv);
 
@@ -16,7 +16,7 @@ float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(const Texture& textur
 }
 
 template<typename Address_mode_U, typename Address_mode_V>
-float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(const Texture& texture,
+float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& texture,
 															float2 uv) const {
 	const int2 xy = map(texture, uv);
 
@@ -24,7 +24,7 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(const Texture& textu
 }
 
 template<typename Address_mode_U, typename Address_mode_V>
-float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(const Texture& texture,
+float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& texture,
 															float2 uv) const {
 	const int2 xy = map(texture, uv);
 
@@ -32,7 +32,7 @@ float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(const Texture& textu
 }
 
 template<typename Address_mode_U, typename Address_mode_V>
-float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(const Texture& texture, float2 uv,
+float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& texture, float2 uv,
 														   int32_t element) const {
 	const int2 xy = map(texture, uv);
 
@@ -42,7 +42,7 @@ float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(const Texture& textur
 }
 
 template<typename Address_mode_U, typename Address_mode_V>
-float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(const Texture& texture, float2 uv,
+float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& texture, float2 uv,
 															int32_t element) const {
 	const int2 xy = map(texture, uv);
 
@@ -52,7 +52,7 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(const Texture& textu
 }
 
 template<typename Address_mode_U, typename Address_mode_V>
-float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(const Texture& texture, float2 uv,
+float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& texture, float2 uv,
 															int32_t element) const {
 	const int2 xy = map(texture, uv);
 
@@ -67,7 +67,7 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::address(float2 uv) const {
 }
 
 template<typename Address_mode_U, typename Address_mode_V>
-int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(const Texture& texture, float2 uv) {
+int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(Texture const& texture, float2 uv) {
 	auto const b = texture.back_2();
 	auto const d = texture.dimensions_float2();
 

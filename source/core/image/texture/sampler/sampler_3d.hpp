@@ -15,11 +15,11 @@ public:
 
 	virtual ~Sampler_3D() {}
 
-	virtual float  sample_1(const Texture& texture, float3 const& uvw) const = 0;
-	virtual float2 sample_2(const Texture& texture, float3 const& uvw) const = 0;
-	virtual float3 sample_3(const Texture& texture, float3 const& uvw) const = 0;
+	virtual float  sample_1(Texture const& texture, f_float3 uvw) const = 0;
+	virtual float2 sample_2(Texture const& texture, f_float3 uvw) const = 0;
+	virtual float3 sample_3(Texture const& texture, f_float3 uvw) const = 0;
 
-	virtual float3 address(float3 const& uvw) const = 0;
+	virtual float3 address(f_float3 uvw) const = 0;
 };
 
 }}
