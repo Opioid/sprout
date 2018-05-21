@@ -296,19 +296,19 @@ static inline Matrix3x3f_a operator*(const Matrix3x3f_a& a, const Matrix3x3f_a& 
 						a.r[2][0] * b.r[0][2] + a.r[2][1] * b.r[1][2] + a.r[2][2] * b.r[2][2]);
 }
 
-static inline Vector3f_a operator*(const Vector3f_a& v, const Matrix3x3f_a& m) {
+static inline Vector3f_a operator*(Vector3f_a const& v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector(const Vector3f_a& v, const Matrix3x3f_a& m) {
+static inline Vector3f_a transform_vector(Vector3f_a const& v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector_transposed(const Vector3f_a& v, const Matrix3x3f_a& m) {
+static inline Vector3f_a transform_vector_transposed(Vector3f_a const& v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
 					  v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
 					  v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
@@ -341,7 +341,7 @@ static inline void set_rotation_z(Matrix3x3f_a& m, float a) {
 	m.r[2][0] = 0.f; m.r[2][1] =  0.f; m.r[2][2] = 1.f;
 }
 
-static inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
+static inline void set_rotation(Matrix3x3f_a& m, Vector3f_a const& v, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 	float t = 1.f - c;

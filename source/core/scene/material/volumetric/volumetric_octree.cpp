@@ -59,7 +59,7 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 	uint32_t index = 0;
 
 	for (uint32_t l = 0;; ++l) {		
-		uint32_t children = nodes_[index].children;
+		uint32_t const children = nodes_[index].children;
 
 		if (0 == children) {
 			break;
@@ -137,7 +137,7 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
 	uint32_t index = 0;
 
 	for (uint32_t l = 0;; ++l) {
-		uint32_t children = nodes_[index].children;
+		uint32_t const children = nodes_[index].children;
 
 		if (0 == children) {
 			break;
@@ -151,24 +151,21 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
 
 		if (p[0] < middle[0]) {
 			box.bounds[1][0] = middle[0];
-		}
-		else {
+		} else {
 			box.bounds[0][0] = middle[0];
 			index += 1;
 		}
 
 		if (p[1] < middle[1]) {
 			box.bounds[1][1] = middle[1];
-		}
-		else {
+		} else {
 			box.bounds[0][1] = middle[1];
 			index += 2;
 		}
 
 		if (p[2] < middle[2]) {
 			box.bounds[1][2] = middle[2];
-		}
-		else {
+		} else {
 			box.bounds[0][2] = middle[2];
 			index += 4;
 		}
@@ -182,8 +179,7 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
 
 	//	std::cout << box.bounds[0] << " ";
 	//	std::cout << p << std::endl;
-	}
-	else {	
+	} else {	
 	//	std::cout << "min: " << box.bounds[0] << std::endl;
 	//	std::cout << "max: " << box.bounds[1] << std::endl;
 	//	std::cout << "p: " << p << std::endl;

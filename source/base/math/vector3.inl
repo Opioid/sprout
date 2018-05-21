@@ -24,11 +24,11 @@ template<typename T>
 constexpr Vector3<T>::Vector3(const T* v) : v{v[0], v[1], v[2]} {}
 
 template<typename T>
-constexpr Vector3<T>::Vector3(const Vector3f_a& v) : v{T(v[0]), T(v[1]), T(v[2])} {}
+constexpr Vector3<T>::Vector3(Vector3f_a const& v) : v{T(v[0]), T(v[1]), T(v[2])} {}
 
 template<typename T>
 template<typename U>
-constexpr Vector3<T>::Vector3(const Vector3<U>& a) :
+constexpr Vector3<T>::Vector3(Vector3<U> const& a) :
 	v{T(a[0]), T(a[1]), T(a[2])} {}
 
 template<typename T>
@@ -52,7 +52,7 @@ Vector3<T> Vector3<T>::operator+(T s) const {
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator+(const Vector3& a) const {
+Vector3<T> Vector3<T>::operator+(Vector3 const& a) const {
 	return Vector3(v[0] + a[0], v[1] + a[1], v[2] + a[2]);
 }
 
@@ -62,12 +62,12 @@ Vector3<T> Vector3<T>::operator-(T s) const {
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator-(const Vector3& a) const {
+Vector3<T> Vector3<T>::operator-(Vector3 const& a) const {
 	return Vector3(v[0] - a[0], v[1] - a[1], v[2] - a[2]);
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator*(const Vector3& a) const {
+Vector3<T> Vector3<T>::operator*(Vector3 const& a) const {
 	return Vector3(v[0] * a[0], v[1] * a[1], v[2] * a[2]);
 }
 
@@ -83,7 +83,7 @@ Vector3<T> Vector3<T>::operator/(T s) const {
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator/(const Vector3& a) const {
+Vector3<T> Vector3<T>::operator/(Vector3 const& a) const {
 	return Vector3(v[0] / a[0], v[1] / a[1], v[2] / a[2]);
 }
 
@@ -93,7 +93,7 @@ Vector3<T> Vector3<T>::operator-() const {
 }
 
 template<typename T>
-Vector3<T>& Vector3<T>::operator+=(const Vector3& a) {
+Vector3<T>& Vector3<T>::operator+=(Vector3 const& a) {
 	v[0] += a[0];
 	v[1] += a[1];
 	v[2] += a[2];
@@ -101,7 +101,7 @@ Vector3<T>& Vector3<T>::operator+=(const Vector3& a) {
 }
 
 template<typename T>
-Vector3<T>& Vector3<T>::operator-=(const Vector3& a) {
+Vector3<T>& Vector3<T>::operator-=(Vector3 const& a) {
 	v[0] -= a[0];
 	v[1] -= a[1];
 	v[2] -= a[2];
@@ -109,7 +109,7 @@ Vector3<T>& Vector3<T>::operator-=(const Vector3& a) {
 }
 
 template<typename T>
-Vector3<T>& Vector3<T>::operator*=(const Vector3& a) {
+Vector3<T>& Vector3<T>::operator*=(Vector3 const& a) {
 	v[0] *= a[0];
 	v[1] *= a[1];
 	v[2] *= a[2];
@@ -134,12 +134,12 @@ Vector3<T>& Vector3<T>::operator/=(T s) {
 }
 
 template<typename T>
-bool Vector3<T>::operator==(const Vector3& a) const {
+bool Vector3<T>::operator==(Vector3 const& a) const {
 	return v[0] == a[0] && v[1] == a[1] && v[2] == a[2];
 }
 
 template<typename T>
-bool Vector3<T>::operator!=(const Vector3& a) const {
+bool Vector3<T>::operator!=(Vector3 const& a) const {
 	return v[0] != a[0] || v[1] != a[1] || v[2] != a[2];
 }
 
@@ -253,8 +253,18 @@ static void orthonormal_basis(Vector3<T> const& n, Vector3<T>& t, Vector3<T>& b)
 }
 
 template<typename T>
+static Vector3<T> min(Vector3<T> const& av, T s) {
+	return Vector3<T>(std::min(v[0], s), std::min(v[1], s), std::min(v[2], s));
+}
+
+template<typename T>
 static Vector3<T> min(Vector3<T> const& a, Vector3<T> const& b) {
 	return Vector3<T>(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]));
+}
+
+template<typename T>
+static Vector3<T> max(Vector3<T> const& v, T s) {
+	return Vector3<T>(std::max(v[0], s), std::max(v[1], s), std::max(v[2], s));
 }
 
 template<typename T>
@@ -310,7 +320,7 @@ inline constexpr Vector3f_a::Vector3f_a(float const* a) : v{a[0], a[1], a[2], 0.
 
 inline constexpr Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}
 
-inline constexpr Vector3f_a::Vector3f_a(const Vector2<float> xy, float z) :
+inline constexpr Vector3f_a::Vector3f_a(Vector2<float> const xy, float z) :
 	v{xy[0], xy[1], z, 0.f} {}
 
 template<typename T>
@@ -556,7 +566,7 @@ static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b
 
 // https://twitter.com/ian_mallett/status/846631289822232577
 /*
-static inline void orthonormal_basis_sse(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
+static inline void orthonormal_basis_sse(Vector3f_a const& n, Vector3f_a& t, Vector3f_a& b) {
 	const Vector u = simd::load_float3(n.v);
 
 	float const sign = copysign1(n[2]);

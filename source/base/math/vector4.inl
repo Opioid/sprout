@@ -99,7 +99,7 @@ inline constexpr Vector4f_a::Vector4f_a(float x, float y, float z, float w) :
 
 inline constexpr Vector4f_a::Vector4f_a(float s) : v{s, s, s, s} {}
 
-inline constexpr Vector4f_a::Vector4f_a(const Vector2<float> xy, float z, float w) :
+inline constexpr Vector4f_a::Vector4f_a(Vector2<float> const xy, float z, float w) :
 	v{xy[0], xy[1], z, w} {}
 
 inline constexpr Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :

@@ -38,8 +38,8 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 	static uint32_t constexpr max_depth = 4;
 
 	// Include 1 additional voxel on each border to account for filtering
-	const int3 minb = math::max(box.bounds[0] - int3(1), int3(0));
-	const int3 maxb = math::min(box.bounds[1] + int3(1), texture.dimensions_3());
+	const int3 minb = math::max(box.bounds[0] - 1, 0);
+	const int3 maxb = math::min(box.bounds[1] + 1, texture.dimensions_3());
 
 	float max_density = 0.f;
 	for (int32_t z = minb[2], mz = maxb[2]; z < mz; ++z) {

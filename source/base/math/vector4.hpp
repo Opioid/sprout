@@ -58,7 +58,7 @@ struct alignas(16) Vector4f_a {
 
 	explicit constexpr Vector4f_a(float s);
 
-	explicit constexpr Vector4f_a(const Vector2<float> xy, float z, float w = 1.f);
+	explicit constexpr Vector4f_a(Vector2<float> const xy, float z, float w = 1.f);
 
 	explicit constexpr Vector4f_a(FVector3f_a xyz, float w = 1.f);
 
