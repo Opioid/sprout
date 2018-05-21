@@ -41,8 +41,8 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 			math::Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);
-			for (;local_ray.min_t < d;) {
-				if (float mt; tree->intersect(local_ray, mt)) {
+			for (; local_ray.min_t < d;) {
+				if (float mt; tree->intersect_f(local_ray, mt)) {
 					w *= track(local_ray, mt, material, Sampler_filter::Nearest, rng, worker);
 				}
 
@@ -51,7 +51,19 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 				local_ray.min_t = local_ray.max_t + 0.00001f;
 				local_ray.max_t = d;
 			}
+		
+		/*	for (; local_ray.min_t < d;) {
+				float mt;
+				if (!tree->intersect_f(local_ray, mt)) {
+					break;
+				}
 
+				w *= track(local_ray, mt, material, Sampler_filter::Nearest, rng, worker);
+
+				local_ray.min_t = local_ray.max_t + 0.00001f;
+				local_ray.max_t = d;
+			}*/
+			
 			return w;
 		}
 

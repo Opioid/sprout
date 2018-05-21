@@ -35,6 +35,8 @@ public:
 
 	bool intersect(math::Ray& ray, float& majorant_mu_t) const;
 
+	bool intersect_f(math::Ray& ray, float& majorant_mu_t) const;
+
 private:
 
 	bool intersect(math::Ray& ray, uint32_t node_id, Box const& box, float& majorant_mu_t) const;

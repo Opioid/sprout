@@ -191,8 +191,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 			math::Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);
-			for (;local_ray.min_t < d;) {
-				if (float mt; tree->intersect(local_ray, mt)) {
+			for (; local_ray.min_t < d;) {
+				if (float mt; tree->intersect_f(local_ray, mt)) {
 					if (float t; Tracking::track(local_ray, mt, material, filter,
 												 rng_, worker, t, w)) {
 						intersection.prop = interface->prop;
@@ -210,7 +210,30 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 				local_ray.min_t = local_ray.max_t + 0.00001f;
 				local_ray.max_t = d;
 			}
+			
+		/*	for (; local_ray.min_t < d;) {
+				float mt;
+				if (!tree->intersect_f(local_ray, mt)) {
+					break;
+				}
 
+				if (float t; Tracking::track(local_ray, mt, material, filter,
+					rng_, worker, t, w)) {
+					intersection.prop = interface->prop;
+					intersection.geo.p = ray.point(t);
+					intersection.geo.uv = interface->uv;
+					intersection.geo.part = interface->part;
+					intersection.geo.subsurface = true;
+
+					li = float3(0.f);
+					transmittance = w;
+					return true;
+				}
+
+				local_ray.min_t = local_ray.max_t + 0.00001f;
+				local_ray.max_t = d;
+			}*/
+			
 			li = float3(0.f);
 			transmittance = w;
 			return true;

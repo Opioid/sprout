@@ -106,28 +106,90 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 	} else {
 		ray.max_t = ray.min_t;
 		return false;
-//		Box const boxi{{int3(0), dimensions_}};
-//		float mu_t;
-//		math::Ray tray = ray;
-//		intersect(tray, 0, boxi, mu_t);
+	}
 
+	majorant_mu_t = nodes_[index].majorant_mu_t;
 
-//		if (tray.max_t < ray.max_t) {
+	return true;
+}
 
-//			std::cout << ray.max_t << " vs " << tray.max_t << std::endl;
+bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
+//	{
+//		Box const box{{int3(0), dimensions_}};
 
+//		return intersect(ray, 0, box, majorant_mu_t);
+//	}
 
-//			std::cout << "damn" << std::endl;
+	math::AABB box(float3(-1.f), float3(1.f));
 
-//			float3 const of = ray.point(ray.min_t);
-//			std::cout << "of: " << of << std::endl;
-//			std::cout << "minf: " << min << std::endl;
-//			std::cout << "maxf: " << max << std::endl;
+	float3 p = ray.point(ray.min_t);
 
-//			std::cout << "oi: " << v << std::endl;
-//			std::cout << "mini: " << box.bounds[0] << std::endl;
-//			std::cout << "maxi: " << box.bounds[1] << std::endl;
-//		}
+	if (math::any_lesser_equal(p, -1.f) || math::any_greater_equal(p, 1.f)) {
+		float hit_t;
+		if (!box.intersect_p(ray, hit_t)) {
+			return false;
+		}
+
+		ray.min_t = hit_t;
+		p = ray.point(ray.min_t);
+	}
+
+	uint32_t index = 0;
+
+	for (uint32_t l = 0;; ++l) {
+		uint32_t children = nodes_[index].children;
+
+		if (0 == children) {
+			break;
+		}
+
+		index = children;
+
+		float3 const half = box.halfsize();
+
+		float3 const middle = box.bounds[0] + half;
+
+		if (p[0] < middle[0]) {
+			box.bounds[1][0] = middle[0];
+		}
+		else {
+			box.bounds[0][0] = middle[0];
+			index += 1;
+		}
+
+		if (p[1] < middle[1]) {
+			box.bounds[1][1] = middle[1];
+		}
+		else {
+			box.bounds[0][1] = middle[1];
+			index += 2;
+		}
+
+		if (p[2] < middle[2]) {
+			box.bounds[1][2] = middle[2];
+		}
+		else {
+			box.bounds[0][2] = middle[2];
+			index += 4;
+		}
+	}
+
+	float hit_t;
+	if (box.intersect_inside(ray, hit_t)) {
+		if (ray.max_t > hit_t) {
+			ray.max_t = hit_t;
+		}
+
+	//	std::cout << box.bounds[0] << " ";
+	//	std::cout << p << std::endl;
+	}
+	else {	
+	//	std::cout << "min: " << box.bounds[0] << std::endl;
+	//	std::cout << "max: " << box.bounds[1] << std::endl;
+	//	std::cout << "p: " << p << std::endl;
+
+		ray.max_t = ray.min_t;
+		return false;
 	}
 
 	majorant_mu_t = nodes_[index].majorant_mu_t;
