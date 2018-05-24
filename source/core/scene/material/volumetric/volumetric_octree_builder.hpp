@@ -25,13 +25,13 @@ private:
 	};
 
 	void split(Build_node* node, Box const& box, image::texture::Texture const& texture,
-			   float max_extinction, uint32_t depth);
+			   float max_extinction, uint32_t depth, uint32_t max_depth);
 
 	void serialize(Build_node* node, uint32_t current, uint32_t& next);
 
 	uint32_t num_nodes_;
 
-	Octree::Node* nodes_;
+	Node* nodes_;
 };
 
 }

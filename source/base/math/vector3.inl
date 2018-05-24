@@ -253,7 +253,7 @@ static void orthonormal_basis(Vector3<T> const& n, Vector3<T>& t, Vector3<T>& b)
 }
 
 template<typename T>
-static Vector3<T> min(Vector3<T> const& av, T s) {
+static Vector3<T> min(Vector3<T> const& v, T s) {
 	return Vector3<T>(std::min(v[0], s), std::min(v[1], s), std::min(v[2], s));
 }
 

@@ -9,13 +9,140 @@
 
 namespace scene::material::volumetric {
 
+Gridtree::Gridtree() : num_nodes_(0), nodes_(nullptr) {}
+
+Gridtree::~Gridtree() {
+	memory::free_aligned(nodes_);
+}
+
+Node* Gridtree::allocate_nodes(uint32_t num_nodes) {
+	if (num_nodes != num_nodes_) {
+		num_nodes_ = num_nodes;
+
+		memory::free_aligned(nodes_);
+		nodes_ = memory::allocate_aligned<Node>(num_nodes);
+	}
+
+	return nodes_;
+}
+
+void Gridtree::set_dimensions(int3 const& dimensions, int3 const& cell_dimensions, 
+							  int3 const& num_cells) {
+	dimensions_ = dimensions;
+
+	num_cells_ = num_cells;
+
+	std::cout << 2.f / float3(num_cells) << std::endl;
+
+//	cell_dimensions_ = 2.f / float3(num_cells);
+
+	cell_dimensions_ = 2.f * (float3(cell_dimensions) / float3(dimensions));
+
+	std::cout << cell_dimensions_ << std::endl;
+
+	inv_2_dimensions_ = 2.f / float3(dimensions);
+}
+
+bool Gridtree::is_valid() const {
+	return nullptr != nodes_;
+}
+
+bool Gridtree::intersect(math::Ray& ray, float& majorant_mu_t) const {
+	math::AABB box(float3(-1.f), float3(1.f));
+
+	float3 p = ray.point(ray.min_t);
+
+	if (math::any_lesser_equal(p, -1.f) || math::any_greater_equal(p, 1.f)) {
+		float hit_t;
+		if (!box.intersect_p(ray, hit_t)) {
+			return false;
+		}
+
+		ray.min_t = hit_t;
+		p = ray.point(ray.min_t);
+	}
+
+	int3 const v = int3((0.5f * float3(num_cells_)) * (p + 1.f));
+
+	if (math::any_greater_equal(v, num_cells_)) {
+		return false;
+	}
+
+	uint32_t index = v[2] * (num_cells_[0] * num_cells_[1]) + v[1] * num_cells_[1] + v[0];
+
+	box.bounds[0] = -1.f + float3(v) * cell_dimensions_;
+	box.bounds[1] = math::min(box.bounds[0] + cell_dimensions_, 1.f);
+
+	std::cout << box.bounds[0] << ", " << box.bounds[1] << std::endl;
+
+	for (;;) {
+		uint32_t const children = nodes_[index].children;
+
+		if (0 == children) {
+			break;
+		}
+
+		index = children;
+
+		float3 const half = box.halfsize();
+
+		float3 const middle = box.bounds[0] + half;
+
+		if (p[0] < middle[0]) {
+			box.bounds[1][0] = middle[0];
+		}
+		else {
+			box.bounds[0][0] = middle[0];
+			index += 1;
+		}
+
+		if (p[1] < middle[1]) {
+			box.bounds[1][1] = middle[1];
+		}
+		else {
+			box.bounds[0][1] = middle[1];
+			index += 2;
+		}
+
+		if (p[2] < middle[2]) {
+			box.bounds[1][2] = middle[2];
+		}
+		else {
+			box.bounds[0][2] = middle[2];
+			index += 4;
+		}
+	}
+
+	float hit_t;
+	if (box.intersect_inside(ray, hit_t)) {
+		if (ray.max_t > hit_t) {
+			ray.max_t = hit_t;
+		}
+
+		//	std::cout << box.bounds[0] << " ";
+		//	std::cout << p << std::endl;
+	}
+	else {
+		//	std::cout << "min: " << box.bounds[0] << std::endl;
+		//	std::cout << "max: " << box.bounds[1] << std::endl;
+		//	std::cout << "p: " << p << std::endl;
+
+		ray.max_t = ray.min_t;
+		return false;
+	}
+
+	majorant_mu_t = nodes_[index].majorant_mu_t;
+
+	return true;
+}
+
 Octree::Octree() : num_nodes_(0), nodes_(nullptr) {}
 
 Octree::~Octree() {
 	memory::free_aligned(nodes_);
 }
 
-Octree::Node* Octree::allocate_nodes(uint32_t num_nodes) {
+Node* Octree::allocate_nodes(uint32_t num_nodes) {
 	if (num_nodes != num_nodes_) {
 		num_nodes_ = num_nodes;
 
@@ -32,7 +159,7 @@ void Octree::set_dimensions(int3 const& dimensions) {
 }
 
 bool Octree::is_valid() const {
-	return 0 != num_nodes_;
+	return nullptr != nodes_;
 }
 
 bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
@@ -119,6 +246,8 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
 
 //		return intersect(ray, 0, box, majorant_mu_t);
 //	}
+
+	return gridtree_.intersect(ray, majorant_mu_t);
 
 	math::AABB box(float3(-1.f), float3(1.f));
 

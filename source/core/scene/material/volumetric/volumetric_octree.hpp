@@ -14,15 +14,44 @@ struct Box {
 	int3 bounds[2];
 };
 
-class Octree {
+struct Node {
+	uint32_t children;
+
+	float majorant_mu_t;
+};
+
+class Gridtree {
 
 public:
 
-	struct Node {
-		uint32_t children;
+	Gridtree();
+	~Gridtree();
 
-		float majorant_mu_t;
-	};
+	Node* allocate_nodes(uint32_t num_nodes);
+
+	void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions,
+						int3 const& num_cells);
+
+	bool is_valid() const;
+
+	bool intersect(math::Ray& ray, float& majorant_mu_t) const;
+
+private:
+
+	uint32_t num_nodes_;
+	Node*    nodes_;
+
+	int3 dimensions_;
+	int3 num_cells_;
+
+	float3 cell_dimensions_;
+
+	float3 inv_2_dimensions_;
+};
+
+class Octree {
+
+public:
 
 	Octree();
 	~Octree();
@@ -50,6 +79,10 @@ private:
 	int3 dimensions_;
 
 	float3 inv_2_dimensions_;
+
+public:
+
+	Gridtree gridtree_;
 };
 
 }
