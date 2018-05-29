@@ -32,6 +32,8 @@ void Gridtree::set_dimensions(int3 const& dimensions, int3 const& cell_dimension
 
 	num_cells_ = num_cells;
 
+	std::cout << num_cells << " -> ";
+
 	std::cout << 2.f / float3(num_cells) << std::endl;
 
 //	cell_dimensions_ = 2.f / float3(num_cells);
@@ -39,6 +41,10 @@ void Gridtree::set_dimensions(int3 const& dimensions, int3 const& cell_dimension
 	cell_dimensions_ = 2.f * (float3(cell_dimensions) / float3(dimensions));
 
 	std::cout << cell_dimensions_ << std::endl;
+
+	factor_ = float3(num_cells) / (float3(dimensions) / float3(cell_dimensions));
+
+	std::cout << factor_ << std::endl;
 
 	inv_2_dimensions_ = 2.f / float3(dimensions);
 }
@@ -62,18 +68,17 @@ bool Gridtree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 		p = ray.point(ray.min_t);
 	}
 
-	int3 const v = int3((0.5f * float3(num_cells_)) * (p + 1.f));
+	int3 const v = int3((0.5f * (float3(num_cells_) / factor_)) * (p + 1.f));
 
 	if (math::any_greater_equal(v, num_cells_)) {
 		return false;
 	}
 
-	uint32_t index = v[2] * (num_cells_[0] * num_cells_[1]) + v[1] * num_cells_[1] + v[0];
+	uint32_t index = v[2] * (num_cells_[0] * num_cells_[1]) + v[1] * num_cells_[0] + v[0];
 
 	box.bounds[0] = -1.f + float3(v) * cell_dimensions_;
 	box.bounds[1] = math::min(box.bounds[0] + cell_dimensions_, 1.f);
 
-	std::cout << box.bounds[0] << ", " << box.bounds[1] << std::endl;
 
 	for (;;) {
 		uint32_t const children = nodes_[index].children;
@@ -243,7 +248,7 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
 //		return intersect(ray, 0, box, majorant_mu_t);
 //	}
 
-//	return gridtree_.intersect(ray, majorant_mu_t);
+	return gridtree_.intersect(ray, majorant_mu_t);
 
 	math::AABB box(float3(-1.f), float3(1.f));
 
