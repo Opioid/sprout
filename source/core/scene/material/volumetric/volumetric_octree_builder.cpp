@@ -109,65 +109,65 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
 
 	++depth;
 
-	int3 const middle = box.bounds[0] + half;
+	int3 const center = box.bounds[0] + half;
 
 	{
-		Box const sub{{box.bounds[0], middle}};
+		Box const sub{{box.bounds[0], center}};
 
 		node->children[0] = new Build_node;
 		split(node->children[0], sub, texture, max_extinction, depth, max_depth);
 	}
 
 	{
-		Box const sub{{int3(middle[0], box.bounds[0][1], box.bounds[0][2]),
-					   int3(box.bounds[1][0], middle[1], middle[2])}};
+		Box const sub{{int3(center[0], box.bounds[0][1], box.bounds[0][2]),
+					   int3(box.bounds[1][0], center[1], center[2])}};
 
 		node->children[1] = new Build_node;
 		split(node->children[1], sub, texture, max_extinction, depth, max_depth);
 	}
 
 	{
-		Box const sub{{int3(box.bounds[0][0], middle[1], box.bounds[0][2]),
-					   int3(middle[0], box.bounds[1][1], middle[2])}};
+		Box const sub{{int3(box.bounds[0][0], center[1], box.bounds[0][2]),
+					   int3(center[0], box.bounds[1][1], center[2])}};
 
 		node->children[2] = new Build_node;
 		split(node->children[2], sub, texture, max_extinction, depth, max_depth);
 	}
 
 	{
-		Box const sub{{int3(middle[0], box.bounds[0][1] + half[1], box.bounds[0][2]),
-					   int3(box.bounds[1][0], box.bounds[1][1], middle[2])}};
+		Box const sub{{int3(center[0], box.bounds[0][1] + half[1], box.bounds[0][2]),
+					   int3(box.bounds[1][0], box.bounds[1][1], center[2])}};
 
 		node->children[3] = new Build_node;
 		split(node->children[3], sub, texture, max_extinction, depth, max_depth);
 	}
 
 	{
-		Box const sub{{int3(box.bounds[0][0], box.bounds[0][1], middle[2]),
-					   int3(middle[0], middle[1], box.bounds[1][2])}};
+		Box const sub{{int3(box.bounds[0][0], box.bounds[0][1], center[2]),
+					   int3(center[0], center[1], box.bounds[1][2])}};
 
 		node->children[4] = new Build_node;
 		split(node->children[4], sub, texture, max_extinction, depth, max_depth);
 	}
 
 	{
-		Box const sub{{int3(middle[0], box.bounds[0][1], middle[2]),
-					   int3(box.bounds[1][0], middle[1], box.bounds[1][2])}};
+		Box const sub{{int3(center[0], box.bounds[0][1], center[2]),
+					   int3(box.bounds[1][0], center[1], box.bounds[1][2])}};
 
 		node->children[5] = new Build_node;
 		split(node->children[5], sub, texture, max_extinction, depth, max_depth);
 	}
 
 	{
-		Box const sub{{int3(box.bounds[0][0], middle[1], middle[2]),
-					   int3(middle[0], box.bounds[1][1], box.bounds[1][2])}};
+		Box const sub{{int3(box.bounds[0][0], center[1], center[2]),
+					   int3(center[0], box.bounds[1][1], box.bounds[1][2])}};
 
 		node->children[6] = new Build_node;
 		split(node->children[6], sub, texture, max_extinction, depth, max_depth);
 	}
 
 	{
-		Box const sub{{middle, box.bounds[1]}};
+		Box const sub{{center, box.bounds[1]}};
 
 		node->children[7] = new Build_node;
 		split(node->children[7], sub, texture, max_extinction, depth, max_depth);
