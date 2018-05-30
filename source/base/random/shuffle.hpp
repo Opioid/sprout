@@ -6,12 +6,24 @@
 
 namespace rnd {
 
+// This is a copy of
+// http://en.cppreference.com/w/cpp/algorithm/random_shuffle
 template<typename T>
 void shuffle(T* data, uint32_t count, Generator& rng) {
-	// This is a copy of
-	// http://en.cppreference.com/w/cpp/algorithm/random_shuffle
-	for (uint32_t i = count - 1; i > 0; --i) {
-		uint32_t const other = rng.random_uint() % (i + 1);
+//	for (uint32_t i = count - 1; i > 0; --i) {
+//		uint32_t const other = rng.random_uint() % (i + 1);
+
+//		std::swap(data[i], data[other]);
+//	}
+
+	// Divisionless optimization with slight bias from
+	// https://lemire.me/blog/2016/06/30/fast-random-shuffling/
+	// (Upper variant has bias as well?!)
+	for (uint64_t i = static_cast<uint64_t>(count - 1); i > 0; --i) {
+		uint64_t const r = static_cast<uint64_t>(rng.random_uint());
+		uint64_t const m = r * (i + 1);
+		uint64_t const other = m >> 32;
+
 		std::swap(data[i], data[other]);
 	}
 }
