@@ -52,14 +52,10 @@ size_t Grid::num_bytes() const {
 	return sizeof(*this);
 }
 
-float Grid::density(f_float3 p, Sampler_filter filter, Worker const& worker) const {
-	// p is in object space already
-
-	float3 p_g = 0.5f * (float3(1.f) + p);
-
+float Grid::density(f_float3 uvw, Sampler_filter filter, Worker const& worker) const {
 	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-	return grid_.sample_1(sampler, p_g);
+	return grid_.sample_1(sampler, uvw);
 }
 
 Emission_grid::Emission_grid(Sampler_settings const& sampler_settings,

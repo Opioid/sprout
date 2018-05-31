@@ -47,8 +47,6 @@ private:
 	float3 cell_dimensions_;
 
 	float3 factor_;
-
-	float3 inv_2_dimensions_;
 };
 
 class Octree {

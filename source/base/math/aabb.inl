@@ -34,6 +34,10 @@ inline float3 AABB::halfsize() const {
 	return 0.5f * (bounds[1] - bounds[0]);
 }
 
+inline float3 AABB::extent() const {
+	return bounds[1] - bounds[0];
+}
+
 inline float AABB::surface_area() const {
 	float3 const d = bounds[1] - bounds[0];
 	return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);

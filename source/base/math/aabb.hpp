@@ -19,6 +19,7 @@ struct AABB {
 
 	float3 position() const;
 	float3 halfsize() const;
+	float3 extent() const;
 
 	float surface_area() const;
 	float volume() const;

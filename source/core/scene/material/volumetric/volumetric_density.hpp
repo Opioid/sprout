@@ -18,7 +18,7 @@ public:
 	virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
 									  Worker const& worker) const override final;
 
-	virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
+	virtual CC collision_coefficients(f_float3 uvw, Sampler_filter filter,
 									  Worker const& worker) const override final;
 
 private:

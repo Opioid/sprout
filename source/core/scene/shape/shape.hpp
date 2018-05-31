@@ -34,6 +34,9 @@ public:
 
 	math::AABB const& aabb() const;
 
+	float3 object_to_texture_point(f_float3 p) const;
+	float3 object_to_texture_vector(f_float3 v) const;
+
 	virtual math::AABB transformed_aabb(const float4x4& m, math::Transformation const& t) const;
 	virtual math::AABB transformed_aabb(math::Transformation const& t) const;
 
@@ -107,6 +110,8 @@ public:
 protected:
 
 	math::AABB aabb_;
+
+	float3 inv_extent_;
 };
 
 }}

@@ -27,7 +27,7 @@ public:
 
 private:
 
-	virtual float density(f_float3 p, Sampler_filter filter,
+	virtual float density(f_float3 uvw, Sampler_filter filter,
 						  Worker const& worker) const override final;
 
 	Texture_adapter grid_;

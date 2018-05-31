@@ -17,6 +17,7 @@ namespace scene::shape {
 
 Sphere::Sphere() {
 	aabb_.set_min_max(float3(-1.f), float3(1.f));
+	inv_extent_ = 1.f / aabb_.extent();
 }
 
 math::AABB Sphere::transformed_aabb(const float4x4& /*m*/, math::Transformation const& t) const {

@@ -202,14 +202,20 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 	}
 
 	if (material.is_heterogeneous_volume()) {
-		if (auto const tree = material.volume_octree(); tree) {
-			Transformation temp;
-			auto const& transformation = interface->prop->transformation_at(ray.time, temp);
+		auto const shape = interface->prop->shape();
 
+		Transformation temp;
+		auto const& transformation = interface->prop->transformation_at(ray.time, temp);
+
+		if (auto const tree = material.volume_octree(); tree) {
 			float3 const local_origin = transformation.world_to_object_point(ray.origin);
 			float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-			Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+			auto const shape = interface->prop->shape();
+			float3 const origin = shape->object_to_texture_point(local_origin);
+			float3 const dir = shape->object_to_texture_vector(local_dir);
+
+			Ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);
 			for (;local_ray.min_t < d;) {
@@ -231,9 +237,6 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 			return true;
 		}
 
-		Transformation temp;
-		auto const& transformation = intersection.prop->transformation_at(ray.time, temp);
-
 		float3 w(1.f);
 		float t = 0.f;
 
@@ -250,7 +253,8 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection,
 			float3 const p = ray.point(ray.min_t + t);
 
 			float3 const local_p = transformation.world_to_object_point(p);
-			auto const mu = material.collision_coefficients(local_p, filter, worker);
+			float3 const uvw = shape->object_to_texture_point(local_p);
+			auto const mu = material.collision_coefficients(uvw, filter, worker);
 
 			float3 const mu_t = mu.a + mu.s;
 

@@ -21,6 +21,7 @@ Mesh::~Mesh() {}
 
 bool Mesh::init() {
 	aabb_ = tree_.aabb();
+	inv_extent_ = 1.f / aabb_.extent();
 
 	distributions_.resize(tree_.num_parts());
 

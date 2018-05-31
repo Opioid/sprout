@@ -23,7 +23,7 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 
 	Build_node root;
 
-	static uint32_t constexpr max_depth = 5;
+	static uint32_t constexpr max_depth = 6;
 	split(&root, box, texture, max_extinction, 0, max_depth);
 
 	tree.set_dimensions(d);
@@ -37,7 +37,7 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 
 	// Gridtree experiment
 	{
-		int32_t const cd = 48;
+		int32_t const cd = 36;
 		int3 const cell = math::min(d, cd);
 	//	int3 const cell = math::min(d, d / 7);
 
@@ -58,7 +58,7 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 					int3 const min = int3(x, y, z) * cell;
 					int3 const max = math::min(min + cell, d);
 					Box const box{{min, max}};
-					split(node, box, texture, max_extinction, 0, 3);
+					split(node, box, texture, max_extinction, 0, 2);
 				}
 			}
 		}

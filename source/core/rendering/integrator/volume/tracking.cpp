@@ -6,6 +6,7 @@
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
+#include "scene/shape/shape.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
@@ -37,8 +38,12 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 		float3 const local_origin = transformation.world_to_object_point(ray.origin);
 		float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
+		auto const shape = interface->prop->shape();
+		float3 const origin = shape->object_to_texture_point(local_origin);
+		float3 const dir = shape->object_to_texture_vector(local_dir);
+
 		if (auto const tree = material.volume_octree(); tree) {
-			math::Ray local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+			math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
 			float3 w(1.f);
 			for (; local_ray.min_t < d;) {
@@ -81,9 +86,9 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 				return w;
 			}
 
-			float3 const local_p = local_origin + t * local_dir;
+			float3 const uvw = shape->object_to_texture_point(local_origin + t * local_dir);
 
-			auto const mu = material.collision_coefficients(local_p, Sampler_filter::Nearest,
+			auto const mu = material.collision_coefficients(uvw, Sampler_filter::Nearest,
 															worker);
 
 			float3 const mu_t = mu.a + mu.s;
@@ -122,9 +127,9 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
 			return false;
 		}
 
-		float3 const local_p = ray.point(t);
+		float3 const uvw = ray.point(t);
 
-		auto const mu = material.collision_coefficients(local_p, filter, worker);
+		auto const mu = material.collision_coefficients(uvw, filter, worker);
 
 		float3 const mu_t = mu.a + mu.s;
 
@@ -175,9 +180,9 @@ float3 Tracking::track(math::Ray const& ray, float mt, Material const& material,
 			return w;
 		}
 
-		float3 const local_p = ray.point(t);
+		float3 const uvw = ray.point(t);
 
-		auto const mu = material.collision_coefficients(local_p, filter, worker);
+		auto const mu = material.collision_coefficients(uvw, filter, worker);
 
 		float3 const mu_t = mu.a + mu.s;
 

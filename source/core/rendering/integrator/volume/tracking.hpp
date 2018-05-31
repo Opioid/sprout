@@ -32,9 +32,9 @@ public:
 
 	using Ray		     = scene::Ray;
 	using Transformation = scene::entity::Composed_transformation;
-	using Intersection   = scene::prop::Intersection;
 	using Material		 = scene::material::Material;
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
+	using Intersection   = scene::prop::Intersection;
 
 	static float3 transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker);
 
