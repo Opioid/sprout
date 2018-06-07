@@ -43,8 +43,8 @@ bool Prop_image_light::sample(f_float3 p, float time, Transformation const& tran
 	return true;
 }
 
-bool Prop_image_light::sample(f_float3 p, f_float3 n,
-							  float time, Transformation const& transformation, bool total_sphere,
+bool Prop_image_light::sample(f_float3 p, f_float3 n, float time,
+							  Transformation const& transformation, bool total_sphere,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Sampler_filter filter, Worker const& worker, Sample& result) const {
 	auto const material = prop_->material(part_);

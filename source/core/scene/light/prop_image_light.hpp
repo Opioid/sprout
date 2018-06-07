@@ -14,8 +14,8 @@ public:
 						Sampler_filter filter, Worker const& worker,
 						Sample& result) const override final;
 
-	virtual bool sample(f_float3 p, f_float3 n,
-						float time, Transformation const& transformation, bool total_sphere,
+	virtual bool sample(f_float3 p, f_float3 n, float time,
+						Transformation const& transformation, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, Worker const& worker,
 						Sample& result) const override final;
