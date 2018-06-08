@@ -8,22 +8,19 @@ namespace rnd {
 // http://www.pcg-random.org/
 
 class Generator {
+ public:
+  Generator(uint64_t state = 0, uint64_t sequence = 0);
 
-public:
+  uint32_t random_uint();
+  float random_float();
 
-	Generator(uint64_t state = 0, uint64_t sequence = 0);
+ private:
+  uint32_t advance_pcg32();
 
-	uint32_t random_uint();
-	float random_float();
-
-private:
-
-	uint32_t advance_pcg32();
-
-	uint64_t state_;
-	uint64_t inc_;
+  uint64_t state_;
+  uint64_t inc_;
 };
 
-}
+}  // namespace rnd
 
 #endif

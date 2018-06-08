@@ -7,24 +7,21 @@
 namespace scene::material {
 
 class Sample_cache {
+ public:
+  ~Sample_cache();
 
-public:
+  void init(uint32_t max_sample_size);
 
-	~Sample_cache();
+  template <typename T>
+  T& get();
 
-	void init(uint32_t max_sample_size);
+  size_t num_bytes() const;
 
-	template<typename T>
-	T& get();
-
-	size_t num_bytes() const;
-
-private:
-
-	uint32_t buffer_size_ = 0;
-	char* buffer_ = nullptr;
+ private:
+  uint32_t buffer_size_ = 0;
+  char* buffer_ = nullptr;
 };
 
-}
+}  // namespace scene::material
 
 #endif

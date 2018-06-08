@@ -5,33 +5,30 @@
 
 namespace thread {
 
-template<typename T>
+template <typename T>
 class Task_queue {
+ public:
+  Task_queue(uint32_t num_tasks);
+  ~Task_queue();
 
-public:
+  uint32_t size() const;
 
-	Task_queue(uint32_t num_tasks);
-	~Task_queue();
+  void clear();
 
-	uint32_t size() const;
+  void restart();
 
-	void clear();
+  void push(T const& task);
 
-	void restart();
+  bool pop(T& task);
 
-	void push(T const& task);
+ public:
+  uint32_t num_tasks_;
+  T* tasks_;
 
-	bool pop(T& task);
-
-public:
-
-	uint32_t num_tasks_;
-	T* tasks_;
-
-	uint32_t top_;
-	std::atomic<uint32_t> current_consume_;
+  uint32_t top_;
+  std::atomic<uint32_t> current_consume_;
 };
 
-}
+}  // namespace thread
 
 #endif

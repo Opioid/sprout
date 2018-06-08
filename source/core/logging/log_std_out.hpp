@@ -6,12 +6,10 @@
 namespace logging {
 
 class Std_out : public Log {
-
-public:
-
-	virtual void post(Type type, std::string_view text) override final;
+ public:
+  virtual void post(Type type, std::string_view text) override final;
 };
 
-}
+}  // namespace logging
 
 #endif

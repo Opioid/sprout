@@ -5,10 +5,7 @@
 
 namespace logging {
 
-enum class Type {
-	Null,
-	Std_out
-};
+enum class Type { Null, Std_out };
 
 void init(Type type, bool verbose = false);
 
@@ -20,6 +17,6 @@ void verbose(std::string_view text);
 void set_verbose(bool verbose);
 bool is_verbose();
 
-}
+}  // namespace logging
 
 #endif

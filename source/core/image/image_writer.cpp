@@ -5,4 +5,4 @@ namespace image {
 
 Writer::~Writer() {}
 
-}
+}  // namespace image

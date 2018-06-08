@@ -5,8 +5,10 @@
 
 namespace math {
 
-template<typename T> struct Vector3;
-template<typename T> struct Matrix3x3;
+template <typename T>
+struct Vector3;
+template <typename T>
+struct Matrix3x3;
 struct Matrix3x3f_a;
 
 /****************************************************************************
@@ -18,23 +20,23 @@ struct Matrix3x3f_a;
 template<typename T>
 struct Quaternion {
 
-	union {
-		struct {
-			T x, y, z, w;
-		};
+        union {
+                struct {
+                        T x, y, z, w;
+                };
 
-		T v[4];
-	};
+                T v[4];
+        };
 
-	Quaternion();
+        Quaternion();
 
-	Quaternion(T x, T y, T z, T w);
+        Quaternion(T x, T y, T z, T w);
 
-	explicit Quaternion(const Matrix3x3<T>& m);
+        explicit Quaternion(const Matrix3x3<T>& m);
 
-	Quaternion operator*(const Quaternion& q) const;
+        Quaternion operator*(const Quaternion& q) const;
 
-	static const Quaternion identity;
+        static const Quaternion identity;
 };
 
 template<typename T>
@@ -71,9 +73,9 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t);
  ****************************************************************************/
 
 // using quaternion = Quaternion<float>;
-using Quaternion  = float4;
+using Quaternion = float4;
 using FQuaternion = f_float4;
 
-}
+}  // namespace math
 
 #endif

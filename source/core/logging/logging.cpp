@@ -1,51 +1,41 @@
 #include "logging.hpp"
+#include <memory>
 #include "log_null.hpp"
 #include "log_std_out.hpp"
-#include <memory>
 
 namespace logging {
 
-std::unique_ptr<Log> log;
-bool log_verbose = false;
+static std::unique_ptr<Log> log;
+static bool log_verbose = false;
 
 void init(Type type, bool verbose) {
-	switch (type) {
-	case Type::Null:
-		log = std::make_unique<Null>();
-		break;
-	case Type::Std_out:
-	default:
-		log = std::make_unique<Std_out>();
-		break;
-	}
+  switch (type) {
+    case Type::Null:
+      log = std::make_unique<Null>();
+      break;
+    case Type::Std_out:
+    default:
+      log = std::make_unique<Std_out>();
+      break;
+  }
 
-	log_verbose = verbose;
+  log_verbose = verbose;
 }
 
-void info(std::string_view text) {
-	log->post(Log::Type::Info, text);
-}
+void info(std::string_view text) { log->post(Log::Type::Info, text); }
 
-void warning(std::string_view text) {
-	log->post(Log::Type::Warning, text);
-}
+void warning(std::string_view text) { log->post(Log::Type::Warning, text); }
 
-void error(std::string_view text) {
-	log->post(Log::Type::Error, text);
-}
+void error(std::string_view text) { log->post(Log::Type::Error, text); }
 
 void verbose(std::string_view text) {
-	if (log_verbose) {
-		log->post(Log::Type::Verbose, text);
-	}
+  if (log_verbose) {
+    log->post(Log::Type::Verbose, text);
+  }
 }
 
-void set_verbose(bool verbose) {
-	log_verbose = verbose;
-}
+void set_verbose(bool verbose) { log_verbose = verbose; }
 
-bool is_verbose() {
-	return log_verbose;
-}
+bool is_verbose() { return log_verbose; }
 
-}
+}  // namespace logging
