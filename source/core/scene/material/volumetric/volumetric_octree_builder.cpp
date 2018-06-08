@@ -37,7 +37,7 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 
 	// Gridtree experiment
 	{
-		int32_t const cd = 36;
+		int32_t const cd = 32;
 		int3 const cell = math::min(d, cd);
 	//	int3 const cell = math::min(d, d / 7);
 
