@@ -6,7 +6,9 @@
 
 namespace scene {
 
-namespace shape { class Node_stack; }
+namespace shape {
+class Node_stack;
+}
 
 class Worker;
 struct Ray;
@@ -17,37 +19,35 @@ class Prop;
 struct Intersection;
 
 class BVH_wrapper {
+ public:
+  using Sampler_filter = material::Sampler_settings::Filter;
 
-public:
+  bvh::Tree<Prop>& tree();
 
-	using Sampler_filter = material::Sampler_settings::Filter;
+  void set_infinite_props(std::vector<Prop*> const& infite_props);
 
-	bvh::Tree<Prop>& tree();
+  math::AABB const& aabb() const;
 
-	void set_infinite_props(std::vector<Prop*> const& infite_props);
+  bool intersect(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	math::AABB const& aabb() const;
+  bool intersect_fast(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
+  bool intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const;
 
-	bool intersect_fast(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
+  bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const;
 
-	bool intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const;
+  float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
-	bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const;
+  float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
-	float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
+ private:
+  bvh::Tree<Prop> tree_;
 
-	float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
-
-private:
-
-	bvh::Tree<Prop> tree_;
-
-	uint32_t num_infinite_props_;
-	Prop* const* infinite_props_;
+  uint32_t num_infinite_props_;
+  Prop* const* infinite_props_;
 };
 
-}}
+}  // namespace prop
+}  // namespace scene
 
 #endif

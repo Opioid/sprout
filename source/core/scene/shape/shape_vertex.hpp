@@ -7,13 +7,13 @@
 namespace scene::shape {
 
 struct Vertex {
-	packed_float3 p;
-	packed_float3 n;
-	packed_float3 t;
-	float2 uv;
-	float bitangent_sign;
+  packed_float3 p;
+  packed_float3 n;
+  packed_float3 t;
+  float2 uv;
+  float bitangent_sign;
 };
 
-}
+}  // namespace scene::shape
 
 #endif

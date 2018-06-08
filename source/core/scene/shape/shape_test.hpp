@@ -5,7 +5,9 @@
 
 namespace scene {
 
-namespace entity { struct Composed_transformation; }
+namespace entity {
+struct Composed_transformation;
+}
 
 struct Ray;
 
@@ -16,9 +18,8 @@ struct Sample;
 
 namespace testing {
 
-bool check(Intersection const& intersection,
-		   const entity::Composed_transformation& transformation,
-		   Ray const& ray);
+bool check(Intersection const& intersection, const entity::Composed_transformation& transformation,
+           Ray const& ray);
 
 bool check(const Sample& sample);
 
@@ -26,6 +27,8 @@ bool check(const Sample& sample, float2 uv);
 
 void test();
 
-}}}
+}  // namespace testing
+}  // namespace shape
+}  // namespace scene
 
 #endif

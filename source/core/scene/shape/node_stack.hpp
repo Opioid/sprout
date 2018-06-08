@@ -1,36 +1,33 @@
 #ifndef SU_CORE_SCENE_SHAPE_NODE_STACK_HPP
 #define SU_CORE_SCENE_SHAPE_NODE_STACK_HPP
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace scene::shape {
 
 class Node_stack {
+ public:
+  Node_stack(uint32_t size);
 
-public:
+  ~Node_stack();
 
-	Node_stack(uint32_t size);
+  bool empty() const;
 
-	~Node_stack();
+  void clear();
 
-	bool empty() const;
+  void push(uint32_t value);
 
-	void clear();
+  uint32_t pop();
 
-	void push(uint32_t value);
+  size_t num_bytes() const;
 
-	uint32_t pop();
-
-	size_t num_bytes() const;
-
-private:
-
-	uint32_t num_elements_;
-	uint32_t end_;
-	uint32_t* stack_;
+ private:
+  uint32_t num_elements_;
+  uint32_t end_;
+  uint32_t* stack_;
 };
 
-}
+}  // namespace scene::shape
 
 #endif

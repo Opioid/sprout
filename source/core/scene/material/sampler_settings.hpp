@@ -13,10 +13,10 @@ struct Sampler_settings {
   };
 
   enum class Address_flat : uint32_t {
-    Clamp_clamp,
-    Clamp_repeat,
-    Repeat_clamp,
-    Repeat_repeat,
+    Clamp_clamp = 0,
+    Clamp_repeat = 1,
+    Repeat_clamp = 2,
+    Repeat_repeat = 3,
     Mask = 0x00000003
   };
 
