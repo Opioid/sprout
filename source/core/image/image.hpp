@@ -7,45 +7,45 @@
 namespace image {
 
 class Image {
- public:
-  enum class Type { Undefined, Byte1, Byte2, Byte3, Float1, Float2, Float3, Float4 };
+  public:
+    enum class Type { Undefined, Byte1, Byte2, Byte3, Float1, Float2, Float3, Float4 };
 
-  struct Description {
-    Description() = default;
-    Description(Type type, int2 dimensions, int32_t num_elements = 1);
-    Description(Type type, int3 const& dimensions, int32_t num_elements = 1);
+    struct Description {
+        Description() = default;
+        Description(Type type, int2 dimensions, int32_t num_elements = 1);
+        Description(Type type, int3 const& dimensions, int32_t num_elements = 1);
 
-    size_t num_pixels() const;
+        size_t num_pixels() const;
 
-    uint32_t num_channels() const;
+        uint32_t num_channels() const;
 
-    Type type = Type::Undefined;
-    int3 dimensions = int3(0, 0, 0);
+        Type type       = Type::Undefined;
+        int3 dimensions = int3(0, 0, 0);
 
-    int32_t num_elements = 0;
-  };
+        int32_t num_elements = 0;
+    };
 
-  Image() = default;
-  Image(Description const& description);
-  virtual ~Image();
+    Image() = default;
+    Image(Description const& description);
+    virtual ~Image();
 
-  Description const& description() const;
+    Description const& description() const;
 
-  int2 dimensions2() const;
-  int32_t area() const;
-  int32_t volume() const;
+    int2    dimensions2() const;
+    int32_t area() const;
+    int32_t volume() const;
 
-  int2 coordinates_2(int32_t index) const;
+    int2 coordinates_2(int32_t index) const;
 
-  virtual size_t num_bytes() const = 0;
+    virtual size_t num_bytes() const = 0;
 
- protected:
-  void resize(Description const& description);
+  protected:
+    void resize(Description const& description);
 
-  Description description_;
+    Description description_;
 
-  int32_t area_ = 0;
-  int32_t volume_ = 0;
+    int32_t area_   = 0;
+    int32_t volume_ = 0;
 };
 
 }  // namespace image

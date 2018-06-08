@@ -5,14 +5,12 @@
 namespace server {
 
 class Message_handler {
+  public:
+    virtual void handle(std::string const& message) = 0;
 
-public:
+    virtual std::string introduction() const = 0;
 
-	virtual void handle(std::string const& message) = 0;
-
-	virtual std::string introduction() const = 0;
-
-	virtual std::string iteration() const = 0;
+    virtual std::string iteration() const = 0;
 };
 
-}
+}  // namespace server

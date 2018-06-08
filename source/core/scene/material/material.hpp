@@ -1,151 +1,163 @@
 #ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
-#include "sampler_settings.hpp"
-#include "image/texture/texture_adapter.hpp"
-#include "image/texture/texture_types.hpp"
+#include <memory>
+#include <vector>
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
-#include <memory>
-#include <vector>
+#include "image/texture/texture_adapter.hpp"
+#include "image/texture/texture_types.hpp"
+#include "sampler_settings.hpp"
 
-namespace math { struct Ray; struct AABB; }
+namespace math {
+struct Ray;
+struct AABB;
+}  // namespace math
 
-namespace rnd { class Generator; }
+namespace rnd {
+class Generator;
+}
 
-namespace sampler { class Sampler; }
+namespace sampler {
+class Sampler;
+}
 
-namespace thread { class Pool; }
+namespace thread {
+class Pool;
+}
 
 namespace scene {
 
 struct Renderstate;
 class Worker;
 
-namespace entity { struct Composed_transformation; }
+namespace entity {
+struct Composed_transformation;
+}
 
-namespace shape { class Shape; }
+namespace shape {
+class Shape;
+}
 
 namespace material {
 
-namespace volumetric { class Octree; }
+namespace volumetric {
+class Octree;
+}
 
 class Sample;
 
 class Material {
+  public:
+    using Transformation = entity::Composed_transformation;
+    using Sampler_filter = Sampler_settings::Filter;
 
-public:
+    Material(Sampler_settings const& sampler_settings, bool two_sided);
 
-	using Transformation = entity::Composed_transformation;
-	using Sampler_filter = Sampler_settings::Filter;
+    virtual ~Material();
 
-	Material(Sampler_settings const& sampler_settings, bool two_sided);
+    void set_mask(Texture_adapter const& mask);
 
-	virtual ~Material();
+    void set_parameters(json::Value const& parameters);
 
-	void set_mask(Texture_adapter const& mask);
+    virtual void compile();
 
-	void set_parameters(json::Value const& parameters);
+    virtual void tick(float absolute_time, float time_slice);
 
-	virtual void compile();
+    virtual const Sample& sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
+                                 sampler::Sampler& sampler, Worker const& worker) const = 0;
 
-	virtual void tick(float absolute_time, float time_slice);
+    virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
+                                   Sampler_filter filter, Worker const& worker) const;
 
-	virtual const Sample& sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
-								 sampler::Sampler& sampler, Worker const& worker) const = 0;
+    virtual float3 average_radiance(float area) const;
 
-	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
-								   Sampler_filter filter, Worker const& worker) const;
+    virtual bool has_emission_map() const;
 
-	virtual float3 average_radiance(float area) const;
+    struct Sample_2D {
+        float2 uv;
+        float  pdf;
+    };
+    virtual Sample_2D radiance_sample(float2 r2) const;
 
-	virtual bool has_emission_map() const;
+    virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const;
 
-	struct Sample_2D { float2 uv; float pdf; };
-	virtual Sample_2D radiance_sample(float2 r2) const;
+    virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const;
 
-	virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const;
+    virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
+                                   Sampler_filter filter, Worker const& worker) const;
 
-	virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const;
+    virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
+                            float step_size, rnd::Generator& rng, Sampler_filter filter,
+                            Worker const& worker) const;
 
-	virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
-								   Sampler_filter filter, Worker const& worker) const;
+    virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
+                                          Worker const& worker) const;
 
-	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
-							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, Worker const& worker) const;
+    struct CC {
+        float3 a, s;
+    };
 
-	virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-										  Worker const& worker) const;
+    virtual CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const;
 
-	struct CC { float3 a, s; };
+    virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
+                                      Worker const& worker) const;
 
-	virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
-									  Worker const& worker) const;
+    virtual float majorant_mu_t() const;
 
-	virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
-									  Worker const& worker) const;
+    virtual volumetric::Octree const* volume_octree() const;
 
-	virtual float majorant_mu_t() const;
+    virtual bool is_heterogeneous_volume() const;
+    virtual bool is_scattering_volume() const;
 
-	virtual volumetric::Octree const* volume_octree() const;
+    virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
+                                  Transformation const& transformation, float area,
+                                  bool importance_sampling, thread::Pool& pool);
 
-	virtual bool is_heterogeneous_volume() const;
-	virtual bool is_scattering_volume() const;
+    virtual bool is_animated() const;
 
-	virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
-								  Transformation const& transformation, float area,
-								  bool importance_sampling, thread::Pool& pool);
+    virtual bool has_tinted_shadow() const;
 
-	virtual bool is_animated() const;
+    virtual float ior() const = 0;
 
-	virtual bool has_tinted_shadow() const;
+    uint32_t sampler_key() const;
 
-	virtual float ior() const = 0;
+    virtual bool is_masked() const;
+    bool         is_emissive() const;
+    bool         is_two_sided() const;
 
-	uint32_t sampler_key() const;
+    virtual size_t num_bytes() const = 0;
 
-	virtual bool is_masked() const;
-	bool is_emissive() const;
-	bool is_two_sided() const;
+  protected:
+    virtual void set_parameter(std::string const& name, json::Value const& value);
 
-	virtual size_t num_bytes() const = 0;
+  private:
+    uint32_t sampler_key_;
 
-protected:
+    bool two_sided_;
 
-	virtual void set_parameter(std::string const& name, json::Value const& value);
+  protected:
+    Texture_adapter mask_;
 
-private:
+  public:
+    static void init_rainbow();
 
-	uint32_t sampler_key_;
+    static float3 spectrum_at_wavelength(float lambda, float value = 1.f);
 
-	bool two_sided_;
+    static int32_t constexpr Num_bands = 16;
 
-protected:
+    using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
-	Texture_adapter mask_;
-
-public:
-
-	static void init_rainbow();
-
-	static float3 spectrum_at_wavelength(float lambda, float value = 1.f);
-
-	static int32_t constexpr Num_bands = 16;
-
-	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
-
-private:
-
-	static float3 rainbow_[Num_bands];
+  private:
+    static float3 rainbow_[Num_bands];
 };
 
-}
+}  // namespace material
 
 using Material_ptr = std::shared_ptr<material::Material>;
-using Materials = std::vector<Material_ptr>;
+using Materials    = std::vector<Material_ptr>;
 
-}
+}  // namespace scene
 
 #endif

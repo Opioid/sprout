@@ -1,28 +1,27 @@
 #include "camera_spherical.hpp"
+#include "base/math/math.hpp"
+#include "base/math/matrix4x4.inl"
+#include "base/math/sampling/sampling.hpp"
+#include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
-#include "base/math/math.hpp"
-#include "base/math/vector4.inl"
-#include "base/math/matrix4x4.inl"
-#include "base/math/sampling/sampling.hpp"
 
 namespace scene::camera {
 
-Spherical::Spherical(int2 resolution) :
-	Camera(resolution) {
-	float2 fr(resolution);
-	d_x_ = 1.f / fr[0];
-	d_y_ = 1.f / fr[1];
+Spherical::Spherical(int2 resolution) : Camera(resolution) {
+    float2 fr(resolution);
+    d_x_ = 1.f / fr[0];
+    d_y_ = 1.f / fr[1];
 }
 
 uint32_t Spherical::num_views() const {
-	return 1;
+    return 1;
 }
 
 int2 Spherical::sensor_dimensions() const {
-	return resolution_;
+    return resolution_;
 }
 
 int4 Spherical::view_bounds(uint32_t /*view*/) const {
@@ -30,38 +29,37 @@ int4 Spherical::view_bounds(uint32_t /*view*/) const {
 }
 
 float Spherical::pixel_solid_angle() const {
-	return 1.f;
+    return 1.f;
 }
 
-bool Spherical::generate_ray(sampler::Camera_sample const& sample,
-							 uint32_t /*view*/, scene::Ray& ray) const {
-	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
+bool Spherical::generate_ray(sampler::Camera_sample const& sample, uint32_t /*view*/,
+                             scene::Ray&                   ray) const {
+    float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float x = d_x_ * coordinates[0];
-	float y = d_y_ * coordinates[1];
+    float x = d_x_ * coordinates[0];
+    float y = d_y_ * coordinates[1];
 
-	float phi   = (x - 0.5f) * (2.f * math::Pi);
-	float theta = y * math::Pi;
+    float phi   = (x - 0.5f) * (2.f * math::Pi);
+    float theta = y * math::Pi;
 
-	float sin_phi   = std::sin(phi);
-	float cos_phi   = std::cos(phi);
-	float sin_theta = std::sin(theta);
-	float cos_theta = std::cos(theta);
+    float sin_phi   = std::sin(phi);
+    float cos_phi   = std::cos(phi);
+    float sin_theta = std::sin(theta);
+    float cos_theta = std::cos(theta);
 
-	float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
+    float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-	entity::Composed_transformation temp;
-	auto& transformation = transformation_at(sample.time, temp);
+    entity::Composed_transformation temp;
+    auto&                           transformation = transformation_at(sample.time, temp);
 
-	ray = create_ray(transformation.position,
-					 math::transform_vector(dir, transformation.rotation),
-					 sample.time);
+    ray = create_ray(transformation.position, math::transform_vector(dir, transformation.rotation),
+                     sample.time);
 
-	return true;
+    return true;
 }
 
 void Spherical::on_update(Worker& /*worker*/) {}
 
 void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 
-}
+}  // namespace scene::camera

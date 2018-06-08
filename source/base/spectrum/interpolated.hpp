@@ -1,32 +1,29 @@
 #ifndef SU_BASE_SPECTRUM_INTERPOLATED_HPP
 #define SU_BASE_SPECTRUM_INTERPOLATED_HPP
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 namespace spectrum {
 
 class Interpolated {
+  public:
+    Interpolated() = default;
 
-public:
+    Interpolated(float const* wavelengths, float const* intensities, size_t len);
 
-	Interpolated() = default;
+    float start_wavelength() const;
+    float end_wavelength() const;
 
-	Interpolated(float const* wavelengths, float const* intensities, size_t len);
+    float evaluate(float wl) const;
 
-	float start_wavelength() const;
-	float end_wavelength() const;
+    float integrate(float a, float b) const;
 
-	float evaluate(float wl) const;
-
-	float integrate(float a, float b) const;
-
-private:
-
-	std::vector<float> wavelengths_;
-	std::vector<float> intensities_;
+  private:
+    std::vector<float> wavelengths_;
+    std::vector<float> intensities_;
 };
 
-}
+}  // namespace spectrum
 
 #endif

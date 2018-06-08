@@ -1,54 +1,51 @@
 #ifndef SU_CORE_SCENE_CAMERA_CUBIC_STEREOSCOPIC_HPP
 #define SU_CORE_SCENE_CAMERA_CUBIC_STEREOSCOPIC_HPP
 
-#include "camera_stereoscopic.hpp"
 #include "base/math/matrix3x3.hpp"
+#include "camera_stereoscopic.hpp"
 
 namespace scene::camera {
 
 class Cubic_stereoscopic : public Stereoscopic {
+  public:
+    enum class Layout {
+        lxlmxlylmylzlmzrxrmxryrmyrzrmz,
+        rxlmxryrmyrzrmzlxlmxlylmylzlmz,
+    };
 
-public:
+    Cubic_stereoscopic(Layout layout, int2 resolution);
 
-	enum class Layout {
-		lxlmxlylmylzlmzrxrmxryrmyrzrmz,
-		rxlmxryrmyrzrmzlxlmxlylmylzlmz,
-	};
+    virtual uint32_t num_views() const override final;
 
-	Cubic_stereoscopic(Layout layout, int2 resolution);
+    virtual int2 sensor_dimensions() const override final;
 
-	virtual uint32_t num_views() const override final;
+    virtual int4 view_bounds(uint32_t view) const override final;
 
-	virtual int2 sensor_dimensions() const override final;
+    virtual float pixel_solid_angle() const override final;
 
-	virtual int4 view_bounds(uint32_t view) const override final;
+    virtual bool generate_ray(sampler::Camera_sample const& sample, uint32_t view,
+                              scene::Ray& ray) const override final;
 
-	virtual float pixel_solid_angle() const override final;
+    void set_interpupillary_distance_falloff(float ipd_falloff);
 
-	virtual bool generate_ray(sampler::Camera_sample const& sample, uint32_t view,
-							  scene::Ray& ray) const override final;
+  private:
+    virtual void on_update(Worker& worker) override final;
 
-	void set_interpupillary_distance_falloff(float ipd_falloff);
+    virtual void set_parameter(std::string_view name, json::Value const& value) override final;
 
-private:
+    float3 left_top_;
+    float3 d_x_;
+    float3 d_y_;
 
-	virtual void on_update(Worker& worker) override final;
+    int2 sensor_dimensions_;
 
-	virtual void set_parameter(std::string_view name, json::Value const& value) override final;
+    float ipd_falloff_;
 
-	float3 left_top_;
-	float3 d_x_;
-	float3 d_y_;
+    int4 view_bounds_[12];
 
-	int2 sensor_dimensions_;
-
-	float ipd_falloff_;
-
-	int4 view_bounds_[12];
-
-	float3x3 view_rotations_[6];
+    float3x3 view_rotations_[6];
 };
 
-}
+}  // namespace scene::camera
 
 #endif

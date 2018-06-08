@@ -8,5 +8,4 @@ void Null::end() {}
 
 void Null::tick() {}
 
-}
-
+}  // namespace progress

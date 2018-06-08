@@ -2,7 +2,9 @@
 
 #include "base/json/json_types.hpp"
 
-namespace resource { class Manager; }
+namespace resource {
+class Manager;
+}
 
 namespace scene {
 
@@ -13,11 +15,10 @@ namespace entity {
 class Entity;
 
 class Extension_provider {
-public:
-
-	virtual Entity* create_extension(json::Value const& extension_value,
-									 Scene& scene,
-									 resource::Manager& manager) = 0;
+  public:
+    virtual Entity* create_extension(json::Value const& extension_value, Scene& scene,
+                                     resource::Manager& manager) = 0;
 };
 
-}}
+}  // namespace entity
+}  // namespace scene

@@ -3,5 +3,4 @@
 namespace scene::material::metal::testing {
 
 void test();
-
 }

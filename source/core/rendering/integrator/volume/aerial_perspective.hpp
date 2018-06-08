@@ -1,75 +1,71 @@
 #ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_AERIAL_PERSPECTIVE_HPP
 #define SU_CORE_RENDERING_INTEGRATOR_VOLUME_AERIAL_PERSPECTIVE_HPP
 
-#include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
+#include "volume_integrator.hpp"
 
-namespace scene::entity { struct Composed_transformation; }
+namespace scene::entity {
+struct Composed_transformation;
+}
 
 namespace rendering::integrator::volume {
 
 class alignas(64) Aerial_perspective final : public Integrator {
+  public:
+    struct Settings {
+        float step_size;
 
-public:
+        bool disable_shadows;
+    };
 
-	struct Settings {
-		float step_size;
+    Aerial_perspective(rnd::Generator& rng, take::Settings const& take_settings,
+                       Settings const& settings);
 
-		bool disable_shadows;
-	};
+    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
 
-	Aerial_perspective(rnd::Generator& rng, take::Settings const& take_settings,
-					   Settings const& settings);
+    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
-	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
+                           Worker& worker, float3& li, float3& transmittance) override final;
 
-	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
+    virtual size_t num_bytes() const override final;
 
-	virtual bool integrate(Ray& ray, Intersection& intersection,
-						   Sampler_filter filter, Worker& worker,
-						   float3& li, float3& transmittance) override final;
+  private:
+    /*
+    float3 integrate_with_shadows(Ray const& ray, const Volume& volume,
+                                                              Worker& worker, float3&
+    transmittance);
 
-	virtual size_t num_bytes() const override final;
+    float3 integrate_without_shadows(Ray const& ray, const Volume& volume,
+                                                                     Worker& worker, float3&
+    transmittance);
+    */
 
-private:
+    const Material_sample& sample(f_float3 wo, float time, const Material& material,
+                                  Sampler_filter filter, Worker& worker);
 
-	/*
-	float3 integrate_with_shadows(Ray const& ray, const Volume& volume,
-								  Worker& worker, float3& transmittance);
+    const Settings settings_;
 
-	float3 integrate_without_shadows(Ray const& ray, const Volume& volume,
-									 Worker& worker, float3& transmittance);
-	*/
-
-	const Material_sample& sample(f_float3 wo, float time, const Material& material,
-								  Sampler_filter filter, Worker& worker);
-
-	const Settings settings_;
-
-	sampler::Random sampler_;
+    sampler::Random sampler_;
 };
 
 class Aerial_perspective_factory : public Factory {
+  public:
+    Aerial_perspective_factory(take::Settings const& take_settings, uint32_t num_integrators,
+                               float step_size, bool shadows);
 
-public:
+    virtual ~Aerial_perspective_factory() override;
 
-	Aerial_perspective_factory(take::Settings const& take_settings, uint32_t num_integrators,
-							   float step_size, bool shadows);
+    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
-	virtual ~Aerial_perspective_factory() override;
+  private:
+    Aerial_perspective* integrators_;
 
-	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
-
-private:
-
-	Aerial_perspective* integrators_;
-
-	Aerial_perspective::Settings settings_;
+    Aerial_perspective::Settings settings_;
 };
 
-}
+}  // namespace rendering::integrator::volume
 
 #endif
-

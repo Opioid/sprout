@@ -37,8 +37,8 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
 
     // Gridtree experiment
     {
-        int32_t const cd = 36;
-        int3 const cell = math::min(d, cd);
+        int32_t const cd   = 36;
+        int3 const    cell = math::min(d, cd);
         //	int3 const cell = math::min(d, d / 7);
 
         int3 num_cells = d / cell;
@@ -57,7 +57,7 @@ void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
                 for (int32_t x = 0; x < num_cells[0]; ++x, ++node) {
                     int3 const min = int3(x, y, z) * cell;
                     int3 const max = math::min(min + cell, d);
-                    Box const box{{min, max}};
+                    Box const  box{{min, max}};
                     split(node, box, texture, max_extinction, 0, 2);
                 }
             }
@@ -90,7 +90,7 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
         for (int32_t y = minb[1], my = maxb[1]; y < my; ++y) {
             for (int32_t x = minb[0], mx = maxb[0]; x < mx; ++x) {
                 float const density = texture.at_1(x, y, z);
-                max_density = std::max(density, max_density);
+                max_density         = std::max(density, max_density);
             }
         }
     }
@@ -189,7 +189,7 @@ void Octree_builder::serialize(Build_node* node, uint32_t current, uint32_t& nex
             serialize(node->children[i], current + i, next);
         }
     } else {
-        n.children = 0;
+        n.children      = 0;
         n.majorant_mu_t = node->majorant_mu_t;
     }
 }

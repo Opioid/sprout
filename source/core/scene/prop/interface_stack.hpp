@@ -16,41 +16,41 @@ struct Intersection;
 class Prop;
 
 class Interface_stack {
- public:
-  struct Interface {
-    material::Material const* material() const;
+  public:
+    struct Interface {
+        material::Material const* material() const;
 
-    bool matches(Intersection const& intersection) const;
+        bool matches(Intersection const& intersection) const;
 
-    Prop const* prop;
-    float2 uv;
-    uint32_t part;
-  };
+        Prop const* prop;
+        float2      uv;
+        uint32_t    part;
+    };
 
-  Interface_stack();
-  ~Interface_stack();
+    Interface_stack();
+    ~Interface_stack();
 
-  void operator=(Interface_stack const& other);
+    void operator=(Interface_stack const& other);
 
-  void swap(Interface_stack& other);
+    void swap(Interface_stack& other);
 
-  bool empty() const;
+    bool empty() const;
 
-  void clear();
+    void clear();
 
-  const Interface* top() const;
+    const Interface* top() const;
 
-  float top_ior() const;
+    float top_ior() const;
 
-  void push(Intersection const& intersection);
-  bool remove(Intersection const& intersection);
-  void pop();
+    void push(Intersection const& intersection);
+    bool remove(Intersection const& intersection);
+    void pop();
 
- private:
-  static int32_t constexpr Num_entries = 16;
+  private:
+    static int32_t constexpr Num_entries = 16;
 
-  int32_t index_;
-  Interface* stack_;
+    int32_t    index_;
+    Interface* stack_;
 };
 
 }  // namespace prop

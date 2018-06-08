@@ -9,6 +9,6 @@ void init();
 
 float3 linear_rgb(float height);
 
-}
+}  // namespace procedural::aurora::spectrum
 
 #endif

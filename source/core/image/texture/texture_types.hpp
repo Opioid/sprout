@@ -8,7 +8,7 @@ namespace image::texture {
 class Texture;
 class Adapter;
 
-}
+}  // namespace image::texture
 
 using Texture_ptr = std::shared_ptr<image::texture::Texture>;
 

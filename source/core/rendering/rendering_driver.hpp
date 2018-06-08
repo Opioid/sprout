@@ -45,27 +45,27 @@ class Factory;
 class Camera_worker;
 
 class Driver {
- public:
-  Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
-         uint32_t max_sample_size);
+  public:
+    Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
+           uint32_t max_sample_size);
 
-  ~Driver();
+    ~Driver();
 
-  scene::camera::Camera& camera();
+    scene::camera::Camera& camera();
 
-  scene::Scene const& scene() const;
+    scene::Scene const& scene() const;
 
-  size_t num_bytes() const;
+    size_t num_bytes() const;
 
- protected:
-  scene::Scene& scene_;
-  take::View& view_;
-  thread::Pool& thread_pool_;
+  protected:
+    scene::Scene& scene_;
+    take::View&   view_;
+    thread::Pool& thread_pool_;
 
-  Camera_worker* workers_;
-  Tile_queue tiles_;
+    Camera_worker* workers_;
+    Tile_queue     tiles_;
 
-  image::Float4 target_;
+    image::Float4 target_;
 };
 
 }  // namespace rendering

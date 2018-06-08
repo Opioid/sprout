@@ -6,7 +6,7 @@
 namespace scene::light {
 
 class Prop_image_light : public Prop_light {
-   public:
+  public:
     virtual bool sample(f_float3 p, float time, Transformation const& transformation,
                         sampler::Sampler& sampler, uint32_t sampler_dimension,
                         Sampler_filter filter, Worker const& worker,

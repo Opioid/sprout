@@ -2,9 +2,9 @@
 #define SU_BASE_SIMD_SIMD_HPP
 
 #if defined(_MSC_VER)
-#	include <intrin.h>
+#include <intrin.h>
 #else
-#	include <x86intrin.h>
+#include <x86intrin.h>
 #endif
 
 /*
@@ -18,11 +18,11 @@
 #define _SU_VECTORCALL_ 1
 
 #ifdef __clang__
-#	define SU_CALLCONV __attribute__((vectorcall))
+#define SU_CALLCONV __attribute__((vectorcall))
 #elif defined(_MSC_VER)
-#	define SU_CALLCONV __vectorcall
+#define SU_CALLCONV __vectorcall
 #else
-#	define SU_CALLCONV
+#define SU_CALLCONV
 #endif
 
 /****************************************************************************
@@ -32,9 +32,9 @@
  ****************************************************************************/
 
 #if defined(_SU_NO_MOVNT_)
-#		define XM_STREAM_PS( p, a ) _mm_store_ps(p, a)
-#	else
-#		define SU_STREAM_PS(p, a) _mm_stream_ps(p, a)
+#define XM_STREAM_PS(p, a) _mm_store_ps(p, a)
+#else
+#define SU_STREAM_PS(p, a) _mm_stream_ps(p, a)
 #endif
 
 #define SU_PERMUTE_PS(v, c) _mm_shuffle_ps(v, v, c)
@@ -56,7 +56,7 @@ using FVector = const Vector;
 // Fix-up for (7th+) Vector parameters to pass by reference
 using RVector = const Vector&;
 
-}
+}  // namespace simd
 
 using Vector  = simd::Vector;
 using FVector = simd::FVector;

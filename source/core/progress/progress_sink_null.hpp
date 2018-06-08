@@ -5,12 +5,10 @@
 namespace progress {
 
 class Null : public Sink {
-public:
-
-	virtual void start(uint32_t resolution) override final;
-	virtual void end() override final;
-	virtual void tick() override final;
+  public:
+    virtual void start(uint32_t resolution) override final;
+    virtual void end() override final;
+    virtual void tick() override final;
 };
 
-}
-
+}  // namespace progress

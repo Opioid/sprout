@@ -6,39 +6,33 @@
 namespace rendering::integrator::volume {
 
 class alignas(64) Tracking_multi : public Integrator {
+  public:
+    Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings);
 
-public:
+    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
 
-	Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings);
+    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
 
-	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
+                           Worker& worker, float3& li, float3& transmittance) override final;
 
-	virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
-
-	virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
-						   Worker& worker, float3& li, float3& transmittance) override final;
-
-	virtual size_t num_bytes() const override final;
-
+    virtual size_t num_bytes() const override final;
 };
 
 class Tracking_multi_factory final : public Factory {
+  public:
+    Tracking_multi_factory(take::Settings const& take_settings, uint32_t num_integrators);
 
-public:
+    virtual ~Tracking_multi_factory() override final;
 
-	Tracking_multi_factory(take::Settings const& take_settings, uint32_t num_integrators);
+    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
-	virtual ~Tracking_multi_factory() override final;
-
-	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
-
-private:
-
-	Tracking_multi* integrators_;
+  private:
+    Tracking_multi* integrators_;
 };
 
-}
+}  // namespace rendering::integrator::volume
 
 #endif

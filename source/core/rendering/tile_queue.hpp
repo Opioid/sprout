@@ -1,34 +1,31 @@
 #ifndef SU_CORE_RENDERING_TILE_QUEUE_HPP
 #define SU_CORE_RENDERING_TILE_QUEUE_HPP
 
-#include "base/math/vector4.hpp"
 #include <atomic>
+#include "base/math/vector4.hpp"
 
 namespace rendering {
 
 class Tile_queue {
+  public:
+    Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius);
+    ~Tile_queue();
 
-public:
+    uint32_t size() const;
 
-	Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius);
-	~Tile_queue();
+    void restart();
 
-	uint32_t size() const;
+    bool pop(int4& tile);
 
-	void restart();
+  private:
+    void push(int4 const& tile);
 
-	bool pop(int4& tile);
+    uint32_t num_tiles_;
+    int4*    tiles_;
 
-private:
-
-	void push(int4 const& tile);
-
-	uint32_t num_tiles_;
-	int4* tiles_;
-
-	std::atomic<uint32_t> current_consume_;
+    std::atomic<uint32_t> current_consume_;
 };
 
-}
+}  // namespace rendering
 
 #endif

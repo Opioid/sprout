@@ -8,43 +8,42 @@ struct ArHosekSkyModelState;
 namespace procedural::sky {
 
 class Model {
+  public:
+    Model();
+    ~Model();
 
-public:
+    // Return signals whether there was a change (not success/failure!)
+    bool init();
 
-	Model();
-	~Model();
+    float3 sun_direction() const;
+    void   set_sun_direction(float3 const& direction);
 
-	// Return signals whether there was a change (not success/failure!)
-	bool init();
+    void set_ground_albedo(float3 const& albedo);
+    void set_turbidity(float turbidity);
 
-	float3 sun_direction() const;
-	void set_sun_direction(float3 const& direction);
+    float3 evaluate_sky(f_float3 wi) const;
 
-	void set_ground_albedo(float3 const& albedo);
-	void set_turbidity(float turbidity);
+    float3 evaluate_sky_and_sun(f_float3 wi) const;
 
-	float3 evaluate_sky(f_float3 wi) const;
+    static constexpr float3 zenith() {
+        return float3(0.f, 1.f, 0.f);
+    };
 
-	float3 evaluate_sky_and_sun(f_float3 wi) const;
+  private:
+    void release();
 
-	static constexpr float3 zenith() { return float3(0.f, 1.f, 0.f); };
+    float3 sun_direction_;
+    float3 ground_albedo_;
 
-private:
+    float turbidity_;
 
-	void release();
+    static uint32_t constexpr Num_bands = 6;
 
-	float3 sun_direction_;
-	float3 ground_albedo_;
+    ArHosekSkyModelState* skymodel_states_[Num_bands];
 
-	float turbidity_;
+    bool dirty_ = true;
 
-	static uint32_t constexpr Num_bands = 6;
-
-	ArHosekSkyModelState* skymodel_states_[Num_bands];
-
-	bool dirty_ = true;
-
-	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
+    using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 };
 
-}
+}  // namespace procedural::sky

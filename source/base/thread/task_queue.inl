@@ -14,43 +14,43 @@ Task_queue<T>::Task_queue(uint32_t num_tasks)
 
 template <typename T>
 Task_queue<T>::~Task_queue() {
-  memory::free_aligned(tasks_);
+    memory::free_aligned(tasks_);
 }
 
 template <typename T>
 uint32_t Task_queue<T>::size() const {
-  return num_tasks_;
+    return num_tasks_;
 }
 
 template <typename T>
 void Task_queue<T>::clear() {
-  top_ = 0;
-  current_consume_ = 0;
+    top_             = 0;
+    current_consume_ = 0;
 }
 
 template <typename T>
 void Task_queue<T>::restart() {
-  current_consume_ = 0;
+    current_consume_ = 0;
 }
 
 template <typename T>
 void Task_queue<T>::push(T const& task) {
-  uint32_t const current = top_++;
+    uint32_t const current = top_++;
 
-  tasks_[current] = task;
+    tasks_[current] = task;
 }
 
 template <typename T>
 bool Task_queue<T>::pop(T& task) {
-  // uint32_t const current = current_consume_++;
-  uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
+    // uint32_t const current = current_consume_++;
+    uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
-  if (current < top_) {
-    task = tasks_[current];
-    return true;
-  }
+    if (current < top_) {
+        task = tasks_[current];
+        return true;
+    }
 
-  return false;
+    return false;
 }
 
 }  // namespace thread

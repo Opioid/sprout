@@ -8,12 +8,10 @@ namespace scene::shape::triangle {
 class Json_handler;
 
 class Exporter {
-
-public:
-
-	static void write(std::string const& filename, const Json_handler& handler);
+  public:
+    static void write(std::string const& filename, const Json_handler& handler);
 };
 
-}
+}  // namespace scene::shape::triangle
 
 #endif

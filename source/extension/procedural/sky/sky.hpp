@@ -1,48 +1,45 @@
 #ifndef SU_EXTENSION_PROCEDURAL_SKY_HPP
 #define SU_EXTENSION_PROCEDURAL_SKY_HPP
 
-#include "sky_model.hpp"
 #include "core/scene/entity/entity.hpp"
+#include "sky_model.hpp"
 
-namespace scene::prop { class Prop; }
+namespace scene::prop {
+class Prop;
+}
 
 namespace procedural::sky {
 
 class Sky : public scene::entity::Entity {
+  public:
+    Sky() = default;
+    ~Sky();
 
-public:
+    virtual void set_parameters(json::Value const& parameters) override final;
 
-	Sky() = default;
-	~Sky();
+    void init(scene::prop::Prop* sky, scene::prop::Prop* sun);
 
-	virtual void set_parameters(json::Value const& parameters) override final;
+    Model& model();
 
-	void init(scene::prop::Prop* sky, scene::prop::Prop* sun);
+  private:
+    void update();
 
-	Model& model();
+    virtual void on_set_transformation() override final;
 
-private:
+    Model model_;
 
-	void update();
+    scene::prop::Prop* sky_;
+    scene::prop::Prop* sun_;
 
-	virtual void on_set_transformation() override final;
+    float3x3 sun_rotation_ = float3x3(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, -1.f, 0.f);
 
-	Model model_;
+    float3 ground_albedo_ = float3(0.2f, 0.2f, 0.2f);
 
-	scene::prop::Prop* sky_;
-	scene::prop::Prop* sun_;
+    float turbidity_ = 2.f;
 
-	float3x3 sun_rotation_ = float3x3(1.f,  0.f, 0.f,
-									  0.f,  0.f, 1.f,
-									  0.f, -1.f, 0.f);
-
-	float3 ground_albedo_ = float3(0.2f, 0.2f, 0.2f);
-
-	float turbidity_ = 2.f;
-
-	bool implicit_rotation_ = true;
+    bool implicit_rotation_ = true;
 };
 
-}
+}  // namespace procedural::sky
 
 #endif

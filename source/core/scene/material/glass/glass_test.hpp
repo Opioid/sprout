@@ -7,6 +7,6 @@ void test();
 
 void rough_refraction();
 
-}
+}  // namespace scene::material::glass::testing
 
 #endif

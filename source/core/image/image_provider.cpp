@@ -17,58 +17,60 @@ Provider::Provider() : resource::Provider<Image>("Image") {}
 
 Provider::~Provider() {}
 
-std::shared_ptr<Image> Provider::load(std::string const& filename,
+std::shared_ptr<Image> Provider::load(std::string const&         filename,
                                       memory::Variant_map const& options,
-                                      resource::Manager& manager) {
-  if ("proc:flakes" == filename) {
-    return flakes_provider_.create_normal_map(options);
-  } else if ("proc:flakes_mask" == filename) {
-    return flakes_provider_.create_mask(options);
-  }
-
-  auto stream_pointer = manager.filesystem().read_stream(filename);
-
-  auto& stream = *stream_pointer;
-
-  file::Type const type = file::query_type(stream);
-
-  if (file::Type::PNG == type) {
-    Channels channels = Channels::None;
-    options.query("channels", channels);
-
-    int32_t num_elements = 1;
-    options.query("num_elements", num_elements);
-
-    Swizzle swizzle = Swizzle::XYZW;
-    options.query("swizzle", swizzle);
-    bool const swap_xy = Swizzle::YXZW == swizzle;
-
-    bool invert = false;
-    options.query("invert", invert);
-
-    return png_reader_.read(stream, channels, num_elements, swap_xy, invert);
-  } else if (file::Type::RGBE == type) {
-    encoding::rgbe::Reader reader;
-    return reader.read(stream);
-  } else if (file::Type::Undefined == type) {
-    if ("raw" == string::suffix(filename)) {
-      encoding::raw::Reader reader;
-      return reader.read(stream);
+                                      resource::Manager&         manager) {
+    if ("proc:flakes" == filename) {
+        return flakes_provider_.create_normal_map(options);
+    } else if ("proc:flakes_mask" == filename) {
+        return flakes_provider_.create_mask(options);
     }
 
-    encoding::json::Reader reader;
-    return reader.read(stream);
-  }
+    auto stream_pointer = manager.filesystem().read_stream(filename);
 
-  throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
+    auto& stream = *stream_pointer;
+
+    file::Type const type = file::query_type(stream);
+
+    if (file::Type::PNG == type) {
+        Channels channels = Channels::None;
+        options.query("channels", channels);
+
+        int32_t num_elements = 1;
+        options.query("num_elements", num_elements);
+
+        Swizzle swizzle = Swizzle::XYZW;
+        options.query("swizzle", swizzle);
+        bool const swap_xy = Swizzle::YXZW == swizzle;
+
+        bool invert = false;
+        options.query("invert", invert);
+
+        return png_reader_.read(stream, channels, num_elements, swap_xy, invert);
+    } else if (file::Type::RGBE == type) {
+        encoding::rgbe::Reader reader;
+        return reader.read(stream);
+    } else if (file::Type::Undefined == type) {
+        if ("raw" == string::suffix(filename)) {
+            encoding::raw::Reader reader;
+            return reader.read(stream);
+        }
+
+        encoding::json::Reader reader;
+        return reader.read(stream);
+    }
+
+    throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
 }
 
 std::shared_ptr<Image> Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
                                       memory::Variant_map const& /*options*/,
                                       resource::Manager& /*manager*/) {
-  return nullptr;
+    return nullptr;
 }
 
-size_t Provider::num_bytes() const { return sizeof(*this); }
+size_t Provider::num_bytes() const {
+    return sizeof(*this);
+}
 
 }  // namespace image

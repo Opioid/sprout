@@ -25,30 +25,30 @@ namespace prop {
 class Prop;
 
 struct Intersection {
-  using Sampler_filter = material::Sampler_settings::Filter;
+    using Sampler_filter = material::Sampler_settings::Filter;
 
-  bool hit() const;
+    bool hit() const;
 
-  material::Material* material() const;
+    material::Material* material() const;
 
-  bool is_light() const;
+    bool is_light() const;
 
-  uint32_t light_id() const;
+    uint32_t light_id() const;
 
-  float area() const;
+    float area() const;
 
-  float opacity(float time, Sampler_filter filter, Worker const& worker) const;
+    float opacity(float time, Sampler_filter filter, Worker const& worker) const;
 
-  float3 thin_absorption(f_float3 wo, float const time, Sampler_filter filter,
-                         Worker& worker) const;
+    float3 thin_absorption(f_float3 wo, float const time, Sampler_filter filter,
+                           Worker& worker) const;
 
-  const material::Sample& sample(f_float3 wo, Ray const& ray, Sampler_filter filter,
-                                 sampler::Sampler& sampler, Worker& worker) const;
+    const material::Sample& sample(f_float3 wo, Ray const& ray, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker& worker) const;
 
-  bool same_hemisphere(f_float3 v) const;
+    bool same_hemisphere(f_float3 v) const;
 
-  Prop const* prop;
-  shape::Intersection geo;
+    Prop const*         prop;
+    shape::Intersection geo;
 };
 
 }  // namespace prop

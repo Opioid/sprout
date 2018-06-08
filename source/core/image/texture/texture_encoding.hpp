@@ -11,6 +11,6 @@ float cached_srgb_to_float(uint8_t byte);
 float cached_snorm_to_float(uint8_t byte);
 float cached_unorm_to_float(uint8_t byte);
 
-}
+}  // namespace image::texture::encoding
 
 #endif

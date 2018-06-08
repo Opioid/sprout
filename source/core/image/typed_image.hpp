@@ -1,68 +1,65 @@
 #ifndef SU_CORE_IMAGE_TYPED_IMAGE_HPP
 #define SU_CORE_IMAGE_TYPED_IMAGE_HPP
 
-#include "image.hpp"
 #include "base/math/vector.hpp"
+#include "image.hpp"
 
 namespace image {
 
-template<typename T>
+template <typename T>
 class Typed_image final : public Image {
+  public:
+    Typed_image() = default;
+    Typed_image(const Image::Description& description);
+    ~Typed_image();
 
-public:
+    Typed_image<T> clone() const;
 
-	Typed_image() = default;
-	Typed_image(const Image::Description& description);
-	~Typed_image();
+    void resize(const Image::Description& description);
 
-	Typed_image<T> clone() const;
+    void clear(T v);
 
-	void resize(const Image::Description& description);
+    T load(int32_t index) const;
 
-	void clear(T v);
+    T* address(int32_t index) const;
 
-	T load(int32_t index) const;
+    void store(int32_t index, T v);
 
-	T* address(int32_t index) const;
+    T const& at(int32_t index) const;
+    T&       at(int32_t index);
 
-	void store(int32_t index, T v);
+    T load(int32_t x, int32_t y) const;
 
-	T const& at(int32_t index) const;
-	T& at(int32_t index);
+    void store(int32_t x, int32_t y, T v);
 
-	T load(int32_t x, int32_t y) const;
+    T load_element(int32_t x, int32_t y, int32_t element) const;
 
-	void store(int32_t x, int32_t y, T v);
+    T const& at(int32_t x, int32_t y) const;
+    T&       at(int32_t x, int32_t y);
 
-	T load_element(int32_t x, int32_t y, int32_t element) const;
+    T const& at_element(int32_t x, int32_t y, int32_t element) const;
+    T&       at_element(int32_t x, int32_t y, int32_t element);
 
-	T const& at(int32_t x, int32_t y) const;
-	T& at(int32_t x, int32_t y);
+    T load(int32_t x, int32_t y, int32_t z) const;
 
-	T const& at_element(int32_t x, int32_t y, int32_t element) const;
-	T& at_element(int32_t x, int32_t y, int32_t element);
+    T const& at(int32_t x, int32_t y, int32_t z) const;
+    T&       at(int32_t x, int32_t y, int32_t z);
 
-	T load(int32_t x, int32_t y, int32_t z) const;
+    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
+    T&       at_element(int32_t x, int32_t y, int32_t z, int32_t element);
 
-	T const& at(int32_t x, int32_t y, int32_t z) const;
-	T& at(int32_t x, int32_t y, int32_t z);
+    void gather(int4 const& xy_xy1, T c[4]) const;
 
-	T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
-	T& at_element(int32_t x, int32_t y, int32_t z, int32_t element);
+    void square_transpose();
 
-	void gather(int4 const& xy_xy1, T c[4]) const;
+    T* data() const;
 
-	void square_transpose();
+    virtual size_t num_bytes() const override final;
 
-	T* data() const;
-
-	virtual size_t num_bytes() const override final;
-
-private:
-
-	T* data_ = nullptr;
+  private:
+    T* data_ = nullptr;
 };
 
-}
+}  // namespace image
 
 #endif

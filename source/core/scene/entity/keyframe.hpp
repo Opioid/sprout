@@ -6,20 +6,20 @@
 namespace scene::entity {
 
 struct alignas(16) Keyframe {
-	void interpolate(Keyframe const& other, float t, Keyframe& result) const;
+    void interpolate(Keyframe const& other, float t, Keyframe& result) const;
 
-	math::Transformation transformation;
+    math::Transformation transformation;
 
-	struct Morphing {
-		uint32_t targets[2];
-		float    weight;
-	};
+    struct Morphing {
+        uint32_t targets[2];
+        float    weight;
+    };
 
-	Morphing morphing;
+    Morphing morphing;
 
-	float time;
+    float time;
 };
 
-}
+}  // namespace scene::entity
 
 #endif

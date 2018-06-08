@@ -181,134 +181,136 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 namespace quaternion {
 
 static inline Quaternion create(float3x3 const& m) noexcept {
-  float const trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
-  Quaternion temp;
+    float const trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
+    Quaternion  temp;
 
-  if (trace > 0.f) {
-    float s = std::sqrt(trace + 1.f);
-    temp[3] = s * 0.5f;
-    s = 0.5f / s;
+    if (trace > 0.f) {
+        float s = std::sqrt(trace + 1.f);
+        temp[3] = s * 0.5f;
+        s       = 0.5f / s;
 
-    temp[0] = (m.r[2][1] - m.r[1][2]) * s;
-    temp[1] = (m.r[0][2] - m.r[2][0]) * s;
-    temp[2] = (m.r[1][0] - m.r[0][1]) * s;
-  } else {
-    uint32_t const i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2u : 1u)
-                                             : (m.r[0][0] < m.r[2][2] ? 2u : 0u);
-    uint32_t const j = (i + 1) % 3;
-    uint32_t const k = (i + 2) % 3;
+        temp[0] = (m.r[2][1] - m.r[1][2]) * s;
+        temp[1] = (m.r[0][2] - m.r[2][0]) * s;
+        temp[2] = (m.r[1][0] - m.r[0][1]) * s;
+    } else {
+        uint32_t const i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2u : 1u)
+                                                 : (m.r[0][0] < m.r[2][2] ? 2u : 0u);
+        uint32_t const j = (i + 1) % 3;
+        uint32_t const k = (i + 2) % 3;
 
-    float s = std::sqrt(m.r[i][i] - m.r[j][j] - m.r[k][k] + 1.f);
-    temp[i] = s * 0.5f;
-    s = 0.5f / s;
+        float s = std::sqrt(m.r[i][i] - m.r[j][j] - m.r[k][k] + 1.f);
+        temp[i] = s * 0.5f;
+        s       = 0.5f / s;
 
-    temp[3] = (m.r[k][j] - m.r[j][k]) * s;
-    temp[j] = (m.r[j][i] + m.r[i][j]) * s;
-    temp[k] = (m.r[k][i] + m.r[i][k]) * s;
-  }
+        temp[3] = (m.r[k][j] - m.r[j][k]) * s;
+        temp[j] = (m.r[j][i] + m.r[i][j]) * s;
+        temp[k] = (m.r[k][i] + m.r[i][k]) * s;
+    }
 
-  return temp;
+    return temp;
 }
 
 static inline float3x3 create_matrix3x3(FQuaternion q) noexcept {
-  float const d = dot(q, q);
-  float const s = 2.f / d;
+    float const d = dot(q, q);
+    float const s = 2.f / d;
 
-  float const xs = q[0] * s;
-  float const ys = q[1] * s;
-  float const zs = q[2] * s;
+    float const xs = q[0] * s;
+    float const ys = q[1] * s;
+    float const zs = q[2] * s;
 
-  float3x3 m;
+    float3x3 m;
 
-  {
-    float const xx = q[0] * xs;
-    float const yy = q[1] * ys;
-    float const zz = q[2] * zs;
-    m.r[0][0] = 1.f - (yy + zz);
-    m.r[1][1] = 1.f - (xx + zz);
-    m.r[2][2] = 1.f - (xx + yy);
-  }
+    {
+        float const xx = q[0] * xs;
+        float const yy = q[1] * ys;
+        float const zz = q[2] * zs;
+        m.r[0][0]      = 1.f - (yy + zz);
+        m.r[1][1]      = 1.f - (xx + zz);
+        m.r[2][2]      = 1.f - (xx + yy);
+    }
 
-  {
-    float const xy = q[0] * ys;
-    float const wz = q[3] * zs;
-    m.r[0][1] = xy - wz;
-    m.r[1][0] = xy + wz;
-  }
+    {
+        float const xy = q[0] * ys;
+        float const wz = q[3] * zs;
+        m.r[0][1]      = xy - wz;
+        m.r[1][0]      = xy + wz;
+    }
 
-  {
-    float const xz = q[0] * zs;
-    float const wy = q[3] * ys;
-    m.r[0][2] = xz + wy;
-    m.r[2][0] = xz - wy;
-  }
+    {
+        float const xz = q[0] * zs;
+        float const wy = q[3] * ys;
+        m.r[0][2]      = xz + wy;
+        m.r[2][0]      = xz - wy;
+    }
 
-  {
-    float const yz = q[1] * zs;
-    float const wx = q[3] * xs;
-    m.r[1][2] = yz - wx;
-    m.r[2][1] = yz + wx;
-  }
+    {
+        float const yz = q[1] * zs;
+        float const wx = q[3] * xs;
+        m.r[1][2]      = yz - wx;
+        m.r[2][1]      = yz + wx;
+    }
 
-  return m;
+    return m;
 }
 
 static inline Quaternion create_rotation_x(float a) noexcept {
-  return Quaternion(std::sin(a * 0.5f), 0.f, 0.f, std::cos(a * 0.5f));
+    return Quaternion(std::sin(a * 0.5f), 0.f, 0.f, std::cos(a * 0.5f));
 }
 
 static inline Quaternion create_rotation_y(float a) noexcept {
-  return Quaternion(0.f, std::sin(a * 0.5f), 0.f, std::cos(a * 0.5f));
+    return Quaternion(0.f, std::sin(a * 0.5f), 0.f, std::cos(a * 0.5f));
 }
 
 static inline Quaternion create_rotation_z(float a) noexcept {
-  return Quaternion(0.f, 0.f, std::sin(a * 0.5f), std::cos(a * 0.5f));
+    return Quaternion(0.f, 0.f, std::sin(a * 0.5f), std::cos(a * 0.5f));
 }
 
 static inline Quaternion mul(FQuaternion a, FQuaternion b) noexcept {
-  return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
-                    (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
-                    (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
-                    (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
+    return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
+                      (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
+                      (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
+                      (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
 static inline Quaternion slerp(FQuaternion a, FQuaternion b, float t) noexcept {
-  // calc cosine theta
-  float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
+    // calc cosine theta
+    float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 
-  // adjust signs (if necessary)
-  Quaternion end = b;
+    // adjust signs (if necessary)
+    Quaternion end = b;
 
-  if (cosom < 0.f) {
-    cosom = -cosom;
-    end[0] = -end[0];  // Reverse all signs
-    end[1] = -end[1];
-    end[2] = -end[2];
-    end[3] = -end[3];
-  }
+    if (cosom < 0.f) {
+        cosom  = -cosom;
+        end[0] = -end[0];  // Reverse all signs
+        end[1] = -end[1];
+        end[2] = -end[2];
+        end[3] = -end[3];
+    }
 
-  // Calculate coefficients
-  float sclp;
-  float sclq;
+    // Calculate coefficients
+    float sclp;
+    float sclq;
 
-  // 0.0001 -> some epsillon
-  if (1.f - cosom > 0.0001f) {
-    // Standard case (slerp)
-    float const omega = std::acos(cosom);  // extract theta from dot product's cos theta
-    float const sinom = std::sin(omega);
-    sclp = std::sin((1.f - t) * omega) / sinom;
-    sclq = std::sin(t * omega) / sinom;
-  } else {
-    // Very close, do linear interpolation (because it's faster)
-    sclp = 1.f - t;
-    sclq = t;
-  }
+    // 0.0001 -> some epsillon
+    if (1.f - cosom > 0.0001f) {
+        // Standard case (slerp)
+        float const omega = std::acos(cosom);  // extract theta from dot product's cos theta
+        float const sinom = std::sin(omega);
+        sclp              = std::sin((1.f - t) * omega) / sinom;
+        sclq              = std::sin(t * omega) / sinom;
+    } else {
+        // Very close, do linear interpolation (because it's faster)
+        sclp = 1.f - t;
+        sclq = t;
+    }
 
-  return Quaternion(sclp * a[0] + sclq * end[0], sclp * a[1] + sclq * end[1],
-                    sclp * a[2] + sclq * end[2], sclp * a[3] + sclq * end[3]);
+    return Quaternion(sclp * a[0] + sclq * end[0], sclp * a[1] + sclq * end[1],
+                      sclp * a[2] + sclq * end[2], sclp * a[3] + sclq * end[3]);
 }
 
-static inline constexpr Quaternion identity() noexcept { return Quaternion(0.f, 0.f, 0.f, 1.f); }
+static inline constexpr Quaternion identity() noexcept {
+    return Quaternion(0.f, 0.f, 0.f, 1.f);
+}
 
 }  // namespace quaternion
 }  // namespace math

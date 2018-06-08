@@ -10,11 +10,11 @@
 // separate math routine it would be reloaded.
 
 #ifndef SU_GLOBALCONST
-#	ifdef __GNUG__
-#   define SU_GLOBALCONST(X) extern const X __attribute__((weak))
-#	elif defined(_MSC_VER)
-#   define SU_GLOBALCONST(X) extern const __declspec(selectany) X
-#	endif
+#ifdef __GNUG__
+#define SU_GLOBALCONST(X) extern const X __attribute__((weak))
+#elif defined(_MSC_VER)
+#define SU_GLOBALCONST(X) extern const __declspec(selectany) X
+#endif
 #endif
 
 #endif

@@ -5,16 +5,10 @@
 
 namespace file {
 
-enum class Type {
-	Undefined,
-	GZIP,
-	PNG,
-	RGBE,
-	SUM
-};
+enum class Type { Undefined, GZIP, PNG, RGBE, SUM };
 
 Type query_type(std::istream& stream);
 
-}
+}  // namespace file
 
 #endif

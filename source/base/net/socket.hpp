@@ -1,58 +1,55 @@
 #ifndef SU_BASE_NET_SOCKET_HPP
 #define SU_BASE_NET_SOCKET_HPP
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 #ifdef WIN32
-#	define WIN32_LEAN_AND_MEAN
-#	include <winsock2.h>
-#	undef min
-#	undef max
+#define WIN32_LEAN_AND_MEAN
+#include <winsock2.h>
+#undef min
+#undef max
 #endif
 
 namespace net {
 
 class Socket {
+  public:
+    Socket();
+    Socket(std::string const& service);
+    ~Socket();
 
-public:
+    bool is_valid() const;
 
-	Socket();
-	Socket(std::string const& service);
-	~Socket();
+    void cancel_blocking_accept();
+    void shutdown() const;
+    void close();
 
-	bool is_valid() const;
+    bool listen(int backlog) const;
 
-	void cancel_blocking_accept();
-	void shutdown() const;
-	void close();
+    Socket accept() const;
 
-	bool listen(int backlog) const;
+    int receive(char* buffer, uint32_t size) const;
 
-	Socket accept() const;
+    int send(char* buffer, uint32_t size) const;
 
-	int receive(char* buffer, uint32_t size) const;
+    static bool init();
+    static void release();
 
-	int send(char* buffer, uint32_t size) const;
-
-	static bool init();
-	static void release();
-
-public:
-
+  public:
 #ifdef WIN32
-	using Socket_handle = SOCKET;
+    using Socket_handle = SOCKET;
 
-	static constexpr Socket_handle Invalid_socket = INVALID_SOCKET;
+    static constexpr Socket_handle Invalid_socket = INVALID_SOCKET;
 #else
-	using Socket_handle = int;
+    using Socket_handle = int;
 
-	static constexpr Socket_handle Invalid_socket = -1;
+    static constexpr Socket_handle Invalid_socket = -1;
 #endif
 
-	Socket_handle socket_;
+    Socket_handle socket_;
 };
 
-}
+}  // namespace net
 
 #endif

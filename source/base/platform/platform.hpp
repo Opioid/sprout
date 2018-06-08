@@ -6,7 +6,6 @@
 namespace platform {
 
 std::string build();
-
 }
 
 #endif

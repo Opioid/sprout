@@ -6,21 +6,14 @@
 namespace logging {
 
 class Log {
+  public:
+    enum class Type { Info, Warning, Error, Verbose };
 
-public:
+    virtual ~Log() {}
 
-	enum class Type {
-		Info,
-		Warning,
-		Error,
-		Verbose
-	};
-
-	virtual ~Log() {}
-
-	virtual void post(Type type, std::string_view text) = 0;
+    virtual void post(Type type, std::string_view text) = 0;
 };
 
-}
+}  // namespace logging
 
 #endif

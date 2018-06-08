@@ -6,19 +6,16 @@
 namespace scene::camera {
 
 class Stereoscopic : public Camera {
+  public:
+    Stereoscopic(int2 resolution);
+    virtual ~Stereoscopic();
 
-public:
+    void set_interpupillary_distance(float ipd);
 
-	Stereoscopic(int2 resolution);
-	virtual ~Stereoscopic();
-
-	void set_interpupillary_distance(float ipd);
-
-protected:
-
-	float3 eye_offsets_[2];
+  protected:
+    float3 eye_offsets_[2];
 };
 
-}
+}  // namespace scene::camera
 
 #endif

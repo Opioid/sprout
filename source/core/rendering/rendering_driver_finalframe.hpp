@@ -1,44 +1,47 @@
 #ifndef SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
 #define SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
 
-#include "rendering_driver.hpp"
 #include <memory>
 #include <vector>
+#include "rendering_driver.hpp"
 
-namespace scene { namespace camera { class Camera; } }
+namespace scene {
+namespace camera {
+class Camera;
+}
+}  // namespace scene
 
-namespace exporting { class Sink; }
+namespace exporting {
+class Sink;
+}
 
-namespace progress { class Sink; }
+namespace progress {
+class Sink;
+}
 
 namespace rendering {
 
 class Driver_finalframe : public Driver {
+  public:
+    Driver_finalframe(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
+                      uint32_t max_sample_size);
 
-public:
+    using Exporters = std::vector<std::unique_ptr<exporting::Sink>>;
 
-	Driver_finalframe(take::Take& take, scene::Scene& scene,
-					  thread::Pool& thread_pool, uint32_t max_sample_size);
+    void render(Exporters& exporters, progress::Sink& progressor);
 
-	using Exporters = std::vector<std::unique_ptr<exporting::Sink>>;
+  private:
+    void render_subframe(float normalized_tick_offset, float normalized_tick_slice,
+                         float normalized_frame_slice, progress::Sink& progressor);
 
-	void render(Exporters& exporters, progress::Sink& progressor);
+    static uint32_t calculate_progress_range(scene::Scene const&          scene,
+                                             const scene::camera::Camera& camera,
+                                             uint32_t                     num_tiles,
+                                             uint32_t num_samples_per_iteration);
 
-private:
-
-	void render_subframe(float normalized_tick_offset,
-						 float normalized_tick_slice,
-						 float normalized_frame_slice,
-						 progress::Sink& progressor);
-
-	static uint32_t calculate_progress_range(scene::Scene const& scene,
-											 const scene::camera::Camera& camera,
-											 uint32_t num_tiles,
-											 uint32_t num_samples_per_iteration);
-
-	uint32_t current_sample_;
+    uint32_t current_sample_;
 };
 
-}
+}  // namespace rendering
 
 #endif

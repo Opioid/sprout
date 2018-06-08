@@ -6,38 +6,34 @@
 namespace scene::material::volumetric {
 
 class Sample final : public material::Sample {
+  public:
+    virtual Layer const& base_layer() const override final;
 
-public:
+    virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-	virtual Layer const& base_layer() const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-	virtual bxdf::Result evaluate(f_float3 wi) const override final;
+    virtual bool is_translucent() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    void set(float anisotropy);
 
-	virtual bool is_translucent() const override final;
+  public:
+    struct Layer : public material::Sample::Layer {
+        float phase(f_float3 wo, f_float3 wi) const;
 
-	void set(float anisotropy);
+        float sample(f_float3 wo, float2 r2, float3& wi) const;
 
-public:
+        float anisotropy;
+    };
 
-	struct Layer : public material::Sample::Layer {
-		float phase(f_float3 wo, f_float3 wi) const;
+    Layer layer_;
 
-		float sample(f_float3 wo, float2 r2, float3& wi) const;
+  private:
+    static float phase_hg(float cos_theta, float g);
 
-		float anisotropy;
-	};
-
-	Layer layer_;
-
-private:
-
-	static float phase_hg(float cos_theta, float g);
-
-	static float phase_schlick(float cos_theta, float k);
+    static float phase_schlick(float cos_theta, float k);
 };
 
-}
+}  // namespace scene::material::volumetric
 
 #endif

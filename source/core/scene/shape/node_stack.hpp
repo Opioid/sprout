@@ -7,25 +7,25 @@
 namespace scene::shape {
 
 class Node_stack {
- public:
-  Node_stack(uint32_t size);
+  public:
+    Node_stack(uint32_t size);
 
-  ~Node_stack();
+    ~Node_stack();
 
-  bool empty() const;
+    bool empty() const;
 
-  void clear();
+    void clear();
 
-  void push(uint32_t value);
+    void push(uint32_t value);
 
-  uint32_t pop();
+    uint32_t pop();
 
-  size_t num_bytes() const;
+    size_t num_bytes() const;
 
- private:
-  uint32_t num_elements_;
-  uint32_t end_;
-  uint32_t* stack_;
+  private:
+    uint32_t  num_elements_;
+    uint32_t  end_;
+    uint32_t* stack_;
 };
 
 }  // namespace scene::shape

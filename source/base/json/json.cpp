@@ -1,259 +1,257 @@
 #include "json.hpp"
 #include "math/math.hpp"
-#include "math/vector4.inl"
 #include "math/matrix3x3.inl"
 #include "math/quaternion.inl"
+#include "math/vector4.inl"
 //#include "rapidjson/document.h"
+#include <sstream>
 #include "rapidjson/error/en.h"
 #include "rapidjson/istreamwrapper.h"
-#include <sstream>
 
 namespace json {
 
 // get the 0-based line number
 std::tuple<size_t, size_t> calculate_line_number(std::istream& stream, size_t offset) {
-	size_t line = 0;
-	size_t count = 0;
-	size_t column = 0;
+    size_t line   = 0;
+    size_t count  = 0;
+    size_t column = 0;
 
-	stream.clear();
-	stream.seekg(0, std::ios_base::beg);
+    stream.clear();
+    stream.seekg(0, std::ios_base::beg);
 
-	char c = 0;
+    char c = 0;
 
-	while (stream && count < offset) {
-		stream.get(c);
+    while (stream && count < offset) {
+        stream.get(c);
 
-		++count;
-		++column;
+        ++count;
+        ++column;
 
-		if ('\n' == c) {
-			++line;
-			column = 0;
-		}
-	}
+        if ('\n' == c) {
+            ++line;
+            column = 0;
+        }
+    }
 
-	return {line, column};
+    return {line, column};
 }
 
 std::string read_error(rapidjson::Document& document, std::istream& stream) {
-	auto [line, column] = calculate_line_number(stream, document.GetErrorOffset());
+    auto [line, column] = calculate_line_number(stream, document.GetErrorOffset());
 
-	std::stringstream sstream;
-	sstream << rapidjson::GetParseError_En(document.GetParseError());
-	// line number is 0-based, so + 1
-	sstream << " (line " << line + 1 << ", column " << column + 1 << ")";
+    std::stringstream sstream;
+    sstream << rapidjson::GetParseError_En(document.GetParseError());
+    // line number is 0-based, so + 1
+    sstream << " (line " << line + 1 << ", column " << column + 1 << ")";
 
-	return sstream.str();
+    return sstream.str();
 }
 
 std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
-	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+    std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
-	document->ParseInsitu(buffer);
+    document->ParseInsitu(buffer);
 
-	if (document->HasParseError()) {
-		throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
-	}
+    if (document->HasParseError()) {
+        throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+    }
 
-	return document;
+    return document;
 }
 
 std::unique_ptr<rapidjson::Document> parse(std::string_view buffer) {
-	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+    std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
-	document->Parse(buffer.data());
+    document->Parse(buffer.data());
 
-	if (document->HasParseError()) {
-		throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
-	}
+    if (document->HasParseError()) {
+        throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+    }
 
-	return document;
+    return document;
 }
 
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
-	rapidjson::IStreamWrapper json_stream(stream);
+    rapidjson::IStreamWrapper json_stream(stream);
 
-	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+    std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
-	document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
+    document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
 
-	if (document->HasParseError()) {
-		throw std::runtime_error(read_error(*document.get(), stream));
-	}
+    if (document->HasParseError()) {
+        throw std::runtime_error(read_error(*document.get(), stream));
+    }
 
-	return document;
+    return document;
 }
 
 bool read_bool(rapidjson::Value const& value) {
-	return value.GetBool();
+    return value.GetBool();
 }
 
 bool read_bool(rapidjson::Value const& value, std::string_view name, bool default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return node->value.GetBool();
+    return node->value.GetBool();
 }
 
 float read_float(rapidjson::Value const& value) {
-	return value.GetFloat();
+    return value.GetFloat();
 }
 
 float read_float(rapidjson::Value const& value, std::string_view name, float default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return node->value.GetFloat();
+    return node->value.GetFloat();
 }
 
 float2 read_float2(rapidjson::Value const& value) {
-	return float2(value[0u].GetFloat(), value[1].GetFloat());
+    return float2(value[0u].GetFloat(), value[1].GetFloat());
 }
 
 float2 read_float2(rapidjson::Value const& value, std::string_view name, float2 default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return read_float2(node->value);
+    return read_float2(node->value);
 }
 
 float3 read_float3(rapidjson::Value const& value) {
-	return float3(value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat());
+    return float3(value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat());
 }
 
 float3 read_float3(rapidjson::Value const& value, std::string_view name,
-				   float3 const& default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+                   float3 const& default_value) {
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return read_float3(node->value);
+    return read_float3(node->value);
 }
 
 float4 read_float4(rapidjson::Value const& value) {
-	return float4(value[0].GetFloat(),
-				  value[1].GetFloat(),
-				  value[2].GetFloat(),
-				  value[3].GetFloat());
+    return float4(value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat(),
+                  value[3].GetFloat());
 }
 
 int32_t read_int(rapidjson::Value const& value) {
-	return value.GetInt();
+    return value.GetInt();
 }
 
 uint32_t read_uint(rapidjson::Value const& value) {
-	return value.GetUint();
+    return value.GetUint();
 }
 
 uint32_t read_uint(rapidjson::Value const& value, std::string_view name, uint32_t default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return node->value.GetUint();
+    return node->value.GetUint();
 }
 
 int2 read_int2(rapidjson::Value const& value) {
-	return int2(value[0].GetInt(), value[1].GetInt());
+    return int2(value[0].GetInt(), value[1].GetInt());
 }
 
 int2 read_int2(rapidjson::Value const& value, std::string_view name, int2 default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return read_int2(node->value);
+    return read_int2(node->value);
 }
 
 uint2 read_uint2(rapidjson::Value const& value) {
-	return uint2(value[0].GetUint(), value[1].GetUint());
+    return uint2(value[0].GetUint(), value[1].GetUint());
 }
 
 uint2 read_uint2(rapidjson::Value const& value, std::string_view name, uint2 default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return read_uint2(node->value);
+    return read_uint2(node->value);
 }
 
 int3 read_int3(rapidjson::Value const& value) {
-	return int3(value[0].GetInt(), value[1].GetInt(), value[2].GetInt());
+    return int3(value[0].GetInt(), value[1].GetInt(), value[2].GetInt());
 }
 
 int3 read_int3(json::Value const& value, std::string_view name, int3 default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return read_int3(node->value);
+    return read_int3(node->value);
 }
 
 uint3 read_uint3(rapidjson::Value const& value) {
-	return uint3(value[0].GetUint(), value[1].GetUint(), value[2].GetUint());
+    return uint3(value[0].GetUint(), value[1].GetUint(), value[2].GetUint());
 }
 
 float3x3 create_rotation_matrix(float3 const& xyz) {
-	float3x3 rot_x;
-	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz[0]));
+    float3x3 rot_x;
+    math::set_rotation_x(rot_x, math::degrees_to_radians(xyz[0]));
 
-	float3x3 rot_y;
-	math::set_rotation_y(rot_y, math::degrees_to_radians(xyz[1]));
+    float3x3 rot_y;
+    math::set_rotation_y(rot_y, math::degrees_to_radians(xyz[1]));
 
-	float3x3 rot_z;
-	math::set_rotation_z(rot_z, math::degrees_to_radians(xyz[2]));
+    float3x3 rot_z;
+    math::set_rotation_z(rot_z, math::degrees_to_radians(xyz[2]));
 
-	return rot_z * rot_x * rot_y;
+    return rot_z * rot_x * rot_y;
 }
 
 float3x3 read_rotation_matrix(rapidjson::Value const& value) {
-	float3 const rot = read_float3(value);
+    float3 const rot = read_float3(value);
 
-	return create_rotation_matrix(rot);
+    return create_rotation_matrix(rot);
 }
 
 math::Quaternion read_local_rotation(rapidjson::Value const& value) {
-	return math::quaternion::create(read_rotation_matrix(value));
+    return math::quaternion::create(read_rotation_matrix(value));
 }
 
 std::string read_string(rapidjson::Value const& value) {
-	return std::string(value.GetString(), value.GetStringLength());
+    return std::string(value.GetString(), value.GetStringLength());
 }
 
 std::string read_string(rapidjson::Value const& value, std::string_view name,
-						std::string const& default_value) {
-	rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
-	if (value.MemberEnd() == node) {
-		return default_value;
-	}
+                        std::string const& default_value) {
+    rapidjson::Value::ConstMemberIterator const node = value.FindMember(name.data());
+    if (value.MemberEnd() == node) {
+        return default_value;
+    }
 
-	return std::string(node->value.GetString(), node->value.GetStringLength());
+    return std::string(node->value.GetString(), node->value.GetStringLength());
 }
 
 void read_transformation(rapidjson::Value const& value, math::Transformation& transformation) {
-	for (auto& n : value.GetObject()) {
-		std::string const node_name = n.name.GetString();
+    for (auto& n : value.GetObject()) {
+        std::string const node_name = n.name.GetString();
 
-		if ("position" == node_name) {
-			transformation.position = json::read_float3(n.value);
-		} else if ("scale" == node_name) {
-			transformation.scale = json::read_float3(n.value);
-		} else if ("rotation" == node_name) {
-			transformation.rotation = json::read_local_rotation(n.value);
-		}
-	}
+        if ("position" == node_name) {
+            transformation.position = json::read_float3(n.value);
+        } else if ("scale" == node_name) {
+            transformation.scale = json::read_float3(n.value);
+        } else if ("rotation" == node_name) {
+            transformation.rotation = json::read_local_rotation(n.value);
+        }
+    }
 }
 
-}
+}  // namespace json

@@ -6,30 +6,27 @@
 namespace rendering::sensor {
 
 class Opaque : public Sensor {
+  public:
+    Opaque(int2 dimensions, float exposure);
+    virtual ~Opaque();
 
-public:
+    virtual void clear() override final;
 
-	Opaque(int2 dimensions, float exposure);
-	virtual ~Opaque();
+    virtual bool has_alpha_transparency() const override final;
 
-	virtual void clear() override final;
+    virtual size_t num_bytes() const override final;
 
-	virtual bool has_alpha_transparency() const override final;
+  protected:
+    virtual void add_pixel(int2 pixel, float4 const& color, float weight) override final;
 
-	virtual size_t num_bytes() const override final;
+    virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) override final;
 
-protected:
+    virtual void resolve(int32_t begin, int32_t end, image::Float4& target) const override final;
 
-	virtual void add_pixel(int2 pixel, float4 const& color, float weight) override final;
-
-	virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) override final;
-
-	virtual void resolve(int32_t begin, int32_t end, image::Float4& target) const override final;
-
-	// weight_sum is saved in pixel.w
-	float4* pixels_;
+    // weight_sum is saved in pixel.w
+    float4* pixels_;
 };
 
-}
+}  // namespace rendering::sensor
 
 #endif

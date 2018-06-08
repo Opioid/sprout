@@ -151,20 +151,20 @@ void compose(Matrix4x4<T>& m,
  ****************************************************************************/
 
 struct alignas(16) Matrix4x4f_a {
-  Vector4f_a r[4];
+    Vector4f_a r[4];
 
-  Matrix4x4f_a();
+    Matrix4x4f_a();
 
-  Matrix4x4f_a(float m00, float m01, float m02, float m03, float m10, float m11, float m12,
-               float m13, float m20, float m21, float m22, float m23, float m30, float m31,
-               float m32, float m33);
+    Matrix4x4f_a(float m00, float m01, float m02, float m03, float m10, float m11, float m12,
+                 float m13, float m20, float m21, float m22, float m23, float m30, float m31,
+                 float m32, float m33);
 
-  explicit Matrix4x4f_a(Transformation const& t);
+    explicit Matrix4x4f_a(Transformation const& t);
 
-  Vector3f_a x() const;
-  Vector3f_a y() const;
-  Vector3f_a z() const;
-  Vector3f_a w() const;
+    Vector3f_a x() const;
+    Vector3f_a y() const;
+    Vector3f_a z() const;
+    Vector3f_a w() const;
 };
 
 }  // namespace math

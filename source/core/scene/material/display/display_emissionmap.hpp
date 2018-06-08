@@ -5,29 +5,26 @@
 namespace scene::material::display {
 
 class Emissionmap : public light::Emissionmap {
+  public:
+    Emissionmap(Sampler_settings const& sampler_settings, bool two_sided);
 
-public:
+    virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
+                                           Sampler_filter filter, sampler::Sampler& sampler,
+                                           Worker const& worker) const override final;
 
-	Emissionmap(Sampler_settings const& sampler_settings, bool two_sided);
+    virtual float ior() const override final;
 
-	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
-										   Sampler_filter filter, sampler::Sampler& sampler,
-										   Worker const& worker) const override final;
+    virtual size_t num_bytes() const override final;
 
-	virtual float ior() const override final;
+    void set_roughness(float roughness);
+    void set_ior(float ior);
 
-	virtual size_t num_bytes() const override final;
+  private:
+    float roughness_;
 
-	void set_roughness(float roughness);
-	void set_ior(float ior);
+    float ior_;
 
-private:
-
-	float roughness_;
-
-	float ior_;
-
-	float f0_;
+    float f0_;
 };
 
-}
+}  // namespace scene::material::display

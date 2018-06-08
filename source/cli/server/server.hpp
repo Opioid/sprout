@@ -1,10 +1,10 @@
 #pragma once
 
-#include "core/exporting/exporting_sink.hpp"
-#include "image/encoding/encoding_srgb.hpp"
-#include "base/net/socket.hpp"
 #include <list>
 #include <thread>
+#include "base/net/socket.hpp"
+#include "core/exporting/exporting_sink.hpp"
+#include "image/encoding/encoding_srgb.hpp"
 
 namespace server {
 
@@ -12,33 +12,30 @@ class Client;
 class Message_handler;
 
 class Server : public exporting::Sink {
+  public:
+    Server(int2 dimensions, Message_handler& message_handler);
+    ~Server();
 
-public:
+    void run();
+    void shutdown();
 
-	Server(int2 dimensions, Message_handler& message_handler);
-	~Server();
+    virtual void write(const image::Float4& image, uint32_t frame,
+                       thread::Pool& pool) override final;
 
-	void run();
-	void shutdown();
+  private:
+    void accept_loop();
 
-	virtual void write(const image::Float4& image, uint32_t frame,
-					   thread::Pool& pool) override final;
+    image::encoding::Srgb_alpha srgb_;
 
-private:
+    Message_handler& message_handler_;
 
-	void accept_loop();
+    std::thread accept_thread_;
 
-	image::encoding::Srgb_alpha srgb_;
+    net::Socket accept_socket_;
 
-	Message_handler& message_handler_;
+    bool shutdown_;
 
-	std::thread accept_thread_;
-
-	net::Socket accept_socket_;
-
-	bool shutdown_;
-
-	std::list<Client*> clients_;
+    std::list<Client*> clients_;
 };
 
-}
+}  // namespace server

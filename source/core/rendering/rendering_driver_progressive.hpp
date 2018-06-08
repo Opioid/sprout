@@ -1,63 +1,68 @@
 #ifndef SU_CORE_RENDERING_DRIVER_PROGRESSIVE_HPP
 #define SU_CORE_RENDERING_DRIVER_PROGRESSIVE_HPP
 
-#include "rendering_driver.hpp"
-#include "exporting/exporting_sink_statistics.hpp"
 #include <thread>
+#include "exporting/exporting_sink_statistics.hpp"
+#include "rendering_driver.hpp"
 
-namespace scene { namespace camera { class Camera; } }
+namespace scene {
+namespace camera {
+class Camera;
+}
+}  // namespace scene
 
-namespace exporting { class Sink; }
+namespace exporting {
+class Sink;
+}
 
-namespace progress { class Sink; }
+namespace progress {
+class Sink;
+}
 
 namespace rendering {
 
 class Driver_progressive : public Driver {
+  public:
+    Driver_progressive(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
+                       uint32_t max_sample_size);
 
-public:
+    void render(exporting::Sink& exporter);
 
-	Driver_progressive(take::Take& take, scene::Scene& scene,
-					   thread::Pool& thread_pool, uint32_t max_sample_size);
+    void abort();
 
-	void render(exporting::Sink& exporter);
+    void schedule_restart(bool recompile);
+    void schedule_statistics();
 
-	void abort();
+    void set_force_statistics(bool force);
 
-	void schedule_restart(bool recompile);
-	void schedule_statistics();
+    uint32_t iteration() const;
 
-	void set_force_statistics(bool force);
+  private:
+    bool render_loop(exporting::Sink& exporter);
 
-	uint32_t iteration() const;
+    void restart();
 
-private:
+    std::thread render_thread_;
 
-	bool render_loop(exporting::Sink& exporter);
+    uint32_t iteration_;
 
-	void restart();
+    uint32_t samples_per_iteration_;
 
-	std::thread render_thread_;
+    bool rendering_;
 
-	uint32_t iteration_;
+    struct Schedule {
+        bool restart    = false;
+        bool recompile  = false;
+        bool statistics = false;
+    };
 
-	uint32_t samples_per_iteration_;
+    Schedule schedule_;
 
-	bool rendering_;
+    bool force_statistics_;
 
-	struct Schedule {
-		bool restart	= false;
-		bool recompile  = false;
-		bool statistics = false;
-	};
-
-	Schedule schedule_;
-
-	bool force_statistics_;
-
-	exporting::Statistics statistics_;
+    exporting::Statistics statistics_;
 };
 
-}
+}  // namespace rendering
 
 #endif

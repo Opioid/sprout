@@ -2,21 +2,20 @@
 
 #include "core/scene/material/material.hpp"
 
-namespace procedural { namespace sky {
+namespace procedural {
+namespace sky {
 
 class Model;
 
 class Material : public scene::material::Material {
+  public:
+    using Sampler_filter = scene::material::Sampler_settings::Filter;
 
-public:
+    Material(Model& model);
 
-	using Sampler_filter = scene::material::Sampler_settings::Filter;
-
-	Material(Model& model);
-
-protected:
-
-	Model& model_;
+  protected:
+    Model& model_;
 };
 
-}}
+}  // namespace sky
+}  // namespace procedural

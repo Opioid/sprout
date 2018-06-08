@@ -5,9 +5,7 @@
 namespace baking {
 
 class Baking_worker : public rendering::Worker {
-
-public:
-
+  public:
 };
 
-}
+}  // namespace baking

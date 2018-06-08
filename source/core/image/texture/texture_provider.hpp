@@ -12,34 +12,32 @@ namespace texture {
 class Texture;
 
 class Provider final : public resource::Provider<Texture> {
+  public:
+    Provider();
 
-public:
+    enum class Usage {
+        Undefined,
+        Color,
+        Normal,
+        Anisotropy,
+        Roughness,
+        Surface,
+        Specularity,
+        Mask
+    };
 
-	Provider();
+    virtual std::shared_ptr<Texture> load(std::string const&         filename,
+                                          memory::Variant_map const& options,
+                                          resource::Manager&         manager) override final;
 
-	enum class Usage {
-		Undefined,
-		Color,
-		Normal,
-		Anisotropy,
-		Roughness,
-		Surface,
-		Specularity,
-		Mask
-	};
+    virtual std::shared_ptr<Texture> load(void const* data, std::string_view mount_folder,
+                                          memory::Variant_map const& options,
+                                          resource::Manager&         manager) override final;
 
-	virtual std::shared_ptr<Texture> load(std::string const& filename,
-										  memory::Variant_map const& options,
-										  resource::Manager& manager) override final;
-
-	virtual std::shared_ptr<Texture> load(void const* data,
-										  std::string_view mount_folder,
-										  memory::Variant_map const& options,
-										  resource::Manager& manager) override final;
-
-	virtual size_t num_bytes() const override final;
+    virtual size_t num_bytes() const override final;
 };
 
-}}
+}  // namespace texture
+}  // namespace image
 
 #endif

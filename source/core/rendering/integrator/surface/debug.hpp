@@ -6,42 +6,42 @@
 namespace rendering::integrator::surface {
 
 class alignas(64) Debug : public Integrator {
- public:
-  struct Settings {
-    enum class Vector { Tangent, Bitangent, Geometric_normal, Shading_normal, UV };
+  public:
+    struct Settings {
+        enum class Vector { Tangent, Bitangent, Geometric_normal, Shading_normal, UV };
 
-    Vector vector;
-  };
+        Vector vector;
+    };
 
-  Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
+    Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
 
-  virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
 
-  virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-  virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
+    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
 
-  virtual size_t num_bytes() const override final;
+    virtual size_t num_bytes() const override final;
 
- private:
-  Settings settings_;
+  private:
+    Settings settings_;
 
-  sampler::Random sampler_;
+    sampler::Random sampler_;
 };
 
 class Debug_factory : public Factory {
- public:
-  Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                Debug::Settings::Vector vector);
+  public:
+    Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
+                  Debug::Settings::Vector vector);
 
-  ~Debug_factory();
+    ~Debug_factory();
 
-  virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
+    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
- private:
-  Debug* integrators_;
+  private:
+    Debug* integrators_;
 
-  Debug::Settings settings_;
+    Debug::Settings settings_;
 };
 
 }  // namespace rendering::integrator::surface

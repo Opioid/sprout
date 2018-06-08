@@ -6,17 +6,15 @@
 namespace rendering::sensor::filter {
 
 class Filter {
+  public:
+    virtual ~Filter() {}
 
-public:
+    virtual float radius() const = 0;
 
-	virtual ~Filter() {}
-
-	virtual float radius() const = 0;
-
-	virtual float evaluate(float d) const = 0;
-	virtual float evaluate(float2 p) const = 0;
+    virtual float evaluate(float d) const  = 0;
+    virtual float evaluate(float2 p) const = 0;
 };
 
-}
+}  // namespace rendering::sensor::filter
 
 #endif

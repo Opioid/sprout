@@ -13,42 +13,42 @@
 namespace rendering::integrator::surface {
 
 class alignas(64) AO final : public Integrator {
- public:
-  struct Settings {
-    uint32_t num_samples;
-    float num_samples_reciprocal;
-    float radius;
-  };
+  public:
+    struct Settings {
+        uint32_t num_samples;
+        float    num_samples_reciprocal;
+        float    radius;
+    };
 
-  AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
+    AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
 
-  virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
 
-  virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-  virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
+    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
 
-  virtual size_t num_bytes() const override final;
+    virtual size_t num_bytes() const override final;
 
- private:
-  const Settings settings_;
+  private:
+    const Settings settings_;
 
-  sampler::Golden_ratio sampler_;
+    sampler::Golden_ratio sampler_;
 };
 
 class AO_factory final : public Factory {
- public:
-  AO_factory(take::Settings const& settings, uint32_t num_integrators, uint32_t num_samples,
-             float radius);
+  public:
+    AO_factory(take::Settings const& settings, uint32_t num_integrators, uint32_t num_samples,
+               float radius);
 
-  ~AO_factory();
+    ~AO_factory();
 
-  virtual Integrator* create(uint32_t id, rnd::Generator& rng) const;
+    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const;
 
- private:
-  AO* integrators_;
+  private:
+    AO* integrators_;
 
-  AO::Settings settings_;
+    AO::Settings settings_;
 };
 
 }  // namespace rendering::integrator::surface

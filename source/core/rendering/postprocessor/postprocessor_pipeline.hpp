@@ -1,48 +1,50 @@
 #ifndef SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 #define SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 
-#include "scene/camera/camera.hpp"
-#include "image/typed_image_fwd.hpp"
-#include "image/typed_image.hpp"
-#include <vector>
 #include <memory>
+#include <vector>
+#include "image/typed_image.hpp"
+#include "image/typed_image_fwd.hpp"
+#include "scene/camera/camera.hpp"
 
-namespace thread { class Pool; }
+namespace thread {
+class Pool;
+}
 
 namespace rendering {
 
-namespace sensor { class Sensor; }
+namespace sensor {
+class Sensor;
+}
 
 namespace postprocessor {
 
 class Postprocessor;
 
 class Pipeline {
+  public:
+    Pipeline() = default;
+    ~Pipeline();
 
-public:
+    void reserve(size_t num_pps);
 
-	Pipeline() = default;
-	~Pipeline();
+    void add(std::unique_ptr<Postprocessor> pp);
 
-	void reserve(size_t num_pps);
+    void init(const scene::camera::Camera& camera, thread::Pool& pool);
 
-	void add(std::unique_ptr<Postprocessor> pp);
+    bool has_alpha_transparency(bool alpha_in) const;
 
-	void init(const scene::camera::Camera& camera, thread::Pool& pool);
+    void apply(const sensor::Sensor& sensor, image::Float4& target, thread::Pool& pool);
 
-	bool has_alpha_transparency(bool alpha_in) const;
+    size_t num_bytes() const;
 
-	void apply(const sensor::Sensor& sensor, image::Float4& target, thread::Pool& pool);
+  private:
+    image::Float4 scratch_;
 
-	size_t num_bytes() const;
-
-private:
-
-	image::Float4 scratch_;
-
-	std::vector<std::unique_ptr<Postprocessor>> postprocessors_;
+    std::vector<std::unique_ptr<Postprocessor>> postprocessors_;
 };
 
-}}
+}  // namespace postprocessor
+}  // namespace rendering
 
 #endif

@@ -9,24 +9,21 @@
 namespace file {
 
 class System {
+  public:
+    std::unique_ptr<std::istream> read_stream(std::string const& name) const;
 
-public:
+    std::unique_ptr<std::istream> read_stream(std::string const& name,
+                                              std::string&       resolved_name) const;
 
-	std::unique_ptr<std::istream> read_stream(std::string const& name) const;
+    void push_mount(std::string_view folder);
+    void pop_mount();
 
-	std::unique_ptr<std::istream> read_stream(std::string const& name,
-											  std::string& resolved_name) const;
+  private:
+    std::istream* open_read_stream(std::string const& name, std::string& resolved_name) const;
 
-	void push_mount(std::string_view folder);
-	void pop_mount();
-
-private:
-
-	std::istream* open_read_stream(std::string const& name, std::string& resolved_name) const;
-
-	std::vector<std::string> mount_folders_;
+    std::vector<std::string> mount_folders_;
 };
 
-}
+}  // namespace file
 
 #endif

@@ -4,5 +4,8 @@ IndentWidth: 4
 ColumnLimit: 100
 ---
 Language: Cpp
-
+AccessModifierOffset: -2
+AllowShortFunctionsOnASingleLine: Empty
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
 ...

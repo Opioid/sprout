@@ -6,27 +6,23 @@
 namespace scene::material::glass {
 
 class Glass_dispersion final : public Glass {
+  public:
+    Glass_dispersion(Sampler_settings const& sampler_settings);
 
-public:
+    virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
+                                           Sampler_filter filter, sampler::Sampler& sampler,
+                                           Worker const& worker) const override final;
 
-	Glass_dispersion(Sampler_settings const& sampler_settings);
+    virtual size_t num_bytes() const override final;
 
-	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
-										   Sampler_filter filter, sampler::Sampler& sampler,
-										   Worker const& worker) const override final;
+    void set_abbe(float abbe);
 
-	virtual size_t num_bytes() const override final;
+    static size_t sample_size();
 
-	void set_abbe(float abbe);
-
-	static size_t sample_size();
-
-private:
-
-	float abbe_;
+  private:
+    float abbe_;
 };
 
-}
+}  // namespace scene::material::glass
 
 #endif
-

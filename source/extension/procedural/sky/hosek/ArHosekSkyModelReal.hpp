@@ -3,4 +3,4 @@
 
 using hk_real = float;
 
-#endif // _ARHOSEK_SKYMODEL_REAL_H_
+#endif  // _ARHOSEK_SKYMODEL_REAL_H_

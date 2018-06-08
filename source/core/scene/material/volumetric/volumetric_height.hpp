@@ -11,23 +11,23 @@ class Height final : public Density {
 
 public:
 
-	Height(Sampler_settings const& sampler_settings);
+        Height(Sampler_settings const& sampler_settings);
 
-	void set_a_b(float a, float b);
+        void set_a_b(float a, float b);
 
-	virtual size_t num_bytes() const override final;
+        virtual size_t num_bytes() const override final;
 
 private:
 
-	virtual float density(f_float3 p, Transformation const& transformation,
-						  Sampler_filter filter, Worker const& worker) const override final;
+        virtual float density(f_float3 p, Transformation const& transformation,
+                                                  Sampler_filter filter, Worker const& worker) const
+override final;
 
-	float a_ = 1.f;
-	float b_ = 1.f;
+        float a_ = 1.f;
+        float b_ = 1.f;
 };
 
 */
-
 }
 
 #endif

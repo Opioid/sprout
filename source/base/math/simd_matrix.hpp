@@ -4,11 +4,11 @@
 #include "simd/simd.hpp"
 
 struct alignas(16) Matrix3 {
-	Vector r[3];
+    Vector r[3];
 };
 
 struct alignas(16) Matrix4 {
-	Vector r[4];
+    Vector r[4];
 };
 
 // Fix-up for (1st) XMMATRIX parameter to pass in-register on vector call; by reference otherwise

@@ -1,37 +1,34 @@
 #pragma once
 
-#include "websocket.hpp"
 #include <deque>
 #include <thread>
+#include "websocket.hpp"
 
 namespace server {
 
 class Client {
+  public:
+    Client(net::Socket socket);
+    ~Client();
 
-public:
+    bool run(std::string const& introduction);
+    void shutdown();
 
-	Client(net::Socket socket);
-	~Client();
+    bool send(std::string const& text);
+    bool send(const char* data, size_t size);
 
-	bool run(std::string const& introduction);
-	void shutdown();
+    bool pop_message(std::string& message);
 
-	bool send(std::string const& text);
-	bool send(const char* data, size_t size);
+  private:
+    void loop();
 
-	bool pop_message(std::string& message);
+    void push_message(std::string const& message);
 
-private:
+    Websocket websocket_;
 
-	void loop();
+    std::thread thread_;
 
-	void push_message(std::string const& message);
-
-	Websocket websocket_;
-
-	std::thread thread_;
-
-	std::deque<std::string> messages_;
+    std::deque<std::string> messages_;
 };
 
-}
+}  // namespace server

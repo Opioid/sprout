@@ -1,16 +1,20 @@
 #ifndef SU_CORE_SCENE_CAMERA_CAMERA_HPP
 #define SU_CORE_SCENE_CAMERA_CAMERA_HPP
 
-#include "scene/entity/entity.hpp"
-#include "scene/prop/interface_stack.hpp"
-#include "base/math/vector2.hpp"
 #include <memory>
 #include <string>
 #include <vector>
+#include "base/math/vector2.hpp"
+#include "scene/entity/entity.hpp"
+#include "scene/prop/interface_stack.hpp"
 
-namespace sampler { struct Camera_sample; }
+namespace sampler {
+struct Camera_sample;
+}
 
-namespace rendering::sensor { class Sensor; }
+namespace rendering::sensor {
+class Sensor;
+}
 
 namespace scene {
 
@@ -21,62 +25,60 @@ class Worker;
 namespace camera {
 
 class Camera : public entity::Entity {
+  public:
+    Camera(int2 resolution);
+    virtual ~Camera() override;
 
-public:
+    virtual uint32_t num_views() const = 0;
 
-	Camera(int2 resolution);
-	virtual ~Camera() override;
+    virtual int2 sensor_dimensions() const = 0;
 
-	virtual uint32_t num_views() const = 0;
+    virtual int4 view_bounds(uint32_t view) const = 0;
 
-	virtual int2 sensor_dimensions() const = 0;
+    virtual float pixel_solid_angle() const = 0;
 
-	virtual int4 view_bounds(uint32_t view) const = 0;
+    void update(Scene const& scene, Worker& worker);
 
-	virtual float pixel_solid_angle() const = 0;
+    virtual bool generate_ray(sampler::Camera_sample const& sample, uint32_t view,
+                              Ray& ray) const = 0;
 
-	void update(Scene const& scene, Worker& worker);
+    virtual void set_parameters(json::Value const& parameters) override final;
 
-	virtual bool generate_ray(sampler::Camera_sample const& sample,
-							  uint32_t view, Ray& ray) const = 0;
+    int2 resolution() const;
 
-	virtual void set_parameters(json::Value const& parameters) override final;
+    rendering::sensor::Sensor& sensor() const;
+    void                       set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor);
 
-	int2 resolution() const;
+    prop::Interface_stack const& interface_stack() const;
 
-	rendering::sensor::Sensor& sensor() const;
-	void set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor);
+    float frame_duration() const;
+    void  set_frame_duration(float frame_duration);
 
-	prop::Interface_stack const& interface_stack() const;
+    bool motion_blur() const;
+    void set_motion_blur(bool motion_blur);
 
-	float frame_duration() const;
-	void set_frame_duration(float frame_duration);
+  protected:
+    virtual void on_update(Worker& worker) = 0;
 
-	bool motion_blur() const;
-	void set_motion_blur(bool motion_blur);
+    virtual void set_parameter(std::string_view name, json::Value const& value) = 0;
 
-protected:
+    virtual void on_set_transformation() override final;
 
-	virtual void on_update(Worker& worker) = 0;
+    static Ray create_ray(f_float3 origin, f_float3 direction, float time);
 
-	virtual void set_parameter(std::string_view name, json::Value const& value) = 0;
+    int2                                       resolution_;
+    std::unique_ptr<rendering::sensor::Sensor> sensor_;
 
-	virtual void on_set_transformation() override final;
+    prop::Interface_stack interface_stack_;
+    prop::Interface_stack interfaces_;
 
-	static Ray create_ray(f_float3 origin, f_float3 direction, float time);
+    int32_t filter_radius_ = 0;
 
-	int2 resolution_;
-	std::unique_ptr<rendering::sensor::Sensor> sensor_;
-
-	prop::Interface_stack interface_stack_;
-	prop::Interface_stack interfaces_;
-
-	int32_t filter_radius_ = 0;
-
-	float frame_duration_ = 0.f;
-	bool motion_blur_ = true;
+    float frame_duration_ = 0.f;
+    bool  motion_blur_    = true;
 };
 
-}}
+}  // namespace camera
+}  // namespace scene
 
 #endif

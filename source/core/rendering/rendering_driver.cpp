@@ -25,23 +25,29 @@ Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
              take.view.camera->sensor().filter_radius_int()),
       target_(image::Image::Description(image::Image::Type::Float4,
                                         take.view.camera->sensor_dimensions())) {
-  for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-    workers_[i].init(i, take.settings, scene, max_sample_size, *take.surface_integrator_factory,
-                     *take.volume_integrator_factory, *take.sampler_factory);
-  }
+    for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
+        workers_[i].init(i, take.settings, scene, max_sample_size, *take.surface_integrator_factory,
+                         *take.volume_integrator_factory, *take.sampler_factory);
+    }
 }
 
-Driver::~Driver() { memory::destroy_aligned(workers_, thread_pool_.num_threads()); }
+Driver::~Driver() {
+    memory::destroy_aligned(workers_, thread_pool_.num_threads());
+}
 
-scene::camera::Camera& Driver::camera() { return *view_.camera; }
+scene::camera::Camera& Driver::camera() {
+    return *view_.camera;
+}
 
-scene::Scene const& Driver::scene() const { return scene_; }
+scene::Scene const& Driver::scene() const {
+    return scene_;
+}
 
 size_t Driver::num_bytes() const {
-  // Every worker must have exactly the same size, so we only need to query a single one
-  size_t worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();
+    // Every worker must have exactly the same size, so we only need to query a single one
+    size_t worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();
 
-  return worker_num_bytes + target_.num_bytes();
+    return worker_num_bytes + target_.num_bytes();
 }
 
 }  // namespace rendering

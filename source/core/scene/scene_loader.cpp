@@ -53,7 +53,7 @@ bool Loader::load(std::string const& filename, std::string const& take_name, Sce
         filesystem.push_mount(take_mount_folder);
 
         std::string resolved_name;
-        auto stream_pointer = filesystem.read_stream(filename, resolved_name);
+        auto        stream_pointer = filesystem.read_stream(filename, resolved_name);
 
         filesystem.pop_mount();
 
@@ -87,23 +87,31 @@ bool Loader::load(std::string const& filename, std::string const& take_name, Sce
     return success;
 }
 
-void Loader::register_extension_provider(std::string const& name,
+void Loader::register_extension_provider(std::string const&          name,
                                          entity::Extension_provider* provider) {
     extension_providers_[name] = provider;
 }
 
-void Loader::register_mesh_generator(std::string const& name,
+void Loader::register_mesh_generator(std::string const&          name,
                                      shape::triangle::Generator* generator) {
     mesh_generators_[name] = generator;
 }
 
-std::shared_ptr<shape::Shape> Loader::box() { return box_; }
+std::shared_ptr<shape::Shape> Loader::box() {
+    return box_;
+}
 
-std::shared_ptr<shape::Shape> Loader::canopy() { return canopy_; }
+std::shared_ptr<shape::Shape> Loader::canopy() {
+    return canopy_;
+}
 
-std::shared_ptr<shape::Shape> Loader::celestial_disk() { return celestial_disk_; }
+std::shared_ptr<shape::Shape> Loader::celestial_disk() {
+    return celestial_disk_;
+}
 
-size_t Loader::num_bytes() const { return 0; }
+size_t Loader::num_bytes() const {
+    return 0;
+}
 
 void Loader::read_materials(json::Value const& materials_value) {
     if (!materials_value.IsArray()) {
@@ -143,7 +151,7 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
         try {
             if ("Light" == type_name) {
                 prop::Prop* prop = load_prop(e, name, scene);
-                entity = prop;
+                entity           = prop;
                 if (prop && prop->visible_in_reflection()) {
                     load_light(e, prop, scene);
                 }
@@ -167,8 +175,8 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
                                             math::quaternion::identity()};
 
         json::Value const* animation_value = nullptr;
-        json::Value const* children = nullptr;
-        json::Value const* visibility = nullptr;
+        json::Value const* children        = nullptr;
+        json::Value const* visibility      = nullptr;
 
         for (auto& n : e.GetObject()) {
             if ("transformation" == n.name) {
@@ -205,9 +213,9 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
 }
 
 void Loader::set_visibility(entity::Entity* entity, json::Value const& visibility_value) {
-    bool in_camera = true;
+    bool in_camera     = true;
     bool in_reflection = true;
-    bool in_shadow = true;
+    bool in_shadow     = true;
     //	bool propagate	   = false;
 
     for (auto& n : visibility_value.GetObject()) {
@@ -229,8 +237,8 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
 prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& name,
                               Scene& scene) {
     std::shared_ptr<shape::Shape> shape;
-    Materials materials;
-    json::Value const* visibility = nullptr;
+    Materials                     materials;
+    json::Value const*            visibility = nullptr;
 
     for (auto& n : prop_value.GetObject()) {
         if ("shape" == n.name) {

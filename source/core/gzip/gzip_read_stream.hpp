@@ -1,103 +1,98 @@
 #pragma once
 
-#include "miniz/miniz.hpp"
-#include <streambuf>
-#include <istream>
 #include <array>
+#include <istream>
+#include <streambuf>
+#include "miniz/miniz.hpp"
 
 namespace gzip {
 
 class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
+  public:
+    using char_type   = char;
+    using traits_type = std::char_traits<char>;
+    using int_type    = traits_type::int_type;
+    using pos_type    = traits_type::pos_type;
+    using off_type    = traits_type::off_type;
 
-public:
+    using __streambuf_type = std::basic_streambuf<char, std::char_traits<char>>;
 
-	using char_type = char ;
-	using traits_type = std::char_traits<char>;
-	using int_type = traits_type::int_type;
-	using pos_type = traits_type::pos_type;
-	using off_type = traits_type::off_type;
+    Filebuffer();
 
-	using __streambuf_type = std::basic_streambuf<char, std::char_traits<char>>;
+    virtual ~Filebuffer();
 
-	Filebuffer();
+    bool is_open() const;
 
-	virtual ~Filebuffer();
+    //	Filebuffer* open(const char* filename, std::ios_base::openmode mode);
 
-	bool is_open() const;
+    Filebuffer* open(std::istream* stream);
 
-//	Filebuffer* open(const char* filename, std::ios_base::openmode mode);
+    Filebuffer* close();
 
-	Filebuffer* open(std::istream* stream);
+  protected:
+    virtual int_type underflow() override final;
 
-	Filebuffer* close();
+    virtual pos_type seekpos(pos_type pos, std::ios_base::openmode) override final;
 
-protected:
+    virtual pos_type seekoff(off_type off, std::ios_base::seekdir dir,
+                             std::ios_base::openmode mode) override final;
 
-	virtual int_type underflow() override final;
+    virtual int_type overflow(int_type c = traits_type::eof()) override final;
 
-	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode) override final;
+    virtual int sync() override final;
 
-	virtual pos_type seekoff(off_type off, std::ios_base::seekdir dir,
-							 std::ios_base::openmode mode) override final;
+    virtual std::streamsize showmanyc() override final;
 
-	virtual int_type overflow(int_type c = traits_type::eof()) override final;
+  private:
+    bool init_z_stream();
 
-	virtual int sync() override final;
+    pos_type data_start_;
 
-	virtual std::streamsize showmanyc() override final;
+    std::istream* stream_;
 
-private:
+    mz_stream z_stream_;
 
-	bool init_z_stream();
+    std::array<char_type, 8192> read_buffer_;
 
-	pos_type data_start_;
-
-	std::istream* stream_;
-
-	mz_stream z_stream_;
-
-	std::array<char_type, 8192> read_buffer_;
-
-	std::array<char_type, 8192> buffer_;
+    std::array<char_type, 8192> buffer_;
 };
 
 class Read_stream : public std::basic_istream<char, std::char_traits<char>> {
+  public:
+    using char_type   = char;
+    using traits_type = std::char_traits<char>;
+    using int_type    = traits_type::int_type;
+    using pos_type    = traits_type::pos_type;
+    using off_type    = traits_type::off_type;
 
-public:
+    using __istream_type = std::basic_istream<char, std::char_traits<char>>;
 
-	using char_type = char;
-	using traits_type = std::char_traits<char>;
-	using int_type = traits_type::int_type;
-	using pos_type = traits_type::pos_type;
-	using off_type = traits_type::off_type;
+    Read_stream();
 
-	using __istream_type = std::basic_istream<char, std::char_traits<char>>;
+    //	explicit Read_stream(std::string const& name,
+    //						 std::ios_base::openmode mode =
+    // std::ios_base::binary);
 
-	Read_stream();
+    //	explicit Read_stream(const char* name,
+    //						 std::ios_base::openmode mode =
+    // std::ios_base::binary);
 
-//	explicit Read_stream(std::string const& name,
-//						 std::ios_base::openmode mode = std::ios_base::binary);
+    explicit Read_stream(std::istream* stream);
 
-//	explicit Read_stream(const char* name,
-//						 std::ios_base::openmode mode = std::ios_base::binary);
+    const Filebuffer* rdbuf() const;
 
-	explicit Read_stream(std::istream* stream);
+    Filebuffer* rdbuf();
 
-	const Filebuffer* rdbuf() const;
+    bool is_open() const;
 
-	Filebuffer* rdbuf();
+    //	void open(char const* name, std::ios_base::openmode mode = std::ios_base::binary);
 
-	bool is_open() const;
+    void open(std::istream* stream);
 
-//	void open(char const* name, std::ios_base::openmode mode = std::ios_base::binary);
-	
-	void open(std::istream* stream);
+    void close();
 
-	void close();
-
-private:
-
-	Filebuffer stream_buffer_;
+  private:
+    Filebuffer stream_buffer_;
 };
 
-}
+}  // namespace gzip

@@ -37,22 +37,26 @@ inline Ray::Ray(f_float3 origin, f_float3 direction, f_float3 inv_direction, flo
       signs{sign_x, sign_y, sign_z} {}
 
 inline void Ray::set_direction(f_float3 v) {
-  direction = v;
-  inv_direction = reciprocal(v);
+    direction     = v;
+    inv_direction = reciprocal(v);
 
-  signs[0] = inv_direction[0] < 0.f ? 1u : 0u;
-  signs[1] = inv_direction[1] < 0.f ? 1u : 0u;
-  signs[2] = inv_direction[2] < 0.f ? 1u : 0u;
+    signs[0] = inv_direction[0] < 0.f ? 1u : 0u;
+    signs[1] = inv_direction[1] < 0.f ? 1u : 0u;
+    signs[2] = inv_direction[2] < 0.f ? 1u : 0u;
 }
 
-inline float3 Ray::point(float t) const { return origin + t * direction; }
+inline float3 Ray::point(float t) const {
+    return origin + t * direction;
+}
 
-inline float Ray::length() const { return math::length((min_t - max_t) * direction); }
+inline float Ray::length() const {
+    return math::length((min_t - max_t) * direction);
+}
 
 inline Ray Ray::normalized() const {
-  float const length = math::length(direction);
-  return Ray(origin, direction / length, length * inv_direction, min_t * length, max_t * length,
-             signs[0], signs[1], signs[2]);
+    float const length = math::length(direction);
+    return Ray(origin, direction / length, length * inv_direction, min_t * length, max_t * length,
+               signs[0], signs[1], signs[2]);
 }
 
 }  // namespace math

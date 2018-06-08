@@ -1,31 +1,32 @@
 #pragma once
 
-#include "image/typed_image.hpp"
 #include <vector>
+#include "image/typed_image.hpp"
 
-namespace thread { class Pool; }
+namespace thread {
+class Pool;
+}
 
-namespace image { namespace filter {
+namespace image {
+namespace filter {
 
-template<typename T>
+template <typename T>
 class Gaussian {
+  public:
+    Gaussian(float radius, float alpha);
 
-public:
+    void apply(Typed_image<T>& target, thread::Pool& pool);
 
-	Gaussian(float radius, float alpha);
+  private:
+    Typed_image<T> scratch_;
 
-	void apply(Typed_image<T>& target, thread::Pool& pool);
+    struct K {
+        int32_t o;
+        float   w;
+    };
 
-private:
-
-	Typed_image<T> scratch_;
-
-	struct K {
-		int32_t o;
-		float w;
-	};
-
-	std::vector<K> kernel_;
+    std::vector<K> kernel_;
 };
 
-}}
+}  // namespace filter
+}  // namespace image

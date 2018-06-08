@@ -4,40 +4,42 @@
 #include "distribution_1d.hpp"
 #include "math/vector2.hpp"
 
-namespace thread { class Pool; }
+namespace thread {
+class Pool;
+}
 
 namespace math {
 
-template<typename T>
+template <typename T>
 class Distribution_t_2D {
+  public:
+    using Distribution_impl = T;
 
-public:
+    void init(float const* data, int2 dimensions);
+    void init(float const* data, int2 dimensions, thread::Pool& pool);
+    void init(std::vector<Distribution_impl>& conditional);
 
-	using Distribution_impl = T;
+    struct Continuous {
+        float2 uv;
+        float  pdf;
+    };
+    Continuous sample_continuous(float2 r2) const;
 
-	void init(float const* data, int2 dimensions);
-	void init(float const* data, int2 dimensions, thread::Pool& pool);
-	void init(std::vector<Distribution_impl>& conditional);
+    float pdf(float2 uv) const;
 
-	struct Continuous { float2 uv; float pdf; };
-	Continuous sample_continuous(float2 r2) const;
+    size_t num_bytes() const;
 
-	float pdf(float2 uv) const;
+  private:
+    Distribution_impl marginal_;
 
-	size_t num_bytes() const;
+    std::vector<Distribution_impl> conditional_;
 
-private:
-
-	Distribution_impl marginal_;
-
-	std::vector<Distribution_impl> conditional_;
-
-	float conditional_size_;
-	uint32_t conditional_max_;
+    float    conditional_size_;
+    uint32_t conditional_max_;
 };
 
 using Distribution_2D = Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
 
-}
+}  // namespace math
 
 #endif

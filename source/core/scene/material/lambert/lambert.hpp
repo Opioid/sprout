@@ -2,27 +2,30 @@
 
 #include "base/math/vector3.hpp"
 
-namespace sampler { class Sampler; }
+namespace sampler {
+class Sampler;
+}
 
 namespace scene::material {
 
-namespace bxdf { struct Result; struct Sample; }
+namespace bxdf {
+struct Result;
+struct Sample;
+}  // namespace bxdf
 
 class Sample;
 
 namespace lambert {
 
 class Isotropic {
+  public:
+    template <typename Layer>
+    static bxdf::Result reflection(float3 const& color, float n_dot_wi, Layer const& layer);
 
-public:
-
-	template<typename Layer>
-	static bxdf::Result reflection(float3 const& color, float n_dot_wi,
-								   Layer const& layer);
-
-	template<typename Layer>
-	static float reflect(float3 const& color, Layer const& layer,
-						 sampler::Sampler& sampler, bxdf::Sample& result);
+    template <typename Layer>
+    static float reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
+                         bxdf::Sample& result);
 };
 
-}}
+}  // namespace lambert
+}  // namespace scene::material

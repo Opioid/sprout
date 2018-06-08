@@ -3,26 +3,26 @@
 
 namespace scene {
 
-namespace entity { class Entity; }
+namespace entity {
+class Entity;
+}
 
 namespace animation {
 
 class Animation;
 
 class Stage {
-
-public:
-
+  public:
     Stage(entity::Entity* entity, Animation* animation);
 
-	void update();
+    void update();
 
-private:
-
+  private:
     entity::Entity* entity_;
-    Animation*   animation_;
+    Animation*      animation_;
 };
 
-}}
+}  // namespace animation
+}  // namespace scene
 
 #endif

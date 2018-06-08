@@ -3,27 +3,31 @@
 
 namespace rapidjson {
 
-template<typename CharType> struct UTF8;
+template <typename CharType>
+struct UTF8;
 
 class CrtAllocator;
 
-template <typename BaseAllocator> class MemoryPoolAllocator;
+template <typename BaseAllocator>
+class MemoryPoolAllocator;
 
-template <typename Encoding, typename Allocator, typename StackAllocator> class GenericDocument;
+template <typename Encoding, typename Allocator, typename StackAllocator>
+class GenericDocument;
 
 using Document = GenericDocument<UTF8<char>, MemoryPoolAllocator<CrtAllocator>, CrtAllocator>;
 
-template <typename Encoding, typename Allocator> class GenericValue;
+template <typename Encoding, typename Allocator>
+class GenericValue;
 
 using Value = GenericValue<UTF8<char>, MemoryPoolAllocator<CrtAllocator>>;
 
-}
+}  // namespace rapidjson
 
 namespace json {
 
 using Document = rapidjson::Document;
-using Value = rapidjson::Value;
+using Value    = rapidjson::Value;
 
-}
+}  // namespace json
 
 #endif

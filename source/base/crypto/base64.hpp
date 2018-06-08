@@ -6,7 +6,6 @@
 namespace crypto::base64 {
 
 std::string encode(const uint8_t* data, size_t size);
-
 }
 
 #endif

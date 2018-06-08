@@ -2,10 +2,10 @@
 #define SU_BASE_JSON_JSON_HPP
 
 #include "json_types.hpp"
-#include "math/vector.hpp"
 #include "math/matrix.hpp"
 #include "math/quaternion.hpp"
 #include "math/transformation.hpp"
+#include "math/vector.hpp"
 
 #include "rapidjson/document.h"
 
@@ -50,16 +50,16 @@ uint3 read_uint3(json::Value const& value);
 
 // math::quaternion read_quaternion(rapidjson::Value const& value);
 
-float3x3 create_rotation_matrix(float3 const& xyz);
-float3x3 read_rotation_matrix(json::Value const& value);
+float3x3         create_rotation_matrix(float3 const& xyz);
+float3x3         read_rotation_matrix(json::Value const& value);
 math::Quaternion read_local_rotation(json::Value const& value);
 
 std::string read_string(json::Value const& value);
 std::string read_string(json::Value const& value, std::string_view name,
-						std::string const& default_value = "");
+                        std::string const& default_value = "");
 
 void read_transformation(json::Value const& value, math::Transformation& transformation);
 
-}
+}  // namespace json
 
 #endif

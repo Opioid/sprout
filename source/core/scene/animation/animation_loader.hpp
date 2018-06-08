@@ -1,17 +1,17 @@
 #ifndef SU_CORE_SCENE_ANIMATION_LOADER_HPP
 #define SU_CORE_SCENE_ANIMATION_LOADER_HPP
 
-#include "base/math/transformation.hpp"
-#include "base/json/json_types.hpp"
 #include <memory>
+#include "base/json/json_types.hpp"
+#include "base/math/transformation.hpp"
 
 namespace scene::animation {
 
 class Animation;
 
-std::shared_ptr<animation::Animation> load(json::Value const& animation_value,
-										   math::Transformation const& default_transformation);
+std::shared_ptr<animation::Animation> load(json::Value const&          animation_value,
+                                           math::Transformation const& default_transformation);
 
-}
+}  // namespace scene::animation
 
 #endif

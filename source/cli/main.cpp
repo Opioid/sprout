@@ -87,10 +87,10 @@ int main(int argc, char const* argv[]) {
     auto const total_start = std::chrono::high_resolution_clock::now();
 
     uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
-    uint32_t num_workers;
+    uint32_t       num_workers;
     if (args.threads <= 0) {
         int32_t const num_threads = static_cast<int32_t>(available_threads) + args.threads;
-        num_workers = static_cast<uint32_t>(std::max(num_threads, 1));
+        num_workers               = static_cast<uint32_t>(std::max(num_threads, 1));
     } else {
         num_workers = std::min(available_threads, static_cast<uint32_t>(std::max(args.threads, 1)));
     }
@@ -122,7 +122,7 @@ int main(int argc, char const* argv[]) {
     }
 
     std::unique_ptr<take::Take> take;
-    std::string take_name;
+    std::string                 take_name;
 
     try {
         auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)

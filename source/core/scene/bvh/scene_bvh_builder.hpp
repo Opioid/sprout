@@ -1,72 +1,70 @@
 #ifndef SU_CORE_SCENE_BVH_BUILDER_HPP
 #define SU_CORE_SCENE_BVH_BUILDER_HPP
 
-#include "scene_bvh_split_candidate.hpp"
+#include <cstddef>
+#include <vector>
 #include "base/math/aabb.hpp"
 #include "base/math/plane.hpp"
-#include <vector>
-#include <cstddef>
+#include "scene_bvh_split_candidate.hpp"
 
 namespace scene::bvh {
 
 class Node;
-template<typename T> struct Tree;
+template <typename T>
+struct Tree;
 
-template<typename T>
+template <typename T>
 class Builder {
+  public:
+    Builder();
+    ~Builder();
 
-public:
+    void build(Tree<T>& tree, std::vector<T*>& finite_props);
 
-	Builder();
-	~Builder();
+  private:
+    struct Build_node {
+        Build_node() = default;
+        ~Build_node();
 
-	void build(Tree<T>& tree, std::vector<T*>& finite_props);
+        void clear();
 
-private:
+        math::AABB aabb;
 
-	struct Build_node {
-		Build_node() = default;
-		~Build_node();
+        uint8_t axis;
 
-		void clear();
+        uint32_t offset;
+        uint32_t props_end;
 
-		math::AABB aabb;
+        Build_node* children[2] = {nullptr, nullptr};
+    };
 
-		uint8_t axis;
+    using index = typename std::vector<T*>::iterator;
 
-		uint32_t offset;
-		uint32_t props_end;
+    void split(Build_node* node, index begin, index end, uint32_t max_shapes,
+               std::vector<T*>& out_props);
 
-		Build_node* children[2] = { nullptr, nullptr };
-	};
+    Split_candidate<T> splitting_plane(math::AABB const& aabb, index begin, index end);
 
-	using index = typename std::vector<T*>::iterator;
+    void serialize(Build_node* node);
 
-	void split(Build_node* node, index begin, index end, uint32_t max_shapes,
-			   std::vector<T*>& out_props);
+    Node& new_node();
 
-	Split_candidate<T> splitting_plane(math::AABB const& aabb, index begin, index end);
+    uint32_t current_node_index() const;
 
-	void serialize(Build_node* node);
+    static void assign(Build_node* node, index begin, index end, std::vector<T*>& out_data);
 
-	Node& new_node();
+    static math::AABB aabb(index begin, index end);
 
-	uint32_t current_node_index() const;
+    std::vector<Split_candidate<T>> split_candidates_;
 
-	static void assign(Build_node* node, index begin, index end, std::vector<T*>& out_data);
+    Build_node* root_;
 
-	static math::AABB aabb(index begin, index end);
+    uint32_t num_nodes_;
+    uint32_t current_node_;
 
-	std::vector<Split_candidate<T>> split_candidates_;
-
-	Build_node* root_;
-
-	uint32_t num_nodes_;
-	uint32_t current_node_;
-
-	Node* nodes_;
+    Node* nodes_;
 };
 
-}
+}  // namespace scene::bvh
 
 #endif

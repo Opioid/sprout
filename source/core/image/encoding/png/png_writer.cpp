@@ -1,169 +1,167 @@
 #include "png_writer.hpp"
-#include "image/typed_image.inl"
-#include "base/math/vector4.inl"
-#include "base/thread/thread_pool.hpp"
-#include "miniz/miniz.hpp"
 #include <fstream>
 #include <vector>
+#include "base/math/vector4.inl"
+#include "base/thread/thread_pool.hpp"
+#include "image/typed_image.inl"
+#include "miniz/miniz.hpp"
 
 namespace image::encoding::png {
 
-Writer::Writer(int2 dimensions) : Srgb(dimensions){}
+Writer::Writer(int2 dimensions) : Srgb(dimensions) {}
 
 std::string Writer::file_extension() const {
-	return "png";
+    return "png";
 }
 
 bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
-	auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions;
 
-	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
-		to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
+    pool.run_range(
+        [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
+        0, d[0] * d[1]);
 
-	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, d[0], d[1],
-															   3, &buffer_len);
-	if (!png_buffer) {
-		return false;
-	}
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, d[0], d[1], 3, &buffer_len);
+    if (!png_buffer) {
+        return false;
+    }
 
-	stream.write(static_cast<char*>(png_buffer), buffer_len);
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
 
-	mz_free(png_buffer);
+    mz_free(png_buffer);
 
-	return true;
+    return true;
 }
 
 bool Writer::write(std::string const& name, Byte3 const& image) {
-	std::ofstream stream(name, std::ios::binary);
-	if (!stream) {
-		return false;
-	}
+    std::ofstream stream(name, std::ios::binary);
+    if (!stream) {
+        return false;
+    }
 
-	auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions;
 
-	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1],
-															   3, &buffer_len);
+    size_t buffer_len = 0;
+    void*  png_buffer =
+        tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 3, &buffer_len);
 
-	if (!png_buffer) {
-		return false;
-	}
+    if (!png_buffer) {
+        return false;
+    }
 
-	stream.write(static_cast<char*>(png_buffer), buffer_len);
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
 
-	mz_free(png_buffer);
+    mz_free(png_buffer);
 
-	return true;
+    return true;
 }
 
 bool Writer::write(std::string const& name, Byte1 const& image) {
-	std::ofstream stream(name, std::ios::binary);
-	if (!stream) {
-		return false;
-	}
+    std::ofstream stream(name, std::ios::binary);
+    if (!stream) {
+        return false;
+    }
 
-	auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions;
 
-	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1],
-															   1, &buffer_len);
+    size_t buffer_len = 0;
+    void*  png_buffer =
+        tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 1, &buffer_len);
 
-	if (!png_buffer) {
-		return false;
-	}
+    if (!png_buffer) {
+        return false;
+    }
 
-	stream.write(static_cast<char*>(png_buffer), buffer_len);
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
 
-	mz_free(png_buffer);
+    mz_free(png_buffer);
 
-	return true;
+    return true;
 }
 
 bool Writer::write(std::string const& name, float const* data, int2 dimensions, float scale) {
-	std::ofstream stream(name, std::ios::binary);
-	if (!stream) {
-		return false;
-	}
+    std::ofstream stream(name, std::ios::binary);
+    if (!stream) {
+        return false;
+    }
 
-	int32_t const area = dimensions[0] * dimensions[1];
-	std::vector<uint8_t> bytes(area);
+    int32_t const        area = dimensions[0] * dimensions[1];
+    std::vector<uint8_t> bytes(area);
 
-	for (int32_t i = 0; i < area; ++i) {
-		bytes[i] = static_cast<uint8_t>(scale * data[i]);
-	}
+    for (int32_t i = 0; i < area; ++i) {
+        bytes[i] = static_cast<uint8_t>(scale * data[i]);
+    }
 
-	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(),
-															   dimensions[0], dimensions[1],
-															   1, &buffer_len);
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
+                                                               dimensions[1], 1, &buffer_len);
 
-	if (!png_buffer) {
-		return false;
-	}
+    if (!png_buffer) {
+        return false;
+    }
 
-	stream.write(static_cast<char*>(png_buffer), buffer_len);
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
 
-	mz_free(png_buffer);
+    mz_free(png_buffer);
 
-	return true;
+    return true;
 }
 
 bool Writer::write(std::string const& name, float2 const* data, int2 dimensions, float scale) {
-	std::ofstream stream(name, std::ios::binary);
-	if (!stream) {
-		return false;
-	}
+    std::ofstream stream(name, std::ios::binary);
+    if (!stream) {
+        return false;
+    }
 
-	int32_t const area = dimensions[0] * dimensions[1];
-	std::vector<byte3> bytes(area);
+    int32_t const      area = dimensions[0] * dimensions[1];
+    std::vector<byte3> bytes(area);
 
-	for (int32_t i = 0; i < area; ++i) {
-		bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
-						 static_cast<uint8_t>(scale * data[i][1]),
-						 0);
-	}
+    for (int32_t i = 0; i < area; ++i) {
+        bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
+                         static_cast<uint8_t>(scale * data[i][1]), 0);
+    }
 
-	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(),
-															   dimensions[0], dimensions[1],
-															   3, &buffer_len);
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
+                                                               dimensions[1], 3, &buffer_len);
 
-	if (!png_buffer) {
-		return false;
-	}
+    if (!png_buffer) {
+        return false;
+    }
 
-	stream.write(static_cast<char*>(png_buffer), buffer_len);
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
 
-	mz_free(png_buffer);
+    mz_free(png_buffer);
 
-	return true;
+    return true;
 }
 
 Writer_alpha::Writer_alpha(int2 dimensions) : Srgb_alpha(dimensions) {}
 
 std::string Writer_alpha::file_extension() const {
-	return "png";
+    return "png";
 }
 
 bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
-	auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions;
 
-	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
-			to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
+    pool.run_range(
+        [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
+        0, d[0] * d[1]);
 
-	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d[0], d[1], 4, &buffer_len);
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d[0], d[1], 4, &buffer_len);
 
-	if (!png_buffer) {
-		return false;
-	}
+    if (!png_buffer) {
+        return false;
+    }
 
-	stream.write(static_cast<char*>(png_buffer), buffer_len);
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
 
-	mz_free(png_buffer);
+    mz_free(png_buffer);
 
-	return true;
+    return true;
 }
 
-}
+}  // namespace image::encoding::png

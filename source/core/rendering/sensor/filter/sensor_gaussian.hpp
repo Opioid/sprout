@@ -1,37 +1,34 @@
 #ifndef SU_CORE_RENDERING_SENSOR_FILTER_GAUSSIAN_HPP
 #define SU_CORE_RENDERING_SENSOR_FILTER_GAUSSIAN_HPP
 
-#include "sensor_filter.hpp"
-#include "base/math/vector3.hpp"
 #include "base/math/function/interpolated_function.hpp"
+#include "base/math/vector3.hpp"
+#include "sensor_filter.hpp"
 
 namespace rendering::sensor::filter {
 
 class Gaussian : public Filter {
+  public:
+    Gaussian(float radius, float alpha);
 
-public:
+    virtual float radius() const override final;
 
-	Gaussian(float radius, float alpha);
+    virtual float evaluate(float d) const override final;
 
-	virtual float radius() const override final;
+    virtual float evaluate(float2 p) const override final;
 
-	virtual float evaluate(float d) const override final;
+  private:
+    float gaussian(float d) const;
 
-	virtual float evaluate(float2 p) const override final;
+    float radius_;
 
-private:
+    math::Interpolated_function<float> gaussian_;
 
-	float gaussian(float d) const;
+    float exp_;
 
-	float radius_;
-
-	math::Interpolated_function<float> gaussian_;
-
-	float exp_;
-
-	float alpha_;
+    float alpha_;
 };
 
-}
+}  // namespace rendering::sensor::filter
 
 #endif

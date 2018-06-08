@@ -5,12 +5,12 @@
 
 namespace resource {
 
-template<typename T>
+template <typename T>
 Provider<T>::Provider(std::string const& name) : Identifiable<T>(name) {}
 
-template<typename T>
+template <typename T>
 Provider<T>::~Provider() {}
 
-}
+}  // namespace resource
 
 #endif

@@ -54,8 +54,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     float3 result(0.f);
 
     for (uint32_t i = ray.depth;; ++i) {
-        float3 const wo = -ray.direction;
-        auto const& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+        float3 const wo              = -ray.direction;
+        auto const&  material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
         if (material_sample.same_hemisphere(wo)) {
             result += throughput * material_sample.radiance();
@@ -91,7 +91,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
             }
         } else {
             primary_ray = false;
-            filter = Sampler_filter::Nearest;
+            filter      = Sampler_filter::Nearest;
         }
 
         throughput *= sample_result.reflection / sample_result.pdf;
@@ -114,8 +114,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
         }
 
         if (!worker.interface_stack().empty()) {
-            float3 vli;
-            float3 vtr;
+            float3     vli;
+            float3     vtr;
             bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             result += throughput * vli;
@@ -158,7 +158,9 @@ Pathtracer_factory::Pathtracer_factory(take::Settings const& take_settings,
       integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
       settings_{min_bounces, max_bounces, 1.f - path_termination_probability, !enable_caustics} {}
 
-Pathtracer_factory::~Pathtracer_factory() { memory::free_aligned(integrators_); }
+Pathtracer_factory::~Pathtracer_factory() {
+    memory::free_aligned(integrators_);
+}
 
 Integrator* Pathtracer_factory::create(uint32_t id, rnd::Generator& rng) const {
     return new (&integrators_[id]) Pathtracer(rng, take_settings_, settings_);

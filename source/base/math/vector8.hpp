@@ -10,13 +10,17 @@ namespace math {
 //==============================================================================
 
 struct alignas(16) Vector8us_a {
-  uint16_t v[8];
+    uint16_t v[8];
 
-  Vector8us_a() = default;
+    Vector8us_a() = default;
 
-  uint16_t operator[](uint32_t i) const { return v[i]; }
+    uint16_t operator[](uint32_t i) const {
+        return v[i];
+    }
 
-  uint16_t& operator[](uint32_t i) { return v[i]; }
+    uint16_t& operator[](uint32_t i) {
+        return v[i];
+    }
 };
 
 }  // namespace math

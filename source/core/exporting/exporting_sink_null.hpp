@@ -6,11 +6,12 @@
 namespace exporting {
 
 class Null : public Sink {
- public:
-  Null();
-  virtual ~Null() override final;
+  public:
+    Null();
+    virtual ~Null() override final;
 
-  virtual void write(const image::Float4& image, uint32_t frame, thread::Pool& pool) override final;
+    virtual void write(const image::Float4& image, uint32_t frame,
+                       thread::Pool& pool) override final;
 };
 
 }  // namespace exporting

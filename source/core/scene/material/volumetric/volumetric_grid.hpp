@@ -1,86 +1,77 @@
 #ifndef SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 #define SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 
+#include "image/texture/texture_adapter.hpp"
 #include "volumetric_density.hpp"
 #include "volumetric_octree.hpp"
-#include "image/texture/texture_adapter.hpp"
 
 namespace scene::material::volumetric {
 
 class Grid final : public Density {
+  public:
+    Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
 
-public:
+    virtual ~Grid() override final;
 
-	Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
+    virtual void compile() override final;
 
-	virtual ~Grid() override final;
+    virtual float majorant_mu_t() const override final;
 
-	virtual void compile() override final;
+    virtual Octree const* volume_octree() const override final;
 
-	virtual float majorant_mu_t() const override final;
+    virtual bool is_heterogeneous_volume() const override final;
 
-	virtual Octree const* volume_octree() const override final;
+    virtual size_t num_bytes() const override final;
 
-	virtual bool  is_heterogeneous_volume() const override final;
+  private:
+    virtual float density(f_float3 uvw, Sampler_filter filter,
+                          Worker const& worker) const override final;
 
-	virtual size_t num_bytes() const override final;
+    Texture_adapter grid_;
 
-private:
+    float majorant_mu_t_;
 
-	virtual float density(f_float3 uvw, Sampler_filter filter,
-						  Worker const& worker) const override final;
-
-	Texture_adapter grid_;
-
-	float majorant_mu_t_;
-
-	Octree tree_;
+    Octree tree_;
 };
 
 class Emission_grid final : public Material {
+  public:
+    Emission_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
 
-public:
+    virtual ~Emission_grid() override final;
 
-	Emission_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
+    virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
+                            float step_size, rnd::Generator& rng, Sampler_filter filter,
+                            Worker const& worker) const override final;
 
-	virtual ~Emission_grid() override final;
+    virtual size_t num_bytes() const override final;
 
-	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
-							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, Worker const& worker) const override final;
+  private:
+    float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
 
-	virtual size_t num_bytes() const override final;
-
-private:
-
-	float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
-
-	Texture_adapter grid_;
+    Texture_adapter grid_;
 };
 
 class Flow_vis_grid final : public Material {
+  public:
+    Flow_vis_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
 
-public:
+    virtual ~Flow_vis_grid() override final;
 
-	Flow_vis_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
+    virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
+                            float step_size, rnd::Generator& rng, Sampler_filter filter,
+                            Worker const& worker) const override final;
 
-	virtual ~Flow_vis_grid() override final;
+    virtual size_t num_bytes() const override final;
 
-	virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
-							float step_size, rnd::Generator& rng,
-							Sampler_filter filter, Worker const& worker) const override final;
+  private:
+    float density(f_float3 p, Sampler_filter filter, Worker const& worker) const;
 
-	virtual size_t num_bytes() const override final;
+    float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
 
-private:
-
-	float density(f_float3 p, Sampler_filter filter, Worker const& worker) const;
-
-	float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
-
-	Texture_adapter grid_;
+    Texture_adapter grid_;
 };
 
-}
+}  // namespace scene::material::volumetric
 
 #endif

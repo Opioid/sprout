@@ -5,43 +5,39 @@
 namespace scene::material::display {
 
 class Constant : public Material {
+  public:
+    Constant(Sampler_settings const& sampler_settings, bool two_sided);
 
-public:
+    virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
+                                           Sampler_filter filter, sampler::Sampler& sampler,
+                                           Worker const& worker) const override final;
 
-	Constant(Sampler_settings const& sampler_settings, bool two_sided);
+    virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
+                                   Sampler_filter filter,
+                                   Worker const&  worker) const override final;
 
-	virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
-										   Sampler_filter filter, sampler::Sampler& sampler,
-										   Worker const& worker) const override final;
+    virtual float3 average_radiance(float area) const override final;
 
-	virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
-								   Sampler_filter filter,
-								   Worker const& worker) const override final;
+    virtual float ior() const override final;
 
-	virtual float3 average_radiance(float area) const override final;
+    virtual size_t num_bytes() const override final;
 
-	virtual float ior() const override final;
+    void set_emission(float3 const& radiance);
+    void set_roughness(float roughness);
+    void set_ior(float ior);
 
-	virtual size_t num_bytes() const override final;
+    static size_t sample_size();
 
-	void set_emission(float3 const& radiance);
-	void set_roughness(float roughness);
-	void set_ior(float ior);
+  private:
+    Texture_adapter emission_map_;
 
-	static size_t sample_size();
+    float3 emission_;
 
-private:
+    float roughness_;
 
-	Texture_adapter emission_map_;
+    float ior_;
 
-	float3 emission_;
-
-	float roughness_;
-
-	float ior_;
-
-	float f0_;
-
+    float f0_;
 };
 
-}
+}  // namespace scene::material::display

@@ -5,31 +5,28 @@
 
 namespace math {
 
-template<typename T>
+template <typename T>
 class Interpolated_function {
+  public:
+    Interpolated_function() = default;
 
-public:
+    template <typename F>
+    Interpolated_function(float range_begin, float range_end, size_t num_samples, F f);
 
-	Interpolated_function() = default;
+    ~Interpolated_function();
 
-	template<typename F>
-	Interpolated_function(float range_begin, float range_end, size_t num_samples, F f);
+    void from_array(float range_begin, float range_end, size_t num_samples, const T t[]);
 
-	~Interpolated_function();
+    T operator()(float x) const;
 
-	void from_array(float range_begin, float range_end, size_t num_samples, const T t[]);
+  private:
+    float range_end_;
 
-	T operator()(float x) const;
+    float inverse_range_;
 
-private:
-
-	float range_end_;
-
-	float inverse_range_;
-
-	T* samples_ = nullptr;
+    T* samples_ = nullptr;
 };
 
-}
+}  // namespace math
 
 #endif

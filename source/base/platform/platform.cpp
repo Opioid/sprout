@@ -4,38 +4,38 @@
 namespace platform {
 
 std::string build() {
-	std::stringstream stream;
+    std::stringstream stream;
 
-	// Architecture
+    // Architecture
 #if defined(__LP64__) || defined(_LP64) || defined(_WIN64)
-	stream << "x64 ";
+    stream << "x64 ";
 #else
-	stream << "x86 ";
+    stream << "x86 ";
 #endif
 
-	// Profile
+    // Profile
 #ifdef _DEBUG
-	stream << "Debug ";
+    stream << "Debug ";
 #else
-	stream << "Release ";
+    stream << "Release ";
 #endif
 
 #ifdef SU_DEBUG
-	stream << "(NaN) ";
+    stream << "(NaN) ";
 #endif
 
-	// Compiler
+    // Compiler
 #ifdef _MSC_VER
-	int major = _MSC_VER / 100;
-	int minor = (_MSC_VER - major * 100) / 10;
-	stream << "MSVC++ " << major << "." << minor;
+    int major = _MSC_VER / 100;
+    int minor = (_MSC_VER - major * 100) / 10;
+    stream << "MSVC++ " << major << "." << minor;
 #elif defined(__clang__)
-	stream << "clang " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__;
+    stream << "clang " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__;
 #elif defined(__GNUC__)
-	stream << "GCC " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__;
+    stream << "GCC " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__;
 #endif
 
-	return stream.str();
+    return stream.str();
 }
 
-}
+}  // namespace platform

@@ -10,11 +10,12 @@ class Writer;
 namespace exporting {
 
 class Statistics : public Sink {
- public:
-  Statistics();
-  virtual ~Statistics() override final;
+  public:
+    Statistics();
+    virtual ~Statistics() override final;
 
-  virtual void write(const image::Float4& image, uint32_t frame, thread::Pool& pool) override final;
+    virtual void write(const image::Float4& image, uint32_t frame,
+                       thread::Pool& pool) override final;
 };
 
 }  // namespace exporting

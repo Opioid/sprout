@@ -1,79 +1,73 @@
 #ifndef SU_CORE_IMAGE_PROCEDURAL_RENDERER_HPP
 #define SU_CORE_IMAGE_PROCEDURAL_RENDERER_HPP
 
-#include "image/typed_image_fwd.hpp"
 #include "base/math/vector2.hpp"
 #include "base/math/vector4.hpp"
+#include "image/typed_image_fwd.hpp"
 
 namespace image::procedural {
 
-template<typename T>
+template <typename T>
 class Typed_renderer {
+  public:
+    Typed_renderer(int2 dimensions, int32_t sqrt_num_samples = 1);
+    ~Typed_renderer();
 
-public:
+    void set_brush(T color);
 
-	Typed_renderer(int2 dimensions, int32_t sqrt_num_samples = 1);
-	~Typed_renderer();
+    void clear();
 
-	void set_brush(T color);
+    void draw_circle(float2 pos, float radius);
 
-	void clear();
+    void resolve(Typed_image<T>& target) const;
 
-	void draw_circle(float2 pos, float radius);
+  private:
+    void set_sample(int32_t x, int32_t y, T color);
+    void set_row(int32_t start_x, int32_t end_x, int32_t y, T color);
 
-	void resolve(Typed_image<T>& target) const;
+    int32_t sqrt_num_samples_;
 
-private:
+    int2 dimensions_;
 
-	void set_sample(int32_t x, int32_t y, T color);
-	void set_row(int32_t start_x, int32_t end_x, int32_t y, T color);
+    float2 dimensions_f_;
 
-	int32_t sqrt_num_samples_;
+    T* samples_;
 
-	int2 dimensions_;
-
-	float2 dimensions_f_;
-
-	T* samples_;
-
-	T brush_;
+    T brush_;
 };
 
 class Renderer {
+  public:
+    Renderer(int2 dimensions, int32_t sqrt_num_samples = 1);
+    ~Renderer();
 
-public:
+    void set_brush(float3 const& color);
+    void set_brush(float4 const& color);
 
-	Renderer(int2 dimensions, int32_t sqrt_num_samples = 1);
-	~Renderer();
+    void clear();
 
-	void set_brush(float3 const& color);
-	void set_brush(float4 const& color);
+    void draw_circle(float2 pos, float radius);
 
-	void clear();
+    void resolve_sRGB(Byte3& target) const;
+    void resolve(Byte3& target) const;
 
-	void draw_circle(float2 pos, float radius);
+    void resolve(Byte1& target) const;
 
-	void resolve_sRGB(Byte3& target) const;
-	void resolve(Byte3& target) const;
+  private:
+    void set_sample(int32_t x, int32_t y, float4 const& color);
+    void set_row(int32_t start_x, int32_t end_x, int32_t y, float4 const& color);
 
-	void resolve(Byte1& target) const;
+    int32_t sqrt_num_samples_;
 
-private:
+    int2 dimensions_;
 
-	void set_sample(int32_t x, int32_t y, float4 const& color);
-	void set_row(int32_t start_x, int32_t end_x, int32_t y, float4 const& color);
+    float2 dimensions_f_;
 
-	int32_t sqrt_num_samples_;
+    float4* samples_;
 
-	int2 dimensions_;
-
-	float2 dimensions_f_;
-
-	float4* samples_;
-
-	float4 brush_;
+    float4 brush_;
 };
 
-}
+}  // namespace image::procedural
 
 #endif

@@ -7,7 +7,8 @@
 
 namespace math {
 
-template<typename T> struct Matrix4x4;
+template <typename T>
+struct Matrix4x4;
 
 /****************************************************************************
  *
@@ -15,27 +16,27 @@ template<typename T> struct Matrix4x4;
  *
  ****************************************************************************/
 /*
-template<typename T> 
+template<typename T>
 struct Matrix3x3 {
-	Vector3<T> r[3];
+        Vector3<T> r[3];
 
-	Matrix3x3();
+        Matrix3x3();
 
-	Matrix3x3(T m00, T m01, T m02,
-			  T m10, T m11, T m12,
-			  T m20, T m21, T m22);
-		
-	Matrix3x3(Vector3<T> const& x, Vector3<T> const& y, Vector3<T> const& z);
-	
-	explicit Matrix3x3(const Matrix4x4<T>& m);
+        Matrix3x3(T m00, T m01, T m02,
+                          T m10, T m11, T m12,
+                          T m20, T m21, T m22);
+                
+        Matrix3x3(Vector3<T> const& x, Vector3<T> const& y, Vector3<T> const& z);
+        
+        explicit Matrix3x3(const Matrix4x4<T>& m);
 
-	Matrix3x3 operator*(const Matrix3x3& m) const;
+        Matrix3x3 operator*(const Matrix3x3& m) const;
 
-	Matrix3x3 operator/(T s) const;
+        Matrix3x3 operator/(T s) const;
 
-	Matrix3x3& operator*=(const Matrix3x3& m);
+        Matrix3x3& operator*=(const Matrix3x3& m);
 
-	static Matrix3x3 identity();
+        static Matrix3x3 identity();
 };
 
 template<typename T>
@@ -52,7 +53,8 @@ Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, Vector3<T> const& 
 
 template<typename T>
 void transform_vectors(const Matrix3x3<T>& m,
-					   Vector3<T> const& a, Vector3<T> const& b, Vector3<T>& oa, Vector3<T>& ob);
+                                           Vector3<T> const& a, Vector3<T> const& b, Vector3<T>& oa,
+Vector3<T>& ob);
 
 template<typename T>
 Matrix3x3<T> normalize(const Matrix3x3<T>& m);
@@ -102,17 +104,16 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m);
 struct Vector4f_a;
 
 struct alignas(16) Matrix3x3f_a {
-	Vector3f_a r[3];
+    Vector3f_a r[3];
 
-	Matrix3x3f_a() = default;
+    Matrix3x3f_a() = default;
 
-	constexpr Matrix3x3f_a(float m00, float m01, float m02,
-						   float m10, float m11, float m12,
-						   float m20, float m21, float m22);
+    constexpr Matrix3x3f_a(float m00, float m01, float m02, float m10, float m11, float m12,
+                           float m20, float m21, float m22);
 
-	static constexpr Matrix3x3f_a identity();
+    static constexpr Matrix3x3f_a identity();
 };
 
-}
+}  // namespace math
 
 #endif

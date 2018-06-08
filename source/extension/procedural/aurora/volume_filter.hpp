@@ -3,41 +3,40 @@
 
 #include "image/typed_image.hpp"
 
-namespace thread { class Pool; }
+namespace thread {
+class Pool;
+}
 
 namespace procedural::aurora {
 
 class Volume_filter {
+  public:
+    Volume_filter(int3 const& dimensions, float radius, float alpha, uint32_t num_buckets);
+    ~Volume_filter();
 
-public:
+    void filter(float3* target, thread::Pool& pool) const;
 
-	Volume_filter(int3 const& dimensions, float radius, float alpha, uint32_t num_buckets);
-	~Volume_filter();
+  private:
+    void filter_slices(uint32_t id, int32_t begin, int32_t end, float3* target) const;
 
-	void filter(float3* target, thread::Pool& pool) const;
+    void filter_z(uint32_t id, int32_t begin, int32_t end, float3* target) const;
 
-private:
+    int3 dimensions_;
 
-	void filter_slices(uint32_t id, int32_t begin, int32_t end, float3* target) const;
+    int32_t kernel_width_;
 
-	void filter_z(uint32_t id, int32_t begin, int32_t end, float3* target) const;
+    struct K {
+        int32_t o;
+        float   w;
+    };
 
-	int3 dimensions_;
+    K* kernel_;
 
-	int32_t kernel_width_;
+    uint32_t num_buckets_;
 
-	struct K {
-		int32_t o;
-		float w;
-	};
-
-	K* kernel_;
-
-	uint32_t num_buckets_;
-
-	float3** scratch_;
+    float3** scratch_;
 };
 
-}
+}  // namespace procedural::aurora
 
 #endif

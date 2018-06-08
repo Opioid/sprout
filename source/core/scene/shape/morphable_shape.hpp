@@ -10,10 +10,10 @@ class Pool;
 namespace scene::shape {
 
 class Morphable_shape {
- public:
-  virtual ~Morphable_shape() {}
+  public:
+    virtual ~Morphable_shape() {}
 
-  virtual void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) = 0;
+    virtual void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) = 0;
 };
 
 }  // namespace scene::shape
