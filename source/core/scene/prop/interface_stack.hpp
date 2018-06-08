@@ -1,12 +1,14 @@
 #ifndef SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 #define SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 
-#include "base/math/vector2.hpp"
 #include <cstdint>
+#include "base/math/vector2.hpp"
 
 namespace scene {
 
-namespace material { class Material; }
+namespace material {
+class Material;
+}
 
 namespace prop {
 
@@ -14,47 +16,44 @@ struct Intersection;
 class Prop;
 
 class Interface_stack {
+ public:
+  struct Interface {
+    material::Material const* material() const;
 
-public:
+    bool matches(Intersection const& intersection) const;
 
-	struct Interface {
-		material::Material const* material() const;
+    Prop const* prop;
+    float2 uv;
+    uint32_t part;
+  };
 
-		bool matches(Intersection const& intersection) const;
+  Interface_stack();
+  ~Interface_stack();
 
-		Prop const* prop;
-		float2		uv;
-		uint32_t	part;
-	};
+  void operator=(Interface_stack const& other);
 
-	Interface_stack();
-	~Interface_stack();
+  void swap(Interface_stack& other);
 
-	void operator=(Interface_stack const& other);
+  bool empty() const;
 
-	void swap(Interface_stack& other);
+  void clear();
 
-	bool empty() const;
+  const Interface* top() const;
 
-	void clear();
+  float top_ior() const;
 
-	const Interface* top() const;
+  void push(Intersection const& intersection);
+  bool remove(Intersection const& intersection);
+  void pop();
 
-	float top_ior() const;
+ private:
+  static int32_t constexpr Num_entries = 16;
 
-	void push(Intersection const& intersection);
-	bool remove(Intersection const& intersection);
-	void pop();
-
-
-private:
-
-	static int32_t constexpr Num_entries = 16;
-
-	int32_t index_;
-	Interface* stack_;
+  int32_t index_;
+  Interface* stack_;
 };
 
-}}
+}  // namespace prop
+}  // namespace scene
 
 #endif

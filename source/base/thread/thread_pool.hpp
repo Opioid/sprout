@@ -9,84 +9,81 @@
 // #define GRANULAR_TASKS
 
 #ifdef GRANULAR_TASKS
-	#include "task_queue.hpp"
+#include "task_queue.hpp"
 #endif
 
 namespace thread {
 
 class Pool {
+ public:
+  using Parallel_program = std::function<void(uint32_t)>;
+  using Range_program = std::function<void(uint32_t, int32_t, int32_t)>;
+  using Async_program = std::function<void()>;
 
-public:
+  Pool(uint32_t num_threads);
+  ~Pool();
 
-	using Parallel_program = std::function<void(uint32_t)>;
-	using Range_program	   = std::function<void(uint32_t, int32_t, int32_t)>;
-	using Async_program	   = std::function<void()>;
+  uint32_t num_threads() const;
 
-	Pool(uint32_t num_threads);
-	~Pool();
+  void run_parallel(Parallel_program program);
+  void run_range(Range_program program, int32_t begin, int32_t end);
 
-	uint32_t num_threads() const;
+  void run_async(Async_program program);
+  void wait_async();
 
-	void run_parallel(Parallel_program program);
-	void run_range(Range_program program, int32_t begin, int32_t end);
+ private:
+  void wake_all();
+  void wake_all(int32_t begin, int32_t end);
 
-	void run_async(Async_program program);
-	void wait_async();
+  void wake_async();
 
-private:
+  void wait_all();
 
-	void wake_all();
-	void wake_all(int32_t begin, int32_t end);
+  struct Unique {
+    int32_t begin;
+    int32_t end;
+    std::condition_variable wake_signal;
+    std::condition_variable done_signal;
+    std::mutex mutex;
+    bool wake = false;
+  };
 
-	void wake_async();
+  struct Async {
+    Async_program program;
+    std::condition_variable wake_signal;
+    std::condition_variable done_signal;
+    std::mutex mutex;
+    bool wake = false;
+    bool quit = false;
+  };
 
-	void wait_all();
+  uint32_t num_threads_;
 
-	struct Unique {
-		int32_t begin;
-		int32_t end;
-		std::condition_variable wake_signal;
-		std::condition_variable done_signal;
-		std::mutex mutex;
-		bool wake = false;
-	};
+  bool quit_ = false;
 
-	struct Async {
-		Async_program program;
-		std::condition_variable wake_signal;
-		std::condition_variable done_signal;
-		std::mutex mutex;
-		bool wake = false;
-		bool quit = false;
-	};
+  Parallel_program parallel_program_;
+  Range_program range_program_;
 
-	uint32_t num_threads_;
+  std::vector<Unique> uniques_;
+  std::vector<std::thread> threads_;
 
-	bool quit_ = false;
-
-	Parallel_program parallel_program_;
-	Range_program    range_program_;
-
-	std::vector<Unique> uniques_;
-	std::vector<std::thread> threads_;
-
-	struct Task {
-		int32_t begin;
-		int32_t end;
-	};
+  struct Task {
+    int32_t begin;
+    int32_t end;
+  };
 
 #ifdef GRANULAR_TASKS
-	Task_queue<Task> tasks_;
+  Task_queue<Task> tasks_;
 #endif
 
-	Async async_;
-	std::thread async_thread_;
+  Async async_;
+  std::thread async_thread_;
 
-	void loop(uint32_t id);
+  void loop(uint32_t id);
 
-	static void async_loop(Async& async);
+  static void async_loop(Async& async);
 };
 
-}
+}  // namespace thread
 
 #endif

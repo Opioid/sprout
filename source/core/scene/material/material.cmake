@@ -21,7 +21,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/volumetric/volumetric.cmake")
 target_sources(core
 	PRIVATE
 	"${CMAKE_CURRENT_LIST_DIR}/bxdf.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/material_attenuation.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_attenuation.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/material_helper.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/material_print.hpp"

@@ -61,13 +61,13 @@ void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
 		float2* begin = samples_2D_ + i * num_samples_;
 		float2 const r(scramble.random_float(), scramble.random_float());
 		math::golden_ratio(begin, num_samples_, r);
-		rnd::shuffle(begin, num_samples_, scramble);
+		rnd::biased_shuffle(begin, num_samples_, scramble);
 	}
 
 	for (uint32_t i = 0, len = num_dimensions_1D_; i < len; ++i) {
 		float* begin = samples_1D_ + i * num_samples_;
 		math::golden_ratio(begin, num_samples_, scramble.random_float());
-		rnd::shuffle(begin, num_samples_, scramble);
+		rnd::biased_shuffle(begin, num_samples_, scramble);
 	}
 }
 

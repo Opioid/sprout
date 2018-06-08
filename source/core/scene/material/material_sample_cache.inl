@@ -5,11 +5,11 @@
 
 namespace scene::material {
 
-template<typename T>
+template <typename T>
 T& Sample_cache::get() {
-	return *new(buffer_) T;
+  return *new (buffer_) T;
 }
 
-}
+}  // namespace scene::material
 
 #endif

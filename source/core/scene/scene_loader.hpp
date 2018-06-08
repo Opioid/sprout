@@ -1,16 +1,20 @@
 #ifndef SU_CORE_SCENE_LOADER_HPP
 #define SU_CORE_SCENE_LOADER_HPP
 
-#include "material/material.hpp"
-#include "base/json/json_types.hpp"
 #include <istream>
-#include <string>
 #include <map>
 #include <memory>
+#include <string>
+#include "base/json/json_types.hpp"
+#include "material/material.hpp"
 
-namespace file { class System; }
+namespace file {
+class System;
+}
 
-namespace resource { class Manager; }
+namespace resource {
+class Manager;
+}
 
 namespace scene {
 
@@ -19,15 +23,23 @@ namespace entity {
 class Entity;
 class Extension_provider;
 
+}  // namespace entity
+
+namespace surrounding {
+class Surrounding;
 }
 
-namespace surrounding { class Surrounding; }
+namespace light {
+class Light;
+}
 
-namespace light { class Light; }
+namespace volume {
+class Volume;
+}
 
-namespace volume { class Volume; }
-
-namespace prop { class Prop; }
+namespace prop {
+class Prop;
+}
 
 namespace shape {
 
@@ -38,73 +50,70 @@ namespace triangle {
 class Generator;
 class Provider;
 
-}}
+}  // namespace triangle
+}  // namespace shape
 
 class Scene;
 
 class Loader {
+ public:
+  Loader(resource::Manager& manager, Material_ptr const& fallback_material);
+  ~Loader();
 
-public:
+  bool load(std::string const& filename, std::string const& take_name, Scene& scene);
 
-	Loader(resource::Manager& manager, Material_ptr const& fallback_material);
-    ~Loader();
+  void register_extension_provider(std::string const& name, entity::Extension_provider* provider);
+  void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
 
-	bool load(std::string const& filename, std::string const& take_name, Scene& scene);
+  std::shared_ptr<shape::Shape> box();
+  std::shared_ptr<shape::Shape> canopy();
+  std::shared_ptr<shape::Shape> celestial_disk();
 
-	void register_extension_provider(std::string const& name, entity::Extension_provider* provider);
-    void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
+  size_t num_bytes() const;
 
-	std::shared_ptr<shape::Shape> box();
-	std::shared_ptr<shape::Shape> canopy();
-	std::shared_ptr<shape::Shape> celestial_disk();
+ private:
+  void read_materials(json::Value const& materials_value);
 
-	size_t num_bytes() const;
+  void load_entities(json::Value const& entities_value, entity::Entity* parent, Scene& scene);
 
-private:
+  void set_visibility(entity::Entity* entity, json::Value const& visibility_value);
 
-	void read_materials(json::Value const& materials_value);
+  prop::Prop* load_prop(json::Value const& prop_value, std::string const& name, Scene& scene);
 
-	void load_entities(json::Value const& entities_value, entity::Entity* parent, Scene& scene);
+  void load_light(json::Value const& light_value, prop::Prop* prop, Scene& scene);
 
-	void set_visibility(entity::Entity* entity, json::Value const& visibility_value);
+  entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
+                                 std::string const& name, Scene& scene);
 
-	prop::Prop* load_prop(json::Value const& prop_value, std::string const& name, Scene& scene);
+  std::shared_ptr<shape::Shape> load_shape(json::Value const& shape_value);
 
-	void load_light(json::Value const& light_value, prop::Prop* prop, Scene& scene);
+  std::shared_ptr<shape::Shape> shape(std::string const& type,
+                                      json::Value const& shape_value) const;
 
-	entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
-								   std::string const& name, Scene& scene);
+  void load_materials(json::Value const& materials_value, Scene& scene, Materials& materials);
 
-	std::shared_ptr<shape::Shape> load_shape(json::Value const& shape_value);
+  Material_ptr load_material(std::string const& name, Scene& scene);
 
-	std::shared_ptr<shape::Shape> shape(std::string const& type,
-										json::Value const& shape_value) const;
+  resource::Manager& resource_manager_;
 
-	void load_materials(json::Value const& materials_value, Scene& scene,
-						Materials& materials);
+  std::shared_ptr<shape::Shape> box_;
+  std::shared_ptr<shape::Shape> canopy_;
+  std::shared_ptr<shape::Shape> celestial_disk_;
+  std::shared_ptr<shape::Shape> disk_;
+  std::shared_ptr<shape::Shape> infinite_sphere_;
+  std::shared_ptr<shape::Shape> plane_;
+  std::shared_ptr<shape::Shape> rectangle_;
+  std::shared_ptr<shape::Shape> sphere_;
 
-	Material_ptr load_material(std::string const& name, Scene& scene);
+  Material_ptr fallback_material_;
 
-	resource::Manager& resource_manager_;
+  std::map<std::string, json::Value const*> local_materials_;
+  std::string mount_folder_;
 
-	std::shared_ptr<shape::Shape> box_;
-	std::shared_ptr<shape::Shape> canopy_;
-	std::shared_ptr<shape::Shape> celestial_disk_;
-	std::shared_ptr<shape::Shape> disk_;
-	std::shared_ptr<shape::Shape> infinite_sphere_;
-	std::shared_ptr<shape::Shape> plane_;
-	std::shared_ptr<shape::Shape> rectangle_;
-	std::shared_ptr<shape::Shape> sphere_;
-
-	Material_ptr fallback_material_;
-
-	std::map<std::string, json::Value const*> local_materials_;
-	std::string mount_folder_;
-
-	std::map<std::string, entity::Extension_provider*> extension_providers_;
-	std::map<std::string, shape::triangle::Generator*> mesh_generators_;
+  std::map<std::string, entity::Extension_provider*> extension_providers_;
+  std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 };
 
-}
+}  // namespace scene
 
 #endif

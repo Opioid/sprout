@@ -1,63 +1,73 @@
 #ifndef SU_CORE_RENDERING_DRIVER_HPP
 #define SU_CORE_RENDERING_DRIVER_HPP
 
-#include "tile_queue.hpp"
-#include "image/typed_image_fwd.hpp"
-#include "image/typed_image.hpp"
 #include <memory>
+#include "image/typed_image.hpp"
+#include "image/typed_image_fwd.hpp"
+#include "tile_queue.hpp"
 
-namespace take { struct Take; struct View; }
+namespace take {
+struct Take;
+struct View;
+}  // namespace take
 
 namespace scene {
 
-namespace camera { class Camera; }
+namespace camera {
+class Camera;
+}
 
 class Scene;
 
+}  // namespace scene
+
+namespace sampler {
+class Factory;
 }
 
-namespace sampler { class Factory; }
-
-namespace thread { class Pool; }
+namespace thread {
+class Pool;
+}
 
 namespace rendering {
 
 namespace integrator {
 
-namespace surface { class Factory; }
-namespace volume { class Factory; }
-
+namespace surface {
+class Factory;
 }
+namespace volume {
+class Factory;
+}
+
+}  // namespace integrator
 
 class Camera_worker;
 
 class Driver {
+ public:
+  Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
+         uint32_t max_sample_size);
 
-public:
+  ~Driver();
 
-	Driver(take::Take& take, scene::Scene& scene,
-		   thread::Pool& thread_pool, uint32_t max_sample_size);
+  scene::camera::Camera& camera();
 
-	~Driver();
+  scene::Scene const& scene() const;
 
-	scene::camera::Camera& camera();
+  size_t num_bytes() const;
 
-	scene::Scene const& scene() const;
+ protected:
+  scene::Scene& scene_;
+  take::View& view_;
+  thread::Pool& thread_pool_;
 
-	size_t num_bytes() const;
+  Camera_worker* workers_;
+  Tile_queue tiles_;
 
-protected:
-
-	scene::Scene& scene_;
-	take::View& view_;
-	thread::Pool& thread_pool_;
-
-	Camera_worker* workers_;
-	Tile_queue tiles_;
-
-	image::Float4 target_;
+  image::Float4 target_;
 };
 
-}
+}  // namespace rendering
 
 #endif

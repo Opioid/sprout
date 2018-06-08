@@ -7,62 +7,53 @@
 namespace memory {
 
 class Variant_map {
+ public:
+  template <typename T>
+  bool query(std::string_view key, T& value) const;
 
-public:
+  bool query(std::string_view key, bool& value) const;
+  bool query(std::string_view key, int32_t& value) const;
+  bool query(std::string_view key, uint32_t& value) const;
+  bool query(std::string_view key, float& value) const;
 
-	template<typename T>
-	bool query(std::string_view key, T& value) const;
+  template <typename T>
+  void set(std::string const& key, T value);
 
-	bool query(std::string_view key, bool& value) const;
-	bool query(std::string_view key, int32_t& value) const;
-	bool query(std::string_view key, uint32_t& value) const;
-	bool query(std::string_view key, float& value) const;
+  void set(std::string const& key, bool value);
+  void set(std::string const& key, int32_t value);
+  void set(std::string const& key, uint32_t value);
+  void set(std::string const& key, float value);
 
-	template<typename T>
-	void set(std::string const& key, T value);
+  void inherit(const Variant_map& other, std::string const& key);
+  void inherit_except(const Variant_map& other, std::string_view key);
 
-	void set(std::string const& key, bool value);
-	void set(std::string const& key, int32_t value);
-	void set(std::string const& key, uint32_t value);
-	void set(std::string const& key, float value);
+  bool operator<(const Variant_map& other) const;
 
-	void inherit(const Variant_map& other, std::string const& key);
-	void inherit_except(const Variant_map& other, std::string_view key);
+ private:
+  struct Variant {
+    Variant() = default;
+    Variant(bool bool_value);
+    Variant(int32_t int_value);
+    Variant(uint32_t uint_value);
+    Variant(float float_value);
 
-	bool operator<(const Variant_map& other) const;
+    bool operator<(const Variant& other) const;
 
-private:
+    enum class Type { Undefined, Bool, Int, Uint, Float };
 
-	struct Variant {
-		Variant() = default;
-		Variant(bool bool_value);
-		Variant(int32_t int_value);
-		Variant(uint32_t uint_value);
-		Variant(float float_value);
+    Type type = Type::Undefined;
 
-		bool operator<(const Variant& other) const;
+    union {
+      bool bool_value;
+      int32_t int_value;
+      uint32_t uint_value;
+      float float_value;
+    };
+  };
 
-		enum class Type {
-			Undefined,
-			Bool,
-			Int,
-			Uint,
-			Float
-		};
-
-		Type type = Type::Undefined;
-
-		union {
-			bool	 bool_value;
-			int32_t  int_value;
-			uint32_t uint_value;
-			float	 float_value;
-		};
-	};
-
-	std::map<std::string, Variant, std::less<>> map_;
+  std::map<std::string, Variant, std::less<>> map_;
 };
 
-}
+}  // namespace memory
 
 #endif

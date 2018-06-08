@@ -6,49 +6,46 @@
 namespace scene::material::glass {
 
 class Sample_rough final : public material::Sample {
+ public:
+  virtual Layer const& base_layer() const override final;
 
-public:
+  virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-	virtual Layer const& base_layer() const override final;
+  virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-	virtual bxdf::Result evaluate(f_float3 wi) const override final;
+  virtual bool is_transmissive() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+  struct IOR {
+    float ior_i_;
+    float ior_o_;
+    float eta_i_;
+    float eta_t_;
+  };
 
-	virtual bool is_transmissive() const override final;
+  void set(float3 const& refraction_color, float3 const& absorption_color,
+           float attenuation_distance, float ior, float ior_outside, float alpha);
 
-	struct IOR {
-		float ior_i_;
-		float ior_o_;
-		float eta_i_;
-		float eta_t_;
-	};
+  struct Layer : public material::Sample::Layer {
+    float3 color_;
+    float3 absorption_coefficient_;
+    float f0_;
+    float alpha_;
+    float alpha2_;
+  };
 
-	void set(float3 const& refraction_color, float3 const& absorption_color,
-			 float attenuation_distance, float ior, float ior_outside, float alpha);
+  Layer layer_;
 
-	struct Layer : public material::Sample::Layer {
-		float3 color_;
-		float3 absorption_coefficient_;
-		float f0_;
-		float alpha_;
-		float alpha2_;
-	};
+  IOR ior_;
 
-	Layer layer_;
+  void reflect(Layer const& layer, sampler::Sampler& sampler, bxdf::Sample& result) const;
 
-	IOR ior_;
+  void reflect_internally(Layer const& layer, sampler::Sampler& sampler,
+                          bxdf::Sample& result) const;
 
-	void reflect(Layer const& layer, sampler::Sampler& sampler,
-				 bxdf::Sample& result) const;
-
-	void reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-							bxdf::Sample& result) const;
-
-	void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-				 bxdf::Sample& result) const;
+  void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
+               bxdf::Sample& result) const;
 };
 
-}
+}  // namespace scene::material::glass
 
 #endif

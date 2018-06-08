@@ -5,136 +5,128 @@
 
 namespace memory {
 
-template<typename T>
+template <typename T>
 bool Variant_map::query(std::string_view key, T& value) const {
-	auto const i = map_.find(key);
+  auto const i = map_.find(key);
 
-	if (map_.end() == i) {
-		return false;
-	}
+  if (map_.end() == i) {
+    return false;
+  }
 
-	auto& variant = i->second;
+  auto& variant = i->second;
 
-	if (Variant::Type::Uint != variant.type) {
-		return false;
-	}
+  if (Variant::Type::Uint != variant.type) {
+    return false;
+  }
 
-	value = static_cast<T>(variant.uint_value);
+  value = static_cast<T>(variant.uint_value);
 
-	return true;
+  return true;
 }
 
 inline bool Variant_map::query(std::string_view key, bool& value) const {
-	auto const i = map_.find(key);
+  auto const i = map_.find(key);
 
-	if (map_.end() == i) {
-		return false;
-	}
+  if (map_.end() == i) {
+    return false;
+  }
 
-	auto& variant = i->second;
+  auto& variant = i->second;
 
-	if (Variant::Type::Bool != variant.type) {
-		return false;
-	}
+  if (Variant::Type::Bool != variant.type) {
+    return false;
+  }
 
-	value = variant.bool_value;
+  value = variant.bool_value;
 
-	return true;
+  return true;
 }
 
 inline bool Variant_map::query(std::string_view key, int32_t& value) const {
-	auto const i = map_.find(key);
+  auto const i = map_.find(key);
 
-	if (map_.end() == i) {
-		return false;
-	}
+  if (map_.end() == i) {
+    return false;
+  }
 
-	auto& variant = i->second;
+  auto& variant = i->second;
 
-	if (Variant::Type::Int != variant.type) {
-		return false;
-	}
+  if (Variant::Type::Int != variant.type) {
+    return false;
+  }
 
-	value = variant.int_value;
+  value = variant.int_value;
 
-	return true;
+  return true;
 }
 
 inline bool Variant_map::query(std::string_view key, uint32_t& value) const {
-	auto const i = map_.find(key);
+  auto const i = map_.find(key);
 
-	if (map_.end() == i) {
-		return false;
-	}
+  if (map_.end() == i) {
+    return false;
+  }
 
-	auto& variant = i->second;
+  auto& variant = i->second;
 
-	if (Variant::Type::Uint != variant.type) {
-		return false;
-	}
+  if (Variant::Type::Uint != variant.type) {
+    return false;
+  }
 
-	value = variant.uint_value;
+  value = variant.uint_value;
 
-	return true;
+  return true;
 }
 
 inline bool Variant_map::query(std::string_view key, float& value) const {
-	auto const i = map_.find(key);
+  auto const i = map_.find(key);
 
-	if (map_.end() == i) {
-		return false;
-	}
+  if (map_.end() == i) {
+    return false;
+  }
 
-	auto& variant = i->second;
+  auto& variant = i->second;
 
-	if (Variant::Type::Float != variant.type) {
-		return false;
-	}
+  if (Variant::Type::Float != variant.type) {
+    return false;
+  }
 
-	value = variant.float_value;
+  value = variant.float_value;
 
-	return true;
+  return true;
 }
 
-template<typename T>
+template <typename T>
 void Variant_map::set(std::string const& key, T value) {
-	map_[key] = Variant(static_cast<uint32_t>(value));
+  map_[key] = Variant(static_cast<uint32_t>(value));
 }
 
-inline void Variant_map::set(std::string const& key, bool value) {
-	map_[key] = Variant(value);
-}
+inline void Variant_map::set(std::string const& key, bool value) { map_[key] = Variant(value); }
 
-inline void Variant_map::set(std::string const& key, int32_t value) {
-	map_[key] = Variant(value);
-}
+inline void Variant_map::set(std::string const& key, int32_t value) { map_[key] = Variant(value); }
 
-inline void Variant_map::set(std::string const& key, uint32_t value) {
-	map_[key] = Variant(value);
-}
+inline void Variant_map::set(std::string const& key, uint32_t value) { map_[key] = Variant(value); }
 
-inline void Variant_map::set(std::string const& key, float value) {
-	map_[key] = Variant(value);
-}
+inline void Variant_map::set(std::string const& key, float value) { map_[key] = Variant(value); }
 
 inline void Variant_map::inherit(const Variant_map& other, std::string const& key) {
-	auto const i = other.map_.find(key);
+  auto const i = other.map_.find(key);
 
-	if (other.map_.end() == i) {
-		return;
-	}
+  if (other.map_.end() == i) {
+    return;
+  }
 
-	map_[key] = i->second;
+  map_[key] = i->second;
 }
 
 inline void Variant_map::inherit_except(const Variant_map& other, std::string_view key) {
-	for (auto i : other.map_) {
-		if (i.first != key) {
-			map_.insert(map_.end(), i);
-		}
-	}
+  for (auto i : other.map_) {
+    if (i.first != key) {
+      map_.insert(map_.end(), i);
+    }
+  }
 }
 
-}
+}  // namespace memory
 
 #endif

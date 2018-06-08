@@ -4,9 +4,9 @@
 namespace take {
 
 struct Settings {
-	float ray_offset_factor = 1.f;
+  float ray_offset_factor = 1.f;
 };
 
-}
+}  // namespace take
 
 #endif

@@ -7,7 +7,8 @@
 
 namespace math {
 
-template<typename T> struct Matrix3x3;
+template <typename T>
+struct Matrix3x3;
 struct Matrix3x3f_a;
 struct Transformation;
 
@@ -19,47 +20,47 @@ struct Transformation;
 /*
 template<typename T>
 struct Matrix4x4 {
-	union {
-		struct {
-			T m00, m01, m02, m03,
-			  m10, m11, m12, m13,
-			  m20, m21, m22, m23,
-			  m30, m31, m32, m33;
-		};
+        union {
+                struct {
+                        T m00, m01, m02, m03,
+                          m10, m11, m12, m13,
+                          m20, m21, m22, m23,
+                          m30, m31, m32, m33;
+                };
 
-		struct {
-			T m[16];
-		};
+                struct {
+                        T m[16];
+                };
 
-		struct {
-			Vector4<T> x, y, z, w;
-		};
+                struct {
+                        Vector4<T> x, y, z, w;
+                };
 
-		struct {
-			Vector4<T> rows[4];
-		};
-	};
+                struct {
+                        Vector4<T> rows[4];
+                };
+        };
 
-	Matrix4x4();
+        Matrix4x4();
 
-	Matrix4x4(T m00, T m01, T m02, T m03,
-			  T m10, T m11, T m12, T m13,
-			  T m20, T m21, T m22, T m23,
-			  T m30, T m31, T m32, T m33);
-		
-	Matrix4x4(const T m[16]);
+        Matrix4x4(T m00, T m01, T m02, T m03,
+                          T m10, T m11, T m12, T m13,
+                          T m20, T m21, T m22, T m23,
+                          T m30, T m31, T m32, T m33);
 
-	explicit Matrix4x4(const Matrix3x3<T>& m);
+        Matrix4x4(const T m[16]);
 
-	explicit Matrix4x4(Transformation const& t);
+        explicit Matrix4x4(const Matrix3x3<T>& m);
 
-	Matrix4x4 operator*(const Matrix4x4& o) const;
+        explicit Matrix4x4(Transformation const& t);
 
-	Matrix4x4 operator/(T s) const;
+        Matrix4x4 operator*(const Matrix4x4& o) const;
 
-	Matrix4x4& operator*=(const Matrix4x4& m);
+        Matrix4x4 operator/(T s) const;
 
-	static const Matrix4x4 identity;
+        Matrix4x4& operator*=(const Matrix4x4& m);
+
+        static const Matrix4x4 identity;
 };
 
 template<typename T>
@@ -139,9 +140,9 @@ Matrix4x4<T> affine_inverted(const Matrix4x4<T>& m);
 
 template<typename T>
 void compose(Matrix4x4<T>& m,
-							const Matrix3x3<T>& basis,
-							Vector3<T> const& scale,
-							Vector3<T> const& origin);
+                                                        const Matrix3x3<T>& basis,
+                                                        Vector3<T> const& scale,
+                                                        Vector3<T> const& origin);
 */
 /****************************************************************************
  *
@@ -150,23 +151,22 @@ void compose(Matrix4x4<T>& m,
  ****************************************************************************/
 
 struct alignas(16) Matrix4x4f_a {
-	Vector4f_a r[4];
+  Vector4f_a r[4];
 
-	Matrix4x4f_a();
+  Matrix4x4f_a();
 
-	Matrix4x4f_a(float m00, float m01, float m02, float m03,
-				 float m10, float m11, float m12, float m13,
-				 float m20, float m21, float m22, float m23,
-				 float m30, float m31, float m32, float m33);
+  Matrix4x4f_a(float m00, float m01, float m02, float m03, float m10, float m11, float m12,
+               float m13, float m20, float m21, float m22, float m23, float m30, float m31,
+               float m32, float m33);
 
-	explicit Matrix4x4f_a(Transformation const& t);
+  explicit Matrix4x4f_a(Transformation const& t);
 
-	Vector3f_a x() const;
-	Vector3f_a y() const;
-	Vector3f_a z() const;
-	Vector3f_a w() const;
+  Vector3f_a x() const;
+  Vector3f_a y() const;
+  Vector3f_a z() const;
+  Vector3f_a w() const;
 };
 
-}
+}  // namespace math
 
 #endif
