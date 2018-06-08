@@ -8,93 +8,90 @@
 
 namespace scene {
 
-namespace light { class Light; }
-namespace material { class Sample; }
-
+namespace light {
+class Light;
 }
+namespace material {
+class Sample;
+}
+
+}  // namespace scene
 
 namespace rendering::integrator::surface {
 
 class alignas(64) Pathtracer_MIS final : public Integrator {
+ public:
+  struct Settings {
+    uint32_t min_bounces;
+    uint32_t max_bounces;
+    float path_continuation_probability;
 
-public:
+    Light_sampling light_sampling;
 
-	struct Settings {
-		uint32_t min_bounces;
-		uint32_t max_bounces;
-		float    path_continuation_probability;
+    float num_light_samples_reciprocal;
+    bool disable_caustics;
+  };
 
-		Light_sampling light_sampling;
+  Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
+                 Settings const& settings);
 
-		float num_light_samples_reciprocal;
-		bool  disable_caustics;
-	};
+  virtual ~Pathtracer_MIS() override final;
 
-	Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
-				   Settings const& settings);
+  virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
 
-	virtual ~Pathtracer_MIS() override final;
+  virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+  virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
 
-	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+  virtual size_t num_bytes() const override final;
 
-	virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
+ private:
+  float3 sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
+                       const Material_sample& material_sample, bool do_mis, Sampler_filter filter,
+                       Worker& worker);
 
-	virtual size_t num_bytes() const override final;
+  float3 evaluate_light(const Light& light, float light_weight, Ray const& history,
+                        float ray_offset, uint32_t sampler_dimension, bool do_mis,
+                        Intersection const& intersection, const Material_sample& material_sample,
+                        Sampler_filter filter, Worker& worker);
 
-private:
+  float3 evaluate_light(Ray const& ray, Intersection const& intersection, Bxdf_sample sample_result,
+                        bool treat_as_singular, bool is_translucent, Sampler_filter filter,
+                        Worker& worker, bool& pure_emissive);
 
-	float3 sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
-						 const Material_sample& material_sample, bool do_mis,
-						 Sampler_filter filter, Worker& worker);
+  sampler::Sampler& material_sampler(uint32_t bounce);
+  sampler::Sampler& light_sampler(uint32_t bounce);
 
-	float3 evaluate_light(const Light& light, float light_weight, Ray const& history,
-						  float ray_offset, uint32_t sampler_dimension, bool do_mis,
-						  Intersection const& intersection,
-						  const Material_sample& material_sample,
-						  Sampler_filter filter, Worker& worker);
+  const Settings settings_;
 
-	float3 evaluate_light(Ray const& ray, Intersection const& intersection,
-						  Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
-						  Sampler_filter filter, Worker& worker, bool& pure_emissive);
+  float num_lights_reciprocal_;
 
-	sampler::Sampler& material_sampler(uint32_t bounce);
-	sampler::Sampler& light_sampler(uint32_t bounce);
+  sampler::Random sampler_;
 
-	const Settings settings_;
+  static uint32_t constexpr Num_material_samplers = 3;
+  sampler::Golden_ratio material_samplers_[Num_material_samplers];
 
-	float num_lights_reciprocal_;
-
-	sampler::Random sampler_;
-
-	static uint32_t constexpr Num_material_samplers = 3;
-	sampler::Golden_ratio material_samplers_[Num_material_samplers];
-
-	static uint32_t constexpr Num_light_samplers = 3;
-	sampler::Golden_ratio light_samplers_[Num_light_samplers];
+  static uint32_t constexpr Num_light_samplers = 3;
+  sampler::Golden_ratio light_samplers_[Num_light_samplers];
 };
 
 class Pathtracer_MIS_factory final : public Factory {
+ public:
+  Pathtracer_MIS_factory(take::Settings const& take_settings, uint32_t num_integrators,
+                         uint32_t min_bounces, uint32_t max_bounces,
+                         float path_termination_probability, Light_sampling light_sampling,
+                         bool enable_caustics);
 
-public:
+  virtual ~Pathtracer_MIS_factory() override final;
 
-	Pathtracer_MIS_factory(take::Settings const& take_settings, uint32_t num_integrators,
-						   uint32_t min_bounces, uint32_t max_bounces,
-						   float path_termination_probability, Light_sampling light_sampling,
-						   bool enable_caustics);
+  virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
-	virtual ~Pathtracer_MIS_factory() override final;
+ private:
+  Pathtracer_MIS* integrators_;
 
-	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
-
-private:
-
-	Pathtracer_MIS* integrators_;
-
-	Pathtracer_MIS::Settings settings_;
+  Pathtracer_MIS::Settings settings_;
 };
 
-}
+}  // namespace rendering::integrator::surface
 
 #endif

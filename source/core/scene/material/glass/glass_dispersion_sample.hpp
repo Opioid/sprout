@@ -6,21 +6,17 @@
 namespace scene::material::glass {
 
 class Sample_dispersion final : public Sample {
+ public:
+  virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-public:
+  void set(float ior, float abbe, float wavelength);
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
-
-	void set(float ior, float abbe, float wavelength);
-
-private:
-
-	float ior_;
-	float abbe_;
-	float wavelength_;
+ private:
+  float ior_;
+  float abbe_;
+  float wavelength_;
 };
 
-}
+}  // namespace scene::material::glass
 
 #endif
-
