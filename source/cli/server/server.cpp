@@ -71,7 +71,7 @@ void Server::write(const image::Float4& image, uint32_t frame, thread::Pool& poo
             client->send(message_handler_.iteration());
         }
 
-        if (!client->send(reinterpret_cast<const char*>(srgb_.data()), buffer_len)) {
+        if (!client->send(reinterpret_cast<char const*>(srgb_.data()), buffer_len)) {
             client->shutdown();
             delete client;
             client = nullptr;

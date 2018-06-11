@@ -5,7 +5,7 @@
 #define SOFT_ASSERT(EXPRESSION) ((void)0)
 #else
 #include <iostream>
-inline void print_location(const char* file, int line) {
+inline void print_location(char const* file, int line) {
     std::cout << file << "(" << line << ")" << std::endl;
 }
 #define SOFT_ASSERT(EXPRESSION) ((EXPRESSION) ? (void)0 : print_location(__FILE__, __LINE__))

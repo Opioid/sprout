@@ -23,7 +23,7 @@ class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
 
     bool is_open() const;
 
-    //	Filebuffer* open(const char* filename, std::ios_base::openmode mode);
+    //	Filebuffer* open(char const* filename, std::ios_base::openmode mode);
 
     Filebuffer* open(std::istream* stream);
 
@@ -73,7 +73,7 @@ class Read_stream : public std::basic_istream<char, std::char_traits<char>> {
     //						 std::ios_base::openmode mode =
     // std::ios_base::binary);
 
-    //	explicit Read_stream(const char* name,
+    //	explicit Read_stream(char const* name,
     //						 std::ios_base::openmode mode =
     // std::ios_base::binary);
 

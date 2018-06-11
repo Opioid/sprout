@@ -21,18 +21,18 @@ class Websocket {
 
     bool send(std::string const& text);
 
-    bool send(const char* data, size_t size);
+    bool send(char const* data, size_t size);
 
-    static std::string handshake_response(const char* header);
+    static std::string handshake_response(char const* header);
 
-    static std::string sec_websocket_accept(const char* header);
+    static std::string sec_websocket_accept(char const* header);
 
-    static std::string sec_websocket_key(const char* header);
+    static std::string sec_websocket_key(char const* header);
 
-    static bool is_pong(const char* buffer, size_t size);
-    static bool is_text(const char* buffer, size_t size);
+    static bool is_pong(char const* buffer, size_t size);
+    static bool is_text(char const* buffer, size_t size);
 
-    static void decode_text(const char* buffer, size_t size, std::string& text);
+    static void decode_text(char const* buffer, size_t size, std::string& text);
 
   private:
     enum class Opcode {

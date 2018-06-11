@@ -176,7 +176,7 @@ void Reader::read_chunk(std::istream& stream, Chunk& chunk) {
 }
 
 bool Reader::handle_chunk(const Chunk& chunk, Info& info) {
-    const char* type = reinterpret_cast<const char*>(chunk.type.data());
+    char const* type = reinterpret_cast<char const*>(chunk.type.data());
 
     if (!strncmp("IHDR", type, 4)) {
         return parse_header(chunk, info);

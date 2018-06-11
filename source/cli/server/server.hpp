@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SERVER_SERVER_HPP
+#define SU_SERVER_SERVER_HPP
 
 #include <list>
 #include <thread>
@@ -14,7 +15,7 @@ class Message_handler;
 class Server : public exporting::Sink {
   public:
     Server(int2 dimensions, Message_handler& message_handler);
-    ~Server();
+    virtual ~Server() override final;
 
     void run();
     void shutdown();
@@ -39,3 +40,5 @@ class Server : public exporting::Sink {
 };
 
 }  // namespace server
+
+#endif

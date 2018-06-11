@@ -34,10 +34,10 @@ class Json_handler {
     bool Int64(int64_t i);
     bool Uint64(uint64_t i);
     bool Double(double d);
-    bool RawNumber(const char* str, rapidjson::SizeType length, bool copy);
-    bool String(const char* str, rapidjson::SizeType length, bool copy);
+    bool RawNumber(char const* str, rapidjson::SizeType length, bool copy);
+    bool String(char const* str, rapidjson::SizeType length, bool copy);
     bool StartObject();
-    bool Key(const char* str, rapidjson::SizeType length, bool copy);
+    bool Key(char const* str, rapidjson::SizeType length, bool copy);
     bool EndObject(size_t memberCount);
     bool StartArray();
     bool EndArray(size_t elementCount);

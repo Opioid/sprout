@@ -1236,7 +1236,7 @@ float3 Provider::read_hex_RGB(std::string const& text) {
 
     int32_t elements[3];
 
-    const char* buffer = &text.data()[1];
+    char const* buffer = &text.data()[1];
     for (uint32_t i = 0, j = 0; i < 3; ++i, j += 2) {
         elements[i] = (hex_table[static_cast<uint32_t>(buffer[j])] << 4) +
                       hex_table[static_cast<uint32_t>(buffer[j + 1])];

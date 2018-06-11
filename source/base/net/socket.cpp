@@ -2,7 +2,7 @@
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <ws2tcpip.h>
+#include <WS2tcpip.h>
 #undef min
 #undef max
 #else
@@ -26,9 +26,7 @@ Socket::Socket(std::string const& service) : socket_(Invalid_socket) {
     hints.ai_flags    = AI_PASSIVE;  // use my IP
 
     addrinfo* server_info;
-    int       error = getaddrinfo(nullptr, service.c_str(), &hints, &server_info);
-    if (error != 0) {
-        //   fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+    if (int error = getaddrinfo(nullptr, service.c_str(), &hints, &server_info); error != 0) {
         return;
     }
 
@@ -41,7 +39,7 @@ Socket::Socket(std::string const& service) : socket_(Invalid_socket) {
 
         const int enable = 1;
         if (-1 == setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR,
-                             reinterpret_cast<const char*>(&enable), sizeof(int))) {
+                             reinterpret_cast<char const*>(&enable), sizeof(int))) {
             return;
         }
 
@@ -107,7 +105,7 @@ Socket Socket::accept() const {
 }
 
 int Socket::receive(char* buffer, uint32_t size) const {
-    return recv(socket_, buffer, size, 0);
+    return recv(socket_, buffer, static_cast<int>(size), 0);
 }
 
 int Socket::send(char* buffer, uint32_t size) const {
@@ -117,7 +115,7 @@ int Socket::send(char* buffer, uint32_t size) const {
     int flags = MSG_NOSIGNAL;
 #endif
 
-    return ::send(socket_, buffer, size, flags);
+    return ::send(socket_, buffer, static_cast<int>(size), flags);
 }
 
 bool Socket::init() {
