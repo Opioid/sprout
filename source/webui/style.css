@@ -1,41 +1,41 @@
 body {
-	margin: 0px;
+    margin: 0px;
 
-	color: #e6e5e2;
+    color: #e6e5e2;
 
-	background-color: #272822;
+    background-color: #272822;
 
-	font-family: sans-serif;
+    font-family: sans-serif;
 } 
 
 #consoleInput {
-	background-color: #272822;
+    background-color: #272822;
 
-	border: solid 2px #e6e5e2;
+    border: solid 2px #e6e5e2;
 
-	color: #e6e5e2;
+    color: #e6e5e2;
 
-	font-family: monospace;
-	font-size: 16px;
+    font-family: monospace;
+    font-size: 16px;
 
-	width: 800px;
+    width: 800px;
 }
 
 .top { 
-	overflow:hidden; 
+    overflow:hidden; 
 }
 
 #viewer {
-	float: left;
+    float: left;
 }
 
 .sidebar {
-	float: left;
+    float: left;
 
-	margin: 4px;
+    margin: 4px;
 }
 
 .sidebarContent {
-	font-size: 20px;
-	font-weight: bold;	
+    font-size: 20px;
+    font-weight: bold;	
 }

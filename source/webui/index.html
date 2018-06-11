@@ -1,34 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>sprout</title>
-	<link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>sprout</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <script src="app.js"></script>
 
-	<script src="app.js"></script>
+    <div class="top">
+        <div id="viewer">
+            <canvas id="viewerImage"/>
+        </div>
 
-	<div class="top">
-		<div id="viewer">
-			<canvas id="viewerImage"/>
-		</div>
+        <div class="sidebar">
+            <div id="fpsLabel" class="sidebarContent">
+                0 FPS
+            </div>
+            <div id="iterationLabel" class="sidebarContent">
+                # 0
+            </div>
+        </div>
+    </div>
 
-		<div class="sidebar">
-			<div id="fpsLabel" class="sidebarContent">
-				0 FPS
-			</div>
-			<div id="iterationLabel" class="sidebarContent">
-				# 0
-			</div>
-		</div>
-	</div>
-
-	<div id="console">
-		<form id="consoleForm" action="#" method="post">
-			<input id="consoleInput" type="text" placeholder="Write command here..." required/>
-		</form>
-	</div>
-
+    <div id="console">
+        <form id="consoleForm" action="#" method="post">
+            <input id="consoleInput" type="text" placeholder="Write command here..." required/>
+        </form>
+    </div>
 </body>
 </html> 
