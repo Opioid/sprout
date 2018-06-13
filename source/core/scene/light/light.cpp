@@ -22,8 +22,7 @@ bool Light::sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t s
     entity::Composed_transformation temp;
     auto const&                     transformation = transformation_at(time, temp);
 
-    return sample(p, time, transformation, true, sampler, sampler_dimension, filter, worker,
-                  result);
+    return sample(p, time, transformation, sampler, sampler_dimension, filter, worker, result);
 }
 
 bool Light::is_light(uint32_t id) {
