@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SERVER_CLIENT_HPP
+#define SU_SERVER_CLIENT_HPP
 
 #include <deque>
 #include <thread>
@@ -15,7 +16,7 @@ class Client {
     void shutdown();
 
     bool send(std::string const& text);
-    bool send(const char* data, size_t size);
+    bool send(char const* data, size_t size);
 
     bool pop_message(std::string& message);
 
@@ -32,3 +33,5 @@ class Client {
 };
 
 }  // namespace server
+
+#endif

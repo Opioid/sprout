@@ -15,7 +15,7 @@ bool Filebuffer::is_open() const {
     return nullptr != stream_;
 }
 
-// Filebuffer* Filebuffer::open(const char* filename, std::ios_base::openmode mode) {
+// Filebuffer* Filebuffer::open(char const* filename, std::ios_base::openmode mode) {
 //	// Return failure if this file buf is open already
 //	if (is_open()) {
 //		return nullptr;
@@ -278,7 +278,7 @@ Read_stream::Read_stream() : __istream_type(&stream_buffer_) {}
 //	open(name.c_str(), mode);
 //}
 
-// Read_stream::Read_stream(const char* name, std::ios_base::openmode mode) :
+// Read_stream::Read_stream(char const* name, std::ios_base::openmode mode) :
 //	__istream_type(&stream_buffer_)/*, name_(name)*/ {
 //	open(name, mode);
 //}
@@ -299,7 +299,7 @@ bool Read_stream::is_open() const {
     return rdbuf()->is_open();
 }
 
-// void Read_stream::open(const char* name, std::ios_base::openmode mode) {
+// void Read_stream::open(char const* name, std::ios_base::openmode mode) {
 //	if (!rdbuf()->open(name, mode | std::ios_base::in)) {
 //		__istream_type::setstate(std::ios_base::failbit);
 //	}

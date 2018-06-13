@@ -28,7 +28,7 @@ bool Client::send(std::string const& text) {
     return websocket_.send(text);
 }
 
-bool Client::send(const char* data, size_t size) {
+bool Client::send(char const* data, size_t size) {
     return websocket_.send(data, size);
 }
 

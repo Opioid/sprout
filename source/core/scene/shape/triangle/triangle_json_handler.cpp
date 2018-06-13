@@ -83,11 +83,11 @@ bool Json_handler::Double(double d) {
     return true;
 }
 
-bool Json_handler::RawNumber(const char* /*str*/, rapidjson::SizeType /*length*/, bool /*copy*/) {
+bool Json_handler::RawNumber(char const* /*str*/, rapidjson::SizeType /*length*/, bool /*copy*/) {
     return true;
 }
 
-bool Json_handler::String(const char* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
+bool Json_handler::String(char const* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
     if (String_type::Morph_target == expected_string_) {
         morph_targets_.emplace_back(str);
     }
@@ -109,7 +109,7 @@ bool Json_handler::StartObject() {
     return true;
 }
 
-bool Json_handler::Key(const char* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
+bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
     std::string name(str);
 
     if (1 == object_level_) {

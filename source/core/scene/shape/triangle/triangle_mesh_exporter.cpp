@@ -166,8 +166,8 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
 
     std::string json_string = jstream.str();
     uint64_t    json_size   = json_string.size() - 1;
-    stream.write(reinterpret_cast<const char*>(&json_size), sizeof(uint64_t));
-    stream.write(reinterpret_cast<const char*>(json_string.data()), json_size * sizeof(char));
+    stream.write(reinterpret_cast<char const*>(&json_size), sizeof(uint64_t));
+    stream.write(reinterpret_cast<char const*>(json_string.data()), json_size * sizeof(char));
 
     // binary stuff
 
@@ -184,25 +184,25 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
                     cv.uv = v.uv;
             }
 
-            stream.write(reinterpret_cast<const char*>(cvs), vertices.size() *
+            stream.write(reinterpret_cast<char const*>(cvs), vertices.size() *
        sizeof(Compressed_vertex));
     */
-    stream.write(reinterpret_cast<const char*>(vertices.data()), vertices_size);
+    stream.write(reinterpret_cast<char const*>(vertices.data()), vertices_size);
 
     auto const& triangles = handler.triangles();
 
     if (4 == index_bytes) {
         for (auto const& t : triangles) {
-            stream.write(reinterpret_cast<const char*>(t.i), 3 * sizeof(uint32_t));
+            stream.write(reinterpret_cast<char const*>(t.i), 3 * sizeof(uint32_t));
         }
     } else {
         for (auto const& t : triangles) {
             uint16_t a = static_cast<uint16_t>(t.i[0]);
-            stream.write(reinterpret_cast<const char*>(&a), sizeof(uint16_t));
+            stream.write(reinterpret_cast<char const*>(&a), sizeof(uint16_t));
             uint16_t b = static_cast<uint16_t>(t.i[1]);
-            stream.write(reinterpret_cast<const char*>(&b), sizeof(uint16_t));
+            stream.write(reinterpret_cast<char const*>(&b), sizeof(uint16_t));
             uint16_t c = static_cast<uint16_t>(t.i[2]);
-            stream.write(reinterpret_cast<const char*>(&c), sizeof(uint16_t));
+            stream.write(reinterpret_cast<char const*>(&c), sizeof(uint16_t));
         }
     }
 }

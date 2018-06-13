@@ -56,7 +56,7 @@ bool Websocket::send(std::string const& text) {
     return socket_.send(buffer_.data(), static_cast<uint32_t>(buffer_.size())) >= 0;
 }
 
-bool Websocket::send(const char* data, size_t size) {
+bool Websocket::send(char const* data, size_t size) {
     prepare_header(size, Opcode::Binary_frame);
 
     buffer_.insert(buffer_.end(), data, data + size);
@@ -64,7 +64,7 @@ bool Websocket::send(const char* data, size_t size) {
     return socket_.send(buffer_.data(), static_cast<uint32_t>(buffer_.size())) >= 0;
 }
 
-std::string Websocket::handshake_response(const char* header) {
+std::string Websocket::handshake_response(char const* header) {
     std::string key_accept = Websocket::sec_websocket_accept(header);
 
     return "HTTP/1.0 101 Switching Protocols\r\n"
@@ -75,7 +75,7 @@ std::string Websocket::handshake_response(const char* header) {
            key_accept + "\r\n\r\n";
 }
 
-std::string Websocket::sec_websocket_accept(const char* header) {
+std::string Websocket::sec_websocket_accept(char const* header) {
     std::string key = sec_websocket_key(header);
 
     std::string global_uid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -85,7 +85,7 @@ std::string Websocket::sec_websocket_accept(const char* header) {
     return crypto::base64::encode(hash.data(), hash.size());
 }
 
-std::string Websocket::sec_websocket_key(const char* header) {
+std::string Websocket::sec_websocket_key(char const* header) {
     std::string string = header;
 
     std::string key_label      = "Sec-WebSocket-Key: ";
@@ -96,7 +96,7 @@ std::string Websocket::sec_websocket_key(const char* header) {
     return string.substr(key_start_iter, key_end_iter - key_start_iter);
 }
 
-bool Websocket::is_pong(const char* buffer, size_t size) {
+bool Websocket::is_pong(char const* buffer, size_t size) {
     if (!size) {
         return false;
     }
@@ -104,7 +104,7 @@ bool Websocket::is_pong(const char* buffer, size_t size) {
     return (0x80 | static_cast<char>(Opcode::Pong)) == (buffer[0] & 0xff);
 }
 
-bool Websocket::is_text(const char* buffer, size_t size) {
+bool Websocket::is_text(char const* buffer, size_t size) {
     if (!size) {
         return false;
     }
@@ -112,7 +112,7 @@ bool Websocket::is_text(const char* buffer, size_t size) {
     return (0x80 | static_cast<char>(Opcode::Text_frame)) == (buffer[0] & 0xff);
 }
 
-void Websocket::decode_text(const char* buffer, size_t size, std::string& text) {
+void Websocket::decode_text(char const* buffer, size_t size, std::string& text) {
     uint64_t payload_length = 0;
 
     bool masked = (buffer[1] & 0x80) == 0x80;
