@@ -19,7 +19,10 @@ bool Light::sample(f_float3 p, f_float3 n, float time, bool total_sphere, sample
 
 bool Light::sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
                    Sampler_filter filter, Worker const& worker, Sample& result) const {
-    return sample(p, float3::identity(), time, true, sampler, sampler_dimension, filter, worker,
+    entity::Composed_transformation temp;
+    auto const&                     transformation = transformation_at(time, temp);
+
+    return sample(p, time, transformation, true, sampler, sampler_dimension, filter, worker,
                   result);
 }
 
