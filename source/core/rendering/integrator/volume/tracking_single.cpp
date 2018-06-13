@@ -266,13 +266,13 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        transmittance = math::exp(-d * extinction);
+        transmittance = math::exp(-(d - ray.min_t) * extinction);
 
         float const r = rng_.random_float();
         float const scatter_distance =
             -std::log(1.f - r * (1.f - math::average(transmittance))) / math::average(extinction);
 
-        float3 const p = ray.point(scatter_distance);
+        float3 const p = ray.point(ray.min_t + scatter_distance);
 
         float3 l = direct_light(ray, p, intersection, worker);
 
@@ -288,45 +288,13 @@ size_t Tracking_single::num_bytes() const {
     return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Tracking_single::direct_light(Ray const& ray, f_float3 position, Worker& worker) {
-    float3 result = float3::identity();
-
-    Ray shadow_ray;
-    shadow_ray.origin = position;
-    shadow_ray.min_t  = 0.f;
-    shadow_ray.depth  = ray.depth + 1;
-    shadow_ray.time   = ray.time;
-
-    auto const light = worker.scene().random_light(rng_.random_float());
-
-    scene::light::Sample light_sample;
-    if (light.ref.sample(position, float3(0.f, 0.f, 1.f), ray.time, true, sampler_, 0,
-                         Sampler_filter::Nearest, worker, light_sample)) {
-        shadow_ray.set_direction(light_sample.shape.wi);
-        float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
-        shadow_ray.max_t   = light_sample.shape.t - offset;
-
-        float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
-        if (math::any_greater_zero(tv)) {
-            float3 const tr = worker.transmittance(shadow_ray);
-
-            float const phase = 1.f / (4.f * math::Pi);
-
-            result +=
-                (tv * tr) * (phase * light_sample.radiance) / (light.pdf * light_sample.shape.pdf);
-        }
-    }
-
-    return result;
-}
-
 float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
                                      Intersection const& intersection, Worker& worker) {
     float3 result = float3::identity();
 
     Ray shadow_ray;
     shadow_ray.origin = position;
-    shadow_ray.min_t  = 0.f;
+    shadow_ray.min_t  = take_settings_.ray_offset_factor * intersection.geo.epsilon;
     shadow_ray.depth  = ray.depth + 1;
     shadow_ray.time   = ray.time;
 

@@ -145,7 +145,6 @@ float3 Worker::tinted_visibility(Ray& ray, Intersection const& intersection,
             ray.max_t = ray_max_t;
 
             return tr * tinted_visibility(ray, filter);
-            ;
         }
     }
 

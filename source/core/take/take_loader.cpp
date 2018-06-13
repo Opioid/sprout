@@ -15,6 +15,7 @@
 #include "logging/logging.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/debug.hpp"
+#include "rendering/integrator/surface/lighttracer.hpp"
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
@@ -403,6 +404,18 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
                 json::read_uint(n.value, "num_light_samples", light_sampling.num_samples);
 
             return std::make_shared<Whitted_factory>(settings, num_workers, num_light_samples);
+        } else if ("LT" == n.name) {
+            uint32_t const min_bounces =
+                json::read_uint(n.value, "min_bounces", default_min_bounces);
+
+            uint32_t const max_bounces =
+                json::read_uint(n.value, "max_bounces", default_max_bounces);
+
+            float const path_termination_probability = json::read_float(
+                n.value, "path_termination_probability", default_path_termination_probability);
+
+            return std::make_shared<Lighttracer_factory>(settings, num_workers, min_bounces,
+                                                         max_bounces, path_termination_probability);
         } else if ("PT" == n.name) {
             uint32_t const min_bounces =
                 json::read_uint(n.value, "min_bounces", default_min_bounces);

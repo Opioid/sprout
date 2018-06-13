@@ -105,7 +105,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
     float3 const mu_t = mu.a + mu.s;
 
-    return attenuation(d, mu_t);
+    return attenuation(d - ray.min_t, mu_t);
 }
 
 bool Tracking::track(math::Ray const& ray, float mt, Material const& material,

@@ -1,5 +1,5 @@
-#ifndef SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_HPP
-#define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_HPP
+#ifndef SU_RENDERING_INTEGRATOR_SURFACE_LIGHTTRACER_HPP
+#define SU_RENDERING_INTEGRATOR_SURFACE_LIGHTTRACER_HPP
 
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
@@ -12,19 +12,17 @@ struct Sample;
 
 namespace rendering::integrator::surface {
 
-class alignas(64) Pathtracer final : public Integrator {
+class alignas(64) Lighttracer final : public Integrator {
   public:
     struct Settings {
         uint32_t min_bounces;
         uint32_t max_bounces;
         float    path_continuation_probability;
-
-        bool disable_caustics;
     };
 
-    Pathtracer(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
+    Lighttracer(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
 
-    virtual ~Pathtracer() override final;
+    virtual ~Lighttracer() override final;
 
     virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -35,6 +33,8 @@ class alignas(64) Pathtracer final : public Integrator {
     virtual size_t num_bytes() const override final;
 
   private:
+    Ray generate_light_ray();
+
     sampler::Sampler& material_sampler(uint32_t bounce);
 
     const Settings settings_;
@@ -45,20 +45,20 @@ class alignas(64) Pathtracer final : public Integrator {
     sampler::Golden_ratio material_samplers_[Num_material_samplers];
 };
 
-class Pathtracer_factory final : public Factory {
+class Lighttracer_factory final : public Factory {
   public:
-    Pathtracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                       uint32_t min_bounces, uint32_t max_bounces,
-                       float path_termination_probability, bool enable_caustics);
+    Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
+                        uint32_t min_bounces, uint32_t max_bounces,
+                        float path_termination_probability);
 
-    virtual ~Pathtracer_factory() override final;
+    virtual ~Lighttracer_factory() override final;
 
     virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
   private:
-    Pathtracer* integrators_;
+    Lighttracer* integrators_;
 
-    Pathtracer::Settings settings_;
+    Lighttracer::Settings settings_;
 };
 
 }  // namespace rendering::integrator::surface

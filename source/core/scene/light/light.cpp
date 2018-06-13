@@ -5,6 +5,8 @@
 
 namespace scene::light {
 
+Light::~Light() {}
+
 bool Light::sample(f_float3 p, f_float3 n, float time, bool total_sphere, sampler::Sampler& sampler,
                    uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
                    Sample& result) const {

@@ -22,8 +22,6 @@ class alignas(64) Tracking_single final : public Integrator {
     virtual size_t num_bytes() const override final;
 
   private:
-    float3 direct_light(Ray const& ray, f_float3 position, Worker& worker);
-
     float3 direct_light(Ray const& ray, f_float3 position, Intersection const& intersection,
                         Worker& worker);
 
