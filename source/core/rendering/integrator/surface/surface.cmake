@@ -1,9 +1,11 @@
 target_sources(core
-	PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/ao.cpp"
+    PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/ao.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/ao.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/debug.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/debug.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/lighttracer.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/lighttracer.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/pathtracer_mis.cpp"
