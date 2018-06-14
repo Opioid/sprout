@@ -128,7 +128,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 }
 
 scene::Ray Lighttracer::generate_light_ray() {
-
+    return scene::Ray{};
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {

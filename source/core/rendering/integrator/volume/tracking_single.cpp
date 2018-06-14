@@ -182,7 +182,6 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
             float3 const local_origin = transformation.world_to_object_point(ray.origin);
             float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-            auto const   shape  = interface->prop->shape();
             float3 const origin = shape->object_to_texture_point(local_origin);
             float3 const dir    = shape->object_to_texture_vector(local_dir);
 
@@ -190,7 +189,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
 
             float3 w(1.f);
             for (; local_ray.min_t < d;) {
-                if (float mt; tree->intersect(local_ray, mt)) {
+                if (float mt; tree->intersect_f(local_ray, mt)) {
                     if (float t;
                         Tracking::track(local_ray, mt, material, filter, rng_, worker, t, w)) {
                         li            = w * direct_light(ray, ray.point(t), intersection, worker);
