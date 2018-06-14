@@ -9,7 +9,7 @@ Light::~Light() {}
 
 bool Light::sample(f_float3 p, f_float3 n, float time, bool total_sphere, sampler::Sampler& sampler,
                    uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
-                   Sample& result) const {
+                   Sample_to& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
@@ -18,7 +18,7 @@ bool Light::sample(f_float3 p, f_float3 n, float time, bool total_sphere, sample
 }
 
 bool Light::sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                   Sampler_filter filter, Worker const& worker, Sample& result) const {
+                   Sampler_filter filter, Worker const& worker, Sample_to& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
@@ -26,7 +26,7 @@ bool Light::sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t s
 }
 
 bool Light::sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                   Sampler_filter filter, Worker const& worker, Sample& result) const {
+                   Sampler_filter filter, Worker const& worker, Sample_from& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 

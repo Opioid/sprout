@@ -6,9 +6,14 @@
 
 namespace scene::light {
 
-struct Sample {
-    shape::Sample shape;
-    float3        radiance;
+struct Sample_to {
+    shape::Sample_to shape;
+    float3           radiance;
+};
+
+struct Sample_from {
+    shape::Sample_from shape;
+    float3             radiance;
 };
 
 }  // namespace scene::light

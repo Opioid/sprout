@@ -6,11 +6,19 @@
 
 namespace scene::shape {
 
-struct Sample {
+struct Sample_to {
     float3 wi;
     float2 uv;
     float  pdf;
     float  t;
+    float  epsilon;
+};
+
+struct Sample_from {
+    float3 p;
+    float3 wi;
+    float2 uv;
+    float  pdf;
     float  epsilon;
 };
 

@@ -46,25 +46,25 @@ class Morphable_mesh : public Shape, public Morphable_shape {
     virtual bool sample(uint32_t part, f_float3 p, f_float3 n, Transformation const& transformation,
                         float area, bool two_sided, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, Node_stack& node_stack,
-                        Sample& sample) const override final;
+                        Sample_to& sample) const override final;
 
     virtual bool sample(uint32_t part, f_float3 p, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample& sample) const override final;
+                        Node_stack& node_stack, Sample_to& sample) const override final;
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample& sample) const override final;
+                        Node_stack& node_stack, Sample_from& sample) const override final;
 
     virtual float pdf(Ray const& ray, const shape::Intersection& intersection,
                       Transformation const& transformation, float area, bool two_sided,
                       bool total_sphere) const override final;
 
     virtual bool sample(uint32_t part, f_float3 p, float2 uv, Transformation const& transformation,
-                        float area, bool two_sided, Sample& sample) const override final;
+                        float area, bool two_sided, Sample_to& sample) const override final;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                        bool two_sided, Sample& sample) const override final;
+                        bool two_sided, Sample_from& sample) const override final;
 
     virtual float pdf_uv(Ray const& ray, const shape::Intersection& intersection,
                          Transformation const& transformation, float area,

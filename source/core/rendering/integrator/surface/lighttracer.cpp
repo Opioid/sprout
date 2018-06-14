@@ -53,6 +53,12 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     float3 throughput(1.f);
     float3 result(0.f);
 
+    Ray    light_ray;
+    float3 radiance;
+
+    if (generate_light_ray(ray.time, worker, light_ray, radiance)) {
+    }
+
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo              = -ray.direction;
         auto const&  material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
@@ -127,8 +133,17 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     return result;
 }
 
-scene::Ray Lighttracer::generate_light_ray() {
-    return scene::Ray{};
+bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3 radiance) {
+    float const select = sampler_.generate_sample_1D(1);
+
+    auto const light = worker.scene().random_light(select);
+
+    scene::light::Sample_from light_sample;
+    if (!light.ref.sample(time, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
+        return false;
+    }
+
+    return false;
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {

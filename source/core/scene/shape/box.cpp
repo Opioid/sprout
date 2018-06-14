@@ -298,14 +298,14 @@ float3 Box::thin_absorption(Ray const& ray, Transformation const& transformation
 
 bool Box::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
                  float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                 Node_stack& node_stack, Sample& sample) const {
+                 Node_stack& node_stack, Sample_to& sample) const {
     return Box::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                        node_stack, sample);
 }
 
 bool Box::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transformation,
                  float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
-                 uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample& sample) const {
+                 uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius              = transformation.scale[0];
@@ -332,9 +332,9 @@ bool Box::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transform
     return true;
 }
 
-bool Box::sample(uint32_t /*part*/, Transformation const& transformation, float /*area*/,
-                 bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                 Node_stack& /*node_stack*/, Sample& sample) const {
+bool Box::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+                 bool /*two_sided*/, sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                 Node_stack& /*node_stack*/, Sample_from& /*sample*/) const {
     return false;
 }
 
@@ -353,12 +353,12 @@ float Box::pdf(Ray const&            ray, const shape::Intersection& /*intersect
 
 bool Box::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                 Sample& /*sample*/) const {
+                 Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Box::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                 float /*area*/, bool /*two_sided*/, Sample& /*sample*/) const {
+                 float /*area*/, bool /*two_sided*/, Sample_from& /*sample*/) const {
     return false;
 }
 

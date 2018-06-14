@@ -24,7 +24,7 @@ const Light::Transformation& Prop_light::transformation_at(float           time,
 
 bool Prop_light::sample(f_float3 p, f_float3 n, float time, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker, Sample& result) const {
+                        Sampler_filter filter, Worker const& worker, Sample_to& result) const {
     auto material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -55,7 +55,7 @@ bool Prop_light::sample(f_float3 p, f_float3 n, float time, Transformation const
 
 bool Prop_light::sample(f_float3 p, float time, Transformation const& transformation,
                         sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker, Sample& result) const {
+                        Sampler_filter filter, Worker const& worker, Sample_to& result) const {
     auto material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -75,15 +75,15 @@ bool Prop_light::sample(f_float3 p, float time, Transformation const& transforma
 
 bool Prop_light::sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
-                        Sample& result) const {
+                        Sample_from& result) const {
     auto material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 
     bool const two_sided = material->is_two_sided();
 
-    if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler,
-                                sampler_dimension, worker.node_stack(), result.shape)) {
+    if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
+                                worker.node_stack(), result.shape)) {
         return false;
     }
 

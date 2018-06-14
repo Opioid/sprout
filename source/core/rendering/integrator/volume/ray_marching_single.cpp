@@ -135,7 +135,7 @@ float3 Ray_marching_single::estimate_direct_light(Ray const& ray, f_float3 posit
 
     auto const light = worker.scene().random_light(rng_.random_float());
 
-    scene::light::Sample light_sample;
+    scene::light::Sample_to light_sample;
     if (light.ref.sample(position, float3(0.f, 0.f, 1.f), ray.time, true, sampler_, 0,
                          Sampler_filter::Nearest, worker, light_sample)) {
         shadow_ray.set_direction(light_sample.shape.wi);

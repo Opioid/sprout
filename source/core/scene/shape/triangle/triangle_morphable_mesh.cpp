@@ -170,7 +170,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 /*n*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                            Sample& /*sample*/) const {
+                            Sample_to& /*sample*/) const {
     return false;
 }
 
@@ -178,14 +178,14 @@ bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                            Sample& /*sample*/) const {
+                            Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
                             float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                            Sample& /*sample*/) const {
+                            Sample_from& /*sample*/) const {
     return false;
 }
 
@@ -197,15 +197,13 @@ float Morphable_mesh::pdf(Ray const& /*ray*/, const shape::Intersection& /*inter
 
 bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, Sample& sample) const {
-    sample.pdf = 0.f;
+                            bool /*two_sided*/, Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, Sample& sample) const {
-    sample.pdf = 0.f;
+                            bool /*two_sided*/, Sample_from& /*sample*/) const {
     return false;
 }
 

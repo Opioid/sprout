@@ -79,7 +79,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
     float3 result(0.f);
 
     for (uint32_t i = ray.depth;; ++i) {
-        float3      wo              = -ray.direction;
+        float3 const wo = -ray.direction;
+
         auto const& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
         // Only check for the very first hit.
@@ -257,7 +258,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
                                       const Material_sample& material_sample, Sampler_filter filter,
                                       Worker& worker) {
     // Light source importance sample
-    scene::light::Sample light_sample;
+    scene::light::Sample_to light_sample;
     if (!light.sample(intersection.geo.p, material_sample.geometric_normal(), history.time,
                       material_sample.is_translucent(), light_sampler(history.depth),
                       sampler_dimension, Sampler_filter::Nearest, worker, light_sample)) {

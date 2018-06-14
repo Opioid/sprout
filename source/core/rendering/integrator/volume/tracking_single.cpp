@@ -299,7 +299,7 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
 
     auto const light = worker.scene().random_light(rng_.random_float());
 
-    scene::light::Sample light_sample;
+    scene::light::Sample_to light_sample;
     if (light.ref.sample(position, ray.time, sampler_, 0, Sampler_filter::Nearest, worker,
                          light_sample)) {
         shadow_ray.set_direction(light_sample.shape.wi);

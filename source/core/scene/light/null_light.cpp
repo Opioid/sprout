@@ -13,21 +13,21 @@ bool Null_light::sample(f_float3 /*p*/, f_float3 /*n*/, float /*time*/,
                         Transformation const& /*transformation*/, bool /*total_sphere*/,
                         sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                         Sampler_filter /*filter*/, Worker const& /*worker*/,
-                        Sample& /*result*/) const {
+                        Sample_to& /*result*/) const {
     return false;
 }
 
 bool Null_light::sample(f_float3 /*p*/, float /*time*/, Transformation const& /*transformation*/,
                         sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                         Sampler_filter /*filter*/, Worker const& /*worker*/,
-                        Sample& /*result*/) const {
+                        Sample_to& /*result*/) const {
     return false;
 }
 
 bool Null_light::sample(float /*time*/, Transformation const& /*transformation*/,
                         sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                         Sampler_filter /*filter*/, Worker const& /*worker*/,
-                        Sample& /*result*/) const {
+                        Sample_from& /*result*/) const {
     return false;
 }
 

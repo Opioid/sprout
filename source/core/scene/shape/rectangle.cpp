@@ -240,15 +240,15 @@ float3 Rectangle::thin_absorption(Ray const& ray, Transformation const& transfor
 bool Rectangle::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
                        Transformation const& transformation, float area, bool two_sided,
                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-                       Node_stack& node_stack, Sample& sample) const {
+                       Node_stack& node_stack, Sample_to& sample) const {
     return Rectangle::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                              node_stack, sample);
 }
 
 bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& transformation,
                        float area, bool two_sided, sampler::Sampler& sampler,
-                       uint32_t sampler_dimension, Node_stack& /*node_stack*/,
-                       Sample&  sample) const {
+                       uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
+                       Sample_to& sample) const {
     float2 r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 xy = 2.f * r2 - float2(1.f);
 
@@ -283,9 +283,10 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& tran
     return true;
 }
 
-bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, float area,
-                       bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                       Node_stack& /*node_stack*/, Sample& sample) const {
+bool Rectangle::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+                       bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+                       uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
+                       Sample_from& /*sample*/) const {
     return false;
 }
 
@@ -306,7 +307,7 @@ float Rectangle::pdf(Ray const&            ray, const shape::Intersection& /*int
 
 bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
                        Transformation const& transformation, float area, bool two_sided,
-                       Sample& sample) const {
+                       Sample_to& sample) const {
     float3 ls(-2.f * uv[0] + 1.f, -2.f * uv[1] + 1.f, 0.f);
     float3 ws = math::transform_point(ls, transformation.object_to_world);
 
@@ -338,7 +339,7 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
 }
 
 bool Rectangle::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                       float /*area*/, bool /*two_sided*/, Sample& /*sample*/) const {
+                       float /*area*/, bool /*two_sided*/, Sample_from& /*sample*/) const {
     return false;
 }
 

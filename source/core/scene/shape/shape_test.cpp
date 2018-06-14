@@ -30,7 +30,7 @@ bool check(Intersection const& intersection,
     return true;
 }
 
-bool check(const Sample& sample) {
+bool check(const Sample_to& sample) {
     if (sample.pdf <= 0.f) {
         std::cout << "pdf " << sample.pdf << std::endl;
         return false;
@@ -43,7 +43,7 @@ bool check(const Sample& sample) {
     return true;
 }
 
-bool check(const Sample& sample, float2 uv) {
+bool check(const Sample_to& sample, float2 uv) {
     if (sample.pdf <= 0.f) {
         std::cout << "pdf " << sample.pdf << std::endl;
         return false;

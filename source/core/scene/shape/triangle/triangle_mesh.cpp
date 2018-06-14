@@ -276,14 +276,14 @@ float3 Mesh::thin_absorption(Ray const& ray, Transformation const& transformatio
 
 bool Mesh::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
                   float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& node_stack, Sample& sample) const {
+                  Node_stack& node_stack, Sample_to& sample) const {
     return Mesh::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                         node_stack, sample);
 }
 
 bool Mesh::sample(uint32_t part, f_float3 p, Transformation const& transformation, float area,
                   bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& /*node_stack*/, Sample& sample) const {
+                  Node_stack& /*node_stack*/, Sample_to& sample) const {
     float const  r  = sampler.generate_sample_1D(sampler_dimension);
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     auto const   s  = distributions_[part].sample(r);
@@ -320,9 +320,9 @@ bool Mesh::sample(uint32_t part, f_float3 p, Transformation const& transformatio
     return true;
 }
 
-bool Mesh::sample(uint32_t part, Transformation const& transformation, float area, bool two_sided,
-                  sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& /*node_stack*/,
-                  Sample& sample) const {
+bool Mesh::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+                  bool /*two_sided*/, sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                  Node_stack& /*node_stack*/, Sample_from& /*sample*/) const {
     return false;
 }
 
@@ -341,12 +341,12 @@ float Mesh::pdf(Ray const& ray, const shape::Intersection&      intersection,
 
 bool Mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                  Sample& /*sample*/) const {
+                  Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, Sample& /*sample*/) const {
+                  float /*area*/, bool /*two_sided*/, Sample_from& /*sample*/) const {
     return false;
 }
 

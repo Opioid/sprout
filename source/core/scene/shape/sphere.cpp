@@ -309,14 +309,15 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
 
 bool Sphere::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
                     float area, bool two_sided, sampler::Sampler& sampler,
-                    uint32_t sampler_dimension, Node_stack& node_stack, Sample& sample) const {
+                    uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const {
     return Sphere::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                           node_stack, sample);
 }
 
 bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transformation,
                     float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
-                    uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample& sample) const {
+                    uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
+                    Sample_to& sample) const {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius              = transformation.scale[0];
@@ -352,9 +353,10 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transf
     return false;
 }
 
-bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float /*area*/,
-                    bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                    Node_stack& /*node_stack*/, Sample& sample) const {
+bool Sphere::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+                    bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+                    uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
+                    Sample_from& /*sample*/) const {
     return false;
 }
 
@@ -372,7 +374,7 @@ float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*inters
 }
 
 bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation const& transformation,
-                    float area, bool /*two_sided*/, Sample& sample) const {
+                    float area, bool /*two_sided*/, Sample_to& sample) const {
     float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
     float theta = uv[1] * math::Pi;
 
@@ -409,7 +411,7 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation con
 }
 
 bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                    float /*area*/, bool /*two_sided*/, Sample& /*sample*/) const {
+                    float /*area*/, bool /*two_sided*/, Sample_from& /*sample*/) const {
     return false;
 }
 

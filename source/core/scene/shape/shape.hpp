@@ -25,7 +25,8 @@ struct Composed_transformation;
 namespace shape {
 
 struct Intersection;
-struct Sample;
+struct Sample_to;
+struct Sample_from;
 class Node_stack;
 class Morphable_shape;
 
@@ -74,15 +75,15 @@ class Shape {
     virtual bool sample(uint32_t part, f_float3 p, f_float3 n, Transformation const& transformation,
                         float area, bool two_sided, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, Node_stack& node_stack,
-                        Sample& sample) const = 0;
+                        Sample_to& sample) const = 0;
 
     virtual bool sample(uint32_t part, f_float3 p, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample& sample) const = 0;
+                        Node_stack& node_stack, Sample_to& sample) const = 0;
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample& sample) const = 0;
+                        Node_stack& node_stack, Sample_from& sample) const = 0;
 
     // Both pdf functions implicitely assume that the passed
     // ray/intersection/transformation combination actually lead to a hit.
@@ -93,10 +94,10 @@ class Shape {
     // The following three functions are used for textured lights
     // and should have the uv weight baked in!
     virtual bool sample(uint32_t part, f_float3 p, float2 uv, Transformation const& transformation,
-                        float area, bool two_sided, Sample& sample) const = 0;
+                        float area, bool two_sided, Sample_to& sample) const = 0;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                        bool two_sided, Sample& sample) const = 0;
+                        bool two_sided, Sample_from& sample) const = 0;
 
     virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
                          Transformation const& transformation, float area,
