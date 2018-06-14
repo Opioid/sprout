@@ -82,7 +82,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
         uint32_t i = max_iterations_;
         for (float t = ray.min_t; i > 0; --i) {
             float const r0 = rng.random_float();
-            t              = t - std::log(1.f - r0) * imt;
+            t -= std::log(1.f - r0) * imt;
             if (t > d) {
                 return w;
             }
@@ -121,7 +121,7 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
 
     for (float t = ray.min_t;;) {
         float const r0 = rng.random_float();
-        t              = t - std::log(1.f - r0) / mt;
+        t -= std::log(1.f - r0) / mt;
         if (t > d) {
             w = lw;
             return false;
@@ -175,7 +175,7 @@ float3 Tracking::track(math::Ray const& ray, float mt, Material const& material,
 
     for (float t = ray.min_t;;) {
         float const r0 = rng.random_float();
-        t              = t - std::log(1.f - r0) * imt;
+        t -= std::log(1.f - r0) * imt;
         if (t > d) {
             return w;
         }

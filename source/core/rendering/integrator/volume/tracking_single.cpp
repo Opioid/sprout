@@ -213,7 +213,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
         float const mt = material.majorant_mu_t();
         while (true) {
             float const r = rng_.random_float();
-            t             = t - std::log(1.f - r) / mt;
+            t -= std::log(1.f - r) / mt;
             if (t > d) {
                 li            = float3(0.f);
                 transmittance = w;
@@ -267,9 +267,9 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
 
         transmittance = math::exp(-(d - ray.min_t) * extinction);
 
-        float const r = rng_.random_float();
-        float const scatter_distance =
-            -std::log(1.f - r * (1.f - math::average(transmittance))) / math::average(extinction);
+        float const r                = rng_.random_float();
+        float const scatter_distance = -std::log(1.f - r * (1.f - math::average(transmittance))) /
+                                       math::average(extinction);
 
         float3 const p = ray.point(ray.min_t + scatter_distance);
 
@@ -310,15 +310,16 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
 
         Intersection tintersection   = intersection;
         tintersection.geo.subsurface = true;
-        float3 const tv =
-            worker.tinted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest);
+
+        float3 const tv = worker.tinted_visibility(shadow_ray, tintersection,
+                                                   Sampler_filter::Nearest);
         if (math::any_greater_zero(tv)) {
             float3 const tr = worker.transmittance(shadow_ray);
 
             float const phase = 1.f / (4.f * math::Pi);
 
-            result +=
-                (tv * tr) * (phase * light_sample.radiance) / (light.pdf * light_sample.shape.pdf);
+            result += ((tv * tr) * (phase * light_sample.radiance)) /
+                      (light.pdf * light_sample.shape.pdf);
         }
     }
 

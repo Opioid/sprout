@@ -6,6 +6,9 @@ ColumnLimit: 100
 Language: Cpp
 AccessModifierOffset: -2
 AllowShortFunctionsOnASingleLine: Empty
+AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
+AlignOperands: true
+PenaltyBreakAssignment: 100
 ...

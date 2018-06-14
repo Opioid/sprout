@@ -172,9 +172,9 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         if (do_mis || treat_as_singular) {
             bool         pure_emissive;
-            float3 const radiance =
-                evaluate_light(ray, intersection, sample_result, treat_as_singular, is_translucent,
-                               filter, worker, pure_emissive);
+            float3 const radiance = evaluate_light(ray, intersection, sample_result,
+                                                   treat_as_singular, is_translucent, filter,
+                                                   worker, pure_emissive);
 
             result += throughput * radiance;
 
@@ -265,7 +265,8 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
     }
 
     float const shadow_offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
-    Ray         shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
+
+    Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
                    light_sample.shape.t - shadow_offset, history.depth, history.time,
                    history.wavelength);
 
@@ -308,8 +309,8 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
             light.pdf = num_lights_reciprocal_;
         }
 
-        float const ls_pdf =
-            light.ref.pdf(ray, intersection.geo, is_translucent, Sampler_filter::Nearest, worker);
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent,
+                                           Sampler_filter::Nearest, worker);
 
         if (0.f == ls_pdf) {
             pure_emissive = true;

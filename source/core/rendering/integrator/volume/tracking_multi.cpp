@@ -230,7 +230,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
             //	SOFT_ASSERT(i < 1024*1024);
 
             float const r0 = rng_.random_float();
-            t              = t - std::log(1.f - r0) / mt;
+            t -= std::log(1.f - r0) / mt;
             if (t > d || 0 == i) {
                 li            = float3(0.f);
                 transmittance = w;
@@ -296,7 +296,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
         for (float t = ray.min_t;;) {
             float const r0 = rng_.random_float();
-            t              = t - std::log(1.f - r0) * imt;
+            t -= std::log(1.f - r0) * imt;
             if (t > d) {
                 li            = float3(0.f);
                 transmittance = w;

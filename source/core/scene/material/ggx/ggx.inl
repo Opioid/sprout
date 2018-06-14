@@ -303,10 +303,10 @@ float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, Fresne
     float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
     // sample point with polar coordinates (r, phi)
-    float const a = 1.f / (1.f + v[2]);
-    float const r = std::sqrt(xi[0]);
-    float const phi =
-        (xi[1] < a) ? xi[1] / a * math::Pi : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
+    float const a   = 1.f / (1.f + v[2]);
+    float const r   = std::sqrt(xi[0]);
+    float const phi = (xi[1] < a) ? xi[1] / a * math::Pi
+                                  : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
 
     float sin_phi;
     float cos_phi;
@@ -374,10 +374,10 @@ float Isotropic::reflect_internally(f_float3 wo, float n_dot_wo, Layer const& la
     float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
     // sample point with polar coordinates (r, phi)
-    float const a = 1.f / (1.f + v[2]);
-    float const r = std::sqrt(xi[0]);
-    float const phi =
-        (xi[1] < a) ? xi[1] / a * math::Pi : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
+    float const a   = 1.f / (1.f + v[2]);
+    float const r   = std::sqrt(xi[0]);
+    float const phi = (xi[1] < a) ? (xi[1] / a * math::Pi)
+                                  : (math::Pi + (xi[1] - a) / (1.f - a) * math::Pi);
 
     float sin_phi;
     float cos_phi;
@@ -605,10 +605,10 @@ float Isotropic::refract(f_float3 wo, float n_dot_wo, Layer const& layer, IOR co
     float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
     // sample point with polar coordinates (r, phi)
-    float const a = 1.f / (1.f + v[2]);
-    float const r = std::sqrt(xi[0]);
-    float const phi =
-        (xi[1] < a) ? xi[1] / a * math::Pi : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
+    float const a   = 1.f / (1.f + v[2]);
+    float const r   = std::sqrt(xi[0]);
+    float const phi = (xi[1] < a) ? (xi[1] / a * math::Pi)
+                                  : (math::Pi + (xi[1] - a) / (1.f - a) * math::Pi);
 
     float sin_phi;
     float cos_phi;
