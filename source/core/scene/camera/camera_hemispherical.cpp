@@ -50,18 +50,6 @@ bool Hemispherical::generate_ray(sampler::Camera_sample const& sample, uint32_t 
 
     float3 dir = math::disk_to_hemisphere_equidistant(float2(x, y));
 
-    // paraboloid
-    //	float3 dir = math::normalize(float3(x, -y, 0.5f - 0.5f * z));
-
-    //	float3 dir = math::normalize(float3(x, -y, 1.f - std::sqrt(z)));
-
-    //	float3 dir = math::normalize(float3(x, -y,
-    //										std::sqrt(std::max(0.f, 1.f - x *
-    //x
-    //-
-    // y
-    //* y))));
-
     entity::Composed_transformation temp;
     auto&                           transformation = transformation_at(sample.time, temp);
 

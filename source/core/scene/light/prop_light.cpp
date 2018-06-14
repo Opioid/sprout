@@ -22,26 +22,6 @@ const Light::Transformation& Prop_light::transformation_at(float           time,
     return prop_->transformation_at(time, transformation);
 }
 
-bool Prop_light::sample(f_float3 p, float time, Transformation const& transformation,
-                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker, Sample& result) const {
-    auto material = prop_->material(part_);
-
-    float const area = prop_->area(part_);
-
-    bool const two_sided = material->is_two_sided();
-
-    if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
-                                sampler_dimension, worker.node_stack(), result.shape)) {
-        return false;
-    }
-
-    result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv, area, time,
-                                                filter, worker);
-
-    return true;
-}
-
 bool Prop_light::sample(f_float3 p, f_float3 n, float time, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
                         Sampler_filter filter, Worker const& worker, Sample& result) const {
@@ -73,10 +53,50 @@ bool Prop_light::sample(f_float3 p, f_float3 n, float time, Transformation const
     return true;
 }
 
+bool Prop_light::sample(f_float3 p, float time, Transformation const& transformation,
+                        sampler::Sampler& sampler, uint32_t sampler_dimension,
+                        Sampler_filter filter, Worker const& worker, Sample& result) const {
+    auto material = prop_->material(part_);
+
+    float const area = prop_->area(part_);
+
+    bool const two_sided = material->is_two_sided();
+
+    if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
+                                sampler_dimension, worker.node_stack(), result.shape)) {
+        return false;
+    }
+
+    result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv, area, time,
+                                                filter, worker);
+
+    return true;
+}
+
+bool Prop_light::sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
+                        uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
+                        Sample& result) const {
+    auto material = prop_->material(part_);
+
+    float const area = prop_->area(part_);
+
+    bool const two_sided = material->is_two_sided();
+
+    if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler,
+                                sampler_dimension, worker.node_stack(), result.shape)) {
+        return false;
+    }
+
+    result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv, area, time,
+                                                filter, worker);
+
+    return true;
+}
+
 float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                       Sampler_filter /*filter*/, Worker const& /*worker*/) const {
-    entity::Composed_transformation temp;
-    auto const&                     transformation = prop_->transformation_at(ray.time, temp);
+    Transformation temp;
+    auto const&    transformation = prop_->transformation_at(ray.time, temp);
 
     float const area = prop_->area(part_);
 

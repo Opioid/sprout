@@ -25,9 +25,7 @@ struct Matrix3x3 {
         Matrix3x3(T m00, T m01, T m02,
                           T m10, T m11, T m12,
                           T m20, T m21, T m22);
-                
         Matrix3x3(Vector3<T> const& x, Vector3<T> const& y, Vector3<T> const& z);
-        
         explicit Matrix3x3(const Matrix4x4<T>& m);
 
         Matrix3x3 operator*(const Matrix3x3& m) const;

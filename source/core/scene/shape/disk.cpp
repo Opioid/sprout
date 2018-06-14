@@ -256,6 +256,12 @@ bool Disk::sample(uint32_t /*part*/, f_float3 p, Transformation const& transform
     return true;
 }
 
+bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
+                  bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                  Node_stack& /*node_stack*/, Sample& sample) const {
+    return false;
+}
+
 float Disk::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
                 Transformation const& transformation, float area, bool two_sided,
                 bool /*total_sphere*/) const {
@@ -274,6 +280,11 @@ float Disk::pdf(Ray const&            ray, const shape::Intersection& /*intersec
 bool Disk::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   Sample& /*sample*/) const {
+    return false;
+}
+
+bool Disk::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
+                  float /*area*/, bool /*two_sided*/, Sample& /*sample*/) const {
     return false;
 }
 

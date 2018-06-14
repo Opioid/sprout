@@ -123,16 +123,24 @@ float3 Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trans
     return float3(0.f);
 }
 
-bool Canopy::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
-                    float area, bool two_sided, sampler::Sampler& sampler,
-                    uint32_t sampler_dimension, Node_stack& node_stack, Sample& sample) const {
-    return Canopy::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
+bool Canopy::sample(uint32_t              part, f_float3 /*p*/, f_float3 /*n*/,
+                    Transformation const& transformation, float area, bool two_sided,
+                    sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                    Sample& sample) const {
+    return Canopy::sample(part, transformation, area, two_sided, sampler, sampler_dimension,
                           node_stack, sample);
 }
 
-bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, sampler::Sampler&    sampler,
-                    uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample& sample) const {
+bool Canopy::sample(uint32_t part, f_float3 /*p*/, Transformation const& transformation, float area,
+                    bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                    Node_stack& node_stack, Sample& sample) const {
+    return Canopy::sample(part, transformation, area, two_sided, sampler, sampler_dimension,
+                          node_stack, sample);
+}
+
+bool Canopy::sample(uint32_t /*part*/, Transformation const& transformation, float /*area*/,
+                    bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                    Node_stack& /*node_stack*/, Sample& sample) const {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
@@ -158,9 +166,13 @@ float Canopy::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*
     return 1.f / (2.f * math::Pi);
 }
 
-bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
-                    Transformation const& transformation, float /*area*/, bool /*two_sided*/,
-                    Sample&               sample) const {
+bool Canopy::sample(uint32_t part, f_float3 /*p*/, float2 uv, Transformation const& transformation,
+                    float area, bool two_sided, Sample& sample) const {
+    return Canopy::sample(part, uv, transformation, area, two_sided, sample);
+}
+
+bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
+                    float /*area*/, bool /*two_sided*/, Sample&         sample) const {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     float const z = math::dot(disk, disk);

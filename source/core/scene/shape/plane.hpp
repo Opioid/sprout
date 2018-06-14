@@ -39,12 +39,19 @@ class Plane final : public Shape {
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
                         Node_stack& node_stack, Sample& sample) const override final;
 
+    virtual bool sample(uint32_t part, Transformation const& transformation, float area,
+                        bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                        Node_stack& node_stack, Sample& sample) const override final;
+
     virtual float pdf(Ray const& ray, Intersection const& intersection,
                       Transformation const& transformation, float area, bool two_sided,
                       bool total_sphere) const override final;
 
     virtual bool sample(uint32_t part, f_float3 p, float2 uv, Transformation const& transformation,
                         float area, bool two_sided, Sample& sample) const override final;
+
+    virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
+                        bool two_sided, Sample& sample) const override final;
 
     virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
                          Transformation const& transformation, float area,

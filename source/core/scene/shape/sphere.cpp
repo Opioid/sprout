@@ -352,6 +352,12 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transf
     return false;
 }
 
+bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float /*area*/,
+                    bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                    Node_stack& /*node_stack*/, Sample& sample) const {
+    return false;
+}
+
 float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
                   Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const {
@@ -400,6 +406,11 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation con
     sample.epsilon = 5e-4f * d;
 
     return true;
+}
+
+bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
+                    float /*area*/, bool /*two_sided*/, Sample& /*sample*/) const {
+    return false;
 }
 
 float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersection,

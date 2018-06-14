@@ -332,6 +332,12 @@ bool Box::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transform
     return true;
 }
 
+bool Box::sample(uint32_t /*part*/, Transformation const& transformation, float /*area*/,
+                 bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                 Node_stack& /*node_stack*/, Sample& sample) const {
+    return false;
+}
+
 float Box::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
                Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                bool /*total_sphere*/) const {
@@ -345,40 +351,15 @@ float Box::pdf(Ray const&            ray, const shape::Intersection& /*intersect
     return math::cone_pdf_uniform(cos_theta_max);
 }
 
-bool Box::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation const& transformation,
-                 float area, bool /*two_sided*/, Sample& sample) const {
-    float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
-    float theta = uv[1] * math::Pi;
+bool Box::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+                 Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
+                 Sample& /*sample*/) const {
+    return false;
+}
 
-    float sin_theta = std::sin(theta);
-    float cos_theta = std::cos(theta);
-    float sin_phi   = std::sin(phi);
-    float cos_phi   = std::cos(phi);
-
-    float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-    float3 ws = math::transform_point(ls, transformation.object_to_world);
-
-    float3 axis = ws - p;
-    float  sl   = math::squared_length(axis);
-    float  d    = std::sqrt(sl);
-
-    float3 dir = axis / d;
-
-    float3 wn = math::normalize(ws - transformation.position);
-
-    float c = -math::dot(wn, dir);
-
-    if (c <= 0.f) {
-        return false;
-    }
-
-    sample.wi = dir;
-    sample.uv = uv;
-    sample.t  = d;
-    // sin_theta because of the uv weight
-    sample.pdf = sl / (c * area * sin_theta);
-
-    return true;
+bool Box::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
+                 float /*area*/, bool /*two_sided*/, Sample& /*sample*/) const {
+    return false;
 }
 
 float Box::pdf_uv(Ray const& ray, Intersection const&             intersection,

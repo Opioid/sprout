@@ -47,7 +47,7 @@ and the 2013 IEEE CG&A paper
 
 
                         Version: 1.4a, February 22nd, 2013
-                        
+
 Version history:
 
 1.4a  February 22nd, 2013
@@ -81,7 +81,7 @@ Version history:
       the result of a simple conversion from spectral data via the CIE 2 degree
       standard observer matching functions. Therefore, after multiplication
       with 683 lm / W, the Y channel now corresponds to luminance in lm.
-     
+
 1.0   May 11th, 2012
       Initial release.
 

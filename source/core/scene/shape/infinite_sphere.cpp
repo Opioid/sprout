@@ -134,9 +134,16 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 n,
     return true;
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/,
-                             Transformation const& transformation, float /*area*/,
-                             bool /*two_sided*/, sampler::Sampler& sampler,
+bool Infinite_sphere::sample(uint32_t part, f_float3 /*p*/, Transformation const& transformation,
+                             float area, bool two_sided, sampler::Sampler& sampler,
+                             uint32_t sampler_dimension, Node_stack& node_stack,
+                             Sample& sample) const {
+    return Infinite_sphere::sample(part, transformation, area, two_sided, sampler,
+                                   sampler_dimension, node_stack, sample);
+}
+
+bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& transformation,
+                             float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
                              uint32_t sampler_dimension, Node_stack& /*node_stack*/,
                              Sample&  sample) const {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
@@ -168,9 +175,14 @@ float Infinite_sphere::pdf(Ray const& /*ray*/, const shape::Intersection& /*inte
     }
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
-                             Transformation const& transformation, float /*area*/,
-                             bool /*two_sided*/, Sample& sample) const {
+bool Infinite_sphere::sample(uint32_t part, f_float3 /*p*/, float2 uv,
+                             Transformation const& transformation, float area, bool two_sided,
+                             Sample& sample) const {
+    return Infinite_sphere::sample(part, uv, transformation, area, two_sided, sample);
+}
+
+bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
+                             float /*area*/, bool /*two_sided*/, Sample&         sample) const {
     float const phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
     float const theta = uv[1] * math::Pi;
 
