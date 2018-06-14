@@ -55,17 +55,17 @@ void Byte2_snorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
     byte2 v[4];
     image_.gather(xy_xy1, v);
 
-    c[0] =
-        float2(encoding::cached_snorm_to_float(v[0][0]), encoding::cached_snorm_to_float(v[0][1]));
+    c[0] = float2(encoding::cached_snorm_to_float(v[0][0]),
+                  encoding::cached_snorm_to_float(v[0][1]));
 
-    c[1] =
-        float2(encoding::cached_snorm_to_float(v[1][0]), encoding::cached_snorm_to_float(v[1][1]));
+    c[1] = float2(encoding::cached_snorm_to_float(v[1][0]),
+                  encoding::cached_snorm_to_float(v[1][1]));
 
-    c[2] =
-        float2(encoding::cached_snorm_to_float(v[1][0]), encoding::cached_snorm_to_float(v[1][1]));
+    c[2] = float2(encoding::cached_snorm_to_float(v[1][0]),
+                  encoding::cached_snorm_to_float(v[1][1]));
 
-    c[3] =
-        float2(encoding::cached_snorm_to_float(v[2][0]), encoding::cached_snorm_to_float(v[2][1]));
+    c[3] = float2(encoding::cached_snorm_to_float(v[2][0]),
+                  encoding::cached_snorm_to_float(v[2][1]));
 }
 
 void Byte2_snorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {

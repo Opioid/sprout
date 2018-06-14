@@ -133,17 +133,17 @@ void Entity::inherit_transformation(math::Transformation const& a, math::Transfo
         properties_.set(Property::Animated);
     }
 
-    world_frame_a_.position =
-        math::transform_point(local_frame_a_.transformation.position, float4x4(a));
-    world_frame_a_.rotation =
-        math::quaternion::mul(local_frame_a_.transformation.rotation, a.rotation);
-    world_frame_a_.scale = local_frame_a_.transformation.scale;
+    world_frame_a_.position = math::transform_point(local_frame_a_.transformation.position,
+                                                    float4x4(a));
+    world_frame_a_.rotation = math::quaternion::mul(local_frame_a_.transformation.rotation,
+                                                    a.rotation);
+    world_frame_a_.scale    = local_frame_a_.transformation.scale;
 
-    world_frame_b_.position =
-        math::transform_point(local_frame_b_.transformation.position, float4x4(b));
-    world_frame_b_.rotation =
-        math::quaternion::mul(local_frame_b_.transformation.rotation, b.rotation);
-    world_frame_b_.scale = local_frame_b_.transformation.scale;
+    world_frame_b_.position = math::transform_point(local_frame_b_.transformation.position,
+                                                    float4x4(b));
+    world_frame_b_.rotation = math::quaternion::mul(local_frame_b_.transformation.rotation,
+                                                    b.rotation);
+    world_frame_b_.scale    = local_frame_b_.transformation.scale;
 
     if (!properties_.test(Property::Animated)) {
         world_transformation_.set(world_frame_a_);

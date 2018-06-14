@@ -63,8 +63,8 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     auto texture = std::make_shared<texture::Byte3_sRGB>(target);
 
-    std::shared_ptr<Material> material =
-        std::make_shared<volumetric::Emission_grid>(Sampler_settings(), Texture_adapter(texture));
+    std::shared_ptr<Material> material = std::make_shared<volumetric::Emission_grid>(
+        Sampler_settings(), Texture_adapter(texture));
 
     Materials materials(1);
     materials[0] = material;
@@ -96,8 +96,8 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 
     voxel_ratio_ = dimensions[1] / aurora_height_;
 
-    aurora_volume_ =
-        float3(dimensions[0] / voxel_ratio_, aurora_height_, dimensions[2] / voxel_ratio_);
+    aurora_volume_ = float3(dimensions[0] / voxel_ratio_, aurora_height_,
+                            dimensions[2] / voxel_ratio_);
 
     renderer.set_brush(float3(0.f));
     renderer.clear();

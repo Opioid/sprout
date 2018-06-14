@@ -255,8 +255,8 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& tran
     float3 scale(transformation.scale.xy(), 1.f);
 
     float3 ls = float3(xy, 0.f);
-    float3 ws =
-        transformation.position + math::transform_vector(scale * ls, transformation.rotation);
+    float3 ws = transformation.position +
+                math::transform_vector(scale * ls, transformation.rotation);
 
     float3 axis = ws - p;
 

@@ -21,8 +21,8 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 co
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
 
-    int4 isolated_bounds =
-        sensor.isolated_tile(int4(bounds.xy() + tile.xy(), bounds.xy() + tile.zw()));
+    int4 isolated_bounds = sensor.isolated_tile(
+        int4(bounds.xy() + tile.xy(), bounds.xy() + tile.zw()));
     isolated_bounds[2] -= isolated_bounds[0];
     isolated_bounds[3] -= isolated_bounds[1];
 

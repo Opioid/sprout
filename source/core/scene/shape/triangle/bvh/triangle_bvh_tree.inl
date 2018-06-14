@@ -443,8 +443,8 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, Materials const& mater
 
                     auto const material = materials[data_.material_index(i)];
 
-                    float3 const ta =
-                        material->thin_absorption(ray.direction, normal, uv, time, filter, worker);
+                    float3 const ta = material->thin_absorption(ray.direction, normal, uv, time,
+                                                                filter, worker);
                     absorption += (1.f - absorption) * ta;
                     if (math::all_greater_equal(absorption, 1.f)) {
                         return float3(1.f);

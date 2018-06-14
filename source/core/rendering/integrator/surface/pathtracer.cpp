@@ -81,8 +81,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
             break;
         }
 
-        bool const singular =
-            sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
+        bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
+                                                          Bxdf_type::Transmission);
 
         if (singular) {
             if (settings_.disable_caustics && !primary_ray && material_sample.ior_greater_one() &&

@@ -25,8 +25,8 @@ bxdf::Result Sample_isotropic::evaluate(f_float3 wi) const {
     float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
     const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    auto const               ggx =
-        ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_, conductor);
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
+                                                conductor);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
@@ -40,8 +40,8 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
     const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    float const              n_dot_wi =
-        ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, conductor, sampler, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, conductor, sampler,
+                                                   result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
@@ -71,8 +71,8 @@ bxdf::Result Sample_anisotropic::evaluate(f_float3 wi) const {
     float const  wo_dot_h = clamp_dot(wo_, h);
 
     const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    auto const               ggx =
-        ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, layer_, conductor);
+    auto const ggx = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, layer_,
+                                                  conductor);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
@@ -86,8 +86,8 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
     const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    float const              n_dot_wi =
-        ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor, sampler, result);
+    float const n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor, sampler,
+                                                     result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;

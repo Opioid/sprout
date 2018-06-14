@@ -31,9 +31,9 @@ float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
     occlusion_ray.max_t  = settings_.radius;
     occlusion_ray.time   = ray.time;
 
-    float3 const wo = -ray.direction;
-    auto const&  material_sample =
-        intersection.sample(wo, ray, Sampler_filter::Undefined, sampler_, worker);
+    float3 const wo              = -ray.direction;
+    auto const&  material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined, sampler_,
+                                                      worker);
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         float2 const sample = sampler_.generate_sample_2D();

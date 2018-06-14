@@ -241,8 +241,8 @@ bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) con
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 if (props[i]->intersect_p(ray, node_stack)) {
                     //				if (props[i]->intersect_p(ray_origin, ray_direction,
-                    // ray_inv_direction, 										  ray_min_t, ray_max_t,
-                    // ray.time, node_stack))
+                    // ray_inv_direction,
+                    // ray_min_t, ray_max_t, ray.time, node_stack))
                     // {
                     return true;
                 }

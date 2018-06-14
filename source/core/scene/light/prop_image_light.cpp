@@ -66,8 +66,8 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n, float time,
 
     if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
         result.shape.pdf *= rs.pdf;
-        result.radiance =
-            material->sample_radiance(result.shape.wi, rs.uv, area, time, filter, worker);
+        result.radiance = material->sample_radiance(result.shape.wi, rs.uv, area, time, filter,
+                                                    worker);
 
         return true;
     }
@@ -87,8 +87,8 @@ float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bo
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    float const shape_pdf =
-        prop_->shape()->pdf_uv(ray, intersection, transformation, area, two_sided);
+    float const shape_pdf = prop_->shape()->pdf_uv(ray, intersection, transformation, area,
+                                                   two_sided);
 
     float const material_pdf = material->emission_pdf(intersection.uv, filter, worker);
 

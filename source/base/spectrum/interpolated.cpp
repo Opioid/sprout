@@ -61,8 +61,9 @@ float Interpolated::integrate(float a, float b) const {
 
     auto it = std::lower_bound(wavelengths_.begin(), wavelengths_.end(), start);
 
-    size_t index =
-        std::max(static_cast<size_t>(it - wavelengths_.begin()), static_cast<size_t>(1)) - 1;
+    size_t index = std::max(static_cast<size_t>(it - wavelengths_.begin()),
+                            static_cast<size_t>(1)) -
+                   1;
 
     float integral = 0.f;
     for (; index + 1 < len && end >= wavelengths_[index]; ++index) {

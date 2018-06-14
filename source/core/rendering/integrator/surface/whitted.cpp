@@ -63,9 +63,9 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
 float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& worker) {
     float3 result(0.f);
 
-    float3 const wo = -ray.direction;
-    auto&        material_sample =
-        intersection.sample(wo, ray, Sampler_filter::Undefined, sampler_, worker);
+    float3 const wo              = -ray.direction;
+    auto&        material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined, sampler_,
+                                                worker);
 
     if (material_sample.same_hemisphere(wo)) {
         result += material_sample.radiance();

@@ -48,8 +48,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
         coating_.sample(wo_, 1.f, sampler, coating_attenuation, result);
 
         float3     flakes_fresnel;
-        auto const flakes =
-            flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, flakes_fresnel);
+        auto const flakes = flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                             flakes_fresnel);
 
         auto const base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
@@ -63,8 +63,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
         auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, 1.f);
 
         float3     flakes_fresnel;
-        auto const flakes =
-            flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, flakes_fresnel);
+        auto const flakes = flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                             flakes_fresnel);
 
         float3 const bottom = (1.f - flakes_fresnel) * result.reflection + flakes.reflection;
 
@@ -107,8 +107,8 @@ bxdf::Result Sample::Base_layer::evaluate(f_float3 wi, f_float3 wo, float3 const
     float const n_dot_h = math::saturate(math::dot(n_, h));
 
     const fresnel::Schlick fresnel(color);
-    auto const             ggx =
-        ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this, fresnel);
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
+                                                fresnel);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
@@ -154,8 +154,8 @@ void Sample::Flakes_layer::sample(f_float3 wo, sampler::Sampler& sampler, float3
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     const fresnel::Conductor_weighted conductor({ior_, absorption_}, weight_);
-    float const                       n_dot_wi =
-        ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler, fresnel_result, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,
+                                                   fresnel_result, result);
     result.reflection *= n_dot_wi;
 }
 

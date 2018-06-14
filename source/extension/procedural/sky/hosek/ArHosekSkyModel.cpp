@@ -47,7 +47,7 @@ and the 2013 IEEE CG&A paper
 
 
                         Version: 1.4a, February 22nd, 2013
-                        
+                        
 Version history:
 
 1.4a  February 22nd, 2013
@@ -81,7 +81,7 @@ Version history:
       the result of a simple conversion from spectral data via the CIE 2 degree
       standard observer matching functions. Therefore, after multiplication
       with 683 lm / W, the Y channel now corresponds to luminance in lm.
-     
+     
 1.0   May 11th, 2012
       Initial release.
 
@@ -152,8 +152,8 @@ void ArHosekSkyModel_CookConfiguration(ArHosekSkyModel_Dataset      dataset,
     int     int_turbidity = (int)turbidity;
     hk_real turbidity_rem = turbidity - (hk_real)int_turbidity;
 
-    hk_real se =
-        std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
+    hk_real se  = std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)),
+                          (hk_real(1) / hk_real(3)));
     hk_real se2 = se * se;
     hk_real se3 = se2 * se;
     hk_real se4 = se3 * se;
@@ -185,10 +185,10 @@ void ArHosekSkyModel_CookConfiguration(ArHosekSkyModel_Dataset      dataset,
     elev_matrix = dataset + (9 * 6 * 10 + 9 * 6 * (int_turbidity - 1));
     for (unsigned int i = 0; i < 9; ++i) {
         //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
-        config[i] +=
-            (albedo) * (hk_real(1) - turbidity_rem) *
-            (omse5 * elev_matrix[i] + a * elev_matrix[i + 9] + b * elev_matrix[i + 18] +
-             c * elev_matrix[i + 27] + d * elev_matrix[i + 36] + se5 * elev_matrix[i + 45]);
+        config[i] += (albedo) * (hk_real(1) - turbidity_rem) *
+                     (omse5 * elev_matrix[i] + a * elev_matrix[i + 9] + b * elev_matrix[i + 18] +
+                      c * elev_matrix[i + 27] + d * elev_matrix[i + 36] +
+                      se5 * elev_matrix[i + 45]);
     }
 
     if (int_turbidity == 10) return;
@@ -197,20 +197,20 @@ void ArHosekSkyModel_CookConfiguration(ArHosekSkyModel_Dataset      dataset,
     elev_matrix = dataset + (9 * 6 * (int_turbidity));
     for (unsigned int i = 0; i < 9; ++i) {
         //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
-        config[i] +=
-            (hk_real(1) - albedo) * (turbidity_rem) *
-            (omse5 * elev_matrix[i] + a * elev_matrix[i + 9] + b * elev_matrix[i + 18] +
-             c * elev_matrix[i + 27] + d * elev_matrix[i + 36] + se5 * elev_matrix[i + 45]);
+        config[i] += (hk_real(1) - albedo) * (turbidity_rem) *
+                     (omse5 * elev_matrix[i] + a * elev_matrix[i + 9] + b * elev_matrix[i + 18] +
+                      c * elev_matrix[i + 27] + d * elev_matrix[i + 36] +
+                      se5 * elev_matrix[i + 45]);
     }
 
     // alb 1 high turb
     elev_matrix = dataset + (9 * 6 * 10 + 9 * 6 * (int_turbidity));
     for (unsigned int i = 0; i < 9; ++i) {
         //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
-        config[i] +=
-            (albedo) * (turbidity_rem) *
-            (omse5 * elev_matrix[i] + a * elev_matrix[i + 9] + b * elev_matrix[i + 18] +
-             c * elev_matrix[i + 27] + d * elev_matrix[i + 36] + se5 * elev_matrix[i + 45]);
+        config[i] += (albedo) * (turbidity_rem) *
+                     (omse5 * elev_matrix[i] + a * elev_matrix[i + 9] + b * elev_matrix[i + 18] +
+                      c * elev_matrix[i + 27] + d * elev_matrix[i + 36] +
+                      se5 * elev_matrix[i + 45]);
     }
 }
 
@@ -223,8 +223,8 @@ hk_real ArHosekSkyModel_CookRadianceConfiguration(ArHosekSkyModel_Radiance_Datas
     hk_real turbidity_rem = turbidity - (hk_real)int_turbidity;
     hk_real res;
 
-    hk_real se =
-        std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
+    hk_real se  = std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)),
+                          (hk_real(1) / hk_real(3)));
     hk_real se2 = se * se;
     hk_real se3 = se2 * se;
     hk_real se4 = se3 * se;
@@ -286,9 +286,9 @@ hk_real ArHosekSkyModel_GetRadianceInternal(ArHosekSkyModelConfiguration configu
     //	const hk_real mieM = (hk_real(1.0) + std::cos(gamma)*std::cos(gamma)) /
     // std::pow((hk_real(1.0) + configuration[8]*configuration[8] -
     // hk_real(2.0)*configuration[8]*std::cos(gamma)), hk_real(1.5));
-    const hk_real mieM =
-        (hk_real(1.0) + rayM) / pow1_5((hk_real(1.0) + configuration[8] * configuration[8] -
-                                        hk_real(2.0) * configuration[8] * cos_gamma));
+    const hk_real mieM = (hk_real(1.0) + rayM) /
+                         pow1_5((hk_real(1.0) + configuration[8] * configuration[8] -
+                                 hk_real(2.0) * configuration[8] * cos_gamma));
     //	const hk_real cos_theta = std::cos(theta);
     const hk_real zenith = sqrt_cos_theta;  // std::sqrt(cos_theta);
 
@@ -441,8 +441,8 @@ ArHosekSkyModelState* arhosekskymodelstate_alienworld_alloc_init(
     //		  ( std::sqrt( solar_intensity ) * hk_real(TERRESTRIAL_SOLAR_RADIUS))
     //		/ std::sqrt( ratio );
 
-    const hk_real solar_radius =
-        (std::sqrt(solar_intensity) * hk_real(TERRESTRIAL_SOLAR_RADIUS)) / std::sqrt(ratio);
+    const hk_real solar_radius = (std::sqrt(solar_intensity) * hk_real(TERRESTRIAL_SOLAR_RADIUS)) /
+                                 std::sqrt(ratio);
     const hk_real sol_rad_sin = std::sin(solar_radius);
     state->ar2                = hk_real(1) / (sol_rad_sin * sol_rad_sin);
 
@@ -457,8 +457,8 @@ ArHosekSkyModelState* arhosekskymodelstate_alienworld_alloc_init(
     //   be wrong.
 
     for (unsigned int i = 0; i < 11; i++) {
-        state->emission_correction_factor_sky[i] =
-            solar_intensity * state->emission_correction_factor_sun[i] / ratio;
+        state->emission_correction_factor_sky[i] = solar_intensity *
+                                                   state->emission_correction_factor_sun[i] / ratio;
     }
 
     return state;
@@ -480,11 +480,11 @@ hk_real arhosekskymodel_radiance(ArHosekSkyModelState* state,
 
     hk_real interp = std::fmod((wavelength - hk_real(320)) / hk_real(40), hk_real(1));
 
-    hk_real val_low =
-        ArHosekSkyModel_GetRadianceInternal(state->configs[low_wl],
-                                            //       theta,
-                                            cos_theta, sqrt_cos_theta, gamma, cos_gamma) *
-        state->radiances[low_wl] * state->emission_correction_factor_sky[low_wl];
+    hk_real val_low = ArHosekSkyModel_GetRadianceInternal(state->configs[low_wl],
+                                                          //       theta,
+                                                          cos_theta, sqrt_cos_theta, gamma,
+                                                          cos_gamma) *
+                      state->radiances[low_wl] * state->emission_correction_factor_sky[low_wl];
 
     if (interp < 1e-6) return val_low;
 
@@ -576,8 +576,8 @@ void arhosekskymodel_solar_radiance_temp(ArHosekSkyModelSolarTemp* temp, hk_real
 
     if (pos > 44) pos = 44;
 
-    const hk_real break_x =
-        pow3(((hk_real)pos / (hk_real)pieces)) * (hk_real(MATH_PI) * hk_real(0.5));
+    const hk_real break_x = pow3(((hk_real)pos / (hk_real)pieces)) *
+                            (hk_real(MATH_PI) * hk_real(0.5));
 
     const hk_real sin_gamma_squared = sin_gamma * sin_gamma;
 
@@ -588,8 +588,8 @@ void arhosekskymodel_solar_radiance_temp(ArHosekSkyModelSolarTemp* temp, hk_real
 
 hk_real arhosekskymodel_sr_internal(ArHosekSkyModelState* state, ArHosekSkyModelSolarTemp* temp,
                                     int turbidity, int wl) {
-    const hk_real* coefs =
-        solarDatasets[wl] + ((order * pieces) * turbidity + order * (temp->pos_plus_1) - 1);
+    const hk_real* coefs = solarDatasets[wl] +
+                           ((order * pieces) * turbidity + order * (temp->pos_plus_1) - 1);
 
     hk_real       res   = 0.0;
     const hk_real x     = temp->elevation_minus_break_x;
@@ -675,8 +675,8 @@ hk_real arhosekskymodel_solar_radiance(ArHosekSkyModelState* state, ArHosekSkyMo
                                        hk_real cos_gamma, hk_real wavelength) {
     hk_real direct_radiance = arhosekskymodel_solar_radiance_internal2(state, temp, wavelength);
 
-    hk_real inscattered_radiance =
-        arhosekskymodel_radiance(state, cos_theta, sqrt_cos_theta, gamma, cos_gamma, wavelength);
+    hk_real inscattered_radiance = arhosekskymodel_radiance(state, cos_theta, sqrt_cos_theta, gamma,
+                                                            cos_gamma, wavelength);
 
     return direct_radiance + inscattered_radiance;
 }

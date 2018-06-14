@@ -15,8 +15,8 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
     Renderer renderer(props.dimensions, 4);
 
-    std::shared_ptr<Byte3> image =
-        std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, props.dimensions));
+    std::shared_ptr<Byte3> image = std::make_shared<Byte3>(
+        Image::Description(Image::Type::Byte3, props.dimensions));
 
     renderer.set_brush(float3(0.f, 0.f, 1.f));
     renderer.clear();
@@ -55,8 +55,8 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
 
     Renderer renderer(props.dimensions, 4);
 
-    std::shared_ptr<Byte1> image =
-        std::make_shared<Byte1>(Image::Description(Image::Type::Byte1, props.dimensions));
+    std::shared_ptr<Byte1> image = std::make_shared<Byte1>(
+        Image::Description(Image::Type::Byte1, props.dimensions));
 
     renderer.set_brush(float3(0.f, 0.f, 0.f));
     renderer.clear();

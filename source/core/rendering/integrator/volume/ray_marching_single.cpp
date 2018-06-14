@@ -149,8 +149,8 @@ float3 Ray_marching_single::estimate_direct_light(Ray const& ray, f_float3 posit
 
             float const phase = 1.f / (4.f * math::Pi);
 
-            result +=
-                (tv * tr) * (phase * light_sample.radiance) / (light.pdf * light_sample.shape.pdf);
+            result += (tv * tr) * (phase * light_sample.radiance) /
+                      (light.pdf * light_sample.shape.pdf);
         }
     }
 

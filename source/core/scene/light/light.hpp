@@ -52,9 +52,10 @@ class Light {
     virtual Transformation const& transformation_at(float           time,
                                                     Transformation& transformation) const = 0;
 
-//    virtual bool sample(float time, Transformation const& transformation,
-//                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-//                        Sampler_filter filter, Worker const& worker, Sample& result) const = 0;
+    //    virtual bool sample(float time, Transformation const& transformation,
+    //                        sampler::Sampler& sampler, uint32_t sampler_dimension,
+    //                        Sampler_filter filter, Worker const& worker, Sample& result) const =
+    //                        0;
 
     virtual bool sample(f_float3 p, float time, Transformation const& transformation,
                         sampler::Sampler& sampler, uint32_t sampler_dimension,

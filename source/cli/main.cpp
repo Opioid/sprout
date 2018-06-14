@@ -169,8 +169,8 @@ int main(int argc, char const* argv[]) {
     size_t rendering_num_bytes = 0;
 
     if (args.progressive) {
-        rendering_num_bytes =
-            controller::progressive(*take, scene, resource_manager, thread_pool, max_sample_size);
+        rendering_num_bytes = controller::progressive(*take, scene, resource_manager, thread_pool,
+                                                      max_sample_size);
     } else {
         progress::Std_out progressor;
 

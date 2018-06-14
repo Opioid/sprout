@@ -36,10 +36,11 @@ const material::Sample& Glass_thin::sample(f_float3 wo, Renderstate const& rs,
 
 float3 Glass_thin::thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
                                    Sampler_filter filter, Worker const& worker) const {
-    float const  n_dot_wi              = clamp_abs_dot(wo, n);
-    float const  approximated_distance = thickness_ / n_dot_wi;
-    float3 const attenuation =
-        rendering::attenuation(approximated_distance, absorption_coefficient_);
+    float const n_dot_wi              = clamp_abs_dot(wo, n);
+    float const approximated_distance = thickness_ / n_dot_wi;
+
+    float3 const attenuation = rendering::attenuation(approximated_distance,
+                                                      absorption_coefficient_);
 
     return opacity(uv, time, filter, worker) * (1.f - refraction_color_ * attenuation);
 }

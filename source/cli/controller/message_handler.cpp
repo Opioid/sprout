@@ -38,8 +38,8 @@ void Message_handler::handle(std::string const& message) {
             return;
         }
 
-        auto assignee_begin =
-            std::find_if_not(operand.begin(), operand.begin() + dot, string::is_space);
+        auto assignee_begin = std::find_if_not(operand.begin(), operand.begin() + dot,
+                                               string::is_space);
 
         auto assigne_end = std::find_if(assignee_begin, operand.begin() + dot, string::is_space);
 
@@ -56,8 +56,8 @@ void Message_handler::handle(std::string const& message) {
             string::trim(index);
         }
 
-        auto value_begin =
-            std::find_if_not(operand.begin() + dot + 1, operand.end(), string::is_space);
+        auto value_begin = std::find_if_not(operand.begin() + dot + 1, operand.end(),
+                                            string::is_space);
 
         auto value_end = std::find_if(value_begin, operand.end(), string::is_space);
 

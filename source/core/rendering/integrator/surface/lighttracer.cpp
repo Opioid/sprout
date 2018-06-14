@@ -81,8 +81,8 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
             break;
         }
 
-        bool const singular =
-            sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
+        bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
+                                                          Bxdf_type::Transmission);
 
         if (!singular) {
             primary_ray = false;

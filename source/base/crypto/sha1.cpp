@@ -126,9 +126,9 @@ void SHA1::transform(uint32_t block[Block_bytes]) {
 
     // Help macros
 #define rol(value, bits) (((value) << (bits)) | (((value)&0xffffffff) >> (32 - (bits))))
-#define blk(i)       \
-    (block[i & 15] = \
-         rol(block[(i + 13) & 15] ^ block[(i + 8) & 15] ^ block[(i + 2) & 15] ^ block[i & 15], 1))
+#define blk(i)            \
+    (block[i & 15] = rol( \
+         block[(i + 13) & 15] ^ block[(i + 8) & 15] ^ block[(i + 2) & 15] ^ block[i & 15], 1))
 
     // (R0+R1), R2, R3, R4 are the different operations used in SHA1
 #define R0(v, w, x, y, z, i)                                      \

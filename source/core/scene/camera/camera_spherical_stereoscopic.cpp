@@ -20,8 +20,8 @@ Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) : Stereoscopic(r
     d_y_ = 1.f / fr[1];
 
     view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
-    view_bounds_[1] =
-        int4(int2(0, resolution[1]), int2(resolution[0], resolution[1] * 2) - int2(1));
+    view_bounds_[1] = int4(int2(0, resolution[1]),
+                           int2(resolution[0], resolution[1] * 2) - int2(1));
 }
 
 uint32_t Spherical_stereoscopic::num_views() const {

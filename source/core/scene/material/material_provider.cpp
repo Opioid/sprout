@@ -927,8 +927,8 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
         }
 
         if (coating.thickness > 0.f) {
-            auto material =
-                std::make_shared<substitute::Material_thinfilm>(sampler_settings, two_sided);
+            auto material = std::make_shared<substitute::Material_thinfilm>(sampler_settings,
+                                                                            two_sided);
 
             material->set_mask(mask);
             material->set_color_map(color_map);
@@ -950,8 +950,8 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 
             return material;
         } else {
-            auto material =
-                std::make_shared<substitute::Material_clearcoat>(sampler_settings, two_sided);
+            auto material = std::make_shared<substitute::Material_clearcoat>(sampler_settings,
+                                                                             two_sided);
 
             material->set_mask(mask);
             material->set_color_map(color_map);

@@ -40,11 +40,11 @@ static inline float3 conductor(float wo_dot_h, f_float3 eta, f_float3 k) {
 }
 
 static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
-    float const r_p =
-        (eta_t * cos_theta_i - eta_i * cos_theta_t) / (eta_t * cos_theta_i + eta_i * cos_theta_t);
+    float const r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t) /
+                      (eta_t * cos_theta_i + eta_i * cos_theta_t);
 
-    float const r_o =
-        (eta_i * cos_theta_i - eta_t * cos_theta_t) / (eta_i * cos_theta_i + eta_t * cos_theta_t);
+    float const r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t) /
+                      (eta_i * cos_theta_i + eta_t * cos_theta_t);
 
     return 0.5f * (r_p * r_p + r_o * r_o);
 }
@@ -98,14 +98,14 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
     phi += float3(delta);
 
     // Obtain the various Fresnel amplitude coefficients.
-    float alpha_s =
-        rs(thinfilm_ior, external_ior, cos1, wo_dot_h) * rs(thinfilm_ior, internal_ior, cos1, cos2);
-    float alpha_p =
-        rp(thinfilm_ior, external_ior, cos1, wo_dot_h) * rp(thinfilm_ior, internal_ior, cos1, cos2);
-    float beta_s =
-        ts(external_ior, thinfilm_ior, wo_dot_h, cos1) * ts(thinfilm_ior, internal_ior, cos1, cos2);
-    float beta_p =
-        tp(external_ior, thinfilm_ior, wo_dot_h, cos1) * tp(thinfilm_ior, internal_ior, cos1, cos2);
+    float alpha_s = rs(thinfilm_ior, external_ior, cos1, wo_dot_h) *
+                    rs(thinfilm_ior, internal_ior, cos1, cos2);
+    float alpha_p = rp(thinfilm_ior, external_ior, cos1, wo_dot_h) *
+                    rp(thinfilm_ior, internal_ior, cos1, cos2);
+    float beta_s = ts(external_ior, thinfilm_ior, wo_dot_h, cos1) *
+                   ts(thinfilm_ior, internal_ior, cos1, cos2);
+    float beta_p = tp(external_ior, thinfilm_ior, wo_dot_h, cos1) *
+                   tp(thinfilm_ior, internal_ior, cos1, cos2);
 
     // Calculate the s- and p-polarized intensity transmission coefficient
     float3 cos_phi = math::cos(phi);

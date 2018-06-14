@@ -28,8 +28,8 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
         workers_[i].prepare(view_.num_samples_per_pixel);
     }
 
-    uint32_t const progress_range =
-        calculate_progress_range(scene_, camera, tiles_.size(), view_.num_samples_per_pixel);
+    uint32_t const progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
+                                                             view_.num_samples_per_pixel);
 
     float const start_frame = static_cast<float>(view_.start_frame);
     float       tick_offset = scene_.seek(start_frame * camera.frame_duration(), thread_pool_);

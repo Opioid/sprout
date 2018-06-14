@@ -16,8 +16,8 @@ Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) : Stereoscop
     set_fov(90.f);
 
     view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
-    view_bounds_[1] =
-        int4(int2(resolution[0], 0), int2(resolution[0] * 2, resolution[1]) - int2(1));
+    view_bounds_[1] = int4(int2(resolution[0], 0),
+                           int2(resolution[0] * 2, resolution[1]) - int2(1));
 }
 
 uint32_t Perspective_stereoscopic::num_views() const {
@@ -46,9 +46,9 @@ bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample
     entity::Composed_transformation temp;
     auto&                           transformation = transformation_at(sample.time, temp);
 
-    ray =
-        create_ray(math::transform_point(eye_offsets_[view], transformation.object_to_world),
-                   math::transform_vector(direction, transformation.object_to_world), sample.time);
+    ray = create_ray(math::transform_point(eye_offsets_[view], transformation.object_to_world),
+                     math::transform_vector(direction, transformation.object_to_world),
+                     sample.time);
 
     return true;
 }

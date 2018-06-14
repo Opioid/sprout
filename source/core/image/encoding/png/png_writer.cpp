@@ -43,8 +43,8 @@ bool Writer::write(std::string const& name, Byte3 const& image) {
     auto const d = image.description().dimensions;
 
     size_t buffer_len = 0;
-    void*  png_buffer =
-        tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 3, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 3,
+                                                               &buffer_len);
 
     if (!png_buffer) {
         return false;
@@ -66,8 +66,8 @@ bool Writer::write(std::string const& name, Byte1 const& image) {
     auto const d = image.description().dimensions;
 
     size_t buffer_len = 0;
-    void*  png_buffer =
-        tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 1, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 1,
+                                                               &buffer_len);
 
     if (!png_buffer) {
         return false;

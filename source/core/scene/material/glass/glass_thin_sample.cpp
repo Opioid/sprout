@@ -113,8 +113,9 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, Layer const&      la
 
     float const n_dot_wi              = layer.clamp_n_dot(sample.wo_);
     float       approximated_distance = layer.thickness_ / n_dot_wi;
-    float3      attenuation =
-        rendering::attenuation(approximated_distance, layer.absorption_coefficient_);
+
+    float3 attenuation = rendering::attenuation(approximated_distance,
+                                                layer.absorption_coefficient_);
 
     result.reflection = (1.f - f) * layer.color_ * attenuation;
     result.wi         = -sample.wo_;

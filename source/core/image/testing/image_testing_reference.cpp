@@ -92,8 +92,8 @@ void create_reference_normal_map(int2 dimensions) {
     }
 
     size_t buffer_len = 0;
-    void*  png_buffer =
-        tdefl_write_image_to_png_file_in_memory(rgb, dimensions[0], dimensions[1], 3, &buffer_len);
+    void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgb, dimensions[0], dimensions[1], 3,
+                                                               &buffer_len);
 
     if (!png_buffer) {
         delete[] rgb;

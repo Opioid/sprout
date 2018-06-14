@@ -32,8 +32,8 @@ bxdf::Result Sample_rough::evaluate(f_float3 wi) const {
     float const  n_dot_h  = math::saturate(math::dot(layer_.n_, h));
 
     const fresnel::Schlick schlick(layer_.f0_);
-    auto const             ggx =
-        ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_, schlick);
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
+                                                schlick);
 
     return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
 }
@@ -85,9 +85,9 @@ bool Sample_rough::is_transmissive() const {
 
 void Sample_rough::set(float3 const& refraction_color, float3 const& absorption_color,
                        float attenuation_distance, float ior, float ior_outside, float alpha) {
-    layer_.color_ = refraction_color;
-    layer_.absorption_coefficient_ =
-        material::extinction_coefficient(absorption_color, attenuation_distance);
+    layer_.color_                  = refraction_color;
+    layer_.absorption_coefficient_ = material::extinction_coefficient(absorption_color,
+                                                                      attenuation_distance);
 
     layer_.f0_     = fresnel::schlick_f0(ior_outside, ior);
     layer_.alpha_  = alpha;
@@ -122,8 +122,8 @@ void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& samp
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
     const fresnel::Schlick schlick(layer.f0_);
-    float const            n_dot_wi =
-        ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, tmp_ior, schlick, sampler, result);
+    float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, tmp_ior,
+                                                              schlick, sampler, result);
 
     SOFT_ASSERT(testing::check(result, wo_, layer));
 
@@ -147,8 +147,8 @@ void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler&
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
     const fresnel::Schlick schlick(layer.f0_);
-    float const            n_dot_wi =
-        ggx::Isotropic::refract(wo_, n_dot_wo, layer, tmp_ior, schlick, sampler, result);
+    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, tmp_ior, schlick, sampler,
+                                                   result);
 
     result.reflection *= n_dot_wi * layer.color_;
 }

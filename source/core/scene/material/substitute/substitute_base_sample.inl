@@ -68,8 +68,8 @@ void Sample_base<Diffuse, Layer_data...>::diffuse_sample_and_coating(const Coati
                                                                      bxdf::Sample& result) const {
     layer_.diffuse_sample(wo_, sampler, result);
 
-    auto const coating =
-        coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi, layer_.ior_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                                layer_.ior_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
@@ -82,8 +82,8 @@ void Sample_base<Diffuse, Layer_data...>::specular_sample_and_coating(const Coat
                                                                       bxdf::Sample& result) const {
     layer_.specular_sample(wo_, sampler, result);
 
-    auto const coating =
-        coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi, layer_.ior_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                                layer_.ior_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
@@ -95,8 +95,8 @@ void Sample_base<Diffuse, Layer_data...>::pure_specular_sample_and_coating(
     const Coating& coating_layer, sampler::Sampler& sampler, bxdf::Sample& result) const {
     layer_.pure_specular_sample(wo_, sampler, result);
 
-    auto const coating =
-        coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi, layer_.ior_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                                layer_.ior_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = 0.5f * (result.pdf + coating.pdf);
@@ -167,8 +167,8 @@ void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(f_float3       
 
     const fresnel::Schlick schlick(f0_);
     float3                 ggx_fresnel;
-    float const            n_dot_wi =
-        ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, ggx_fresnel, result);
+    float const            n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler,
+                                                   ggx_fresnel, result);
 
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, *this);
 

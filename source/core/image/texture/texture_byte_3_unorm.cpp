@@ -58,38 +58,38 @@ void Byte3_unorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
     byte3 v[4];
     image_.gather(xy_xy1, v);
 
-    c[0] =
-        float2(encoding::cached_unorm_to_float(v[0][0]), encoding::cached_unorm_to_float(v[0][1]));
+    c[0] = float2(encoding::cached_unorm_to_float(v[0][0]),
+                  encoding::cached_unorm_to_float(v[0][1]));
 
-    c[1] =
-        float2(encoding::cached_unorm_to_float(v[1][0]), encoding::cached_unorm_to_float(v[1][1]));
+    c[1] = float2(encoding::cached_unorm_to_float(v[1][0]),
+                  encoding::cached_unorm_to_float(v[1][1]));
 
-    c[2] =
-        float2(encoding::cached_unorm_to_float(v[2][0]), encoding::cached_unorm_to_float(v[2][1]));
+    c[2] = float2(encoding::cached_unorm_to_float(v[2][0]),
+                  encoding::cached_unorm_to_float(v[2][1]));
 
-    c[3] =
-        float2(encoding::cached_unorm_to_float(v[3][0]), encoding::cached_unorm_to_float(v[3][1]));
+    c[3] = float2(encoding::cached_unorm_to_float(v[3][0]),
+                  encoding::cached_unorm_to_float(v[3][1]));
 }
 
 void Byte3_unorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {
     byte3 v[4];
     image_.gather(xy_xy1, v);
 
-    c[0] =
-        float3(encoding::cached_unorm_to_float(v[0][0]), encoding::cached_unorm_to_float(v[0][1]),
-               encoding::cached_unorm_to_float(v[0][2]));
+    c[0] = float3(encoding::cached_unorm_to_float(v[0][0]),
+                  encoding::cached_unorm_to_float(v[0][1]),
+                  encoding::cached_unorm_to_float(v[0][2]));
 
-    c[1] =
-        float3(encoding::cached_unorm_to_float(v[1][0]), encoding::cached_unorm_to_float(v[1][1]),
-               encoding::cached_unorm_to_float(v[1][2]));
+    c[1] = float3(encoding::cached_unorm_to_float(v[1][0]),
+                  encoding::cached_unorm_to_float(v[1][1]),
+                  encoding::cached_unorm_to_float(v[1][2]));
 
-    c[2] =
-        float3(encoding::cached_unorm_to_float(v[2][0]), encoding::cached_unorm_to_float(v[2][1]),
-               encoding::cached_unorm_to_float(v[2][2]));
+    c[2] = float3(encoding::cached_unorm_to_float(v[2][0]),
+                  encoding::cached_unorm_to_float(v[2][1]),
+                  encoding::cached_unorm_to_float(v[2][2]));
 
-    c[3] =
-        float3(encoding::cached_unorm_to_float(v[3][0]), encoding::cached_unorm_to_float(v[3][1]),
-               encoding::cached_unorm_to_float(v[3][2]));
+    c[3] = float3(encoding::cached_unorm_to_float(v[3][0]),
+                  encoding::cached_unorm_to_float(v[3][1]),
+                  encoding::cached_unorm_to_float(v[3][2]));
 }
 
 float Byte3_unorm::at_element_1(int32_t x, int32_t y, int32_t element) const {

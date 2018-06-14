@@ -288,8 +288,8 @@ void Loader::load_light(json::Value const& /*light_value*/, prop::Prop* prop, Sc
 entity::Entity* Loader::load_extension(std::string const& type, json::Value const& extension_value,
                                        std::string const& name, Scene& scene) {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
-        entity::Entity* entity =
-            p->second->create_extension(extension_value, scene, resource_manager_);
+        entity::Entity* entity = p->second->create_extension(extension_value, scene,
+                                                             resource_manager_);
         scene.add_extension(entity, name);
 
         return entity;

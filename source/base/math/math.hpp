@@ -85,11 +85,11 @@ static constexpr T mod(T k, T n) {
 }
 
 static inline float sqrt(float x) {
-    Vector xs   = _mm_load_ss(&x);
-    Vector res  = _mm_rsqrt_ss(xs);
-    Vector muls = _mm_mul_ss(_mm_mul_ss(xs, res), res);
-    Vector sqrtx =
-        _mm_mul_ss(xs, _mm_mul_ss(_mm_mul_ss(simd::Half, res), _mm_sub_ss(simd::Three, muls)));
+    Vector xs    = _mm_load_ss(&x);
+    Vector res   = _mm_rsqrt_ss(xs);
+    Vector muls  = _mm_mul_ss(_mm_mul_ss(xs, res), res);
+    Vector sqrtx = _mm_mul_ss(
+        xs, _mm_mul_ss(_mm_mul_ss(simd::Half, res), _mm_sub_ss(simd::Three, muls)));
     return _mm_cvtss_f32(sqrtx);
 }
 

@@ -86,9 +86,9 @@ bool Cubic::generate_ray(sampler::Camera_sample const& sample, uint32_t view,
     entity::Composed_transformation temp;
     auto&                           transformation = transformation_at(0.f, temp);
 
-    ray =
-        create_ray(math::transform_point(float3(0.f), transformation.object_to_world),
-                   math::transform_vector(direction, transformation.object_to_world), sample.time);
+    ray = create_ray(math::transform_point(float3(0.f), transformation.object_to_world),
+                     math::transform_vector(direction, transformation.object_to_world),
+                     sample.time);
 
     return true;
 }

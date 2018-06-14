@@ -37,8 +37,8 @@ bool Model::init() {
     */
 
     for (uint32_t i = 0; i < Num_bands; ++i) {
-        skymodel_states_[i] =
-            arhosekskymodelstate_alloc_init(elevation, turbidity_, ground_albedo_[0]);
+        skymodel_states_[i] = arhosekskymodelstate_alloc_init(elevation, turbidity_,
+                                                              ground_albedo_[0]);
     }
 
     dirty_ = false;

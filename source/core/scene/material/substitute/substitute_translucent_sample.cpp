@@ -55,8 +55,8 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result)
 
     if (thickness_ > 0.f) {
         if (p < 0.5f) {
-            float const n_dot_wi =
-                lambert::Isotropic::reflect(layer_.diffuse_color_, layer_, sampler, result);
+            float const n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_, layer_,
+                                                               sampler, result);
 
             // This is the least attempt we can do at energy conservation
             float const n_dot_wo = layer_.clamp_n_dot(wo_);
