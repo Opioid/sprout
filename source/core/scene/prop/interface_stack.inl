@@ -57,12 +57,12 @@ inline Interface_stack::Interface const* Interface_stack::top() const {
     return nullptr;
 }
 
-inline float Interface_stack::top_ior() const {
+inline bool Interface_stack::top_is_vacuum() const {
     if (index_ > 0) {
-        return stack_[index_ - 1].material()->ior();
+        return 1.f == stack_[index_ - 1].material()->ior();
     }
 
-    return 1.f;
+    return true;
 }
 
 inline void Interface_stack::push(Intersection const& intersection) {

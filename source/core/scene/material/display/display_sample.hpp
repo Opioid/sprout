@@ -12,8 +12,7 @@ class Sample : public material::Sample {
 
     virtual float3 radiance() const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     struct Layer : material::Sample::Layer {
         void set(float3 const& radiance, float f0, float roughness);

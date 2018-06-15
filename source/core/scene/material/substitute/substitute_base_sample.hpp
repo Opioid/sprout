@@ -16,10 +16,12 @@ class Sample_base : public material::Sample {
     bxdf::Result base_and_coating_evaluate(f_float3 wi, const Coating& coating_layer) const;
 
     template <typename Coating>
-    void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler, bxdf::Sample& result) const;
+    void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler,
+                                 bxdf::Sample& result) const;
 
     template <typename Coating>
-    void diffuse_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler, bxdf::Sample& result) const;
+    void diffuse_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
+                                    bxdf::Sample& result) const;
 
     template <typename Coating>
     void specular_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,

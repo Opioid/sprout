@@ -11,8 +11,7 @@ class Sample final : public material::Sample {
 
     virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     virtual bool ior_greater_one() const override final;
 

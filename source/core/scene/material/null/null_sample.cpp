@@ -13,8 +13,7 @@ bxdf::Result Sample::evaluate(f_float3 /*wi*/) const {
     return {float3::identity(), 0.f};
 }
 
-void Sample::sample(sampler::Sampler& /*sampler*/,
-                    bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const {
     result.reflection = float3(1.f);
     result.wi         = -wo_;
     result.pdf        = 1.f;

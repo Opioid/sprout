@@ -35,14 +35,13 @@ float3 Sample::radiance() const {
     return layer_.emission_;
 }
 
-void Sample::sample(sampler::Sampler& sampler,
-                    bxdf::Sample&     result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
     }
 
-    float const            n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
     fresnel::Schlick const schlick(layer_.f0_);
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, schlick, sampler, result);

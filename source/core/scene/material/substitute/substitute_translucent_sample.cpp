@@ -24,8 +24,8 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
     // then we don't need to calculate the reflection.
     // In the other case, transmission won't be visible and we only need reflection.
     if (thickness_ > 0.f && !same_hemisphere(wi)) {
-        float const  n_dot_wi              = layer_.clamp_reverse_n_dot(wi);
-        float const  approximated_distance = thickness_ / n_dot_wi;
+        float const n_dot_wi              = layer_.clamp_reverse_n_dot(wi);
+        float const approximated_distance = thickness_ / n_dot_wi;
 
         float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 
@@ -49,8 +49,7 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
     return result;
 }
 
-void Sample_translucent::sample(sampler::Sampler& sampler,
-                                bxdf::Sample& result) const {
+void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
     float const p = sampler.generate_sample_1D();

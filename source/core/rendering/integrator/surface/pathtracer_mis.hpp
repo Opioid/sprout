@@ -47,14 +47,13 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
   private:
     float3 sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
-                         const Material_sample& material_sample, bool do_mis, bool avoid_caustics,
-                         Sampler_filter filter, Worker& worker);
+                         const Material_sample& material_sample, bool do_mis, Sampler_filter filter,
+                         Worker& worker);
 
     float3 evaluate_light(const Light& light, float light_weight, Ray const& history,
                           float ray_offset, uint32_t sampler_dimension, bool do_mis,
-                          bool avoid_caustics, Intersection const& intersection,
-                          const Material_sample& material_sample, Sampler_filter filter,
-                          Worker& worker);
+                          Intersection const& intersection, const Material_sample& material_sample,
+                          Sampler_filter filter, Worker& worker);
 
     float3 evaluate_light(Ray const& ray, Intersection const& intersection,
                           Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,

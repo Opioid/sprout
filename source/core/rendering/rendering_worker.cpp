@@ -88,7 +88,7 @@ float3 Worker::transmittance(Ray const& ray) {
     // This is the typical SSS case:
     // A medium is on the stack but we already considered it during shadow calculation,
     // igonoring the IoR. Therefore remove the medium from the stack.
-    if (interface_stack_.top_ior() > 1.f) {
+    if (!interface_stack_.top_is_vacuum()) {
         interface_stack_.pop();
     }
 
@@ -163,7 +163,7 @@ scene::prop::Interface_stack& Worker::interface_stack() {
 void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
     if (intersection.same_hemisphere(dir)) {
         interface_stack_.remove(intersection);
-    } else if (interface_stack_.top_ior() == 1.f || intersection.material()->ior() > 1.f) {
+    } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
         interface_stack_.push(intersection);
     }
 }

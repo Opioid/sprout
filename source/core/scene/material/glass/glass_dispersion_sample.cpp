@@ -15,8 +15,7 @@
 
 namespace scene::material::glass {
 
-void Sample_dispersion::sample(sampler::Sampler& sampler,
-                               bxdf::Sample&     result) const {
+void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float3 weight;
     float  wavelength = wavelength_;
 

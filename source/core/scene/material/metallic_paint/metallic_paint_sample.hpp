@@ -11,8 +11,7 @@ class Sample : public material::Sample {
 
     virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     struct Base_layer : material::Sample::Layer {
         void set(float3 const& color_a, float3 const& color_b, float alpha, float alpha2);

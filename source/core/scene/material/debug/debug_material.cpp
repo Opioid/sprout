@@ -12,7 +12,7 @@ Material::Material(Sampler_settings const& sampler_settings)
     : material::Material(sampler_settings, true) {}
 
 const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs,
-                                         Sampler_filter /*filter*/,  sampler::Sampler& /*sampler*/,
+                                         Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
                                          Worker const& worker, uint32_t depth) const {
     auto& sample = worker.sample<Sample>(depth);
 

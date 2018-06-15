@@ -22,8 +22,7 @@ bxdf::Result Sample_subsurface::evaluate(f_float3 wi) const {
     return result;
 }
 
-void Sample_subsurface::sample(sampler::Sampler& sampler,
-                               bxdf::Sample& result) const {
+void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     bool const same_side = same_hemisphere(wo_);
 
     float const p = sampler.generate_sample_1D();

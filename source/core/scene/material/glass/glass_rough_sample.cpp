@@ -38,8 +38,7 @@ bxdf::Result Sample_rough::evaluate(f_float3 wi) const {
     return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
 }
 
-void Sample_rough::sample(sampler::Sampler& sampler,
-                          bxdf::Sample&     result) const {
+void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     //	float const p = sampler.generate_sample_1D();
 
     //	if (p < 0.5f) {

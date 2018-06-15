@@ -42,8 +42,8 @@ struct Intersection {
     float3 thin_absorption(f_float3 wo, float const time, Sampler_filter filter,
                            Worker& worker) const;
 
-    const material::Sample& sample(f_float3 wo, Ray const& ray, Sampler_filter filter, bool avoid_caustics,
-                                   sampler::Sampler& sampler, Worker& worker,
+    const material::Sample& sample(f_float3 wo, Ray const& ray, Sampler_filter filter,
+                                   bool avoid_caustics, sampler::Sampler& sampler, Worker& worker,
                                    uint32_t depth = 0) const;
 
     bool same_hemisphere(f_float3 v) const;

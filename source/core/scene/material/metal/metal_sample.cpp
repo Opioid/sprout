@@ -31,8 +31,7 @@ bxdf::Result Sample_isotropic::evaluate(f_float3 wi) const {
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample_isotropic::sample(sampler::Sampler& sampler,
-                              bxdf::Sample&     result) const {
+void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -80,8 +79,7 @@ bxdf::Result Sample_anisotropic::evaluate(f_float3 wi) const {
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample_anisotropic::sample(sampler::Sampler& sampler,
-                                bxdf::Sample&     result) const {
+void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

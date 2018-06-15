@@ -10,8 +10,7 @@ class Sample : public material::Sample {
 
     virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     struct Layer : public material::Sample::Layer {};
 

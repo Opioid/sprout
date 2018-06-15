@@ -10,8 +10,7 @@ class Sample_thin : public material::Sample {
 
     virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     virtual bool is_transmissive() const override final;
 

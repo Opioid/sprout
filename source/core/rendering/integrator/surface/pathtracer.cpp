@@ -54,12 +54,13 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     float3 result(0.f);
 
     for (uint32_t i = ray.depth;; ++i) {
-        float3 const wo              = -ray.direction;
+        float3 const wo = -ray.direction;
 
         const bool avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_ior() == 1.f;
+                                    worker.interface_stack().top_is_vacuum();
 
-        auto const&  material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_, worker);
+        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
+                                                          worker);
 
         if (material_sample.same_hemisphere(wo)) {
             result += throughput * material_sample.radiance();

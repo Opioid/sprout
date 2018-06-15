@@ -19,8 +19,7 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
     return {pdf * layer_.diffuse_color, pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler,
-                    bxdf::Sample&     result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

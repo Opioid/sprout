@@ -40,7 +40,7 @@ class Interface_stack {
 
     const Interface* top() const;
 
-    float top_ior() const;
+    bool top_is_vacuum() const;
 
     void push(Intersection const& intersection);
     bool remove(Intersection const& intersection);

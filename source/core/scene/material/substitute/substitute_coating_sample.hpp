@@ -12,8 +12,7 @@ class Sample_coating : public Sample_base<disney::Isotropic> {
   public:
     virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     Coating_layer coating_;
 };

@@ -47,9 +47,10 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_ior() == 1.f;
+                                    worker.interface_stack().top_is_vacuum();
 
-        auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_, worker);
+        auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
+                                                    worker);
 
         if (treat_as_singular && material_sample.same_hemisphere(wo)) {
             result += throughput * material_sample.radiance();
@@ -59,8 +60,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
             break;
         }
 
-        result += throughput *
-                  direct_light(ray, intersection, material_sample, avoid_caustics, filter, worker);
+        result += throughput * direct_light(ray, intersection, material_sample, filter, worker);
 
         if (ray.depth >= settings_.max_bounces - 1) {
             break;
@@ -132,8 +132,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 }
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
-                                   const Material_sample& material_sample, bool avoid_caustics,
-                                   Sampler_filter filter, Worker& worker) {
+                                   const Material_sample& material_sample, Sampler_filter filter,
+                                   Worker& worker) {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {

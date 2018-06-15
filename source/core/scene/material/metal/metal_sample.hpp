@@ -11,8 +11,7 @@ class Sample_isotropic : public material::Sample {
 
     virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     struct Layer : material::Sample::Layer {
         void   set(float3 const& ior, float3 const& absorption, float roughness);
@@ -23,7 +22,7 @@ class Sample_isotropic : public material::Sample {
     };
 
     Layer layer_;
-    bool avoid_caustics_;
+    bool  avoid_caustics_;
 };
 
 class Sample_anisotropic : public material::Sample {
@@ -32,8 +31,7 @@ class Sample_anisotropic : public material::Sample {
 
     virtual bxdf::Result evaluate(f_float3 wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler,
-                        bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     struct Layer : material::Sample::Layer {
         void set(float3 const& ior, float3 const& absorption, float2 roughness);
@@ -46,7 +44,7 @@ class Sample_anisotropic : public material::Sample {
     };
 
     Layer layer_;
-    bool avoid_caustics_;
+    bool  avoid_caustics_;
 };
 
 }  // namespace scene::material::metal

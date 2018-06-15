@@ -17,8 +17,7 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
     return {float3(phase), phase};
 }
 
-void Sample::sample(sampler::Sampler& sampler,
-                    bxdf::Sample&     result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float2 const r2 = sampler.generate_sample_2D();
     float3       dir;
     float const  phase = layer_.sample(wo_, r2, dir);

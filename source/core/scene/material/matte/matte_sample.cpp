@@ -32,8 +32,7 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
     return {n_dot_wi * brdf.reflection, brdf.pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler,
-                    bxdf::Sample&     result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     //	float const n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler,
     // result);
 

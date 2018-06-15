@@ -36,8 +36,8 @@ class alignas(64) Pathtracer_DL final : public Integrator {
 
   private:
     float3 direct_light(Ray const& ray, Intersection const& intersection,
-                        const Material_sample& material_sample, bool avoid_caustics,
-                        Sampler_filter filter, Worker& worker);
+                        const Material_sample& material_sample, Sampler_filter filter,
+                        Worker& worker);
 
     const Settings settings_;
 

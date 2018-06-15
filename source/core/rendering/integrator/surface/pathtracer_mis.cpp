@@ -82,9 +82,10 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_ior() == 1.f;
+                                    worker.interface_stack().top_is_vacuum();
 
-        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_, worker);
+        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
+                                                          worker);
 
         // Only check for the very first hit.
         // Subsequent hits are handled by the MIS scheme.
@@ -98,10 +99,10 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-        bool const do_mis         = worker.interface_stack().top_ior() == 1.f;
+        bool const do_mis = worker.interface_stack().top_is_vacuum();
 
         result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
-                                             avoid_caustics, filter, worker);
+                                             filter, worker);
 
         SOFT_ASSERT(math::all_finite /*_and_positive*/ (result));
 
@@ -216,7 +217,7 @@ size_t Pathtracer_MIS::num_bytes() const {
 
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
                                      const Material_sample& material_sample, bool do_mis,
-                                     bool avoid_caustics, Sampler_filter filter, Worker& worker) {
+                                     Sampler_filter filter, Worker& worker) {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -231,8 +232,8 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
             auto const light = worker.scene().random_light(select);
 
-            result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis,
-                                     avoid_caustics, intersection, material_sample, filter, worker);
+            result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis, intersection,
+                                     material_sample, filter, worker);
         }
 
         result *= settings_.num_light_samples_reciprocal;
@@ -243,8 +244,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
             auto const& light = *lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {
                 result += evaluate_light(light, light_weight, ray, ray_offset, l, do_mis,
-                                         avoid_caustics, intersection, material_sample, filter,
-                                         worker);
+                                         intersection, material_sample, filter, worker);
             }
         }
 
@@ -256,7 +256,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
 float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ray const& history,
                                       float ray_offset, uint32_t sampler_dimension, bool do_mis,
-                                      bool avoid_caustics, Intersection const& intersection,
+                                      Intersection const&    intersection,
                                       const Material_sample& material_sample, Sampler_filter filter,
                                       Worker& worker) {
     // Light source importance sample
@@ -326,7 +326,8 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
     float3 const wo = -sample_result.wi;
 
     // This will invalidate the contents of previous previous material samples.
-    auto const& light_material_sample = intersection.sample(wo, ray, filter, false, sampler_, worker);
+    auto const& light_material_sample = intersection.sample(wo, ray, filter, false, sampler_,
+                                                            worker);
 
     pure_emissive = light_material_sample.is_pure_emissive();
 
