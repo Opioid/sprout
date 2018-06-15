@@ -24,7 +24,7 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
 
     float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
-    const fresnel::Schlick schlick(layer_.f0_);
+    fresnel::Schlick const schlick(layer_.f0_);
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
                                                 schlick);
 
@@ -42,7 +42,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     }
 
     float const            n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
-    const fresnel::Schlick schlick(layer_.f0_);
+    fresnel::Schlick const schlick(layer_.f0_);
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, schlick, sampler, result);
 
     result.reflection *= n_dot_wi;

@@ -106,15 +106,17 @@ template <typename Diffuse, class... Layer_data>
 void Sample_base<Diffuse, Layer_data...>::Layer::set(f_float3 color, f_float3 radiance, float ior,
                                                      float constant_f0, float roughness,
                                                      float metallic) {
-    diffuse_color_    = (1.f - metallic) * color;
-    f0_               = math::lerp(float3(constant_f0), color, metallic);
-    emission_         = radiance;
-    ior_              = ior;
-    roughness_        = roughness;
+    diffuse_color_ = (1.f - metallic) * color;
+    f0_            = math::lerp(float3(constant_f0), color, metallic);
+    emission_      = radiance;
+    ior_           = ior;
+    roughness_     = roughness;
+
     float const alpha = roughness * roughness;
-    alpha_            = alpha;
-    alpha2_           = alpha * alpha;
-    metallic_         = metallic;
+
+    alpha_    = alpha;
+    alpha2_   = alpha * alpha;
+    metallic_ = metallic;
 }
 
 template <typename Diffuse, class... Layer_data>
@@ -128,8 +130,9 @@ bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(f_float3 
 
     float const n_dot_h = math::saturate(math::dot(n_, h));
 
-    const fresnel::Schlick schlick(f0_);
-    float3                 ggx_fresnel;
+    fresnel::Schlick const schlick(f0_);
+
+    float3     ggx_fresnel;
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
                                                 schlick, ggx_fresnel);
 
@@ -150,8 +153,9 @@ void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(f_float3        
 
     float const n_dot_h = math::saturate(math::dot(n_, result.h));
 
-    const fresnel::Schlick schlick(f0_);
-    float3                 ggx_fresnel;
+    fresnel::Schlick const schlick(f0_);
+
+    float3     ggx_fresnel;
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h, *this,
                                                 schlick, ggx_fresnel);
 
@@ -165,9 +169,10 @@ void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(f_float3       
                                                                  bxdf::Sample&     result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
-    const fresnel::Schlick schlick(f0_);
-    float3                 ggx_fresnel;
-    float const            n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler,
+    fresnel::Schlick const schlick(f0_);
+
+    float3      ggx_fresnel;
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler,
                                                    ggx_fresnel, result);
 
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, *this);
@@ -182,7 +187,8 @@ void Sample_base<Diffuse, Layer_data...>::Layer::pure_specular_sample(f_float3  
                                                                       bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
-    const fresnel::Schlick schlick(f0_);
+    fresnel::Schlick const schlick(f0_);
+
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
     result.reflection *= n_dot_wi;
 }
