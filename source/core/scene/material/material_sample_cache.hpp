@@ -10,16 +10,17 @@ class Sample_cache {
   public:
     ~Sample_cache();
 
-    void init(uint32_t max_sample_size);
+    void init(uint32_t max_sample_size, uint32_t max_depth);
 
     template <typename T>
-    T& get();
+    T& get(uint32_t depth);
 
     size_t num_bytes() const;
 
   private:
-    uint32_t buffer_size_ = 0;
-    char*    buffer_      = nullptr;
+    uint32_t max_sample_size_ = 0;
+    uint32_t buffer_size_     = 0;
+    char*    buffer_          = nullptr;
 };
 
 }  // namespace scene::material

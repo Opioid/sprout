@@ -55,9 +55,9 @@ void Material_subsurface::compile() {
 const material::Sample& Material_subsurface::sample(f_float3 wo, Renderstate const& rs,
                                                     Sampler_filter filter,
                                                     sampler::Sampler& /*sampler*/,
-                                                    Worker const& worker) const {
+                                                    Worker const& worker, uint32_t depth) const {
     if (rs.subsurface) {
-        auto& sample = worker.sample<volumetric::Sample>();
+        auto& sample = worker.sample<volumetric::Sample>(depth);
 
         sample.set_basis(rs.geo_n, wo);
 
@@ -66,7 +66,7 @@ const material::Sample& Material_subsurface::sample(f_float3 wo, Renderstate con
         return sample;
     }
 
-    auto& sample = worker.sample<Sample_subsurface>();
+    auto& sample = worker.sample<Sample_subsurface>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -190,7 +190,8 @@ float Material_subsurface::density(f_float3 p, Sampler_filter filter, Worker con
     return density_map_.sample_1(sampler, p_g);
 }
 
-float3 Material_subsurface::color(f_float3 p, Sampler_filter filter, Worker const& worker) const {
+float3 Material_subsurface::color(f_float3 p, Sampler_filter /*filter*/,
+                                  Worker const& /*worker*/) const {
     float3 p_g = 0.5f * (float3(1.f) + p);
 
     //	auto const& sampler = worker.sampler_3D(sampler_key(), filter);

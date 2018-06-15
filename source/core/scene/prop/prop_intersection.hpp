@@ -43,7 +43,8 @@ struct Intersection {
                            Worker& worker) const;
 
     const material::Sample& sample(f_float3 wo, Ray const& ray, Sampler_filter filter,
-                                   sampler::Sampler& sampler, Worker& worker) const;
+                                   sampler::Sampler& sampler, Worker& worker,
+                                   uint32_t depth = 0) const;
 
     bool same_hemisphere(f_float3 v) const;
 

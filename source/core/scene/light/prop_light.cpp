@@ -87,7 +87,7 @@ bool Prop_light::sample(float time, Transformation const& transformation, sample
         return false;
     }
 
-    result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv, area, time,
+    result.radiance = material->sample_radiance(-result.shape.dir, result.shape.uv, area, time,
                                                 filter, worker);
 
     return true;

@@ -44,7 +44,7 @@ class alignas(64) Aerial_perspective final : public Integrator {
     */
 
     const Material_sample& sample(f_float3 wo, float time, const Material& material,
-                                  Sampler_filter filter, Worker& worker);
+                                  Sampler_filter filter, Worker& worker, uint32_t depth);
 
     const Settings settings_;
 

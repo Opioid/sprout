@@ -15,9 +15,9 @@ Material::~Material() {}
 
 const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker) const {
+                                         Worker const& worker, uint32_t depth) const {
     if (rs.subsurface) {
-        auto& sample = worker.sample<Sample>();
+        auto& sample = worker.sample<Sample>(depth);
 
         sample.set_basis(rs.geo_n, wo);
 
@@ -26,7 +26,7 @@ const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs,
         return sample;
     }
 
-    auto& sample = worker.sample<null::Sample>();
+    auto& sample = worker.sample<null::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
 

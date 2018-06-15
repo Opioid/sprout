@@ -6,8 +6,8 @@
 namespace scene {
 
 template <typename T>
-T& Worker::sample() const {
-    return sample_cache_.get<T>();
+T& Worker::sample(uint32_t depth) const {
+    return sample_cache_.get<T>(depth);
 }
 
 }  // namespace scene

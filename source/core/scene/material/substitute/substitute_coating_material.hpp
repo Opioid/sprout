@@ -35,7 +35,8 @@ class Material_clearcoat : public Material_coating<coating::Clearcoat> {
 
     virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker) const override final;
+                                           Worker const& worker,
+                                           uint32_t      depth) const override final;
 
     void set_clearcoat(float ior, float roughness);
 
@@ -48,7 +49,8 @@ class Material_thinfilm : public Material_coating<coating::Thinfilm> {
 
     virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker) const override final;
+                                           Worker const& worker,
+                                           uint32_t      depth) const override final;
 
     void set_thinfilm(float ior, float roughness, float thickness);
 

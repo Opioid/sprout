@@ -10,14 +10,15 @@ Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
-                                         sampler::Sampler& sampler, Worker const& worker) const {
+                                         sampler::Sampler& sampler, Worker const& worker,
+                                         uint32_t depth) const {
     auto&       texture_sampler = worker.sampler_2D(sampler_key(), filter);
     float const mask            = mask_.sample_1(texture_sampler, rs.uv);
 
     if (mask > sampler.generate_sample_1D(1)) {
-        return material_a_->sample(wo, rs, filter, sampler, worker);
+        return material_a_->sample(wo, rs, filter, sampler, worker, depth);
     } else {
-        return material_b_->sample(wo, rs, filter, sampler, worker);
+        return material_b_->sample(wo, rs, filter, sampler, worker, depth);
     }
 }
 

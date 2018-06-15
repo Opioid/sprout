@@ -232,12 +232,13 @@ scattering);
 
 const scene::material::Sample& Aerial_perspective::sample(f_float3 wo, float time,
                                                           const Material& material,
-                                                          Sampler_filter filter, Worker& worker) {
+                                                          Sampler_filter filter, Worker& worker,
+                                                          uint32_t depth) {
     scene::Renderstate rs;
 
     rs.time = time;
 
-    return material.sample(wo, rs, filter, sampler_, worker);
+    return material.sample(wo, rs, filter, sampler_, worker, depth);
 }
 
 Aerial_perspective_factory::Aerial_perspective_factory(take::Settings const& take_settings,

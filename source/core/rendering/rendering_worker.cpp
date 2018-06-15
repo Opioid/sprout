@@ -29,7 +29,8 @@ void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene cons
                   integrator::surface::Factory& surface_integrator_factory,
                   integrator::volume::Factory&  volume_integrator_factory,
                   sampler::Factory&             sampler_factory) {
-    scene::Worker::init(id, settings, scene, max_sample_size);
+    scene::Worker::init(id, settings, scene, max_sample_size,
+                        surface_integrator_factory.max_sample_depth());
 
     surface_integrator_ = surface_integrator_factory.create(id, rng_);
     volume_integrator_  = volume_integrator_factory.create(id, rng_);

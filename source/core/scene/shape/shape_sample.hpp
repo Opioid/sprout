@@ -16,7 +16,7 @@ struct Sample_to {
 
 struct Sample_from {
     float3 p;
-    float3 wi;
+    float3 dir;
     float2 uv;
     float  pdf;
     float  epsilon;

@@ -18,8 +18,8 @@ Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided)
 
 const material::Sample& Constant::sample(f_float3 wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker) const {
-    auto& sample = worker.sample<Sample>();
+                                         Worker const& worker, uint32_t depth) const {
+    auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
 

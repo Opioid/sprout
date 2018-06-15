@@ -6,8 +6,8 @@
 namespace scene::material {
 
 template <typename T>
-T& Sample_cache::get() {
-    return *new (buffer_) T;
+T& Sample_cache::get(uint32_t depth) {
+    return *new (buffer_ + max_sample_size_ * depth) T;
 }
 
 }  // namespace scene::material

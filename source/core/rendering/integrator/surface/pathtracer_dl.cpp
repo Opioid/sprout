@@ -44,8 +44,9 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
     float3 result(0.f);
 
     for (uint32_t i = ray.depth;; ++i) {
-        float3 const wo              = -ray.direction;
-        auto&        material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+        float3 const wo = -ray.direction;
+
+        auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
 
         if (treat_as_singular && material_sample.same_hemisphere(wo)) {
             result += throughput * material_sample.radiance();
@@ -157,12 +158,6 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
             if (math::any_greater_zero(tv)) {
                 float3 const tr = worker.transmittance(shadow_ray);
-
-                //				if (math::all_greater_equal(tr, 1.f) &&
-                //! intersection.geo.subsurface) { 					std::cout <<
-                //! ray.length()
-                //! << std::endl;
-                //				}
 
                 auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 

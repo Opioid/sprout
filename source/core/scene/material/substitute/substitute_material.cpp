@@ -14,11 +14,11 @@ Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
-                                         sampler::Sampler& /*sampler*/,
-                                         Worker const& worker) const {
+                                         sampler::Sampler& /*sampler*/, Worker const& worker,
+                                         uint32_t depth) const {
     SOFT_ASSERT(!rs.subsurface);
 
-    auto& sample = worker.sample<Sample>();
+    auto& sample = worker.sample<Sample>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

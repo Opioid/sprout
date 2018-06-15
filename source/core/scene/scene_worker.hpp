@@ -33,7 +33,7 @@ class Worker {
     ~Worker();
 
     void init(uint32_t id, take::Settings const& settings, Scene const& scene,
-              uint32_t max_sample_size);
+              uint32_t max_sample_size, uint32_t max_sample_depth);
 
     uint32_t id() const;
 
@@ -55,7 +55,7 @@ class Worker {
     material::Sample_cache& sample_cache() const;
 
     template <typename T>
-    T& sample() const;
+    T& sample(uint32_t depth) const;
 
     Texture_sampler_2D const& sampler_2D(uint32_t key, Sampler_filter filter) const;
 

@@ -33,7 +33,7 @@ class alignas(64) Lighttracer final : public Integrator {
     virtual size_t num_bytes() const override final;
 
   private:
-    bool generate_light_ray(float time, Worker& worker, Ray& ray, float3 radiance);
+    bool generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

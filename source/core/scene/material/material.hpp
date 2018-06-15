@@ -66,7 +66,8 @@ class Material {
     virtual void tick(float absolute_time, float time_slice);
 
     virtual const Sample& sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
-                                 sampler::Sampler& sampler, Worker const& worker) const = 0;
+                                 sampler::Sampler& sampler, Worker const& worker,
+                                 uint32_t depth) const = 0;
 
     virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
                                    Sampler_filter filter, Worker const& worker) const;

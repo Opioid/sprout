@@ -11,4 +11,8 @@ Factory::Factory(take::Settings const& settings) : take_settings_(settings) {}
 
 Factory::~Factory() {}
 
+uint32_t Factory::max_sample_depth() const {
+    return 1;
+}
+
 }  // namespace rendering::integrator::surface

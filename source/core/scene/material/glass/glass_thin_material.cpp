@@ -16,8 +16,8 @@ Glass_thin::Glass_thin(Sampler_settings const& sampler_settings)
 
 const material::Sample& Glass_thin::sample(f_float3 wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                           Worker const&  worker) const {
-    auto& sample = worker.sample<Sample_thin>();
+                                           Worker const& worker, uint32_t depth) const {
+    auto& sample = worker.sample<Sample_thin>(depth);
 
     sample.set_basis(rs.geo_n, wo);
 

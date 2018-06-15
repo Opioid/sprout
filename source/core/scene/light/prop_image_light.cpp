@@ -100,7 +100,8 @@ bool Prop_image_light::sample(float time, Transformation const& transformation,
     }
 
     result.shape.pdf *= rs.pdf;
-    result.radiance = material->sample_radiance(result.shape.wi, rs.uv, area, time, filter, worker);
+    result.radiance = material->sample_radiance(-result.shape.dir, rs.uv, area, time, filter,
+                                                worker);
 
     return true;
 }

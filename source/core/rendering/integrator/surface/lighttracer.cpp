@@ -53,87 +53,61 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     float3 throughput(1.f);
     float3 result(0.f);
 
+    //   float3 const wo = -ray.direction;
+
+    //   auto first_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+
     Ray    light_ray;
     float3 radiance;
 
-    if (generate_light_ray(ray.time, worker, light_ray, radiance)) {
+    if (!generate_light_ray(ray.time, worker, light_ray, radiance)) {
+        return result;
     }
 
-    for (uint32_t i = ray.depth;; ++i) {
-        float3 const wo              = -ray.direction;
-        auto const&  material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+    if (!worker.intersect_and_resolve_mask(light_ray, intersection, filter)) {
+        return result;
+    }
 
-        if (material_sample.same_hemisphere(wo)) {
-            result += throughput * material_sample.radiance();
-        }
+    float3 const wi = -light_ray.direction;
+    //   float3 const wo = -ray.direction;
 
-        if (material_sample.is_pure_emissive()) {
-            break;
-        }
+    auto const& material_sample = intersection.sample(wi, ray, filter, sampler_, worker);
 
-        if (ray.depth >= settings_.max_bounces) {
-            break;
-        }
+    float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-        if (ray.depth > settings_.min_bounces) {
-            float const q = settings_.path_continuation_probability;
-            if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
-                break;
-            }
-        }
+    float3 const eye_axis = ray.origin - intersection.geo.p;
 
-        material_sample.sample(material_sampler(ray.depth), sample_result);
-        if (0.f == sample_result.pdf) {
-            break;
-        }
+    float3 const wo = math::normalize(eye_axis);
 
-        bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
-                                                          Bxdf_type::Transmission);
+    Ray shadow_ray(intersection.geo.p, math::normalize(eye_axis), ray_offset,
+                   math::length(eye_axis), ray.depth, ray.time, ray.wavelength);
 
-        if (!singular) {
-            primary_ray = false;
-            filter      = Sampler_filter::Nearest;
-        }
+    float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
+    if (math::any_greater_zero(tv)) {
+        //    float3 const tr = worker.transmittance(shadow_ray);
 
-        throughput *= sample_result.reflection / sample_result.pdf;
+        auto const bxdf = material_sample.evaluate(wo);
 
-        float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+        float const n_dot_wi = std::abs(math::dot(wi, material_sample.geometric_normal()));
 
-        if (material_sample.ior_greater_one()) {
-            ray.origin = intersection.geo.p;
-            ray.set_direction(sample_result.wi);
-            ray.min_t = ray_offset;
-            ray.max_t = scene::Ray_max_t;
-            ++ray.depth;
-        } else {
-            ray.min_t = ray.max_t + ray_offset;
-            ray.max_t = scene::Ray_max_t;
-        }
+        float const n_dot_wo = std::abs(math::dot(wo, material_sample.geometric_normal()));
 
-        if (sample_result.type.test(Bxdf_type::Transmission)) {
-            worker.interface_change(sample_result.wi, intersection);
-        }
+        float const ln_dot_wi = math::dot(float3(0.f, 1.f, 0.f), wi);
 
-        if (!worker.interface_stack().empty()) {
-            float3     vli;
-            float3     vtr;
-            bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
+        float const wi_dot_wo = math::saturate(math::dot(wi, wo));
 
-            result += throughput * vli;
-            throughput *= vtr;
+        float const eye_dot_wo = math::saturate(math::dot(-ray.direction, wo));
+        //   result += float3(n_dot_wo);
 
-            if (!hit) {
-                break;
-            }
-        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
-            break;
-        }
+        return /*eye_dot_wo **/ float3(1.f, 0.f, 0.f);
+    } else {
+        return float3(0.f, 0.f, 0.f);
     }
 
     return result;
 }
 
-bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3 radiance) {
+bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
@@ -143,7 +117,13 @@ bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float
         return false;
     }
 
-    return false;
+    ray.origin = light_sample.shape.p;
+    ray.set_direction(light_sample.shape.dir);
+    ray.min_t = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+    ray.max_t = scene::Ray_max_t;
+    radiance  = light_sample.radiance;
+
+    return true;
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {

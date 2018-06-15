@@ -10,7 +10,8 @@ class Material_isotropic : public Material {
 
     virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker) const override final;
+                                           Worker const& worker,
+                                           uint32_t      depth) const override final;
 
     virtual float ior() const override final;
 
@@ -39,7 +40,8 @@ class Material_anisotropic : public Material {
 
     virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker) const override final;
+                                           Worker const& worker,
+                                           uint32_t      depth) const override final;
 
     virtual float ior() const override final;
 

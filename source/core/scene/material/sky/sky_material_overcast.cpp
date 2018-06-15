@@ -12,8 +12,8 @@ Material_overcast::Material_overcast(Sampler_settings const& sampler_settings, b
 const material::Sample& Material_overcast::sample(f_float3 wo, Renderstate const& rs,
                                                   Sampler_filter /*filter*/,
                                                   sampler::Sampler& /*sampler*/,
-                                                  Worker const& worker) const {
-    auto& sample = worker.sample<light::Sample>();
+                                                  Worker const& worker, uint32_t depth) const {
+    auto& sample = worker.sample<light::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

@@ -11,7 +11,8 @@ class Glass_rough : public Material {
 
     virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker) const override final;
+                                           Worker const& worker,
+                                           uint32_t      depth) const override final;
 
     virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
                                           Worker const& worker) const override final;
