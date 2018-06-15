@@ -30,6 +30,7 @@ const material::Sample& Material_isotropic::sample(f_float3 wo, Renderstate cons
     }
 
     sample.layer_.set(ior_, absorption_, roughness_);
+    sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
 }
@@ -91,6 +92,7 @@ const material::Sample& Material_anisotropic::sample(f_float3 wo, Renderstate co
     }
 
     sample.layer_.set(ior_, absorption_, roughness_);
+    sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
 }

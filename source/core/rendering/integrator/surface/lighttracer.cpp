@@ -71,7 +71,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     float3 const wi = -light_ray.direction;
     //   float3 const wo = -ray.direction;
 
-    auto const& material_sample = intersection.sample(wi, ray, filter, sampler_, worker);
+    auto const& material_sample = intersection.sample(wi, ray, filter, false, sampler_, worker);
 
     float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
@@ -86,7 +86,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     if (math::any_greater_zero(tv)) {
         //    float3 const tr = worker.transmittance(shadow_ray);
 
-        auto const bxdf = material_sample.evaluate(wo, false);
+        auto const bxdf = material_sample.evaluate(wo);
 
         float const n_dot_wi = std::abs(math::dot(wi, material_sample.geometric_normal()));
 

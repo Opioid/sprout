@@ -13,13 +13,13 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 wi, bool /*avoid_caustics*/) const {
+bxdf::Result Sample::evaluate(f_float3 wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const pdf      = n_dot_wi * math::Pi_inv;
     return {pdf * layer_.diffuse_color, pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+void Sample::sample(sampler::Sampler& sampler,
                     bxdf::Sample&     result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;

@@ -64,7 +64,8 @@ float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& 
     float3 result(0.f);
 
     float3 const wo              = -ray.direction;
-    auto&        material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined, sampler_,
+
+    auto&        material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined, false, sampler_,
                                                 worker);
 
     if (material_sample.same_hemisphere(wo)) {
@@ -107,7 +108,7 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                 if (math::any_greater_zero(tv)) {
                     float3 const tr = worker.transmittance(shadow_ray);
 
-                    auto const bxdf = material_sample.evaluate(light_sample.shape.wi, false);
+                    auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
                     result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
                               light_sample.shape.pdf;

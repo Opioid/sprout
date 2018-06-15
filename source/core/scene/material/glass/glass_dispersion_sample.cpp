@@ -15,10 +15,11 @@
 
 namespace scene::material::glass {
 
-void Sample_dispersion::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+void Sample_dispersion::sample(sampler::Sampler& sampler,
                                bxdf::Sample&     result) const {
     float3 weight;
     float  wavelength = wavelength_;
+
     if (0.f == wavelength) {
         float const start = Material::Spectrum::start_wavelength();
         float const end   = Material::Spectrum::end_wavelength();

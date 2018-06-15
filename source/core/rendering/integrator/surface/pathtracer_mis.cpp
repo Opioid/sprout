@@ -81,7 +81,10 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        auto const& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
+                                    worker.interface_stack().top_ior() == 1.f;
+
+        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_, worker);
 
         // Only check for the very first hit.
         // Subsequent hits are handled by the MIS scheme.
@@ -96,8 +99,6 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
         bool const do_mis         = worker.interface_stack().top_ior() == 1.f;
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_ior() == 1.f;
 
         result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
                                              avoid_caustics, filter, worker);
@@ -107,7 +108,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         float const previous_bxdf_pdf = sample_result.pdf;
 
         // Material BSDF importance sample
-        material_sample.sample(material_sampler(ray.depth), avoid_caustics, sample_result);
+        material_sample.sample(material_sampler(ray.depth), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -281,7 +282,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
         SOFT_ASSERT(math::all_finite /*_and_positive*/ (tr));
 
-        auto const bxdf = material_sample.evaluate(light_sample.shape.wi, avoid_caustics);
+        auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
         float const light_pdf = light_sample.shape.pdf * light_weight;
         float const weight    = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
@@ -325,7 +326,7 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
     float3 const wo = -sample_result.wi;
 
     // This will invalidate the contents of previous previous material samples.
-    auto const& light_material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+    auto const& light_material_sample = intersection.sample(wo, ray, filter, false, sampler_, worker);
 
     pure_emissive = light_material_sample.is_pure_emissive();
 

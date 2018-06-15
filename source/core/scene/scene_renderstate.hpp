@@ -27,6 +27,7 @@ struct Renderstate {
     float ior;
     float wavelength;
     bool  subsurface;
+    bool  avoid_caustics;
 };
 
 }  // namespace scene

@@ -13,16 +13,13 @@ class Sample_base : public material::Sample {
 
   protected:
     template <typename Coating>
-    bxdf::Result base_and_coating_evaluate(f_float3 wi, const Coating& coating_layer,
-                                           bool avoid_caustics) const;
+    bxdf::Result base_and_coating_evaluate(f_float3 wi, const Coating& coating_layer) const;
 
     template <typename Coating>
-    void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler,
-                                 bool avoid_caustics, bxdf::Sample& result) const;
+    void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler, bxdf::Sample& result) const;
 
     template <typename Coating>
-    void diffuse_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
-                                    bool avoid_caustics, bxdf::Sample& result) const;
+    void diffuse_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler, bxdf::Sample& result) const;
 
     template <typename Coating>
     void specular_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
@@ -62,6 +59,8 @@ class Sample_base : public material::Sample {
     };
 
     Layer layer_;
+
+    bool avoid_caustics_;
 };
 
 }  // namespace scene::material::substitute

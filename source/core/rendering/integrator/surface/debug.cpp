@@ -32,7 +32,8 @@ float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
             break;
         case Settings::Vector::Shading_normal: {
             float3 const wo              = -ray.direction;
-            auto&        material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined,
+
+            auto&        material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined, false,
                                                         sampler_, worker);
 
             if (!material_sample.same_hemisphere(wo)) {

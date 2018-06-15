@@ -43,9 +43,9 @@ class Sample {
 
     virtual Layer const& base_layer() const = 0;
 
-    virtual bxdf::Result evaluate(f_float3 wi, bool avoid_caustics) const = 0;
+    virtual bxdf::Result evaluate(f_float3 wi) const = 0;
 
-    virtual void sample(sampler::Sampler& sampler, bool avoid_caustics,
+    virtual void sample(sampler::Sampler& sampler,
                         bxdf::Sample& result) const = 0;
 
     virtual float3 radiance() const;

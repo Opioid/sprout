@@ -113,12 +113,12 @@ void Setup::test(f_float3 wi, f_float3 wo, float3 const& t, float3 const& b, flo
     sample.layer_.set_tangent_frame(t, b, n);
 
     {
-        auto const result = sample.evaluate(wi, false);
+        auto const result = sample.evaluate(wi);
         print(result);
     }
 
     bxdf::Sample result;
-    sample.sample(sampler, false, result);
+    sample.sample(sampler, result);
 
     print(result);
 }

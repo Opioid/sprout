@@ -48,6 +48,7 @@ void Material_base::set_sample(f_float3 wo, Renderstate const& rs,
     }
 
     sample.layer_.set(color, radiance, ior_, constant_f0_, surface[0], surface[1]);
+    sample.avoid_caustics_ = rs.avoid_caustics;
 }
 
 }  // namespace scene::material::substitute

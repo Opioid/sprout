@@ -9,7 +9,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_subsurface::evaluate(f_float3 wi, bool avoid_caustics) const {
+bxdf::Result Sample_subsurface::evaluate(f_float3 wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -17,12 +17,12 @@ bxdf::Result Sample_subsurface::evaluate(f_float3 wi, bool avoid_caustics) const
     float3 const h        = math::normalize(wo_ + wi);
     float const  wo_dot_h = clamp_dot(wo_, h);
 
-    auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics);
+    auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
     result.pdf *= 0.5f;
     return result;
 }
 
-void Sample_subsurface::sample(sampler::Sampler& sampler, bool avoid_caustics,
+void Sample_subsurface::sample(sampler::Sampler& sampler,
                                bxdf::Sample& result) const {
     bool const same_side = same_hemisphere(wo_);
 
@@ -33,7 +33,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bool avoid_caustics,
             refract(same_side, layer_, sampler, result);
         } else {
             if (p < 0.75f) {
-                layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
+                layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
             } else {
                 layer_.specular_sample(wo_, sampler, result);
             }

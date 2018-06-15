@@ -46,7 +46,10 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        auto& material_sample = intersection.sample(wo, ray, filter, sampler_, worker);
+        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
+                                    worker.interface_stack().top_ior() == 1.f;
+
+        auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_, worker);
 
         if (treat_as_singular && material_sample.same_hemisphere(wo)) {
             result += throughput * material_sample.radiance();
@@ -55,9 +58,6 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
         if (material_sample.is_pure_emissive()) {
             break;
         }
-
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_ior() == 1.f;
 
         result += throughput *
                   direct_light(ray, intersection, material_sample, avoid_caustics, filter, worker);
@@ -73,7 +73,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
             }
         }
 
-        material_sample.sample(sampler_, avoid_caustics, sample_result);
+        material_sample.sample(sampler_, sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -162,7 +162,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             if (math::any_greater_zero(tv)) {
                 float3 const tr = worker.transmittance(shadow_ray);
 
-                auto const bxdf = material_sample.evaluate(light_sample.shape.wi, avoid_caustics);
+                auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
                 result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
                           (light.pdf * light_sample.shape.pdf);

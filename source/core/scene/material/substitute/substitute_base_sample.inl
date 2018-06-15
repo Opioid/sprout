@@ -21,13 +21,13 @@ float3 Sample_base<Diffuse, Layer_data...>::radiance() const {
 template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
-    f_float3 wi, const Coating& coating_layer, bool avoid_caustics) const {
+    f_float3 wi, const Coating& coating_layer) const {
     float3 const h        = math::normalize(wo_ + wi);
     float const  wo_dot_h = clamp_dot(wo_, h);
 
     auto const coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_);
 
-    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics);
+    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
     float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
@@ -37,7 +37,6 @@ template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(const Coating&    coating_layer,
                                                                   sampler::Sampler& sampler,
-                                                                  bool              avoid_caustics,
                                                                   bxdf::Sample&     result) const {
     float const p = sampler.generate_sample_1D();
 
@@ -46,7 +45,7 @@ void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(const Coating&
         coating_layer.sample(wo_, layer_.ior_, sampler, coating_attenuation, result);
 
         auto const base = layer_.base_evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                               avoid_caustics);
+                                               avoid_caustics_);
 
         result.reflection = result.reflection + coating_attenuation * base.reflection;
         result.pdf        = (result.pdf + 2.f * base.pdf) / 3.f;
@@ -55,7 +54,7 @@ void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(const Coating&
             pure_specular_sample_and_coating(coating_layer, sampler, result);
         } else {
             if (p < 0.75f) {
-                diffuse_sample_and_coating(coating_layer, sampler, avoid_caustics, result);
+                diffuse_sample_and_coating(coating_layer, sampler, result);
             } else {
                 specular_sample_and_coating(coating_layer, sampler, result);
             }
@@ -67,9 +66,8 @@ template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 void Sample_base<Diffuse, Layer_data...>::diffuse_sample_and_coating(const Coating& coating_layer,
                                                                      sampler::Sampler& sampler,
-                                                                     bool          avoid_caustics,
                                                                      bxdf::Sample& result) const {
-    layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
+    layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                                 layer_.ior_);

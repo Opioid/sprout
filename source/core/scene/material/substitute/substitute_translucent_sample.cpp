@@ -12,7 +12,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_translucent::evaluate(f_float3 wi, bool avoid_caustics) const {
+bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
     // No side check needed because the material is two-sided by definition.
 
     // This is a bit complicated to explain:
@@ -26,6 +26,7 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi, bool avoid_caustics) cons
     if (thickness_ > 0.f && !same_hemisphere(wi)) {
         float const  n_dot_wi              = layer_.clamp_reverse_n_dot(wi);
         float const  approximated_distance = thickness_ / n_dot_wi;
+
         float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 
         // This is the least attempt we can do at energy conservation
@@ -39,7 +40,7 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi, bool avoid_caustics) cons
     float3 const h        = math::normalize(wo_ + wi);
     float const  wo_dot_h = clamp_dot(wo_, h);
 
-    auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics);
+    auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
     if (thickness_ > 0.f) {
         result.pdf *= 0.5f;
@@ -48,7 +49,7 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi, bool avoid_caustics) cons
     return result;
 }
 
-void Sample_translucent::sample(sampler::Sampler& sampler, bool avoid_caustics,
+void Sample_translucent::sample(sampler::Sampler& sampler,
                                 bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
@@ -69,7 +70,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bool avoid_caustics,
             result.reflection *= (n_dot_wi * (1.f - f)) * attenuation;
         } else {
             if (p < 0.75f) {
-                layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
+                layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
             } else {
                 layer_.specular_sample(wo_, sampler, result);
             }
@@ -78,7 +79,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bool avoid_caustics,
         result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
-            layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
+            layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
         } else {
             layer_.specular_sample(wo_, sampler, result);
         }

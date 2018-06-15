@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_COATING_SAMPLE_INL
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_COATING_SAMPLE_INL
 
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
@@ -9,25 +10,27 @@
 namespace scene::material::substitute {
 
 template <typename Coating_layer>
-bxdf::Result Sample_coating<Coating_layer>::evaluate(f_float3 wi, bool avoid_caustics) const {
+bxdf::Result Sample_coating<Coating_layer>::evaluate(f_float3 wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
 
-    return base_and_coating_evaluate(wi, coating_, avoid_caustics);
+    return base_and_coating_evaluate(wi, coating_);
 }
 
 template <typename Coating_layer>
-void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler, bool avoid_caustics,
+void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler,
                                            bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
     }
 
-    base_and_coating_sample(coating_, sampler, avoid_caustics, result);
+    base_and_coating_sample(coating_, sampler, result);
 
     result.wavelength = 0.f;
 }
 
 }  // namespace scene::material::substitute
+
+#endif

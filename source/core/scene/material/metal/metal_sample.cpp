@@ -11,8 +11,8 @@ const material::Sample::Layer& Sample_isotropic::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample_isotropic::evaluate(f_float3 wi, bool avoid_caustics) const {
-    if (!same_hemisphere(wo_) || (avoid_caustics && layer_.alpha_ <= ggx::Min_alpha)) {
+bxdf::Result Sample_isotropic::evaluate(f_float3 wi) const {
+    if (!same_hemisphere(wo_) || (avoid_caustics_ && layer_.alpha_ <= ggx::Min_alpha)) {
         return {float3::identity(), 0.f};
     }
 
@@ -31,7 +31,7 @@ bxdf::Result Sample_isotropic::evaluate(f_float3 wi, bool avoid_caustics) const 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample_isotropic::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+void Sample_isotropic::sample(sampler::Sampler& sampler,
                               bxdf::Sample&     result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
@@ -62,7 +62,7 @@ const material::Sample::Layer& Sample_anisotropic::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample_anisotropic::evaluate(f_float3 wi, bool /*avoid_caustics*/) const {
+bxdf::Result Sample_anisotropic::evaluate(f_float3 wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -80,7 +80,7 @@ bxdf::Result Sample_anisotropic::evaluate(f_float3 wi, bool /*avoid_caustics*/) 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample_anisotropic::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+void Sample_anisotropic::sample(sampler::Sampler& sampler,
                                 bxdf::Sample&     result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;

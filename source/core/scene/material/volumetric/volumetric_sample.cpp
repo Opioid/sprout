@@ -11,13 +11,13 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 wi, bool /*avoid_caustics*/) const {
+bxdf::Result Sample::evaluate(f_float3 wi) const {
     float const phase = layer_.phase(wo_, wi);
 
     return {float3(phase), phase};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+void Sample::sample(sampler::Sampler& sampler,
                     bxdf::Sample&     result) const {
     float2 const r2 = sampler.generate_sample_2D();
     float3       dir;
