@@ -13,7 +13,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return base_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 wi) const {
+bxdf::Result Sample::evaluate(f_float3 wi, bool /*avoid_caustics*/) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -35,7 +35,8 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
     return {coating.reflection + coating.attenuation * bottom, pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+                    bxdf::Sample&     result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

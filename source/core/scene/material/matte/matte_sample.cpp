@@ -11,7 +11,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 wi) const {
+bxdf::Result Sample::evaluate(f_float3 wi, bool /*avoid_caustics*/) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
@@ -32,7 +32,8 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
     return {n_dot_wi * brdf.reflection, brdf.pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+                    bxdf::Sample&     result) const {
     //	float const n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler,
     // result);
 

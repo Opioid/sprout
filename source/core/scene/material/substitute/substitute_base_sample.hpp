@@ -13,11 +13,12 @@ class Sample_base : public material::Sample {
 
   protected:
     template <typename Coating>
-    bxdf::Result base_and_coating_evaluate(f_float3 wi, const Coating& coating_layer) const;
+    bxdf::Result base_and_coating_evaluate(f_float3 wi, const Coating& coating_layer,
+                                           bool avoid_caustics) const;
 
     template <typename Coating>
     void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler,
-                                 bxdf::Sample& result) const;
+                                 bool avoid_caustics, bxdf::Sample& result) const;
 
     template <typename Coating>
     void diffuse_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
@@ -36,7 +37,8 @@ class Sample_base : public material::Sample {
         void set(f_float3 color, f_float3 radiance, float ior, float constant_f0, float roughness,
                  float metallic);
 
-        bxdf::Result base_evaluate(f_float3 wi, f_float3 wo, f_float3 h, float wo_dot_h) const;
+        bxdf::Result base_evaluate(f_float3 wi, f_float3 wo, f_float3 h, float wo_dot_h,
+                                   bool avoid_caustics) const;
 
         void diffuse_sample(f_float3 wo, sampler::Sampler& sampler, bxdf::Sample& result) const;
 

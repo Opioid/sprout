@@ -7,7 +7,8 @@ namespace scene::material::glass {
 
 class Sample_dispersion final : public Sample {
   public:
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    virtual void sample(sampler::Sampler& sampler, bool avoid_caustics,
+                        bxdf::Sample& result) const override final;
 
     void set(float ior, float abbe, float wavelength);
 

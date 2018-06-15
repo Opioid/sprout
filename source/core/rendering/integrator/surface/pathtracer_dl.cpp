@@ -56,7 +56,10 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
             break;
         }
 
-        result += throughput * direct_light(ray, intersection, material_sample, filter, worker);
+        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray;
+
+        result += throughput *
+                  direct_light(ray, intersection, material_sample, avoid_caustics, filter, worker);
 
         if (ray.depth >= settings_.max_bounces - 1) {
             break;
@@ -69,15 +72,14 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
             }
         }
 
-        material_sample.sample(sampler_, sample_result);
+        material_sample.sample(sampler_, avoid_caustics, sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
 
         if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
             if (material_sample.ior_greater_one()) {
-                if (settings_.disable_caustics && !primary_ray &&
-                    worker.interface_stack().top_ior() == 1.f) {
+                if (avoid_caustics && worker.interface_stack().top_ior() == 1.f) {
                     break;
                 }
 
@@ -129,8 +131,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 }
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
-                                   const Material_sample& material_sample, Sampler_filter filter,
-                                   Worker& worker) {
+                                   const Material_sample& material_sample, bool avoid_caustics,
+                                   Sampler_filter filter, Worker& worker) {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -159,7 +161,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             if (math::any_greater_zero(tv)) {
                 float3 const tr = worker.transmittance(shadow_ray);
 
-                auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
+                auto const bxdf = material_sample.evaluate(light_sample.shape.wi, avoid_caustics);
 
                 result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
                           (light.pdf * light_sample.shape.pdf);
@@ -186,7 +188,7 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings
     settings_.path_continuation_probability = 1.f - path_termination_probability;
     settings_.num_light_samples             = num_light_samples;
     settings_.num_light_samples_reciprocal  = 1.f / static_cast<float>(num_light_samples);
-    settings_.disable_caustics              = !enable_caustics;
+    settings_.avoid_caustics              = !enable_caustics;
 }
 
 Pathtracer_DL_factory::~Pathtracer_DL_factory() {

@@ -95,17 +95,18 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-        bool const do_mis = worker.interface_stack().top_ior() == 1.f;
+        bool const do_mis         = worker.interface_stack().top_ior() == 1.f;
+        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray;
 
         result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
-                                             filter, worker);
+                                             avoid_caustics, filter, worker);
 
         SOFT_ASSERT(math::all_finite /*_and_positive*/ (result));
 
         float const previous_bxdf_pdf = sample_result.pdf;
 
         // Material BSDF importance sample
-        material_sample.sample(material_sampler(ray.depth), sample_result);
+        material_sample.sample(material_sampler(ray.depth), avoid_caustics, sample_result);
 
         if (0.f == sample_result.pdf) {
             break;
@@ -113,8 +114,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
             if (material_sample.ior_greater_one()) {
-                if (settings_.disable_caustics && !primary_ray &&
-                    worker.interface_stack().top_ior() == 1.f) {
+                if (avoid_caustics && worker.interface_stack().top_ior() == 1.f) {
                     break;
                 }
 
@@ -215,7 +215,7 @@ size_t Pathtracer_MIS::num_bytes() const {
 
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
                                      const Material_sample& material_sample, bool do_mis,
-                                     Sampler_filter filter, Worker& worker) {
+                                     bool avoid_caustics, Sampler_filter filter, Worker& worker) {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -230,8 +230,8 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
             auto const light = worker.scene().random_light(select);
 
-            result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis, intersection,
-                                     material_sample, filter, worker);
+            result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis,
+                                     avoid_caustics, intersection, material_sample, filter, worker);
         }
 
         result *= settings_.num_light_samples_reciprocal;
@@ -242,7 +242,8 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
             auto const& light = *lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {
                 result += evaluate_light(light, light_weight, ray, ray_offset, l, do_mis,
-                                         intersection, material_sample, filter, worker);
+                                         avoid_caustics, intersection, material_sample, filter,
+                                         worker);
             }
         }
 
@@ -254,7 +255,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
 float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ray const& history,
                                       float ray_offset, uint32_t sampler_dimension, bool do_mis,
-                                      Intersection const&    intersection,
+                                      bool avoid_caustics, Intersection const& intersection,
                                       const Material_sample& material_sample, Sampler_filter filter,
                                       Worker& worker) {
     // Light source importance sample
@@ -280,7 +281,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
         SOFT_ASSERT(math::all_finite /*_and_positive*/ (tr));
 
-        auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
+        auto const bxdf = material_sample.evaluate(light_sample.shape.wi, avoid_caustics);
 
         float const light_pdf = light_sample.shape.pdf * light_weight;
         float const weight    = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;

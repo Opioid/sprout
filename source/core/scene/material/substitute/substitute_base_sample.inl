@@ -21,13 +21,13 @@ float3 Sample_base<Diffuse, Layer_data...>::radiance() const {
 template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
-    f_float3 wi, const Coating& coating_layer) const {
+    f_float3 wi, const Coating& coating_layer, bool avoid_caustics) const {
     float3 const h        = math::normalize(wo_ + wi);
     float const  wo_dot_h = clamp_dot(wo_, h);
 
     auto const coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_);
 
-    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
+    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics);
 
     float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
@@ -37,6 +37,7 @@ template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(const Coating&    coating_layer,
                                                                   sampler::Sampler& sampler,
+                                                                  bool              avoid_caustics,
                                                                   bxdf::Sample&     result) const {
     float const p = sampler.generate_sample_1D();
 
@@ -44,7 +45,8 @@ void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(const Coating&
         float3 coating_attenuation;
         coating_layer.sample(wo_, layer_.ior_, sampler, coating_attenuation, result);
 
-        auto const base = layer_.base_evaluate(result.wi, wo_, result.h, result.h_dot_wi);
+        auto const base = layer_.base_evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                               avoid_caustics);
 
         result.reflection = result.reflection + coating_attenuation * base.reflection;
         result.pdf        = (result.pdf + 2.f * base.pdf) / 3.f;
@@ -121,12 +123,16 @@ void Sample_base<Diffuse, Layer_data...>::Layer::set(f_float3 color, f_float3 ra
 
 template <typename Diffuse, class... Layer_data>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(f_float3 wi, f_float3 wo,
-                                                                       f_float3 h,
-                                                                       float    wo_dot_h) const {
+                                                                       f_float3 h, float wo_dot_h,
+                                                                       bool avoid_caustics) const {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this);
+
+    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
+        return {n_dot_wi * d.reflection, d.pdf};
+    }
 
     float const n_dot_h = math::saturate(math::dot(n_, h));
 

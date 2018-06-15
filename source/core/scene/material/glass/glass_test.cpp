@@ -104,7 +104,7 @@ void rough_refraction() {
     print(result);
 
     if (result.pdf > 0.f) {
-        bxdf::Result eval = sample.evaluate(result.wi);
+        bxdf::Result eval = sample.evaluate(result.wi, false);
         print(eval);
     }
 }

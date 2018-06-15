@@ -16,11 +16,12 @@ const material::Sample::Layer& Sample_thin::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample_thin::evaluate(f_float3 /*wi*/) const {
+bxdf::Result Sample_thin::evaluate(f_float3 /*wi*/, bool /*avoid_caustics*/) const {
     return {float3::identity(), 0.f};
 }
 
-void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_thin::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+                         bxdf::Sample&     result) const {
     float const p = sampler.generate_sample_1D();
 
     if (p < 0.5f) {

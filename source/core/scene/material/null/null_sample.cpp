@@ -9,11 +9,12 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 /*wi*/) const {
-    return {float3(0.f), 0.f};
+bxdf::Result Sample::evaluate(f_float3 /*wi*/, bool /*avoid_caustics*/) const {
+    return {float3::identity(), 0.f};
 }
 
-void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& /*sampler*/, bool /*avoid_caustics*/,
+                    bxdf::Sample& result) const {
     result.reflection = float3(1.f);
     result.wi         = -wo_;
     result.pdf        = 1.f;

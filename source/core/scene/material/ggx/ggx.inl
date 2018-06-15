@@ -25,6 +25,7 @@ constexpr float Min_roughness = 0.01314f;
 
 // constexpr float Min_alpha2 = 0.0000000299f;
 
+constexpr float Min_alpha  = Min_roughness * Min_roughness;
 constexpr float Min_alpha2 = Min_roughness * Min_roughness * Min_roughness * Min_roughness;
 
 static inline float clamp_roughness(float roughness) {
@@ -341,7 +342,9 @@ float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, Fresne
     result.h          = h;
     result.pdf        = pdf_visible(d, g[1]);
     result.h_dot_wi   = wo_dot_h;
-    result.type.clear(bxdf::Type::Glossy_reflection);
+    //    result.type.clear(bxdf::Type::Glossy_reflection);
+    result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_reflection
+                                         : bxdf::Type::Glossy_reflection);
 
     SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
 

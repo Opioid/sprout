@@ -12,10 +12,10 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
+bxdf::Result Sample_translucent::evaluate(f_float3 wi, bool avoid_caustics) const {
     // No side check needed because the material is two-sided by definition.
 
-    // This is a bit complicated to understand:
+    // This is a bit complicated to explain:
     // If the material does not have transmission,
     // we will never get a wi which is in the wrong hemisphere,
     // because that case is handled before coming here,
@@ -39,7 +39,7 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
     float3 const h        = math::normalize(wo_ + wi);
     float const  wo_dot_h = clamp_dot(wo_, h);
 
-    auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
+    auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics);
 
     if (thickness_ > 0.f) {
         result.pdf *= 0.5f;
@@ -48,7 +48,8 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
     return result;
 }
 
-void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_translucent::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+                                bxdf::Sample&     result) const {
     // No side check needed because the material is two-sided by definition.
 
     float const p = sampler.generate_sample_1D();

@@ -9,7 +9,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample::evaluate(f_float3 wi) const {
+bxdf::Result Sample::evaluate(f_float3 wi, bool avoid_caustics) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -17,10 +17,11 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
     float3 const h        = math::normalize(wo_ + wi);
     float const  wo_dot_h = clamp_dot(wo_, h);
 
-    return layer_.base_evaluate(wi, wo_, h, wo_dot_h);
+    return layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics);
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+                    bxdf::Sample&     result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

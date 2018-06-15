@@ -19,9 +19,9 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample_rough::evaluate(f_float3 wi) const {
+bxdf::Result Sample_rough::evaluate(f_float3 wi, bool /*avoid_caustics*/) const {
     if (!same_hemisphere(wo_)) {
-        return {float3(0.f), 0.f};
+        return {float3::identity(), 0.f};
     }
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
@@ -38,7 +38,8 @@ bxdf::Result Sample_rough::evaluate(f_float3 wi) const {
     return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
 }
 
-void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_rough::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
+                          bxdf::Sample&     result) const {
     //	float const p = sampler.generate_sample_1D();
 
     //	if (p < 0.5f) {

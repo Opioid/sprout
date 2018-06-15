@@ -19,7 +19,7 @@ class alignas(64) Pathtracer final : public Integrator {
         uint32_t max_bounces;
         float    path_continuation_probability;
 
-        bool disable_caustics;
+        bool avoid_caustics;
     };
 
     Pathtracer(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
