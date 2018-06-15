@@ -55,7 +55,7 @@ void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(const Coating&
             pure_specular_sample_and_coating(coating_layer, sampler, result);
         } else {
             if (p < 0.75f) {
-                diffuse_sample_and_coating(coating_layer, sampler, result);
+                diffuse_sample_and_coating(coating_layer, sampler, avoid_caustics, result);
             } else {
                 specular_sample_and_coating(coating_layer, sampler, result);
             }
@@ -67,8 +67,9 @@ template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 void Sample_base<Diffuse, Layer_data...>::diffuse_sample_and_coating(const Coating& coating_layer,
                                                                      sampler::Sampler& sampler,
+                                                                     bool          avoid_caustics,
                                                                      bxdf::Sample& result) const {
-    layer_.diffuse_sample(wo_, sampler, result);
+    layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                                 layer_.ior_);
@@ -153,9 +154,15 @@ bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(f_float3 
 template <typename Diffuse, class... Layer_data>
 void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(f_float3          wo,
                                                                 sampler::Sampler& sampler,
+                                                                bool              avoid_caustics,
                                                                 bxdf::Sample&     result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
+
+    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
+        result.reflection *= n_dot_wi;
+        return;
+    }
 
     float const n_dot_h = math::saturate(math::dot(n_, result.h));
 

@@ -22,8 +22,8 @@ bxdf::Result Sample_subsurface::evaluate(f_float3 wi, bool avoid_caustics) const
     return result;
 }
 
-void Sample_subsurface::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
-                               bxdf::Sample&     result) const {
+void Sample_subsurface::sample(sampler::Sampler& sampler, bool avoid_caustics,
+                               bxdf::Sample& result) const {
     bool const same_side = same_hemisphere(wo_);
 
     float const p = sampler.generate_sample_1D();
@@ -33,7 +33,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bool /*avoid_caustics*
             refract(same_side, layer_, sampler, result);
         } else {
             if (p < 0.75f) {
-                layer_.diffuse_sample(wo_, sampler, result);
+                layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
             } else {
                 layer_.specular_sample(wo_, sampler, result);
             }

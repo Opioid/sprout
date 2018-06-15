@@ -56,7 +56,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
             break;
         }
 
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray;
+        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
+                                    worker.interface_stack().top_ior() == 1.f;
 
         result += throughput *
                   direct_light(ray, intersection, material_sample, avoid_caustics, filter, worker);
@@ -79,7 +80,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
         if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
             if (material_sample.ior_greater_one()) {
-                if (avoid_caustics && worker.interface_stack().top_ior() == 1.f) {
+                if (avoid_caustics) {
                     break;
                 }
 
@@ -188,7 +189,7 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings
     settings_.path_continuation_probability = 1.f - path_termination_probability;
     settings_.num_light_samples             = num_light_samples;
     settings_.num_light_samples_reciprocal  = 1.f / static_cast<float>(num_light_samples);
-    settings_.avoid_caustics              = !enable_caustics;
+    settings_.avoid_caustics                = !enable_caustics;
 }
 
 Pathtracer_DL_factory::~Pathtracer_DL_factory() {

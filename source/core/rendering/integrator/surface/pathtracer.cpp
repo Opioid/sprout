@@ -76,7 +76,8 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
             }
         }
 
-        const bool avoid_caustics = settings_.avoid_caustics && !primary_ray;
+        const bool avoid_caustics = settings_.avoid_caustics && !primary_ray &&
+                                    worker.interface_stack().top_ior() == 1.f;
 
         material_sample.sample(material_sampler(ray.depth), avoid_caustics, sample_result);
         if (0.f == sample_result.pdf) {
@@ -87,8 +88,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
                                                           Bxdf_type::Transmission);
 
         if (singular) {
-            if (avoid_caustics && material_sample.ior_greater_one() &&
-                worker.interface_stack().top_ior() == 1.f) {
+            if (avoid_caustics && material_sample.ior_greater_one()) {
                 break;
             }
         } else {

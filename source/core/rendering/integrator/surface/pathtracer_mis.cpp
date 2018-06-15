@@ -96,7 +96,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
         bool const do_mis         = worker.interface_stack().top_ior() == 1.f;
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray;
+        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
+                                    worker.interface_stack().top_ior() == 1.f;
 
         result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
                                              avoid_caustics, filter, worker);
@@ -107,14 +108,13 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         // Material BSDF importance sample
         material_sample.sample(material_sampler(ray.depth), avoid_caustics, sample_result);
-
         if (0.f == sample_result.pdf) {
             break;
         }
 
         if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
             if (material_sample.ior_greater_one()) {
-                if (avoid_caustics && worker.interface_stack().top_ior() == 1.f) {
+                if (avoid_caustics) {
                     break;
                 }
 

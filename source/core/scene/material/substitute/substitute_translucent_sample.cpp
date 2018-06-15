@@ -48,8 +48,8 @@ bxdf::Result Sample_translucent::evaluate(f_float3 wi, bool avoid_caustics) cons
     return result;
 }
 
-void Sample_translucent::sample(sampler::Sampler& sampler, bool /*avoid_caustics*/,
-                                bxdf::Sample&     result) const {
+void Sample_translucent::sample(sampler::Sampler& sampler, bool avoid_caustics,
+                                bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
     float const p = sampler.generate_sample_1D();
@@ -69,7 +69,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bool /*avoid_caustics
             result.reflection *= (n_dot_wi * (1.f - f)) * attenuation;
         } else {
             if (p < 0.75f) {
-                layer_.diffuse_sample(wo_, sampler, result);
+                layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
             } else {
                 layer_.specular_sample(wo_, sampler, result);
             }
@@ -78,7 +78,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bool /*avoid_caustics
         result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
-            layer_.diffuse_sample(wo_, sampler, result);
+            layer_.diffuse_sample(wo_, sampler, avoid_caustics, result);
         } else {
             layer_.specular_sample(wo_, sampler, result);
         }

@@ -11,8 +11,8 @@ const material::Sample::Layer& Sample_isotropic::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample_isotropic::evaluate(f_float3 wi, bool /*avoid_caustics*/) const {
-    if (!same_hemisphere(wo_)) {
+bxdf::Result Sample_isotropic::evaluate(f_float3 wi, bool avoid_caustics) const {
+    if (!same_hemisphere(wo_) || (avoid_caustics && layer_.alpha_ <= ggx::Min_alpha)) {
         return {float3::identity(), 0.f};
     }
 
