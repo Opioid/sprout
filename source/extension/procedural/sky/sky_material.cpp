@@ -26,7 +26,7 @@ using namespace scene;
 
 Sky_material::Sky_material(Model& model) : Material(model) {}
 
-const material::Sample& Sky_material::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Sky_material::sample(f_float3 wo, Renderstate const& rs,
                                              Sampler_filter /*filter*/,
                                              sampler::Sampler& /*sampler*/, Worker const& worker,
                                              uint32_t depth) const {
@@ -68,7 +68,7 @@ Sky_baked_material::Sky_baked_material(Model& model) : Material(model) {}
 
 Sky_baked_material::~Sky_baked_material() {}
 
-const material::Sample& Sky_baked_material::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Sky_baked_material::sample(f_float3 wo, Renderstate const& rs,
                                                    Sampler_filter filter,
                                                    sampler::Sampler& /*sampler*/,
                                                    Worker const& worker, uint32_t depth) const {

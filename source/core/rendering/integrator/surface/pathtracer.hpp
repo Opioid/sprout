@@ -3,12 +3,7 @@
 
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
-#include "scene/scene_ray.hpp"
 #include "surface_integrator.hpp"
-
-namespace scene::light {
-struct Sample;
-}
 
 namespace rendering::integrator::surface {
 

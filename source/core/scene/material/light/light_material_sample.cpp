@@ -27,7 +27,7 @@ bool Sample::is_pure_emissive() const {
     return true;
 }
 
-void Sample::Layer::set(float3 const& radiance) {
+void Sample::Layer::set(f_float3 radiance) {
     radiance_ = radiance;
 }
 

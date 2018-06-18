@@ -5,10 +5,6 @@
 #include "scene/material/sampler_settings.hpp"
 #include "surface_integrator.hpp"
 
-namespace scene::material {
-class Sample;
-}
-
 namespace rendering::integrator::surface {
 
 class alignas(64) Pathtracer_DL final : public Integrator {

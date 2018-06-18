@@ -10,7 +10,7 @@ class Material : public material::Material {
     Material(Sampler_settings const& sampler_settings);
     virtual ~Material() override;
 
-    virtual const material::Sample& sample(f_float3 wo, Renderstate const& rs,
+    virtual material::Sample const& sample(f_float3 wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
                                            Worker const& worker,
                                            uint32_t      depth) const override final;

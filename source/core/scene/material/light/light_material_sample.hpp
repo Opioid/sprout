@@ -18,7 +18,7 @@ class Sample : public material::Sample {
     virtual bool is_pure_emissive() const override final;
 
     struct Layer : public material::Sample::Layer {
-        void set(float3 const& radiance);
+        void set(f_float3 radiance);
 
         float3 radiance_;
     };

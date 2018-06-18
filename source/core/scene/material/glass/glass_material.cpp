@@ -12,7 +12,7 @@ namespace scene::material::glass {
 
 Glass::Glass(Sampler_settings const& sampler_settings) : Material(sampler_settings, false) {}
 
-const material::Sample& Glass::sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
+material::Sample const& Glass::sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
                                       sampler::Sampler& /*sampler*/, Worker const& worker,
                                       uint32_t depth) const {
     auto& sample = worker.sample<Sample>(depth);

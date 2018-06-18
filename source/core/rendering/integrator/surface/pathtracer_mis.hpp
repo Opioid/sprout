@@ -4,18 +4,6 @@
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
-#include "scene/scene_ray.hpp"
-
-namespace scene {
-
-namespace light {
-class Light;
-}
-namespace material {
-class Sample;
-}
-
-}  // namespace scene
 
 namespace rendering::integrator::surface {
 
