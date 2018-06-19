@@ -14,7 +14,6 @@ Golden_ratio::Golden_ratio(rnd::Generator& rng)
     : Sampler(rng), samples_2D_(nullptr), samples_1D_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
-    memory::free_aligned(samples_1D_);
     memory::free_aligned(samples_2D_);
 }
 
@@ -47,17 +46,20 @@ size_t Golden_ratio::num_bytes() const {
 }
 
 void Golden_ratio::on_resize() {
-    memory::free_aligned(samples_1D_);
     memory::free_aligned(samples_2D_);
 
-    samples_2D_ = memory::allocate_aligned<float2>(num_samples_ * num_dimensions_2D_);
-    samples_1D_ = memory::allocate_aligned<float>(num_samples_ * num_dimensions_1D_);
+    float* buffer = memory::allocate_aligned<float>(num_samples_ * 2 * num_dimensions_2D_ +
+                                                    num_samples_ * num_dimensions_1D_);
+
+    samples_2D_ = reinterpret_cast<float2*>(buffer);
+    samples_1D_ = buffer + num_samples_ * 2 * num_dimensions_2D_;
 }
 
 void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
-        float2*      begin = samples_2D_ + i * num_samples_;
         float2 const r(scramble.random_float(), scramble.random_float());
+
+        float2* begin = samples_2D_ + i * num_samples_;
         math::golden_ratio(begin, num_samples_, r);
         rnd::biased_shuffle(begin, num_samples_, scramble);
     }

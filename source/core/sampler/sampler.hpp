@@ -39,8 +39,9 @@ class Sampler {
     virtual void on_resume_pixel(rnd::Generator& scramble) = 0;
 
     rnd::Generator& rng_;
-    uint32_t        num_samples_;
-    uint32_t        num_samples_per_iteration_;
+
+    uint32_t num_samples_;
+    uint32_t num_samples_per_iteration_;
 
     uint32_t num_dimensions_2D_;
     uint32_t num_dimensions_1D_;
