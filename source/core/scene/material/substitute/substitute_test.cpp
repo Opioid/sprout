@@ -27,19 +27,17 @@ struct Setup {
 };
 
 void test() {
-    rnd::Generator    rng;
-    sampler::Constant sampler(rng);
+    rnd::Generator  rng;
+    sampler::Random sampler(rng);
     sampler.resize(0, 1, 1, 1);
-    sampler.set(float2(0.018222f, 0.626882f));
-    sampler.set(1.f);
 
     std::cout << "substitute::testing::test()" << std::endl;
 
     Setup setup;
 
-    float3 t(0.999755f, 0.015535f, -0.0157584f);
-    float3 b(-0.015535f, -0.0144017f, -0.999776f);
-    float3 n(-0.0157584f, 0.999776f, -0.0141569f);
+    float3 t(1.f, 0.f, 0.f);
+    float3 b(0.f, 1.f, 0.f);
+    float3 n(0.f, 0.f, 1.f);
 
     //	float3 t(0.f, 0.500185f, 0.865919f);
     //	float3 b(-0.979966f, -0.172462f, 0.0996202f);
@@ -47,10 +45,12 @@ void test() {
 
     //	float3 arbitrary = math::normalize(float3(0.5f, 0.5f, 0.5f));
 
-    float3 wo = float3(0.493474f, 0.129845f, -0.860014f);
-    float3 wi = float3(0.f, 1.f, 0.f);
+    float3 wo = math::normalize(float3(0.4f, 0.4f, 0.6f));
+    float3 wi = math::normalize(float3(0.f, 0.f, 1.f));
 
     setup.test(wi, wo, t, b, n, sampler);
+
+    setup.test(wo, wi, t, b, n, sampler);
 
     /*
     setup.test(t, t, t, b, n, sampler);
@@ -120,20 +120,21 @@ void Setup::test(f_float3 wi, f_float3 wo, float3 const& t, float3 const& b, flo
 
     sample.layer_.set(color, radiance, ior, constant_f0, roughness, metallic);
 
-    std::cout << sample.layer_.alpha2_ << std::endl;
-
     sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);
 
     {
-        auto const result = sample.evaluate(wi);
+        auto /*const*/ result = sample.evaluate(wi);
+
+        result.reflection *= math::dot(n, wo);
+
         print(result);
     }
 
-    bxdf::Sample result;
-    sample.sample(sampler, result);
+    //    bxdf::Sample result;
+    //    sample.sample(sampler, result);
 
-    print(result);
+    //    print(result);
 }
 
 }  // namespace scene::material::substitute::testing

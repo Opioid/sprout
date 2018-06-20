@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_DISNEY_INL
+#define SU_CORE_SCENE_MATERIAL_DISNEY_INL
 
 #include "base/math/math.hpp"
 #include "base/math/sampling/sampling.hpp"
@@ -188,3 +189,5 @@ float3 Isotropic_scaled_lambert::evaluate(float h_dot_wi, float n_dot_wi, float 
 }
 
 }  // namespace scene::material::disney
+
+#endif

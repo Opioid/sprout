@@ -55,6 +55,8 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
     float3 const wo = -ray.direction;
 
+    float3 const first_hit = intersection.geo.p;
+
     auto const& first_sample = intersection.sample(wo, ray, filter, false, sampler_, worker, 1);
 
     if (first_sample.same_hemisphere(wo)) {
@@ -65,6 +67,8 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
         return result;
     }
 
+    //  result += direct_light(ray, intersection, first_sample, filter, worker);
+
     Ray    light_ray;
     float3 radiance;
 
@@ -74,8 +78,18 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
     float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-    result = radiance * connect(light_ray.origin, intersection.geo.p, first_sample, light_ray,
-                                ray_offset, worker);
+    if (!worker.intersect_and_resolve_mask(light_ray, intersection, filter)) {
+        return result;
+    }
+
+    auto const& sample = intersection.sample(-light_ray.direction, ray, filter, false, sampler_,
+                                             worker);
+
+    result += radiance *
+              connect(intersection.geo.p, first_hit, sample, first_sample, ray, ray_offset, worker);
+
+    //   result = radiance * connect(light_ray.origin, intersection.geo.p, first_sample, light_ray,
+    //                              ray_offset, worker);
 
     /*
     if (!worker.intersect_and_resolve_mask(light_ray, intersection, filter)) {
@@ -147,7 +161,7 @@ bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float
 
 float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& sample,
                             Ray const& history, float ray_offset, Worker& worker) {
-    float3 const axis = from - to;
+    float3 const axis = to - from;
 
     float3 const wi = math::normalize(axis);
 
@@ -166,16 +180,77 @@ float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& s
 
         // ----
 
-        float sl = math::squared_length(axis);
-
-        float const thong = (sl / (thing * 0.0484f));
-
         auto const bxdf = sample.evaluate(wi);
 
-        return (thing / thong) * (tv * tr) * bxdf.reflection;  // / (1.f / bxdf.pdf);
+        return thing * (tv * tr) * bxdf.reflection;
     }
 
     return float3(0.f);
+}
+
+float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& from_sample,
+                            Material_sample const& to_sample, Ray const& history, float ray_offset,
+                            Worker& worker) {
+    float3 const axis = to - from;
+
+    float3 const wi = math::normalize(axis);
+
+    Ray shadow_ray(to, wi, ray_offset, math::length(axis) - ray_offset, history.depth, history.time,
+                   history.wavelength);
+
+    float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+    if (math::any_greater_zero(tv)) {
+        float3 const tr = worker.transmittance(shadow_ray);
+
+        auto const from_bxdf = from_sample.evaluate(wi);
+        auto const to_bxdf   = to_sample.evaluate(-wi);
+
+        return from_bxdf.reflection * to_bxdf.reflection;
+    }
+
+    return float3(0.f);
+}
+
+float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersection,
+                                 const Material_sample& material_sample, Sampler_filter filter,
+                                 Worker& worker) {
+    float3 result(0.f);
+
+    if (!material_sample.ior_greater_one()) {
+        return result;
+    }
+
+    Ray shadow_ray;
+    shadow_ray.origin = intersection.geo.p;
+    shadow_ray.min_t  = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+    shadow_ray.depth  = ray.depth + 1;
+    shadow_ray.time   = ray.time;
+
+    for (uint32_t i = 1; i > 0; --i) {
+        auto const light = worker.scene().random_light(rng_.random_float());
+
+        scene::light::Sample_to light_sample;
+        if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+                             material_sample.is_translucent(), sampler_, 0, Sampler_filter::Nearest,
+                             worker, light_sample)) {
+            shadow_ray.set_direction(light_sample.shape.wi);
+            float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+            shadow_ray.max_t   = light_sample.shape.t - offset;
+
+            //	float3 const tv = worker.tinted_visibility(shadow_ray, filter);
+            float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
+            if (math::any_greater_zero(tv)) {
+                float3 const tr = worker.transmittance(shadow_ray);
+
+                auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
+
+                result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
+                          (light.pdf * light_sample.shape.pdf);
+            }
+        }
+    }
+
+    return result;
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
