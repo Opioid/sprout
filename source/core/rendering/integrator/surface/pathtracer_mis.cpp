@@ -186,7 +186,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
             }
         }
 
-        if (ray.depth >= max_bounces - 1) {
+        if (ray.depth >= max_bounces) {
             break;
         }
 
