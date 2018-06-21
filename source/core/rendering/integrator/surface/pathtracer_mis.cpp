@@ -275,12 +275,12 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
     float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 
-    SOFT_ASSERT(math::all_finite /*_and_positive*/ (tv));
+    SOFT_ASSERT(math::all_finite(tv));
 
     if (math::any_greater_zero(tv)) {
         float3 const tr = worker.transmittance(shadow_ray);
 
-        SOFT_ASSERT(math::all_finite /*_and_positive*/ (tr));
+        SOFT_ASSERT(math::all_finite(tr));
 
         auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
