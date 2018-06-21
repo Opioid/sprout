@@ -99,7 +99,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-        bool const do_mis = false;  // worker.interface_stack().top_is_vacuum();
+        bool const do_mis = worker.interface_stack().top_is_vacuum();
 
         result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
                                              filter, worker);
