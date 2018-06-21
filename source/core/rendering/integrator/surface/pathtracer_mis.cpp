@@ -99,7 +99,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-        bool const do_mis = worker.interface_stack().top_is_vacuum();
+        bool const do_mis = false;  // worker.interface_stack().top_is_vacuum();
 
         result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
                                              filter, worker);
@@ -136,17 +136,17 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         }
 
         if (material_sample.ior_greater_one()) {
+            throughput *= sample_result.reflection / sample_result.pdf;
+
             ray.origin = intersection.geo.p;
             ray.set_direction(sample_result.wi);
             ray.min_t = ray_offset;
-            ray.max_t = scene::Ray_max_t;
             ++ray.depth;
         } else {
             ray.min_t = ray.max_t + ray_offset;
-            ray.max_t = scene::Ray_max_t;
         }
 
-        throughput *= sample_result.reflection / sample_result.pdf;
+        ray.max_t = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
