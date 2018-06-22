@@ -93,28 +93,27 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
             treat_as_singular = false;
         }
 
-        throughput *= sample_result.reflection / sample_result.pdf;
-
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
         if (material_sample.ior_greater_one()) {
+            throughput *= sample_result.reflection / sample_result.pdf;
+
             ray.origin = intersection.geo.p;
             ray.set_direction(sample_result.wi);
             ray.min_t = ray_offset;
-            ray.max_t = scene::Ray_max_t;
             ++ray.depth;
         } else {
             ray.min_t = ray.max_t + ray_offset;
-            ray.max_t = scene::Ray_max_t;
         }
+
+        ray.max_t = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         }
 
         if (!worker.interface_stack().empty()) {
-            float3     vli;
-            float3     vtr;
+            float3     vli, vtr;
             bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             result += throughput * vli;

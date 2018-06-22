@@ -19,7 +19,7 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
     : light::Emissionmap_animated(sampler_settings, two_sided, emission_map, emission_factor,
                                   animation_duration) {}
 
-const material::Sample& Emissionmap_animated::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Emissionmap_animated::sample(f_float3 wo, Renderstate const& rs,
                                                      Sampler_filter filter,
                                                      sampler::Sampler& /*sampler*/,
                                                      Worker const& worker, uint32_t depth) const {

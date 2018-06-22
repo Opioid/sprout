@@ -13,7 +13,7 @@ namespace scene::material::metal {
 Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-const material::Sample& Material_isotropic::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Material_isotropic::sample(f_float3 wo, Renderstate const& rs,
                                                    Sampler_filter filter,
                                                    sampler::Sampler& /*sampler*/,
                                                    Worker const& worker, uint32_t depth) const {
@@ -66,7 +66,7 @@ size_t Material_isotropic::sample_size() {
 Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-const material::Sample& Material_anisotropic::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Material_anisotropic::sample(f_float3 wo, Renderstate const& rs,
                                                      Sampler_filter filter,
                                                      sampler::Sampler& /*sampler*/,
                                                      Worker const& worker, uint32_t depth) const {

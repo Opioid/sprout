@@ -3,12 +3,7 @@
 
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
-#include "scene/scene_ray.hpp"
 #include "surface_integrator.hpp"
-
-namespace scene::light {
-struct Sample;
-}
 
 namespace rendering::integrator::surface {
 
@@ -35,6 +30,17 @@ class alignas(64) Lighttracer final : public Integrator {
   private:
     bool generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance);
 
+    float3 connect(f_float3 from, f_float3 to, Material_sample const& sample, Ray const& history,
+                   float ray_offst, Worker& worker);
+
+    float3 connect(f_float3 from, f_float3 to, Material_sample const& from_sample,
+                   Material_sample const& to_sample, Ray const& history, float ray_offset,
+                   Worker& worker);
+
+    float3 direct_light(Ray const& ray, Intersection const& intersection,
+                        const Material_sample& material_sample, Sampler_filter filter,
+                        Worker& worker);
+
     sampler::Sampler& material_sampler(uint32_t bounce);
 
     const Settings settings_;
@@ -54,6 +60,8 @@ class Lighttracer_factory final : public Factory {
     virtual ~Lighttracer_factory() override final;
 
     virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
+
+    virtual uint32_t max_sample_depth() const override final;
 
   private:
     Lighttracer* integrators_;

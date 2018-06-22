@@ -199,10 +199,10 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
     // Roughness zero will always have zero specular term (or worse NaN)
     SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
-    float const  alpha2 = layer.alpha2_;
-    float const  d      = distribution_isotropic(n_dot_h, alpha2);
-    float2 const g      = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
-    float3 const f      = fresnel(wo_dot_h);
+    float const  a2 = layer.alpha2_;
+    float const  d  = distribution_isotropic(n_dot_h, a2);
+    float2 const g  = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, a2);
+    float3 const f  = fresnel(wo_dot_h);
 
     fresnel_result = f;
 

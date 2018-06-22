@@ -283,7 +283,7 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& tran
     return true;
 }
 
-bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, float /*area*/,
+bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                        bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
                        Node_stack& /*node_stack*/, Sample_from& sample) const {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
@@ -298,9 +298,10 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_uniform(r1, transformation.rotation);
 
-    sample.p       = ws;
-    sample.dir     = dir;
-    sample.pdf     = math::dot(dir, transformation.rotation.r[0]);
+    sample.p   = ws;
+    sample.dir = dir;
+    sample.pdf = math::dot(dir, transformation.rotation.r[2]) * math::Pi_inv *
+                 (1.f / area);  // 1.f / (/*math::dot(dir, transformation.rotation.r[2]) **/ area);
     sample.epsilon = 5e-4f;
 
     return true;

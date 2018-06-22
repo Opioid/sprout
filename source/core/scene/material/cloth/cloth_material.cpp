@@ -11,7 +11,7 @@ namespace scene::material::cloth {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
-const material::Sample& Material::sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
+material::Sample const& Material::sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
                                          sampler::Sampler& /*sampler*/, Worker const& worker,
                                          uint32_t depth) const {
     auto& sample = worker.sample<Sample>(depth);

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_DISNEY_HPP
+#define SU_CORE_SCENE_MATERIAL_DISNEY_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -6,8 +7,7 @@ namespace sampler {
 class Sampler;
 }
 
-namespace scene {
-namespace material {
+namespace scene ::material {
 
 namespace bxdf {
 struct Result;
@@ -68,5 +68,6 @@ class Isotropic_scaled_lambert {
 };
 
 }  // namespace disney
-}  // namespace material
-}  // namespace scene
+}  // namespace scene::material
+
+#endif

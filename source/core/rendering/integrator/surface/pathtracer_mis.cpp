@@ -104,7 +104,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
                                              filter, worker);
 
-        SOFT_ASSERT(math::all_finite /*_and_positive*/ (result));
+        SOFT_ASSERT(math::all_finite(result));
 
         float const previous_bxdf_pdf = sample_result.pdf;
 
@@ -136,25 +136,24 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         }
 
         if (material_sample.ior_greater_one()) {
+            throughput *= sample_result.reflection / sample_result.pdf;
+
             ray.origin = intersection.geo.p;
             ray.set_direction(sample_result.wi);
             ray.min_t = ray_offset;
-            ray.max_t = scene::Ray_max_t;
             ++ray.depth;
         } else {
             ray.min_t = ray.max_t + ray_offset;
-            ray.max_t = scene::Ray_max_t;
         }
 
-        throughput *= sample_result.reflection / sample_result.pdf;
+        ray.max_t = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         }
 
         if (!worker.interface_stack().empty()) {
-            float3     vli;
-            float3     vtr;
+            float3     vli, vtr;
             bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             result += throughput * vli;
@@ -167,7 +166,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
             break;
         }
 
-        SOFT_ASSERT(math::all_finite /*_and_positive*/ (result));
+        SOFT_ASSERT(math::all_finite(result));
 
         if (!material_sample.ior_greater_one() && !treat_as_singular) {
             sample_result.pdf = previous_bxdf_pdf;
@@ -186,7 +185,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
             }
         }
 
-        if (ray.depth >= max_bounces - 1) {
+        if (ray.depth >= max_bounces) {
             break;
         }
 
@@ -275,12 +274,12 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
     float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
 
-    SOFT_ASSERT(math::all_finite /*_and_positive*/ (tv));
+    SOFT_ASSERT(math::all_finite(tv));
 
     if (math::any_greater_zero(tv)) {
         float3 const tr = worker.transmittance(shadow_ray);
 
-        SOFT_ASSERT(math::all_finite /*_and_positive*/ (tr));
+        SOFT_ASSERT(math::all_finite(tr));
 
         auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
