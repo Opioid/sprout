@@ -11,16 +11,20 @@ void Json_handler::clear(bool read_indices) {
     read_indices_ = read_indices;
     object_level_ = 0;
     top_object_   = Object::Undefined;
+
     vertices_.clear();
     triangles_.clear();
     parts_.clear();
+
     expected_number_          = Number::Undefined;
     expected_string_          = String_type::Undefined;
     expected_object_          = Object::Undefined;
+
     current_vertex_           = 0;
     current_vertex_element_   = 0;
     current_triangle_         = 0;
     current_triangle_element_ = 0;
+
     has_positions_            = false;
     has_normals_              = false;
     has_tangents_             = false;
@@ -135,7 +139,8 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
 
             if (!parts_.empty()) {
                 auto&    p             = parts_.back();
-                uint32_t num_triangles = (p.start_index + p.num_indices) / 3;
+
+                uint32_t const num_triangles = (p.start_index + p.num_indices) / 3;
                 vertices_.reserve(static_cast<size_t>(0.7f * static_cast<float>(num_triangles)));
             }
 
@@ -151,7 +156,8 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
 
                 if (!parts_.empty()) {
                     auto&    p             = parts_.back();
-                    uint32_t num_triangles = (p.start_index + p.num_indices) / 3;
+
+                    uint32_t const num_triangles = (p.start_index + p.num_indices) / 3;
                     triangles_.reserve(num_triangles);
                 }
             } else {
