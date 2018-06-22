@@ -54,8 +54,8 @@ class Tracking {
                       float3& w);
 
   private:
-    static float3 track(math::Ray const& ray, float mt, Material const& material,
-                        Sampler_filter filter, rnd::Generator& rng, Worker& worker);
+    static float3 track_transmittance(math::Ray const& ray, float mt, Material const& material,
+                                      Sampler_filter filter, rnd::Generator& rng, Worker& worker);
 };
 
 }  // namespace integrator::volume

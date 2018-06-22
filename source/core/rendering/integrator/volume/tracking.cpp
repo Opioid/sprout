@@ -48,7 +48,8 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
             float3 w(1.f);
             for (; local_ray.min_t < d;) {
                 if (float mt; tree->intersect_f(local_ray, mt)) {
-                    w *= track(local_ray, mt, material, Sampler_filter::Nearest, rng, worker);
+                    w *= track_transmittance(local_ray, mt, material, Sampler_filter::Nearest, rng,
+                                             worker);
                 }
 
                 //	SOFT_ASSERT(math::all_finite(w));
@@ -117,11 +118,13 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
 
     float3 lw = w;
 
+    float const imt = 1.f / mt;
+
     float const d = ray.max_t;
 
     for (float t = ray.min_t;;) {
         float const r0 = rng.random_float();
-        t -= std::log(1.f - r0) / mt;
+        t -= std::log(1.f - r0) * imt;
         if (t > d) {
             w = lw;
             return false;
@@ -161,8 +164,8 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
     }
 }
 
-float3 Tracking::track(math::Ray const& ray, float mt, Material const& material,
-                       Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
+float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material const& material,
+                                     Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
     float3 w(1.f);
 
     if (0.f == mt) {
