@@ -300,7 +300,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
             if (t > d) {
                 li            = float3(0.f);
                 transmittance = w;
-                //	weight = float3(1.f);
+
+                // transmittance = float3(1.f);
+                // weight = w;
                 return true;
             }
 
@@ -326,8 +328,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                 float3 const ws = mu.s / (mt * ps);
 
                 li = float3(0.f);
-                //	transmittance = float3(1.f);
-                //	weight = w * ws;
+                //	transmittance = w * ws;
+                //	weight = 1.f / transmittance;
                 transmittance = w * ws;
                 return true;
             } else {
