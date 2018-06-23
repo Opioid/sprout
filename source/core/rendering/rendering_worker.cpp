@@ -3,6 +3,8 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/photon/photon_map.hpp"
+#include "rendering/integrator/photon/photon_mapper.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"
@@ -19,28 +21,36 @@
 namespace rendering {
 
 Worker::~Worker() {
+    delete photon_mapper_;
     memory::safe_destruct(sampler_);
     memory::safe_destruct(volume_integrator_);
     memory::safe_destruct(surface_integrator_);
 }
 
 void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene const& scene,
-                  uint32_t                      max_sample_size,
+                  uint32_t max_material_sample_size, uint32_t num_samples_per_pixel,
                   integrator::surface::Factory& surface_integrator_factory,
                   integrator::volume::Factory&  volume_integrator_factory,
-                  sampler::Factory&             sampler_factory) {
-    scene::Worker::init(id, settings, scene, max_sample_size,
+                  sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
+                  take::Photon_settings const& photon_settings_, uint32_t local_num_photons) {
+    scene::Worker::init(id, settings, scene, max_material_sample_size,
                         surface_integrator_factory.max_sample_depth());
 
     surface_integrator_ = surface_integrator_factory.create(id, rng_);
-    volume_integrator_  = volume_integrator_factory.create(id, rng_);
-    sampler_            = sampler_factory.create(id, rng_);
-}
+    surface_integrator_->prepare(scene, num_samples_per_pixel);
 
-void Worker::prepare(uint32_t num_samples_per_pixel) {
-    surface_integrator_->prepare(*scene_, num_samples_per_pixel);
-    volume_integrator_->prepare(*scene_, num_samples_per_pixel);
+    volume_integrator_ = volume_integrator_factory.create(id, rng_);
+    volume_integrator_->prepare(scene, num_samples_per_pixel);
+
+    sampler_ = sampler_factory.create(id, rng_);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
+
+    if (photon_settings_.num_photons) {
+        photon_mapper_ = new rendering::integrator::photon::Mapper(rng_, settings);
+        photon_mapper_->prepare(scene, local_num_photons);
+
+        photon_map_ = photon_map;
+    }
 }
 
 float4 Worker::li(Ray& ray, const scene::prop::Interface_stack& interface_stack) {
@@ -166,6 +176,20 @@ void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
     } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
         interface_stack_.push(intersection);
     }
+}
+
+void Worker::bake_photons(int2 range) {
+    if (photon_mapper_) {
+        photon_mapper_->bake(*photon_map_, range, *this);
+    }
+}
+
+float3 Worker::photon_li(f_float3 position, Material_sample const& sample) const {
+    if (photon_map_) {
+        return photon_map_->li(position, sample);
+    }
+
+    return float3::identity();
 }
 
 }  // namespace rendering

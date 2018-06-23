@@ -33,7 +33,7 @@ class Worker {
     ~Worker();
 
     void init(uint32_t id, take::Settings const& settings, Scene const& scene,
-              uint32_t max_sample_size, uint32_t max_sample_depth);
+              uint32_t max_material_sample_size, uint32_t max_material_sample_depth);
 
     uint32_t id() const;
 
@@ -69,12 +69,12 @@ class Worker {
 
     take::Settings settings_;
 
-    const Scene* scene_;
+    Scene const* scene_;
 
     mutable shape::Node_stack node_stack_;
 
     mutable material::Sample_cache sample_cache_;
-    const material::Sampler_cache  sampler_cache_;
+    material::Sampler_cache const  sampler_cache_;
 };
 
 }  // namespace scene

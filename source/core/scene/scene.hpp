@@ -127,7 +127,7 @@ class Scene {
   private:
     void add_named_entity(Entity* entity, std::string const& name);
 
-    const take::Settings take_settings_;
+    take::Settings const take_settings_;
 
     double   tick_duration_   = 1.0 / 60.0;
     double   simulation_time_ = 0.0;

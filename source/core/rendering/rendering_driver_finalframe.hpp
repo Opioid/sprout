@@ -5,11 +5,9 @@
 #include <vector>
 #include "rendering_driver.hpp"
 
-namespace scene {
-namespace camera {
+namespace scene::camera {
 class Camera;
 }
-}  // namespace scene
 
 namespace exporting {
 class Sink;
@@ -34,12 +32,16 @@ class Driver_finalframe : public Driver {
     void render_subframe(float normalized_tick_offset, float normalized_tick_slice,
                          float normalized_frame_slice, progress::Sink& progressor);
 
+    void bake_photons();
+
     static uint32_t calculate_progress_range(scene::Scene const&          scene,
                                              const scene::camera::Camera& camera,
                                              uint32_t                     num_tiles,
                                              uint32_t num_samples_per_iteration);
 
     uint32_t current_sample_;
+
+    bool photons_baked_;
 };
 
 }  // namespace rendering

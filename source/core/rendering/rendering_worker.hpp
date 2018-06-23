@@ -19,6 +19,11 @@ namespace rendering {
 
 namespace integrator {
 
+namespace photon {
+class Map;
+class Mapper;
+}  // namespace photon
+
 namespace surface {
 
 class Integrator;
@@ -41,11 +46,11 @@ class Worker : public scene::Worker {
     ~Worker();
 
     void init(uint32_t id, take::Settings const& settings, scene::Scene const& scene,
-              uint32_t max_sample_size, integrator::surface::Factory& surface_integrator_factory,
-              integrator::volume::Factory& volume_integrator_factory,
-              sampler::Factory&            sampler_factory);
-
-    void prepare(uint32_t num_samples_per_pixel);
+              uint32_t max_material_sample_size, uint32_t num_samples_per_pixel,
+              integrator::surface::Factory& surface_integrator_factory,
+              integrator::volume::Factory&  volume_integrator_factory,
+              sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
+              take::Photon_settings const& photon_settings_, uint32_t local_num_photons);
 
     float4 li(Ray& ray, const scene::prop::Interface_stack& interface_stack);
 
@@ -66,10 +71,18 @@ class Worker : public scene::Worker {
 
     void interface_change(f_float3 dir, Intersection const& intersection);
 
+    void bake_photons(int2 range);
+
+    float3 photon_li(f_float3 position, Material_sample const& sample) const;
+
   protected:
     integrator::surface::Integrator* surface_integrator_ = nullptr;
     integrator::volume::Integrator*  volume_integrator_  = nullptr;
-    sampler::Sampler*                sampler_            = nullptr;
+
+    sampler::Sampler* sampler_ = nullptr;
+
+    integrator::photon::Mapper* photon_mapper_ = nullptr;
+    integrator::photon::Map*    photon_map_    = nullptr;
 
     scene::prop::Interface_stack interface_stack_;
     scene::prop::Interface_stack interface_stack_temp_;

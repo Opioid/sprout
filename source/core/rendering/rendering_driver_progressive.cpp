@@ -26,10 +26,6 @@ void Driver_progressive::render(exporting::Sink& exporter) {
         return;
     }
 
-    for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
-        workers_[i].prepare(view_.num_samples_per_pixel);
-    }
-
     scene_.tick(thread_pool_);
 
     restart();
@@ -81,8 +77,8 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
                     break;
                 }
 
-                uint32_t begin_sample = iteration_ * samples_per_iteration_;
-                uint32_t end_sample   = begin_sample + samples_per_iteration_;
+                uint32_t const begin_sample = iteration_ * samples_per_iteration_;
+                uint32_t const end_sample   = begin_sample + samples_per_iteration_;
                 worker.render(*view_.camera, v, tile, begin_sample, end_sample, 0.f, 1.f);
             }
         });

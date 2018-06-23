@@ -46,97 +46,14 @@ void Lighttracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     Sampler_filter filter = Sampler_filter::Undefined;
 
-    Bxdf_sample sample_result;
-
-    bool primary_ray = true;
-
-    float3 throughput(1.f);
-    float3 result(0.f);
-
     float3 const wo = -ray.direction;
 
-    float3 const first_hit = intersection.geo.p;
+    bool const avoid_caustics = true;
 
-    auto const& first_sample = intersection.sample(wo, ray, filter, false, sampler_, worker, 1);
+    auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
+                                                      worker);
 
-    if (first_sample.same_hemisphere(wo)) {
-        result += first_sample.radiance();
-    }
-
-    if (first_sample.is_pure_emissive()) {
-        return result;
-    }
-
-    //  result += direct_light(ray, intersection, first_sample, filter, worker);
-
-    Ray    light_ray;
-    float3 radiance;
-
-    if (!generate_light_ray(ray.time, worker, light_ray, radiance)) {
-        return result;
-    }
-
-    float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-
-    if (!worker.intersect_and_resolve_mask(light_ray, intersection, filter)) {
-        return result;
-    }
-
-    auto const& sample = intersection.sample(-light_ray.direction, ray, filter, false, sampler_,
-                                             worker);
-
-    result += radiance *
-              connect(intersection.geo.p, first_hit, sample, first_sample, ray, ray_offset, worker);
-
-    //   result = radiance * connect(light_ray.origin, intersection.geo.p, first_sample, light_ray,
-    //                              ray_offset, worker);
-
-    /*
-    if (!worker.intersect_and_resolve_mask(light_ray, intersection, filter)) {
-        return result;
-    }
-
-    {
-
-        float3 const wi = -light_ray.direction;
-        //   float3 const wo = -ray.direction;
-
-        auto const& material_sample = intersection.sample(wi, ray, filter, false, sampler_, worker);
-
-        float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-
-        float3 const eye_axis = ray.origin - intersection.geo.p;
-
-        float3 const wo = math::normalize(eye_axis);
-
-        Ray shadow_ray(intersection.geo.p, math::normalize(eye_axis), ray_offset,
-                       math::length(eye_axis), ray.depth, ray.time, ray.wavelength);
-
-        float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
-        if (math::any_greater_zero(tv)) {
-            //    float3 const tr = worker.transmittance(shadow_ray);
-
-            auto const bxdf = material_sample.evaluate(wo);
-
-            float const n_dot_wi = std::abs(math::dot(wi, material_sample.geometric_normal()));
-
-            float const n_dot_wo = std::abs(math::dot(wo, material_sample.geometric_normal()));
-
-            float const ln_dot_wi = math::dot(float3(0.f, 1.f, 0.f), wi);
-
-            float const wi_dot_wo = math::saturate(math::dot(wi, wo));
-
-            float const eye_dot_wo = math::saturate(math::dot(-ray.direction, wo));
-            //   result += float3(n_dot_wo);
-
-            return float3(1.f, 0.f, 0.f);
-        } else {
-            return float3(0.f, 0.f, 0.f);
-        }
-    }
-    */
-
-    return result;
+    return worker.photon_li(intersection.geo.p, material_sample);
 }
 
 bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) {

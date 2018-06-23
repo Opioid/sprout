@@ -4,6 +4,8 @@
 #include <memory>
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"
+#include "integrator/photon/photon_map.hpp"
+#include "take/take_settings.hpp"
 #include "tile_queue.hpp"
 
 namespace take {
@@ -47,7 +49,7 @@ class Camera_worker;
 class Driver {
   public:
     Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
-           uint32_t max_sample_size);
+           uint32_t max_material_sample_size);
 
     ~Driver();
 
@@ -66,6 +68,10 @@ class Driver {
     Tile_queue     tiles_;
 
     image::Float4 target_;
+
+    integrator::photon::Map photon_map_;
+    take::Photon_settings   photon_settings_;
+    int2*                   photon_ranges_;
 };
 
 }  // namespace rendering

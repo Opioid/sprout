@@ -76,7 +76,7 @@ class Integrator {
 
   protected:
     rnd::Generator&      rng_;
-    const take::Settings take_settings_;
+    take::Settings const take_settings_;
 };
 
 }  // namespace rendering::integrator

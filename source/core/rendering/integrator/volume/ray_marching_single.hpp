@@ -4,10 +4,6 @@
 #include "sampler/sampler_random.hpp"
 #include "volume_integrator.hpp"
 
-namespace scene::entity {
-struct Composed_transformation;
-}
-
 namespace rendering::integrator::volume {
 
 class alignas(64) Ray_marching_single : public Integrator {

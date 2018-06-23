@@ -15,23 +15,49 @@
 
 namespace rendering {
 
+using namespace image;
+
 Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
-               uint32_t max_sample_size)
+               uint32_t max_material_sample_size)
     : scene_(scene),
       view_(take.view),
       thread_pool_(thread_pool),
       workers_(memory::construct_aligned<Camera_worker>(thread_pool.num_threads())),
       tiles_(take.view.camera->resolution(), int2(32, 32),
              take.view.camera->sensor().filter_radius_int()),
-      target_(image::Image::Description(image::Image::Type::Float4,
-                                        take.view.camera->sensor_dimensions())) {
+      target_(Image::Description(Image::Type::Float4, take.view.camera->sensor_dimensions())),
+      photon_map_(take.photon_settings.num_photons),
+      photon_settings_(take.photon_settings),
+      photon_ranges_(nullptr) {
+    uint32_t const num_photons = take.photon_settings.num_photons;
+    if (num_photons) {
+        int32_t const num_workers = static_cast<int32_t>(thread_pool.num_threads());
+        int32_t       range       = num_photons / num_workers;
+        if (num_photons % num_workers) {
+            ++range;
+        }
+
+        photon_ranges_ = new int2[num_workers];
+
+        for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
+            photon_ranges_[i] = int2(range * i, std::min(range * (i + 1), num_photons));
+        }
+    }
+
+    integrator::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
+
     for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-        workers_[i].init(i, take.settings, scene, max_sample_size, *take.surface_integrator_factory,
-                         *take.volume_integrator_factory, *take.sampler_factory);
+        uint32_t const photon_range = num_photons ? photon_ranges_[i][1] - photon_ranges_[i][0] : 0;
+
+        workers_[i].init(i, take.settings, scene, max_material_sample_size,
+                         take.view.num_samples_per_pixel, *take.surface_integrator_factory,
+                         *take.volume_integrator_factory, *take.sampler_factory, photon_map,
+                         take.photon_settings, photon_range);
     }
 }
 
 Driver::~Driver() {
+    delete[] photon_ranges_;
     memory::destroy_aligned(workers_, thread_pool_.num_threads());
 }
 
@@ -45,7 +71,7 @@ scene::Scene const& Driver::scene() const {
 
 size_t Driver::num_bytes() const {
     // Every worker must have exactly the same size, so we only need to query a single one
-    size_t worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();
+    size_t const worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();
 
     return worker_num_bytes + target_.num_bytes();
 }

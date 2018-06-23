@@ -16,19 +16,19 @@ void Json_handler::clear(bool read_indices) {
     triangles_.clear();
     parts_.clear();
 
-    expected_number_          = Number::Undefined;
-    expected_string_          = String_type::Undefined;
-    expected_object_          = Object::Undefined;
+    expected_number_ = Number::Undefined;
+    expected_string_ = String_type::Undefined;
+    expected_object_ = Object::Undefined;
 
     current_vertex_           = 0;
     current_vertex_element_   = 0;
     current_triangle_         = 0;
     current_triangle_element_ = 0;
 
-    has_positions_            = false;
-    has_normals_              = false;
-    has_tangents_             = false;
-    has_texture_coordinates_  = false;
+    has_positions_           = false;
+    has_normals_             = false;
+    has_tangents_            = false;
+    has_texture_coordinates_ = false;
 }
 
 void Json_handler::create_part() {
@@ -138,7 +138,7 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
             expected_object_ = Object::Undefined;
 
             if (!parts_.empty()) {
-                auto&    p             = parts_.back();
+                auto& p = parts_.back();
 
                 uint32_t const num_triangles = (p.start_index + p.num_indices) / 3;
                 vertices_.reserve(static_cast<size_t>(0.7f * static_cast<float>(num_triangles)));
@@ -155,7 +155,7 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
                 expected_number_ = Number::Index;
 
                 if (!parts_.empty()) {
-                    auto&    p             = parts_.back();
+                    auto& p = parts_.back();
 
                     uint32_t const num_triangles = (p.start_index + p.num_indices) / 3;
                     triangles_.reserve(num_triangles);

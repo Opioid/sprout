@@ -24,10 +24,6 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
     auto& camera = *view_.camera;
     auto& sensor = camera.sensor();
 
-    for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
-        workers_[i].prepare(view_.num_samples_per_pixel);
-    }
-
     uint32_t const progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
                                                              view_.num_samples_per_pixel);
 
@@ -131,6 +127,8 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
 void Driver_finalframe::render_subframe(float normalized_tick_offset, float normalized_tick_slice,
                                         float normalized_frame_slice, progress::Sink& progressor) {
+    bake_photons();
+
     float const num_samples       = static_cast<float>(view_.num_samples_per_pixel);
     float const samples_per_slice = normalized_frame_slice * num_samples;
 
@@ -159,6 +157,27 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
     }
 
     current_sample_ = sample_end;
+}
+
+void Driver_finalframe::bake_photons() {
+    if (photons_baked_ || !photon_ranges_) {
+        return;
+    }
+
+    logging::info("Baking photons...");
+
+    auto const start = std::chrono::high_resolution_clock::now();
+
+    thread_pool_.run_parallel([this](uint32_t index) {
+        auto& worker = workers_[index];
+
+        worker.bake_photons(photon_ranges_[index]);
+    });
+
+    auto const duration = chrono::seconds_since(start);
+    logging::info("Photon time " + string::to_string(duration) + " s");
+
+    photons_baked_ = true;
 }
 
 uint32_t Driver_finalframe::calculate_progress_range(scene::Scene const&          scene,

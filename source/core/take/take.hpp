@@ -32,9 +32,10 @@ namespace take {
 struct Take {
     Take() = default;
 
-    Settings    settings;
-    std::string scene_filename;
-    take::View  view;
+    Settings        settings;
+    std::string     scene_filename;
+    take::View      view;
+    Photon_settings photon_settings;
 
     std::shared_ptr<scene::animation::Animation> camera_animation;
 

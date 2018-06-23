@@ -19,12 +19,12 @@ using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 Worker::Worker() : node_stack_(128 + 16) {}
 
 void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scene,
-                  uint32_t max_sample_size, uint32_t max_sample_depth) {
+                  uint32_t max_material_sample_size, uint32_t max_material_sample_depth) {
     id_       = id;
     rng_      = rnd::Generator(0, id);
     settings_ = settings;
     scene_    = &scene;
-    sample_cache_.init(max_sample_size, max_sample_depth);
+    sample_cache_.init(max_material_sample_size, max_material_sample_depth);
 }
 
 Worker::~Worker() {}

@@ -379,6 +379,8 @@ void Loader::load_integrator_factories(json::Value const& integrator_value, uint
         } else if ("volume" == n.name) {
             take.volume_integrator_factory = load_volume_integrator_factory(n.value, take.settings,
                                                                             num_workers);
+        } else if ("photon" == n.name) {
+            load_photon_settings(n.value, take.photon_settings);
         }
     }
 }
@@ -528,6 +530,11 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
     }
 
     return nullptr;
+}
+
+void Loader::load_photon_settings(json::Value const& photon_value,
+                                  Photon_settings&   photon_settings) {
+    photon_settings.num_photons = json::read_uint(photon_value, "num_photons", 0);
 }
 
 void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
