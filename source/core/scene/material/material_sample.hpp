@@ -26,6 +26,8 @@ class Sample {
         void set_tangent_frame(f_float3 t, f_float3 b, f_float3 n);
         void set_tangent_frame(f_float3 n);
 
+        float abs_n_dot(f_float3 v) const;
+
         float clamp_n_dot(f_float3 v) const;
         float clamp_abs_n_dot(f_float3 v) const;
         float clamp_reverse_n_dot(f_float3 v) const;

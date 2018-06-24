@@ -20,11 +20,15 @@ class Map {
     Map(uint32_t num_photons);
     ~Map();
 
+    void set_num_paths(uint32_t num_paths);
+
     void insert(Photon const& photon, int32_t index);
 
     float3 li(f_float3 position, scene::material::Sample const& sample) const;
 
   private:
+    uint32_t num_paths_;
+
     uint32_t num_photons_;
     Photon*  photons_;
 };

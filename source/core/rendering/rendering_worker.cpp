@@ -178,10 +178,12 @@ void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
     }
 }
 
-void Worker::bake_photons(int2 range) {
+uint32_t Worker::bake_photons(int2 range) {
     if (photon_mapper_) {
-        photon_mapper_->bake(*photon_map_, range, *this);
+        return photon_mapper_->bake(*photon_map_, range, *this);
     }
+
+    return 0;
 }
 
 float3 Worker::photon_li(f_float3 position, Material_sample const& sample) const {

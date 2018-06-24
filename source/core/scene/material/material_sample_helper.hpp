@@ -5,6 +5,10 @@
 
 namespace scene::material {
 
+static inline float abs_dot(f_float3 a, f_float3 b) {
+    return std::abs(math::dot(a, b));
+}
+
 constexpr float Dot_min = 0.00001f;
 
 static inline float clamp(float x) {

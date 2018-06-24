@@ -28,7 +28,7 @@ Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
       target_(Image::Description(Image::Type::Float4, take.view.camera->sensor_dimensions())),
       photon_map_(take.photon_settings.num_photons),
       photon_settings_(take.photon_settings),
-      photon_ranges_(nullptr) {
+      photon_infos_(nullptr) {
     uint32_t const num_photons = take.photon_settings.num_photons;
     if (num_photons) {
         int32_t const num_workers = static_cast<int32_t>(thread_pool.num_threads());
@@ -37,27 +37,28 @@ Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
             ++range;
         }
 
-        photon_ranges_ = new int2[num_workers];
+        photon_infos_ = new Photon_info[num_workers];
 
         for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-            photon_ranges_[i] = int2(range * i, std::min(range * (i + 1), num_photons));
+            photon_infos_[i].range = int2(range * i, std::min(range * (i + 1), num_photons));
         }
     }
 
     integrator::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
 
     for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-        uint32_t const photon_range = num_photons ? photon_ranges_[i][1] - photon_ranges_[i][0] : 0;
+        int2 const     photon_range      = photon_infos_[i].range;
+        uint32_t const local_num_photons = num_photons ? photon_range[1] - photon_range[0] : 0;
 
         workers_[i].init(i, take.settings, scene, max_material_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
                          *take.volume_integrator_factory, *take.sampler_factory, photon_map,
-                         take.photon_settings, photon_range);
+                         take.photon_settings, local_num_photons);
     }
 }
 
 Driver::~Driver() {
-    delete[] photon_ranges_;
+    delete[] photon_infos_;
     memory::destroy_aligned(workers_, thread_pool_.num_threads());
 }
 

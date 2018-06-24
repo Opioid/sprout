@@ -46,6 +46,8 @@ void Lighttracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     Sampler_filter filter = Sampler_filter::Undefined;
 
+    float3 result = float3::identity();
+
     float3 const wo = -ray.direction;
 
     bool const avoid_caustics = true;
@@ -53,7 +55,15 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                       worker);
 
-    return worker.photon_li(intersection.geo.p, material_sample);
+    if (material_sample.same_hemisphere(wo)) {
+        result += material_sample.radiance();
+    }
+
+    if (material_sample.is_pure_emissive()) {
+        return result;
+    }
+
+    return result + worker.photon_li(intersection.geo.p, material_sample);
 }
 
 bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) {

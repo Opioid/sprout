@@ -296,12 +296,11 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
                       math::transform_vector(scale * ls, transformation.rotation);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = math::sample_oriented_hemisphere_uniform(r1, transformation.rotation);
+    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, transformation.rotation);
 
-    sample.p   = ws;
-    sample.dir = dir;
-    sample.pdf = math::dot(dir, transformation.rotation.r[2]) * math::Pi_inv *
-                 (1.f / area);  // 1.f / (/*math::dot(dir, transformation.rotation.r[2]) **/ area);
+    sample.p       = ws;
+    sample.dir     = dir;
+    sample.pdf     = 1.f / (math::Pi * area);
     sample.epsilon = 5e-4f;
 
     return true;

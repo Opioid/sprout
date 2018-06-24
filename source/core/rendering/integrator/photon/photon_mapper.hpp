@@ -23,12 +23,12 @@ class Mapper : public Integrator {
 
     virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-    void bake(Map& map, int2 range, Worker& worker);
+    uint32_t bake(Map& map, int2 range, Worker& worker);
 
     virtual size_t num_bytes() const override final;
 
   private:
-    bool trace_photon(Worker& worker, Photon& photon);
+    uint32_t trace_photon(Worker& worker, Photon& photon);
 
     bool generate_light_ray(Worker& worker, Ray& ray, float3& radiance);
 

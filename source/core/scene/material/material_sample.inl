@@ -22,6 +22,10 @@ inline void Sample::Layer::set_tangent_frame(f_float3 n) {
     n_ = n;
 }
 
+inline float Sample::Layer::abs_n_dot(f_float3 v) const {
+    return abs_dot(n_, v);
+}
+
 inline float Sample::Layer::clamp_n_dot(f_float3 v) const {
     // return std::max(math::dot(n, v), Dot_min);
     return clamp_dot(n_, v);

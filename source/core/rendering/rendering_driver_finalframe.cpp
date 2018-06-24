@@ -160,7 +160,7 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
 }
 
 void Driver_finalframe::bake_photons() {
-    if (photons_baked_ || !photon_ranges_) {
+    if (photons_baked_ || !photon_infos_) {
         return;
     }
 
@@ -171,8 +171,15 @@ void Driver_finalframe::bake_photons() {
     thread_pool_.run_parallel([this](uint32_t index) {
         auto& worker = workers_[index];
 
-        worker.bake_photons(photon_ranges_[index]);
+        photon_infos_[index].num_paths = worker.bake_photons(photon_infos_[index].range);
     });
+
+    uint32_t num_paths = 0;
+    for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
+        num_paths += photon_infos_[i].num_paths;
+    }
+
+    photon_map_.set_num_paths(num_paths);
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");

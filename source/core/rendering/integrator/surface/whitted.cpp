@@ -76,7 +76,7 @@ float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& 
         return result;
     }
 
-    result += estimate_direct_light(ray, intersection, material_sample, worker);
+    //   result += estimate_direct_light(ray, intersection, material_sample, worker);
 
     return result;
 }

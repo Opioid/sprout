@@ -23,26 +23,34 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t num_photons) {
 
 void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-void Mapper::bake(Map& map, int2 range, Worker& worker) {
+uint32_t Mapper::bake(Map& map, int2 range, Worker& worker) {
+    uint32_t num_paths = 0;
+
     for (int32_t i = range[0]; i < range[1]; ++i) {
-        if (Photon photon; trace_photon(worker, photon)) {
+        Photon         photon;
+        uint32_t const num_iterations = trace_photon(worker, photon);
+
+        if (num_iterations > 0) {
             map.insert(photon, i);
+            num_paths += num_iterations;
         } else {
             std::cout << "sad" << std::endl;
         }
     }
+
+    return num_paths;
 }
 
 size_t Mapper::num_bytes() const {
     return sizeof(*this);
 }
 
-bool Mapper::trace_photon(Worker& worker, Photon& photon) {
+uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
     static constexpr uint32_t Max_iterations = 100;
 
     Intersection intersection;
 
-    for (uint32_t i = Max_iterations; i > 0; --i) {
+    for (uint32_t i = 0; i < Max_iterations; ++i) {
         Ray    ray;
         float3 radiance;
         if (!generate_light_ray(worker, ray, radiance)) {
@@ -59,10 +67,10 @@ bool Mapper::trace_photon(Worker& worker, Photon& photon) {
         photon.wi    = -ray.direction;
         photon.alpha = radiance;
 
-        return true;
+        return i + 1;
     }
 
-    return false;
+    return 0;
 }
 
 bool Mapper::generate_light_ray(Worker& worker, Ray& ray, float3& radiance) {
@@ -82,7 +90,7 @@ bool Mapper::generate_light_ray(Worker& worker, Ray& ray, float3& radiance) {
     ray.time       = 0.f;
     ray.wavelength = 0.f;
 
-    radiance = light_sample.radiance / light_sample.shape.pdf;
+    radiance = light_sample.radiance / (light.pdf * light_sample.shape.pdf);
 
     return true;
 }

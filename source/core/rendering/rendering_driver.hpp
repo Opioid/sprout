@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_DRIVER_HPP
 
 #include <memory>
+#include "base/math/vector2.hpp"
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"
 #include "integrator/photon/photon_map.hpp"
@@ -71,7 +72,13 @@ class Driver {
 
     integrator::photon::Map photon_map_;
     take::Photon_settings   photon_settings_;
-    int2*                   photon_ranges_;
+
+    struct Photon_info {
+        int2    range;
+        int32_t num_paths;
+    };
+
+    Photon_info* photon_infos_;
 };
 
 }  // namespace rendering
