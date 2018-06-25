@@ -21,6 +21,8 @@ Driver_finalframe::Driver_finalframe(take::Take& take, scene::Scene& scene,
     : Driver(take, scene, thread_pool, max_sample_size) {}
 
 void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor) {
+    photons_baked_ = false;
+
     auto& camera = *view_.camera;
     auto& sensor = camera.sensor();
 
@@ -179,7 +181,7 @@ void Driver_finalframe::bake_photons() {
         num_paths += photon_infos_[i].num_paths;
     }
 
-    photon_map_.set_num_paths(num_paths);
+    photon_map_.compile(num_paths, scene_.aabb());
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");

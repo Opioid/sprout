@@ -535,6 +535,7 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
 void Loader::load_photon_settings(json::Value const& photon_value,
                                   Photon_settings&   photon_settings) {
     photon_settings.num_photons = json::read_uint(photon_value, "num_photons", 0);
+    photon_settings.radius      = json::read_float(photon_value, "radius", 0.05f);
 }
 
 void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,

@@ -74,8 +74,8 @@ class Driver {
     take::Photon_settings   photon_settings_;
 
     struct Photon_info {
-        int2    range;
-        int32_t num_paths;
+        int2     range;
+        uint32_t num_paths;
     };
 
     Photon_info* photon_infos_;

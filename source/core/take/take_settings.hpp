@@ -11,6 +11,7 @@ struct Settings {
 
 struct Photon_settings {
     uint32_t num_photons = 0;
+    float    radius      = 0.05f;
 };
 
 }  // namespace take

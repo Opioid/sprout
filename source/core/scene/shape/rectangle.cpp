@@ -13,7 +13,7 @@
 namespace scene::shape {
 
 Rectangle::Rectangle() {
-    aabb_.set_min_max(float3(-10.f, -10.f, -0.1f), float3(10.f, 10.f, 0.1f));
+    aabb_.set_min_max(float3(-1.f, -1.f, -0.1f), float3(1.f, 1.f, 0.1f));
 }
 
 bool Rectangle::intersect(Ray& ray, Transformation const&           transformation,
