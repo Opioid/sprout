@@ -214,6 +214,14 @@ void Map::adjacent_cells(f_float3 v, int2 cells[4]) const {
         } else if (1 == adjacent[1] && c[1] < grid_dimensions_[1] - 1) {
             cells[1][0] = grid_[map(c + int3(-1, 1, 0))][0];
             cells[1][1] = grid_[map(c + int3(0, 1, 0))][1];
+
+            if (-1 == adjacent[2] && c[2] > 0) {
+                cells[3][0] = grid_[map(c + int3(-1, 1, -1))][0];
+                cells[3][1] = grid_[map(c + int3(0,  1, -1))][1];
+            } else if (1 == adjacent[2] && c[2] < grid_dimensions_[2] - 1) {
+                cells[3][0] = grid_[map(c + int3(-1, 1, 1))][0];
+                cells[3][1] = grid_[map(c + int3(0,  1, 1))][1];
+            }
         }
 
         if (-1 == adjacent[2] && c[2] > 0) {
@@ -231,9 +239,25 @@ void Map::adjacent_cells(f_float3 v, int2 cells[4]) const {
         if (-1 == adjacent[1] && c[1] > 0) {
             cells[1][0] = grid_[map(c + int3(0, -1, 0))][0];
             cells[1][1] = grid_[map(c + int3(1, -1, 0))][1];
+
+            if (-1 == adjacent[2] && c[2] > 0) {
+                cells[3][0] = grid_[map(c + int3(0, -1, -1))][0];
+                cells[3][1] = grid_[map(c + int3(1, -1, -1))][1];
+            } else if (1 == adjacent[2] && c[2] < grid_dimensions_[2] - 1) {
+                cells[3][0] = grid_[map(c + int3(0, -1, 1))][0];
+                cells[3][1] = grid_[map(c + int3(1, -1, 1))][1];
+            }
         } else if (1 == adjacent[1] && c[1] < grid_dimensions_[1] - 1) {
             cells[1][0] = grid_[map(c + int3(0, 1, 0))][0];
             cells[1][1] = grid_[map(c + int3(1, 1, 0))][1];
+
+            if (-1 == adjacent[2] && c[2] > 0) {
+                cells[3][0] = grid_[map(c + int3(0, 1, -1))][0];
+                cells[3][1] = grid_[map(c + int3(1, 1, -1))][1];
+            } else if (1 == adjacent[2] && c[2] < grid_dimensions_[2] - 1) {
+                cells[3][0] = grid_[map(c + int3(0, 1, 1))][0];
+                cells[3][1] = grid_[map(c + int3(1, 1, 1))][1];
+            }
         }
 
         if (-1 == adjacent[2] && c[2] > 0) {
@@ -249,8 +273,28 @@ void Map::adjacent_cells(f_float3 v, int2 cells[4]) const {
 
     if (-1 == adjacent[1] && c[1] > 0) {
         cells[1] = grid_[map(c + int3(0, -1, 0))];
+
+        if (-1 == adjacent[2] && c[2] > 0) {
+            cells[2] = grid_[map(c + int3(0, 0, -1))];
+            cells[3] = grid_[map(c + int3(0, -1, -1))];
+        } else if (1 == adjacent[2] && c[2] < grid_dimensions_[2] - 1) {
+            cells[2] = grid_[map(c + int3(0, 0, 1))];
+            cells[3] = grid_[map(c + int3(0, -1, 1))];
+        }
+
+        return;
     } else if (1 == adjacent[1] && c[1] < grid_dimensions_[1] - 1) {
         cells[1] = grid_[map(c + int3(0, 1, 0))];
+
+        if (-1 == adjacent[2] && c[2] > 0) {
+            cells[2] = grid_[map(c + int3(0, 0, -1))];
+            cells[3] = grid_[map(c + int3(0, 1, -1))];
+        } else if (1 == adjacent[2] && c[2] < grid_dimensions_[2] - 1) {
+            cells[2] = grid_[map(c + int3(0, 0, 1))];
+            cells[3] = grid_[map(c + int3(0, 1, 1))];
+        }
+
+        return;
     }
 
     if (-1 == adjacent[2] && c[2] > 0) {
