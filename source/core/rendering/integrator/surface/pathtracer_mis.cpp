@@ -90,6 +90,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         // Only check for the very first hit.
         // Subsequent hits are handled by the MIS scheme.
         if (0 == i && material_sample.same_hemisphere(wo)) {
+            result += worker.photon_li(intersection.geo.p, material_sample);
             result += material_sample.radiance();
         }
 

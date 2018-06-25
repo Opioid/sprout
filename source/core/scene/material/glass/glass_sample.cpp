@@ -40,11 +40,13 @@ bool Sample::is_transmissive() const {
 
 void Sample::Layer::set(float3 const& refraction_color, float3 const& absorption_color,
                         float attenuation_distance, float ior, float ior_outside) {
-    color_                  = refraction_color;
+    color_ = refraction_color;
+
     absorption_coefficient_ = material::extinction_coefficient(absorption_color,
                                                                attenuation_distance);
-    ior_                    = ior;
-    ior_outside_            = ior_outside;
+
+    ior_         = ior;
+    ior_outside_ = ior_outside;
 }
 
 float Sample::BSDF::reflect(const Sample& sample, Layer const& layer, sampler::Sampler& /*sampler*/,
@@ -110,8 +112,7 @@ float Sample::BSDF::refract(const Sample& sample, Layer const& layer, sampler::S
 
     result.reflection = (1.f - f) * layer.color_;
     result.wi         = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
-
-    result.pdf = 1.f;
+    result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_transmission);
 
     SOFT_ASSERT(testing::check(result, sample.wo_, layer));

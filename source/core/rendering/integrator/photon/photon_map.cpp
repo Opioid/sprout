@@ -1,4 +1,5 @@
 #include "photon_map.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
@@ -23,10 +24,6 @@ Map::~Map() {
 
 void Map::insert(Photon const& photon, int32_t index) {
     photons_[index] = photon;
-}
-
-static inline int32_t map(float s, float min, float inverse_cell) {
-    return static_cast<int32_t>(inverse_cell * (s - min));
 }
 
 static inline int3 map(f_float3 v, f_float3 min, float inverse_cell) {
@@ -162,7 +159,7 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
                 float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
 
                 if (n_dot_wi > 0.f) {
-                    float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
+                    float const clamped_n_dot_wi = 1.f;  // scene::material::clamp(n_dot_wi);
 
                     float const k = kernel(squared_distance, inv_squared_radius);
 
@@ -217,10 +214,10 @@ void Map::adjacent_cells(f_float3 v, int2 cells[4]) const {
 
             if (-1 == adjacent[2] && c[2] > 0) {
                 cells[3][0] = grid_[map(c + int3(-1, 1, -1))][0];
-                cells[3][1] = grid_[map(c + int3(0,  1, -1))][1];
+                cells[3][1] = grid_[map(c + int3(0, 1, -1))][1];
             } else if (1 == adjacent[2] && c[2] < grid_dimensions_[2] - 1) {
                 cells[3][0] = grid_[map(c + int3(-1, 1, 1))][0];
-                cells[3][1] = grid_[map(c + int3(0,  1, 1))][1];
+                cells[3][1] = grid_[map(c + int3(0, 1, 1))][1];
             }
         }
 
