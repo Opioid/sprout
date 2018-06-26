@@ -159,7 +159,7 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
                 float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
 
                 if (n_dot_wi > 0.f) {
-                    float const clamped_n_dot_wi = 1.f;  // scene::material::clamp(n_dot_wi);
+                    float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
 
                     float const k = kernel(squared_distance, inv_squared_radius);
 

@@ -11,6 +11,7 @@ struct Settings {
 
 struct Photon_settings {
     uint32_t num_photons = 0;
+    uint32_t max_bounces = 2;
     float    radius      = 0.05f;
 };
 

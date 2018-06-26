@@ -32,7 +32,7 @@ void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene cons
                   integrator::surface::Factory& surface_integrator_factory,
                   integrator::volume::Factory&  volume_integrator_factory,
                   sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
-                  take::Photon_settings const& photon_settings_, uint32_t local_num_photons) {
+                  take::Photon_settings const& photon_settings, uint32_t local_num_photons) {
     scene::Worker::init(id, settings, scene, max_material_sample_size,
                         surface_integrator_factory.max_sample_depth());
 
@@ -45,8 +45,9 @@ void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene cons
     sampler_ = sampler_factory.create(id, rng_);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
-    if (photon_settings_.num_photons) {
-        photon_mapper_ = new rendering::integrator::photon::Mapper(rng_, settings);
+    if (photon_settings.num_photons) {
+        integrator::photon::Mapper::Settings ps{photon_settings.max_bounces};
+        photon_mapper_ = new integrator::photon::Mapper(rng_, settings, ps);
         photon_mapper_->prepare(scene, local_num_photons);
 
         photon_map_ = photon_map;

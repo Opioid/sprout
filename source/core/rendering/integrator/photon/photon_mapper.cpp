@@ -15,8 +15,8 @@
 
 namespace rendering::integrator::photon {
 
-Mapper::Mapper(rnd::Generator& rng, take::Settings const& settings)
-    : Integrator(rng, settings), sampler_(rng) {}
+Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings)
+    : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
 Mapper::~Mapper() {}
 
@@ -50,7 +50,6 @@ size_t Mapper::num_bytes() const {
 
 uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
     static constexpr uint32_t Max_iterations = 1024;
-    static constexpr uint32_t Max_path_depth = 16;
 
     Sampler_filter const filter = Sampler_filter::Undefined;
 
@@ -77,7 +76,7 @@ uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
             continue;
         }
 
-        for (uint32_t j = Max_path_depth; j > 0; --j) {
+        for (uint32_t j = settings_.max_bounces; j > 0; --j) {
             float3 const wo = -ray.direction;
 
             auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
@@ -140,16 +139,6 @@ uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
                 break;
             }
         }
-
-        //        if (!intersection.hit()) {
-        //            continue;
-        //        }
-
-        //        photon.p     = intersection.geo.p;
-        //        photon.wi    = -ray.direction;
-        //        photon.alpha = radiance;
-
-        //        return i + 1;
     }
 
     return 0;
