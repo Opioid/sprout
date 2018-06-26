@@ -87,10 +87,9 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
 
-        // Only check for the very first hit.
+        // Only check direct eye-light connections for check for the very first hit.
         // Subsequent hits are handled by the MIS scheme.
         if (0 == i && material_sample.same_hemisphere(wo)) {
-            result += worker.photon_li(intersection.geo.p, material_sample);
             result += material_sample.radiance();
         }
 
@@ -124,10 +123,12 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
                 bool const scattering = intersection.material()->is_scattering_volume();
                 treat_as_singular     = scattering ? primary_ray : true;
             }
-        } else {
+        } else if (primary_ray) {
             primary_ray       = false;
             filter            = Sampler_filter::Nearest;
             treat_as_singular = false;
+
+            result += worker.photon_li(intersection.geo.p, material_sample);
         }
 
         bool const is_translucent = material_sample.is_translucent();

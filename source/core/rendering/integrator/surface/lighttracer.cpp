@@ -46,24 +46,76 @@ void Lighttracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     Sampler_filter filter = Sampler_filter::Undefined;
 
+    Bxdf_sample sample_result;
+
+    float3 throughput(1.f);
+
     float3 result = float3::identity();
 
     float3 const wo = -ray.direction;
 
     bool const avoid_caustics = true;
 
-    auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
-                                                      worker);
+    for (uint32_t i = 4; i > 0; --i) {
+        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
+                                                          worker);
 
-    if (material_sample.same_hemisphere(wo)) {
-        result += material_sample.radiance();
+        if (material_sample.same_hemisphere(wo)) {
+            result += material_sample.radiance();
+        }
+
+        if (material_sample.is_pure_emissive()) {
+            return result;
+        }
+
+        material_sample.sample(sampler_, sample_result);
+        if (0.f == sample_result.pdf) {
+            break;
+        }
+
+        bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
+                                                          Bxdf_type::Transmission);
+
+        if (!singular) {
+            result += throughput * worker.photon_li(intersection.geo.p, material_sample);
+            break;
+        }
+
+        float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+
+        if (material_sample.ior_greater_one()) {
+            throughput *= sample_result.reflection / sample_result.pdf;
+
+            ray.origin = intersection.geo.p;
+            ray.set_direction(sample_result.wi);
+            ray.min_t = ray_offset;
+            ++ray.depth;
+        } else {
+            ray.min_t = ray.max_t + ray_offset;
+        }
+
+        ray.max_t = scene::Ray_max_t;
+
+        if (sample_result.type.test(Bxdf_type::Transmission)) {
+            worker.interface_change(sample_result.wi, intersection);
+        }
+
+        if (!worker.interface_stack().empty()) {
+            float3     vli, vtr;
+            bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
+
+            // result += throughput * vli;
+            throughput *= vtr;
+
+            if (!hit) {
+                break;
+            }
+        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+            break;
+        }
     }
 
-    if (material_sample.is_pure_emissive()) {
-        return result;
-    }
-
-    return result + worker.photon_li(intersection.geo.p, material_sample);
+    return result;
 }
 
 bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) {
