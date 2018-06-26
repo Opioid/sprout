@@ -89,22 +89,15 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
 
     int32_t current = 0;
     for (int32_t c = 0; c < num_cells; ++c) {
-        int32_t begin = current;
-        int32_t end   = current;
-        for (int32_t len = static_cast<int32_t>(num_photons_); end < len; ++end) {
-            if (map(photons_[end].p) != c) {
+        int32_t const begin = current;
+        for (int32_t len = static_cast<int32_t>(num_photons_); current < len; ++current) {
+            if (map(photons_[current].p) != c) {
                 break;
             }
         }
 
-        current = end;
-
         grid_[c][0] = begin;
-        grid_[c][1] = end;
-
-        //        if (begin != end) {
-        //            std::cout << grid_[c] << std::endl;
-        //        }
+        grid_[c][1] = current;
     }
 }
 
