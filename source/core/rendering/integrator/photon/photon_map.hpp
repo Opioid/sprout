@@ -21,7 +21,7 @@ class Map {
     Map(uint32_t num_photons, float photon_radius);
     ~Map();
 
-    void insert(Photon const& photon, int32_t index);
+    void insert(Photon const& photon, uint32_t index);
 
     void compile(uint32_t num_paths, math::AABB const& aabb);
 

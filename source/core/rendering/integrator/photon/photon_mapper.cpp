@@ -26,10 +26,10 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t num_photons) {
 
 void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-uint32_t Mapper::bake(Map& map, int2 range, Worker& worker) {
+uint32_t Mapper::bake(Map& map, uint2 range, Worker& worker) {
     uint32_t num_paths = 0;
 
-    for (int32_t i = range[0]; i < range[1]; ++i) {
+    for (uint32_t i = range[0]; i < range[1]; ++i) {
         Photon         photon;
         uint32_t const num_iterations = trace_photon(worker, photon);
 

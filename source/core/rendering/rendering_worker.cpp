@@ -179,7 +179,7 @@ void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
     }
 }
 
-uint32_t Worker::bake_photons(int2 range) {
+uint32_t Worker::bake_photons(uint2 range) {
     if (photon_mapper_) {
         return photon_mapper_->bake(*photon_map_, range, *this);
     }

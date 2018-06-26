@@ -22,7 +22,7 @@ Map::~Map() {
     delete[] photons_;
 }
 
-void Map::insert(Photon const& photon, int32_t index) {
+void Map::insert(Photon const& photon, uint32_t index) {
     photons_[index] = photon;
 }
 
@@ -123,9 +123,6 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
 
     float3 result = float3::identity();
 
-    int2 cells[4];
-
-    adjacent_cells(position, cells);
     /*
             for (uint32_t i = 0, len = num_photons_; i < len; ++i) {
                 auto const& photon           = photons_[i];
@@ -146,6 +143,11 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
                 }
             }
     */
+
+    int2 cells[4];
+
+    adjacent_cells(position, cells);
+
     for (uint32_t c = 0; c < 4; ++c) {
         int2 const cell = cells[c];
 
@@ -154,14 +156,14 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
 
             float const squared_distance = math::squared_distance(photon.p, position);
             if (squared_distance <= squared_radius) {
-                auto const bxdf = sample.evaluate(photon.wi);
-
                 float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
 
                 if (n_dot_wi > 0.f) {
                     float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
 
                     float const k = kernel(squared_distance, inv_squared_radius);
+
+                    auto const bxdf = sample.evaluate(photon.wi);
 
                     result += (k * f) / clamped_n_dot_wi * photon.alpha * bxdf.reflection;
                 }

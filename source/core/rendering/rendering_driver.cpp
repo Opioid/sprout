@@ -31,8 +31,8 @@ Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
       photon_infos_(nullptr) {
     uint32_t const num_photons = take.photon_settings.num_photons;
     if (num_photons) {
-        int32_t const num_workers = static_cast<int32_t>(thread_pool.num_threads());
-        int32_t       range       = num_photons / num_workers;
+        uint32_t const num_workers = thread_pool.num_threads();
+        uint32_t       range       = num_photons / num_workers;
         if (num_photons % num_workers) {
             ++range;
         }
@@ -40,15 +40,15 @@ Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
         photon_infos_ = new Photon_info[num_workers];
 
         for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-            photon_infos_[i].range = int2(range * i, std::min(range * (i + 1), num_photons));
+            photon_infos_[i].range = uint2(range * i, std::min(range * (i + 1), num_photons));
         }
     }
 
     integrator::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
 
     for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-        int2 const     photon_range      = photon_infos_[i].range;
-        uint32_t const local_num_photons = num_photons ? photon_range[1] - photon_range[0] : 0;
+        uint2 const    photon_range      = num_photons ? photon_infos_[i].range : uint2(0);
+        uint32_t const local_num_photons = photon_range[1] - photon_range[0];
 
         workers_[i].init(i, take.settings, scene, max_material_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
