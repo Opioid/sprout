@@ -50,6 +50,14 @@ class Map {
     int32_t grid_area_;
 
     int2* grid_;
+
+    static int32_t constexpr o_m1__0__0_ = -1;
+    static int32_t constexpr o_p1__0__0_ = +1;
+
+    int32_t o__0_m1__0_;
+    int32_t o__0_p1__0_;
+    int32_t o__0__0_m1_;
+    int32_t o__0__0_p1_;
 };
 
 }  // namespace rendering::integrator::photon
