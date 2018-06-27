@@ -85,30 +85,30 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
         o__0__0_m1_ = -grid_area_;
         o__0__0_p1_ = +grid_area_;
 
-        o_m1_m1__0_ = -1 -grid_dimensions[0];
-        o_m1_p1__0_ = -1 +grid_dimensions[0];
-        o_p1_m1__0_ = +1 -grid_dimensions[0];
-        o_p1_p1__0_ = +1 +grid_dimensions[0];
+        o_m1_m1__0_ = -1 - grid_dimensions[0];
+        o_m1_p1__0_ = -1 + grid_dimensions[0];
+        o_p1_m1__0_ = +1 - grid_dimensions[0];
+        o_p1_p1__0_ = +1 + grid_dimensions[0];
 
-        o_m1_m1_m1_ = -1 -grid_dimensions[0] -grid_area_;
-        o_m1_m1_p1_ = -1 -grid_dimensions[0] +grid_area_;
-        o_m1_p1_m1_ = -1 +grid_dimensions[0] -grid_area_;
-        o_m1_p1_p1_ = -1 +grid_dimensions[0] +grid_area_;
+        o_m1_m1_m1_ = -1 - grid_dimensions[0] - grid_area_;
+        o_m1_m1_p1_ = -1 - grid_dimensions[0] + grid_area_;
+        o_m1_p1_m1_ = -1 + grid_dimensions[0] - grid_area_;
+        o_m1_p1_p1_ = -1 + grid_dimensions[0] + grid_area_;
 
-        o_p1_m1_m1_ = +1 -grid_dimensions[0] -grid_area_;
-        o_p1_m1_p1_ = +1 -grid_dimensions[0] +grid_area_;
-        o_p1_p1_m1_ = +1 +grid_dimensions[0] -grid_area_;
-        o_p1_p1_p1_ = +1 +grid_dimensions[0] +grid_area_;
+        o_p1_m1_m1_ = +1 - grid_dimensions[0] - grid_area_;
+        o_p1_m1_p1_ = +1 - grid_dimensions[0] + grid_area_;
+        o_p1_p1_m1_ = +1 + grid_dimensions[0] - grid_area_;
+        o_p1_p1_p1_ = +1 + grid_dimensions[0] + grid_area_;
 
-        o_m1__0_m1_ = -1 -grid_area_;
-        o_m1__0_p1_ = -1 +grid_area_;
-        o_p1__0_m1_ = +1 -grid_area_;
-        o_p1__0_p1_ = +1 +grid_area_;
+        o_m1__0_m1_ = -1 - grid_area_;
+        o_m1__0_p1_ = -1 + grid_area_;
+        o_p1__0_m1_ = +1 - grid_area_;
+        o_p1__0_p1_ = +1 + grid_area_;
 
-        o__0_m1_m1_ = -grid_dimensions[0] -grid_area_;
-        o__0_m1_p1_ = -grid_dimensions[0] +grid_area_;
-        o__0_p1_m1_ = +grid_dimensions[0] -grid_area_;
-        o__0_p1_p1_ = +grid_dimensions[0] +grid_area_;
+        o__0_m1_m1_ = -grid_dimensions[0] - grid_area_;
+        o__0_m1_p1_ = -grid_dimensions[0] + grid_area_;
+        o__0_p1_m1_ = +grid_dimensions[0] - grid_area_;
+        o__0_p1_p1_ = +grid_dimensions[0] + grid_area_;
     }
 
     std::sort(photons_, photons_ + num_photons_, [this](Photon const& a, Photon const& b) -> bool {

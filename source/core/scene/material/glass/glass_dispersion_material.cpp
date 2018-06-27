@@ -21,15 +21,16 @@ material::Sample const& Glass_dispersion::sample(f_float3 wo, Renderstate const&
     sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
-        auto&        sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const n       = sample_normal(wo, rs, normal_map_, sampler);
+        auto& sampler = worker.sampler_2D(sampler_key(), filter);
+
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler);
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set(ior_, abbe_, rs.wavelength);
-    sample.layer_.set(refraction_color_, absorption_color_, attenuation_distance_, ior_, rs.ior);
+    sample.set(refraction_color_, ior_, rs.ior);
+    sample.set_dispersion(abbe_, rs.wavelength);
 
     return sample;
 }

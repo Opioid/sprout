@@ -21,14 +21,35 @@ bxdf::Result Sample::evaluate(f_float3 /*wi*/) const {
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+    float3 n     = layer_.n_;
+    float  eta_i = 1.f / ior_;
+    float  eta_t = ior_;
+
+    if (!same_hemisphere(wo_)) {
+        n     = -n;
+        eta_t = eta_i;
+        eta_i = ior_;
+    }
+
+    float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
+    float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+
+    float n_dot_t;
+    float f;
+    if (sint2 >= 1.f) {
+        n_dot_t = 0.f;
+        f       = 1.f;
+    } else {
+        n_dot_t = std::sqrt(1.f - sint2);
+        f       = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+    }
+
     float const p = sampler.generate_sample_1D();
 
-    if (p < 0.5f) {
-        BSDF::reflect(*this, layer_, sampler, result);
-        result.pdf *= 0.5f;
+    if (p < f) {
+        BSDF::reflect(wo_, n, n_dot_wo, result);
     } else {
-        BSDF::refract(*this, layer_, sampler, result);
-        result.pdf *= 0.5f;
+        BSDF::refract(wo_, n, color_, n_dot_wo, n_dot_t, eta_i, result);
     }
 
     result.wavelength = 0.f;
@@ -38,44 +59,15 @@ bool Sample::is_transmissive() const {
     return true;
 }
 
-void Sample::Layer::set(float3 const& refraction_color, float3 const& absorption_color,
-                        float attenuation_distance, float ior, float ior_outside) {
-    color_ = refraction_color;
-
-    absorption_coefficient_ = material::extinction_coefficient(absorption_color,
-                                                               attenuation_distance);
-
+void Sample::set(float3 const& refraction_color, float ior, float ior_outside) {
+    color_       = refraction_color;
     ior_         = ior;
     ior_outside_ = ior_outside;
 }
 
-float Sample::BSDF::reflect(const Sample& sample, Layer const& layer, sampler::Sampler& /*sampler*/,
-                            bxdf::Sample& result) {
-    float3 n     = layer.n_;
-    float  eta_i = 1.f / layer.ior_;
-    float  eta_t = layer.ior_;
-
-    if (!sample.same_hemisphere(sample.wo_)) {
-        n     = -n;
-        eta_t = eta_i;
-        eta_i = layer.ior_;
-    }
-
-    float const n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f);
-    float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
-
-    float f;
-    if (sint2 >= 1.f) {
-        f = 1.f;
-    } else {
-        float const n_dot_t = std::sqrt(1.f - sint2);
-
-        // fresnel has to be the same value that would have been computed by BRDF
-        f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
-    }
-
-    result.reflection = float3(f);
-    result.wi         = math::normalize(2.f * n_dot_wo * n - sample.wo_);
+float Sample::BSDF::reflect(f_float3 wo, f_float3 n, float n_dot_wo, bxdf::Sample& result) {
+    result.reflection = float3(1.f);
+    result.wi         = math::normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_reflection);
 
@@ -84,34 +76,10 @@ float Sample::BSDF::reflect(const Sample& sample, Layer const& layer, sampler::S
     return 1.f;
 }
 
-float Sample::BSDF::refract(const Sample& sample, Layer const& layer, sampler::Sampler& /*sampler*/,
-                            bxdf::Sample& result) {
-    float3 n     = layer.n_;
-    float  eta_i = 1.f / layer.ior_;
-    float  eta_t = layer.ior_;
-
-    if (!sample.same_hemisphere(sample.wo_)) {
-        n     = -n;
-        eta_t = eta_i;
-        eta_i = layer.ior_;
-    }
-
-    float const n_dot_wo = std::min(std::abs(math::dot(n, sample.wo_)), 1.f);
-
-    float const sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
-
-    if (sint2 >= 1.f) {
-        result.pdf = 0.f;
-        return 0.f;
-    }
-
-    float const n_dot_t = std::sqrt(1.f - sint2);
-
-    // fresnel has to be the same value that would have been computed by BRDF
-    float const f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
-
-    result.reflection = (1.f - f) * layer.color_;
-    result.wi         = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
+float Sample::BSDF::refract(f_float3 wo, f_float3 n, f_float3 color, float n_dot_wo, float n_dot_t,
+                            float eta_i, bxdf::Sample& result) {
+    result.reflection = color;
+    result.wi         = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_transmission);
 

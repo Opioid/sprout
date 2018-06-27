@@ -11,6 +11,7 @@
 namespace scene::material::glass::testing {
 
 void test() {
+    /*
     rnd::Generator  rng;
     sampler::Random sampler(rng);
     sampler.resize(0, 1, 1, 1);
@@ -39,29 +40,30 @@ void test() {
 
     result.wi         = float3::identity();
     result.reflection = float3::identity();
-    Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
+    Sample::BSDF::reflect(sample, sample.layer_, result);
     print(result);
     result.reflection = float3::identity();
-    Sample::BSDF::refract(sample, sample.layer_, sampler, result);
+    Sample::BSDF::refract(sample, sample.layer_, result);
     print(result);
 
     wo = b;
     sample.set_basis(n, wo);
     result.reflection = float3::identity();
-    Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
+    Sample::BSDF::reflect(sample, sample.layer_, result);
     print(result);
     result.reflection = float3::identity();
-    Sample::BSDF::refract(sample, sample.layer_, sampler, result);
+    Sample::BSDF::refract(sample, sample.layer_, result);
     print(result);
 
     wo = n;
     sample.set_basis(n, wo);
     result.reflection = float3::identity();
-    Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
+    Sample::BSDF::reflect(sample, sample.layer_, result);
     print(result);
     result.reflection = float3::identity();
-    Sample::BSDF::refract(sample, sample.layer_, sampler, result);
+    Sample::BSDF::refract(sample, sample.layer_, result);
     print(result);
+    */
 }
 
 void rough_refraction() {

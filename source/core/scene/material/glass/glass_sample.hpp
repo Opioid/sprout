@@ -15,25 +15,20 @@ class Sample : public material::Sample {
 
     virtual bool is_transmissive() const override final;
 
-    struct Layer : public material::Sample::Layer {
-        void set(float3 const& refraction_color, float3 const& absorption_color,
-                 float attenuation_distance, float ior, float ior_outside);
-
-        float3        color_;
-        float3        absorption_coefficient_;
-        mutable float ior_;
-        float         ior_outside_;
-    };
+    void set(float3 const& refraction_color, float ior, float ior_outside);
 
     Layer layer_;
 
+    float3 color_;
+    float  ior_;
+    float  ior_outside_;
+
     class BSDF {
       public:
-        static float reflect(const Sample& sample, Layer const& layer, sampler::Sampler& sampler,
-                             bxdf::Sample& result);
+        static float reflect(f_float3 wo, f_float3 n, float n_dot_wo, bxdf::Sample& result);
 
-        static float refract(const Sample& sample, Layer const& layer, sampler::Sampler& sampler,
-                             bxdf::Sample& result);
+        static float refract(f_float3 wo, f_float3 n, f_float3 color, float n_dot_wo, float n_dot_t,
+                             float eta_i, bxdf::Sample& result);
     };
 };
 

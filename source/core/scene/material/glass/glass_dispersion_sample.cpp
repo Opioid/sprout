@@ -52,24 +52,42 @@ void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     float ior = ior_;
     ior += ((ior - 1.f) / abbe_) * (523655.f / (wavelength * wavelength) - 1.5168f);
 
-    layer_.ior_ = ior;
+    float3 n     = layer_.n_;
+    float  eta_i = 1.f / ior;
+    float  eta_t = ior;
+
+    if (!same_hemisphere(wo_)) {
+        n     = -n;
+        eta_t = eta_i;
+        eta_i = ior;
+    }
+
+    float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
+    float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+
+    float n_dot_t;
+    float f;
+    if (sint2 >= 1.f) {
+        n_dot_t = 0.f;
+        f       = 1.f;
+    } else {
+        n_dot_t = std::sqrt(1.f - sint2);
+        f       = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+    }
 
     float const p = sampler.generate_sample_1D();
 
-    if (p < 0.5f) {
-        BSDF::reflect(*this, layer_, sampler, result);
-        result.pdf *= 0.5f;
+    if (p < f) {
+        BSDF::reflect(wo_, n, n_dot_wo, result);
     } else {
-        BSDF::refract(*this, layer_, sampler, result);
-        result.pdf *= 0.5f;
+        BSDF::refract(wo_, n, color_, n_dot_wo, n_dot_t, eta_i, result);
     }
 
     result.reflection *= weight;
     result.wavelength = wavelength;
 }
 
-void Sample_dispersion::set(float ior, float abbe, float wavelength) {
-    ior_        = ior;
+void Sample_dispersion::set_dispersion(float abbe, float wavelength) {
     abbe_       = abbe;
     wavelength_ = wavelength;
 }
