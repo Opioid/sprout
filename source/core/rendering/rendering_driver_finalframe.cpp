@@ -170,6 +170,8 @@ void Driver_finalframe::bake_photons() {
 
     auto const start = std::chrono::high_resolution_clock::now();
 
+    photon_map_.prepare();
+
     thread_pool_.run_parallel([this](uint32_t index) {
         auto& worker = workers_[index];
 

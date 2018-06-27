@@ -11,7 +11,7 @@ namespace rendering::integrator::photon {
 
 Map::Map(uint32_t num_photons, float photon_radius)
     : num_photons_(num_photons),
-      photons_(new Photon[num_photons]),
+      photons_(nullptr),
       photon_radius_(photon_radius),
       inverse_cell_size_(1.f / (2.5f * photon_radius)),
       grid_dimensions_(0),
@@ -20,6 +20,11 @@ Map::Map(uint32_t num_photons, float photon_radius)
 Map::~Map() {
     delete[] grid_;
     delete[] photons_;
+}
+
+void Map::prepare() {
+    delete[] photons_;
+    photons_ = new Photon[num_photons_];
 }
 
 void Map::insert(Photon const& photon, uint32_t index) {
@@ -77,6 +82,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
 
         grid_area_ = grid_dimensions[0] * grid_dimensions[1];
 
+        delete[] grid_;
         grid_ = new int2[static_cast<uint32_t>(num_cells)];
 
         o__0_m1__0_ = -grid_dimensions[0];
@@ -111,7 +117,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
         o__0_p1_p1_ = +grid_dimensions[0] + grid_area_;
     }
 
-    update_grid();
+    update_grid(true);
 
     // return;
     uint32_t comp_num_photons = num_photons_;
@@ -131,11 +137,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
         for (uint32_t c = 0; c < 4; ++c) {
             int2 const cell = cells[c];
 
-            for (int32_t j = cell[0], jlen = cell[1]; j < jlen; ++j) {
-                if (j <= i) {
-                    continue;
-                }
-
+            for (int32_t j = std::max(cell[0], i + 1), jlen = cell[1]; j < jlen; ++j) {
                 auto& pb = photons_[j];
 
                 if (pb.alpha[0] < 0.f) {
@@ -169,7 +171,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
     photons_     = comp_photons;
     num_photons_ = comp_num_photons;
 
-    update_grid();
+    update_grid(false);
 }
 
 static inline float kernel(float squared_distance, float inv_squared_radius) {
@@ -246,13 +248,15 @@ size_t Map::num_bytes() const {
     return num_bytes;
 }
 
-void Map::update_grid() {
-    std::sort(photons_, photons_ + num_photons_, [this](Photon const& a, Photon const& b) -> bool {
-        int32_t const ida = map(a.p);
-        int32_t const idb = map(b.p);
+void Map::update_grid(bool needs_sorting) {
+    if (needs_sorting) {
+        std::sort(photons_, photons_ + num_photons_, [this](Photon const& a, Photon const& b) -> bool {
+            int32_t const ida = map(a.p);
+            int32_t const idb = map(b.p);
 
-        return ida < idb;
-    });
+            return ida < idb;
+        });
+    }
 
     int32_t const num_cells = grid_dimensions_[0] * grid_dimensions_[1] * grid_dimensions_[2];
 

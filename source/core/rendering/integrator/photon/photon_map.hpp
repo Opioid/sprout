@@ -21,6 +21,8 @@ class Map {
     Map(uint32_t num_photons, float photon_radius);
     ~Map();
 
+    void prepare();
+
     void insert(Photon const& photon, uint32_t index);
 
     void compile(uint32_t num_paths, math::AABB const& aabb);
@@ -30,7 +32,7 @@ class Map {
     size_t num_bytes() const;
 
   private:
-    void update_grid();
+    void update_grid(bool needs_sorting);
 
     int32_t map(f_float3 v) const;
     int3    map(f_float3 v, int8_t adjacent[3]) const;
