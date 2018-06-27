@@ -56,8 +56,35 @@ class Map {
 
     int32_t o__0_m1__0_;
     int32_t o__0_p1__0_;
+
     int32_t o__0__0_m1_;
     int32_t o__0__0_p1_;
+
+    int32_t o_m1_m1__0_;
+    int32_t o_m1_p1__0_;
+
+    int32_t o_p1_m1__0_;
+    int32_t o_p1_p1__0_;
+
+    int32_t o_m1_m1_m1_;
+    int32_t o_m1_m1_p1_;
+    int32_t o_m1_p1_m1_;
+    int32_t o_m1_p1_p1_;
+
+    int32_t o_p1_m1_m1_;
+    int32_t o_p1_m1_p1_;
+    int32_t o_p1_p1_m1_;
+    int32_t o_p1_p1_p1_;
+
+    int32_t o_m1__0_m1_;
+    int32_t o_m1__0_p1_;
+    int32_t o_p1__0_m1_;
+    int32_t o_p1__0_p1_;
+
+    int32_t o__0_m1_m1_;
+    int32_t o__0_m1_p1_;
+    int32_t o__0_p1_m1_;
+    int32_t o__0_p1_p1_;
 };
 
 }  // namespace rendering::integrator::photon
