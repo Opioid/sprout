@@ -42,6 +42,7 @@ class Interface_stack {
     const Interface* top() const;
 
     bool top_is_vacuum() const;
+    bool top_is_vacuum_or_pure_specular() const;
 
     void push(Intersection const& intersection);
     bool remove(Intersection const& intersection);

@@ -28,6 +28,8 @@ class Glass : public Material {
     void set_attenuation(float3 const& absorption_color, float distance);
     void set_ior(float ior);
 
+    virtual bool is_pure_specular() const override final;
+
     static size_t sample_size();
 
   protected:

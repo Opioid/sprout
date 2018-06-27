@@ -118,6 +118,10 @@ uint32_t Material::sampler_key() const {
     return sampler_key_;
 }
 
+bool Material::is_pure_specular() const {
+    return false;
+}
+
 bool Material::is_masked() const {
     return mask_.is_valid();
 }

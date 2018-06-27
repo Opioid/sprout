@@ -70,6 +70,10 @@ void Glass::set_ior(float ior) {
     ior_ = ior;
 }
 
+bool Glass::is_pure_specular() const {
+    return true;
+}
+
 size_t Glass::sample_size() {
     return sizeof(Sample);
 }

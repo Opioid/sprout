@@ -124,6 +124,7 @@ class Material {
 
     uint32_t sampler_key() const;
 
+    virtual bool is_pure_specular() const;
     virtual bool is_masked() const;
     bool         is_emissive() const;
     bool         is_two_sided() const;

@@ -65,6 +65,15 @@ inline bool Interface_stack::top_is_vacuum() const {
     return true;
 }
 
+inline bool Interface_stack::top_is_vacuum_or_pure_specular() const {
+    if (index_ > 0) {
+        auto const material = stack_[index_ - 1].material();
+        return 1.f == material->ior() || material->is_pure_specular();
+    }
+
+    return true;
+}
+
 inline void Interface_stack::push(Intersection const& intersection) {
     if (index_ < Num_entries - 1) {
         stack_[index_] = {intersection.prop, intersection.geo.uv, intersection.geo.part};

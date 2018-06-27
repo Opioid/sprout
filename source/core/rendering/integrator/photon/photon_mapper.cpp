@@ -96,7 +96,7 @@ uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
 
             if (singular) {
                 specular_ray = true;
-            } else if (specular_ray /*&& worker.interface_stack().top_is_vacuum()*/) {
+            } else if (specular_ray && worker.interface_stack().top_is_vacuum_or_pure_specular()) {
                 photon.p     = intersection.geo.p;
                 photon.wi    = -ray.direction;
                 photon.alpha = throughput * radiance;
