@@ -1,6 +1,7 @@
 #include "photon_map.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
+#include "base/thread/thread_pool.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 
@@ -9,15 +10,17 @@
 
 namespace rendering::integrator::photon {
 
-Map::Map(uint32_t num_photons, float photon_radius)
+Map::Map(uint32_t num_photons, float photon_radius, uint32_t num_workers)
     : num_photons_(num_photons),
       photons_(nullptr),
       photon_radius_(photon_radius),
       inverse_cell_size_(1.f / (2.5f * photon_radius)),
       grid_dimensions_(0),
-      grid_(nullptr) {}
+      grid_(nullptr),
+      num_reduced_(new uint32_t[num_workers]) {}
 
 Map::~Map() {
+    delete[] num_reduced_;
     delete[] grid_;
     delete[] photons_;
 }
@@ -68,7 +71,7 @@ static inline int32_t map(f_float3 v, f_float3 min, int32_t area, int32_t width,
     return c[2] * area + c[1] * width + c[0];
 }
 
-void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
+void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool) {
     num_paths_ = num_paths;
 
     aabb_ = aabb;
@@ -120,38 +123,19 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
     update_grid(true);
 
     // return;
+
+    pool.run_range(
+        [this](uint32_t id, int32_t begin, int32_t end) { num_reduced_[id] = reduce(begin, end); },
+        0, num_photons_);
+
     uint32_t comp_num_photons = num_photons_;
 
-    float const merge_distance = math::pow2(0.125f * photon_radius_);
-
-    for (int32_t i = 0, ilen = static_cast<int32_t>(num_photons_); i < ilen; ++i) {
-        auto& pa = photons_[i];
-
-        if (pa.alpha[0] < 0.f) {
-            continue;
-        }
-
-        int2 cells[4];
-        adjacent_cells(pa.p, cells);
-
-        for (uint32_t c = 0; c < 4; ++c) {
-            int2 const cell = cells[c];
-
-            for (int32_t j = std::max(cell[0], i + 1), jlen = cell[1]; j < jlen; ++j) {
-                auto& pb = photons_[j];
-
-                if (pb.alpha[0] < 0.f) {
-                    continue;
-                }
-
-                if (math::squared_distance(pa.p, pb.p) < merge_distance) {
-                    pa.alpha += pb.alpha;
-                    pb.alpha = float3(-1.f);
-                    --comp_num_photons;
-                }
-            }
-        }
+    for (uint32_t i = 0, len = pool.num_threads(); i < len; ++i) {
+        comp_num_photons -= num_reduced_[i];
     }
+
+    //    uint32_t const num_reduced = reduce(0, num_photons_);
+    //    uint32_t const comp_num_photons = num_photons_ - num_reduced;
 
     float const percentage = static_cast<float>(comp_num_photons) /
                              static_cast<float>(num_photons_);
@@ -250,12 +234,13 @@ size_t Map::num_bytes() const {
 
 void Map::update_grid(bool needs_sorting) {
     if (needs_sorting) {
-        std::sort(photons_, photons_ + num_photons_, [this](Photon const& a, Photon const& b) -> bool {
-            int32_t const ida = map(a.p);
-            int32_t const idb = map(b.p);
+        std::sort(photons_, photons_ + num_photons_,
+                  [this](Photon const& a, Photon const& b) -> bool {
+                      int32_t const ida = map(a.p);
+                      int32_t const idb = map(b.p);
 
-            return ida < idb;
-        });
+                      return ida < idb;
+                  });
     }
 
     int32_t const num_cells = grid_dimensions_[0] * grid_dimensions_[1] * grid_dimensions_[2];
@@ -272,6 +257,44 @@ void Map::update_grid(bool needs_sorting) {
         grid_[c][0] = begin;
         grid_[c][1] = current;
     }
+}
+
+uint32_t Map::reduce(int32_t begin, int32_t end) {
+    float const merge_distance = math::pow2(0.125f * photon_radius_);
+
+    uint32_t num_reduced = 0;
+
+    for (int32_t i = begin, ilen = end; i < ilen; ++i) {
+        auto& pa = photons_[i];
+
+        if (pa.alpha[0] < 0.f) {
+            continue;
+        }
+
+        int2 cells[4];
+        adjacent_cells(pa.p, cells);
+
+        for (uint32_t c = 0; c < 4; ++c) {
+            int2 const cell = cells[c];
+
+            for (int32_t j = std::max(cell[0], i + 1), jlen = std::min(cell[1], end); j < jlen;
+                 ++j) {
+                auto& pb = photons_[j];
+
+                if (pb.alpha[0] < 0.f) {
+                    continue;
+                }
+
+                if (math::squared_distance(pa.p, pb.p) < merge_distance) {
+                    pa.alpha += pb.alpha;
+                    pb.alpha = float3(-1.f);
+                    ++num_reduced;
+                }
+            }
+        }
+    }
+
+    return num_reduced;
 }
 
 int32_t Map::map(f_float3 v) const {

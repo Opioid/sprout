@@ -4,6 +4,10 @@
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
 
+namespace thread {
+class Pool;
+}
+
 namespace scene::material {
 class Sample;
 }
@@ -18,14 +22,14 @@ struct Photon {
 
 class Map {
   public:
-    Map(uint32_t num_photons, float photon_radius);
+    Map(uint32_t num_photons, float photon_radius, uint32_t num_workers);
     ~Map();
 
     void prepare();
 
     void insert(Photon const& photon, uint32_t index);
 
-    void compile(uint32_t num_paths, math::AABB const& aabb);
+    void compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool);
 
     float3 li(f_float3 position, scene::material::Sample const& sample) const;
 
@@ -33,6 +37,8 @@ class Map {
 
   private:
     void update_grid(bool needs_sorting);
+
+    uint32_t reduce(int32_t begin, int32_t end);
 
     int32_t map(f_float3 v) const;
     int3    map(f_float3 v, int8_t adjacent[3]) const;
@@ -91,6 +97,8 @@ class Map {
     int32_t o__0_m1_p1_;
     int32_t o__0_p1_m1_;
     int32_t o__0_p1_p1_;
+
+    uint32_t* num_reduced_;
 };
 
 }  // namespace rendering::integrator::photon

@@ -183,7 +183,7 @@ void Driver_finalframe::bake_photons() {
         num_paths += photon_infos_[i].num_paths;
     }
 
-    photon_map_.compile(num_paths, scene_.aabb());
+    photon_map_.compile(num_paths, scene_.aabb(), thread_pool_);
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");
