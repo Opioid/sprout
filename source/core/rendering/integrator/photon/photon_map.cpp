@@ -111,25 +111,63 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
         o__0_p1_p1_ = +grid_dimensions[0] + grid_area_;
     }
 
-    std::sort(photons_, photons_ + num_photons_, [this](Photon const& a, Photon const& b) -> bool {
-        int32_t const ida = map(a.p);
-        int32_t const idb = map(b.p);
+    update_grid();
 
-        return ida < idb;
-    });
+//return;
+    uint32_t comp_num_photons = num_photons_;
 
-    int32_t current = 0;
-    for (int32_t c = 0; c < num_cells; ++c) {
-        int32_t const begin = current;
-        for (int32_t len = static_cast<int32_t>(num_photons_); current < len; ++current) {
-            if (map(photons_[current].p) != c) {
-                break;
-            }
+    float const merge_distance = math::pow2(0.125f * photon_radius_);
+
+    for (int32_t i = 0, ilen = static_cast<int32_t>(num_photons_); i < ilen; ++i) {
+        auto& pa = photons_[i];
+
+        if (pa.alpha[0] < 0.f) {
+            continue;
         }
 
-        grid_[c][0] = begin;
-        grid_[c][1] = current;
+        int2 cells[4];
+        adjacent_cells(pa.p, cells);
+
+        for (uint32_t c = 0; c < 4; ++c) {
+            int2 const cell = cells[c];
+
+            for (int32_t j = cell[0], jlen = cell[1]; j < jlen; ++j) {
+                if (j <= i) {
+                    continue;
+                }
+
+                auto& pb = photons_[j];
+
+                if (pb.alpha[0] < 0.f) {
+                    continue;
+                }
+
+                if (math::squared_distance(pa.p, pb.p) < merge_distance) {
+                    pa.alpha += pb.alpha;
+                    pb.alpha = float3(-1.f);
+                    --comp_num_photons;
+                }
+            }
+        }
     }
+
+    float const percentage = static_cast<float>(comp_num_photons) / static_cast<float>(num_photons_);
+
+    std::cout << comp_num_photons << " left of " << num_photons_ << " (" << static_cast<uint32_t>(100.f * percentage) << "%)" << std::endl;
+
+    Photon* comp_photons = new Photon[comp_num_photons];
+
+    for (uint32_t i = 0, j = 0, len = num_photons_; i < len; ++i) {
+        if (photons_[i].alpha[0] >= 0.f) {
+            comp_photons[j++] = photons_[i];
+        }
+    }
+
+    delete[] photons_;
+    photons_ = comp_photons;
+    num_photons_ = comp_num_photons;
+
+    update_grid();
 }
 
 static inline float kernel(float squared_distance, float inv_squared_radius) {
@@ -169,7 +207,6 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
     */
 
     int2 cells[4];
-
     adjacent_cells(position, cells);
 
     for (uint32_t c = 0; c < 4; ++c) {
@@ -205,6 +242,30 @@ size_t Map::num_bytes() const {
     num_bytes += static_cast<uint32_t>(num_cells) * sizeof(int2);
 
     return num_bytes;
+}
+
+void Map::update_grid() {
+    std::sort(photons_, photons_ + num_photons_, [this](Photon const& a, Photon const& b) -> bool {
+        int32_t const ida = map(a.p);
+        int32_t const idb = map(b.p);
+
+        return ida < idb;
+    });
+
+    int32_t const num_cells = grid_dimensions_[0] * grid_dimensions_[1] * grid_dimensions_[2];
+
+    int32_t current = 0;
+    for (int32_t c = 0; c < num_cells; ++c) {
+        int32_t const begin = current;
+        for (int32_t len = static_cast<int32_t>(num_photons_); current < len; ++current) {
+            if (map(photons_[current].p) != c) {
+                break;
+            }
+        }
+
+        grid_[c][0] = begin;
+        grid_[c][1] = current;
+    }
 }
 
 int32_t Map::map(f_float3 v) const {
