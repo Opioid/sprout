@@ -46,6 +46,8 @@ class Interface_stack {
     bool remove(Intersection const& intersection);
     void pop();
 
+    size_t num_bytes() const;
+
   private:
     static int32_t constexpr Num_entries = 16;
 

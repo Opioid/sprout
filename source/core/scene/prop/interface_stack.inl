@@ -94,6 +94,10 @@ inline void Interface_stack::pop() {
     }
 }
 
+inline size_t Interface_stack::num_bytes() const {
+    return sizeof(*this) + Num_entries * sizeof(Interface);
+}
+
 }  // namespace scene::prop
 
 #endif

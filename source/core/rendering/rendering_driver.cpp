@@ -74,7 +74,7 @@ size_t Driver::num_bytes() const {
     // Every worker must have exactly the same size, so we only need to query a single one
     size_t const worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();
 
-    return worker_num_bytes + target_.num_bytes();
+    return sizeof(*this) + worker_num_bytes + target_.num_bytes() + photon_map_.num_bytes();
 }
 
 }  // namespace rendering

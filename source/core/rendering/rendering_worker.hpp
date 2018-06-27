@@ -75,6 +75,8 @@ class Worker : public scene::Worker {
 
     float3 photon_li(f_float3 position, Material_sample const& sample) const;
 
+    size_t num_bytes() const;
+
   protected:
     integrator::surface::Integrator* surface_integrator_ = nullptr;
     integrator::volume::Integrator*  volume_integrator_  = nullptr;

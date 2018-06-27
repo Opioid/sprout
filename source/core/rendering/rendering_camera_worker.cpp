@@ -58,9 +58,4 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 co
     }
 }
 
-size_t Camera_worker::num_bytes() const {
-    return sizeof(*this) + surface_integrator_->num_bytes() + volume_integrator_->num_bytes() +
-           sampler_->num_bytes();
-}
-
 }  // namespace rendering

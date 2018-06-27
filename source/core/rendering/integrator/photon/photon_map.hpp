@@ -27,6 +27,8 @@ class Map {
 
     float3 li(f_float3 position, scene::material::Sample const& sample) const;
 
+    size_t num_bytes() const;
+
   private:
     int32_t map(f_float3 v) const;
     int3    map(f_float3 v, int8_t adjacent[3]) const;

@@ -14,8 +14,6 @@ class alignas(64) Camera_worker : public Worker {
     void render(scene::camera::Camera& camera, uint32_t view, int4 const& tile,
                 uint32_t sample_begin, uint32_t sample_end, float normalized_tick_offset,
                 float normalized_tick_slice);
-
-    size_t num_bytes() const;
 };
 
 }  // namespace rendering

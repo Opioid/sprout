@@ -195,4 +195,16 @@ float3 Worker::photon_li(f_float3 position, Material_sample const& sample) const
     return float3::identity();
 }
 
+size_t Worker::num_bytes() const {
+    size_t num_bytes = sizeof(*this);
+
+    num_bytes += surface_integrator_->num_bytes();
+    num_bytes += volume_integrator_->num_bytes();
+    num_bytes += sampler_->num_bytes();
+    num_bytes += interface_stack_.num_bytes();
+    num_bytes += interface_stack_temp_.num_bytes();
+
+    return num_bytes;
+}
+
 }  // namespace rendering

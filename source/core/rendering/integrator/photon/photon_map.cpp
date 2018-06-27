@@ -197,6 +197,16 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
     return result;
 }
 
+size_t Map::num_bytes() const {
+    size_t num_bytes = num_photons_ * sizeof(Photon);
+
+    int32_t const num_cells = grid_dimensions_[0] * grid_dimensions_[1] * grid_dimensions_[2];
+
+    num_bytes += static_cast<uint32_t>(num_cells) * sizeof(int2);
+
+    return num_bytes;
+}
+
 int32_t Map::map(f_float3 v) const {
     return photon::map(v, aabb_.min(), grid_area_, grid_dimensions_[0], inverse_cell_size_);
 }
