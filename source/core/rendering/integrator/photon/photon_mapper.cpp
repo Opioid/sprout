@@ -29,12 +29,22 @@ void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 uint32_t Mapper::bake(Map& map, uint2 range, Worker& worker) {
     uint32_t num_paths = 0;
 
+    uint32_t constexpr num_photons_per_path = 4;
+
+    Photon photons[num_photons_per_path];
+
     for (uint32_t i = range[0]; i < range[1]; ++i) {
-        Photon         photon;
-        uint32_t const num_iterations = trace_photon(worker, photon);
+        uint32_t const max_photons = std::min(num_photons_per_path, range[1] - i);
+        uint32_t       num_photons;
+        uint32_t const num_iterations = trace_photon(worker, max_photons, photons, num_photons);
 
         if (num_iterations > 0) {
-            map.insert(photon, i);
+            for (uint32_t j = 0; j < num_photons; ++j) {
+                map.insert(photons[j], i + j);
+            }
+
+            i += num_photons - 1;
+
             num_paths += num_iterations;
         } else {
             std::cout << "sad" << std::endl;
@@ -48,7 +58,8 @@ size_t Mapper::num_bytes() const {
     return sizeof(*this);
 }
 
-uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
+uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* photons,
+                              uint32_t& num_photons) {
     static constexpr uint32_t Max_iterations = 1024;
 
     Sampler_filter const filter = Sampler_filter::Undefined;
@@ -58,6 +69,10 @@ uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
     Bxdf_sample sample_result;
 
     Intersection intersection;
+
+    uint32_t iteration = 0;
+
+    num_photons = 0;
 
     for (uint32_t i = 0; i < Max_iterations; ++i) {
         worker.interface_stack().clear();
@@ -97,11 +112,19 @@ uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
             if (singular) {
                 specular_ray = true;
             } else if (specular_ray && worker.interface_stack().top_is_vacuum_or_pure_specular()) {
+                auto& photon = photons[num_photons++];
+
                 photon.p     = intersection.geo.p;
                 photon.wi    = -ray.direction;
                 photon.alpha = throughput * radiance;
 
-                return i + 1;
+                iteration = i + 1;
+
+                if (max_photons == num_photons) {
+                    return iteration;
+                }
+
+                specular_ray = false;
             } else {
                 break;
             }
@@ -138,6 +161,10 @@ uint32_t Mapper::trace_photon(Worker& worker, Photon& photon) {
             } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
                 break;
             }
+        }
+
+        if (iteration) {
+            return iteration;
         }
     }
 

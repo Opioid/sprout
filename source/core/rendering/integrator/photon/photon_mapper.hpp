@@ -32,7 +32,8 @@ class Mapper : public Integrator {
     virtual size_t num_bytes() const override final;
 
   private:
-    uint32_t trace_photon(Worker& worker, Photon& photon);
+    uint32_t trace_photon(Worker& worker, uint32_t max_photons, Photon* photons,
+                          uint32_t& num_photons);
 
     bool generate_light_ray(Worker& worker, Ray& ray, float3& radiance);
 

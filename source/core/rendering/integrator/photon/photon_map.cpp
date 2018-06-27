@@ -260,7 +260,7 @@ void Map::update_grid(bool needs_sorting) {
 }
 
 uint32_t Map::reduce(int32_t begin, int32_t end) {
-    float const merge_distance = math::pow2(0.125f * photon_radius_);
+    float const merge_distance = math::pow2(0.1f * photon_radius_);
 
     uint32_t num_reduced = 0;
 
