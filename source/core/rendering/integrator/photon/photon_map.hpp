@@ -30,7 +30,6 @@ class Map {
     size_t num_bytes() const;
 
   private:
-
     void update_grid();
 
     int32_t map(f_float3 v) const;

@@ -113,7 +113,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
 
     update_grid();
 
-//return;
+    // return;
     uint32_t comp_num_photons = num_photons_;
 
     float const merge_distance = math::pow2(0.125f * photon_radius_);
@@ -151,9 +151,11 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
         }
     }
 
-    float const percentage = static_cast<float>(comp_num_photons) / static_cast<float>(num_photons_);
+    float const percentage = static_cast<float>(comp_num_photons) /
+                             static_cast<float>(num_photons_);
 
-    std::cout << comp_num_photons << " left of " << num_photons_ << " (" << static_cast<uint32_t>(100.f * percentage) << "%)" << std::endl;
+    std::cout << comp_num_photons << " left of " << num_photons_ << " ("
+              << static_cast<uint32_t>(100.f * percentage) << "%)" << std::endl;
 
     Photon* comp_photons = new Photon[comp_num_photons];
 
@@ -164,7 +166,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb) {
     }
 
     delete[] photons_;
-    photons_ = comp_photons;
+    photons_     = comp_photons;
     num_photons_ = comp_num_photons;
 
     update_grid();

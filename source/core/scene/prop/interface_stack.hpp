@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 #define SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 
+#include <cstddef>
 #include <cstdint>
 #include "base/math/vector2.hpp"
 
