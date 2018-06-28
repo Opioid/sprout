@@ -64,11 +64,10 @@ static inline int3 map(f_float3 v, f_float3 min, float inverse_cell, int8_t adja
     return c;
 }
 
-static inline int32_t map(f_float3 v, f_float3 min, int32_t area, int32_t width,
-                          float inverse_cell) {
+static inline int32_t map(f_float3 v, f_float3 min, int3 dimensions, float inverse_cell) {
     int3 const c = static_cast<int3>(inverse_cell * (v - min));
 
-    return c[2] * area + c[1] * width + c[0];
+    return (c[2] * dimensions[1] + c[1]) * dimensions[0] + c[0];
 }
 
 void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool) {
@@ -82,8 +81,9 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
 
     if (grid_dimensions_ != grid_dimensions) {
         grid_dimensions_ = grid_dimensions;
+        grid_max_coords_ = grid_dimensions - int3(1);
 
-        grid_area_ = grid_dimensions[0] * grid_dimensions[1];
+        int32_t const grid_area = grid_dimensions[0] * grid_dimensions[1];
 
         delete[] grid_;
         grid_ = new int2[static_cast<uint32_t>(num_cells)];
@@ -91,38 +91,36 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
         o__0_m1__0_ = -grid_dimensions[0];
         o__0_p1__0_ = +grid_dimensions[0];
 
-        o__0__0_m1_ = -grid_area_;
-        o__0__0_p1_ = +grid_area_;
+        o__0__0_m1_ = -grid_area;
+        o__0__0_p1_ = +grid_area;
 
         o_m1_m1__0_ = -1 - grid_dimensions[0];
         o_m1_p1__0_ = -1 + grid_dimensions[0];
         o_p1_m1__0_ = +1 - grid_dimensions[0];
         o_p1_p1__0_ = +1 + grid_dimensions[0];
 
-        o_m1_m1_m1_ = -1 - grid_dimensions[0] - grid_area_;
-        o_m1_m1_p1_ = -1 - grid_dimensions[0] + grid_area_;
-        o_m1_p1_m1_ = -1 + grid_dimensions[0] - grid_area_;
-        o_m1_p1_p1_ = -1 + grid_dimensions[0] + grid_area_;
+        o_m1_m1_m1_ = -1 - grid_dimensions[0] - grid_area;
+        o_m1_m1_p1_ = -1 - grid_dimensions[0] + grid_area;
+        o_m1_p1_m1_ = -1 + grid_dimensions[0] - grid_area;
+        o_m1_p1_p1_ = -1 + grid_dimensions[0] + grid_area;
 
-        o_p1_m1_m1_ = +1 - grid_dimensions[0] - grid_area_;
-        o_p1_m1_p1_ = +1 - grid_dimensions[0] + grid_area_;
-        o_p1_p1_m1_ = +1 + grid_dimensions[0] - grid_area_;
-        o_p1_p1_p1_ = +1 + grid_dimensions[0] + grid_area_;
+        o_p1_m1_m1_ = +1 - grid_dimensions[0] - grid_area;
+        o_p1_m1_p1_ = +1 - grid_dimensions[0] + grid_area;
+        o_p1_p1_m1_ = +1 + grid_dimensions[0] - grid_area;
+        o_p1_p1_p1_ = +1 + grid_dimensions[0] + grid_area;
 
-        o_m1__0_m1_ = -1 - grid_area_;
-        o_m1__0_p1_ = -1 + grid_area_;
-        o_p1__0_m1_ = +1 - grid_area_;
-        o_p1__0_p1_ = +1 + grid_area_;
+        o_m1__0_m1_ = -1 - grid_area;
+        o_m1__0_p1_ = -1 + grid_area;
+        o_p1__0_m1_ = +1 - grid_area;
+        o_p1__0_p1_ = +1 + grid_area;
 
-        o__0_m1_m1_ = -grid_dimensions[0] - grid_area_;
-        o__0_m1_p1_ = -grid_dimensions[0] + grid_area_;
-        o__0_p1_m1_ = +grid_dimensions[0] - grid_area_;
-        o__0_p1_p1_ = +grid_dimensions[0] + grid_area_;
+        o__0_m1_m1_ = -grid_dimensions[0] - grid_area;
+        o__0_m1_p1_ = -grid_dimensions[0] + grid_area;
+        o__0_p1_m1_ = +grid_dimensions[0] - grid_area;
+        o__0_p1_p1_ = +grid_dimensions[0] + grid_area;
     }
 
     update_grid(true);
-
-    // return;
 
     pool.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) { num_reduced_[id] = reduce(begin, end); },
@@ -298,7 +296,7 @@ uint32_t Map::reduce(int32_t begin, int32_t end) {
 }
 
 int32_t Map::map(f_float3 v) const {
-    return photon::map(v, aabb_.min(), grid_area_, grid_dimensions_[0], inverse_cell_size_);
+    return photon::map(v, aabb_.min(), grid_dimensions_, inverse_cell_size_);
 }
 
 int3 Map::map(f_float3 v, int8_t adjacent[3]) const {
@@ -306,13 +304,12 @@ int3 Map::map(f_float3 v, int8_t adjacent[3]) const {
 }
 
 int32_t Map::map(f_int3 c) const {
-    return c[2] * grid_area_ + c[1] * grid_dimensions_[0] + c[0];
+    return (c[2] * grid_dimensions_[1] + c[1]) * grid_dimensions_[0] + c[0];
 }
 
 void Map::adjacent_cells(f_float3 v, int2 cells[4]) const {
-    int8_t adjacent[3];
-
-    int3 const c = map(v, adjacent);
+    int8_t     adjacent[3];
+    int3 const c = math::min(map(v, adjacent), grid_max_coords_);
 
     int32_t const ic = map(c);
 
@@ -397,7 +394,6 @@ void Map::adjacent_cells(f_float3 v, int2 cells[4]) const {
 
     if (-1 == adjacent[1] && c[1] > 0) {
         cells[1] = grid_[ic + o__0_m1__0_];
-
         if (-1 == adjacent[2] && c[2] > 0) {
             cells[2] = grid_[ic + o__0__0_m1_];
             cells[3] = grid_[ic + o__0_m1_m1_];

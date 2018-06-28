@@ -58,8 +58,7 @@ class Map {
     math::AABB aabb_;
 
     int3 grid_dimensions_;
-
-    int32_t grid_area_;
+    int3 grid_max_coords_;
 
     int2* grid_;
 
