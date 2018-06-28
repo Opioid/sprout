@@ -21,7 +21,7 @@ class Mapper : public Integrator {
     };
 
     Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
-    virtual ~Mapper();
+    virtual ~Mapper() override;
 
     virtual void prepare(Scene const& scene, uint32_t num_photons) override final;
 

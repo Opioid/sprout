@@ -126,7 +126,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
 
     pool.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) { num_reduced_[id] = reduce(begin, end); },
-        0, num_photons_);
+        0, static_cast<int32_t>(num_photons_));
 
     uint32_t comp_num_photons = num_photons_;
 

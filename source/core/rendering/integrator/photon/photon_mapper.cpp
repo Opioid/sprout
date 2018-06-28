@@ -79,8 +79,6 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
 
         bool specular_ray = false;
 
-        float3 throughput(1.f);
-
         Ray    ray;
         float3 radiance;
         if (!generate_light_ray(worker, ray, radiance)) {
@@ -116,7 +114,7 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
 
                 photon.p     = intersection.geo.p;
                 photon.wi    = -ray.direction;
-                photon.alpha = throughput * radiance;
+                photon.alpha = radiance;
 
                 iteration = i + 1;
 
@@ -132,7 +130,18 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
             float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
             if (material_sample.ior_greater_one()) {
-                throughput *= sample_result.reflection / sample_result.pdf;
+                //  radiance *= sample_result.reflection / sample_result.pdf;
+
+                float3 const nr = radiance * sample_result.reflection / sample_result.pdf;
+
+                float const continue_prob = std::min(1.f,
+                                                     math::average(nr) / math::average(radiance));
+
+                if (rng_.random_float() > continue_prob) {
+                    break;
+                }
+
+                radiance = nr / continue_prob;
 
                 ray.origin = intersection.geo.p;
                 ray.set_direction(sample_result.wi);
@@ -153,7 +162,7 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
                 bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
                 //   radiance += throughput * vli;
-                throughput *= vtr;
+                radiance *= vtr;
 
                 if (!hit) {
                     break;
