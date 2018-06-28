@@ -532,11 +532,12 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
     return nullptr;
 }
 
-void Loader::load_photon_settings(json::Value const& photon_value,
-                                  Photon_settings&   photon_settings) {
-    photon_settings.num_photons = json::read_uint(photon_value, "num_photons", 0);
-    photon_settings.max_bounces = json::read_uint(photon_value, "max_bounces", 2);
-    photon_settings.radius      = json::read_float(photon_value, "radius", 0.05f);
+void Loader::load_photon_settings(json::Value const& value, Photon_settings& settings) {
+    settings.num_photons          = json::read_uint(value, "num_photons", 0);
+    settings.max_photons_per_path = json::read_uint(value, "max_photons_per_path", 1);
+    settings.max_bounces          = json::read_uint(value, "max_bounces", 2);
+    settings.radius               = json::read_float(value, "radius", 0.05f);
+    settings.indirect_caustics    = json::read_bool(value, "indirect_caustics", false);
 }
 
 void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,

@@ -16,9 +16,14 @@
 namespace rendering::integrator::photon {
 
 Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings)
-    : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
+    : Integrator(rng, take_settings),
+      settings_(settings),
+      sampler_(rng),
+      photons_(memory::allocate_aligned<Photon>(settings.max_photons_per_path)) {}
 
-Mapper::~Mapper() {}
+Mapper::~Mapper() {
+    memory::free_aligned(photons_);
+}
 
 void Mapper::prepare(Scene const& /*scene*/, uint32_t num_photons) {
     sampler_.resize(num_photons, 1, 1, 1);
@@ -29,18 +34,16 @@ void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 uint32_t Mapper::bake(Map& map, uint2 range, Worker& worker) {
     uint32_t num_paths = 0;
 
-    uint32_t constexpr num_photons_per_path = 4;
-
-    Photon photons[num_photons_per_path];
+    uint32_t const max_ppp = settings_.max_photons_per_path;
 
     for (uint32_t i = range[0]; i < range[1]; ++i) {
-        uint32_t const max_photons = std::min(num_photons_per_path, range[1] - i);
+        uint32_t const max_photons = std::min(max_ppp, range[1] - i);
         uint32_t       num_photons;
-        uint32_t const num_iterations = trace_photon(worker, max_photons, photons, num_photons);
+        uint32_t const num_iterations = trace_photon(worker, max_photons, photons_, num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
-                map.insert(photons[j], i + j);
+                map.insert(photons_[j], i + j);
             }
 
             i += num_photons - 1;
@@ -123,9 +126,9 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
                 }
 
                 specular_ray = false;
-            } /*else {
+            } else if (settings_.disable_indirect_caustics) {
                 break;
-            }*/
+            }
 
             float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 

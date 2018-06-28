@@ -10,9 +10,11 @@ struct Settings {
 };
 
 struct Photon_settings {
-    uint32_t num_photons = 0;
-    uint32_t max_bounces = 2;
-    float    radius      = 0.05f;
+    uint32_t num_photons          = 0;
+    uint32_t max_photons_per_path = 1;
+    uint32_t max_bounces          = 2;
+    float    radius               = 0.05f;
+    bool     indirect_caustics    = false;
 };
 
 }  // namespace take

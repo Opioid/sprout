@@ -193,8 +193,6 @@ float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material co
 
         w *= imt * mu_n;
     }
-
-    return w;
 }
 
 }  // namespace rendering::integrator::volume

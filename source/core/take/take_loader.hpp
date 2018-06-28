@@ -93,8 +93,7 @@ class Loader {
     static std::shared_ptr<rendering::integrator::volume::Factory> load_volume_integrator_factory(
         json::Value const& integrator_value, Settings const& settings, uint32_t num_workers);
 
-    static void load_photon_settings(json::Value const& photon_value,
-                                     Photon_settings&   photon_settings);
+    static void load_photon_settings(json::Value const& value, Photon_settings& settings);
 
     static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
                                     Take& take);

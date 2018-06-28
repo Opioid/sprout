@@ -18,6 +18,8 @@ class Mapper : public Integrator {
   public:
     struct Settings {
         uint32_t max_bounces;
+        uint32_t max_photons_per_path;
+        bool     disable_indirect_caustics;
     };
 
     Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
@@ -40,6 +42,8 @@ class Mapper : public Integrator {
     const Settings settings_;
 
     sampler::Random sampler_;
+
+    Photon* photons_;
 };
 
 }  // namespace integrator::photon
