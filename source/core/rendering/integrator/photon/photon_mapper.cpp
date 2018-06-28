@@ -125,9 +125,9 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
                 }
 
                 specular_ray = false;
-            } else {
+            } /*else {
                 break;
-            }
+            }*/
 
             float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
