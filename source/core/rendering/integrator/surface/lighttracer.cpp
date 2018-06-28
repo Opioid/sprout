@@ -50,13 +50,13 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
     float3 throughput(1.f);
 
-    float3 result = float3::identity();
-
-    float3 const wo = -ray.direction;
+    float3 result = float3::identity(); 
 
     bool const avoid_caustics = true;
 
     for (uint32_t i = 4; i > 0; --i) {
+        float3 const wo = -ray.direction;
+
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
 
