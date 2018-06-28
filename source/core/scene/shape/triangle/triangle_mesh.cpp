@@ -320,10 +320,33 @@ bool Mesh::sample(uint32_t part, f_float3 p, Transformation const& transformatio
     return true;
 }
 
-bool Mesh::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
-                  bool /*two_sided*/, sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                  Node_stack& /*node_stack*/, Sample_from& /*sample*/) const {
-    return false;
+bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
+                  bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                  Node_stack& /*node_stack*/, Sample_from& sample) const {
+    float const  r  = sampler.generate_sample_1D(sampler_dimension);
+    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+    auto const   s  = distributions_[part].sample(r);
+
+    float3 sv;
+    float2 tc;
+    tree_.sample(s.offset, r2, sv, tc);
+    float3 const ws = math::transform_point(sv, transformation.object_to_world);
+
+    float3 const sn = tree_.triangle_normal(s.offset);
+    float3 const wn = math::transform_vector(sn, transformation.rotation);
+
+    float3 x, y;
+    math::orthonormal_basis(wn, x, y);
+
+    float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
+    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, wn, x, y);
+
+    sample.p       = ws;
+    sample.dir     = dir;
+    sample.pdf     = 1.f / ((2.f * math::Pi) * area);
+    sample.epsilon = 5e-4f;
+
+    return true;
 }
 
 float Mesh::pdf(Ray const& ray, const shape::Intersection&      intersection,

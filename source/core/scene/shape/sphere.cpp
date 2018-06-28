@@ -327,8 +327,9 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transf
                                          0.99999995f);
     float const  pdf                 = math::cone_pdf_uniform(cos_theta_max);
 
-    float const  axis_length = std::sqrt(axis_squared_length);
-    float3 const z           = axis / axis_length;
+    float const axis_length = std::sqrt(axis_squared_length);
+
+    float3 const z = axis / axis_length;
     float3       x, y;
     math::orthonormal_basis(z, x, y);
 
@@ -353,11 +354,26 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transf
     return false;
 }
 
-bool Sphere::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
-                    bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                    uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                    Sample_from& /*sample*/) const {
-    return false;
+bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
+                    bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                    Node_stack& /*node_stack*/, Sample_from& sample) const {
+    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+    float3 const ls = math::sample_sphere_uniform(r0);
+
+    float3 const ws = transformation.position + (transformation.scale[0] * ls);
+
+    float3 x, y;
+    math::orthonormal_basis(ls, x, y);
+
+    float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
+    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, ls, x, y);
+
+    sample.p       = ws;
+    sample.dir     = dir;
+    sample.pdf     = 1.f / ((2.f * math::Pi) * area);
+    sample.epsilon = 5e-4f;
+
+    return true;
 }
 
 float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,

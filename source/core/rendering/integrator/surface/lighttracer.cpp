@@ -50,7 +50,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
     float3 throughput(1.f);
 
-    float3 result = float3::identity(); 
+    float3 result = float3::identity();
 
     bool const avoid_caustics = true;
 

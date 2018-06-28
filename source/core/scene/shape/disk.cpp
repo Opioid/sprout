@@ -256,10 +256,25 @@ bool Disk::sample(uint32_t /*part*/, f_float3 p, Transformation const& transform
     return true;
 }
 
-bool Disk::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
-                  bool /*two_sided*/, sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                  Node_stack& /*node_stack*/, Sample_from& /*sample*/) const {
-    return false;
+bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
+                  bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                  Node_stack& /*node_stack*/, Sample_from& sample) const {
+    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+    float2 const xy = math::sample_disk_concentric(r0);
+
+    float3 const ls = float3(xy, 0.f);
+    float3 const ws = transformation.position +
+                      math::transform_vector(transformation.scale[0] * ls, transformation.rotation);
+
+    float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
+    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, transformation.rotation);
+
+    sample.p       = ws;
+    sample.dir     = dir;
+    sample.pdf     = 1.f / (math::Pi * area);
+    sample.epsilon = 5e-4f;
+
+    return true;
 }
 
 float Disk::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
