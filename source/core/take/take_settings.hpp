@@ -13,8 +13,11 @@ struct Photon_settings {
     uint32_t num_photons          = 0;
     uint32_t max_photons_per_path = 1;
     uint32_t max_bounces          = 2;
-    float    radius               = 0.05f;
-    bool     indirect_caustics    = false;
+
+    float radius = 0.05f;
+
+    bool indirect_caustics = false;
+    bool full_light_path;
 };
 
 }  // namespace take

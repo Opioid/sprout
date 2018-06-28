@@ -19,7 +19,9 @@ class Mapper : public Integrator {
     struct Settings {
         uint32_t max_bounces;
         uint32_t max_photons_per_path;
-        bool     disable_indirect_caustics;
+
+        bool indirect_caustics;
+        bool full_light_path;
     };
 
     Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);

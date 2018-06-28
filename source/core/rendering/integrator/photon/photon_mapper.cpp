@@ -63,7 +63,7 @@ size_t Mapper::num_bytes() const {
 
 uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* photons,
                               uint32_t& num_photons) {
-    static constexpr uint32_t Max_iterations = 1024;
+    static constexpr uint32_t Max_iterations = 2048;
 
     Sampler_filter const filter = Sampler_filter::Undefined;
 
@@ -110,9 +110,11 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
             bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
                                                               Bxdf_type::Transmission);
 
-            if (singular) {
+            if (singular && !settings_.full_light_path) {
                 specular_ray = true;
-            } else if (specular_ray && worker.interface_stack().top_is_vacuum_or_pure_specular()) {
+            } else if ((specular_ray &&
+                        worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
+                       settings_.full_light_path) {
                 auto& photon = photons[num_photons++];
 
                 photon.p     = intersection.geo.p;
@@ -125,8 +127,8 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
                     return iteration;
                 }
 
-                specular_ray = false;
-            } else if (settings_.disable_indirect_caustics) {
+                specular_ray = settings_.indirect_caustics;
+            } else if (!settings_.indirect_caustics) {
                 break;
             }
 

@@ -538,6 +538,7 @@ void Loader::load_photon_settings(json::Value const& value, Photon_settings& set
     settings.max_bounces          = json::read_uint(value, "max_bounces", 2);
     settings.radius               = json::read_float(value, "radius", 0.05f);
     settings.indirect_caustics    = json::read_bool(value, "indirect_caustics", false);
+    settings.full_light_path      = json::read_bool(value, "full_light_path", false);
 }
 
 void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
