@@ -132,12 +132,11 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
             if (material_sample.ior_greater_one()) {
                 //  radiance *= sample_result.reflection / sample_result.pdf;
 
-                float3 const nr = radiance * sample_result.reflection / sample_result.pdf;
+                float3 const nr      = radiance * sample_result.reflection / sample_result.pdf;
+                float const  average = math::average(nr) / math::average(radiance);
+                float const  continue_prob = std::min(1.f, average);
 
-                float const continue_prob = std::min(1.f,
-                                                     math::average(nr) / math::average(radiance));
-
-                if (rng_.random_float() > continue_prob) {
+                if (sampler_.generate_sample_1D() > continue_prob) {
                     break;
                 }
 
