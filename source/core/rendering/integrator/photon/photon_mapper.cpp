@@ -198,6 +198,7 @@ bool Mapper::generate_light_ray(Worker& worker, Ray& ray, float3& radiance) {
     ray.set_direction(light_sample.shape.dir);
     ray.min_t      = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
     ray.max_t      = scene::Ray_max_t;
+    ray.depth      = 0;
     ray.time       = 0.f;
     ray.wavelength = 0.f;
 
