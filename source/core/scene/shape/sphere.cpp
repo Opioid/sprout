@@ -366,11 +366,11 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
     math::orthonormal_basis(ls, x, y);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, ls, x, y);
+    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, ls);
 
     sample.p       = ws;
     sample.dir     = dir;
-    sample.pdf     = 1.f / ((2.f * math::Pi) * area);
+    sample.pdf     = 1.f / ((1.f * math::Pi) * area);
     sample.epsilon = 5e-4f;
 
     return true;
