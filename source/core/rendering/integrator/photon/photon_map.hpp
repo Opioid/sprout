@@ -17,7 +17,7 @@ namespace rendering::integrator::photon {
 
 class Map {
   public:
-    Map(uint32_t num_photons, float photon_radius, uint32_t num_workers);
+    Map(uint32_t num_photons, float photon_radius, bool separate_caustics, uint32_t num_workers);
     ~Map();
 
     void prepare();
@@ -37,6 +37,8 @@ class Map {
     Photon*  photons_;
 
     float photon_radius_;
+
+    bool separate_caustics_;
 
     math::AABB aabb_;
 

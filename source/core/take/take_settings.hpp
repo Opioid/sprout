@@ -17,6 +17,7 @@ struct Photon_settings {
     float radius = 0.05f;
 
     bool indirect_caustics = false;
+    bool separate_caustics = true;
     bool full_light_path;
 };
 
