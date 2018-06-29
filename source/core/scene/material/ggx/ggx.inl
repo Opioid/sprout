@@ -418,7 +418,8 @@ float Isotropic::reflect_internally(f_float3 wo, float n_dot_wo, Layer const& la
     result.h          = h;
     result.pdf        = pdf_visible(d, g[1]);
     result.h_dot_wi   = wi_dot_h;
-    result.type.clear(bxdf::Type::Glossy_reflection);
+    result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_reflection
+                                         : bxdf::Type::Glossy_reflection);
 
     SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
 
@@ -667,7 +668,8 @@ float Isotropic::refract(f_float3 wo, float n_dot_wo, Layer const& layer, IOR co
     float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
     result.pdf      = pdf * (wi_dot_h * sqr_ior_i / denom);
     result.h_dot_wi = wi_dot_h;
-    result.type.clear(bxdf::Type::Glossy_transmission);
+    result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_transmission
+                                         : bxdf::Type::Glossy_transmission);
 
     SOFT_ASSERT(testing::check(result, wo, layer));
 
