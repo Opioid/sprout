@@ -37,7 +37,7 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
     caustic_grid_.resize(aabb, photon_radius_);
 
     if (separate_caustics_) {
-        indirect_grid_.resize(aabb, 12.f * photon_radius_);
+        indirect_grid_.resize(aabb, 32.f * photon_radius_);
 
         auto const indirect_photons = std::partition(photons_, photons_ + num_photons_,
                                                      [](Photon const& p) { return p.caustic; });
