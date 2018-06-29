@@ -201,6 +201,10 @@ float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
         for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
             auto const& photon = photons_[i];
 
+            //            if (math::dot(photon.n, sample.geometric_normal()) < 0.5f) {
+            //                continue;
+            //            }
+
             if (float const squared_distance = math::squared_distance(photon.p, position);
                 squared_distance <= squared_radius) {
                 if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
@@ -283,9 +287,13 @@ uint32_t Map::reduce(int32_t begin, int32_t end) {
                     continue;
                 }
 
+                //                if (math::dot(pa.n, pb.n) < 0.5f) {
+                //                    continue;
+                //                }
+
                 if (math::squared_distance(pa.p, pb.p) < merge_distance) {
                     pa.alpha += pb.alpha;
-                    pb.alpha = float3(-1.f);
+                    pb.alpha[0] = -1.f;
                     ++num_reduced;
                 }
             }

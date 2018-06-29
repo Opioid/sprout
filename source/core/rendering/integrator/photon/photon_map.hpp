@@ -16,6 +16,7 @@ namespace rendering::integrator::photon {
 
 struct Photon {
     float3 p;
+    //    float3 n;
     float3 wi;
     float3 alpha;
 };

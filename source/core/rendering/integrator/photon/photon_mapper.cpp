@@ -117,7 +117,8 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
                        settings_.full_light_path) {
                 auto& photon = photons[num_photons++];
 
-                photon.p     = intersection.geo.p;
+                photon.p = intersection.geo.p;
+                //                photon.n     = intersection.geo.n;
                 photon.wi    = -ray.direction;
                 photon.alpha = radiance;
 
