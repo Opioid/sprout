@@ -43,9 +43,6 @@ class Image {
     void resize(Description const& description);
 
     Description description_;
-
-    int32_t area_   = 0;
-    int32_t volume_ = 0;
 };
 
 }  // namespace image

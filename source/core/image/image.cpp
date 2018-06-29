@@ -31,10 +31,7 @@ uint32_t Image::Description::num_channels() const {
     }
 }
 
-Image::Image(Description const& description)
-    : description_(description),
-      area_(description.dimensions[0] * description.dimensions[1]),
-      volume_(description.dimensions[0] * description.dimensions[1] * description.dimensions[2]) {}
+Image::Image(Description const& description) : description_(description) {}
 
 Image::~Image() {}
 
@@ -47,11 +44,11 @@ int2 Image::dimensions2() const {
 }
 
 int32_t Image::area() const {
-    return area_;
+    return description_.dimensions[0] * description_.dimensions[1];
 }
 
 int32_t Image::volume() const {
-    return volume_;
+    return description_.dimensions[0] * description_.dimensions[1] * description_.dimensions[2];
 }
 
 int2 Image::coordinates_2(int32_t index) const {
@@ -63,8 +60,6 @@ int2 Image::coordinates_2(int32_t index) const {
 
 void Image::resize(Description const& description) {
     description_ = description;
-    area_        = description.dimensions[0] * description.dimensions[1];
-    volume_ = description.dimensions[0] * description.dimensions[1] * description.dimensions[2];
 }
 
 }  // namespace image
