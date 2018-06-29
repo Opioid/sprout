@@ -43,6 +43,7 @@ class Map {
     uint32_t* num_reduced_;
 
     Grid caustic_grid_;
+    Grid indirect_grid_;
 };
 
 }  // namespace rendering::integrator::photon

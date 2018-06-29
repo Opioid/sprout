@@ -115,14 +115,17 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
             } else if ((specular_ray &&
                         worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
                        settings_.full_light_path) {
-                auto& photon = photons[num_photons++];
+                auto& photon = photons[num_photons];
 
                 photon.p = intersection.geo.p;
                 //                photon.n     = intersection.geo.n;
-                photon.wi    = -ray.direction;
-                photon.alpha = radiance;
+                photon.wi      = -ray.direction;
+                photon.alpha   = radiance;
+                photon.caustic = 0 == num_photons;
 
                 iteration = i + 1;
+
+                ++num_photons;
 
                 if (max_photons == num_photons) {
                     return iteration;

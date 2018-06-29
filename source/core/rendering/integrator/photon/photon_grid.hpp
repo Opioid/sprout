@@ -19,6 +19,7 @@ struct Photon {
     //    float3 n;
     float3 wi;
     float3 alpha;
+    bool   caustic;
 };
 
 class Grid {

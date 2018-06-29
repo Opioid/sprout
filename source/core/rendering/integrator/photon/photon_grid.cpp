@@ -3,13 +3,13 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
-#include "base/thread/thread_pool.hpp"
 
 namespace rendering::integrator::photon {
 
-Grid::Grid() : dimensions_(0), grid_(nullptr) {}
+Grid::Grid() : num_photons_(0), photons_(nullptr), dimensions_(0), grid_(nullptr) {}
 
 Grid::~Grid() {
     memory::free_aligned(grid_);
@@ -71,6 +71,10 @@ void Grid::update(uint32_t num_photons, Photon* photons, bool needs_sorting) {
     num_photons_ = num_photons;
     photons_     = photons;
 
+    if (0 == num_photons) {
+        return;
+    }
+
     if (needs_sorting) {
         std::sort(photons, photons + num_photons, [this](Photon const& a, Photon const& b) -> bool {
             int32_t const ida = map1(a.p);
@@ -97,9 +101,9 @@ void Grid::update(uint32_t num_photons, Photon* photons, bool needs_sorting) {
 }
 
 uint32_t Grid::reduce(uint32_t* num_reduced, thread::Pool& pool) {
-    pool.run_range(
-        [this, num_reduced](uint32_t id, int32_t begin, int32_t end) { num_reduced[id] = reduce(begin, end); },
-        0, static_cast<int32_t>(num_photons_));
+    pool.run_range([this, num_reduced](uint32_t id, int32_t begin,
+                                       int32_t end) { num_reduced[id] = reduce(begin, end); },
+                   0, static_cast<int32_t>(num_photons_));
 
     uint32_t comp_num_photons = num_photons_;
 
@@ -117,6 +121,10 @@ static inline float kernel(float squared_distance, float inv_squared_radius) {
 
 float3 Grid::li(f_float3 position, scene::material::Sample const& sample,
                 uint32_t num_paths) const {
+    if (0 == num_photons_) {
+        return float3::identity();
+    }
+
     float const squared_radius     = photon_radius_ * photon_radius_;
     float const inv_squared_radius = 1.f / squared_radius;
 
