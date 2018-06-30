@@ -17,11 +17,10 @@ namespace rendering::integrator::photon {
 
 class Map {
   public:
-    Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics,
-        uint32_t num_workers);
+    Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics);
     ~Map();
 
-    void prepare();
+    void init(uint32_t num_workers);
 
     void insert(Photon const& photon, uint32_t index);
 

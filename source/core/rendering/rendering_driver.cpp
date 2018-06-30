@@ -28,13 +28,16 @@ Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
       target_(Image::Description(Image::Type::Float4, take.view.camera->sensor_dimensions())),
       photon_map_(take.photon_settings.num_photons, take.photon_settings.radius,
                   take.photon_settings.indirect_radius_factor,
-                  take.photon_settings.separate_caustics, thread_pool.num_threads()),
+                  take.photon_settings.separate_caustics),
       photon_settings_(take.photon_settings),
       photon_infos_(nullptr) {
     uint32_t const num_photons = take.photon_settings.num_photons;
     if (num_photons) {
         uint32_t const num_workers = thread_pool.num_threads();
-        uint32_t       range       = num_photons / num_workers;
+
+        photon_map_.init(num_workers);
+
+        uint32_t range = num_photons / num_workers;
         if (num_photons % num_workers) {
             ++range;
         }

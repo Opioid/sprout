@@ -8,23 +8,22 @@
 
 namespace rendering::integrator::photon {
 
-Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics,
-         uint32_t num_workers)
+Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics)
     : num_photons_(num_photons),
       photons_(nullptr),
       radius_(radius),
       indirect_radius_factor_(indirect_radius_factor),
       separate_caustics_(separate_caustics),
-      num_reduced_(new uint32_t[num_workers]) {}
+      num_reduced_(nullptr) {}
 
 Map::~Map() {
     delete[] num_reduced_;
     delete[] photons_;
 }
 
-void Map::prepare() {
-    delete[] photons_;
-    photons_ = new Photon[num_photons_];
+void Map::init(uint32_t num_workers) {
+    photons_     = new Photon[num_photons_];
+    num_reduced_ = new uint32_t[num_workers];
 }
 
 void Map::insert(Photon const& photon, uint32_t index) {
@@ -47,8 +46,8 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
         uint32_t const num_caustics = std::distance(photons_, indirect_photons);
         uint32_t const num_indirect = num_photons_ - num_caustics;
 
-        caustic_grid_.update(num_caustics, photons_, true);
-        indirect_grid_.update(num_indirect, photons_ + num_caustics, true);
+        caustic_grid_.update(num_caustics, photons_);
+        indirect_grid_.update(num_indirect, photons_ + num_caustics);
 
         uint32_t const comp_num_caustics = caustic_grid_.reduce(num_reduced_, pool);
         uint32_t const comp_num_indirect = indirect_grid_.reduce(num_reduced_, pool);
@@ -63,31 +62,8 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
                   << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
         std::cout << comp_num_indirect << " indirect left of " << num_indirect << " ("
                   << static_cast<uint32_t>(100.f * percentage_indirect) << "%)" << std::endl;
-
-        uint32_t const comp_num_photons = comp_num_caustics + comp_num_indirect;
-
-        Photon* comp_photons = new Photon[comp_num_photons];
-
-        for (uint32_t i = 0, j = 0, len = num_caustics; i < len; ++i) {
-            if (photons_[i].alpha[0] >= 0.f) {
-                comp_photons[j++] = photons_[i];
-            }
-        }
-
-        for (uint32_t i = num_caustics, j = comp_num_caustics, len = num_photons_; i < len; ++i) {
-            if (photons_[i].alpha[0] >= 0.f) {
-                comp_photons[j++] = photons_[i];
-            }
-        }
-
-        delete[] photons_;
-        photons_     = comp_photons;
-        num_photons_ = comp_num_photons;
-
-        caustic_grid_.update(comp_num_caustics, photons_, false);
-        indirect_grid_.update(comp_num_indirect, photons_ + comp_num_caustics, false);
     } else {
-        caustic_grid_.update(num_photons_, photons_, true);
+        caustic_grid_.update(num_photons_, photons_);
 
         uint32_t const comp_num_caustics = caustic_grid_.reduce(num_reduced_, pool);
 
@@ -96,22 +72,6 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
 
         std::cout << comp_num_caustics << " total left of " << num_photons_ << " ("
                   << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
-
-        uint32_t const comp_num_photons = comp_num_caustics;
-
-        Photon* comp_photons = new Photon[comp_num_photons];
-
-        for (uint32_t i = 0, j = 0, len = num_photons_; i < len; ++i) {
-            if (photons_[i].alpha[0] >= 0.f) {
-                comp_photons[j++] = photons_[i];
-            }
-        }
-
-        delete[] photons_;
-        photons_     = comp_photons;
-        num_photons_ = comp_num_photons;
-
-        caustic_grid_.update(comp_num_photons, photons_, false);
     }
 }
 

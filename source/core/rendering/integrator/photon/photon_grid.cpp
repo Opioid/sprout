@@ -67,7 +67,7 @@ void Grid::resize(math::AABB const& aabb, float radius) {
     }
 }
 
-void Grid::update(uint32_t num_photons, Photon* photons, bool needs_sorting) {
+void Grid::update(uint32_t num_photons, Photon* photons) {
     num_photons_ = num_photons;
     photons_     = photons;
 
@@ -75,14 +75,12 @@ void Grid::update(uint32_t num_photons, Photon* photons, bool needs_sorting) {
         return;
     }
 
-    if (needs_sorting) {
-        std::sort(photons, photons + num_photons, [this](Photon const& a, Photon const& b) -> bool {
-            int32_t const ida = map1(a.p);
-            int32_t const idb = map1(b.p);
+    std::sort(photons, photons + num_photons, [this](Photon const& a, Photon const& b) -> bool {
+        int32_t const ida = map1(a.p);
+        int32_t const idb = map1(b.p);
 
-            return ida < idb;
-        });
-    }
+        return ida < idb;
+    });
 
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2];
     int32_t const len       = static_cast<int32_t>(num_photons);
@@ -111,6 +109,11 @@ uint32_t Grid::reduce(uint32_t* num_reduced, thread::Pool& pool) {
     for (uint32_t i = 0, len = pool.num_threads(); i < len; ++i) {
         comp_num_photons -= num_reduced[i];
     }
+
+    std::partition(photons_, photons_ + num_photons_,
+                   [](Photon const& p) { return p.alpha[0] >= 0.f; });
+
+    update(comp_num_photons, photons_);
 
     return comp_num_photons;
 }

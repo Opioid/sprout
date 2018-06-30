@@ -29,7 +29,7 @@ class Grid {
 
     void resize(math::AABB const& aabb, float radius);
 
-    void update(uint32_t num_photons, Photon* photons, bool needs_sorting);
+    void update(uint32_t num_photons, Photon* photons);
 
     uint32_t reduce(uint32_t* num_reduced, thread::Pool& pool);
 
