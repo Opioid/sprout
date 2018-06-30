@@ -8,10 +8,12 @@
 
 namespace rendering::integrator::photon {
 
-Map::Map(uint32_t num_photons, float photon_radius, bool separate_caustics, uint32_t num_workers)
+Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics,
+         uint32_t num_workers)
     : num_photons_(num_photons),
       photons_(nullptr),
-      photon_radius_(photon_radius),
+      radius_(radius),
+      indirect_radius_factor_(indirect_radius_factor),
       separate_caustics_(separate_caustics),
       num_reduced_(new uint32_t[num_workers]) {}
 
@@ -34,10 +36,10 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
 
     aabb_ = aabb;
 
-    caustic_grid_.resize(aabb, photon_radius_);
+    caustic_grid_.resize(aabb, radius_);
 
     if (separate_caustics_) {
-        indirect_grid_.resize(aabb, 32.f * photon_radius_);
+        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_);
 
         auto const indirect_photons = std::partition(photons_, photons_ + num_photons_,
                                                      [](Photon const& p) { return p.caustic; });
@@ -98,12 +100,6 @@ void Map::compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool
         uint32_t const comp_num_photons = comp_num_caustics;
 
         Photon* comp_photons = new Photon[comp_num_photons];
-
-        for (uint32_t i = 0, j = 0, len = num_photons_; i < len; ++i) {
-            if (photons_[i].alpha[0] >= 0.f) {
-                comp_photons[j++] = photons_[i];
-            }
-        }
 
         for (uint32_t i = 0, j = 0, len = num_photons_; i < len; ++i) {
             if (photons_[i].alpha[0] >= 0.f) {

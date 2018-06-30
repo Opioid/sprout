@@ -17,7 +17,7 @@ Grid::~Grid() {
 
 void Grid::resize(math::AABB const& aabb, float radius) {
     photon_radius_     = radius;
-    inverse_cell_size_ = 1.f / (2.5f * radius);
+    inverse_cell_size_ = 1.f / (2.f * radius);
 
     min_ = aabb.min();
 
@@ -85,11 +85,12 @@ void Grid::update(uint32_t num_photons, Photon* photons, bool needs_sorting) {
     }
 
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2];
+    int32_t const len       = static_cast<int32_t>(num_photons);
 
     int32_t current = 0;
     for (int32_t c = 0; c < num_cells; ++c) {
         int32_t const begin = current;
-        for (int32_t len = static_cast<int32_t>(num_photons); current < len; ++current) {
+        for (; current < len; ++current) {
             if (map1(photons[current].p) != c) {
                 break;
             }
@@ -246,11 +247,11 @@ int3 Grid::map3(f_float3 v) const {
 }
 
 static inline int8_t adjacent(float s) {
-    if (s <= 0.4f) {
+    if (s < 0.5f) {
         return -1;
     }
 
-    if (s >= 0.6f) {
+    if (s > 0.5f) {
         return 1;
     }
 

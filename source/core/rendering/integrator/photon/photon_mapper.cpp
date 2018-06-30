@@ -19,7 +19,7 @@ Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings, Setting
     : Integrator(rng, take_settings),
       settings_(settings),
       sampler_(rng),
-      photons_(memory::allocate_aligned<Photon>(settings.max_photons_per_path)) {}
+      photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
 
 Mapper::~Mapper() {
     memory::free_aligned(photons_);
@@ -34,10 +34,8 @@ void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 uint32_t Mapper::bake(Map& map, uint2 range, Worker& worker) {
     uint32_t num_paths = 0;
 
-    uint32_t const max_ppp = settings_.max_photons_per_path;
-
     for (uint32_t i = range[0]; i < range[1]; ++i) {
-        uint32_t const max_photons = std::min(max_ppp, range[1] - i);
+        uint32_t const max_photons = std::min(settings_.max_bounces, range[1] - i);
         uint32_t       num_photons;
         uint32_t const num_iterations = trace_photon(worker, max_photons, photons_, num_photons);
 
