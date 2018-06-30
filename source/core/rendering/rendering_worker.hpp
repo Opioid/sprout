@@ -50,7 +50,7 @@ class Worker : public scene::Worker {
               integrator::surface::Factory& surface_integrator_factory,
               integrator::volume::Factory&  volume_integrator_factory,
               sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
-              take::Photon_settings const& photon_settings_, uint32_t local_num_photons);
+              take::Photon_settings const& photon_settings_);
 
     float4 li(Ray& ray, const scene::prop::Interface_stack& interface_stack);
 
@@ -71,7 +71,7 @@ class Worker : public scene::Worker {
 
     void interface_change(f_float3 dir, Intersection const& intersection);
 
-    uint32_t bake_photons(uint2 range);
+    uint32_t bake_photons(int32_t begin, int32_t end);
 
     float3 photon_li(f_float3 position, Material_sample const& sample) const;
 

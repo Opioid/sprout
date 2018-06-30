@@ -170,11 +170,13 @@ void Driver_finalframe::bake_photons() {
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    thread_pool_.run_parallel([this](uint32_t index) {
-        auto& worker = workers_[index];
+    thread_pool_.run_range(
+        [this](uint32_t id, int32_t begin, int32_t end) {
+            auto& worker = workers_[id];
 
-        photon_infos_[index].num_paths = worker.bake_photons(photon_infos_[index].range);
-    });
+            photon_infos_[id].num_paths = worker.bake_photons(begin, end);
+        },
+        0, static_cast<int32_t>(photon_settings_.num_photons));
 
     uint32_t num_paths = 0;
     for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {

@@ -30,7 +30,7 @@ class Mapper : public Integrator {
 
     virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-    uint32_t bake(Map& map, uint2 range, Worker& worker);
+    uint32_t bake(Map& map, int32_t begin, int32_t end, Worker& worker);
 
     virtual size_t num_bytes() const override final;
 

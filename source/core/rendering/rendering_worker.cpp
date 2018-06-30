@@ -32,7 +32,7 @@ void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene cons
                   integrator::surface::Factory& surface_integrator_factory,
                   integrator::volume::Factory&  volume_integrator_factory,
                   sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
-                  take::Photon_settings const& photon_settings, uint32_t local_num_photons) {
+                  take::Photon_settings const& photon_settings) {
     scene::Worker::init(id, settings, scene, max_material_sample_size,
                         surface_integrator_factory.max_sample_depth());
 
@@ -51,7 +51,7 @@ void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene cons
                                                 photon_settings.full_light_path};
 
         photon_mapper_ = new integrator::photon::Mapper(rng_, settings, ps);
-        photon_mapper_->prepare(scene, local_num_photons);
+        photon_mapper_->prepare(scene, 0);
 
         photon_map_ = photon_map;
     }
@@ -182,9 +182,9 @@ void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
     }
 }
 
-uint32_t Worker::bake_photons(uint2 range) {
+uint32_t Worker::bake_photons(int32_t begin, int32_t end) {
     if (photon_mapper_) {
-        return photon_mapper_->bake(*photon_map_, range, *this);
+        return photon_mapper_->bake(*photon_map_, begin, end, *this);
     }
 
     return 0;

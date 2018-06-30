@@ -25,17 +25,18 @@ Mapper::~Mapper() {
     memory::free_aligned(photons_);
 }
 
-void Mapper::prepare(Scene const& /*scene*/, uint32_t num_photons) {
-    sampler_.resize(num_photons, 1, 1, 1);
+void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) {
+    sampler_.resize(1, 1, 1, 1);
 }
 
 void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-uint32_t Mapper::bake(Map& map, uint2 range, Worker& worker) {
+uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, Worker& worker) {
     uint32_t num_paths = 0;
 
-    for (uint32_t i = range[0]; i < range[1]; ++i) {
-        uint32_t const max_photons = std::min(settings_.max_bounces, range[1] - i);
+    for (int32_t i = begin; i < end; ++i) {
+        uint32_t const max_photons = std::min(settings_.max_bounces,
+                                              static_cast<uint32_t>(end - i));
         uint32_t       num_photons;
         uint32_t const num_iterations = trace_photon(worker, max_photons, photons_, num_photons);
 
