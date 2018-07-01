@@ -535,6 +535,7 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
 void Loader::load_photon_settings(json::Value const& value, Photon_settings& settings) {
     settings.num_photons            = json::read_uint(value, "num_photons", 0);
     settings.max_bounces            = json::read_uint(value, "max_bounces", 2);
+    settings.iteration_threshold    = json::read_float(value, "iteration_threshold", 0.f);
     settings.radius                 = json::read_float(value, "radius", 0.05f);
     settings.indirect_radius_factor = json::read_float(value, "indirect_radius_factor", 4.f);
     settings.indirect_caustics      = json::read_bool(value, "indirect_caustics", false);

@@ -31,7 +31,7 @@ class Grid {
 
     void update(uint32_t num_photons, Photon* photons);
 
-    uint32_t reduce(uint32_t* num_reduced, thread::Pool& pool);
+    uint32_t reduce_and_move(Photon* photons, uint32_t* num_reduced, thread::Pool& pool);
 
     float3 li(f_float3 position, scene::material::Sample const& sample, uint32_t num_paths) const;
 

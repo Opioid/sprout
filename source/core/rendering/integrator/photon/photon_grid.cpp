@@ -99,7 +99,7 @@ void Grid::update(uint32_t num_photons, Photon* photons) {
     }
 }
 
-uint32_t Grid::reduce(uint32_t* num_reduced, thread::Pool& pool) {
+uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced, thread::Pool& pool) {
     pool.run_range([this, num_reduced](uint32_t id, int32_t begin,
                                        int32_t end) { num_reduced[id] = reduce(begin, end); },
                    0, static_cast<int32_t>(num_photons_));
@@ -112,6 +112,15 @@ uint32_t Grid::reduce(uint32_t* num_reduced, thread::Pool& pool) {
 
     std::partition(photons_, photons_ + num_photons_,
                    [](Photon const& p) { return p.alpha[0] >= 0.f; });
+
+    if (photons != photons_) {
+        Photon* old_photons = photons_;
+        photons_            = photons;
+
+        for (uint32_t i = 0; i < comp_num_photons; ++i) {
+            photons[i] = old_photons[i];
+        }
+    }
 
     update(comp_num_photons, photons_);
 
@@ -198,7 +207,7 @@ size_t Grid::num_bytes() const {
 }
 
 uint32_t Grid::reduce(int32_t begin, int32_t end) {
-    float const merge_distance = math::pow2(0.1f * photon_radius_);
+    float const merge_distance = math::pow2(0.05f * photon_radius_);
 
     uint32_t num_reduced = 0;
 

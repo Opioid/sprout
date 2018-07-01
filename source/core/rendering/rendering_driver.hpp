@@ -51,7 +51,6 @@ class Driver {
   public:
     Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
            uint32_t max_material_sample_size);
-
     ~Driver();
 
     scene::camera::Camera& camera();

@@ -170,20 +170,37 @@ void Driver_finalframe::bake_photons() {
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    thread_pool_.run_range(
-        [this](uint32_t id, int32_t begin, int32_t end) {
-            auto& worker = workers_[id];
-
-            photon_infos_[id].num_paths = worker.bake_photons(begin, end);
-        },
-        0, static_cast<int32_t>(photon_settings_.num_photons));
+    photon_map_.resize(scene_.aabb());
 
     uint32_t num_paths = 0;
-    for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
-        num_paths += photon_infos_[i].num_paths;
-    }
+    uint32_t begin     = 0;
 
-    photon_map_.compile(num_paths, scene_.aabb(), thread_pool_);
+    for (;;) {
+        thread_pool_.run_range(
+            [this](uint32_t id, int32_t begin, int32_t end) {
+                auto& worker = workers_[id];
+
+                photon_infos_[id].num_paths = worker.bake_photons(begin, end);
+            },
+            static_cast<int32_t>(begin), static_cast<int32_t>(photon_settings_.num_photons));
+
+        for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
+            num_paths += photon_infos_[i].num_paths;
+        }
+
+        uint32_t const new_begin = photon_map_.compile(num_paths, thread_pool_);
+
+        if (new_begin == begin) {
+            break;
+        }
+
+        begin = new_begin;
+
+        if (static_cast<float>(begin) / static_cast<float>(photon_settings_.num_photons) >=
+            photon_settings_.iteration_threshold) {
+            break;
+        }
+    }
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");

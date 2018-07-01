@@ -22,9 +22,11 @@ class Map {
 
     void init(uint32_t num_workers);
 
+    void resize(math::AABB const& aabb);
+
     void insert(Photon const& photon, uint32_t index);
 
-    void compile(uint32_t num_paths, math::AABB const& aabb, thread::Pool& pool);
+    uint32_t compile(uint32_t num_paths, thread::Pool& pool);
 
     float3 li(f_float3 position, scene::material::Sample const& sample) const;
 
@@ -40,8 +42,6 @@ class Map {
     float indirect_radius_factor_;
 
     bool separate_caustics_;
-
-    math::AABB aabb_;
 
     uint32_t* num_reduced_;
 
