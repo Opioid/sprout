@@ -51,36 +51,36 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
         caustic_grid_.update(num_caustics, photons_);
         indirect_grid_.update(num_indirect, photons_ + num_caustics);
 
-        uint32_t const comp_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
-                                                                         pool);
-        uint32_t const comp_num_indirect = indirect_grid_.reduce_and_move(
-            photons_ + comp_num_caustics, num_reduced_, pool);
+        uint32_t const red_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
+                                                                        pool);
+        uint32_t const red_num_indirect = indirect_grid_.reduce_and_move(
+            photons_ + red_num_caustics, num_reduced_, pool);
 
-        float const percentage_caustics = static_cast<float>(comp_num_caustics) /
+        float const percentage_caustics = static_cast<float>(red_num_caustics) /
                                           static_cast<float>(num_caustics);
 
-        float const percentage_indirect = static_cast<float>(comp_num_indirect) /
+        float const percentage_indirect = static_cast<float>(red_num_indirect) /
                                           static_cast<float>(num_indirect);
 
-        std::cout << comp_num_caustics << " caustics left of " << num_caustics << " ("
+        std::cout << red_num_caustics << " caustics left of " << num_caustics << " ("
                   << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
-        std::cout << comp_num_indirect << " indirect left of " << num_indirect << " ("
+        std::cout << red_num_indirect << " indirect left of " << num_indirect << " ("
                   << static_cast<uint32_t>(100.f * percentage_indirect) << "%)" << std::endl;
 
-        return comp_num_caustics + comp_num_indirect;
+        return red_num_caustics + red_num_indirect;
     } else {
         caustic_grid_.update(num_photons_, photons_);
 
-        uint32_t const comp_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
-                                                                         pool);
+        uint32_t const red_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
+                                                                        pool);
 
-        float const percentage_caustics = static_cast<float>(comp_num_caustics) /
+        float const percentage_caustics = static_cast<float>(red_num_caustics) /
                                           static_cast<float>(num_photons_);
 
-        std::cout << comp_num_caustics << " total left of " << num_photons_ << " ("
+        std::cout << red_num_caustics << " total left of " << num_photons_ << " ("
                   << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
 
-        return comp_num_caustics;
+        return red_num_caustics;
     }
 }
 
