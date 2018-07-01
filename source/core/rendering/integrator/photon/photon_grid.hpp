@@ -27,7 +27,7 @@ class Grid {
     Grid();
     ~Grid();
 
-    void resize(math::AABB const& aabb, float radius);
+    void resize(math::AABB const& aabb, float radius, float merge_radius_factor);
 
     void update(uint32_t num_photons, Photon* photons);
 
@@ -54,6 +54,7 @@ class Grid {
 
     float photon_radius_;
     float inverse_cell_size_;
+    float merge_radius_factor_;
 
     int3 dimensions_;
     int3 max_coords_;

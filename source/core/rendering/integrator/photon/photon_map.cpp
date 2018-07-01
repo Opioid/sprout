@@ -27,10 +27,10 @@ void Map::init(uint32_t num_workers) {
 }
 
 void Map::resize(math::AABB const& aabb) {
-    caustic_grid_.resize(aabb, radius_);
+    caustic_grid_.resize(aabb, radius_, 0.1f);
 
     if (separate_caustics_) {
-        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_);
+        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_, 0.05f);
     }
 }
 

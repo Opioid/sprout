@@ -15,9 +15,10 @@ Grid::~Grid() {
     memory::free_aligned(grid_);
 }
 
-void Grid::resize(math::AABB const& aabb, float radius) {
-    photon_radius_     = radius;
-    inverse_cell_size_ = 1.f / (2.f * radius);
+void Grid::resize(math::AABB const& aabb, float radius, float merge_radius_factor) {
+    photon_radius_       = radius;
+    inverse_cell_size_   = 1.f / (2.f * radius);
+    merge_radius_factor_ = merge_radius_factor;
 
     min_ = aabb.min();
 
@@ -207,7 +208,7 @@ size_t Grid::num_bytes() const {
 }
 
 uint32_t Grid::reduce(int32_t begin, int32_t end) {
-    float const merge_distance = math::pow2(0.05f * photon_radius_);
+    float const merge_distance = math::pow2(merge_radius_factor_ * photon_radius_);
 
     uint32_t num_reduced = 0;
 
