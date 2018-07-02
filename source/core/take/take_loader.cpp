@@ -20,10 +20,8 @@
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
-#include "rendering/integrator/volume/aerial_perspective.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/flow_vis.hpp"
-#include "rendering/integrator/volume/ray_marching_single.hpp"
 #include "rendering/integrator/volume/tracking_multi.hpp"
 #include "rendering/integrator/volume/tracking_single.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
@@ -498,13 +496,7 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
-        if ("Aerial_perspective" == n.name) {
-            float const step_size = json::read_float(n.value, "step_size", 1.f);
-            bool const  shadows   = json::read_bool(n.value, "shadows", true);
-
-            return std::make_shared<Aerial_perspective_factory>(settings, num_workers, step_size,
-                                                                shadows);
-        } else if ("Emission" == n.name) {
+        if ("Emission" == n.name) {
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
             return std::make_shared<Emission_factory>(settings, num_workers, step_size);
@@ -512,12 +504,6 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
             return std::make_shared<Flow_vis_factory>(settings, num_workers, step_size);
-        } else if ("Ray_marching" == n.name) {
-            float const step_size        = json::read_float(n.value, "step_size", 1.f);
-            float const step_probability = json::read_float(n.value, "step_probability", 0.9f);
-
-            return std::make_shared<Ray_marching_single_factory>(settings, num_workers, step_size,
-                                                                 step_probability);
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 

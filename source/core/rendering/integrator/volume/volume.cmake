@@ -1,13 +1,9 @@
 target_sources(core
 	PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/aerial_perspective.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/aerial_perspective.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/emission.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/emission.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/flow_vis.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/flow_vis.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/ray_marching_single.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/ray_marching_single.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/tracking_multi.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/tracking_multi.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/tracking_single.cpp"
