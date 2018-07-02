@@ -32,7 +32,7 @@ class Driver_finalframe : public Driver {
     void render_subframe(float normalized_tick_offset, float normalized_tick_slice,
                          float normalized_frame_slice, progress::Sink& progressor);
 
-    void bake_photons();
+    void bake_photons(float normalized_tick_offset, float normalized_tick_slice);
 
     static uint32_t calculate_progress_range(scene::Scene const&          scene,
                                              const scene::camera::Camera& camera,

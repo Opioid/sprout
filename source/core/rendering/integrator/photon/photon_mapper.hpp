@@ -30,15 +30,17 @@ class Mapper : public Integrator {
 
     virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-    uint32_t bake(Map& map, int32_t begin, int32_t end, Worker& worker);
+    uint32_t bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
+                  float normalized_tick_slice, Worker& worker);
 
     virtual size_t num_bytes() const override final;
 
   private:
-    uint32_t trace_photon(Worker& worker, uint32_t max_photons, Photon* photons,
-                          uint32_t& num_photons);
+    uint32_t trace_photon(float normalized_tick_offset, float normalized_tick_slice, Worker& worker,
+                          uint32_t max_photons, Photon* photons, uint32_t& num_photons);
 
-    bool generate_light_ray(Worker& worker, Ray& ray, float3& radiance);
+    bool generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
+                            Worker& worker, Ray& ray, float3& radiance);
 
     const Settings settings_;
 

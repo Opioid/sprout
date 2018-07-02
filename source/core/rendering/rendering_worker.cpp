@@ -182,9 +182,11 @@ void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
     }
 }
 
-uint32_t Worker::bake_photons(int32_t begin, int32_t end) {
+uint32_t Worker::bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
+                              float normalized_tick_slice) {
     if (photon_mapper_) {
-        return photon_mapper_->bake(*photon_map_, begin, end, *this);
+        return photon_mapper_->bake(*photon_map_, begin, end, normalized_tick_offset,
+                                    normalized_tick_slice, *this);
     }
 
     return 0;

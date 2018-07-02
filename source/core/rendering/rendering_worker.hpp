@@ -71,7 +71,8 @@ class Worker : public scene::Worker {
 
     void interface_change(f_float3 dir, Intersection const& intersection);
 
-    uint32_t bake_photons(int32_t begin, int32_t end);
+    uint32_t bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
+                          float normalized_tick_slice);
 
     float3 photon_li(f_float3 position, Material_sample const& sample) const;
 

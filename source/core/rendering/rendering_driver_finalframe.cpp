@@ -129,7 +129,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
 void Driver_finalframe::render_subframe(float normalized_tick_offset, float normalized_tick_slice,
                                         float normalized_frame_slice, progress::Sink& progressor) {
-    bake_photons();
+    bake_photons(normalized_tick_offset, normalized_tick_slice);
 
     float const num_samples       = static_cast<float>(view_.num_samples_per_pixel);
     float const samples_per_slice = normalized_frame_slice * num_samples;
@@ -161,8 +161,8 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
     current_sample_ = sample_end;
 }
 
-void Driver_finalframe::bake_photons() {
-    if (photons_baked_ || !photon_infos_) {
+void Driver_finalframe::bake_photons(float normalized_tick_offset, float normalized_tick_slice) {
+    if (/*photons_baked_ || */ !photon_infos_) {
         return;
     }
 
@@ -177,10 +177,12 @@ void Driver_finalframe::bake_photons() {
 
     for (;;) {
         thread_pool_.run_range(
-            [this](uint32_t id, int32_t begin, int32_t end) {
+            [this, normalized_tick_offset, normalized_tick_slice](uint32_t id, int32_t begin,
+                                                                  int32_t end) {
                 auto& worker = workers_[id];
 
-                photon_infos_[id].num_paths = worker.bake_photons(begin, end);
+                photon_infos_[id].num_paths = worker.bake_photons(
+                    begin, end, normalized_tick_offset, normalized_tick_slice);
             },
             static_cast<int32_t>(begin), static_cast<int32_t>(photon_settings_.num_photons));
 

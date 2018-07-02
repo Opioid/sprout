@@ -31,14 +31,16 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) {
 
 void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, Worker& worker) {
+uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
+                      float normalized_tick_slice, Worker& worker) {
     uint32_t num_paths = 0;
 
     for (int32_t i = begin; i < end; ++i) {
         uint32_t const max_photons = std::min(settings_.max_bounces,
                                               static_cast<uint32_t>(end - i));
         uint32_t       num_photons;
-        uint32_t const num_iterations = trace_photon(worker, max_photons, photons_, num_photons);
+        uint32_t const num_iterations = trace_photon(normalized_tick_offset, normalized_tick_slice,
+                                                     worker, max_photons, photons_, num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -60,7 +62,8 @@ size_t Mapper::num_bytes() const {
     return sizeof(*this);
 }
 
-uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* photons,
+uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tick_slice,
+                              Worker& worker, uint32_t max_photons, Photon* photons,
                               uint32_t& num_photons) {
     static constexpr uint32_t Max_iterations = 2048;
 
@@ -83,7 +86,8 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
 
         Ray    ray;
         float3 radiance;
-        if (!generate_light_ray(worker, ray, radiance)) {
+        if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, worker, ray,
+                                radiance)) {
             continue;
         }
 
@@ -189,7 +193,8 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
     return 0;
 }
 
-bool Mapper::generate_light_ray(Worker& worker, Ray& ray, float3& radiance) {
+bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
+                                Worker& worker, Ray& ray, float3& radiance) {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
@@ -201,10 +206,11 @@ bool Mapper::generate_light_ray(Worker& worker, Ray& ray, float3& radiance) {
 
     ray.origin = light_sample.shape.p;
     ray.set_direction(light_sample.shape.dir);
-    ray.min_t      = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
-    ray.max_t      = scene::Ray_max_t;
-    ray.depth      = 0;
-    ray.time       = 0.f;
+    ray.min_t = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+    ray.max_t = scene::Ray_max_t;
+    ray.depth = 0;
+    ray.time  = 0.f;
+    ray.time  = normalized_tick_offset + sampler_.generate_sample_1D(2) * normalized_tick_slice;
     ray.wavelength = 0.f;
 
     radiance = light_sample.radiance / (light.pdf * light_sample.shape.pdf);
