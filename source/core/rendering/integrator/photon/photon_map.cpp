@@ -27,10 +27,10 @@ void Map::init(uint32_t num_workers) {
 }
 
 void Map::resize(math::AABB const& aabb) {
-    caustic_grid_.resize(aabb, radius_, 0.1f);
+    caustic_grid_.resize(aabb, radius_, 0.12f);
 
     if (separate_caustics_) {
-        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_, 0.05f);
+        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_, 0.03f);
     }
 }
 
@@ -45,7 +45,8 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
         auto const indirect_photons = std::partition(photons_, photons_ + num_photons_,
                                                      [](Photon const& p) { return p.caustic; });
 
-        uint32_t const num_caustics = std::distance(photons_, indirect_photons);
+        uint32_t const num_caustics = static_cast<uint32_t>(
+            std::distance(photons_, indirect_photons));
         uint32_t const num_indirect = num_photons_ - num_caustics;
 
         caustic_grid_.update(num_caustics, photons_);

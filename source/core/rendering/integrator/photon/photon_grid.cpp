@@ -190,7 +190,7 @@ float3 Grid::li(f_float3 position, scene::material::Sample const& sample,
 
                     auto const bxdf = sample.evaluate(photon.wi);
 
-                    result += (k * f) / clamped_n_dot_wi * photon.alpha * bxdf.reflection;
+                    result += (k * f) / clamped_n_dot_wi * float3(photon.alpha) * bxdf.reflection;
                 }
             }
         }
@@ -238,7 +238,11 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) {
                 //                }
 
                 if (math::squared_distance(pa.p, pb.p) < merge_distance) {
-                    pa.alpha += pb.alpha;
+                    float3 const sum = float3(pa.alpha) + float3(pb.alpha);
+                    pa.alpha[0]      = sum[0];
+                    pa.alpha[1]      = sum[1];
+                    pa.alpha[2]      = sum[2];
+
                     pb.alpha[0] = -1.f;
                     ++num_reduced;
                 }

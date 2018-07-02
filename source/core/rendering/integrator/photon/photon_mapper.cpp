@@ -118,9 +118,11 @@ uint32_t Mapper::trace_photon(Worker& worker, uint32_t max_photons, Photon* phot
 
                 photon.p = intersection.geo.p;
                 //                photon.n     = intersection.geo.n;
-                photon.wi      = -ray.direction;
-                photon.alpha   = radiance;
-                photon.caustic = 0 == num_photons;
+                photon.wi       = -ray.direction;
+                photon.alpha[0] = radiance[0];
+                photon.alpha[1] = radiance[1];
+                photon.alpha[2] = radiance[2];
+                photon.caustic  = 0 == num_photons;
 
                 iteration = i + 1;
 
