@@ -2,6 +2,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
+#include "base/memory/align.hpp"
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -17,20 +18,20 @@ Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool 
       num_reduced_(nullptr) {}
 
 Map::~Map() {
-    delete[] num_reduced_;
-    delete[] photons_;
+    memory::free_aligned(num_reduced_);
+    memory::free_aligned(photons_);
 }
 
 void Map::init(uint32_t num_workers) {
-    photons_     = new Photon[num_photons_];
-    num_reduced_ = new uint32_t[num_workers];
+    photons_     = memory::allocate_aligned<Photon>(num_photons_);
+    num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
 }
 
 void Map::resize(math::AABB const& aabb) {
-    caustic_grid_.resize(aabb, radius_, 0.12f);
+    caustic_grid_.resize(aabb, radius_, 0.15f);
 
     if (separate_caustics_) {
-        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_, 0.03f);
+        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_, 0.0275f);
     }
 }
 
