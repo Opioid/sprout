@@ -46,11 +46,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
         progressor.start(progress_range);
 
-        if (0.f == camera.frame_duration()) {
-            scene_.tick(thread_pool_);
-            camera.update(scene_, workers_[0]);
-            render_subframe(0.f, 0.f, 1.f, progressor);
-        } else if (!camera.motion_blur()) {
+        if (!camera.motion_blur()) {
             float frame_offset = 0.f;
             float frame_rest   = camera.frame_duration();
 

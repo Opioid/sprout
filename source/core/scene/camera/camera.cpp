@@ -58,7 +58,7 @@ void Camera::set_parameters(json::Value const& parameters) {
         if ("frame_duration" == n.name) {
             frame_duration_ = json::read_float(n.value);
         } else if ("frames_per_second" == n.name) {
-            float fps = json::read_float(n.value);
+            float const fps = json::read_float(n.value);
             if (0.f == fps) {
                 frame_duration_ = 0.f;
             } else {

@@ -66,7 +66,8 @@ class Camera : public entity::Entity {
 
     static Ray create_ray(f_float3 origin, f_float3 direction, float time);
 
-    int2                                       resolution_;
+    int2 resolution_;
+
     std::unique_ptr<rendering::sensor::Sensor> sensor_;
 
     prop::Interface_stack interface_stack_;
@@ -74,7 +75,7 @@ class Camera : public entity::Entity {
 
     int32_t filter_radius_ = 0;
 
-    float frame_duration_ = 0.f;
+    float frame_duration_ = 1.f / 60.f;
     bool  motion_blur_    = true;
 };
 
