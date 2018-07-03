@@ -29,6 +29,10 @@ A render is configurable by json files
 that describe the different parts of the scene (shapes, lights, material parameters etc.) 
 as well as the camera settings.
 
+** Gallery
+
+A few images rendered with sprout can be found in the [[https://opioid.github.io/sprout/gallery.html][gallery]]. 
+
 ** Build
 
 #+BEGIN_EXAMPLE
