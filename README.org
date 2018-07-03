@@ -1,6 +1,6 @@
 * sprout
 
-[[file:doc/images/san_miguel_1080.jpg]]
+[[https://opioid.github.io/images/sprout/san_miguel_1080.jpg]]
 [[http://casual-effects.com/data/index.html][San Miguel 2.0]]
 
 ** Brief
@@ -8,7 +8,7 @@
 sprout is a small raytracing renderer written in C++. 
 I work on it for fun and to learn about physically based rendering and global illumination.
 
-The overall architecture is heavily inspired by [[http://www.pbrt.org/][PBRT]] 
+The overall architecture is heavily inspired by [[http://www.pbrt.org/][PBRT]] version 2,
 while the implementation details differ more or less strongly in various places.
 
 At the moment the most advanced integrator is a uni-directional path tracer 
@@ -18,11 +18,12 @@ The default material is inspired by the [[https://disney-animation.s3.amazonaws.
 It uses a combination of the Disney Diffuse BRDF and GGX 
 with adjustable roughness and metallic parameters.
 Optionally subsurface scattering can be enabled.
-Multiple-scattering is supported via random walk.
 Most parameters like color, roughness, and normals can be controlled via texture mapping.
 Specialized materials for metal and glass are also available.
 There is support for a few built in shapes (sphere, disk, plane...) as well as triangle meshes.
 Those shapes are shared between solid objects, volumetric objects, and light emitters.
+
+Support for heterogeneous participating media and subsurface scattering is based on [[http://drz.disneyresearch.com/~jnovak/publications/SDTracking/SDTracking.pdf][spectral tracking]].
 
 A render is configurable by json files 
 that describe the different parts of the scene (shapes, lights, material parameters etc.) 

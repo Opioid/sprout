@@ -1,8 +1,8 @@
 #include "photon_map.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
-#include "base/thread/thread_pool.hpp"
 #include "base/memory/align.hpp"
+#include "base/thread/thread_pool.hpp"
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -28,10 +28,13 @@ void Map::init(uint32_t num_workers) {
 }
 
 void Map::resize(math::AABB const& aabb) {
-    caustic_grid_.resize(aabb, radius_, 0.15f);
+    float constexpr merge_threshold = 0.15f;
+
+    caustic_grid_.resize(aabb, radius_, merge_threshold);
 
     if (separate_caustics_) {
-        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_, 0.0275f);
+        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_,
+                              merge_threshold / indirect_radius_factor_);
     }
 }
 
