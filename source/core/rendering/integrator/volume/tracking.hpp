@@ -46,12 +46,15 @@ class Tracking {
 
     static float3 transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker);
 
-    // Completely arbitrary and biased cutoff limit in order to prevent some worst case things
-    static uint32_t constexpr max_iterations_ = 1024 * 128;
-
     static bool track(math::Ray const& ray, float mt, Material const& material,
                       Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t,
                       float3& w);
+
+    // Completely arbitrary and biased cutoff limit in order to prevent some worst case things
+    static uint32_t constexpr max_iterations_ = 1024 * 128;
+
+    static float constexpr Min_mt      = 1e-10f;
+    static float constexpr Ray_epsilon = 5e-4f;
 
   private:
     static float3 track_transmittance(math::Ray const& ray, float mt, Material const& material,

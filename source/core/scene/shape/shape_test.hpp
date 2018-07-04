@@ -14,16 +14,16 @@ struct Ray;
 namespace shape {
 
 struct Intersection;
-struct Sample;
+struct Sample_to;
 
 namespace testing {
 
 bool check(Intersection const& intersection, const entity::Composed_transformation& transformation,
            Ray const& ray);
 
-bool check(const Sample& sample);
+bool check(const Sample_to& sample);
 
-bool check(const Sample& sample, float2 uv);
+bool check(const Sample_to& sample, float2 uv);
 
 void test();
 

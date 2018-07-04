@@ -27,7 +27,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
     float const d = ray.max_t;
 
-    if (d - ray.min_t < 0.0005f) {
+    if (d - ray.min_t < Ray_epsilon) {
         return float3(1.f);
     }
 
@@ -54,7 +54,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
                 //	SOFT_ASSERT(math::all_finite(w));
 
-                local_ray.min_t = local_ray.max_t + 0.00001f;
+                local_ray.min_t = local_ray.max_t + Ray_epsilon;
                 local_ray.max_t = d;
             }
 
@@ -74,10 +74,15 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
             return w;
         }
 
-        float const mt  = material.majorant_mu_t();
-        float const imt = 1.f / mt;
-
         float3 w(1.f);
+
+        float const mt = material.majorant_mu_t();
+
+        if (mt < Min_mt) {
+            return w;
+        }
+
+        float const imt = 1.f / mt;
 
         // Completely arbitray limit
         uint32_t i = max_iterations_;
@@ -112,7 +117,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
                      Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                      float3& w) {
-    if (0.f == mt) {
+    if (mt < Min_mt) {
         return false;
     }
 
@@ -168,11 +173,15 @@ float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material co
                                      Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
     float3 w(1.f);
 
-    if (0.f == mt) {
+    SOFT_ASSERT(mt >= 0.f);
+
+    if (mt < Min_mt) {
         return w;
     }
 
     float const imt = 1.f / mt;
+
+    SOFT_ASSERT(std::isfinite(imt));
 
     float const d = ray.max_t;
 
