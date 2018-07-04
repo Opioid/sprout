@@ -15,6 +15,8 @@
 
 namespace rendering::integrator::volume {
 
+static float constexpr Min_mt = 1.e-4f;
+
 // Code for hetereogeneous transmittance from:
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
@@ -168,11 +170,13 @@ float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material co
                                      Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
     float3 w(1.f);
 
-    if (0.f == mt) {
+    if (mt < Min_mt) {
         return w;
     }
 
     float const imt = 1.f / mt;
+
+    SOFT_ASSERT(std::isfinite(imt));
 
     float const d = ray.max_t;
 
@@ -192,6 +196,8 @@ float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material co
         float3 const mu_n = float3(mt) - mu_t;
 
         w *= imt * mu_n;
+
+        SOFT_ASSERT(math::all_finite(w));
     }
 }
 
