@@ -90,7 +90,8 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
         for (int32_t y = minb[1], my = maxb[1]; y < my; ++y) {
             for (int32_t x = minb[0], mx = maxb[0]; x < mx; ++x) {
                 float const density = texture.at_1(x, y, z);
-                max_density         = std::max(density, max_density);
+
+                max_density = std::max(density, max_density);
             }
         }
     }

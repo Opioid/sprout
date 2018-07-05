@@ -135,7 +135,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
     float const d = ray.max_t;
 
-    if (d - ray.min_t < 0.0005f) {
+    if (d - ray.min_t < Tracking::Ray_epsilon) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         //	weight = float3(1.f);
@@ -189,7 +189,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     }
                 }
 
-                local_ray.min_t = local_ray.max_t + 0.00001f;
+                local_ray.min_t = local_ray.max_t + Tracking::Ray_epsilon;
                 local_ray.max_t = d;
             }
 

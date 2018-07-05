@@ -71,7 +71,7 @@ float Sample::BSDF::reflect(f_float3 wo, f_float3 n, float n_dot_wo, bxdf::Sampl
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_reflection);
 
- //   SOFT_ASSERT(testing::check(result, sample.wo_, layer));
+    //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
     return 1.f;
 }
@@ -83,7 +83,7 @@ float Sample::BSDF::refract(f_float3 wo, f_float3 n, f_float3 color, float n_dot
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_transmission);
 
-  //  SOFT_ASSERT(testing::check(result, sample.wo_, layer));
+    //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
     return 1.f;
 }
