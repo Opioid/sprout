@@ -54,7 +54,7 @@ class Tracking {
     static uint32_t constexpr max_iterations_ = 1024 * 128;
 
     static float constexpr Min_mt      = 1e-10f;
-    static float constexpr Ray_epsilon = 5e-4f;
+    static float constexpr Ray_epsilon = 1e-3f;
 
   private:
     static float3 track_transmittance(math::Ray const& ray, float mt, Material const& material,
