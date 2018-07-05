@@ -73,12 +73,9 @@ void Message_handler::handle(std::string const& message) {
                 scene::entity::Entity* entity       = driver_.scene().entity(index_string);
                 handle_entity(entity, value, parameters, true);
             } else {
-                try {
-                    uint32_t               index_number = std::stoul(index);
-                    scene::entity::Entity* entity       = driver_.scene().entity(index_number);
-                    handle_entity(entity, value, parameters, true);
-                } catch (...) {
-                }
+                uint32_t               index_number = std::stoul(index);
+                scene::entity::Entity* entity       = driver_.scene().entity(index_number);
+                handle_entity(entity, value, parameters, true);
             }
         } else if ("materials" == assignee.substr(0, 9)) {
             if ('\"' == index.front() && '\"' == index.back()) {

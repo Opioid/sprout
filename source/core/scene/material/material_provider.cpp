@@ -1031,15 +1031,16 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
 
     Texture_adapter density_map;
     Texture_adapter emission_map;
-    float3          color(0.6f, 0.6f, 0.6f);
-    bool            use_absorption_color = false;
-    float3          absorption_color(0.f);
-    bool            use_scattering_color = false;
-    float3          scattering_color(0.f);
-    float           attenuation_distance = 1.f;
-    float           anisotropy           = 0.f;
-    float           a                    = 0.f;
-    float           b                    = 0.f;
+
+    float3 color(0.6f, 0.6f, 0.6f);
+    bool   use_absorption_color = false;
+    float3 absorption_color(0.f);
+    bool   use_scattering_color = false;
+    float3 scattering_color(0.f);
+    float  attenuation_distance = 1.f;
+    float  anisotropy           = 0.f;
+    float  a                    = 0.f;
+    float  b                    = 0.f;
 
     for (auto& n : volumetric_value.GetObject()) {
         if ("color" == n.name) {

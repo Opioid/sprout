@@ -39,7 +39,7 @@ void Sample::set(float anisotropy) {
 
 float Sample::Layer::phase(f_float3 wo, f_float3 wi) const {
     float const g = anisotropy;
-    return phase_hg(math::dot(wo, wi), g);
+    return phase_hg(-math::dot(wo, wi), g);
     //	float const k = 1.55f * g - (0.55f * g) * (g * g);
     //	return phase_schlick(math::dot(wo, wi), k);
 }
@@ -53,14 +53,18 @@ float Sample::Layer::sample(f_float3 wo, float2 r2, float3& wi) const {
     } else {
         float const gg  = g * g;
         float const sqr = (1.f - gg) / (1.f - g + 2.f * g * r2[0]);
-        cos_theta       = (1.f + gg - sqr * sqr) / (2.f * g);
+
+        cos_theta = (1.f + gg - sqr * sqr) / (2.f * g);
     }
 
     float const sin_theta = std::sqrt(std::max(0.f, 1.f - cos_theta * cos_theta));
     float const phi       = r2[1] * (2.f * math::Pi);
-    float3      t, b;
+
+    float3 t, b;
     math::orthonormal_basis(wo, t, b);
-    wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
+
+    wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, wo);
+
     return phase_hg(-cos_theta, g);
 }
 
