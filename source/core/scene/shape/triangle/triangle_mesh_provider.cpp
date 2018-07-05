@@ -42,6 +42,9 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
                                       memory::Variant_map const& /*options*/,
                                       resource::Manager& manager) {
     auto stream_pointer = manager.filesystem().read_stream(filename);
+    if (!stream_pointer) {
+        return nullptr;
+    }
 
     file::Type type = file::query_type(*stream_pointer);
     if (file::Type::SUM == type) {
@@ -65,15 +68,18 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
     }
 
     if (handler.vertices().empty()) {
-        throw std::runtime_error("Mesh does not contain vertices");
+        //   throw std::runtime_error("Mesh does not contain vertices");
+        return nullptr;
     }
 
     if (!handler.has_positions()) {
-        throw std::runtime_error("Mesh does not contain vertex positions");
+        //  throw std::runtime_error("Mesh does not contain vertex positions");
+        return nullptr;
     }
 
     if (handler.triangles().empty()) {
-        throw std::runtime_error("Mesh does not contain indices");
+        //   throw std::runtime_error("Mesh does not contain indices");
+        return nullptr;
     }
 
     if (handler.parts().empty()) {
@@ -141,7 +147,8 @@ size_t Provider::num_bytes() const {
 std::shared_ptr<Shape> Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
                                              uint32_t num_parts, thread::Pool& thread_pool) {
     if (triangles.empty() || vertices.empty() || !num_parts) {
-        throw std::runtime_error("No mesh data");
+        // throw std::runtime_error("No mesh data");
+        return nullptr;
     }
 
     auto mesh = std::make_shared<Mesh>();
@@ -166,6 +173,9 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(std::string const& filename
 
     for (auto& targets : morph_targets) {
         auto stream_pointer = manager.filesystem().read_stream(targets);
+        if (!stream_pointer) {
+            continue;
+        }
 
         rapidjson::IStreamWrapper json_stream(*stream_pointer);
 
@@ -265,12 +275,18 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
     stream.read(json_string, json_size * sizeof(char));
     json_string[json_size] = 0;
 
-    auto root = json::parse_insitu(json_string);
+    std::string error;
+    auto        root = json::parse_insitu(json_string, error);
+    if (!root) {
+        delete[] json_string;
+        return nullptr;
+    }
 
     json::Value::ConstMemberIterator const geometry_node = root->FindMember("geometry");
     if (root->MemberEnd() == geometry_node) {
         delete[] json_string;
-        throw std::runtime_error("Model has no geometry node");
+        //   throw std::runtime_error("Model has no geometry node");
+        return nullptr;
     }
 
     json::Value const& geometry_value = geometry_node->value;

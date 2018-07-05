@@ -19,12 +19,12 @@ class Reader {
         uint32_t height;
     };
 
-    static Header read_header(std::istream& stream);
+    static bool read_header(std::istream& stream, Header& header);
 
-    static void read_pixels_RLE(std::istream& stream, uint32_t scanline_width,
+    static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width,
                                 uint32_t num_scanlines, Float3& image);
 
-    static void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
+    static bool read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
                             uint32_t offset);
 
     using image_float3 = packed_float3;

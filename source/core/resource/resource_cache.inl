@@ -30,6 +30,7 @@ std::shared_ptr<T> Typed_cache<T>::load(std::string const&         filename,
 
     auto resource = provider_.load(filename, options, manager);
     if (!resource) {
+        logging::error("Could not load \"" + filename + "\".");
         return nullptr;
     }
 
@@ -37,7 +38,7 @@ std::shared_ptr<T> Typed_cache<T>::load(std::string const&         filename,
 
     if (logging::is_verbose()) {
         std::stringstream stream;
-        stream << "Loaded " << provider_.name() << " resource \"" << filename << "\"";
+        stream << "Loaded " << provider_.name() << " resource \"" << filename << "\".";
         logging::verbose(stream.str());
     }
 

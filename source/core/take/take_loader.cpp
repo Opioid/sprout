@@ -58,10 +58,14 @@
 
 namespace take {
 
-std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& manager) {
+std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& manager,
+                                   std::string& error) {
     uint32_t const num_threads = manager.thread_pool().num_threads();
 
-    auto root = json::parse(stream);
+    auto root = json::parse(stream, error);
+    if (!root) {
+        return nullptr;
+    }
 
     auto take = std::make_unique<Take>();
 
@@ -70,7 +74,9 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
     for (auto& n : root->GetObject()) {
         if ("camera" == n.name) {
-            load_camera(n.value, *take);
+            if (!load_camera(n.value, *take, error)) {
+                return nullptr;
+            }
         } else if ("export" == n.name) {
             exporter_value = &n.value;
         } else if ("start_frame" == n.name) {
@@ -92,7 +98,8 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
     }
 
     if (take->scene_filename.empty()) {
-        throw std::runtime_error("No reference to scene included");
+        error = "No reference to scene included";
+        return nullptr;
     }
 
     if (take->view.camera) {
@@ -151,7 +158,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
     return take;
 }
 
-void Loader::load_camera(json::Value const& camera_value, Take& take) {
+bool Loader::load_camera(json::Value const& camera_value, Take& take, std::string& error) {
     using namespace scene::camera;
 
     std::string        type_name;
@@ -168,7 +175,8 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
 
     if (!type_value) {
         // Can this happen at all!
-        throw std::runtime_error("Empty camera object");
+        error = "Empty camera object";
+        return false;
     }
 
     math::Transformation transformation{float3::identity(), float3(1.f),
@@ -200,10 +208,12 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
     if (sensor_value) {
         resolution = json::read_int2(*sensor_value, "resolution", int2::identity());
         if (int2::identity() == resolution) {
-            throw std::runtime_error("Sensor resolution must be greater than zero");
+            error = "Sensor resolution must be greater than zero";
+            return false;
         }
     } else {
-        throw std::runtime_error("No sensor configuration included");
+        error = "No sensor configuration included";
+        return false;
     }
 
     if (animation_value) {
@@ -246,7 +256,8 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
     } else if ("Hemispherical" == type_name) {
         camera = std::make_shared<Hemispherical>(resolution);
     } else {
-        throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
+        error = "Camera type \"" + type_name + "\" not recognized";
+        return false;
     }
 
     if (parameters_value) {
@@ -262,6 +273,8 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
     }
 
     take.view.camera = camera;
+
+    return true;
 }
 
 std::unique_ptr<rendering::sensor::Sensor> Loader::load_sensor(json::Value const& sensor_value,
@@ -553,8 +566,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
             if (take.view.camera &&
                 backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {
                 logging::warning("Not using backplate \"" + name +
-                                 "\", "
-                                 "because resolution doesn't match sensor resolution.");
+                                 "\", because resolution doesn't match sensor resolution.");
                 continue;
             }
 

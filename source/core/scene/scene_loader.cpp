@@ -44,47 +44,49 @@ Loader::Loader(resource::Manager& manager, Material_ptr const& fallback_material
 Loader::~Loader() {}
 
 bool Loader::load(std::string const& filename, std::string const& take_name, Scene& scene) {
-    bool success = true;
+    auto& filesystem = resource_manager_.filesystem();
 
-    try {
-        auto& filesystem = resource_manager_.filesystem();
+    std::string const take_mount_folder = string::parent_directory(take_name);
+    filesystem.push_mount(take_mount_folder);
 
-        std::string const take_mount_folder = string::parent_directory(take_name);
-        filesystem.push_mount(take_mount_folder);
-
-        std::string resolved_name;
-        auto        stream_pointer = filesystem.read_stream(filename, resolved_name);
-
-        filesystem.pop_mount();
-
-        mount_folder_ = string::parent_directory(resolved_name);
-
-        auto root = json::parse(*stream_pointer);
-
-        if (auto const materials_node = root->FindMember("materials");
-            root->MemberEnd() != materials_node) {
-            read_materials(materials_node->value);
-        }
-
-        filesystem.push_mount(mount_folder_);
-
-        for (auto& n : root->GetObject()) {
-            if ("entities" == n.name) {
-                load_entities(n.value, nullptr, scene);
-            }
-        }
-
-        filesystem.pop_mount();
-
-        scene.finish();
-    } catch (std::exception& e) {
-        success = false;
-        logging::error("Scene \"" + filename + "\" could not be loaded: " + e.what() + ".");
+    std::string resolved_name;
+    auto        stream_pointer = filesystem.read_stream(filename, resolved_name);
+    if (!stream_pointer) {
+        logging::error("Scene \"" + filename +
+                       "\" could not be loaded: Stream could not be opened.");
+        return false;
     }
+
+    filesystem.pop_mount();
+
+    mount_folder_ = string::parent_directory(resolved_name);
+
+    std::string error;
+    auto        root = json::parse(*stream_pointer, error);
+    if (!root) {
+        return false;
+    }
+
+    if (auto const materials_node = root->FindMember("materials");
+        root->MemberEnd() != materials_node) {
+        read_materials(materials_node->value);
+    }
+
+    filesystem.push_mount(mount_folder_);
+
+    for (auto& n : root->GetObject()) {
+        if ("entities" == n.name) {
+            load_entities(n.value, nullptr, scene);
+        }
+    }
+
+    filesystem.pop_mount();
+
+    scene.finish();
 
     resource_manager_.thread_pool().wait_async();
 
-    return success;
+    return true;
 }
 
 void Loader::register_extension_provider(std::string const&          name,
@@ -148,26 +150,24 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
 
         entity::Entity* entity = nullptr;
 
-        try {
-            if ("Light" == type_name) {
-                prop::Prop* prop = load_prop(e, name, scene);
-                entity           = prop;
-                if (prop && prop->visible_in_reflection()) {
-                    load_light(e, prop, scene);
-                }
-            } else if ("Prop" == type_name) {
-                entity = load_prop(e, name, scene);
-            } else if ("Dummy" == type_name) {
-                entity = scene.create_dummy();
-            } else {
-                entity = load_extension(type_name, e, name, scene);
+        if ("Light" == type_name) {
+            prop::Prop* prop = load_prop(e, name, scene);
+
+            if (prop && prop->visible_in_reflection()) {
+                load_light(e, prop, scene);
             }
-        } catch (const std::exception& e) {
-            logging::error("Cannot create entity \"" + type_name + "\": " + e.what() + ".");
-            continue;
+
+            entity = prop;
+        } else if ("Prop" == type_name) {
+            entity = load_prop(e, name, scene);
+        } else if ("Dummy" == type_name) {
+            entity = scene.create_dummy();
+        } else {
+            entity = load_extension(type_name, e, name, scene);
         }
 
         if (!entity) {
+            logging::error("Cannot create entity \"" + type_name + "\".");
             continue;
         }
 
@@ -330,15 +330,13 @@ std::shared_ptr<shape::Shape> Loader::shape(std::string const& type,
         return sphere_;
     } else {
         if (auto g = mesh_generators_.find(type); mesh_generators_.end() != g) {
-            try {
-                return g->second->create_mesh(shape_value, resource_manager_);
-            } catch (const std::exception& e) {
-                logging::error("Cannot create shape of type \"" + type + "\": " + e.what() + ".");
+            if (auto mesh = g->second->create_mesh(shape_value, resource_manager_)) {
+                return mesh;
             }
-        } else {
-            logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
         }
     }
+
+    logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
 
     return nullptr;
 }
@@ -358,36 +356,34 @@ void Loader::load_materials(json::Value const& materials_value, Scene& scene,
 
 Material_ptr Loader::load_material(std::string const& name, Scene& scene) {
     // First, check if we maybe already have cached the material.
-    if (auto material = resource_manager_.get<material::Material>(name); material) {
+    if (auto material = resource_manager_.get<material::Material>(name)) {
         return material;
     }
 
-    try {
-        // Otherwise, see if it is among the locally defined materials.
-        if (auto const material_node = local_materials_.find(name);
-            local_materials_.end() != material_node) {
-            void const* data = reinterpret_cast<void const*>(material_node->second);
+    // Otherwise, see if it is among the locally defined materials.
+    if (auto const material_node = local_materials_.find(name);
+        local_materials_.end() != material_node) {
+        void const* data = reinterpret_cast<void const*>(material_node->second);
 
-            auto material = resource_manager_.load<material::Material>(name, data, mount_folder_);
-
+        if (auto material = resource_manager_.load<material::Material>(name, data, mount_folder_)) {
             if (material->is_animated()) {
                 scene.add_material(material);
             }
 
             return material;
         }
+    }
 
-        // Lastly, try loading the material from the filesystem.
-        auto material = resource_manager_.load<material::Material>(name);
-
+    // Lastly, try loading the material from the filesystem.
+    if (auto material = resource_manager_.load<material::Material>(name)) {
         if (material->is_animated()) {
             scene.add_material(material);
         }
 
         return material;
-    } catch (const std::exception& e) {
-        logging::error("Loading \"" + name + "\": " + e.what() + ". Using fallback material.");
     }
+
+    logging::error("Material \"" + name + "\": could not be loaded. Using fallback material.");
 
     return fallback_material_;
 }

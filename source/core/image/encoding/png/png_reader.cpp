@@ -18,7 +18,8 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels, int
     stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
 
     if (Signature != signature) {
-        throw std::runtime_error("Bad PNG signature");
+        // error = "Bad PNG signature";
+        return nullptr;
     }
 
     Chunk chunk;
@@ -105,7 +106,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
         for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
             int32_t const o = i * info.num_channels;
 
-            int8_t color = info.buffer[o + c];
+            uint8_t color = info.buffer[o + c];
 
             if (invert) {
                 color = 255 - color;
@@ -197,7 +198,8 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 
     uint32_t const depth = static_cast<uint32_t>(chunk.data[8]);
     if (8 != depth) {
-        throw std::runtime_error(string::to_string(depth) + " bit depth PNG not supported");
+        // throw std::runtime_error(string::to_string(depth) + " bit depth PNG not supported");
+        return false;
     }
 
     const Color_type color_type = static_cast<Color_type>(chunk.data[9]);
@@ -218,14 +220,16 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
     }
 
     if (0 == info.num_channels) {
-        throw std::runtime_error("Indexed PNG not supported");
+        // throw std::runtime_error("Indexed PNG not supported");
+        return false;
     }
 
     info.bytes_per_pixel = info.num_channels;
 
     const uint8_t interlace = chunk.data[12];
     if (interlace) {
-        throw std::runtime_error("Interlaced PNG not supported");
+        // throw std::runtime_error("Interlaced PNG not supported");
+        return false;
     }
 
     info.buffer.resize(info.width * info.height * info.num_channels);

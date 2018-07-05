@@ -121,16 +121,21 @@ int main(int argc, char const* argv[]) {
         resource_manager.register_provider(texture_provider);
     }
 
-    std::unique_ptr<take::Take> take;
-    std::string                 take_name;
+    std::string take_name;
 
-    try {
-        auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
-                                         : file_system.read_stream(args.take, take_name);
+    auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
+                                     : file_system.read_stream(args.take, take_name);
 
-        take = take::Loader::load(*stream, resource_manager);
-    } catch (const std::exception& e) {
-        logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
+    if (!stream) {
+        logging::error("Take \"" + args.take + "\" could not be loaded");
+        return 1;
+    }
+
+    std::string                 error;
+    std::unique_ptr<take::Take> take = take::Loader::load(*stream, resource_manager, error);
+
+    if (!take) {
+        logging::error("Take \"" + args.take + "\" could not be loaded: " + error + ".");
         return 1;
     }
 

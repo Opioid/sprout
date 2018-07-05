@@ -47,31 +47,33 @@ std::string read_error(rapidjson::Document& document, std::istream& stream) {
     return sstream.str();
 }
 
-std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
+std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer, std::string& error) {
     std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
     document->ParseInsitu(buffer);
 
     if (document->HasParseError()) {
-        throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+        error = rapidjson::GetParseError_En(document->GetParseError());
+        return nullptr;
     }
 
     return document;
 }
 
-std::unique_ptr<rapidjson::Document> parse(std::string_view buffer) {
+std::unique_ptr<rapidjson::Document> parse(std::string_view buffer, std::string& error) {
     std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
     document->Parse(buffer.data());
 
     if (document->HasParseError()) {
-        throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+        error = rapidjson::GetParseError_En(document->GetParseError());
+        return nullptr;
     }
 
     return document;
 }
 
-std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
+std::unique_ptr<rapidjson::Document> parse(std::istream& stream, std::string& error) {
     rapidjson::IStreamWrapper json_stream(stream);
 
     std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
@@ -79,7 +81,7 @@ std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
     document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
 
     if (document->HasParseError()) {
-        throw std::runtime_error(read_error(*document.get(), stream));
+        error = read_error(*document.get(), stream);
     }
 
     return document;

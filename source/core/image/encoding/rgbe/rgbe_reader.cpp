@@ -13,7 +13,10 @@ namespace encoding {
 namespace rgbe {
 
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
-    const Header header = read_header(stream);
+    Header header;
+    if (!read_header(stream, header)) {
+        return nullptr;
+    }
 
     const int2 dimensions(header.width, header.height);
 
@@ -24,11 +27,12 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
     return image;
 }
 
-Reader::Header Reader::read_header(std::istream& stream) {
+bool Reader::read_header(std::istream& stream, Header& header) {
     std::string line;
     std::getline(stream, line);
     if ("#?" != line.substr(0, 2)) {
-        throw std::runtime_error("Bad initial token");
+        // throw std::runtime_error("Bad initial token");
+        return false;
     }
 
     bool format_specifier = false;
@@ -45,21 +49,21 @@ Reader::Header Reader::read_header(std::istream& stream) {
     }
 
     if (!format_specifier) {
-        throw std::runtime_error("No FORMAT specifier found");
+        // throw std::runtime_error("No FORMAT specifier found");
+        return false;
     }
-
-    Header header;
 
     std::getline(stream, line);
 
     if (std::sscanf(line.c_str(), "-Y %d +X %d", &header.height, &header.width) < 2) {
-        throw std::runtime_error("Missing image size specifier");
+        // throw std::runtime_error("Missing image size specifier");
+        return false;
     }
 
-    return header;
+    return true;
 }
 
-void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+bool Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
                              Float3& image) {
     if (scanline_width < 8 || scanline_width > 0x7fff) {
         return read_pixels(stream, scanline_width * num_scanlines, image, 0);
@@ -80,12 +84,13 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
             image.at(0) = color;
 
             read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
-            return;
+            return true;
         }
 
         if ((static_cast<uint32_t>(rgbe[2]) << 8 | static_cast<uint32_t>(rgbe[3])) !=
             scanline_width) {
-            throw std::runtime_error("Wrong scanline width");
+            // throw std::runtime_error("Wrong scanline width");
+            return false;
         }
 
         // read each of the four channels for the scanline into the buffer
@@ -100,7 +105,8 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
                     uint32_t count = static_cast<uint32_t>(buf[0]) - 128;
 
                     if (count == 0 || count > end - index) {
-                        throw std::runtime_error("Bad scanline data");
+                        // throw std::runtime_error("Bad scanline data");
+                        return false;
                     }
 
                     for (; count > 0; --count) {
@@ -111,7 +117,8 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
                     uint32_t count = static_cast<uint32_t>(buf[0]);
 
                     if (count == 0 || count > end - index) {
-                        throw std::runtime_error("Bad scanline data");
+                        //  throw std::runtime_error("Bad scanline data");
+                        return false;
                     }
 
                     scanline_buffer[index++] = buf[1];
@@ -135,9 +142,11 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
             image.at(offset++) = rgbe_to_float3(rgbe);
         }
     }
+
+    return true;
 }
 
-void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
+bool Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
                          uint32_t offset) {
     uint8_t rgbe[4];
 
@@ -148,6 +157,8 @@ void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& imag
 
         image.at(offset++) = color;
     }
+
+    return true;
 }
 
 Reader::image_float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {

@@ -27,6 +27,9 @@ std::shared_ptr<Image> Provider::load(std::string const&         filename,
     }
 
     auto stream_pointer = manager.filesystem().read_stream(filename);
+    if (!stream_pointer) {
+        return nullptr;
+    }
 
     auto& stream = *stream_pointer;
 
@@ -56,11 +59,13 @@ std::shared_ptr<Image> Provider::load(std::string const&         filename,
             return reader.read(stream);
         }
 
+        std::string            error;
         encoding::json::Reader reader;
-        return reader.read(stream);
+        return reader.read(stream, error);
     }
 
-    throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
+    // error = "Image type for \"" + filename + "\" not recognized";
+    return nullptr;
 }
 
 std::shared_ptr<Image> Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
