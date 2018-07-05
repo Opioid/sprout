@@ -20,8 +20,8 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float2 const r2 = sampler.generate_sample_2D();
 
-    float3       dir;
-    float const  phase = layer_.sample(wo_, r2, dir);
+    float3      dir;
+    float const phase = layer_.sample(wo_, r2, dir);
 
     result.reflection = float3(phase);
     result.wi         = dir;
@@ -40,7 +40,7 @@ void Sample::set(float anisotropy) {
 
 float Sample::Layer::phase(f_float3 wo, f_float3 wi) const {
     float const g = anisotropy;
-    return phase_hg(-math::dot(wo, wi), g);
+    return phase_hg(math::dot(wo, wi), g);
     //	float const k = 1.55f * g - (0.55f * g) * (g * g);
     //	return phase_schlick(math::dot(wo, wi), k);
 }
@@ -66,11 +66,7 @@ float Sample::Layer::sample(f_float3 wo, float2 r2, float3& wi) const {
 
     wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
 
-  //  float const dotly = math::dot(wi, wo);
-
-  //  float const temp = phase_hg(dotly, g);
-
-    return phase_hg(cos_theta, g);
+    return phase_hg(-cos_theta, g);
 }
 
 float Sample::phase_hg(float cos_theta, float g) {
