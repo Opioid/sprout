@@ -18,6 +18,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::volume {
 
 Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings)
@@ -187,6 +189,13 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                         transmittance = w;
                         return true;
                     }
+                }
+
+                SOFT_ASSERT(local_ray.max_t >= local_ray.min_t);
+
+                if (local_ray.min_t > local_ray.max_t) {
+                    std::cout << "aha multi" << std::endl;
+                    break;
                 }
 
                 local_ray.min_t = local_ray.max_t + Tracking::Ray_epsilon;

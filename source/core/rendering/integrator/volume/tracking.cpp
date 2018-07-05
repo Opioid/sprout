@@ -13,6 +13,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::volume {
 
 // Code for hetereogeneous transmittance from:
@@ -52,7 +54,12 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
                                              worker);
                 }
 
-                //	SOFT_ASSERT(math::all_finite(w));
+                SOFT_ASSERT(local_ray.max_t >= local_ray.min_t);
+
+                if (local_ray.min_t > local_ray.max_t) {
+                    std::cout << "aha oc" << std::endl;
+                    break;
+                }
 
                 local_ray.min_t = local_ray.max_t + Ray_epsilon;
                 local_ray.max_t = d;

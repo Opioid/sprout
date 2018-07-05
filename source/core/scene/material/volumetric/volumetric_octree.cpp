@@ -4,6 +4,8 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
+#include "base/debug/assert.hpp"
+
 #include <iostream>
 #include "base/math/print.hpp"
 
@@ -304,6 +306,8 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
     if (box.intersect_inside(ray, hit_t)) {
         if (ray.max_t > hit_t) {
             ray.max_t = hit_t;
+
+            SOFT_ASSERT(ray.min_t <= hit_t);
         }
 
         //	std::cout << box.bounds[0] << " ";
