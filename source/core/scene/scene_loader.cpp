@@ -151,10 +151,12 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
         try {
             if ("Light" == type_name) {
                 prop::Prop* prop = load_prop(e, name, scene);
-                entity           = prop;
+
                 if (prop && prop->visible_in_reflection()) {
                     load_light(e, prop, scene);
                 }
+
+                entity = prop;
             } else if ("Prop" == type_name) {
                 entity = load_prop(e, name, scene);
             } else if ("Dummy" == type_name) {
