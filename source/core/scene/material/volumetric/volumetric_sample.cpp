@@ -19,6 +19,7 @@ bxdf::Result Sample::evaluate(f_float3 wi) const {
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float2 const r2 = sampler.generate_sample_2D();
+
     float3       dir;
     float const  phase = layer_.sample(wo_, r2, dir);
 
@@ -63,9 +64,13 @@ float Sample::Layer::sample(f_float3 wo, float2 r2, float3& wi) const {
     float3 t, b;
     math::orthonormal_basis(wo, t, b);
 
-    wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, wo);
+    wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
 
-    return phase_hg(-cos_theta, g);
+  //  float const dotly = math::dot(wi, wo);
+
+  //  float const temp = phase_hg(dotly, g);
+
+    return phase_hg(cos_theta, g);
 }
 
 float Sample::phase_hg(float cos_theta, float g) {

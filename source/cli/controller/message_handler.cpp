@@ -69,17 +69,23 @@ void Message_handler::handle(std::string const& message) {
             handle_entity(&driver_.camera(), value, parameters, false);
         } else if ("entities" == assignee.substr(0, 8)) {
             if ('\"' == index.front() && '\"' == index.back()) {
-                std::string            index_string = index.substr(1, index.size() - 2);
-                scene::entity::Entity* entity       = driver_.scene().entity(index_string);
+                std::string index_string = index.substr(1, index.size() - 2);
+
+                scene::entity::Entity* entity = driver_.scene().entity(index_string);
                 handle_entity(entity, value, parameters, true);
             } else {
-                uint32_t               index_number = std::stoul(index);
-                scene::entity::Entity* entity       = driver_.scene().entity(index_number);
-                handle_entity(entity, value, parameters, true);
+                try {
+                    uint32_t index_number = std::stoul(index);
+
+                    scene::entity::Entity* entity = driver_.scene().entity(index_number);
+                    handle_entity(entity, value, parameters, true);
+                } catch (...) {
+                }
             }
         } else if ("materials" == assignee.substr(0, 9)) {
             if ('\"' == index.front() && '\"' == index.back()) {
-                std::string                index_string = index.substr(1, index.size() - 2);
+                std::string index_string = index.substr(1, index.size() - 2);
+
                 scene::material::Material* material =
                     resource_manager_.get<scene::material::Material>(index_string).get();
                 handle_material(material, value, parameters);

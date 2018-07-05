@@ -6,7 +6,7 @@
 namespace scene::material {
 
 static inline float3 extinction_coefficient(float3 const& color, float distance) {
-    float3 const ca = math::clamp(color, 0.001f, 0.999f);
+    float3 const ca = math::clamp(color, 0.001f, 0.99999f);
 
     float3 const a = math::log(ca);
 
@@ -23,7 +23,8 @@ static inline void attenuation(float3 const& ac, float3 const& ssc, float distan
 
     float3 const pss = 1.f - (factor * factor);
 
-    float3 const mu_a      = mu_t * (1.f - pss);
+    float3 const mu_a = mu_t * (1.f - pss);
+
     absorption_coefficient = mu_a;
     scattering_coefficient = mu_t - mu_a;
 }

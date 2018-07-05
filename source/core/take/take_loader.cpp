@@ -391,7 +391,7 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
     uint32_t       default_min_bounces = 4;
     uint32_t       default_max_bounces = 8;
     Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
-    float          default_path_termination_probability = 0.9f;
+    float          default_path_termination_probability = 0.1f;
     bool           default_caustics                     = true;
 
     for (auto& n : integrator_value.GetObject()) {

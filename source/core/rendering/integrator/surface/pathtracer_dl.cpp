@@ -16,8 +16,6 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
-#include <iostream>
-
 namespace rendering::integrator::surface {
 
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
