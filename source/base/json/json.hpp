@@ -14,9 +14,9 @@
 
 namespace json {
 
-std::unique_ptr<json::Document> parse_insitu(char* buffer, std::string& error);
-std::unique_ptr<json::Document> parse(std::string_view buffer, std::string& error);
-std::unique_ptr<json::Document> parse(std::istream& stream, std::string& error);
+std::unique_ptr<json::Document> parse_insitu(char* buffer);
+std::unique_ptr<json::Document> parse(std::string_view buffer);
+std::unique_ptr<json::Document> parse(std::istream& stream);
 
 bool read_bool(json::Value const& value);
 bool read_bool(json::Value const& value, std::string_view name, bool default_value);

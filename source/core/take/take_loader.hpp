@@ -65,15 +65,14 @@ struct Photon_settings;
 
 class Loader {
   public:
-    static std::unique_ptr<Take> load(std::istream& stream, resource::Manager& manager,
-                                      std::string& error);
+    static std::unique_ptr<Take> load(std::istream& stream, resource::Manager& manager);
 
   private:
     struct Stereoscopic {
         float interpupillary_distance = 0.f;
     };
 
-    static bool load_camera(json::Value const& camera_value, Take& take, std::string& error);
+    static void load_camera(json::Value const& camera_value, Take& take);
 
     static std::unique_ptr<rendering::sensor::Sensor> load_sensor(json::Value const& sensor_value,
                                                                   int2               dimensions);

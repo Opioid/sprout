@@ -118,24 +118,23 @@ void Message_handler::handle_entity(scene::entity::Entity* entity, std::string c
         return;
     }
 
-    std::string error;
-    auto        root = json::parse(parameters, error);
-    if (!root) {
-        logging::error(error);
-        return;
-    }
+    try {
+        auto root = json::parse(parameters);
 
-    if ("parameters" == value) {
-        entity->set_parameters(*root);
-    } else if ("transformation" == value) {
-        math::Transformation t = entity->local_frame_a();
-        json::read_transformation(*root, t);
-        entity->set_transformation(t);
-    } else {
-        return;
-    }
+        if ("parameters" == value) {
+            entity->set_parameters(*root);
+        } else if ("transformation" == value) {
+            math::Transformation t = entity->local_frame_a();
+            json::read_transformation(*root, t);
+            entity->set_transformation(t);
+        } else {
+            return;
+        }
 
-    driver_.schedule_restart(recompile);
+        driver_.schedule_restart(recompile);
+    } catch (const std::exception& e) {
+        logging::error(e.what());
+    }
 }
 
 void Message_handler::handle_material(scene::material::Material* /*material*/,

@@ -28,7 +28,7 @@ endif ()
 
 if (LINUX) 
 	# linux stuff here
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti -fno-exceptions")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti")
 
 	if (${Valgrind})
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse3")
@@ -49,17 +49,9 @@ if (LINUX)
 	# add_compile_options(-Wuseless-cast)
 	# add_compile_options(-Wshadow)
 elseif (MSVC)
-    # set(CMAKE_CXX_STANDARD 17) works for visual studio now,
-    # but the clang code model in QtCreator still gives warnings
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+	# set(CMAKE_CXX_STANDARD 17) doesn't seem to work for visual studio target at the moment
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 
-    if (CMAKE_CXX_FLAGS MATCHES "/EHsc")
-        string(REGEX REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    endif()
-
-    add_definitions(-D_HAS_EXCEPTIONS=0)
-
-    # disable RTTI
 	if (CMAKE_CXX_FLAGS MATCHES "/GR")
 		string(REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     endif()

@@ -16,7 +16,7 @@ std::unique_ptr<std::istream> System::read_stream(std::string const& name,
                                                   std::string&       resolved_name) const {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
-        return nullptr;
+        throw std::runtime_error("Stream \"" + name + "\" could not be opened");
     }
 
     const Type type = query_type(*stream);

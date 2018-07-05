@@ -53,15 +53,8 @@ Material_ptr Provider::load(std::string const& filename, memory::Variant_map con
                             resource::Manager& manager) {
     std::string resolved_name;
     auto        stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
-    if (!stream_pointer) {
-        return nullptr;
-    }
 
-    std::string error;
-    auto        root = json::parse(*stream_pointer, error);
-    if (!root) {
-        return nullptr;
-    }
+    auto root = json::parse(*stream_pointer);
 
     return load(*root, string::parent_directory(resolved_name), manager);
 }
@@ -85,8 +78,7 @@ Material_ptr Provider::load(json::Value const& value, std::string_view mount_fol
                             resource::Manager& manager) {
     json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
     if (value.MemberEnd() == rendering_node) {
-        // error = "Material has no render node";
-        return nullptr;
+        throw std::runtime_error("Material has no render node");
     }
 
     manager.filesystem().push_mount(mount_folder);
@@ -126,8 +118,7 @@ Material_ptr Provider::load(json::Value const& value, std::string_view mount_fol
     manager.filesystem().pop_mount();
 
     if (!material) {
-        // error = "Material is of unknown type";
-        return nullptr;
+        throw std::runtime_error("Material is of unknown type");
     }
 
     material->compile();
@@ -750,8 +741,7 @@ Material_ptr Provider::load_mix(json::Value const& mix_value, resource::Manager&
     }
 
     if (materials.size() < 2) {
-        // error = "Mix material needs 2 child materials";
-        return nullptr;
+        throw std::runtime_error("Mix material needs 2 child materials");
     }
 
     if (!mask.is_valid()) {
