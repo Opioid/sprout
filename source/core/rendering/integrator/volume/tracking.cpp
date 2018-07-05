@@ -13,8 +13,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace rendering::integrator::volume {
 
 // Code for hetereogeneous transmittance from:
@@ -47,6 +45,8 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
         if (auto const tree = material.volume_octree(); tree) {
             math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
+            const float ray_offset = Ray_epsilon / math::length(dir);
+
             float3 w(1.f);
             for (; local_ray.min_t < d;) {
                 if (float mt; tree->intersect_f(local_ray, mt)) {
@@ -54,14 +54,9 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
                                              worker);
                 }
 
-                SOFT_ASSERT(local_ray.max_t >= local_ray.min_t);
+                SOFT_ASSERT(local_ray.max_t  + ray_offset > local_ray.min_t);
 
-                if (local_ray.min_t > local_ray.max_t) {
-                    std::cout << "aha oc" << std::endl;
-                    break;
-                }
-
-                local_ray.min_t = local_ray.max_t + Ray_epsilon;
+                local_ray.min_t = local_ray.max_t + ray_offset;
                 local_ray.max_t = d;
             }
 

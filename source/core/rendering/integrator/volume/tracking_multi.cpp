@@ -18,8 +18,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace rendering::integrator::volume {
 
 Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings)
@@ -174,6 +172,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         if (auto const tree = material.volume_octree(); tree) {
             math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
+            const float ray_offset = Tracking::Ray_epsilon / math::length(dir);
+
             float3 w(1.f);
             for (; local_ray.min_t < d;) {
                 if (float mt; tree->intersect_f(local_ray, mt)) {
@@ -191,14 +191,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     }
                 }
 
-                SOFT_ASSERT(local_ray.max_t >= local_ray.min_t);
+                SOFT_ASSERT(local_ray.max_t  + ray_offset > local_ray.min_t);
 
-                if (local_ray.min_t > local_ray.max_t) {
-                    std::cout << "aha multi" << std::endl;
-                    break;
-                }
-
-                local_ray.min_t = local_ray.max_t + Tracking::Ray_epsilon;
+                local_ray.min_t = local_ray.max_t + ray_offset;
                 local_ray.max_t = d;
             }
 
