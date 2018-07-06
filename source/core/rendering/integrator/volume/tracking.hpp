@@ -46,7 +46,7 @@ class Tracking {
 
     static float3 transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker);
 
-    static bool track(math::Ray const& ray, float mt, Material const& material,
+    static bool track(math::Ray const& ray, float2 minorant_majorant, Material const& material,
                       Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t,
                       float3& w);
 
@@ -57,8 +57,9 @@ class Tracking {
     static float constexpr Ray_epsilon = 5e-4f;
 
   private:
-    static float3 track_transmittance(math::Ray const& ray, float mt, Material const& material,
-                                      Sampler_filter filter, rnd::Generator& rng, Worker& worker);
+    static float3 track_transmittance(math::Ray const& ray, float2 minorant_majorant,
+                                      Material const& material, Sampler_filter filter,
+                                      rnd::Generator& rng, Worker& worker);
 };
 
 }  // namespace integrator::volume

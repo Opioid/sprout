@@ -18,9 +18,10 @@ struct Box {
     int3 bounds[2];
 };
 
-struct Node {
+struct alignas(16) Node {
     int32_t children;
 
+    float minorant_mu_t;
     float majorant_mu_t;
 };
 
@@ -35,7 +36,7 @@ class Gridtree {
 
     bool is_valid() const;
 
-    bool intersect(math::Ray& ray, float& majorant_mu_t) const;
+    bool intersect(math::Ray& ray, float2& minorant_majorant_mu_t) const;
 
   private:
     int32_t num_nodes_;
@@ -62,7 +63,7 @@ class Octree {
 
     bool intersect(math::Ray& ray, float& majorant_mu_t) const;
 
-    bool intersect_f(math::Ray& ray, float& majorant_mu_t) const;
+    bool intersect_f(math::Ray& ray, float2& minorant_majorant_mu_t) const;
 
   private:
     bool intersect(math::Ray& ray, int32_t node_id, Box const& box, float& majorant_mu_t) const;

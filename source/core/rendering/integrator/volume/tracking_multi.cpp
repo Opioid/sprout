@@ -176,9 +176,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
             float3 w(1.f);
             for (; local_ray.min_t < d;) {
-                if (float mt; tree->intersect_f(local_ray, mt)) {
+                if (float2 mi_ma; tree->intersect_f(local_ray, mi_ma)) {
                     if (float t;
-                        Tracking::track(local_ray, mt, material, filter, rng_, worker, t, w)) {
+                        Tracking::track(local_ray, mi_ma, material, filter, rng_, worker, t, w)) {
                         intersection.prop           = interface->prop;
                         intersection.geo.p          = ray.point(t);
                         intersection.geo.uv         = interface->uv;

@@ -55,7 +55,7 @@ bool Gridtree::is_valid() const {
     return nullptr != nodes_;
 }
 
-bool Gridtree::intersect(math::Ray& ray, float& majorant_mu_t) const {
+bool Gridtree::intersect(math::Ray& ray, float2& minorant_majorant_mu_t) const {
     math::AABB box(float3(0.f), float3(1.f));
 
     float3 p = ray.point(ray.min_t);
@@ -126,7 +126,8 @@ bool Gridtree::intersect(math::Ray& ray, float& majorant_mu_t) const {
         return false;
     }
 
-    majorant_mu_t = nodes_[index].majorant_mu_t;
+    minorant_majorant_mu_t[0] = nodes_[index].minorant_mu_t;
+    minorant_majorant_mu_t[1] = nodes_[index].majorant_mu_t;
 
     return true;
 }
@@ -235,14 +236,14 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
     return true;
 }
 
-bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
+bool Octree::intersect_f(math::Ray& ray, float2& minorant_majorant_mu_t) const {
     //	{
     //		Box const box{{int3(0), dimensions_}};
 
     //		return intersect(ray, 0, box, majorant_mu_t);
     //	}
 
-    return gridtree_.intersect(ray, majorant_mu_t);
+    return gridtree_.intersect(ray, minorant_majorant_mu_t);
 
     math::AABB box(float3(0.f), float3(1.f));
 
@@ -314,7 +315,7 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
         return false;
     }
 
-    majorant_mu_t = nodes_[index].majorant_mu_t;
+    minorant_majorant_mu_t = nodes_[index].majorant_mu_t;
 
     return true;
 }

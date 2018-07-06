@@ -49,9 +49,9 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
             float3 w(1.f);
             for (; local_ray.min_t < d;) {
-                if (float mt; tree->intersect_f(local_ray, mt)) {
-                    w *= track_transmittance(local_ray, mt, material, Sampler_filter::Nearest, rng,
-                                             worker);
+                if (float2 mi_ma; tree->intersect_f(local_ray, mi_ma)) {
+                    w *= track_transmittance(local_ray, mi_ma, material, Sampler_filter::Nearest,
+                                             rng, worker);
                 }
 
                 SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
@@ -116,9 +116,11 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
     return attenuation(d - ray.min_t, mu_t);
 }
 
-bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
+bool Tracking::track(math::Ray const& ray, float2 minorant_majorant, Material const& material,
                      Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                      float3& w) {
+    float const mt = minorant_majorant[1];
+
     if (mt < Min_mt) {
         return false;
     }
@@ -173,9 +175,17 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
     }
 }
 
-float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material const& material,
-                                     Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
+float3 Tracking::track_transmittance(math::Ray const& ray, float2 minorant_majorant,
+                                     Material const& material, Sampler_filter filter,
+                                     rnd::Generator& rng, Worker& worker) {
+    if (minorant_majorant[0] == minorant_majorant[1]) {
+        // Homogeneous segment
+        return attenuation(ray.max_t - ray.min_t, float3(minorant_majorant[0]));
+    }
+
     float3 w(1.f);
+
+    float const mt = minorant_majorant[1];
 
     if (mt < Min_mt) {
         return w;
