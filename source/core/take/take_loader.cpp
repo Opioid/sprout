@@ -107,8 +107,9 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
         if (take->exporters.empty()) {
             auto const d = take->view.camera->sensor().dimensions();
 
-            std::unique_ptr<image::Writer> writer = std::make_unique<image::encoding::png::Writer>(
-                d);
+            using namespace image;
+
+            std::unique_ptr<Writer> writer = std::make_unique<encoding::png::Writer>(d);
 
             take->exporters.push_back(
                 std::make_unique<exporting::Image_sequence>("output_", std::move(writer)));
@@ -673,7 +674,7 @@ std::vector<std::unique_ptr<exporting::Sink>> Loader::load_exporters(
             std::unique_ptr<image::Writer> writer;
 
             if ("RGBE" == format) {
-                writer = std::unique_ptr<image::encoding::rgbe::Writer>();
+                writer = std::make_unique<image::encoding::rgbe::Writer>();
             } else {
                 bool const transparent_sensor = camera.sensor().has_alpha_transparency();
                 if (view.pipeline.has_alpha_transparency(transparent_sensor)) {

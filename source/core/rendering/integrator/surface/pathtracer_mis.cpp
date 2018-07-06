@@ -197,10 +197,6 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
                 break;
             }
         }
-
-//        if (math::all_lesser(throughput, 0.9f)) {
-//            break;
-//        }
     }
 
     return result;
