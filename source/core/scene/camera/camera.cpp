@@ -80,7 +80,7 @@ rendering::sensor::Sensor& Camera::sensor() const {
     return *sensor_;
 }
 
-void Camera::set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor) {
+void Camera::set_sensor(std::unique_ptr<Sensor> sensor) {
     sensor_ = std::move(sensor);
 }
 

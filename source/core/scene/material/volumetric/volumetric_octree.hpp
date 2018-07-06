@@ -19,7 +19,7 @@ struct Box {
 };
 
 struct Node {
-    uint32_t children;
+    int32_t children;
 
     float majorant_mu_t;
 };
@@ -29,7 +29,7 @@ class Gridtree {
     Gridtree();
     ~Gridtree();
 
-    Node* allocate_nodes(uint32_t num_nodes);
+    Node* allocate_nodes(int32_t num_nodes);
 
     void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions, int3 const& num_cells);
 
@@ -38,8 +38,8 @@ class Gridtree {
     bool intersect(math::Ray& ray, float& majorant_mu_t) const;
 
   private:
-    uint32_t num_nodes_;
-    Node*    nodes_;
+    int32_t num_nodes_;
+    Node*   nodes_;
 
     int3 dimensions_;
     int3 num_cells_;
@@ -54,7 +54,7 @@ class Octree {
     Octree();
     ~Octree();
 
-    Node* allocate_nodes(uint32_t num_nodes);
+    Node* allocate_nodes(int32_t num_nodes);
 
     void set_dimensions(int3 const& dimensions);
 
@@ -65,13 +65,13 @@ class Octree {
     bool intersect_f(math::Ray& ray, float& majorant_mu_t) const;
 
   private:
-    bool intersect(math::Ray& ray, uint32_t node_id, Box const& box, float& majorant_mu_t) const;
+    bool intersect(math::Ray& ray, int32_t node_id, Box const& box, float& majorant_mu_t) const;
 
     void intersect_children(math::Ray& ray, Node const& node, Box const& box,
                             float& majorant_mu_t) const;
 
-    uint32_t num_nodes_;
-    Node*    nodes_;
+    int32_t num_nodes_;
+    Node*   nodes_;
 
     int3 dimensions_;
 

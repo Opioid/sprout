@@ -54,7 +54,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
                                              worker);
                 }
 
-                SOFT_ASSERT(local_ray.max_t  + ray_offset > local_ray.min_t);
+                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
 
                 local_ray.min_t = local_ray.max_t + ray_offset;
                 local_ray.max_t = d;
@@ -125,6 +125,8 @@ bool Tracking::track(math::Ray const& ray, float mt, Material const& material,
 
     float3 lw = w;
 
+    SOFT_ASSERT(math::all_finite(lw));
+
     float const imt = 1.f / mt;
 
     float const d = ray.max_t;
@@ -175,8 +177,6 @@ float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material co
                                      Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
     float3 w(1.f);
 
-    SOFT_ASSERT(mt >= 0.f);
-
     if (mt < Min_mt) {
         return w;
     }
@@ -203,6 +203,8 @@ float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material co
         float3 const mu_n = float3(mt) - mu_t;
 
         w *= imt * mu_n;
+
+        SOFT_ASSERT(math::all_finite(w));
     }
 }
 

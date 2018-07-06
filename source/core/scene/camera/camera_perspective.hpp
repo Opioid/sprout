@@ -31,7 +31,7 @@ class Perspective : public Camera {
 
     virtual float pixel_solid_angle() const override final;
 
-    virtual bool generate_ray(sampler::Camera_sample const& sample, uint32_t view,
+    virtual bool generate_ray(Camera_sample const& sample, uint32_t view,
                               scene::Ray& ray) const override final;
 
     void set_fov(float fov);

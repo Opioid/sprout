@@ -191,7 +191,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     }
                 }
 
-                SOFT_ASSERT(local_ray.max_t  + ray_offset > local_ray.min_t);
+                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
 
                 local_ray.min_t = local_ray.max_t + ray_offset;
                 local_ray.max_t = d;

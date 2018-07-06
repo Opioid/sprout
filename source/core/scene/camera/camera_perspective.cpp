@@ -33,8 +33,8 @@ float Perspective::pixel_solid_angle() const {
     return fov_ / static_cast<float>(resolution_[0]);
 }
 
-bool Perspective::generate_ray(sampler::Camera_sample const& sample, uint32_t /*view*/,
-                               scene::Ray&                   ray) const {
+bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
+                               scene::Ray&          ray) const {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -54,8 +54,8 @@ bool Perspective::generate_ray(sampler::Camera_sample const& sample, uint32_t /*
         origin = float3::identity();
     }
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(sample.time, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(sample.time, temp);
 
     float3 const origin_w = math::transform_point(origin, transformation.object_to_world);
 
@@ -125,8 +125,8 @@ void Perspective::update_focus(Worker& worker) {
         float3 direction = left_top_ + focus_.point[0] * d_x_ + focus_.point[1] * d_y_;
         direction        = math::normalize(direction);
 
-        entity::Composed_transformation temp;
-        auto const&                     transformation = transformation_at(0.f, temp);
+        Transformation temp;
+        auto const&    transformation = transformation_at(0.f, temp);
 
         scene::Ray ray(transformation.position,
                        math::transform_vector(direction, transformation.object_to_world), 0.f,

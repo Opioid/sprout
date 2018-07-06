@@ -69,7 +69,7 @@ class Entity {
 
     flags::Flags<Property> properties_;
 
-    Composed_transformation world_transformation_;
+    Transformation world_transformation_;
 
     math::Transformation world_frame_a_;
     math::Transformation world_frame_b_;

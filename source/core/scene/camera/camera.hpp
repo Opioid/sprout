@@ -26,6 +26,9 @@ namespace camera {
 
 class Camera : public entity::Entity {
   public:
+    using Camera_sample = sampler::Camera_sample;
+    using Sensor        = rendering::sensor::Sensor;
+
     Camera(int2 resolution);
     virtual ~Camera() override;
 
@@ -39,15 +42,14 @@ class Camera : public entity::Entity {
 
     void update(Scene const& scene, Worker& worker);
 
-    virtual bool generate_ray(sampler::Camera_sample const& sample, uint32_t view,
-                              Ray& ray) const = 0;
+    virtual bool generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const = 0;
 
     virtual void set_parameters(json::Value const& parameters) override final;
 
     int2 resolution() const;
 
-    rendering::sensor::Sensor& sensor() const;
-    void                       set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor);
+    Sensor& sensor() const;
+    void    set_sensor(std::unique_ptr<Sensor> sensor);
 
     prop::Interface_stack const& interface_stack() const;
 
@@ -68,7 +70,7 @@ class Camera : public entity::Entity {
 
     int2 resolution_;
 
-    std::unique_ptr<rendering::sensor::Sensor> sensor_;
+    std::unique_ptr<Sensor> sensor_;
 
     prop::Interface_stack interface_stack_;
     prop::Interface_stack interfaces_;

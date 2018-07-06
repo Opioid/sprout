@@ -17,12 +17,12 @@ Gridtree::~Gridtree() {
     memory::free_aligned(nodes_);
 }
 
-Node* Gridtree::allocate_nodes(uint32_t num_nodes) {
+Node* Gridtree::allocate_nodes(int32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
         memory::free_aligned(nodes_);
-        nodes_ = memory::allocate_aligned<Node>(num_nodes);
+        nodes_ = memory::allocate_aligned<Node>(static_cast<size_t>(num_nodes));
     }
 
     return nodes_;
@@ -60,7 +60,7 @@ bool Gridtree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 
     float3 p = ray.point(ray.min_t);
 
-    if (math::any_lesser_equal(p, 0.f) || math::any_greater_equal(p, 1.f)) {
+    if (math::any_lesser(p, 0.f) || math::any_greater(p, 1.f)) {
         float hit_t;
         if (!box.intersect_p(ray, hit_t)) {
             return false;
@@ -76,13 +76,13 @@ bool Gridtree::intersect(math::Ray& ray, float& majorant_mu_t) const {
         return false;
     }
 
-    uint32_t index = v[2] * (num_cells_[0] * num_cells_[1]) + v[1] * num_cells_[0] + v[0];
+    int32_t index = v[2] * (num_cells_[0] * num_cells_[1]) + v[1] * num_cells_[0] + v[0];
 
     box.bounds[0] = float3(v) * cell_dimensions_;
     box.bounds[1] = math::min(box.bounds[0] + cell_dimensions_, 1.f);
 
     for (;;) {
-        uint32_t const children = nodes_[index].children;
+        int32_t const children = nodes_[index].children;
 
         if (0 == children) {
             break;
@@ -121,14 +121,7 @@ bool Gridtree::intersect(math::Ray& ray, float& majorant_mu_t) const {
         if (ray.max_t > hit_t) {
             ray.max_t = hit_t;
         }
-
-        //	std::cout << box.bounds[0] << " ";
-        //	std::cout << p << std::endl;
     } else {
-        //	std::cout << "min: " << box.bounds[0] << std::endl;
-        //	std::cout << "max: " << box.bounds[1] << std::endl;
-        //	std::cout << "p: " << p << std::endl;
-
         ray.max_t = ray.min_t;
         return false;
     }
@@ -144,12 +137,12 @@ Octree::~Octree() {
     memory::free_aligned(nodes_);
 }
 
-Node* Octree::allocate_nodes(uint32_t num_nodes) {
+Node* Octree::allocate_nodes(int32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
         memory::free_aligned(nodes_);
-        nodes_ = memory::allocate_aligned<Node>(num_nodes);
+        nodes_ = memory::allocate_aligned<Node>(static_cast<size_t>(num_nodes));
     }
 
     return nodes_;
@@ -161,7 +154,7 @@ void Octree::set_dimensions(int3 const& dimensions) {
 }
 
 bool Octree::is_valid() const {
-    return nullptr != nodes_;
+    return gridtree_.is_valid();  // nullptr != nodes_;
 }
 
 bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
@@ -185,10 +178,10 @@ bool Octree::intersect(math::Ray& ray, float& majorant_mu_t) const {
 
     Box box{{int3(0), dimensions_}};
 
-    uint32_t index = 0;
+    int32_t index = 0;
 
     for (uint32_t l = 0;; ++l) {
-        uint32_t const children = nodes_[index].children;
+        int32_t const children = nodes_[index].children;
 
         if (0 == children) {
             break;
@@ -249,13 +242,13 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
     //		return intersect(ray, 0, box, majorant_mu_t);
     //	}
 
-    //	return gridtree_.intersect(ray, majorant_mu_t);
+    return gridtree_.intersect(ray, majorant_mu_t);
 
     math::AABB box(float3(0.f), float3(1.f));
 
     float3 p = ray.point(ray.min_t);
 
-    if (math::any_lesser_equal(p, 0.f) || math::any_greater_equal(p, 1.f)) {
+    if (math::any_lesser(p, 0.f) || math::any_greater(p, 1.f)) {
         float hit_t;
         if (!box.intersect_p(ray, hit_t)) {
             return false;
@@ -265,10 +258,10 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
         p         = ray.point(ray.min_t);
     }
 
-    uint32_t index = 0;
+    int32_t index = 0;
 
     for (uint32_t l = 0;; ++l) {
-        uint32_t const children = nodes_[index].children;
+        int32_t const children = nodes_[index].children;
 
         if (0 == children) {
             break;
@@ -326,7 +319,7 @@ bool Octree::intersect_f(math::Ray& ray, float& majorant_mu_t) const {
     return true;
 }
 
-bool Octree::intersect(math::Ray& ray, uint32_t node_id, Box const& box,
+bool Octree::intersect(math::Ray& ray, int32_t node_id, Box const& box,
                        float& majorant_mu_t) const {
     float3 const min = inv_2_dimensions_ * float3(box.bounds[0]) - float3(1.f);
     float3 const max = inv_2_dimensions_ * float3(box.bounds[1]) - float3(1.f);
