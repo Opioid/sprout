@@ -40,8 +40,8 @@ float Grid::majorant_mu_t() const {
     return majorant_mu_t_;
 }
 
-Octree const* Grid::volume_octree() const {
-    return tree_.is_valid() ? &tree_ : nullptr;
+Gridtree const* Grid::volume_tree() const {
+    return &tree_;
 }
 
 bool Grid::is_heterogeneous_volume() const {

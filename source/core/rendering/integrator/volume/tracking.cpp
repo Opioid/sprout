@@ -42,78 +42,34 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
         float3 const origin = shape->object_to_texture_point(local_origin);
         float3 const dir    = shape->object_to_texture_vector(local_dir);
 
-        if (auto const tree = material.volume_octree(); tree) {
-            math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
+        auto const& tree = *material.volume_tree();
 
-            const float ray_offset = Ray_epsilon / math::length(dir);
+        math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
-            float3 w(1.f);
-            for (; local_ray.min_t < d;) {
-                if (float2 mi_ma; tree->intersect_f(local_ray, mi_ma)) {
-                    w *= track_transmittance(local_ray, mi_ma, material, Sampler_filter::Nearest,
-                                             rng, worker);
-                }
-
-                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
-
-                local_ray.min_t = local_ray.max_t + ray_offset;
-                local_ray.max_t = d;
-            }
-
-            /*	for (; local_ray.min_t < d;) {
-                            float mt;
-                            if (!tree->intersect_f(local_ray, mt)) {
-                                    break;
-                            }
-
-                            w *= track(local_ray, mt, material, Sampler_filter::Nearest, rng,
-               worker);
-
-                            local_ray.min_t = local_ray.max_t + 0.00001f;
-                            local_ray.max_t = d;
-                    }*/
-
-            return w;
-        }
+        const float ray_offset = Ray_epsilon / math::length(dir);
 
         float3 w(1.f);
-
-        float const mt = material.majorant_mu_t();
-
-        if (mt < Min_mt) {
-            return w;
-        }
-
-        float const imt = 1.f / mt;
-
-        // Completely arbitray limit
-        uint32_t i = max_iterations_;
-        for (float t = ray.min_t; i > 0; --i) {
-            float const r0 = rng.random_float();
-            t -= std::log(1.f - r0) * imt;
-            if (t > d) {
-                return w;
+        for (; local_ray.min_t < d;) {
+            if (float2 mi_ma; tree.intersect(local_ray, mi_ma)) {
+                w *= track_transmittance(local_ray, mi_ma, material, Sampler_filter::Nearest, rng,
+                                         worker);
             }
 
-            float3 const uvw = shape->object_to_texture_point(local_origin + t * local_dir);
+            SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
 
-            auto const mu = material.collision_coefficients(uvw, Sampler_filter::Nearest, worker);
-
-            float3 const mu_t = mu.a + mu.s;
-
-            float3 const mu_n = float3(mt) - mu_t;
-
-            w *= imt * mu_n;
+            local_ray.min_t = local_ray.max_t + ray_offset;
+            local_ray.max_t = d;
         }
 
         return w;
+    } else {
+        auto const mu = material.collision_coefficients(interface->uv, Sampler_filter::Nearest,
+                                                        worker);
+
+        float3 const mu_t = mu.a + mu.s;
+
+        return attenuation(d - ray.min_t, mu_t);
     }
-
-    auto const mu = material.collision_coefficients(interface->uv, Sampler_filter::Nearest, worker);
-
-    float3 const mu_t = mu.a + mu.s;
-
-    return attenuation(d - ray.min_t, mu_t);
 }
 
 bool Tracking::track(math::Ray const& ray, float2 minorant_majorant, Material const& material,
@@ -178,18 +134,18 @@ bool Tracking::track(math::Ray const& ray, float2 minorant_majorant, Material co
 float3 Tracking::track_transmittance(math::Ray const& ray, float2 minorant_majorant,
                                      Material const& material, Sampler_filter filter,
                                      rnd::Generator& rng, Worker& worker) {
+    float const mt = minorant_majorant[1];
+
+    if (mt < Min_mt) {
+        return float3(1.f);
+    }
+
     if (minorant_majorant[0] == minorant_majorant[1]) {
         // Homogeneous segment
         return attenuation(ray.max_t - ray.min_t, float3(minorant_majorant[0]));
     }
 
     float3 w(1.f);
-
-    float const mt = minorant_majorant[1];
-
-    if (mt < Min_mt) {
-        return w;
-    }
 
     float const imt = 1.f / mt;
 

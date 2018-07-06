@@ -12,7 +12,7 @@ namespace scene::material::volumetric {
 
 class Octree_builder {
   public:
-    void build(Octree& tree, image::texture::Texture const& texture, float2 min_max_extinction);
+    void build(Gridtree& tree, image::texture::Texture const& texture, float2 min_max_extinction);
 
   private:
     struct Build_node {

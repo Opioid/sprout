@@ -13,73 +13,46 @@ Octree_builder::Build_node::~Build_node() {
     }
 }
 
-void Octree_builder::build(Octree& tree, image::texture::Texture const& texture,
+void Octree_builder::build(Gridtree& tree, image::texture::Texture const& texture,
                            float2 min_max_extinction) {
     int3 const d = texture.dimensions_3();
 
-    {
-        Box const box{{int3(0), d}};
+    int32_t const cd   = 36;
+    int3 const    cell = math::min(d, cd);
 
-        num_nodes_ = 1;
+    int3 num_cells = d / cell;
 
-        Build_node root;
+    num_cells += math::min(d - num_cells * cell, 1);
 
-        static uint32_t constexpr max_depth = 6;
-        split(&root, box, texture, min_max_extinction, 0, max_depth);
+    int32_t const cell_len = num_cells[0] * num_cells[1] * num_cells[2];
 
-        tree.set_dimensions(d);
+    num_nodes_ = cell_len;
 
-        std::cout << num_nodes_ << std::endl;
+    Build_node* grid = new Build_node[static_cast<size_t>(cell_len)];
 
-        nodes_ = tree.allocate_nodes(num_nodes_);
-
-        int32_t next = 1;
-        serialize(&root, 0, next);
-    }
-
-    // Gridtree experiment
-    {
-        int32_t const cd   = 36;
-        int3 const    cell = math::min(d, cd);
-
-        int3 num_cells = d / cell;
-
-        num_cells += math::min(d - num_cells * cell, 1);
-
-        int32_t const cell_len = num_cells[0] * num_cells[1] * num_cells[2];
-
-        num_nodes_ = cell_len;
-
-        Build_node* grid = new Build_node[static_cast<size_t>(cell_len)];
-
-        Build_node* node = grid;
-        for (int32_t z = 0; z < num_cells[2]; ++z) {
-            for (int32_t y = 0; y < num_cells[1]; ++y) {
-                for (int32_t x = 0; x < num_cells[0]; ++x, ++node) {
-                    int3 const min = int3(x, y, z) * cell;
-                    int3 const max = math::min(min + cell, d);
-                    Box const  box{{min, max}};
-                    split(node, box, texture, min_max_extinction, 0, 2);
-                }
+    Build_node* node = grid;
+    for (int32_t z = 0; z < num_cells[2]; ++z) {
+        for (int32_t y = 0; y < num_cells[1]; ++y) {
+            for (int32_t x = 0; x < num_cells[0]; ++x, ++node) {
+                int3 const min = int3(x, y, z) * cell;
+                int3 const max = math::min(min + cell, d);
+                Box const  box{{min, max}};
+                split(node, box, texture, min_max_extinction, 0, 2);
             }
         }
-
-        std::cout << num_nodes_ << std::endl;
-
-        tree.gridtree_.set_dimensions(d, cell, num_cells);
-
-        nodes_ = tree.gridtree_.allocate_nodes(num_nodes_);
-
-        int32_t next = cell_len;
-
-        for (int32_t i = 0; i < cell_len; ++i) {
-            serialize(&grid[i], i, next);
-        }
-
-        delete[] grid;
     }
 
-    return;
+    tree.set_dimensions(d, cell, num_cells);
+
+    nodes_ = tree.allocate_nodes(num_nodes_);
+
+    int32_t next = cell_len;
+
+    for (int32_t i = 0; i < cell_len; ++i) {
+        serialize(&grid[i], i, next);
+    }
+
+    delete[] grid;
 }
 
 void Octree_builder::split(Build_node* node, Box const& box, image::texture::Texture const& texture,

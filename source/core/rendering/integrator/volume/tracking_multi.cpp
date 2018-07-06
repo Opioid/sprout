@@ -169,123 +169,37 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         float3 const origin = shape->object_to_texture_point(local_origin);
         float3 const dir    = shape->object_to_texture_vector(local_dir);
 
-        if (auto const tree = material.volume_octree(); tree) {
-            math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
+        auto const& tree = *material.volume_tree();
+        math::Ray   local_ray(origin, dir, ray.min_t, ray.max_t);
 
-            const float ray_offset = Tracking::Ray_epsilon / math::length(dir);
-
-            float3 w(1.f);
-            for (; local_ray.min_t < d;) {
-                if (float2 mi_ma; tree->intersect_f(local_ray, mi_ma)) {
-                    if (float t;
-                        Tracking::track(local_ray, mi_ma, material, filter, rng_, worker, t, w)) {
-                        intersection.prop           = interface->prop;
-                        intersection.geo.p          = ray.point(t);
-                        intersection.geo.uv         = interface->uv;
-                        intersection.geo.part       = interface->part;
-                        intersection.geo.subsurface = true;
-
-                        li            = float3(0.f);
-                        transmittance = w;
-                        return true;
-                    }
-                }
-
-                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
-
-                local_ray.min_t = local_ray.max_t + ray_offset;
-                local_ray.max_t = d;
-            }
-
-            /*	for (; local_ray.min_t < d;) {
-                            float mt;
-                            if (!tree->intersect_f(local_ray, mt)) {
-                                    break;
-                            }
-
-                            if (float t; Tracking::track(local_ray, mt, material, filter,
-                                    rng_, worker, t, w)) {
-                                    intersection.prop = interface->prop;
-                                    intersection.geo.p = ray.point(t);
-                                    intersection.geo.uv = interface->uv;
-                                    intersection.geo.part = interface->part;
-                                    intersection.geo.subsurface = true;
-
-                                    li = float3(0.f);
-                                    transmittance = w;
-                                    return true;
-                            }
-
-                            local_ray.min_t = local_ray.max_t + 0.00001f;
-                            local_ray.max_t = d;
-                    }*/
-
-            li            = float3(0.f);
-            transmittance = w;
-            return true;
-        }
-
-        float const mt = material.majorant_mu_t();
+        const float ray_offset = Tracking::Ray_epsilon / math::length(dir);
 
         float3 w(1.f);
+        for (; local_ray.min_t < d;) {
+            if (float2 mi_ma; tree.intersect(local_ray, mi_ma)) {
+                if (float t;
+                    Tracking::track(local_ray, mi_ma, material, filter, rng_, worker, t, w)) {
+                    intersection.prop           = interface->prop;
+                    intersection.geo.p          = ray.point(t);
+                    intersection.geo.uv         = interface->uv;
+                    intersection.geo.part       = interface->part;
+                    intersection.geo.subsurface = true;
 
-        uint32_t i = Tracking::max_iterations_;
-        for (float t = ray.min_t;; --i) {
-            //	SOFT_ASSERT(i < 1024*1024);
-
-            float const r0 = rng_.random_float();
-            t -= std::log(1.f - r0) / mt;
-            if (t > d || 0 == i) {
-                li            = float3(0.f);
-                transmittance = w;
-                //	weight = float3(1.f);
-                return true;
+                    li            = float3(0.f);
+                    transmittance = w;
+                    return true;
+                }
             }
 
-            float3 const uvw = shape->object_to_texture_point(local_origin + t * local_dir);
+            SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
 
-            auto const mu = material.collision_coefficients(uvw, filter, worker);
-
-            float3 const mu_t = mu.a + mu.s;
-
-            float3 const mu_n = float3(mt) - mu_t;
-
-            //			float ps, pn;
-            //			float3 ws, wn;
-            //			avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
-
-            float const ms = math::average(mu.s * w);
-            float const mn = math::average(mu_n * w);
-            float const c  = 1.f / (ms + mn);
-
-            float const ps = ms * c;
-            float const pn = mn * c;
-
-            float const r1 = rng_.random_float();
-            if (r1 <= 1.f - pn && ps > 0.f) {
-                intersection.prop           = interface->prop;
-                intersection.geo.p          = ray.point(t);
-                intersection.geo.uv         = interface->uv;
-                intersection.geo.part       = interface->part;
-                intersection.geo.subsurface = true;
-
-                float3 const ws = mu.s / (mt * ps);
-
-                SOFT_ASSERT(math::all_finite(ws));
-
-                li = float3(0.f);
-                //	transmittance = float3(1.f);
-                //	weight = w * ws;
-                transmittance = w * ws;
-                return true;
-            } else {
-                float3 const wn = mu_n / (mt * pn);
-
-                SOFT_ASSERT(math::all_finite(wn));
-
-                w *= wn;
-            }
+            local_ray.min_t = local_ray.max_t + ray_offset;
+            local_ray.max_t = d;
         }
+
+        li            = float3(0.f);
+        transmittance = w;
+        return true;
     } else {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 

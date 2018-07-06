@@ -44,7 +44,7 @@ class Material_subsurface final : public Material_base {
 
     virtual float majorant_mu_t() const override final;
 
-    virtual volumetric::Octree const* volume_octree() const override final;
+    virtual volumetric::Gridtree const* volume_tree() const override final;
 
     virtual bool is_heterogeneous_volume() const override final;
 
@@ -64,7 +64,7 @@ class Material_subsurface final : public Material_base {
     float  attenuation_distance_;
     float  majorant_mu_t_;
 
-    volumetric::Octree tree_;
+    volumetric::Gridtree tree_;
 
     Sample_subsurface::IOR sior_;
 };

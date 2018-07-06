@@ -17,7 +17,7 @@ class Grid final : public Density {
 
     virtual float majorant_mu_t() const override final;
 
-    virtual Octree const* volume_octree() const override final;
+    virtual Gridtree const* volume_tree() const override final;
 
     virtual bool is_heterogeneous_volume() const override final;
 
@@ -31,7 +31,7 @@ class Grid final : public Density {
 
     float majorant_mu_t_;
 
-    Octree tree_;
+    Gridtree tree_;
 };
 
 class Emission_grid final : public Material {

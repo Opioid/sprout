@@ -178,7 +178,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
         Transformation temp;
         auto const&    transformation = interface->prop->transformation_at(ray.time, temp);
 
-        if (auto const tree = material.volume_octree(); tree) {
+        if (auto const tree = material.volume_tree(); tree) {
             float3 const local_origin = transformation.world_to_object_point(ray.origin);
             float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
@@ -189,7 +189,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
 
             float3 w(1.f);
             for (; local_ray.min_t < d;) {
-                if (float2 mi_ma; tree->intersect_f(local_ray, mi_ma)) {
+                if (float2 mi_ma; tree->intersect(local_ray, mi_ma)) {
                     if (float t;
                         Tracking::track(local_ray, mi_ma, material, filter, rng_, worker, t, w)) {
                         li            = w * direct_light(ray, ray.point(t), intersection, worker);

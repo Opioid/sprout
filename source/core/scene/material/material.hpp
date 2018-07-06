@@ -43,7 +43,7 @@ class Shape;
 namespace material {
 
 namespace volumetric {
-class Octree;
+class Gridtree;
 }
 
 class Sample;
@@ -107,7 +107,7 @@ class Material {
 
     virtual float majorant_mu_t() const;
 
-    virtual volumetric::Octree const* volume_octree() const;
+    virtual volumetric::Gridtree const* volume_tree() const;
 
     virtual bool is_heterogeneous_volume() const;
     virtual bool is_scattering_volume() const;

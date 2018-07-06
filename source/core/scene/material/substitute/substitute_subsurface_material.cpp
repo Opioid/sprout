@@ -34,12 +34,13 @@ void Material_subsurface::compile() {
 
         float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-        float const max_extinction = math::max_component(extinction_coefficient);
+        float2 const min_max_extinction(math::min_component(extinction_coefficient),
+                                        math::max_component(extinction_coefficient));
 
-        majorant_mu_t_ = max_density * max_extinction;
+        majorant_mu_t_ = max_density * min_max_extinction[1];
 
         volumetric::Octree_builder builder;
-        builder.build(tree_, texture, max_extinction);
+        builder.build(tree_, texture, min_max_extinction);
     }
 
     //	attenuation(float3(0.25f), attenuation_distance_,
@@ -167,7 +168,7 @@ float Material_subsurface::majorant_mu_t() const {
     return majorant_mu_t_;
 }
 
-volumetric::Octree const* Material_subsurface::volume_octree() const {
+volumetric::Gridtree const* Material_subsurface::volume_tree() const {
     //	return nullptr;
     return &tree_;
 }
