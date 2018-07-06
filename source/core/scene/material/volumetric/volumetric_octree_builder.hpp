@@ -12,7 +12,9 @@ namespace scene::material::volumetric {
 
 class Octree_builder {
   public:
-    void build(Gridtree& tree, image::texture::Texture const& texture, float2 min_max_extinction);
+    using Texture = image::texture::Texture;
+
+    void build(Gridtree& tree, Texture const& texture, float2 min_max_extinction);
 
   private:
     struct Build_node {
@@ -24,8 +26,8 @@ class Octree_builder {
         float majorant_mu_t;
     };
 
-    void split(Build_node* node, Box const& box, image::texture::Texture const& texture,
-               float2 min_max_extinction, uint32_t depth, uint32_t max_depth);
+    void split(Build_node* node, Box const& box, Texture const& texture, float2 min_max_extinction,
+               uint32_t depth, uint32_t max_depth);
 
     void serialize(Build_node* node, int32_t current, int32_t& next);
 

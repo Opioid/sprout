@@ -2,9 +2,6 @@
 #include "base/math/vector3.inl"
 #include "image/texture/texture.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace scene::material::volumetric {
 
 Octree_builder::Build_node::~Build_node() {
@@ -13,12 +10,11 @@ Octree_builder::Build_node::~Build_node() {
     }
 }
 
-void Octree_builder::build(Gridtree& tree, image::texture::Texture const& texture,
-                           float2 min_max_extinction) {
-    int3 const d = texture.dimensions_3();
+void Octree_builder::build(Gridtree& tree, Texture const& texture, float2 min_max_extinction) {
+    static int32_t constexpr cell_max_dimension = 36;
 
-    int32_t const cd   = 36;
-    int3 const    cell = math::min(d, cd);
+    int3 const d    = texture.dimensions_3();
+    int3 const cell = math::min(d, cell_max_dimension);
 
     int3 num_cells = d / cell;
 
@@ -55,7 +51,7 @@ void Octree_builder::build(Gridtree& tree, image::texture::Texture const& textur
     delete[] grid;
 }
 
-void Octree_builder::split(Build_node* node, Box const& box, image::texture::Texture const& texture,
+void Octree_builder::split(Build_node* node, Box const& box, Texture const& texture,
                            float2 min_max_extinction, uint32_t depth, uint32_t max_depth) {
     // Include 1 additional voxel on each border to account for filtering
     int3 const minb = math::max(box.bounds[0] - 1, 0);
@@ -99,10 +95,6 @@ void Octree_builder::split(Build_node* node, Box const& box, image::texture::Tex
         for (uint32_t i = 0; i < 8; ++i) {
             node->children[i] = nullptr;
         }
-
-        //        if (min_density == max_density) {
-        //            std::cout << min_density << std::endl;
-        //        }
 
         return;
     }
