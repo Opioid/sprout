@@ -204,6 +204,11 @@ float3 Tracking::track_transmittance(math::Ray const& ray, float mt, Material co
 
         w *= imt * mu_n;
 
+        // TODO: employ russian roulette instead of just aborting
+        if (math::all_lesser(w, 0.0001f)) {
+            return float3::identity();
+        }
+
         SOFT_ASSERT(math::all_finite(w));
     }
 }
