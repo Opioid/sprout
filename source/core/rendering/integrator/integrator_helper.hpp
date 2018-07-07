@@ -6,6 +6,10 @@
 
 namespace rendering {
 
+static inline float attenuation(float distance, float c) {
+    return math::exp(-distance * c);
+}
+
 static inline float3 attenuation(float distance, f_float3 c) {
     return math::exp(-distance * c);
 }
