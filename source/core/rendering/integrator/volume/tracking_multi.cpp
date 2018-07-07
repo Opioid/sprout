@@ -169,10 +169,11 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         float3 const origin = shape->object_to_texture_point(local_origin);
         float3 const dir    = shape->object_to_texture_vector(local_dir);
 
-        auto const& tree = *material.volume_tree();
-        math::Ray   local_ray(origin, dir, ray.min_t, ray.max_t);
+        math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
         const float ray_offset = Tracking::Ray_epsilon / math::length(dir);
+
+        auto const& tree = *material.volume_tree();
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {

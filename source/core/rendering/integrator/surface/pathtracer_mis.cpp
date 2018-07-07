@@ -240,8 +240,9 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
         result *= settings_.num_light_samples_reciprocal;
     } else {
-        auto const& lights       = worker.scene().lights();
         float const light_weight = num_lights_reciprocal_;
+
+        auto const& lights = worker.scene().lights();
         for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
             auto const& light = *lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {
