@@ -74,6 +74,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
     bool primary_ray       = true;
     bool treat_as_singular = true;
+    bool is_translucent = false;
 
     float3 throughput(1.f);
     float3 result(0.f);
@@ -131,7 +132,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
             result += worker.photon_li(intersection.geo.p, material_sample);
         }
 
-        bool const is_translucent = material_sample.is_translucent();
+
 
         if (0.f == ray.wavelength) {
             ray.wavelength = sample_result.wavelength;
@@ -172,6 +173,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
         if (!material_sample.ior_greater_one() && !treat_as_singular) {
             sample_result.pdf = previous_bxdf_pdf;
+        } else {
+            is_translucent = material_sample.is_translucent();
         }
 
         if (do_mis || treat_as_singular) {

@@ -24,7 +24,7 @@ using Sampler_filter = scene::material::Sampler_settings::Filter;
 static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
                                      float2 minorant_majorant, Material const& material,
                                      Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
-    static float constexpr Abort_epsilon = 1e-6f;
+    static float constexpr Abort_epsilon = 1e-5f;
 
     float const mt = minorant_majorant[1];
 
