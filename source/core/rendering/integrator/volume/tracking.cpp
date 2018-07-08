@@ -24,7 +24,7 @@ using Sampler_filter = scene::material::Sampler_settings::Filter;
 static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
                                      float2 minorant_majorant, Material const& material,
                                      Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
-    static float constexpr Abort_epsilon = 1e-5f;
+    static float constexpr Abort_epsilon = 1e-4f;
 
     float const mt = minorant_majorant[1];
 
@@ -66,6 +66,13 @@ static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
         if (math::all_lesser(transmitted, Abort_epsilon)) {
             return false;
         }
+
+        //        if (math::all_lesser(transmitted, 0.01f)) {
+        //            static float constexpr q = 0.1f;
+        //            if (rendering::russian_roulette(transmitted, q, rng.random_float())) {
+        //                return false;
+        //            }
+        //        }
 
         SOFT_ASSERT(math::all_finite(w));
     }
