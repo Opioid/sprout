@@ -50,12 +50,14 @@ float3 Model::sun_direction() const {
     return sun_direction_;
 }
 
-void Model::set_sun_direction(float3 const& direction) {
-    sun_direction_ = direction;
+void Model::set_sun_direction(f_float3 direction) {
+    // Supposedly the sun direction in the disney cloud scene
+    sun_direction_ = float3(-0.5826f, -0.7660f, -0.2717);
+ //   sun_direction_ = direction;
     dirty_         = true;
 }
 
-void Model::set_ground_albedo(float3 const& albedo) {
+void Model::set_ground_albedo(f_float3 albedo) {
     ground_albedo_ = albedo;
     dirty_         = true;
 }

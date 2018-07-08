@@ -16,9 +16,9 @@ class Model {
     bool init();
 
     float3 sun_direction() const;
-    void   set_sun_direction(float3 const& direction);
+    void   set_sun_direction(f_float3 direction);
 
-    void set_ground_albedo(float3 const& albedo);
+    void set_ground_albedo(f_float3 albedo);
     void set_turbidity(float turbidity);
 
     float3 evaluate_sky(f_float3 wi) const;
