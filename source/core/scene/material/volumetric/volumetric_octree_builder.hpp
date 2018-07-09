@@ -22,8 +22,7 @@ class Octree_builder {
 
         Build_node* children[8];
 
-        float minorant_mu_t;
-        float majorant_mu_t;
+        Node::Data data;
     };
 
     void split(Build_node* node, Box const& box, Texture const& texture, float2 min_max_extinction,

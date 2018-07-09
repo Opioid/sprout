@@ -18,25 +18,83 @@ namespace rendering::integrator::volume {
 // Code for hetereogeneous transmittance from:
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
-using Material       = scene::material::Material;
-using Sampler_filter = scene::material::Sampler_settings::Filter;
+static inline bool decomposition_track_transmitted(float3& transmitted, math::Ray const& ray,
+                                                   Tracking::Segment_data const& data,
+                                                   Tracking::Material const&     material,
+                                                   Tracking::Sampler_filter      filter,
+                                                   rnd::Generator& rng, Worker& worker) {
+    transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
 
-static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
-                                     float2 minorant_majorant, Material const& material,
-                                     Sampler_filter filter, rnd::Generator& rng, Worker& worker) {
-    static float constexpr Abort_epsilon = 1e-4f;
+    if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
+        return false;
+    }
 
-    float const mt = minorant_majorant[1];
+    float const mt = data.majorant_mu_t - data.minorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
         return true;
     }
 
-    if (minorant_majorant[0] == minorant_majorant[1]) {
-        // Homogeneous segment
-        transmitted *= attenuation(ray.max_t - ray.min_t, minorant_majorant[0]);
+    float const imt = 1.f / mt;
 
-        return math::all_greater_equal(transmitted, Abort_epsilon);
+    SOFT_ASSERT(std::isfinite(imt));
+
+    float const d = ray.max_t;
+
+    for (float t = ray.min_t;;) {
+        float const r0 = rng.random_float();
+        t -= std::log(1.f - r0) * imt;
+        if (t > d) {
+            return true;
+        }
+
+        float3 const uvw = ray.point(t);
+
+        auto const mu = material.collision_coefficients(uvw, data.min_density, filter, worker);
+
+        float3 const mu_t = mu.a + mu.s;
+
+        float3 const mu_n = float3(mt) - mu_t;
+
+        transmitted *= imt * mu_n;
+
+        // TODO: employ russian roulette instead of just aborting
+        if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
+            return false;
+        }
+
+        //        if (math::all_lesser(transmitted, 0.01f)) {
+        //            static float constexpr q = 0.1f;
+        //            if (rendering::russian_roulette(transmitted, q, rng.random_float())) {
+        //                return false;
+        //            }
+        //        }
+
+        SOFT_ASSERT(math::all_finite(w));
+    }
+}
+
+static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
+                                     Tracking::Segment_data const& data,
+                                     Tracking::Material const&     material,
+                                     Tracking::Sampler_filter filter, rnd::Generator& rng,
+                                     Worker& worker) {
+    float const mt = data.majorant_mu_t;
+
+    if (mt < Tracking::Min_mt) {
+        return true;
+    }
+
+    //    if (data.minorant_mu_t == data.majorant_mu_t) {
+    //        // Homogeneous segment
+    //        transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
+
+    //        return math::all_greater_equal(transmitted, Abort_epsilon);
+    //    }
+
+    if (data.minorant_mu_t > 0.f) {
+        return decomposition_track_transmitted(transmitted, ray, data, material, filter, rng,
+                                               worker);
     }
 
     float const imt = 1.f / mt;
@@ -63,7 +121,7 @@ static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
         transmitted *= imt * mu_n;
 
         // TODO: employ russian roulette instead of just aborting
-        if (math::all_lesser(transmitted, Abort_epsilon)) {
+        if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
             return false;
         }
 
@@ -110,8 +168,8 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
-            if (float2 mi_ma; tree.intersect(local_ray, mi_ma)) {
-                if (!track_transmitted(w, local_ray, mi_ma, material, Sampler_filter::Nearest, rng,
+            if (Segment_data data; tree.intersect(local_ray, data)) {
+                if (!track_transmitted(w, local_ray, data, material, Sampler_filter::Nearest, rng,
                                        worker)) {
                     return float3::identity();
                 }
@@ -134,10 +192,10 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
     }
 }
 
-bool Tracking::track(math::Ray const& ray, float2 minorant_majorant, Material const& material,
+bool Tracking::track(math::Ray const& ray, Segment_data const& data, Material const& material,
                      Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                      float3& w) {
-    float const mt = minorant_majorant[1];
+    float const mt = data.majorant_mu_t;
 
     if (mt < Min_mt) {
         return false;

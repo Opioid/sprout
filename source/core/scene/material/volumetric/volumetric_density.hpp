@@ -19,6 +19,9 @@ class Density : public Material {
     virtual CC collision_coefficients(f_float3 uvw, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
+    virtual CC collision_coefficients(f_float3 uvw, float min_density, Sampler_filter filter,
+                                      Worker const& worker) const override final;
+
   private:
     // expects p in object space!
     virtual float density(f_float3 p, Sampler_filter filter, Worker const& worker) const = 0;

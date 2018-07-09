@@ -21,8 +21,13 @@ struct Box {
 struct alignas(16) Node {
     int32_t children;
 
-    float minorant_mu_t;
-    float majorant_mu_t;
+    struct Data {
+        float minorant_mu_t;
+        float majorant_mu_t;
+        float min_density;
+    };
+
+    Data data;
 };
 
 class Gridtree {
@@ -36,7 +41,7 @@ class Gridtree {
 
     bool is_valid() const;
 
-    bool intersect(math::Ray& ray, float2& minorant_majorant_mu_t) const;
+    bool intersect(math::Ray& ray, Node::Data& data) const;
 
   private:
     int32_t num_nodes_;

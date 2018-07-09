@@ -28,14 +28,6 @@ bool Model::init() {
 
     float const elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
 
-    /*
-    for (uint32_t i = 0; i < 3; ++i) {
-            skymodel_states_[i] = arhosek_rgb_skymodelstate_alloc_init(turbidity_,
-                                                                                                                               ground_albedo_.v[i],
-                                                                                                                               elevation);
-    }
-    */
-
     for (uint32_t i = 0; i < Num_bands; ++i) {
         skymodel_states_[i] = arhosekskymodelstate_alloc_init(elevation, turbidity_,
                                                               ground_albedo_[0]);
@@ -52,9 +44,9 @@ float3 Model::sun_direction() const {
 
 void Model::set_sun_direction(f_float3 direction) {
     // Supposedly the sun direction in the disney cloud scene
-    sun_direction_ = float3(-0.5826f, -0.7660f, -0.2717);
- //   sun_direction_ = direction;
-    dirty_         = true;
+    sun_direction_ = float3(-0.5826f, -0.7660f, -0.2717f);
+    //   sun_direction_ = direction;
+    dirty_ = true;
 }
 
 void Model::set_ground_albedo(f_float3 albedo) {

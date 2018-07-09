@@ -40,7 +40,7 @@ bool Gridtree::is_valid() const {
     return nullptr != nodes_;
 }
 
-bool Gridtree::intersect(math::Ray& ray, float2& minorant_majorant_mu_t) const {
+bool Gridtree::intersect(math::Ray& ray, Node::Data& data) const {
     math::AABB box(float3(0.f), float3(1.f));
 
     float3 p = ray.point(ray.min_t);
@@ -111,8 +111,7 @@ bool Gridtree::intersect(math::Ray& ray, float2& minorant_majorant_mu_t) const {
         return false;
     }
 
-    minorant_majorant_mu_t[0] = nodes_[index].minorant_mu_t;
-    minorant_majorant_mu_t[1] = nodes_[index].majorant_mu_t;
+    data = nodes_[index].data;
 
     return true;
 }

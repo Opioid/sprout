@@ -79,14 +79,16 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
 
     float const diff = majorant - minorant;
 
-    bool const homogeneous = 0 == diff;
+    bool const homogeneous = 0.f == diff;
 
     if (homogeneous) {
-        node->minorant_mu_t = minorant;
-        node->majorant_mu_t = majorant;
+        node->data.minorant_mu_t = minorant;
+        node->data.majorant_mu_t = majorant;
+        node->data.min_density   = min_density;
     } else {
-        node->minorant_mu_t = std::max(minorant - mt_epsilon, 0.f);
-        node->majorant_mu_t = 0.f == majorant ? 0.f : majorant + mt_epsilon;
+        node->data.minorant_mu_t = std::max(minorant - mt_epsilon, 0.f);
+        node->data.majorant_mu_t = 0.f == majorant ? 0.f : majorant + mt_epsilon;
+        node->data.min_density   = min_density;
     }
 
     int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
@@ -172,9 +174,8 @@ void Octree_builder::serialize(Build_node* node, int32_t current, int32_t& next)
     auto& n = nodes_[current];
 
     if (node->children[0]) {
-        n.children      = next;
-        n.minorant_mu_t = node->minorant_mu_t;
-        n.majorant_mu_t = node->majorant_mu_t;
+        n.children = next;
+        n.data     = node->data;
 
         current = next;
         next += 8;
@@ -183,9 +184,8 @@ void Octree_builder::serialize(Build_node* node, int32_t current, int32_t& next)
             serialize(node->children[i], current + i, next);
         }
     } else {
-        n.children      = 0;
-        n.minorant_mu_t = node->minorant_mu_t;
-        n.majorant_mu_t = node->majorant_mu_t;
+        n.children = 0;
+        n.data     = node->data;
     }
 }
 
