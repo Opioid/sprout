@@ -192,6 +192,12 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
     }
 }
 
+static inline bool decomposition_track(math::Ray const& ray, Tracking::Segment_data const& data, Tracking::Material const& material,
+                     Tracking::Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
+                     float3& w) {
+    return true;
+}
+
 bool Tracking::track(math::Ray const& ray, Segment_data const& data, Material const& material,
                      Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                      float3& w) {
