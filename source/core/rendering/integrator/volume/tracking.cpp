@@ -15,14 +15,15 @@
 
 namespace rendering::integrator::volume {
 
-// Code for hetereogeneous transmittance from:
+// Code for hetereogeneous transmittance inspired by:
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
-static inline bool decomposition_track_transmitted(float3& transmitted, math::Ray const& ray,
-                                                   Tracking::Segment_data const& data,
-                                                   Tracking::Material const&     material,
-                                                   Tracking::Sampler_filter      filter,
-                                                   rnd::Generator& rng, Worker& worker) {
+static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
+                                                       Tracking::Segment_data const& data,
+                                                       Tracking::Material const&     material,
+                                                       Tracking::Sampler_filter      filter,
+                                                       rnd::Generator& rng, Worker& worker) {
+    // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
 
     if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
@@ -35,6 +36,7 @@ static inline bool decomposition_track_transmitted(float3& transmitted, math::Ra
         return true;
     }
 
+    // Transmittance of the residual medium
     float const imt = 1.f / mt;
 
     SOFT_ASSERT(std::isfinite(imt));
@@ -50,6 +52,7 @@ static inline bool decomposition_track_transmitted(float3& transmitted, math::Ra
 
         float3 const uvw = ray.point(t);
 
+        //
         auto const mu = material.collision_coefficients(uvw, data.min_density, filter, worker);
 
         float3 const mu_t = mu.a + mu.s;
@@ -58,17 +61,9 @@ static inline bool decomposition_track_transmitted(float3& transmitted, math::Ra
 
         transmitted *= imt * mu_n;
 
-        // TODO: employ russian roulette instead of just aborting
         if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
             return false;
         }
-
-        //        if (math::all_lesser(transmitted, 0.01f)) {
-        //            static float constexpr q = 0.1f;
-        //            if (rendering::russian_roulette(transmitted, q, rng.random_float())) {
-        //                return false;
-        //            }
-        //        }
 
         SOFT_ASSERT(math::all_finite(w));
     }
@@ -85,16 +80,9 @@ static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
         return true;
     }
 
-    //    if (data.minorant_mu_t == data.majorant_mu_t) {
-    //        // Homogeneous segment
-    //        transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
-
-    //        return math::all_greater_equal(transmitted, Abort_epsilon);
-    //    }
-
     if (data.minorant_mu_t > 0.f) {
-        return decomposition_track_transmitted(transmitted, ray, data, material, filter, rng,
-                                               worker);
+        return residual_ratio_tracking_transmitted(transmitted, ray, data, material, filter, rng,
+                                                   worker);
     }
 
     float const imt = 1.f / mt;
@@ -120,7 +108,7 @@ static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
 
         transmitted *= imt * mu_n;
 
-        // TODO: employ russian roulette instead of just aborting
+        // TODO: Consider employing russian roulette instead of just aborting
         if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
             return false;
         }
@@ -192,9 +180,10 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
     }
 }
 
-static inline bool decomposition_track(math::Ray const& ray, Tracking::Segment_data const& data, Tracking::Material const& material,
-                     Tracking::Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
-                     float3& w) {
+static inline bool decomposition_track(math::Ray const& ray, Tracking::Segment_data const& data,
+                                       Tracking::Material const& material,
+                                       Tracking::Sampler_filter filter, rnd::Generator& rng,
+                                       Worker& worker, float& t_out, float3& w) {
     return true;
 }
 

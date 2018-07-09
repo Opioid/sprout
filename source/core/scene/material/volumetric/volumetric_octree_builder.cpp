@@ -32,8 +32,9 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, float2 min_ma
             for (int32_t x = 0; x < num_cells[0]; ++x, ++node) {
                 int3 const min = int3(x, y, z) * cell;
                 int3 const max = math::min(min + cell, d);
-                Box const  box{{min, max}};
-                split(node, box, texture, min_max_extinction, 0, 2);
+
+                Box const box{{min, max}};
+                split(node, box, texture, min_max_extinction, 0, 3);
             }
         }
     }
@@ -70,22 +71,21 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         }
     }
 
-    // Without this epsilon the sampled extinction coefficient is sometimes
-    // a tiny bit larger than the majorant computed here
-    static float constexpr mt_epsilon = 0.01f;
-
     float const minorant = min_density * min_max_extinction[0];
     float const majorant = max_density * min_max_extinction[1];
 
     float const diff = majorant - minorant;
 
-    bool const homogeneous = 0.f == diff;
-
-    if (homogeneous) {
+    if (0.f == diff) {
         node->data.minorant_mu_t = minorant;
         node->data.majorant_mu_t = majorant;
         node->data.min_density   = min_density;
     } else {
+        // Without an epsilon the sampled extinction coefficient can sometimes
+        // be a tiny bit larger than the majorant computed here.
+        // Supposedly due to floating point imprecision.
+        static float constexpr mt_epsilon = 0.005f;
+
         node->data.minorant_mu_t = std::max(minorant - mt_epsilon, 0.f);
         node->data.majorant_mu_t = 0.f == majorant ? 0.f : majorant + mt_epsilon;
         node->data.min_density   = min_density;
@@ -93,7 +93,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
 
     int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
 
-    if (max_depth == depth || homogeneous || math::any_lesser(half, 3)) {
+    if (max_depth == depth || diff < 0.1f || math::any_lesser(half, 3)) {
         for (uint32_t i = 0; i < 8; ++i) {
             node->children[i] = nullptr;
         }
