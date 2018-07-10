@@ -184,7 +184,68 @@ static inline bool decomposition_track(math::Ray const& ray, Tracking::Interval_
                                        Tracking::Material const& material,
                                        Tracking::Sampler_filter filter, rnd::Generator& rng,
                                        Worker& worker, float& t_out, float3& w) {
-    return true;
+    float const d = ray.max_t;
+
+    float const rc = rng.random_float();
+    float const t_c = ray.min_t - std::log(1.f - rc) / data.minorant_mu_t;
+
+    float const mt = data.majorant_mu_t - data.minorant_mu_t;
+
+    if (mt < Tracking::Min_mt) {
+        if (t_c < d) {
+            t_out = t_c;
+            w *= attenuation(d - t_c, data.minorant_mu_t);
+            return true;
+        } else {
+            w *= attenuation(d - ray.min_t, data.minorant_mu_t);
+            return false;
+        }
+    }
+
+    float3 lw = attenuation(d - ray.min_t, data.minorant_mu_t) * w;
+
+    float const imt = 1.f / mt;
+
+    for (float t = ray.min_t;;) {
+            float const r0 = rng.random_float();
+            t -= std::log(1.f - r0) * imt;
+            if (t > d) {
+                w = lw;
+                return false;
+            }
+
+            float3 const uvw = ray.point(t);
+
+            auto const mu = material.collision_coefficients(uvw, data.min_density, filter, worker);
+
+            float3 const mu_t = mu.a + mu.s;
+
+            float3 const mu_n = float3(mt) - mu_t;
+
+            float const ms = math::average(mu.s * lw);
+            float const mn = math::average(mu_n * lw);
+            float const c  = 1.f / (ms + mn);
+
+            float const ps = ms * c;
+            float const pn = mn * c;
+
+            float const r1 = rng.random_float();
+            if (r1 <= 1.f - pn && ps > 0.f) {
+                float3 const ws = mu.s / (mt * ps);
+
+                SOFT_ASSERT(math::all_finite(ws));
+
+                t_out = t;
+                w     = lw * ws;
+                return true;
+            } else {
+                float3 const wn = mu_n / (mt * pn);
+
+                SOFT_ASSERT(math::all_finite(wn));
+
+                lw *= wn;
+            }
+        }
 }
 
 bool Tracking::track(math::Ray const& ray, Interval_data const& data, Material const& material,
@@ -195,6 +256,10 @@ bool Tracking::track(math::Ray const& ray, Interval_data const& data, Material c
     if (mt < Min_mt) {
         return false;
     }
+
+//    if (data.minorant_mu_t > 0.f) {
+//        return decomposition_track(ray, data, material, filter, rng, worker, t_out, w);
+//    }
 
     float3 lw = w;
 
