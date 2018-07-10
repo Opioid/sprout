@@ -8,21 +8,33 @@
 
 namespace scene::material::volumetric {
 
-Gridtree::Gridtree() : num_nodes_(0), nodes_(nullptr) {}
+Gridtree::Gridtree() : num_nodes_(0), nodes_(nullptr), num_data_(0), data_(nullptr) {}
 
 Gridtree::~Gridtree() {
+    memory::free_aligned(data_);
     memory::free_aligned(nodes_);
 }
 
-Node* Gridtree::allocate_nodes(int32_t num_nodes) {
+Node* Gridtree::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
         memory::free_aligned(nodes_);
-        nodes_ = memory::allocate_aligned<Node>(static_cast<size_t>(num_nodes));
+        nodes_ = memory::allocate_aligned<Node>(num_nodes);
     }
 
     return nodes_;
+}
+
+Interval_data* Gridtree::allocate_data(uint32_t num_data) {
+    if (num_data != num_data_) {
+        num_data_ = num_data;
+
+        memory::free_aligned(data_);
+        data_ = memory::allocate_aligned<Interval_data>(num_data);
+    }
+
+    return data_;
 }
 
 void Gridtree::set_dimensions(int3 const& dimensions, int3 const& cell_dimensions,
@@ -40,7 +52,7 @@ bool Gridtree::is_valid() const {
     return nullptr != nodes_;
 }
 
-bool Gridtree::intersect(math::Ray& ray, Node::Data& data) const {
+bool Gridtree::intersect(math::Ray& ray, Interval_data& data) const {
     math::AABB box(float3(0.f), float3(1.f));
 
     float3 p = ray.point(ray.min_t);
@@ -61,19 +73,19 @@ bool Gridtree::intersect(math::Ray& ray, Node::Data& data) const {
         return false;
     }
 
-    int32_t index = v[2] * (num_cells_[0] * num_cells_[1]) + v[1] * num_cells_[0] + v[0];
+    uint32_t index = static_cast<uint32_t>((v[2] * num_cells_[1] + v[1]) * num_cells_[0] + v[0]);
 
     box.bounds[0] = float3(v) * cell_dimensions_;
     box.bounds[1] = math::min(box.bounds[0] + cell_dimensions_, 1.f);
 
     for (;;) {
-        int32_t const children = nodes_[index].children;
+        auto const& node = nodes_[index];
 
-        if (0 == children) {
+        if (!node.has_children()) {
             break;
         }
 
-        index = children;
+        index = node.index();
 
         float3 const half = box.halfsize();
 
@@ -111,9 +123,13 @@ bool Gridtree::intersect(math::Ray& ray, Node::Data& data) const {
         return false;
     }
 
-    data = nodes_[index].data;
+    data = data_[nodes_[index].index()];
 
     return true;
+}
+
+size_t Gridtree::num_bytes() const {
+    return sizeof(*this) + num_nodes_ * sizeof(Node) + num_data_ * sizeof(Interval_data);
 }
 
 }  // namespace scene::material::volumetric

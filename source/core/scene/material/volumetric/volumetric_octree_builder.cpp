@@ -20,11 +20,12 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, float2 min_ma
 
     num_cells += math::min(d - num_cells * cell, 1);
 
-    int32_t const cell_len = num_cells[0] * num_cells[1] * num_cells[2];
+    uint32_t const cell_len = static_cast<uint32_t>(num_cells[0] * num_cells[1] * num_cells[2]);
 
     num_nodes_ = cell_len;
+    num_data_  = 0;
 
-    Build_node* grid = new Build_node[static_cast<size_t>(cell_len)];
+    Build_node* grid = new Build_node[cell_len];
 
     Build_node* node = grid;
     for (int32_t z = 0; z < num_cells[2]; ++z) {
@@ -43,10 +44,13 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, float2 min_ma
 
     nodes_ = tree.allocate_nodes(num_nodes_);
 
-    int32_t next = cell_len;
+    data_ = tree.allocate_data(num_data_);
 
-    for (int32_t i = 0; i < cell_len; ++i) {
-        serialize(&grid[i], i, next);
+    uint32_t next = cell_len;
+    uint32_t data = 0;
+
+    for (uint32_t i = 0; i < cell_len; ++i) {
+        serialize(&grid[i], i, next, data);
     }
 
     delete[] grid;
@@ -97,6 +101,8 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         for (uint32_t i = 0; i < 8; ++i) {
             node->children[i] = nullptr;
         }
+
+        ++num_data_;
 
         return;
     }
@@ -170,22 +176,24 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
     num_nodes_ += 8;
 }
 
-void Octree_builder::serialize(Build_node* node, int32_t current, int32_t& next) {
+void Octree_builder::serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data) {
     auto& n = nodes_[current];
 
     if (node->children[0]) {
-        n.children = next;
-        n.data     = node->data;
+        n.set_children(next);
 
         current = next;
         next += 8;
 
-        for (int32_t i = 0; i < 8; ++i) {
-            serialize(node->children[i], current + i, next);
+        for (uint32_t i = 0; i < 8; ++i) {
+            serialize(node->children[i], current + i, next, data);
         }
     } else {
-        n.children = 0;
-        n.data     = node->data;
+        n.set_data(data);
+
+        data_[data] = node->data;
+
+        ++data;
     }
 }
 

@@ -27,7 +27,7 @@ class Model {
 
     static constexpr float3 zenith() {
         return float3(0.f, 1.f, 0.f);
-    };
+    }
 
   private:
     void release();
@@ -37,7 +37,7 @@ class Model {
 
     float turbidity_;
 
-    static uint32_t constexpr Num_bands = 6;
+    static int32_t constexpr Num_bands = 6;
 
     ArHosekSkyModelState* skymodel_states_[Num_bands];
 

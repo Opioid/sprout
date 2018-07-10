@@ -13,7 +13,7 @@ namespace procedural::sky {
 class Sky : public scene::entity::Entity {
   public:
     Sky() = default;
-    ~Sky();
+    virtual ~Sky() override;
 
     virtual void set_parameters(json::Value const& parameters) override final;
 

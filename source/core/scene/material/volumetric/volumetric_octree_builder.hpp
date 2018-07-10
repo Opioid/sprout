@@ -22,17 +22,19 @@ class Octree_builder {
 
         Build_node* children[8];
 
-        Node::Data data;
+        Interval_data data;
     };
 
     void split(Build_node* node, Box const& box, Texture const& texture, float2 min_max_extinction,
                uint32_t depth, uint32_t max_depth);
 
-    void serialize(Build_node* node, int32_t current, int32_t& next);
+    void serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data);
 
-    int32_t num_nodes_;
+    uint32_t num_nodes_;
+    Node*    nodes_;
 
-    Node* nodes_;
+    uint32_t       num_data_;
+    Interval_data* data_;
 };
 
 }  // namespace scene::material::volumetric

@@ -18,16 +18,32 @@ struct Box {
     int3 bounds[2];
 };
 
-struct alignas(16) Node {
-    int32_t children;
+struct Node {
+    static uint32_t constexpr Children_mask = 0x7FFFFFFFu;
 
-    struct Data {
-        float minorant_mu_t;
-        float majorant_mu_t;
-        float min_density;
-    };
+    uint32_t children_or_data;
 
-    Data data;
+    bool has_children() const {
+        return 0 == (children_or_data & ~Children_mask);
+    }
+
+    uint32_t index() const {
+        return children_or_data & Children_mask;
+    }
+
+    void set_children(uint32_t index) {
+        children_or_data = index;
+    }
+
+    void set_data(uint32_t index) {
+        children_or_data = index | ~Children_mask;
+    }
+};
+
+struct Interval_data {
+    float minorant_mu_t;
+    float majorant_mu_t;
+    float min_density;
 };
 
 class Gridtree {
@@ -35,17 +51,24 @@ class Gridtree {
     Gridtree();
     ~Gridtree();
 
-    Node* allocate_nodes(int32_t num_nodes);
+    Node* allocate_nodes(uint32_t num_nodes);
+
+    Interval_data* allocate_data(uint32_t num_data);
 
     void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions, int3 const& num_cells);
 
     bool is_valid() const;
 
-    bool intersect(math::Ray& ray, Node::Data& data) const;
+    bool intersect(math::Ray& ray, Interval_data& data) const;
+
+    size_t num_bytes() const;
 
   private:
-    int32_t num_nodes_;
-    Node*   nodes_;
+    uint32_t num_nodes_;
+    Node*    nodes_;
+
+    uint32_t       num_data_;
+    Interval_data* data_;
 
     int3 dimensions_;
     int3 num_cells_;

@@ -19,9 +19,9 @@ namespace rendering::integrator::volume {
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
-                                                       Tracking::Segment_data const& data,
-                                                       Tracking::Material const&     material,
-                                                       Tracking::Sampler_filter      filter,
+                                                       Tracking::Interval_data const& data,
+                                                       Tracking::Material const&      material,
+                                                       Tracking::Sampler_filter       filter,
                                                        rnd::Generator& rng, Worker& worker) {
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
@@ -70,8 +70,8 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 }
 
 static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
-                                     Tracking::Segment_data const& data,
-                                     Tracking::Material const&     material,
+                                     Tracking::Interval_data const& data,
+                                     Tracking::Material const&      material,
                                      Tracking::Sampler_filter filter, rnd::Generator& rng,
                                      Worker& worker) {
     float const mt = data.majorant_mu_t;
@@ -156,7 +156,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
-            if (Segment_data data; tree.intersect(local_ray, data)) {
+            if (Interval_data data; tree.intersect(local_ray, data)) {
                 if (!track_transmitted(w, local_ray, data, material, Sampler_filter::Nearest, rng,
                                        worker)) {
                     return float3::identity();
@@ -180,14 +180,14 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
     }
 }
 
-static inline bool decomposition_track(math::Ray const& ray, Tracking::Segment_data const& data,
+static inline bool decomposition_track(math::Ray const& ray, Tracking::Interval_data const& data,
                                        Tracking::Material const& material,
                                        Tracking::Sampler_filter filter, rnd::Generator& rng,
                                        Worker& worker, float& t_out, float3& w) {
     return true;
 }
 
-bool Tracking::track(math::Ray const& ray, Segment_data const& data, Material const& material,
+bool Tracking::track(math::Ray const& ray, Interval_data const& data, Material const& material,
                      Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                      float3& w) {
     float const mt = data.majorant_mu_t;

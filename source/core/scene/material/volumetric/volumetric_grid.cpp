@@ -49,7 +49,7 @@ bool Grid::is_heterogeneous_volume() const {
 }
 
 size_t Grid::num_bytes() const {
-    return sizeof(*this);
+    return sizeof(*this) + tree_.num_bytes();
 }
 
 float Grid::density(f_float3 uvw, Sampler_filter filter, Worker const& worker) const {
