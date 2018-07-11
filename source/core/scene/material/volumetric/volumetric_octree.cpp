@@ -64,7 +64,7 @@ bool Gridtree::intersect(math::Ray& ray, Interval_data& data) const {
         }
 
         ray.min_t = hit_t;
-        p         = ray.point(ray.min_t);
+        p         = ray.point(hit_t);
     }
 
     int3 const v = int3(float3(num_cells_) * (factor_ * p));
