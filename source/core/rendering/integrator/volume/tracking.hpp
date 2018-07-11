@@ -52,9 +52,9 @@ class Tracking {
 
     static float3 transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker);
 
-    static bool track(math::Ray const& ray, Interval_data const& data, Material const& material,
-                      Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t,
-                      float3& w);
+    static bool tracking(math::Ray const& ray, Interval_data const& data, Material const& material,
+                         Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t,
+                         float3& w);
 
     static float constexpr Min_mt        = 1e-10f;
     static float constexpr Ray_epsilon   = 5e-4f;

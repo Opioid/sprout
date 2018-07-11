@@ -105,9 +105,6 @@ class Material {
     virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
                                       Worker const& worker) const;
 
-    virtual CC collision_coefficients(f_float3 p, float min_density, Sampler_filter filter,
-                                      Worker const& worker) const;
-
     virtual float majorant_mu_t() const;
 
     virtual volumetric::Gridtree const* volume_tree() const;

@@ -19,7 +19,7 @@ float3 Shape::object_to_texture_vector(f_float3 v) const {
     return v * inv_extent_;
 }
 
-math::AABB Shape::transformed_aabb(const float4x4& m, math::Transformation const& /*t*/) const {
+math::AABB Shape::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const {
     return aabb_.transform(m);
 }
 

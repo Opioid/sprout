@@ -86,12 +86,6 @@ Material::CC Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*f
     return {float3::identity(), float3::identity()};
 }
 
-Material::CC Material::collision_coefficients(f_float3 /*p*/, float /*min_density*/,
-                                              Sampler_filter /*filter*/,
-                                              Worker const& /*worker*/) const {
-    return {float3::identity(), float3::identity()};
-}
-
 float Material::majorant_mu_t() const {
     return 0.f;
 }

@@ -10,7 +10,7 @@ Octree_builder::Build_node::~Build_node() {
     }
 }
 
-void Octree_builder::build(Gridtree& tree, Texture const& texture, float2 min_max_extinction) {
+void Octree_builder::build(Gridtree& tree, Texture const& texture, Interval_data const& idata) {
     static int32_t constexpr cell_max_dimension = 36;
 
     int3 const d    = texture.dimensions_3();
@@ -35,7 +35,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, float2 min_ma
                 int3 const max = math::min(min + cell, d);
 
                 Box const box{{min, max}};
-                split(node, box, texture, min_max_extinction, 0, 3);
+                split(node, box, texture, idata, 0, 3);
             }
         }
     }
@@ -57,7 +57,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, float2 min_ma
 }
 
 void Octree_builder::split(Build_node* node, Box const& box, Texture const& texture,
-                           float2 min_max_extinction, uint32_t depth, uint32_t max_depth) {
+                           Interval_data const& idata, uint32_t depth, uint32_t max_depth) {
     // Include 1 additional voxel on each border to account for filtering
     int3 const minb = math::max(box.bounds[0] - 1, 0);
     int3 const maxb = math::min(box.bounds[1] + 1, texture.dimensions_3());
@@ -75,31 +75,34 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         }
     }
 
-    float const minorant = min_density * min_max_extinction[0];
-    float const majorant = max_density * min_max_extinction[1];
+    float const minorant_mu_a = min_density * idata.minorant_mu_a;
+    float const minorant_mu_s = min_density * idata.minorant_mu_s;
+    float const majorant_mu_t = max_density * idata.majorant_mu_t;
 
-    float const diff = majorant - minorant;
-
-    if (0.f == diff) {
-        node->data.minorant_mu_t = minorant;
-        node->data.majorant_mu_t = majorant;
-        node->data.min_density   = min_density;
-    } else {
-        // Without an epsilon the sampled extinction coefficient can sometimes
-        // be a tiny bit larger than the majorant computed here.
-        // Supposedly due to floating point imprecision.
-        static float constexpr mt_epsilon = 0.005f;
-
-        node->data.minorant_mu_t = std::max(minorant - mt_epsilon, 0.f);
-        node->data.majorant_mu_t = 0.f == majorant ? 0.f : majorant + mt_epsilon;
-        node->data.min_density   = min_density;
-    }
+    float const diff = majorant_mu_t - (minorant_mu_a + minorant_mu_s);
 
     int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
 
     if (max_depth == depth || diff < 0.1f || math::any_lesser(half, 3)) {
         for (uint32_t i = 0; i < 8; ++i) {
             node->children[i] = nullptr;
+        }
+
+        if (0.f == diff) {
+            node->data.minorant_mu_a = minorant_mu_a;
+            node->data.minorant_mu_s = minorant_mu_s;
+            node->data.minorant_mu_t = minorant_mu_a + minorant_mu_s;
+            node->data.majorant_mu_t = majorant_mu_t;
+        } else {
+            // Without an epsilon the sampled extinction coefficient can sometimes
+            // be a tiny bit larger than the majorant computed here.
+            // Supposedly due to floating point imprecision.
+            static float constexpr mt_epsilon = 0.005f;
+
+            node->data.minorant_mu_a = std::max(minorant_mu_a - mt_epsilon, 0.f);
+            node->data.minorant_mu_s = std::max(minorant_mu_s - mt_epsilon, 0.f);
+            node->data.minorant_mu_t = node->data.minorant_mu_a + node->data.minorant_mu_s;
+            node->data.majorant_mu_t = 0.f == majorant_mu_t ? 0.f : majorant_mu_t + mt_epsilon;
         }
 
         ++num_data_;
@@ -115,7 +118,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         Box const sub{{box.bounds[0], center}};
 
         node->children[0] = new Build_node;
-        split(node->children[0], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[0], sub, texture, idata, depth, max_depth);
     }
 
     {
@@ -123,7 +126,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(box.bounds[1][0], center[1], center[2])}};
 
         node->children[1] = new Build_node;
-        split(node->children[1], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[1], sub, texture, idata, depth, max_depth);
     }
 
     {
@@ -131,7 +134,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(center[0], box.bounds[1][1], center[2])}};
 
         node->children[2] = new Build_node;
-        split(node->children[2], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[2], sub, texture, idata, depth, max_depth);
     }
 
     {
@@ -139,7 +142,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(box.bounds[1][0], box.bounds[1][1], center[2])}};
 
         node->children[3] = new Build_node;
-        split(node->children[3], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[3], sub, texture, idata, depth, max_depth);
     }
 
     {
@@ -147,7 +150,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(center[0], center[1], box.bounds[1][2])}};
 
         node->children[4] = new Build_node;
-        split(node->children[4], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[4], sub, texture, idata, depth, max_depth);
     }
 
     {
@@ -155,7 +158,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(box.bounds[1][0], center[1], box.bounds[1][2])}};
 
         node->children[5] = new Build_node;
-        split(node->children[5], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[5], sub, texture, idata, depth, max_depth);
     }
 
     {
@@ -163,14 +166,14 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(center[0], box.bounds[1][1], box.bounds[1][2])}};
 
         node->children[6] = new Build_node;
-        split(node->children[6], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[6], sub, texture, idata, depth, max_depth);
     }
 
     {
         Box const sub{{center, box.bounds[1]}};
 
         node->children[7] = new Build_node;
-        split(node->children[7], sub, texture, min_max_extinction, depth, max_depth);
+        split(node->children[7], sub, texture, idata, depth, max_depth);
     }
 
     num_nodes_ += 8;

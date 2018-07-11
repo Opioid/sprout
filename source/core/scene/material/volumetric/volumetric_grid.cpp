@@ -16,24 +16,26 @@ Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid
 Grid::~Grid() {}
 
 void Grid::compile() {
-    auto const& texture = *grid_.texture();
-
-    const int3 d = texture.dimensions_3();
-
-    float max_density = 0.f;
-    for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
-        max_density = std::max(texture.at_1(i), max_density);
-    }
-
     float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-    float2 const min_max_extinction(math::min_component(extinction_coefficient),
-                                    math::max_component(extinction_coefficient));
+    Interval_data idata{math::min_component(absorption_coefficient_),
+                        math::min_component(scattering_coefficient_), 0.f,
+                        math::max_component(extinction_coefficient)};
 
-    majorant_mu_t_ = max_density * min_max_extinction[1];
+    auto const& texture = *grid_.texture();
+    {
+        const int3 d = texture.dimensions_3();
+
+        float max_density = 0.f;
+        for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
+            max_density = std::max(texture.at_1(i), max_density);
+        }
+
+        majorant_mu_t_ = max_density * idata.majorant_mu_t;
+    }
 
     Octree_builder builder;
-    builder.build(tree_, texture, min_max_extinction);
+    builder.build(tree_, texture, idata);
 }
 
 float Grid::majorant_mu_t() const {

@@ -41,9 +41,10 @@ struct Node {
 };
 
 struct Interval_data {
+    float minorant_mu_a;
+    float minorant_mu_s;
     float minorant_mu_t;
     float majorant_mu_t;
-    float min_density;
 };
 
 class Gridtree {

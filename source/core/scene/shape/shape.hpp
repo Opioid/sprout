@@ -42,7 +42,7 @@ class Shape {
     float3 object_to_texture_point(f_float3 p) const;
     float3 object_to_texture_vector(f_float3 v) const;
 
-    virtual math::AABB transformed_aabb(const float4x4& m, math::Transformation const& t) const;
+    virtual math::AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const;
     virtual math::AABB transformed_aabb(math::Transformation const& t) const;
 
     virtual uint32_t num_parts() const;

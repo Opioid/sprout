@@ -9,7 +9,7 @@ class Sphere final : public Shape {
   public:
     Sphere();
 
-    virtual math::AABB transformed_aabb(const float4x4&             m,
+    virtual math::AABB transformed_aabb(float4x4 const&             m,
                                         math::Transformation const& t) const override final;
 
     virtual math::AABB transformed_aabb(math::Transformation const& t) const override final;

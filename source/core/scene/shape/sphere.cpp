@@ -20,7 +20,7 @@ Sphere::Sphere() {
     inv_extent_ = 1.f / aabb_.extent();
 }
 
-math::AABB Sphere::transformed_aabb(const float4x4& /*m*/, math::Transformation const& t) const {
+math::AABB Sphere::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const {
     return transformed_aabb(t);
 }
 

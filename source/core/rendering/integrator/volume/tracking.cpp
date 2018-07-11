@@ -52,8 +52,10 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         float3 const uvw = ray.point(t);
 
-        //
-        auto const mu = material.collision_coefficients(uvw, data.min_density, filter, worker);
+        auto mu = material.collision_coefficients(uvw, filter, worker);
+
+        mu.a -= data.minorant_mu_a;
+        mu.s -= data.minorant_mu_s;
 
         float3 const mu_t = mu.a + mu.s;
 
@@ -69,11 +71,11 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
     }
 }
 
-static inline bool track_transmitted(float3& transmitted, math::Ray const& ray,
-                                     Tracking::Interval_data const& data,
-                                     Tracking::Material const&      material,
-                                     Tracking::Sampler_filter filter, rnd::Generator& rng,
-                                     Worker& worker) {
+static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ray,
+                                        Tracking::Interval_data const& data,
+                                        Tracking::Material const&      material,
+                                        Tracking::Sampler_filter filter, rnd::Generator& rng,
+                                        Worker& worker) {
     float const mt = data.majorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
@@ -157,8 +159,8 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
             if (Interval_data data; tree.intersect(local_ray, data)) {
-                if (!track_transmitted(w, local_ray, data, material, Sampler_filter::Nearest, rng,
-                                       worker)) {
+                if (!tracking_transmitted(w, local_ray, data, material, Sampler_filter::Nearest,
+                                          rng, worker)) {
                     return float3::identity();
                 }
             }
@@ -180,13 +182,13 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
     }
 }
 
-static inline bool decomposition_track(math::Ray const& ray, Tracking::Interval_data const& data,
-                                       Tracking::Material const& material,
-                                       Tracking::Sampler_filter filter, rnd::Generator& rng,
-                                       Worker& worker, float& t_out, float3& w) {
+static inline bool decomposition_tracking(math::Ray const& ray, Tracking::Interval_data const& data,
+                                          Tracking::Material const& material,
+                                          Tracking::Sampler_filter filter, rnd::Generator& rng,
+                                          Worker& worker, float& t_out, float3& w) {
     float const d = ray.max_t;
 
-    float const rc = rng.random_float();
+    float const rc  = rng.random_float();
     float const t_c = ray.min_t - std::log(1.f - rc) / data.minorant_mu_t;
 
     float const mt = data.majorant_mu_t - data.minorant_mu_t;
@@ -207,59 +209,62 @@ static inline bool decomposition_track(math::Ray const& ray, Tracking::Interval_
     float const imt = 1.f / mt;
 
     for (float t = ray.min_t;;) {
-            float const r0 = rng.random_float();
-            t -= std::log(1.f - r0) * imt;
-            if (t > d) {
-                w = lw;
-                return false;
-            }
-
-            float3 const uvw = ray.point(t);
-
-            auto const mu = material.collision_coefficients(uvw, data.min_density, filter, worker);
-
-            float3 const mu_t = mu.a + mu.s;
-
-            float3 const mu_n = float3(mt) - mu_t;
-
-            float const ms = math::average(mu.s * lw);
-            float const mn = math::average(mu_n * lw);
-            float const c  = 1.f / (ms + mn);
-
-            float const ps = ms * c;
-            float const pn = mn * c;
-
-            float const r1 = rng.random_float();
-            if (r1 <= 1.f - pn && ps > 0.f) {
-                float3 const ws = mu.s / (mt * ps);
-
-                SOFT_ASSERT(math::all_finite(ws));
-
-                t_out = t;
-                w     = lw * ws;
-                return true;
-            } else {
-                float3 const wn = mu_n / (mt * pn);
-
-                SOFT_ASSERT(math::all_finite(wn));
-
-                lw *= wn;
-            }
+        float const r0 = rng.random_float();
+        t -= std::log(1.f - r0) * imt;
+        if (t > d) {
+            w = lw;
+            return false;
         }
+
+        float3 const uvw = ray.point(t);
+
+        auto mu = material.collision_coefficients(uvw, filter, worker);
+
+        mu.a -= data.minorant_mu_a;
+        mu.s -= data.minorant_mu_s;
+
+        float3 const mu_t = mu.a + mu.s;
+
+        float3 const mu_n = float3(mt) - mu_t;
+
+        float const ms = math::average(mu.s * lw);
+        float const mn = math::average(mu_n * lw);
+        float const c  = 1.f / (ms + mn);
+
+        float const ps = ms * c;
+        float const pn = mn * c;
+
+        float const r1 = rng.random_float();
+        if (r1 <= 1.f - pn && ps > 0.f) {
+            float3 const ws = mu.s / (mt * ps);
+
+            SOFT_ASSERT(math::all_finite(ws));
+
+            t_out = t;
+            w     = lw * ws;
+            return true;
+        } else {
+            float3 const wn = mu_n / (mt * pn);
+
+            SOFT_ASSERT(math::all_finite(wn));
+
+            lw *= wn;
+        }
+    }
 }
 
-bool Tracking::track(math::Ray const& ray, Interval_data const& data, Material const& material,
-                     Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
-                     float3& w) {
+bool Tracking::tracking(math::Ray const& ray, Interval_data const& data, Material const& material,
+                        Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
+                        float3& w) {
     float const mt = data.majorant_mu_t;
 
     if (mt < Min_mt) {
         return false;
     }
 
-//    if (data.minorant_mu_t > 0.f) {
-//        return decomposition_track(ray, data, material, filter, rng, worker, t_out, w);
-//    }
+    //    if (data.minorant_mu_t > 0.f) {
+    //        return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
+    //    }
 
     float3 lw = w;
 

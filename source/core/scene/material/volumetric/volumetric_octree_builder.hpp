@@ -14,7 +14,7 @@ class Octree_builder {
   public:
     using Texture = image::texture::Texture;
 
-    void build(Gridtree& tree, Texture const& texture, float2 min_max_extinction);
+    void build(Gridtree& tree, Texture const& texture, Interval_data const& idata);
 
   private:
     struct Build_node {
@@ -25,7 +25,7 @@ class Octree_builder {
         Interval_data data;
     };
 
-    void split(Build_node* node, Box const& box, Texture const& texture, float2 min_max_extinction,
+    void split(Build_node* node, Box const& box, Texture const& texture, Interval_data const& idata,
                uint32_t depth, uint32_t max_depth);
 
     void serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data);

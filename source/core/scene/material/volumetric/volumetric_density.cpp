@@ -27,11 +27,4 @@ Material::CC Density::collision_coefficients(f_float3 uvw, Sampler_filter filter
     return {d * absorption_coefficient_, d * scattering_coefficient_};
 }
 
-Material::CC Density::collision_coefficients(f_float3 uvw, float min_density, Sampler_filter filter,
-                                             Worker const& worker) const {
-    float const d = density(uvw, filter, worker) - min_density;
-
-    return {d * absorption_coefficient_, d * scattering_coefficient_};
-}
-
 }  // namespace scene::material::volumetric
