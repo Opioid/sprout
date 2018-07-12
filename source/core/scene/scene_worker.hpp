@@ -46,7 +46,7 @@ class Worker {
 
     bool visibility(Ray const& ray) const;
 
-    float masked_visibility(Ray const& ray, Sampler_filter filter) const;
+    bool masked_visibility(Ray const& ray, Sampler_filter filter, float& mv) const;
 
     Scene const& scene() const;
 

@@ -36,9 +36,10 @@ class BVH_wrapper {
 
     bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const;
 
-    float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
+    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const;
 
-    float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
+    bool thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
+                         float3& ta) const;
 
   private:
     bvh::Tree<Prop> tree_;

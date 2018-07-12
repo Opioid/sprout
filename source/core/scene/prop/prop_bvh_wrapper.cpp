@@ -261,7 +261,8 @@ bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) con
     return false;
 }
 
-float BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const {
+bool BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker,
+                          float& o) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -303,7 +304,7 @@ float BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& 
                 opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
 
                 if (opacity >= 1.f) {
-                    return 1.f;
+                    return false;
                 }
             }
         }
@@ -315,15 +316,16 @@ float BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& 
         auto const p = infinite_props_[i];
         opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
         if (opacity >= 1.f) {
-            return 1.f;
+            return false;
         }
     }
 
-    return opacity;
+    o = opacity;
+    return true;
 }
 
-float3 BVH_wrapper::thin_absorption(Ray const& ray, Sampler_filter filter,
-                                    Worker const& worker) const {
+bool BVH_wrapper::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
+                                  float3& ta) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -364,7 +366,7 @@ float3 BVH_wrapper::thin_absorption(Ray const& ray, Sampler_filter filter,
                 auto const p = props[i];
                 absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
                 if (math::all_greater_equal(absorption, 1.f)) {
-                    return float3(1.f);
+                    return false;
                 }
             }
         }
@@ -376,11 +378,12 @@ float3 BVH_wrapper::thin_absorption(Ray const& ray, Sampler_filter filter,
         auto const p = infinite_props_[i];
         absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
         if (math::all_greater_equal(absorption, 1.f)) {
-            return float3(1.f);
+            return false;
         }
     }
 
-    return absorption;
+    ta = absorption;
+    return true;
 }
 
 }  // namespace scene::prop

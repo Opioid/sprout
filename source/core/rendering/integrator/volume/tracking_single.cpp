@@ -311,9 +311,8 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
         Intersection tintersection   = intersection;
         tintersection.geo.subsurface = true;
 
-        float3 const tv = worker.tinted_visibility(shadow_ray, tintersection,
-                                                   Sampler_filter::Nearest);
-        if (math::any_greater_zero(tv)) {
+        if (float3 tv;
+            worker.tinted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest, tv)) {
             float3 const tr = worker.transmittance(shadow_ray);
 
             float const phase = 1.f / (4.f * math::Pi);

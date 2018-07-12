@@ -154,9 +154,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
             shadow_ray.max_t   = light_sample.shape.t - offset;
 
-            //	float3 const tv = worker.tinted_visibility(shadow_ray, filter);
-            float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
-            if (math::any_greater_zero(tv)) {
+            if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
                 float3 const tr = worker.transmittance(shadow_ray);
 
                 auto const bxdf = material_sample.evaluate(light_sample.shape.wi);

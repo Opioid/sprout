@@ -147,8 +147,7 @@ float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& s
     Ray shadow_ray(to, wi, ray_offset, math::length(axis) - ray_offset, history.depth, history.time,
                    history.wavelength);
 
-    float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
-    if (math::any_greater_zero(tv)) {
+    if (float3 tv; worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest, tv)) {
         float3 const tr = worker.transmittance(shadow_ray);
 
         float const thing = math::dot(wi, float3(0.f, 1.f, 0.f));
@@ -177,8 +176,7 @@ float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& f
     Ray shadow_ray(to, wi, ray_offset, math::length(axis) - ray_offset, history.depth, history.time,
                    history.wavelength);
 
-    float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
-    if (math::any_greater_zero(tv)) {
+    if (float3 tv; worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest, tv)) {
         float3 const tr = worker.transmittance(shadow_ray);
 
         auto const from_bxdf = from_sample.evaluate(wi);
@@ -216,9 +214,7 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
             float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
             shadow_ray.max_t   = light_sample.shape.t - offset;
 
-            //	float3 const tv = worker.tinted_visibility(shadow_ray, filter);
-            float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
-            if (math::any_greater_zero(tv)) {
+            if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
                 float3 const tr = worker.transmittance(shadow_ray);
 
                 auto const bxdf = material_sample.evaluate(light_sample.shape.wi);

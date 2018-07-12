@@ -141,17 +141,20 @@ float3 Worker::transmittance(Ray const& ray) {
     return transmittance;
 }
 
-float3 Worker::tinted_visibility(Ray const& ray, Sampler_filter filter) {
-    return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
+bool Worker::tinted_visibility(Ray const& ray, Sampler_filter filter, float3& tv) {
+    bool const visible = scene_->thin_absorption(ray, filter, *this, tv);
+
+    tv = float3(1.f) - tv;
+
+    return visible;
 }
 
-float3 Worker::tinted_visibility(Ray& ray, Intersection const& intersection,
-                                 Sampler_filter filter) {
+bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
+                               float3& tv) {
     if (intersection.geo.subsurface && intersection.material()->ior() > 1.f) {
         float const ray_max_t = ray.max_t;
 
-        float epsilon;
-        if (intersect(ray, epsilon)) {
+        if (float epsilon; intersect(ray, epsilon)) {
             float3 const tr = volume_integrator_->transmittance(ray, *this);
 
             SOFT_ASSERT(math::all_finite_and_positive(tr));
@@ -159,11 +162,15 @@ float3 Worker::tinted_visibility(Ray& ray, Intersection const& intersection,
             ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
             ray.max_t = ray_max_t;
 
-            return tr * tinted_visibility(ray, filter);
+            bool const visible = tinted_visibility(ray, filter, tv);
+
+            tv *= tr;
+
+            return visible;
         }
     }
 
-    return tinted_visibility(ray, filter);
+    return tinted_visibility(ray, filter, tv);
 }
 
 sampler::Sampler* Worker::sampler() {

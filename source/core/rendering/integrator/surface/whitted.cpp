@@ -104,8 +104,8 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                 shadow_ray.set_direction(light_sample.shape.wi);
                 shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-                float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Undefined);
-                if (math::any_greater_zero(tv)) {
+                if (float3 tv;
+                    worker.tinted_visibility(shadow_ray, Sampler_filter::Undefined, tv)) {
                     float3 const tr = worker.transmittance(shadow_ray);
 
                     auto const bxdf = material_sample.evaluate(light_sample.shape.wi);

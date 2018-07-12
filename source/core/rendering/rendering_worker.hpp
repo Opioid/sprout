@@ -61,9 +61,10 @@ class Worker : public scene::Worker {
 
     float3 transmittance(Ray const& ray);
 
-    float3 tinted_visibility(Ray const& ray, Sampler_filter filter);
+    bool tinted_visibility(Ray const& ray, Sampler_filter filter, float3& tv);
 
-    float3 tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter);
+    bool tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
+                           float3& tv);
 
     sampler::Sampler* sampler();
 

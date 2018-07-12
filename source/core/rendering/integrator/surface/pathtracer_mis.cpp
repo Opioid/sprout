@@ -276,11 +276,9 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
                    light_sample.shape.t - shadow_offset, history.depth, history.time,
                    history.wavelength);
 
-    float3 const tv = worker.tinted_visibility(shadow_ray, intersection, filter);
+    if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
+        SOFT_ASSERT(math::all_finite(tv));
 
-    SOFT_ASSERT(math::all_finite(tv));
-
-    if (math::any_greater_zero(tv)) {
         float3 const tr = worker.transmittance(shadow_ray);
 
         SOFT_ASSERT(math::all_finite(tr));

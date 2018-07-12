@@ -82,8 +82,15 @@ bool Worker::visibility(Ray const& ray) const {
     return !scene_->intersect_p(ray, node_stack_);
 }
 
-float Worker::masked_visibility(Ray const& ray, Sampler_filter filter) const {
-    return 1.f - scene_->opacity(ray, filter, *this);
+bool Worker::masked_visibility(Ray const& ray, Sampler_filter filter, float& mv) const {
+    float      o;
+    bool const visible = scene_->opacity(ray, filter, *this, o);
+    if (visible) {
+        mv = 1.f - o;
+        return true;
+    }
+
+    return false;
 }
 
 Scene const& Worker::scene() const {
