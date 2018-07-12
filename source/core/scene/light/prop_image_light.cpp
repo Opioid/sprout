@@ -15,10 +15,9 @@
 
 namespace scene::light {
 
-bool Prop_image_light::sample(f_float3 p, f_float3 n, float time,
-                              Transformation const& transformation, bool total_sphere,
-                              sampler::Sampler& sampler, uint32_t sampler_dimension,
-                              Sampler_filter filter, Worker const& worker,
+bool Prop_image_light::sample(f_float3 p, f_float3 n, Transformation const& transformation,
+                              bool total_sphere, sampler::Sampler& sampler,
+                              uint32_t   sampler_dimension, Worker const& /*worker*/,
                               Sample_to& result) const {
     auto const material = prop_->material(part_);
 
@@ -34,25 +33,21 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n, float time,
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result.shape)) {
+    if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result)) {
         return false;
     }
 
-    if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
-        result.shape.pdf *= rs.pdf;
-        result.radiance = material->sample_radiance(result.shape.wi, rs.uv, area, time, filter,
-                                                    worker);
-
+    if (math::dot(result.wi, n) > 0.f || total_sphere) {
+        result.pdf *= rs.pdf;
         return true;
     }
 
     return false;
 }
 
-bool Prop_image_light::sample(f_float3 p, float time, Transformation const& transformation,
-                              sampler::Sampler& sampler, uint32_t sampler_dimension,
-                              Sampler_filter filter, Worker const& worker,
-                              Sample_to& result) const {
+bool Prop_image_light::sample(f_float3 p, Transformation const& transformation,
+                              sampler::Sampler& sampler, uint32_t  sampler_dimension,
+                              Worker const& /*worker*/, Sample_to& result) const {
     auto const material = prop_->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -67,19 +62,18 @@ bool Prop_image_light::sample(f_float3 p, float time, Transformation const& tran
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result.shape)) {
+    if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result)) {
         return false;
     }
 
-    result.shape.pdf *= rs.pdf;
-    result.radiance = material->sample_radiance(result.shape.wi, rs.uv, area, time, filter, worker);
+    result.pdf *= rs.pdf;
 
     return true;
 }
 
-bool Prop_image_light::sample(float time, Transformation const& transformation,
+bool Prop_image_light::sample(float /*time*/, Transformation const& transformation,
                               sampler::Sampler& sampler, uint32_t sampler_dimension,
-                              Sampler_filter filter, Worker const& worker,
+                              Sampler_filter /*filter*/, Worker const& /*worker*/,
                               Sample_from& result) const {
     auto const material = prop_->material(part_);
 
@@ -100,8 +94,6 @@ bool Prop_image_light::sample(float time, Transformation const& transformation,
     }
 
     result.shape.pdf *= rs.pdf;
-    result.radiance = material->sample_radiance(-result.shape.dir, rs.uv, area, time, filter,
-                                                worker);
 
     return true;
 }

@@ -90,6 +90,73 @@ bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
     return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
 }
 
+bool Worker::transmitted_visibility(Ray& ray, Intersection const& intersection,
+                                    Sampler_filter filter, float3& v) {
+    if (float3 tv; tinted_visibility(ray, intersection, filter, tv)) {
+        if (float3 tr; transmittance(ray, tr)) {
+            v = tv * tr;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+sampler::Sampler* Worker::sampler() {
+    return sampler_;
+}
+
+scene::prop::Interface_stack& Worker::interface_stack() {
+    return interface_stack_;
+}
+
+void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
+    if (intersection.same_hemisphere(dir)) {
+        interface_stack_.remove(intersection);
+    } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
+        interface_stack_.push(intersection);
+    }
+}
+
+uint32_t Worker::bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
+                              float normalized_tick_slice) {
+    if (photon_mapper_) {
+        return photon_mapper_->bake(*photon_map_, begin, end, normalized_tick_offset,
+                                    normalized_tick_slice, *this);
+    }
+
+    return 0;
+}
+
+float3 Worker::photon_li(f_float3 position, Material_sample const& sample) const {
+    if (photon_map_) {
+        return photon_map_->li(position, sample);
+    }
+
+    return float3::identity();
+}
+
+size_t Worker::num_bytes() const {
+    size_t num_bytes = sizeof(*this);
+
+    num_bytes += surface_integrator_->num_bytes();
+    num_bytes += volume_integrator_->num_bytes();
+    num_bytes += sampler_->num_bytes();
+    num_bytes += interface_stack_.num_bytes();
+    num_bytes += interface_stack_temp_.num_bytes();
+
+    return num_bytes;
+}
+
+static inline bool tinted_visibility(scene::Ray const& ray, Worker::Sampler_filter filter,
+                                     scene::Scene const* scene, Worker const& worker, float3& tv) {
+    bool const visible = scene->thin_absorption(ray, filter, worker, tv);
+
+    tv = float3(1.f) - tv;
+
+    return visible;
+}
+
 bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     if (!scene_->has_volumes()) {
         transmittance = float3(1.f);
@@ -146,14 +213,6 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     return true;
 }
 
-bool Worker::tinted_visibility(Ray const& ray, Sampler_filter filter, float3& tv) {
-    bool const visible = scene_->thin_absorption(ray, filter, *this, tv);
-
-    tv = float3(1.f) - tv;
-
-    return visible;
-}
-
 bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
                                float3& tv) {
     if (intersection.geo.subsurface && intersection.material()->ior() > 1.f) {
@@ -166,7 +225,7 @@ bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Sampl
                 ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
                 ray.max_t = ray_max_t;
 
-                bool const visible = tinted_visibility(ray, filter, tv);
+                bool const visible = rendering::tinted_visibility(ray, filter, scene_, *this, tv);
 
                 tv *= tr;
 
@@ -177,53 +236,7 @@ bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Sampl
         }
     }
 
-    return tinted_visibility(ray, filter, tv);
-}
-
-sampler::Sampler* Worker::sampler() {
-    return sampler_;
-}
-
-scene::prop::Interface_stack& Worker::interface_stack() {
-    return interface_stack_;
-}
-
-void Worker::interface_change(f_float3 dir, Intersection const& intersection) {
-    if (intersection.same_hemisphere(dir)) {
-        interface_stack_.remove(intersection);
-    } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
-        interface_stack_.push(intersection);
-    }
-}
-
-uint32_t Worker::bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
-                              float normalized_tick_slice) {
-    if (photon_mapper_) {
-        return photon_mapper_->bake(*photon_map_, begin, end, normalized_tick_offset,
-                                    normalized_tick_slice, *this);
-    }
-
-    return 0;
-}
-
-float3 Worker::photon_li(f_float3 position, Material_sample const& sample) const {
-    if (photon_map_) {
-        return photon_map_->li(position, sample);
-    }
-
-    return float3::identity();
-}
-
-size_t Worker::num_bytes() const {
-    size_t num_bytes = sizeof(*this);
-
-    num_bytes += surface_integrator_->num_bytes();
-    num_bytes += volume_integrator_->num_bytes();
-    num_bytes += sampler_->num_bytes();
-    num_bytes += interface_stack_.num_bytes();
-    num_bytes += interface_stack_temp_.num_bytes();
-
-    return num_bytes;
+    return rendering::tinted_visibility(ray, filter, scene_, *this, tv);
 }
 
 }  // namespace rendering

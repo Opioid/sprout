@@ -12,8 +12,8 @@ namespace scene::material::substitute {
 Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
-float3 Material_base::sample_radiance(f_float3 /*wi*/, float2 uv, float /*area*/, float /*time*/,
-                                      Sampler_filter filter, Worker const& worker) const {
+float3 Material_base::evaluate_radiance(f_float3 /*wi*/, float2 uv, float /*area*/, float /*time*/,
+                                        Sampler_filter filter, Worker const& worker) const {
     if (emission_map_.is_valid()) {
         // For some reason Clang needs this to find inherited Material::sampler_key_
         auto& sampler = worker.sampler_2D(sampler_key(), filter);

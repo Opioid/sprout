@@ -263,32 +263,30 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
                                       const Material_sample& material_sample, Sampler_filter filter,
                                       Worker& worker) {
     // Light source importance sample
-    scene::light::Sample_to light_sample;
+    scene::shape::Sample_to light_sample;
     if (!light.sample(intersection.geo.p, material_sample.geometric_normal(), history.time,
                       material_sample.is_translucent(), light_sampler(history.depth),
-                      sampler_dimension, Sampler_filter::Nearest, worker, light_sample)) {
+                      sampler_dimension, worker, light_sample)) {
         return float3(0.f);
     }
 
-    float const shadow_offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+    float const shadow_offset = take_settings_.ray_offset_factor * light_sample.epsilon;
 
-    Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
-                   light_sample.shape.t - shadow_offset, history.depth, history.time,
-                   history.wavelength);
+    Ray shadow_ray(intersection.geo.p, light_sample.wi, ray_offset, light_sample.t - shadow_offset,
+                   history.depth, history.time, history.wavelength);
 
-    if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
+    if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
         SOFT_ASSERT(math::all_finite(tv));
 
-        if (float3 tr; worker.transmittance(shadow_ray, tr)) {
-            SOFT_ASSERT(math::all_finite(tr));
+        auto const bxdf = material_sample.evaluate(light_sample.wi);
 
-            auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
+        float3 const radiance = light.evaluate_radiance(light_sample, history.time,
+                                                        Sampler_filter::Nearest, worker);
 
-            float const light_pdf = light_sample.shape.pdf * light_weight;
-            float const weight    = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
+        float const light_pdf = light_sample.pdf * light_weight;
+        float const weight    = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
-            return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * bxdf.reflection);
-        }
+        return (weight / light_pdf) * (tv * radiance * bxdf.reflection);
     }
 
     return float3(0.f);

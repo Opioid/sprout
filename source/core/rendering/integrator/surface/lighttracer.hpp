@@ -30,13 +30,6 @@ class alignas(64) Lighttracer final : public Integrator {
   private:
     bool generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance);
 
-    float3 connect(f_float3 from, f_float3 to, Material_sample const& sample, Ray const& history,
-                   float ray_offst, Worker& worker);
-
-    float3 connect(f_float3 from, f_float3 to, Material_sample const& from_sample,
-                   Material_sample const& to_sample, Ray const& history, float ray_offset,
-                   Worker& worker);
-
     float3 direct_light(Ray const& ray, Intersection const& intersection,
                         const Material_sample& material_sample, Sampler_filter filter,
                         Worker& worker);

@@ -14,9 +14,9 @@ class Sky_material : public Material {
                                                   const scene::Worker& worker,
                                                   uint32_t             depth) const override final;
 
-    virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
-                                   Sampler_filter       filter,
-                                   const scene::Worker& worker) const override final;
+    virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
+                                     Sampler_filter       filter,
+                                     const scene::Worker& worker) const override final;
 
     virtual float3 average_radiance(float area) const override final;
 
@@ -39,9 +39,9 @@ class Sky_baked_material : public Material {
                                                   const scene::Worker& worker,
                                                   uint32_t             depth) const override final;
 
-    virtual float3 sample_radiance(f_float3 wi, float2 uv, float area, float time,
-                                   Sampler_filter       filter,
-                                   const scene::Worker& worker) const override final;
+    virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
+                                     Sampler_filter       filter,
+                                     const scene::Worker& worker) const override final;
 
     virtual float3 average_radiance(float area) const override final;
 

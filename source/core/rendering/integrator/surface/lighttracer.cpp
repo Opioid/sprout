@@ -138,56 +138,6 @@ bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float
     return true;
 }
 
-float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& sample,
-                            Ray const& history, float ray_offset, Worker& worker) {
-    float3 const axis = to - from;
-
-    float3 const wi = math::normalize(axis);
-
-    Ray shadow_ray(to, wi, ray_offset, math::length(axis) - ray_offset, history.depth, history.time,
-                   history.wavelength);
-
-    if (float3 tv; worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest, tv)) {
-        if (float3 tr; worker.transmittance(shadow_ray, tr)) {
-            float const thing = math::dot(wi, float3(0.f, 1.f, 0.f));
-
-            if (thing <= 0.f) {
-                return float3(0.f);
-            }
-
-            // ----
-
-            auto const bxdf = sample.evaluate(wi);
-
-            return thing * (tv * tr) * bxdf.reflection;
-        }
-    }
-
-    return float3(0.f);
-}
-
-float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& from_sample,
-                            Material_sample const& to_sample, Ray const& history, float ray_offset,
-                            Worker& worker) {
-    float3 const axis = to - from;
-
-    float3 const wi = math::normalize(axis);
-
-    Ray shadow_ray(to, wi, ray_offset, math::length(axis) - ray_offset, history.depth, history.time,
-                   history.wavelength);
-
-    if (float3 tv; worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest, tv)) {
-        if (float3 tr; worker.transmittance(shadow_ray, tr)) {
-            auto const from_bxdf = from_sample.evaluate(wi);
-            auto const to_bxdf   = to_sample.evaluate(-wi);
-
-            return from_bxdf.reflection * to_bxdf.reflection;
-        }
-    }
-
-    return float3(0.f);
-}
-
 float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersection,
                                  const Material_sample& material_sample, Sampler_filter filter,
                                  Worker& worker) {
@@ -206,21 +156,20 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
     for (uint32_t i = 1; i > 0; --i) {
         auto const light = worker.scene().random_light(rng_.random_float());
 
-        scene::light::Sample_to light_sample;
+        scene::shape::Sample_to light_sample;
         if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-                             material_sample.is_translucent(), sampler_, 0, Sampler_filter::Nearest,
-                             worker, light_sample)) {
-            shadow_ray.set_direction(light_sample.shape.wi);
-            float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
-            shadow_ray.max_t   = light_sample.shape.t - offset;
+                             material_sample.is_translucent(), sampler_, 0, worker, light_sample)) {
+            shadow_ray.set_direction(light_sample.wi);
+            float const offset = take_settings_.ray_offset_factor * light_sample.epsilon;
+            shadow_ray.max_t   = light_sample.t - offset;
 
-            if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
-                if (float3 tr; worker.transmittance(shadow_ray, tr)) {
-                    auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
+            if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
+                auto const bxdf = material_sample.evaluate(light_sample.wi);
 
-                    result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
-                              (light.pdf * light_sample.shape.pdf);
-                }
+                float3 const radiance = light.ref.evaluate_radiance(
+                    light_sample, ray.time, Sampler_filter::Nearest, worker);
+
+                result += (tv * radiance * bxdf.reflection) / (light.pdf * light_sample.pdf);
             }
         }
     }

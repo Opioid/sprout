@@ -35,8 +35,8 @@ material::Sample const& Emissionmap::sample(f_float3 wo, Renderstate const& rs,
     return sample;
 }
 
-float3 Emissionmap::sample_radiance(f_float3 /*wi*/, float2 uv, float /*area*/, float /*time*/,
-                                    Sampler_filter filter, Worker const& worker) const {
+float3 Emissionmap::evaluate_radiance(f_float3 /*wi*/, float2 uv, float /*area*/, float /*time*/,
+                                      Sampler_filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_factor_ * emission_map_.sample_3(sampler, uv);
 }

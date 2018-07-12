@@ -30,8 +30,8 @@ material::Sample const& Constant::sample(f_float3 wo, Renderstate const& rs,
     return sample;
 }
 
-float3 Constant::sample_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
-                                 Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+float3 Constant::evaluate_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
+                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const {
     return emission_;
 }
 

@@ -31,9 +31,9 @@ const scene::material::Sample& Sun_material::sample(f_float3 wo, Renderstate con
     return sample;
 }
 
-float3 Sun_material::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/, float /*time*/,
-                                     Sampler_filter /*filter*/,
-                                     const scene::Worker& /*worker*/) const {
+float3 Sun_material::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/, float /*time*/,
+                                       Sampler_filter /*filter*/,
+                                       const scene::Worker& /*worker*/) const {
     return model_.evaluate_sky_and_sun(wi);
 }
 

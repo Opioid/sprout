@@ -8,21 +8,19 @@ namespace scene::light {
 Light::~Light() {}
 
 bool Light::sample(f_float3 p, f_float3 n, float time, bool total_sphere, sampler::Sampler& sampler,
-                   uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
-                   Sample_to& result) const {
+                   uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
-    return sample(p, n, time, transformation, total_sphere, sampler, sampler_dimension, filter,
-                  worker, result);
+    return sample(p, n, transformation, total_sphere, sampler, sampler_dimension, worker, result);
 }
 
 bool Light::sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                   Sampler_filter filter, Worker const& worker, Sample_to& result) const {
+                   Worker const& worker, Sample_to& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
-    return sample(p, time, transformation, sampler, sampler_dimension, filter, worker, result);
+    return sample(p, transformation, sampler, sampler_dimension, worker, result);
 }
 
 bool Light::sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,

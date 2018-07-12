@@ -28,8 +28,8 @@ void Material::compile() {}
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-float3 Material::sample_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
-                                 Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+float3 Material::evaluate_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
+                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const {
     return float3(0.f);
 }
 

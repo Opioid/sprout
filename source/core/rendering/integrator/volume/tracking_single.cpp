@@ -299,12 +299,11 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
 
     auto const light = worker.scene().random_light(rng_.random_float());
 
-    scene::light::Sample_to light_sample;
-    if (light.ref.sample(position, ray.time, sampler_, 0, Sampler_filter::Nearest, worker,
-                         light_sample)) {
-        shadow_ray.set_direction(light_sample.shape.wi);
-        float const offset = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
-        shadow_ray.max_t   = light_sample.shape.t - offset;
+    scene::shape::Sample_to light_sample;
+    if (light.ref.sample(position, ray.time, sampler_, 0, worker, light_sample)) {
+        shadow_ray.set_direction(light_sample.wi);
+        float const offset = take_settings_.ray_offset_factor * light_sample.epsilon;
+        shadow_ray.max_t   = light_sample.t - offset;
 
         //	float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 
@@ -312,13 +311,13 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
         tintersection.geo.subsurface = true;
 
         if (float3 tv;
-            worker.tinted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest, tv)) {
-            if (float3 tr; worker.transmittance(shadow_ray, tr)) {
-                float const phase = 1.f / (4.f * math::Pi);
+            worker.transmitted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest, tv)) {
+            float const phase = 1.f / (4.f * math::Pi);
 
-                result += ((tv * tr) * (phase * light_sample.radiance)) /
-                          (light.pdf * light_sample.shape.pdf);
-            }
+            float3 const radiance = light.ref.evaluate_radiance(light_sample, ray.time,
+                                                                Sampler_filter::Nearest, worker);
+
+            result += (phase * tv * radiance) / (light.pdf * light_sample.pdf);
         }
     }
 

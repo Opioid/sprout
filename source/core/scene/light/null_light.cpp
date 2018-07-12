@@ -9,18 +9,16 @@ const Light::Transformation& Null_light::transformation_at(float /*time*/,
     return transformation;
 }
 
-bool Null_light::sample(f_float3 /*p*/, f_float3 /*n*/, float /*time*/,
-                        Transformation const& /*transformation*/, bool /*total_sphere*/,
-                        sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                        Sampler_filter /*filter*/, Worker const& /*worker*/,
+bool Null_light::sample(f_float3 /*p*/, f_float3 /*n*/, Transformation const& /*transformation*/,
+                        bool /*total_sphere*/, sampler::Sampler& /*sampler*/,
+                        uint32_t /*sampler_dimension*/, Worker const& /*worker*/,
                         Sample_to& /*result*/) const {
     return false;
 }
 
-bool Null_light::sample(f_float3 /*p*/, float /*time*/, Transformation const& /*transformation*/,
+bool Null_light::sample(f_float3 /*p*/, Transformation const& /*transformation*/,
                         sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                        Sampler_filter /*filter*/, Worker const& /*worker*/,
-                        Sample_to& /*result*/) const {
+                        Worker const& /*worker*/, Sample_to& /*result*/) const {
     return false;
 }
 
@@ -29,6 +27,11 @@ bool Null_light::sample(float /*time*/, Transformation const& /*transformation*/
                         Sampler_filter /*filter*/, Worker const& /*worker*/,
                         Sample_from& /*result*/) const {
     return false;
+}
+
+float3 Null_light::evaluate_radiance(Sample_to const& /*sample*/, float /*time*/,
+                                     Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+    return float3(0.f);
 }
 
 float Null_light::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,

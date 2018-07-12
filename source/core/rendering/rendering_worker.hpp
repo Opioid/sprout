@@ -59,12 +59,8 @@ class Worker : public scene::Worker {
     bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter, float3& li,
                 float3& transmittance);
 
-    bool transmittance(Ray const& ray, float3& transmittance);
-
-    bool tinted_visibility(Ray const& ray, Sampler_filter filter, float3& tv);
-
-    bool tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
-                           float3& tv);
+    bool transmitted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
+                                float3& tv);
 
     sampler::Sampler* sampler();
 
@@ -80,6 +76,11 @@ class Worker : public scene::Worker {
     size_t num_bytes() const;
 
   protected:
+    bool transmittance(Ray const& ray, float3& transmittance);
+
+    bool tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
+                           float3& tv);
+
     integrator::surface::Integrator* surface_integrator_ = nullptr;
     integrator::volume::Integrator*  volume_integrator_  = nullptr;
 

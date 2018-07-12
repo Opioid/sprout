@@ -31,6 +31,7 @@ class Prop;
 namespace shape {
 struct Intersection;
 class Node_stack;
+struct Sample_to;
 }  // namespace shape
 
 class Worker;
@@ -38,7 +39,6 @@ struct Ray;
 
 namespace light {
 
-struct Sample_to;
 struct Sample_from;
 
 class Light {
@@ -47,30 +47,33 @@ class Light {
     using Transformation = entity::Composed_transformation;
     using Sampler_filter = material::Sampler_settings::Filter;
     using Intersection   = shape::Intersection;
+    using Sample_to      = shape::Sample_to;
 
     virtual ~Light();
 
     virtual Transformation const& transformation_at(float           time,
                                                     Transformation& transformation) const = 0;
 
-    virtual bool sample(f_float3 p, f_float3 n, float time, Transformation const& transformation,
+    virtual bool sample(f_float3 p, f_float3 n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker, Sample_to& result) const = 0;
+                        Worker const& worker, Sample_to& result) const = 0;
 
-    virtual bool sample(f_float3 p, float time, Transformation const& transformation,
-                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker, Sample_to& result) const = 0;
+    virtual bool sample(f_float3 p, Transformation const& transformation, sampler::Sampler& sampler,
+                        uint32_t sampler_dimension, Worker const& worker,
+                        Sample_to& result) const = 0;
 
     virtual bool sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
                         Sample_from& result) const = 0;
 
+    virtual float3 evaluate_radiance(Sample_to const& sample, float time, Sampler_filter filter,
+                                     Worker const& worker) const = 0;
+
     bool sample(f_float3 p, f_float3 n, float time, bool total_sphere, sampler::Sampler& sampler,
-                uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
-                Sample_to& result) const;
+                uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const;
 
     bool sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                Sampler_filter filter, Worker const& worker, Sample_to& result) const;
+                Worker const& worker, Sample_to& result) const;
 
     bool sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
                 Sampler_filter filter, Worker const& worker, Sample_from& result) const;

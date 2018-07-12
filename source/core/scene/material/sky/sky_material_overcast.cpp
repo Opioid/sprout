@@ -23,9 +23,9 @@ material::Sample const& Material_overcast::sample(f_float3 wo, Renderstate const
     return sample;
 }
 
-float3 Material_overcast::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
-                                          float /*time*/, Sampler_filter /*filter*/,
-                                          Worker const& /*worker*/) const {
+float3 Material_overcast::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
+                                            float /*time*/, Sampler_filter /*filter*/,
+                                            Worker const& /*worker*/) const {
     return overcast(wi);
 }
 

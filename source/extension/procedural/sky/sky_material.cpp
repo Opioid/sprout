@@ -41,8 +41,8 @@ material::Sample const& Sky_material::sample(f_float3 wo, Renderstate const& rs,
     return sample;
 }
 
-float3 Sky_material::sample_radiance(f_float3 wi, float2 /*uv*/, float /*area*/, float /*time*/,
-                                     Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+float3 Sky_material::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/, float /*time*/,
+                                       Sampler_filter /*filter*/, Worker const& /*worker*/) const {
     return model_.evaluate_sky(wi);
 }
 
@@ -86,9 +86,9 @@ material::Sample const& Sky_baked_material::sample(f_float3 wo, Renderstate cons
     return sample;
 }
 
-float3 Sky_baked_material::sample_radiance(f_float3 /*wi*/, float2        uv, float /*area*/,
-                                           float /*time*/, Sampler_filter filter,
-                                           Worker const& worker) const {
+float3 Sky_baked_material::evaluate_radiance(f_float3 /*wi*/, float2        uv, float /*area*/,
+                                             float /*time*/, Sampler_filter filter,
+                                             Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_map_.sample_3(sampler, uv);
 }

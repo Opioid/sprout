@@ -22,9 +22,9 @@ const Light::Transformation& Prop_light::transformation_at(float           time,
     return prop_->transformation_at(time, transformation);
 }
 
-bool Prop_light::sample(f_float3 p, f_float3 n, float time, Transformation const& transformation,
+bool Prop_light::sample(f_float3 p, f_float3 n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker, Sample_to& result) const {
+                        Worker const& worker, Sample_to& result) const {
     auto material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -33,29 +33,25 @@ bool Prop_light::sample(f_float3 p, f_float3 n, float time, Transformation const
 
     if (total_sphere) {
         if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
-                                    sampler_dimension, worker.node_stack(), result.shape)) {
+                                    sampler_dimension, worker.node_stack(), result)) {
             return false;
         }
     } else {
         if (!prop_->shape()->sample(part_, p, n, transformation, area, two_sided, sampler,
-                                    sampler_dimension, worker.node_stack(), result.shape)) {
+                                    sampler_dimension, worker.node_stack(), result)) {
             return false;
         }
 
-        if (math::dot(result.shape.wi, n) <= 0.f) {
+        if (math::dot(result.wi, n) <= 0.f) {
             return false;
         }
     }
 
-    result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv, area, time,
-                                                filter, worker);
-
     return true;
 }
 
-bool Prop_light::sample(f_float3 p, float time, Transformation const& transformation,
-                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker, Sample_to& result) const {
+bool Prop_light::sample(f_float3 p, Transformation const& transformation, sampler::Sampler& sampler,
+                        uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const {
     auto material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -63,14 +59,20 @@ bool Prop_light::sample(f_float3 p, float time, Transformation const& transforma
     bool const two_sided = material->is_two_sided();
 
     if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
-                                sampler_dimension, worker.node_stack(), result.shape)) {
+                                sampler_dimension, worker.node_stack(), result)) {
         return false;
     }
 
-    result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv, area, time,
-                                                filter, worker);
-
     return true;
+}
+
+float3 Prop_light::evaluate_radiance(Sample_to const& sample, float time, Sampler_filter filter,
+                                     Worker const& worker) const {
+    auto material = prop_->material(part_);
+
+    float const area = prop_->area(part_);
+
+    return material->evaluate_radiance(sample.wi, sample.uv, area, time, filter, worker);
 }
 
 bool Prop_light::sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
@@ -87,8 +89,8 @@ bool Prop_light::sample(float time, Transformation const& transformation, sample
         return false;
     }
 
-    result.radiance = material->sample_radiance(-result.shape.dir, result.shape.uv, area, time,
-                                                filter, worker);
+    result.radiance = material->evaluate_radiance(-result.shape.dir, result.shape.uv, area, time,
+                                                  filter, worker);
 
     return true;
 }

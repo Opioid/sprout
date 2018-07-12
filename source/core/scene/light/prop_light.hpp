@@ -18,19 +18,20 @@ class Prop_light : public Light {
     virtual Transformation const& transformation_at(
         float time, Transformation& transformation) const override final;
 
-    virtual bool sample(f_float3 p, f_float3 n, float time, Transformation const& transformation,
+    virtual bool sample(f_float3 p, f_float3 n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker,
-                        Sample_to& result) const override;
+                        Worker const& worker, Sample_to& result) const override;
 
-    virtual bool sample(f_float3 p, float time, Transformation const& transformation,
-                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sampler_filter filter, Worker const& worker,
+    virtual bool sample(f_float3 p, Transformation const& transformation, sampler::Sampler& sampler,
+                        uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const override;
 
     virtual bool sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
                         Sample_from& result) const override;
+
+    virtual float3 evaluate_radiance(Sample_to const& sample, float time, Sampler_filter filter,
+                                     Worker const& worker) const override final;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                       Sampler_filter filter, Worker const& worker) const override;
