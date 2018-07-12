@@ -126,7 +126,8 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
     }
 }
 
-float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker) {
+bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
+                             float3& transmittance) {
     SOFT_ASSERT(!worker.interface_stack().empty());
 
     auto const interface = worker.interface_stack().top();
@@ -136,7 +137,8 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
     float const d = ray.max_t;
 
     if (d - ray.min_t < Ray_epsilon) {
-        return float3(1.f);
+        transmittance = float3(1.f);
+        return true;
     }
 
     if (material.is_heterogeneous_volume()) {
@@ -161,7 +163,7 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
             if (Interval_data data; tree.intersect(local_ray, data)) {
                 if (!tracking_transmitted(w, local_ray, data, material, Sampler_filter::Nearest,
                                           rng, worker)) {
-                    return float3::identity();
+                    return false;
                 }
             }
 
@@ -171,14 +173,16 @@ float3 Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& work
             local_ray.max_t = d;
         }
 
-        return w;
+        transmittance = w;
+        return true;
     } else {
         auto const mu = material.collision_coefficients(interface->uv, Sampler_filter::Nearest,
                                                         worker);
 
         float3 const mu_t = mu.a + mu.s;
 
-        return attenuation(d - ray.min_t, mu_t);
+        transmittance = attenuation(d - ray.min_t, mu_t);
+        return true;
     }
 }
 

@@ -120,8 +120,8 @@ const& mu_s, float3 const& mu_n, float3 const& w, float& ps, float& pn, float3& 
         wn = (mu_n / (mt * pn));
 }
 */
-float3 Tracking_multi::transmittance(Ray const& ray, Worker& worker) {
-    return Tracking::transmittance(ray, rng_, worker);
+bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
+    return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
 bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,

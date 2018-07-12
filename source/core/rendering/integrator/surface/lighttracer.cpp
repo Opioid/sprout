@@ -148,19 +148,19 @@ float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& s
                    history.wavelength);
 
     if (float3 tv; worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest, tv)) {
-        float3 const tr = worker.transmittance(shadow_ray);
+        if (float3 tr; worker.transmittance(shadow_ray, tr)) {
+            float const thing = math::dot(wi, float3(0.f, 1.f, 0.f));
 
-        float const thing = math::dot(wi, float3(0.f, 1.f, 0.f));
+            if (thing <= 0.f) {
+                return float3(0.f);
+            }
 
-        if (thing <= 0.f) {
-            return float3(0.f);
+            // ----
+
+            auto const bxdf = sample.evaluate(wi);
+
+            return thing * (tv * tr) * bxdf.reflection;
         }
-
-        // ----
-
-        auto const bxdf = sample.evaluate(wi);
-
-        return thing * (tv * tr) * bxdf.reflection;
     }
 
     return float3(0.f);
@@ -177,12 +177,12 @@ float3 Lighttracer::connect(f_float3 from, f_float3 to, Material_sample const& f
                    history.wavelength);
 
     if (float3 tv; worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest, tv)) {
-        float3 const tr = worker.transmittance(shadow_ray);
+        if (float3 tr; worker.transmittance(shadow_ray, tr)) {
+            auto const from_bxdf = from_sample.evaluate(wi);
+            auto const to_bxdf   = to_sample.evaluate(-wi);
 
-        auto const from_bxdf = from_sample.evaluate(wi);
-        auto const to_bxdf   = to_sample.evaluate(-wi);
-
-        return from_bxdf.reflection * to_bxdf.reflection;
+            return from_bxdf.reflection * to_bxdf.reflection;
+        }
     }
 
     return float3(0.f);
@@ -215,12 +215,12 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
             shadow_ray.max_t   = light_sample.shape.t - offset;
 
             if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
-                float3 const tr = worker.transmittance(shadow_ray);
+                if (float3 tr; worker.transmittance(shadow_ray, tr)) {
+                    auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
-                auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
-
-                result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
-                          (light.pdf * light_sample.shape.pdf);
+                    result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
+                              (light.pdf * light_sample.shape.pdf);
+                }
             }
         }
     }

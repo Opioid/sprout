@@ -146,8 +146,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
         auto const light = worker.scene().random_light(rng_.random_float());
 
-        scene::light::Sample_to light_sample;
-        if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+        if (scene::light::Sample_to light_sample;
+            light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
                              material_sample.is_translucent(), sampler_, 0, Sampler_filter::Nearest,
                              worker, light_sample)) {
             shadow_ray.set_direction(light_sample.shape.wi);
@@ -155,12 +155,12 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             shadow_ray.max_t   = light_sample.shape.t - offset;
 
             if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
-                float3 const tr = worker.transmittance(shadow_ray);
+                if (float3 tr; worker.transmittance(shadow_ray, tr)) {
+                    auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
-                auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
-
-                result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
-                          (light.pdf * light_sample.shape.pdf);
+                    result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
+                              (light.pdf * light_sample.shape.pdf);
+                }
             }
         }
     }

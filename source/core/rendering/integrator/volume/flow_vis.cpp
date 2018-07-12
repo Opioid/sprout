@@ -26,8 +26,9 @@ void Flow_vis::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per
 
 void Flow_vis::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Flow_vis::transmittance(Ray const& /*ray*/, Worker& /*worker*/) {
-    return float3(1.f);
+bool Flow_vis::transmittance(Ray const& /*ray*/, Worker& /*worker*/, float3& transmittance) {
+    transmittance = float3(1.f);
+    return true;
 }
 
 bool Flow_vis::integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,

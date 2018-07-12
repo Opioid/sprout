@@ -15,7 +15,7 @@ class Integrator : public integrator::Integrator {
     Integrator(rnd::Generator& rng, take::Settings const& settings);
     virtual ~Integrator();
 
-    virtual float3 transmittance(Ray const& ray, Worker& worker) = 0;
+    virtual bool transmittance(Ray const& ray, Worker& worker, float3& transmittance) = 0;
 
     virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
                            Worker& worker, float3& li, float3& transmittance) = 0;

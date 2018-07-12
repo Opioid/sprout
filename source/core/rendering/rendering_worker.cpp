@@ -90,11 +90,10 @@ bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter,
     return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
 }
 
-float3 Worker::transmittance(Ray const& ray) {
-    float3 transmittance(1.f);
-
+bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     if (!scene_->has_volumes()) {
-        return transmittance;
+        transmittance = float3(1.f);
+        return true;
     }
 
     interface_stack_temp_ = interface_stack_;
@@ -112,14 +111,19 @@ float3 Worker::transmittance(Ray const& ray) {
 
     Intersection intersection;
 
+    float3 w(1.f);
+
     for (;;) {
         bool const hit = scene_->intersect_volume(tray, node_stack_, intersection);
 
         SOFT_ASSERT(tray.max_t > tray.min_t);
 
         if (!interface_stack_.empty()) {
-            float3 const tr = volume_integrator_->transmittance(tray, *this);
-            transmittance *= math::saturate(tr);
+            if (float3 tr; volume_integrator_->transmittance(tray, *this, tr)) {
+                w *= math::saturate(tr);
+            } else {
+                return false;
+            }
         }
 
         if (!hit) {
@@ -138,7 +142,8 @@ float3 Worker::transmittance(Ray const& ray) {
 
     interface_stack_.swap(interface_stack_temp_);
 
-    return transmittance;
+    transmittance = w;
+    return true;
 }
 
 bool Worker::tinted_visibility(Ray const& ray, Sampler_filter filter, float3& tv) {
@@ -155,18 +160,20 @@ bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Sampl
         float const ray_max_t = ray.max_t;
 
         if (float epsilon; intersect(ray, epsilon)) {
-            float3 const tr = volume_integrator_->transmittance(ray, *this);
+            if (float3 tr; volume_integrator_->transmittance(ray, *this, tr)) {
+                SOFT_ASSERT(math::all_finite_and_positive(tr));
 
-            SOFT_ASSERT(math::all_finite_and_positive(tr));
+                ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
+                ray.max_t = ray_max_t;
 
-            ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
-            ray.max_t = ray_max_t;
+                bool const visible = tinted_visibility(ray, filter, tv);
 
-            bool const visible = tinted_visibility(ray, filter, tv);
+                tv *= tr;
 
-            tv *= tr;
+                return visible;
+            }
 
-            return visible;
+            return false;
         }
     }
 

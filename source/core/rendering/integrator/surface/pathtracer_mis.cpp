@@ -279,16 +279,16 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
     if (float3 tv; worker.tinted_visibility(shadow_ray, intersection, filter, tv)) {
         SOFT_ASSERT(math::all_finite(tv));
 
-        float3 const tr = worker.transmittance(shadow_ray);
+        if (float3 tr; worker.transmittance(shadow_ray, tr)) {
+            SOFT_ASSERT(math::all_finite(tr));
 
-        SOFT_ASSERT(math::all_finite(tr));
+            auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
 
-        auto const bxdf = material_sample.evaluate(light_sample.shape.wi);
+            float const light_pdf = light_sample.shape.pdf * light_weight;
+            float const weight    = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
-        float const light_pdf = light_sample.shape.pdf * light_weight;
-        float const weight    = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
-
-        return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * bxdf.reflection);
+            return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * bxdf.reflection);
+        }
     }
 
     return float3(0.f);

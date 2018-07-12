@@ -50,7 +50,8 @@ class Tracking {
     using Interval_data  = scene::material::volumetric::Interval_data;
     using Intersection   = scene::prop::Intersection;
 
-    static float3 transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker);
+    static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
+                              float3& transmittance);
 
     static bool tracking(math::Ray const& ray, Interval_data const& data, Material const& material,
                          Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t,

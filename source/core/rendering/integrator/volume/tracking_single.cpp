@@ -134,8 +134,8 @@ math::average(mu_s * w); float const mn = math::average(mu_n * w); float const c
         wn = (mu_n / (mt * pn));
 }
 */
-float3 Tracking_single::transmittance(Ray const& ray, Worker& worker) {
-    return Tracking::transmittance(ray, rng_, worker);
+bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
+    return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
 bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
@@ -313,12 +313,12 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
 
         if (float3 tv;
             worker.tinted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest, tv)) {
-            float3 const tr = worker.transmittance(shadow_ray);
+            if (float3 tr; worker.transmittance(shadow_ray, tr)) {
+                float const phase = 1.f / (4.f * math::Pi);
 
-            float const phase = 1.f / (4.f * math::Pi);
-
-            result += ((tv * tr) * (phase * light_sample.radiance)) /
-                      (light.pdf * light_sample.shape.pdf);
+                result += ((tv * tr) * (phase * light_sample.radiance)) /
+                          (light.pdf * light_sample.shape.pdf);
+            }
         }
     }
 

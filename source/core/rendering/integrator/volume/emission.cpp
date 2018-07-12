@@ -19,8 +19,8 @@ void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per
 
 void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Emission::transmittance(Ray const& ray, Worker& worker) {
-    return Tracking::transmittance(ray, rng_, worker);
+bool Emission::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
+    return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
 bool Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Sampler_filter /*filter*/,

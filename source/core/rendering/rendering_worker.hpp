@@ -59,7 +59,7 @@ class Worker : public scene::Worker {
     bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter, float3& li,
                 float3& transmittance);
 
-    float3 transmittance(Ray const& ray);
+    bool transmittance(Ray const& ray, float3& transmittance);
 
     bool tinted_visibility(Ray const& ray, Sampler_filter filter, float3& tv);
 

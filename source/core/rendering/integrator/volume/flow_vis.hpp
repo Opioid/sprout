@@ -17,7 +17,8 @@ class alignas(64) Flow_vis final : public Integrator {
 
     virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-    virtual float3 transmittance(Ray const& ray, Worker& worker) override final;
+    virtual bool transmittance(Ray const& ray, Worker& worker,
+                               float3& transmittance) override final;
 
     virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
                            Worker& worker, float3& li, float3& transmittance) override final;
