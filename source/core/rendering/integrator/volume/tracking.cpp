@@ -265,9 +265,9 @@ bool Tracking::tracking(math::Ray const& ray, Control_data const& data, Material
         return false;
     }
 
-    if (data.minorant_mu_t > 0.f) {
-        return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
-    }
+//    if (data.minorant_mu_t > 0.f) {
+//        return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
+//    }
 
     float3 lw = w;
 
