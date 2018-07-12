@@ -177,7 +177,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
-            if (Tracking::Interval_data data; tree.intersect(local_ray, data)) {
+            if (Tracking::Control_data data; tree.intersect(local_ray, data)) {
                 if (float t;
                     Tracking::tracking(local_ray, data, material, filter, rng_, worker, t, w)) {
                     intersection.prop           = interface->prop;
@@ -202,6 +202,43 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         transmittance = w;
         return true;
     } else {
+        /*
+        static bool constexpr achromtatic = true;
+
+        if (achromtatic) {
+            auto const mu = material.collision_coefficients(interface->uv, filter, worker);
+
+            const float3 sigma_a = mu.a;
+
+                const float3 sigma_s = mu.s;
+
+            const float3 extinction = sigma_a + sigma_s;
+
+            float const minorant_mu_t = math::average(extinction);
+
+                const float3 scattering_albedo = sigma_s / extinction;
+
+                const float r = rng_.random_float();
+                const float t = ray.min_t -std::log(1.f - r) / minorant_mu_t;
+
+                if (t < d) {
+                    intersection.prop           = interface->prop;
+                    intersection.geo.p          = ray.point(t);
+                    intersection.geo.uv         = interface->uv;
+                    intersection.geo.part       = interface->part;
+                    intersection.geo.subsurface = true;
+
+                    li = float3(0.f);
+                    transmittance = scattering_albedo;
+                    return true;
+                }
+
+                li = float3(0.f);
+                transmittance = float3(1.f);
+                return true;
+        }
+    */
+
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
         float3 const mu_t = mu.a + mu.s;

@@ -14,7 +14,7 @@ class Octree_builder {
   public:
     using Texture = image::texture::Texture;
 
-    void build(Gridtree& tree, Texture const& texture, Interval_data const& idata);
+    void build(Gridtree& tree, Texture const& texture, Control_data const& idata);
 
   private:
     struct Build_node {
@@ -22,10 +22,10 @@ class Octree_builder {
 
         Build_node* children[8];
 
-        Interval_data data;
+        Control_data data;
     };
 
-    void split(Build_node* node, Box const& box, Texture const& texture, Interval_data const& idata,
+    void split(Build_node* node, Box const& box, Texture const& texture, Control_data const& idata,
                uint32_t depth, uint32_t max_depth);
 
     void serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data);
@@ -33,8 +33,8 @@ class Octree_builder {
     uint32_t num_nodes_;
     Node*    nodes_;
 
-    uint32_t       num_data_;
-    Interval_data* data_;
+    uint32_t      num_data_;
+    Control_data* data_;
 };
 
 }  // namespace scene::material::volumetric

@@ -22,7 +22,7 @@ namespace material {
 class Material;
 
 namespace volumetric {
-struct Interval_data;
+struct Control_data;
 }
 
 }  // namespace material
@@ -47,13 +47,13 @@ class Tracking {
     using Transformation = scene::entity::Composed_transformation;
     using Material       = scene::material::Material;
     using Sampler_filter = scene::material::Sampler_settings::Filter;
-    using Interval_data  = scene::material::volumetric::Interval_data;
+    using Control_data   = scene::material::volumetric::Control_data;
     using Intersection   = scene::prop::Intersection;
 
     static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
                               float3& transmittance);
 
-    static bool tracking(math::Ray const& ray, Interval_data const& data, Material const& material,
+    static bool tracking(math::Ray const& ray, Control_data const& data, Material const& material,
                          Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t,
                          float3& w);
 

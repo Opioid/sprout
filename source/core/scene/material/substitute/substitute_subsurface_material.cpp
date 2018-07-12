@@ -25,9 +25,9 @@ void Material_subsurface::compile() {
     if (density_map_.is_valid()) {
         float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-        volumetric::Interval_data idata{math::min_component(absorption_coefficient_),
-                                        math::min_component(scattering_coefficient_), 0.f,
-                                        math::max_component(extinction_coefficient)};
+        volumetric::Control_data idata{math::min_component(absorption_coefficient_),
+                                       math::min_component(scattering_coefficient_), 0.f,
+                                       math::max_component(extinction_coefficient)};
 
         auto const& texture = *density_map_.texture();
         {

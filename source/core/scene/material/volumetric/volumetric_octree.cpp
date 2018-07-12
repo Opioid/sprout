@@ -26,12 +26,12 @@ Node* Gridtree::allocate_nodes(uint32_t num_nodes) {
     return nodes_;
 }
 
-Interval_data* Gridtree::allocate_data(uint32_t num_data) {
+Control_data* Gridtree::allocate_data(uint32_t num_data) {
     if (num_data != num_data_) {
         num_data_ = num_data;
 
         memory::free_aligned(data_);
-        data_ = memory::allocate_aligned<Interval_data>(num_data);
+        data_ = memory::allocate_aligned<Control_data>(num_data);
     }
 
     return data_;
@@ -52,7 +52,7 @@ bool Gridtree::is_valid() const {
     return nullptr != nodes_;
 }
 
-bool Gridtree::intersect(math::Ray& ray, Interval_data& data) const {
+bool Gridtree::intersect(math::Ray& ray, Control_data& data) const {
     math::AABB box(float3(0.f), float3(1.f));
 
     float3 p = ray.point(ray.min_t);
@@ -129,7 +129,7 @@ bool Gridtree::intersect(math::Ray& ray, Interval_data& data) const {
 }
 
 size_t Gridtree::num_bytes() const {
-    return sizeof(*this) + num_nodes_ * sizeof(Node) + num_data_ * sizeof(Interval_data);
+    return sizeof(*this) + num_nodes_ * sizeof(Node) + num_data_ * sizeof(Control_data);
 }
 
 }  // namespace scene::material::volumetric

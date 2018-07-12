@@ -40,7 +40,7 @@ struct Node {
     }
 };
 
-struct Interval_data {
+struct Control_data {
     float minorant_mu_a;
     float minorant_mu_s;
     float minorant_mu_t;
@@ -54,13 +54,13 @@ class Gridtree {
 
     Node* allocate_nodes(uint32_t num_nodes);
 
-    Interval_data* allocate_data(uint32_t num_data);
+    Control_data* allocate_data(uint32_t num_data);
 
     void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions, int3 const& num_cells);
 
     bool is_valid() const;
 
-    bool intersect(math::Ray& ray, Interval_data& data) const;
+    bool intersect(math::Ray& ray, Control_data& data) const;
 
     size_t num_bytes() const;
 
@@ -68,8 +68,8 @@ class Gridtree {
     uint32_t num_nodes_;
     Node*    nodes_;
 
-    uint32_t       num_data_;
-    Interval_data* data_;
+    uint32_t      num_data_;
+    Control_data* data_;
 
     int3 dimensions_;
     int3 num_cells_;

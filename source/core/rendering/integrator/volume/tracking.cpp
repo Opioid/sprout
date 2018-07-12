@@ -19,9 +19,9 @@ namespace rendering::integrator::volume {
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
-                                                       Tracking::Interval_data const& data,
-                                                       Tracking::Material const&      material,
-                                                       Tracking::Sampler_filter       filter,
+                                                       Tracking::Control_data const& data,
+                                                       Tracking::Material const&     material,
+                                                       Tracking::Sampler_filter      filter,
                                                        rnd::Generator& rng, Worker& worker) {
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
@@ -67,13 +67,13 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
             return false;
         }
 
-        SOFT_ASSERT(math::all_finite(w));
+        SOFT_ASSERT(math::all_finite(transmitted));
     }
 }
 
 static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ray,
-                                        Tracking::Interval_data const& data,
-                                        Tracking::Material const&      material,
+                                        Tracking::Control_data const& data,
+                                        Tracking::Material const&     material,
                                         Tracking::Sampler_filter filter, rnd::Generator& rng,
                                         Worker& worker) {
     float const mt = data.majorant_mu_t;
@@ -122,7 +122,7 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
         //            }
         //        }
 
-        SOFT_ASSERT(math::all_finite(w));
+        SOFT_ASSERT(math::all_finite(transmitted));
     }
 }
 
@@ -160,7 +160,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
-            if (Interval_data data; tree.intersect(local_ray, data)) {
+            if (Control_data data; tree.intersect(local_ray, data)) {
                 if (!tracking_transmitted(w, local_ray, data, material, Sampler_filter::Nearest,
                                           rng, worker)) {
                     return false;
@@ -186,7 +186,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
     }
 }
 
-static inline bool decomposition_tracking(math::Ray const& ray, Tracking::Interval_data const& data,
+static inline bool decomposition_tracking(math::Ray const& ray, Tracking::Control_data const& data,
                                           Tracking::Material const& material,
                                           Tracking::Sampler_filter filter, rnd::Generator& rng,
                                           Worker& worker, float& t_out, float3& w) {
@@ -195,20 +195,19 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::Interv
     float const rc  = rng.random_float();
     float const t_c = ray.min_t - std::log(1.f - rc) / data.minorant_mu_t;
 
+    if (t_c < d) {
+        t_out = t_c;
+        w *= data.minorant_mu_s / data.minorant_mu_t;
+        return true;
+    }
+
     float const mt = data.majorant_mu_t - data.minorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
-        if (t_c < d) {
-            t_out = t_c;
-            w *= attenuation(d - t_c, data.minorant_mu_t);
-            return true;
-        } else {
-            w *= attenuation(d - ray.min_t, data.minorant_mu_t);
-            return false;
-        }
+        return false;
     }
 
-    float3 lw = attenuation(d - ray.min_t, data.minorant_mu_t) * w;
+    float3 lw = w;
 
     float const imt = 1.f / mt;
 
@@ -257,7 +256,7 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::Interv
     }
 }
 
-bool Tracking::tracking(math::Ray const& ray, Interval_data const& data, Material const& material,
+bool Tracking::tracking(math::Ray const& ray, Control_data const& data, Material const& material,
                         Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                         float3& w) {
     float const mt = data.majorant_mu_t;
@@ -266,9 +265,9 @@ bool Tracking::tracking(math::Ray const& ray, Interval_data const& data, Materia
         return false;
     }
 
-    //    if (data.minorant_mu_t > 0.f) {
-    //        return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
-    //    }
+    if (data.minorant_mu_t > 0.f) {
+        return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
+    }
 
     float3 lw = w;
 

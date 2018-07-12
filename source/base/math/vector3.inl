@@ -425,14 +425,14 @@ static inline constexpr Vector3f_a& operator+=(Vector3f_a& a, FVector3f_a b) {
 static inline constexpr Vector3f_a& operator-=(Vector3f_a& a, float b) {
     a[0] -= b;
     a[1] -= b;
-    a[1] -= b;
+    a[2] -= b;
     return a;
 }
 
 static inline constexpr Vector3f_a& operator-=(Vector3f_a& a, FVector3f_a b) {
     a[0] -= b[0];
     a[1] -= b[1];
-    a[1] -= b[2];
+    a[2] -= b[2];
     return a;
 }
 
