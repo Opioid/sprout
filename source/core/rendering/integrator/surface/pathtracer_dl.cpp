@@ -147,7 +147,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         auto const light = worker.scene().random_light(rng_.random_float());
 
         scene::shape::Sample_to light_sample;
-        if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+        if (!light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
                              material_sample.is_translucent(), sampler_, 0, worker, light_sample)) {
             continue;
         }
@@ -162,7 +162,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             float3 const radiance = light.ref.evaluate(light_sample, ray.time,
                                                        Sampler_filter::Nearest, worker);
 
-            result += (tv * radiance * bxdf.reflection) / (light.pdf * light_sample.pdf);
+            result += (light.pdf / light_sample.pdf) * (tv * radiance * bxdf.reflection);
         }
     }
 
