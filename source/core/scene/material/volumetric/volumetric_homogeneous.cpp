@@ -14,21 +14,25 @@ float3 Homogeneous::emission(math::Ray const& /*ray*/, Transformation const& /*t
 
 float3 Homogeneous::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
                                            Worker const& /*worker*/) const {
-    return absorption_coefficient_;
+    return cc_.a;
+}
+
+CC Homogeneous::collision_coefficients() const {
+    return cc_;
 }
 
 CC Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
                                        Worker const& /*worker*/) const {
-    return {absorption_coefficient_, scattering_coefficient_};
+    return cc_;
 }
 
 CC Homogeneous::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
                                        Worker const& /*worker*/) const {
-    return {absorption_coefficient_, scattering_coefficient_};
+    return cc_;
 }
 
 float Homogeneous::majorant_mu_t() const {
-    return math::max_component(absorption_coefficient_ + scattering_coefficient_);
+    return math::max_component(cc_.a + cc_.s);
 }
 
 size_t Homogeneous::num_bytes() const {

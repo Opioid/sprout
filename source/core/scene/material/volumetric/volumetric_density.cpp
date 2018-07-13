@@ -17,14 +17,14 @@ float3 Density::emission(math::Ray const& /*ray*/, Transformation const& /*trans
 
 CC Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
                                    Worker const& /*worker*/) const {
-    return {absorption_coefficient_, scattering_coefficient_};
+    return cc_;
 }
 
 CC Density::collision_coefficients(f_float3 uvw, Sampler_filter filter,
                                    Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 
-    return {d * absorption_coefficient_, d * scattering_coefficient_};
+    return {d * cc_.a, d * cc_.s};
 }
 
 }  // namespace scene::material::volumetric

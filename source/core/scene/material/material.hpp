@@ -97,15 +97,20 @@ class Material {
 
     virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
                                           Worker const& worker) const;
+
+    virtual CC collision_coefficients() const;
+
     virtual CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const;
 
-    virtual CC    collision_coefficients(f_float3 p, Sampler_filter filter,
-                                         Worker const& worker) const;
+    virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
+                                      Worker const& worker) const;
+
     virtual float majorant_mu_t() const;
 
     virtual volumetric::Gridtree const* volume_tree() const;
 
     virtual bool is_heterogeneous_volume() const;
+    virtual bool is_textured_volume() const;
     virtual bool is_scattering_volume() const;
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part,

@@ -22,8 +22,7 @@ class Material_subsurface final : public Material_base {
 
     void set_density_map(Texture_adapter const& density_map);
 
-    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                         float distance);
+    void set_attenuation(f_float3 absorption_color, f_float3 scattering_color, float distance);
 
     void set_volumetric_anisotropy(float anisotropy);
 
@@ -36,6 +35,8 @@ class Material_subsurface final : public Material_base {
     virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
                                           Worker const& worker) const override final;
 
+    virtual CC collision_coefficients() const override final;
+
     virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
@@ -47,6 +48,7 @@ class Material_subsurface final : public Material_base {
     virtual volumetric::Gridtree const* volume_tree() const override final;
 
     virtual bool is_heterogeneous_volume() const override final;
+    virtual bool is_textured_volume() const override final;
 
     static size_t sample_size();
 
@@ -58,8 +60,7 @@ class Material_subsurface final : public Material_base {
     Texture_adapter density_map_;
 
     float3 absorption_color_;
-    float3 absorption_coefficient_;
-    float3 scattering_coefficient_;
+    CC     cc_;
     float  anisotropy_;
     float  attenuation_distance_;
     float  majorant_mu_t_;

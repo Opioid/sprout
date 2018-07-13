@@ -147,9 +147,10 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
         return false;
     }
 
-    float const d = ray.max_t;
+    float const d     = ray.max_t;
+    float const range = d - ray.min_t;
 
-    if (d - ray.min_t < 0.0005f) {
+    if (range < Tracking::Ray_epsilon) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         //	weight = float3(1.f);
@@ -167,7 +168,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
         li            = float3(0.f);
-        transmittance = attenuation(d, mu_a);
+        transmittance = attenuation(range, mu_a);
         //	weight = float3(1.f);
         return true;
     }
@@ -258,7 +259,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
                 }
             }
         }
-    } else {
+    } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
 
         float3 const extinction = mu.a + mu.s;
@@ -267,11 +268,31 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
 
         transmittance = math::exp(-(d - ray.min_t) * extinction);
 
-        float const r                = rng_.random_float();
-        float const scatter_distance = -std::log(1.f - r * (1.f - math::average(transmittance))) /
-                                       math::average(extinction);
+        float const r = rng_.random_float();
+        float const t = -std::log(1.f - r * (1.f - math::average(transmittance))) /
+                        math::average(extinction);
 
-        float3 const p = ray.point(ray.min_t + scatter_distance);
+        float3 const p = ray.point(ray.min_t + t);
+
+        float3 l = direct_light(ray, p, intersection, worker);
+
+        l *= (1.f - transmittance) * scattering_albedo;
+
+        li = l;
+    } else {
+        auto const mu = material.collision_coefficients();
+
+        float3 const extinction = mu.a + mu.s;
+
+        float3 const scattering_albedo = mu.s / extinction;
+
+        transmittance = math::exp(-(d - ray.min_t) * extinction);
+
+        float const r = rng_.random_float();
+        float const t = -std::log(1.f - r * (1.f - math::average(transmittance))) /
+                        math::average(extinction);
+
+        float3 const p = ray.point(ray.min_t + t);
 
         float3 l = direct_light(ray, p, intersection, worker);
 

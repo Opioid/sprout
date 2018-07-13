@@ -133,9 +133,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         return false;
     }
 
-    float const d = ray.max_t;
+    float const d     = ray.max_t;
+    float const range = d - ray.min_t;
 
-    if (d - ray.min_t < Tracking::Ray_epsilon) {
+    if (range < Tracking::Ray_epsilon) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         //	weight = float3(1.f);
@@ -153,7 +154,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
         li            = float3(0.f);
-        transmittance = attenuation(d, mu_a);
+        transmittance = attenuation(range, mu_a);
         //	weight = float3(1.f);
         return true;
     }
@@ -201,6 +202,64 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         li            = float3(0.f);
         transmittance = w;
         return true;
+    } else if (material.is_textured_volume()) {
+        auto const mu = material.collision_coefficients(interface->uv, filter, worker);
+
+        float3 const mu_t = mu.a + mu.s;
+
+        float const mt  = math::max_component(mu_t);
+        float const imt = 1.f / mt;
+
+        float3 const mu_n = float3(mt) - mu_t;
+
+        float3 w(1.f);
+
+        for (float t = ray.min_t;;) {
+            float const r0 = rng_.random_float();
+            t -= std::log(1.f - r0) * imt;
+            if (t > d) {
+                li            = float3(0.f);
+                transmittance = w;
+
+                // transmittance = float3(1.f);
+                // weight = w;
+                return true;
+            }
+
+            //		float ps, pn;
+            //		float3 ws, wn;
+            //		avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
+
+            float const ms = math::average(mu.s * w);
+            float const mn = math::average(mu_n * w);
+            float const c  = 1.f / (ms + mn);
+
+            float const ps = ms * c;
+            float const pn = mn * c;
+
+            float const r1 = rng_.random_float();
+            if (r1 <= 1.f - pn && ps > 0.f) {
+                intersection.prop           = interface->prop;
+                intersection.geo.p          = ray.point(t);
+                intersection.geo.uv         = interface->uv;
+                intersection.geo.part       = interface->part;
+                intersection.geo.subsurface = true;
+
+                float3 const ws = mu.s / (mt * ps);
+
+                li = float3(0.f);
+                //	transmittance = w * ws;
+                //	weight = 1.f / transmittance;
+                transmittance = w * ws;
+                return true;
+            } else {
+                float3 const wn = mu_n / (mt * pn);
+
+                SOFT_ASSERT(math::all_finite(wn));
+
+                w *= wn;
+            }
+        }
     } else {
         /*
         static bool constexpr achromtatic = true;
@@ -239,7 +298,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         }
     */
 
-        auto const mu = material.collision_coefficients(interface->uv, filter, worker);
+        auto const mu = material.collision_coefficients();
 
         float3 const mu_t = mu.a + mu.s;
 

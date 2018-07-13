@@ -16,10 +16,9 @@ Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid
 Grid::~Grid() {}
 
 void Grid::compile() {
-    float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
+    float3 const extinction_coefficient = cc_.a + cc_.s;
 
-    CM cm{math::min_component(absorption_coefficient_),
-          math::min_component(scattering_coefficient_), 0.f,
+    CM cm{math::min_component(cc_.a), math::min_component(cc_.s), 0.f,
           math::max_component(extinction_coefficient)};
 
     auto const& texture = *grid_.texture();

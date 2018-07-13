@@ -175,9 +175,16 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         transmittance = w;
         return true;
-    } else {
+    } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, Sampler_filter::Nearest,
                                                         worker);
+
+        float3 const mu_t = mu.a + mu.s;
+
+        transmittance = attenuation(d - ray.min_t, mu_t);
+        return true;
+    } else {
+        auto const mu = material.collision_coefficients();
 
         float3 const mu_t = mu.a + mu.s;
 

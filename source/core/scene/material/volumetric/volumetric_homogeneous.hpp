@@ -16,6 +16,8 @@ class Homogeneous final : public Material {
     virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
                                           Worker const& worker) const override final;
 
+    virtual CC collision_coefficients() const override final;
+
     virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
                                       Worker const& worker) const override final;
 

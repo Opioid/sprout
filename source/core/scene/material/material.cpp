@@ -76,6 +76,10 @@ float3 Material::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/
     return float3::identity();
 }
 
+CC Material::collision_coefficients() const {
+    return {float3::identity(), float3::identity()};
+}
+
 CC Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
                                     Worker const& /*worker*/) const {
     return {float3::identity(), float3::identity()};
@@ -95,6 +99,10 @@ volumetric::Gridtree const* Material::volume_tree() const {
 }
 
 bool Material::is_heterogeneous_volume() const {
+    return false;
+}
+
+bool Material::is_textured_volume() const {
     return false;
 }
 
