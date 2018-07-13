@@ -30,8 +30,8 @@ class Prop_light : public Light {
                         uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
                         Sample_from& result) const override;
 
-    virtual float3 evaluate_radiance(Sample_to const& sample, float time, Sampler_filter filter,
-                                     Worker const& worker) const override final;
+    virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+                            Worker const& worker) const override final;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                       Sampler_filter filter, Worker const& worker) const override;

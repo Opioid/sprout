@@ -20,7 +20,7 @@ class Sky_material : public Material {
 
     virtual float3 average_radiance(float area) const override final;
 
-    virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
+    virtual void prepare_sampling(const Shape& shape, uint32_t part,
                                   Transformation const& transformation, float area,
                                   bool importance_sampling, thread::Pool& pool) override final;
 
@@ -32,7 +32,7 @@ class Sky_material : public Material {
 class Sky_baked_material : public Material {
   public:
     Sky_baked_material(Model& model);
-    ~Sky_baked_material();
+    virtual ~Sky_baked_material() override;
 
     virtual const scene::material::Sample& sample(f_float3 wo, const scene::Renderstate& rs,
                                                   Sampler_filter filter, sampler::Sampler& sampler,
@@ -52,7 +52,7 @@ class Sky_baked_material : public Material {
     virtual float emission_pdf(float2 uv, Sampler_filter filter,
                                const scene::Worker& worker) const override final;
 
-    virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
+    virtual void prepare_sampling(const Shape& shape, uint32_t part,
                                   Transformation const& transformation, float area,
                                   bool importance_sampling, thread::Pool& pool) override final;
 

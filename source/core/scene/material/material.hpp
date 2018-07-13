@@ -50,8 +50,9 @@ class Sample;
 
 class Material {
   public:
-    using Transformation = entity::Composed_transformation;
     using Sampler_filter = Sampler_settings::Filter;
+    using Shape          = shape::Shape;
+    using Transformation = entity::Composed_transformation;
 
     Material(Sampler_settings const& sampler_settings, bool two_sided);
 
@@ -112,7 +113,7 @@ class Material {
     virtual bool is_heterogeneous_volume() const;
     virtual bool is_scattering_volume() const;
 
-    virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
+    virtual void prepare_sampling(Shape const& shape, uint32_t part,
                                   Transformation const& transformation, float area,
                                   bool importance_sampling, thread::Pool& pool);
 

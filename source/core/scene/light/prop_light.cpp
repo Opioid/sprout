@@ -66,8 +66,8 @@ bool Prop_light::sample(f_float3 p, Transformation const& transformation, sample
     return true;
 }
 
-float3 Prop_light::evaluate_radiance(Sample_to const& sample, float time, Sampler_filter filter,
-                                     Worker const& worker) const {
+float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+                            Worker const& worker) const {
     auto material = prop_->material(part_);
 
     float const area = prop_->area(part_);

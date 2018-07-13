@@ -102,7 +102,7 @@ bool Material::is_scattering_volume() const {
     return true;
 }
 
-void Material::prepare_sampling(shape::Shape const& /*shape*/, uint32_t /*part*/,
+void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                 Transformation const& /*transformation*/, float /*area*/,
                                 bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
 

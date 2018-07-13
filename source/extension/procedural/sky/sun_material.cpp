@@ -15,11 +15,10 @@ using namespace scene;
 
 Sun_material::Sun_material(Model& model) : Material(model) {}
 
-const scene::material::Sample& Sun_material::sample(f_float3 wo, Renderstate const& rs,
-                                                    Sampler_filter /*filter*/,
-                                                    sampler::Sampler& /*sampler*/,
-                                                    const scene::Worker& worker,
-                                                    uint32_t             depth) const {
+const material::Sample& Sun_material::sample(f_float3 wo, Renderstate const& rs,
+                                             Sampler_filter /*filter*/,
+                                             sampler::Sampler& /*sampler*/, Worker const& worker,
+                                             uint32_t depth) const {
     auto& sample = worker.sample<material::light::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -41,7 +40,7 @@ float3 Sun_material::average_radiance(float /*area*/) const {
     return model_.evaluate_sky_and_sun(-model_.sun_direction());
 }
 
-void Sun_material::prepare_sampling(shape::Shape const& /*shape*/, uint32_t /*part*/,
+void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                     Transformation const& /*transformation*/, float /*area*/,
                                     bool /*importance_sampling*/, thread::Pool& /*pool*/) {
     model_.init();

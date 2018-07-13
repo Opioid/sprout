@@ -66,8 +66,8 @@ class Light {
                         uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
                         Sample_from& result) const = 0;
 
-    virtual float3 evaluate_radiance(Sample_to const& sample, float time, Sampler_filter filter,
-                                     Worker const& worker) const = 0;
+    virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+                            Worker const& worker) const = 0;
 
     bool sample(f_float3 p, f_float3 n, float time, bool total_sphere, sampler::Sampler& sampler,
                 uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const;

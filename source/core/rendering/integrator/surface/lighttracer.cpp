@@ -166,8 +166,8 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
             if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
                 auto const bxdf = material_sample.evaluate(light_sample.wi);
 
-                float3 const radiance = light.ref.evaluate_radiance(
-                    light_sample, ray.time, Sampler_filter::Nearest, worker);
+                float3 const radiance = light.ref.evaluate(light_sample, ray.time,
+                                                           Sampler_filter::Nearest, worker);
 
                 result += (tv * radiance * bxdf.reflection) / (light.pdf * light_sample.pdf);
             }

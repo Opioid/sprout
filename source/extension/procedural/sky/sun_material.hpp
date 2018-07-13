@@ -8,9 +8,9 @@ class Sun_material : public Material {
   public:
     Sun_material(Model& model);
 
-    virtual const scene::material::Sample& sample(f_float3 wo, const scene::Renderstate& rs,
+    virtual const scene::material::Sample& sample(f_float3 wo, scene::Renderstate const& rs,
                                                   Sampler_filter filter, sampler::Sampler& sampler,
-                                                  const scene::Worker& worker,
+                                                  scene::Worker const& worker,
                                                   uint32_t             depth) const override final;
 
     virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
@@ -19,7 +19,7 @@ class Sun_material : public Material {
 
     virtual float3 average_radiance(float area) const override final;
 
-    virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
+    virtual void prepare_sampling(const Shape& shape, uint32_t part,
                                   Transformation const& transformation, float area,
                                   bool importance_sampling, thread::Pool& pool) override final;
 

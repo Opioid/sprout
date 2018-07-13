@@ -29,8 +29,8 @@ bool Null_light::sample(float /*time*/, Transformation const& /*transformation*/
     return false;
 }
 
-float3 Null_light::evaluate_radiance(Sample_to const& /*sample*/, float /*time*/,
-                                     Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+float3 Null_light::evaluate(Sample_to const& /*sample*/, float /*time*/, Sampler_filter /*filter*/,
+                            Worker const& /*worker*/) const {
     return float3(0.f);
 }
 
