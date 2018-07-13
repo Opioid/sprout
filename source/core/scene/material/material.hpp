@@ -6,6 +6,7 @@
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
+#include "collision_coefficients.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_types.hpp"
 #include "sampler_settings.hpp"
@@ -96,16 +97,10 @@ class Material {
 
     virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
                                           Worker const& worker) const;
-
-    struct CC {
-        float3 a, s;
-    };
-
     virtual CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const;
 
-    virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
-                                      Worker const& worker) const;
-
+    virtual CC    collision_coefficients(f_float3 p, Sampler_filter filter,
+                                         Worker const& worker) const;
     virtual float majorant_mu_t() const;
 
     virtual volumetric::Gridtree const* volume_tree() const;

@@ -12,7 +12,11 @@ namespace image::texture {
 class Texture;
 }
 
-namespace scene::material::volumetric {
+namespace scene::material {
+
+struct CM;
+
+namespace volumetric {
 
 struct Box {
     int3 bounds[2];
@@ -40,13 +44,6 @@ struct Node {
     }
 };
 
-struct Control_data {
-    float minorant_mu_a;
-    float minorant_mu_s;
-    float minorant_mu_t;
-    float majorant_mu_t;
-};
-
 class Gridtree {
   public:
     Gridtree();
@@ -54,13 +51,13 @@ class Gridtree {
 
     Node* allocate_nodes(uint32_t num_nodes);
 
-    Control_data* allocate_data(uint32_t num_data);
+    CM* allocate_data(uint32_t num_data);
 
     void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions, int3 const& num_cells);
 
     bool is_valid() const;
 
-    bool intersect(math::Ray& ray, Control_data& data) const;
+    bool intersect(math::Ray& ray, CM& data) const;
 
     size_t num_bytes() const;
 
@@ -68,8 +65,8 @@ class Gridtree {
     uint32_t num_nodes_;
     Node*    nodes_;
 
-    uint32_t      num_data_;
-    Control_data* data_;
+    uint32_t num_data_;
+    CM*      data_;
 
     int3 dimensions_;
     int3 num_cells_;
@@ -79,6 +76,7 @@ class Gridtree {
     float3 factor_;
 };
 
-}  // namespace scene::material::volumetric
+}  // namespace volumetric
+}  // namespace scene::material
 
 #endif

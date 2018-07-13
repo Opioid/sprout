@@ -18,9 +18,9 @@ Grid::~Grid() {}
 void Grid::compile() {
     float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-    Control_data idata{math::min_component(absorption_coefficient_),
-                       math::min_component(scattering_coefficient_), 0.f,
-                       math::max_component(extinction_coefficient)};
+    CM cm{math::min_component(absorption_coefficient_),
+          math::min_component(scattering_coefficient_), 0.f,
+          math::max_component(extinction_coefficient)};
 
     auto const& texture = *grid_.texture();
     {
@@ -31,11 +31,11 @@ void Grid::compile() {
             max_density = std::max(texture.at_1(i), max_density);
         }
 
-        majorant_mu_t_ = max_density * idata.majorant_mu_t;
+        majorant_mu_t_ = max_density * cm.majorant_mu_t;
     }
 
     Octree_builder builder;
-    builder.build(tree_, texture, idata);
+    builder.build(tree_, texture, cm);
 }
 
 float Grid::majorant_mu_t() const {

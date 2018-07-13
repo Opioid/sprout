@@ -3,6 +3,7 @@
 #include "base/math/ray.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "scene/material/material.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -26,12 +27,12 @@ Node* Gridtree::allocate_nodes(uint32_t num_nodes) {
     return nodes_;
 }
 
-Control_data* Gridtree::allocate_data(uint32_t num_data) {
+CM* Gridtree::allocate_data(uint32_t num_data) {
     if (num_data != num_data_) {
         num_data_ = num_data;
 
         memory::free_aligned(data_);
-        data_ = memory::allocate_aligned<Control_data>(num_data);
+        data_ = memory::allocate_aligned<CM>(num_data);
     }
 
     return data_;
@@ -52,7 +53,7 @@ bool Gridtree::is_valid() const {
     return nullptr != nodes_;
 }
 
-bool Gridtree::intersect(math::Ray& ray, Control_data& data) const {
+bool Gridtree::intersect(math::Ray& ray, CM& data) const {
     math::AABB box(float3(0.f), float3(1.f));
 
     float3 p = ray.point(ray.min_t);
@@ -129,7 +130,7 @@ bool Gridtree::intersect(math::Ray& ray, Control_data& data) const {
 }
 
 size_t Gridtree::num_bytes() const {
-    return sizeof(*this) + num_nodes_ * sizeof(Node) + num_data_ * sizeof(Control_data);
+    return sizeof(*this) + num_nodes_ * sizeof(Node) + num_data_ * sizeof(CM);
 }
 
 }  // namespace scene::material::volumetric

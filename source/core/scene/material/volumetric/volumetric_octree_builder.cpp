@@ -10,7 +10,7 @@ Octree_builder::Build_node::~Build_node() {
     }
 }
 
-void Octree_builder::build(Gridtree& tree, Texture const& texture, Control_data const& idata) {
+void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& idata) {
     static int32_t constexpr cell_max_dimension = 36;
 
     int3 const d    = texture.dimensions_3();
@@ -57,7 +57,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, Control_data 
 }
 
 void Octree_builder::split(Build_node* node, Box const& box, Texture const& texture,
-                           Control_data const& idata, uint32_t depth, uint32_t max_depth) {
+                           CM const& idata, uint32_t depth, uint32_t max_depth) {
     // Include 1 additional voxel on each border to account for filtering
     int3 const minb = math::max(box.bounds[0] - 1, 0);
     int3 const maxb = math::min(box.bounds[1] + 1, texture.dimensions_3());

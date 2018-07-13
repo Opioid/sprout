@@ -15,13 +15,13 @@ float3 Density::emission(math::Ray const& /*ray*/, Transformation const& /*trans
     return float3::identity();
 }
 
-Material::CC Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
-                                             Worker const& /*worker*/) const {
+CC Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+                                   Worker const& /*worker*/) const {
     return {absorption_coefficient_, scattering_coefficient_};
 }
 
-Material::CC Density::collision_coefficients(f_float3 uvw, Sampler_filter filter,
-                                             Worker const& worker) const {
+CC Density::collision_coefficients(f_float3 uvw, Sampler_filter filter,
+                                   Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 
     return {d * absorption_coefficient_, d * scattering_coefficient_};
