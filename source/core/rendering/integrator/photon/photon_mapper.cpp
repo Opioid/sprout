@@ -6,10 +6,10 @@
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/shape/shape_sample.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/shape/shape_sample.hpp"
 
 #include <iostream>
 
@@ -84,11 +84,11 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 
         bool specular_ray = false;
 
-        Ray    ray;
+        Ray                        ray;
         scene::light::Light const* light;
-        scene::shape::Sample_from light_sample;
-        if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, worker, ray,
-                                &light, light_sample)) {
+        scene::shape::Sample_from  light_sample;
+        if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, worker, ray, &light,
+                                light_sample)) {
             continue;
         }
 
@@ -96,11 +96,10 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
             continue;
         }
 
-       // radiance
+        float3 radiance = light->evaluate(light_sample, 0.f, Sampler_filter::Nearest, worker) /
+                          (light_sample.pdf);
 
-        float3 radiance = light->evaluate(light_sample, 0.f, Sampler_filter::Nearest, worker) / (light_sample.pdf);
-
-        for (uint32_t j = settings_.max_bounces; j > 0; --j) {
+        for (; ray.depth < settings_.max_bounces;) {
             float3 const wo = -ray.direction;
 
             auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
@@ -115,42 +114,42 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                 break;
             }
 
-            bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
-                                                              Bxdf_type::Transmission);
+            if (material_sample.ior_greater_one()) {
+                bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
+                                                                  Bxdf_type::Transmission);
 
-            if (singular && !settings_.full_light_path) {
-                specular_ray = true;
-            } else if ((specular_ray &&
-                        worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
-                       settings_.full_light_path) {
-                auto& photon = photons[num_photons];
+                if (singular && !settings_.full_light_path) {
+                    specular_ray = true;
+                } else if ((specular_ray &&
+                            worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
+                           settings_.full_light_path) {
+                    auto& photon = photons[num_photons];
 
-                photon.p = intersection.geo.p;
-                //                photon.n     = intersection.geo.n;
-                photon.wi       = -ray.direction;
-                photon.alpha[0] = radiance[0];
-                photon.alpha[1] = radiance[1];
-                photon.alpha[2] = radiance[2];
-                photon.caustic  = 0 == num_photons;
+                    photon.p = intersection.geo.p;
+                    //                photon.n     = intersection.geo.n;
+                    photon.wi       = -ray.direction;
+                    photon.alpha[0] = radiance[0];
+                    photon.alpha[1] = radiance[1];
+                    photon.alpha[2] = radiance[2];
+                    photon.caustic  = 0 == num_photons;
 
-                iteration = i + 1;
+                    iteration = i + 1;
 
-                ++num_photons;
+                    ++num_photons;
 
-                if (max_photons == num_photons) {
-                    return iteration;
+                    if (max_photons == num_photons) {
+                        return iteration;
+                    }
+
+                    specular_ray = settings_.indirect_caustics;
+                } else if (!settings_.indirect_caustics) {
+                    break;
                 }
-
-                specular_ray = settings_.indirect_caustics;
-            } else if (!settings_.indirect_caustics) {
-                break;
             }
 
             float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
             if (material_sample.ior_greater_one()) {
-                //  radiance *= sample_result.reflection / sample_result.pdf;
-
                 float3 const nr      = radiance * sample_result.reflection / sample_result.pdf;
                 float const  average = math::average(nr) / math::average(radiance);
                 float const  continue_prob = std::min(1.f, average);
@@ -199,7 +198,8 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 }
 
 bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
-                                Worker& worker, Ray& ray, scene::light::Light const** light_out, scene::shape::Sample_from& light_sample) {
+                                Worker& worker, Ray& ray, scene::light::Light const** light_out,
+                                scene::shape::Sample_from& light_sample) {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);

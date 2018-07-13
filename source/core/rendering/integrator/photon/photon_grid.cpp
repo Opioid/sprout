@@ -182,8 +182,7 @@ float3 Grid::li(f_float3 position, scene::material::Sample const& sample,
 
             if (float const squared_distance = math::squared_distance(photon.p, position);
                 squared_distance <= squared_radius) {
-                if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
-                    n_dot_wi > 0.f) {
+                if (float const n_dot_wi = sample.photon_n_dot(photon.wi); n_dot_wi > 0.f) {
                     float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
 
                     float const k = kernel(squared_distance, inv_squared_radius);

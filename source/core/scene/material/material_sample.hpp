@@ -59,6 +59,8 @@ class Sample {
 
     virtual bool ior_greater_one() const;
 
+    virtual float photon_n_dot(f_float3 wi) const;
+
     f_float3 wo() const;
 
     float clamp_geo_n_dot(f_float3 v) const;

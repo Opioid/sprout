@@ -11,10 +11,10 @@
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/shape/shape_sample.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/shape/shape_sample.hpp"
 
 #include "base/debug/assert.hpp"
 

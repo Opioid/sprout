@@ -366,7 +366,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
             float const imt = 1.f / mt;
 
-
             for (float t = ray.min_t;;) {
                 float const r0 = rng_.random_float();
                 t -= std::log(1.f - r0) * imt;
@@ -396,7 +395,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                         li            = float3(0.f);
                         transmittance = float3(0.f);
                         return true;
-                     } else if (r1 < 1.f - mu_n / mt) {
+                    } else if (r1 < 1.f - mu_n / mt) {
                         intersection.prop           = interface->prop;
                         intersection.geo.p          = ray.point(t);
                         intersection.geo.uv         = interface->uv;
@@ -406,10 +405,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                         li            = float3(0.f);
                         transmittance = float3(1.f);
                         return true;
-                     }
+                    }
                 }
             }
-
 
         } else {
             auto const mu = material.collision_coefficients();

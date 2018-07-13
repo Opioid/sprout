@@ -11,10 +11,10 @@
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/shape/shape_sample.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/shape/shape_sample.hpp"
 
 namespace rendering::integrator::surface {
 
@@ -133,7 +133,8 @@ bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float
     ray.min_t = take_settings_.ray_offset_factor * light_sample.epsilon;
     ray.max_t = scene::Ray_max_t;
 
-    radiance = light.ref.evaluate(light_sample, time, Sampler_filter::Nearest, worker) / (light.pdf * light_sample.pdf);
+    radiance = light.ref.evaluate(light_sample, time, Sampler_filter::Nearest, worker) /
+               (light.pdf * light_sample.pdf);
 
     return true;
 }

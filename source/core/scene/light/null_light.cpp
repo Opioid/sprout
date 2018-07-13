@@ -26,15 +26,14 @@ float3 Null_light::evaluate(Sample_to const& /*sample*/, float /*time*/, Sampler
     return float3(0.f);
 }
 
-bool Null_light::sample(Transformation const& /*transformation*/,
-                        sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                        Worker const& /*worker*/,
+bool Null_light::sample(Transformation const& /*transformation*/, sampler::Sampler& /*sampler*/,
+                        uint32_t /*sampler_dimension*/, Worker const& /*worker*/,
                         Sample_from& /*result*/) const {
     return false;
 }
 
-float3 Null_light::evaluate(Sample_from const& /*sample*/, float /*time*/, Sampler_filter /*filter*/,
-                            Worker const& /*worker*/) const {
+float3 Null_light::evaluate(Sample_from const& /*sample*/, float /*time*/,
+                            Sampler_filter /*filter*/, Worker const& /*worker*/) const {
     return float3(0.f);
 }
 

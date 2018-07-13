@@ -49,7 +49,7 @@ class Light {
     using Sampler_filter = material::Sampler_settings::Filter;
     using Intersection   = shape::Intersection;
     using Sample_to      = shape::Sample_to;
-    using Sample_from      = shape::Sample_from;
+    using Sample_from    = shape::Sample_from;
 
     virtual ~Light();
 

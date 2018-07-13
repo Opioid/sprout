@@ -70,9 +70,8 @@ bool Prop_image_light::sample(f_float3 p, Transformation const& transformation,
     return true;
 }
 
-bool Prop_image_light::sample(Transformation const& transformation,
-                              sampler::Sampler& sampler, uint32_t sampler_dimension,
-                              Worker const& /*worker*/,
+bool Prop_image_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
+                              uint32_t     sampler_dimension, Worker const& /*worker*/,
                               Sample_from& result) const {
     auto const material = prop_->material(part_);
 

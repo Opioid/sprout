@@ -11,10 +11,10 @@
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/shape/shape_sample.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/shape/shape_sample.hpp"
 
 namespace rendering::integrator::surface {
 
@@ -148,7 +148,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
         scene::shape::Sample_to light_sample;
         if (!light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-                             material_sample.is_translucent(), sampler_, 0, worker, light_sample)) {
+                              material_sample.is_translucent(), sampler_, 0, worker,
+                              light_sample)) {
             continue;
         }
 
