@@ -2,7 +2,6 @@
 #include "base/math/aabb.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
-#include "light_sample.hpp"
 #include "scene/material/material.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/scene_ray.hpp"
@@ -75,8 +74,8 @@ float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter 
     return material->evaluate_radiance(sample.wi, sample.uv, area, time, filter, worker);
 }
 
-bool Prop_light::sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
+bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
+                        uint32_t sampler_dimension, Worker const& worker,
                         Sample_from& result) const {
     auto material = prop_->material(part_);
 
@@ -85,14 +84,20 @@ bool Prop_light::sample(float time, Transformation const& transformation, sample
     bool const two_sided = material->is_two_sided();
 
     if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
-                                worker.node_stack(), result.shape)) {
+                                worker.node_stack(), result)) {
         return false;
     }
 
-    result.radiance = material->evaluate_radiance(-result.shape.dir, result.shape.uv, area, time,
-                                                  filter, worker);
-
     return true;
+}
+
+float3 Prop_light::evaluate(Sample_from const& sample, float time, Sampler_filter filter,
+                            Worker const& worker) const {
+    auto material = prop_->material(part_);
+
+    float const area = prop_->area(part_);
+
+    return material->evaluate_radiance(-sample.dir, sample.uv, area, time, filter, worker);
 }
 
 float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,

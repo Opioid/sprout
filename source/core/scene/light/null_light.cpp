@@ -1,6 +1,5 @@
 #include "null_light.hpp"
 #include "base/math/vector3.inl"
-#include "light_sample.hpp"
 
 namespace scene::light {
 
@@ -22,14 +21,19 @@ bool Null_light::sample(f_float3 /*p*/, Transformation const& /*transformation*/
     return false;
 }
 
-bool Null_light::sample(float /*time*/, Transformation const& /*transformation*/,
+float3 Null_light::evaluate(Sample_to const& /*sample*/, float /*time*/, Sampler_filter /*filter*/,
+                            Worker const& /*worker*/) const {
+    return float3(0.f);
+}
+
+bool Null_light::sample(Transformation const& /*transformation*/,
                         sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                        Sampler_filter /*filter*/, Worker const& /*worker*/,
+                        Worker const& /*worker*/,
                         Sample_from& /*result*/) const {
     return false;
 }
 
-float3 Null_light::evaluate(Sample_to const& /*sample*/, float /*time*/, Sampler_filter /*filter*/,
+float3 Null_light::evaluate(Sample_from const& /*sample*/, float /*time*/, Sampler_filter /*filter*/,
                             Worker const& /*worker*/) const {
     return float3(0.f);
 }

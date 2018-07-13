@@ -25,21 +25,22 @@ namespace scene {
 namespace entity {
 struct Composed_transformation;
 }
+
 namespace prop {
 class Prop;
 }
+
 namespace shape {
 struct Intersection;
 class Node_stack;
 struct Sample_to;
+struct Sample_from;
 }  // namespace shape
 
 class Worker;
 struct Ray;
 
 namespace light {
-
-struct Sample_from;
 
 class Light {
   public:
@@ -48,6 +49,7 @@ class Light {
     using Sampler_filter = material::Sampler_settings::Filter;
     using Intersection   = shape::Intersection;
     using Sample_to      = shape::Sample_to;
+    using Sample_from      = shape::Sample_from;
 
     virtual ~Light();
 
@@ -62,11 +64,14 @@ class Light {
                         uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const = 0;
 
-    virtual bool sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
+    virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+                            Worker const& worker) const = 0;
+
+    virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
+                        uint32_t sampler_dimension, Worker const& worker,
                         Sample_from& result) const = 0;
 
-    virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+    virtual float3 evaluate(Sample_from const& sample, float time, Sampler_filter filter,
                             Worker const& worker) const = 0;
 
     bool sample(f_float3 p, f_float3 n, float time, bool total_sphere, sampler::Sampler& sampler,
@@ -76,7 +81,7 @@ class Light {
                 Worker const& worker, Sample_to& result) const;
 
     bool sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                Sampler_filter filter, Worker const& worker, Sample_from& result) const;
+                Worker const& worker, Sample_from& result) const;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                       Sampler_filter filter, Worker const& worker) const = 0;

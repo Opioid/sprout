@@ -3,7 +3,6 @@
 #include "base/math/math.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
-#include "light_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
 #include "scene/prop/prop.hpp"
@@ -71,9 +70,9 @@ bool Prop_image_light::sample(f_float3 p, Transformation const& transformation,
     return true;
 }
 
-bool Prop_image_light::sample(float /*time*/, Transformation const& transformation,
+bool Prop_image_light::sample(Transformation const& transformation,
                               sampler::Sampler& sampler, uint32_t sampler_dimension,
-                              Sampler_filter /*filter*/, Worker const& /*worker*/,
+                              Worker const& /*worker*/,
                               Sample_from& result) const {
     auto const material = prop_->material(part_);
 
@@ -89,11 +88,11 @@ bool Prop_image_light::sample(float /*time*/, Transformation const& transformati
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, result.shape)) {
+    if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, result)) {
         return false;
     }
 
-    result.shape.pdf *= rs.pdf;
+    result.pdf *= rs.pdf;
 
     return true;
 }

@@ -26,11 +26,14 @@ class Prop_light : public Light {
                         uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const override;
 
-    virtual bool sample(float time, Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Sampler_filter filter, Worker const& worker,
+    virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+                            Worker const& worker) const override final;
+
+    virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
+                        uint32_t sampler_dimension, Worker const& worker,
                         Sample_from& result) const override;
 
-    virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+    virtual float3 evaluate(Sample_from const& sample, float time, Sampler_filter filter,
                             Worker const& worker) const override final;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,

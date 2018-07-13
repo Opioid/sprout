@@ -2,11 +2,11 @@
 #include "photon_map.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
-#include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
+#include "scene/shape/shape_sample.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -85,15 +85,20 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
         bool specular_ray = false;
 
         Ray    ray;
-        float3 radiance;
+        scene::light::Light const* light;
+        scene::shape::Sample_from light_sample;
         if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, worker, ray,
-                                radiance)) {
+                                &light, light_sample)) {
             continue;
         }
 
         if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
             continue;
         }
+
+       // radiance
+
+        float3 radiance = light->evaluate(light_sample, 0.f, Sampler_filter::Nearest, worker) / (light_sample.pdf);
 
         for (uint32_t j = settings_.max_bounces; j > 0; --j) {
             float3 const wo = -ray.direction;
@@ -194,26 +199,27 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 }
 
 bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
-                                Worker& worker, Ray& ray, float3& radiance) {
+                                Worker& worker, Ray& ray, scene::light::Light const** light_out, scene::shape::Sample_from& light_sample) {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
 
-    scene::light::Sample_from light_sample;
-    if (!light.ref.sample(0.f, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
+    if (!light.ref.sample(0.f, sampler_, 0, worker, light_sample)) {
         return false;
     }
 
-    ray.origin = light_sample.shape.p;
-    ray.set_direction(light_sample.shape.dir);
-    ray.min_t = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+    ray.origin = light_sample.p;
+    ray.set_direction(light_sample.dir);
+    ray.min_t = take_settings_.ray_offset_factor * light_sample.epsilon;
     ray.max_t = scene::Ray_max_t;
     ray.depth = 0;
     ray.time  = 0.f;
     ray.time  = normalized_tick_offset + sampler_.generate_sample_1D(2) * normalized_tick_slice;
     ray.wavelength = 0.f;
 
-    radiance = light_sample.radiance / (light.pdf * light_sample.shape.pdf);
+    *light_out = &light.ref;
+
+    light_sample.pdf *= light.pdf;
 
     return true;
 }

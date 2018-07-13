@@ -6,12 +6,12 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
-#include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
+#include "scene/shape/shape_sample.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -123,17 +123,17 @@ bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float
 
     auto const light = worker.scene().random_light(select);
 
-    scene::light::Sample_from light_sample;
-    if (!light.ref.sample(time, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
+    scene::shape::Sample_from light_sample;
+    if (!light.ref.sample(time, sampler_, 0, worker, light_sample)) {
         return false;
     }
 
-    ray.origin = light_sample.shape.p;
-    ray.set_direction(light_sample.shape.dir);
-    ray.min_t = take_settings_.ray_offset_factor * light_sample.shape.epsilon;
+    ray.origin = light_sample.p;
+    ray.set_direction(light_sample.dir);
+    ray.min_t = take_settings_.ray_offset_factor * light_sample.epsilon;
     ray.max_t = scene::Ray_max_t;
 
-    radiance = light_sample.radiance / light_sample.shape.pdf;
+    radiance = light.ref.evaluate(light_sample, time, Sampler_filter::Nearest, worker) / (light.pdf * light_sample.pdf);
 
     return true;
 }

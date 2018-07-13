@@ -5,6 +5,14 @@
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler_random.hpp"
 
+namespace scene::shape {
+struct Sample_from;
+}
+
+namespace scene::light {
+class Light;
+}
+
 namespace rendering {
 
 class Worker;
@@ -40,7 +48,7 @@ class Mapper : public Integrator {
                           uint32_t max_photons, Photon* photons, uint32_t& num_photons);
 
     bool generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
-                            Worker& worker, Ray& ray, float3& radiance);
+                            Worker& worker, Ray& ray, scene::light::Light const** light, scene::shape::Sample_from& light_sample);
 
     const Settings settings_;
 
