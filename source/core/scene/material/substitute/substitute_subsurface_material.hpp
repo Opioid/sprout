@@ -64,7 +64,6 @@ class Material_subsurface final : public Material_base {
     CM     cm_;
     float  anisotropy_;
     float  attenuation_distance_;
-    float  majorant_mu_t_;
 
     volumetric::Gridtree tree_;
 
