@@ -3,6 +3,7 @@
 #include "base/math/vector4.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
+#include "collision_coefficients.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
@@ -91,7 +92,7 @@ CC Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
 }
 
 CM Material::control_medium() const {
-    return CM{0.f, 0.f, 0.f, 0.f};
+    return CM(0.f);
 }
 
 volumetric::Gridtree const* Material::volume_tree() const {

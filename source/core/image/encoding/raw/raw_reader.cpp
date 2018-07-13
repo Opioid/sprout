@@ -45,7 +45,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
     //            2) = 0.25f; volume->at(0, 2, 2) = 0.75f;  volume->at(1, 2, 2) = 0.f; volume->at(2,
     //            2, 2) = 0.25f;
 
-    return volume;
+    // return volume;
 }
 
 }  // namespace image::encoding::raw

@@ -22,6 +22,7 @@ target_sources(core
 	PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/bxdf.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/collision_coefficients.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/collision_coefficients.inl"
     "${CMAKE_CURRENT_LIST_DIR}/material_attenuation.inl"
     "${CMAKE_CURRENT_LIST_DIR}/material_helper.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/material_print.hpp"
