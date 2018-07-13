@@ -43,7 +43,7 @@ class Material_subsurface final : public Material_base {
     virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
-    virtual float majorant_mu_t() const override final;
+    virtual CM control_medium() const override final;
 
     virtual volumetric::Gridtree const* volume_tree() const override final;
 
@@ -61,6 +61,7 @@ class Material_subsurface final : public Material_base {
 
     float3 absorption_color_;
     CC     cc_;
+    CM     cm_;
     float  anisotropy_;
     float  attenuation_distance_;
     float  majorant_mu_t_;

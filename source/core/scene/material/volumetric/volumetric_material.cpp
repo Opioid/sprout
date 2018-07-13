@@ -37,9 +37,19 @@ float Material::ior() const {
     return 1.f;
 }
 
+CM Material::control_medium() const {
+    return cm_;
+}
+
 void Material::set_attenuation(f_float3 absorption_color, f_float3 scattering_color,
                                float distance) {
     attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
+
+    float3 const extinction_coefficient = cc_.a + cc_.s;
+
+    cm_ = CM{math::min_component(cc_.a), math::min_component(cc_.s),
+             math::min_component(extinction_coefficient),
+             math::max_component(extinction_coefficient)};
 }
 
 void Material::set_anisotropy(float anisotropy) {

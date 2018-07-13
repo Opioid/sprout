@@ -17,6 +17,8 @@ class Material : public material::Material {
 
     virtual float ior() const override final;
 
+    virtual CM control_medium() const override final;
+
     void set_attenuation(f_float3 absorption_color, f_float3 scattering_color, float distance);
 
     void set_anisotropy(float anisotropy);
@@ -25,6 +27,7 @@ class Material : public material::Material {
 
   protected:
     CC    cc_;
+    CM    cm_;
     float anisotropy_;
 };
 

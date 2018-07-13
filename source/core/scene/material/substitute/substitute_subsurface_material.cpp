@@ -23,25 +23,10 @@ Material_subsurface::Material_subsurface(Sampler_settings const& sampler_setting
 
 void Material_subsurface::compile() {
     if (density_map_.is_valid()) {
-        float3 const extinction_coefficient = cc_.a + cc_.s;
-
-        CM cm{math::min_component(cc_.a), math::min_component(cc_.s), 0.f,
-              math::max_component(extinction_coefficient)};
-
         auto const& texture = *density_map_.texture();
-        {
-            const int3 d = texture.dimensions_3();
-
-            float max_density = 0.f;
-            for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
-                max_density = std::max(texture.at_1(i), max_density);
-            }
-
-            majorant_mu_t_ = max_density * cm.majorant_mu_t;
-        }
 
         volumetric::Octree_builder builder;
-        builder.build(tree_, texture, cm);
+        builder.build(tree_, texture, cm_);
     }
 
     //	attenuation(float3(0.25f), attenuation_distance_,
@@ -92,6 +77,12 @@ void Material_subsurface::set_attenuation(f_float3 absorption_color, f_float3 sc
     absorption_color_ = absorption_color;
 
     attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
+
+    float3 const extinction_coefficient = cc_.a + cc_.s;
+
+    cm_ = CM{math::min_component(cc_.a), math::min_component(cc_.s),
+             math::min_component(extinction_coefficient),
+             math::max_component(extinction_coefficient)};
 
     attenuation_distance_ = distance;
 }
@@ -166,8 +157,8 @@ CC Material_subsurface::collision_coefficients(f_float3 p, Sampler_filter filter
     //	return {d * mu_a, d * mu_s};
 }
 
-float Material_subsurface::majorant_mu_t() const {
-    return majorant_mu_t_;
+CM Material_subsurface::control_medium() const {
+    return cm_;
 }
 
 volumetric::Gridtree const* Material_subsurface::volume_tree() const {

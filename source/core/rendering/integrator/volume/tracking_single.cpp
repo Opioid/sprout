@@ -179,86 +179,35 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
         Transformation temp;
         auto const&    transformation = interface->prop->transformation_at(ray.time, temp);
 
-        if (auto const tree = material.volume_tree(); tree) {
-            float3 const local_origin = transformation.world_to_object_point(ray.origin);
-            float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
+        float3 const local_origin = transformation.world_to_object_point(ray.origin);
+        float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-            float3 const origin = shape->object_to_texture_point(local_origin);
-            float3 const dir    = shape->object_to_texture_vector(local_dir);
+        float3 const origin = shape->object_to_texture_point(local_origin);
+        float3 const dir    = shape->object_to_texture_vector(local_dir);
 
-            Ray local_ray(origin, dir, ray.min_t, ray.max_t);
+        Ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
-            float3 w(1.f);
-            for (; local_ray.min_t < d;) {
-                if (Tracking::CM data; tree->intersect(local_ray, data)) {
-                    if (float t;
-                        Tracking::tracking(local_ray, data, material, filter, rng_, worker, t, w)) {
-                        li            = w * direct_light(ray, ray.point(t), intersection, worker);
-                        transmittance = float3(0.f);
-                        return true;
-                    }
-                }
-
-                local_ray.min_t = local_ray.max_t + 0.00001f;
-                local_ray.max_t = d;
-            }
-
-            li            = float3(0.f);
-            transmittance = w;
-            return true;
-        }
+        auto const& tree = *material.volume_tree();
 
         float3 w(1.f);
-        float  t = 0.f;
-
-        float const mt = material.majorant_mu_t();
-        while (true) {
-            float const r = rng_.random_float();
-            t -= std::log(1.f - r) / mt;
-            if (t > d) {
-                li            = float3(0.f);
-                transmittance = w;
-                return true;
-            }
-
-            float3 const p = ray.point(ray.min_t + t);
-
-            float3 const local_p = transformation.world_to_object_point(p);
-            float3 const uvw     = shape->object_to_texture_point(local_p);
-            auto const   mu      = material.collision_coefficients(uvw, filter, worker);
-
-            float3 const mu_t = mu.a + mu.s;
-
-            float3 const mu_n = float3(mt) - mu_t;
-
-            float  ps, pn;
-            float3 ws, wn;
-            // avg_probabilities(mt, mu_a, mu_s, mu_n, pa, ps, pn, wa, ws, wn);
-
-            avg_history_probabilities(mt, mu.s, mu_n, w, ps, pn, ws, wn);
-
-            float const r2 = rng_.random_float();
-            if (r2 <= 1.f - pn) {
-                transmittance = float3(0.f);
-                SOFT_ASSERT(math::all_finite(ws));
-                li = w * ws * direct_light(ray, p, intersection, worker);
-                return true;
-            } else {
-                SOFT_ASSERT(math::all_finite(wn));
-
-                //				if (!math::all_finite(wn)) {
-                //					std::cout << "problem" << std::endl;
-                //				}
-
-                w *= wn;
-
-                if (math::average(w) == 0.f) {
-                    transmittance = w;
-                    li            = float3(0.f);
+        for (; local_ray.min_t < d;) {
+            if (Tracking::CM data; tree.intersect(local_ray, data)) {
+                if (float t;
+                    Tracking::tracking(local_ray, data, material, filter, rng_, worker, t, w)) {
+                    li            = w * direct_light(ray, ray.point(t), intersection, worker);
+                    transmittance = float3(0.f);
                     return true;
                 }
             }
+
+            local_ray.min_t = local_ray.max_t + 0.00001f;
+            local_ray.max_t = d;
         }
+
+        li            = float3(0.f);
+        transmittance = w;
+        return true;
+
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
 

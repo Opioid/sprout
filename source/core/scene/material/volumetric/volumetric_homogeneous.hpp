@@ -24,8 +24,6 @@ class Homogeneous final : public Material {
     virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
-    virtual float majorant_mu_t() const override final;
-
     virtual size_t num_bytes() const override final;
 };
 

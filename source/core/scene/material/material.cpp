@@ -90,8 +90,8 @@ CC Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
     return {float3::identity(), float3::identity()};
 }
 
-float Material::majorant_mu_t() const {
-    return 0.f;
+CM Material::control_medium() const {
+    return CM{0.f, 0.f, 0.f, 0.f};
 }
 
 volumetric::Gridtree const* Material::volume_tree() const {

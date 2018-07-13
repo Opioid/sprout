@@ -16,29 +16,10 @@ Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid
 Grid::~Grid() {}
 
 void Grid::compile() {
-    float3 const extinction_coefficient = cc_.a + cc_.s;
-
-    CM cm{math::min_component(cc_.a), math::min_component(cc_.s), 0.f,
-          math::max_component(extinction_coefficient)};
-
     auto const& texture = *grid_.texture();
-    {
-        const int3 d = texture.dimensions_3();
-
-        float max_density = 0.f;
-        for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
-            max_density = std::max(texture.at_1(i), max_density);
-        }
-
-        majorant_mu_t_ = max_density * cm.majorant_mu_t;
-    }
 
     Octree_builder builder;
-    builder.build(tree_, texture, cm);
-}
-
-float Grid::majorant_mu_t() const {
-    return majorant_mu_t_;
+    builder.build(tree_, texture, cm_);
 }
 
 Gridtree const* Grid::volume_tree() const {

@@ -15,8 +15,6 @@ class Grid final : public Density {
 
     virtual void compile() override final;
 
-    virtual float majorant_mu_t() const override final;
-
     virtual Gridtree const* volume_tree() const override final;
 
     virtual bool is_heterogeneous_volume() const override final;
@@ -28,8 +26,6 @@ class Grid final : public Density {
                           Worker const& worker) const override final;
 
     Texture_adapter grid_;
-
-    float majorant_mu_t_;
 
     Gridtree tree_;
 };

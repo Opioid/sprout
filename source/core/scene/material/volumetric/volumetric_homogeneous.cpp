@@ -31,10 +31,6 @@ CC Homogeneous::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/
     return cc_;
 }
 
-float Homogeneous::majorant_mu_t() const {
-    return math::max_component(cc_.a + cc_.s);
-}
-
 size_t Homogeneous::num_bytes() const {
     return sizeof(*this);
 }
