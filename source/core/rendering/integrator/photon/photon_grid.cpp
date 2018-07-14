@@ -133,63 +133,66 @@ static inline float kernel(float squared_distance, float inv_squared_radius) {
     return (3.f * math::Pi_inv) * (s * s);
 }
 
-float3 Grid::li(f_float3 position, scene::material::Sample const& sample,
+float3 Grid::li(f_float3 position, bool is_volumetric, scene::material::Sample const& sample,
                 uint32_t num_paths) const {
     if (0 == num_photons_) {
         return float3::identity();
     }
 
-    float const squared_radius     = photon_radius_ * photon_radius_;
-    float const inv_squared_radius = 1.f / squared_radius;
-
-    float const f = 1.f / (static_cast<float>(num_paths) * squared_radius);
-
     float3 result = float3::identity();
-
-    /*
-            for (uint32_t i = 0, len = num_photons_; i < len; ++i) {
-                auto const& photon           = photons_[i];
-
-                float const squared_distance = math::squared_distance(photon.p, position);
-                if (squared_distance <= squared_radius) {
-                    auto const bxdf = sample.evaluate(photon.wi);
-
-                    float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
-
-                    if (n_dot_wi > 0.f) {
-                        float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
-
-                        float const k = kernel(squared_distance, inv_squared_radius);
-
-                        result += (k * f) / clamped_n_dot_wi * photon.alpha * bxdf.reflection;
-                    }
-                }
-            }
-    */
 
     int2 cells[4];
     adjacent_cells(position, cells);
 
-    for (uint32_t c = 0; c < 4; ++c) {
-        int2 const cell = cells[c];
+    if (is_volumetric) {
+        float const squared_radius     = photon_radius_ * photon_radius_;
+        float const inv_squared_radius = 1.f / squared_radius;
 
-        for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
-            auto const& photon = photons_[i];
+        float const f = 1.f / (static_cast<float>(num_paths) * squared_radius);
 
-            //            if (math::dot(photon.n, sample.geometric_normal()) < 0.5f) {
-            //                continue;
-            //            }
+        for (uint32_t c = 0; c < 4; ++c) {
+            int2 const cell = cells[c];
 
-            if (float const squared_distance = math::squared_distance(photon.p, position);
-                squared_distance <= squared_radius) {
-                if (float const n_dot_wi = sample.photon_n_dot(photon.wi); n_dot_wi > 0.f) {
-                    float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
+            for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
+                auto const& photon = photons_[i];
 
-                    float const k = kernel(squared_distance, inv_squared_radius);
+                if (float const squared_distance = math::squared_distance(photon.p, position);
+                    squared_distance <= squared_radius) {
 
-                    auto const bxdf = sample.evaluate(photon.wi);
+                        float const k = kernel(squared_distance, inv_squared_radius);
 
-                    result += (k * f) / clamped_n_dot_wi * float3(photon.alpha) * bxdf.reflection;
+                        auto const bxdf = sample.evaluate(photon.wi);
+
+                        result += (k * f) *
+                                  (float3(photon.alpha) * bxdf.reflection);
+
+                }
+            }
+        }
+    } else {
+        float const squared_radius     = photon_radius_ * photon_radius_;
+        float const inv_squared_radius = 1.f / squared_radius;
+
+        float const f = 1.f / (static_cast<float>(num_paths) * squared_radius);
+
+        for (uint32_t c = 0; c < 4; ++c) {
+            int2 const cell = cells[c];
+
+            for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
+                auto const& photon = photons_[i];
+
+                if (float const squared_distance = math::squared_distance(photon.p, position);
+                    squared_distance <= squared_radius) {
+                    if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi); n_dot_wi > 0.f) {
+                        float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
+
+                        float const k = kernel(squared_distance, inv_squared_radius);
+
+                        auto const bxdf = sample.evaluate(photon.wi);
+
+                        result += ((k * f) / clamped_n_dot_wi) *
+                                  (float3(photon.alpha) * bxdf.reflection);
+                    }
                 }
             }
         }

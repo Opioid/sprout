@@ -89,9 +89,9 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
     }
 }
 
-float3 Map::li(f_float3 position, scene::material::Sample const& sample) const {
-    return caustic_grid_.li(position, sample, num_paths_) +
-           indirect_grid_.li(position, sample, num_paths_);
+float3 Map::li(f_float3 position, bool is_volumetric, scene::material::Sample const& sample) const {
+    return caustic_grid_.li(position, is_volumetric, sample, num_paths_) +
+           indirect_grid_.li(position, is_volumetric, sample, num_paths_);
 }
 
 size_t Map::num_bytes() const {

@@ -71,7 +71,7 @@ class Worker : public scene::Worker {
     uint32_t bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
                           float normalized_tick_slice);
 
-    float3 photon_li(f_float3 position, Material_sample const& sample) const;
+    float3 photon_li(f_float3 position, bool is_volumetric, Material_sample const& sample) const;
 
     size_t num_bytes() const;
 

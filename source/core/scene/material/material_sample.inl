@@ -73,10 +73,6 @@ inline bool Sample::ior_greater_one() const {
     return true;
 }
 
-inline float Sample::photon_n_dot(f_float3 wi) const {
-    return base_layer().abs_n_dot(wi);
-}
-
 inline f_float3 Sample::wo() const {
     return wo_;
 }

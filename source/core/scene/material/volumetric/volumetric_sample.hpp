@@ -15,8 +15,6 @@ class Sample final : public material::Sample {
 
     virtual bool is_translucent() const override final;
 
-    virtual float photon_n_dot(f_float3 wi) const override final;
-
     void set(float anisotropy);
 
   public:

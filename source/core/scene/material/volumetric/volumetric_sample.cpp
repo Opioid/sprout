@@ -34,10 +34,6 @@ bool Sample::is_translucent() const {
     return true;
 }
 
-float Sample::photon_n_dot(f_float3 /*wi*/) const {
-    return 1.f;
-}
-
 void Sample::set(float anisotropy) {
     layer_.anisotropy = anisotropy;
 }

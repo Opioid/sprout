@@ -33,7 +33,7 @@ class Grid {
 
     uint32_t reduce_and_move(Photon* photons, uint32_t* num_reduced, thread::Pool& pool);
 
-    float3 li(f_float3 position, scene::material::Sample const& sample, uint32_t num_paths) const;
+    float3 li(f_float3 position, bool is_volumetric, const scene::material::Sample &sample, uint32_t num_paths) const;
 
     size_t num_bytes() const;
 
