@@ -32,10 +32,6 @@ void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const 
     }
 }
 
-bool Sample_thin::is_transmissive() const {
-    return true;
-}
-
 bool Sample_thin::is_translucent() const {
     return true;
 }

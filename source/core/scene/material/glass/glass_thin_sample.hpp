@@ -12,8 +12,6 @@ class Sample_thin : public material::Sample {
 
     virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-    virtual bool is_transmissive() const override final;
-
     virtual bool is_translucent() const override final;
 
     struct Layer : public material::Sample::Layer {

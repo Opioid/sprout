@@ -13,8 +13,6 @@ class Sample_rough final : public material::Sample {
 
     virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-    virtual bool is_transmissive() const override final;
-
     struct IOR {
         float ior_i_;
         float ior_o_;

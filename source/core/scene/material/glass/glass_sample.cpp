@@ -55,10 +55,6 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     result.wavelength = 0.f;
 }
 
-bool Sample::is_transmissive() const {
-    return true;
-}
-
 void Sample::set(float3 const& refraction_color, float ior, float ior_outside) {
     color_       = refraction_color;
     ior_         = ior;

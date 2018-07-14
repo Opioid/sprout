@@ -53,8 +53,6 @@ class Sample {
 
     virtual bool is_pure_emissive() const;
 
-    virtual bool is_transmissive() const;
-
     virtual bool is_translucent() const;
 
     virtual bool ior_greater_one() const;

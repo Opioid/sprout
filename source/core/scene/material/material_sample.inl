@@ -65,10 +65,6 @@ inline bool Sample::is_pure_emissive() const {
     return false;
 }
 
-inline bool Sample::is_transmissive() const {
-    return false;
-}
-
 inline bool Sample::is_translucent() const {
     return false;
 }

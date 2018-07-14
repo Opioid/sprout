@@ -79,10 +79,6 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
     result.wavelength = 0.f;
 }
 
-bool Sample_rough::is_transmissive() const {
-    return true;
-}
-
 void Sample_rough::set(float3 const& refraction_color, float3 const& absorption_color,
                        float attenuation_distance, float ior, float ior_outside, float alpha) {
     layer_.color_                  = refraction_color;

@@ -13,8 +13,6 @@ class Sample : public material::Sample {
 
     virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
 
-    virtual bool is_transmissive() const override final;
-
     void set(float3 const& refraction_color, float ior, float ior_outside);
 
     Layer layer_;
