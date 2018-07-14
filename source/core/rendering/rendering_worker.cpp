@@ -215,7 +215,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
 
 bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
                                float3& tv) {
-    if (intersection.geo.subsurface && intersection.material()->ior() > 1.f) {
+    if (intersection.subsurface && intersection.material()->ior() > 1.f) {
         float const ray_max_t = ray.max_t;
 
         if (float epsilon; intersect(ray, epsilon)) {

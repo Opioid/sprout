@@ -58,7 +58,7 @@ inline material::Sample const& Intersection::sample(f_float3 wo, Ray const& ray,
     rs.time           = ray.time;
     rs.ior            = 1.f;
     rs.wavelength     = ray.wavelength;
-    rs.subsurface     = geo.subsurface;
+    rs.subsurface     = subsurface;
     rs.avoid_caustics = avoid_caustics;
 
     return material->sample(wo, rs, filter, sampler, worker, depth);

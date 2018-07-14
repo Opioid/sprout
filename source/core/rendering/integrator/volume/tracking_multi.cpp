@@ -185,7 +185,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     intersection.geo.p          = ray.point(t);
                     intersection.geo.uv         = interface->uv;
                     intersection.geo.part       = interface->part;
-                    intersection.geo.subsurface = true;
+                    intersection.subsurface = true;
 
                     li            = float3(0.f);
                     transmittance = w;
@@ -243,7 +243,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                 intersection.geo.p          = ray.point(t);
                 intersection.geo.uv         = interface->uv;
                 intersection.geo.part       = interface->part;
-                intersection.geo.subsurface = true;
+                intersection.subsurface = true;
 
                 float3 const ws = mu.s / (mt * ps);
 
@@ -285,7 +285,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     intersection.geo.p          = ray.point(t);
                     intersection.geo.uv         = interface->uv;
                     intersection.geo.part       = interface->part;
-                    intersection.geo.subsurface = true;
+                    intersection.subsurface = true;
 
                     li = float3(0.f);
                     transmittance = scattering_albedo;
@@ -312,7 +312,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                 intersection.geo.p          = ray.point(t_c);
                 intersection.geo.uv         = interface->uv;
                 intersection.geo.part       = interface->part;
-                intersection.geo.subsurface = true;
+                intersection.subsurface = true;
 
                 li            = float3(0.f);
                 transmittance = float3(cm.minorant_mu_s / cm.minorant_mu_t);
@@ -333,7 +333,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                 intersection.geo.p          = ray.point(t_r);
                 intersection.geo.uv         = interface->uv;
                 intersection.geo.part       = interface->part;
-                intersection.geo.subsurface = true;
+                intersection.subsurface = true;
 
                 li            = float3(0.f);
                 transmittance = float3(mu.s / mt);
@@ -382,7 +382,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                         intersection.geo.p          = ray.point(t_c);
                         intersection.geo.uv         = interface->uv;
                         intersection.geo.part       = interface->part;
-                        intersection.geo.subsurface = true;
+                        intersection.subsurface = true;
 
                         li            = float3(0.f);
                         transmittance = float3(1.f);
@@ -400,7 +400,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                         intersection.geo.p          = ray.point(t);
                         intersection.geo.uv         = interface->uv;
                         intersection.geo.part       = interface->part;
-                        intersection.geo.subsurface = true;
+                        intersection.subsurface = true;
 
                         li            = float3(0.f);
                         transmittance = float3(1.f);
@@ -450,7 +450,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     intersection.geo.p          = ray.point(t);
                     intersection.geo.uv         = interface->uv;
                     intersection.geo.part       = interface->part;
-                    intersection.geo.subsurface = true;
+                    intersection.subsurface = true;
 
                     float3 const ws = mu.s / (mt * ps);
 

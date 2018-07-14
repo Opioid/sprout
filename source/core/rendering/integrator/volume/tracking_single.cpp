@@ -278,7 +278,7 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
         //	float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 
         Intersection tintersection   = intersection;
-        tintersection.geo.subsurface = true;
+        tintersection.subsurface = true;
 
         if (float3 tv;
             worker.transmitted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest, tv)) {

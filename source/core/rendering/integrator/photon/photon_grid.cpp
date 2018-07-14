@@ -147,7 +147,7 @@ float3 Grid::li(scene::prop::Intersection const& intersection, scene::material::
     int2 cells[4];
     adjacent_cells(position, cells);
 
-    if (intersection.geo.subsurface) {
+    if (intersection.subsurface) {
         float const squared_radius     = photon_radius_ * photon_radius_;
         float const inv_squared_radius = 1.f / squared_radius;
 

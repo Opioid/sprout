@@ -14,7 +14,6 @@ struct Intersection {
 
     float    epsilon;
     uint32_t part;
-    bool     subsurface;
 };
 
 }  // namespace scene::shape

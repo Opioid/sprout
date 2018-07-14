@@ -54,7 +54,7 @@ void size() {
     print_size<math::Ray>("math::Ray", 64);
     print_size<scene::Ray>("scene::Ray", 80);
 
-    print_size<scene::shape::Intersection>("shape::Intersection", 112);
+    print_size<scene::shape::Intersection>("shape::Intersection", 96);
 
     print_size<scene::prop::Intersection>("prop::Intersection", 128);
 

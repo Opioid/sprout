@@ -49,7 +49,10 @@ struct Intersection {
     bool same_hemisphere(f_float3 v) const;
 
     Prop const*         prop;
+
     shape::Intersection geo;
+
+    bool subsurface;
 };
 
 }  // namespace prop
