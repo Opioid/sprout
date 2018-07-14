@@ -38,8 +38,7 @@ void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& mate
 
 void Prop::morph(thread::Pool& pool) {
     /*if (properties_.test(Property::Animated))*/ {
-        shape::Morphable_shape* morphable = shape_->morphable_shape();
-        if (morphable) {
+        if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
             morphable->morph(local_frame_a_.morphing.targets[0], local_frame_a_.morphing.targets[1],
                              local_frame_a_.morphing.weight, pool);
         }
@@ -55,8 +54,8 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& inte
         return false;
     }
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(ray.time, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(ray.time, temp);
 
     return shape_->intersect(ray, transformation, node_stack, intersection);
 }
@@ -71,8 +70,8 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack,
         return false;
     }
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(ray.time, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(ray.time, temp);
 
     return shape_->intersect_fast(ray, transformation, node_stack, intersection);
 }
@@ -90,8 +89,8 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
         return false;
     }
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(ray.time, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(ray.time, temp);
 
     return shape_->intersect(ray, transformation, node_stack, epsilon);
 }
@@ -105,8 +104,8 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const {
         return false;
     }
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(ray.time, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(ray.time, temp);
 
     return shape_->intersect_p(ray, transformation, node_stack);
 }
@@ -129,7 +128,7 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const {
 //							   transformation, node_stack);
 //}
 
-const shape::Shape* Prop::shape() const {
+shape::Shape const* Prop::shape() const {
     return shape_.get();
 }
 
@@ -166,19 +165,19 @@ bool Prop::visible(uint32_t ray_depth) const {
 
 void Prop::on_set_transformation() {
     if (properties_.test(Property::Animated)) {
+        static uint32_t constexpr num_steps = 3;
+        static float constexpr interval     = 1.f / static_cast<float>(num_steps + 1);
+
         math::AABB aabb = shape_->transformed_aabb(world_frame_a_);
 
-        constexpr uint32_t num_steps = 3;
-        constexpr float    interval  = 1.f / static_cast<float>(num_steps + 1);
-        float              t         = interval;
+        float t = interval;
         for (uint32_t i = num_steps; i > 0; --i, t += interval) {
             const math::Transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
-            const math::AABB           tmp          = shape_->transformed_aabb(interpolated);
-            aabb.merge_assign(tmp);
+
+            aabb.merge_assign(shape_->transformed_aabb(interpolated));
         }
 
-        const math::AABB tmp = shape_->transformed_aabb(world_frame_b_);
-        aabb_                = aabb.merge(tmp);
+        aabb_ = aabb.merge(shape_->transformed_aabb(world_frame_b_));
     } else {
         aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world, world_frame_a_);
     }
@@ -190,8 +189,8 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_impo
                             thread::Pool& pool) {
     shape_->prepare_sampling(part);
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(0.f, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(0.f, temp);
 
     float const area  = shape_->area(part, transformation.scale);
     parts_[part].area = area;
@@ -215,8 +214,8 @@ float Prop::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker)
         return 0.f;
     }
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(ray.time, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(ray.time, temp);
 
     return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
@@ -234,8 +233,8 @@ float3 Prop::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const
         return float3(0.f);
     }
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(ray.time, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(ray.time, temp);
 
     return shape_->thin_absorption(ray, transformation, materials_, filter, worker);
 }
@@ -248,7 +247,7 @@ uint32_t Prop::light_id(uint32_t part) const {
     return parts_[part].light_id;
 }
 
-material::Material* Prop::material(uint32_t part) const {
+material::Material const* Prop::material(uint32_t part) const {
     return materials_[part].get();
 }
 

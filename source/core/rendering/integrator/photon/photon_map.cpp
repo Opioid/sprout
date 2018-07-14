@@ -46,8 +46,9 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
     num_paths_ = num_paths;
 
     if (separate_caustics_) {
-        auto const indirect_photons = std::partition(photons_, photons_ + num_photons_,
-                                                     [](Photon const& p) { return p.caustic; });
+        auto const indirect_photons = std::partition(
+            photons_, photons_ + num_photons_,
+            [](Photon const& p) { return p.properties.test(Photon::Property::First_hit); });
 
         uint32_t const num_caustics = static_cast<uint32_t>(
             std::distance(photons_, indirect_photons));
@@ -89,9 +90,10 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
     }
 }
 
-float3 Map::li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample) const {
-    return caustic_grid_.li(intersection, sample, num_paths_) +
-           indirect_grid_.li(intersection, sample, num_paths_);
+float3 Map::li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
+               scene::Worker const& worker) const {
+    return caustic_grid_.li(intersection, sample, num_paths_, worker) +
+           indirect_grid_.li(intersection, sample, num_paths_, worker);
 }
 
 size_t Map::num_bytes() const {

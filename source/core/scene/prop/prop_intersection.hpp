@@ -29,7 +29,7 @@ struct Intersection {
 
     bool hit() const;
 
-    material::Material* material() const;
+    material::Material const* material() const;
 
     bool is_light() const;
 
@@ -40,15 +40,15 @@ struct Intersection {
     float opacity(float time, Sampler_filter filter, Worker const& worker) const;
 
     float3 thin_absorption(f_float3 wo, float const time, Sampler_filter filter,
-                           Worker& worker) const;
+                           Worker const& worker) const;
 
     material::Sample const& sample(f_float3 wo, Ray const& ray, Sampler_filter filter,
-                                   bool avoid_caustics, sampler::Sampler& sampler, Worker& worker,
-                                   uint32_t depth = 0) const;
+                                   bool avoid_caustics, sampler::Sampler& sampler,
+                                   Worker const& worker, uint32_t depth = 0) const;
 
     bool same_hemisphere(f_float3 v) const;
 
-    Prop const*         prop;
+    Prop const* prop;
 
     shape::Intersection geo;
 

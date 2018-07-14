@@ -49,7 +49,7 @@ class Prop : public entity::Entity {
     // ray_max_t, 					 float ray_time, shape::Node_stack&
     // node_stack) const;
 
-    const shape::Shape* shape() const;
+    shape::Shape const* shape() const;
     shape::Shape*       shape();
 
     math::AABB const& aabb() const;
@@ -65,9 +65,11 @@ class Prop : public entity::Entity {
 
     float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const;
 
-    float               area(uint32_t part) const;
-    uint32_t            light_id(uint32_t part) const;
-    material::Material* material(uint32_t part) const;
+    float area(uint32_t part) const;
+
+    uint32_t light_id(uint32_t part) const;
+
+    material::Material const* material(uint32_t part) const;
 
     bool has_masked_material() const;
     bool has_tinted_shadow() const;

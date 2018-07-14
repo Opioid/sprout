@@ -80,7 +80,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
         }
     }
 
-    intersection.prop           = prop;
+    intersection.prop       = prop;
     intersection.subsurface = false;
     return hit;
 }
@@ -143,7 +143,7 @@ bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
         }
     }
 
-    intersection.prop           = prop;
+    intersection.prop       = prop;
     intersection.subsurface = false;
     return hit;
 }

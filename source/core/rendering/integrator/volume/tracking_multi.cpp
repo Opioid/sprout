@@ -181,10 +181,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
             if (Tracking::CM data; tree.intersect(local_ray, data)) {
                 if (float t;
                     Tracking::tracking(local_ray, data, material, filter, rng_, worker, t, w)) {
-                    intersection.prop           = interface->prop;
-                    intersection.geo.p          = ray.point(t);
-                    intersection.geo.uv         = interface->uv;
-                    intersection.geo.part       = interface->part;
+                    intersection.prop       = interface->prop;
+                    intersection.geo.p      = ray.point(t);
+                    intersection.geo.uv     = interface->uv;
+                    intersection.geo.part   = interface->part;
                     intersection.subsurface = true;
 
                     li            = float3(0.f);
@@ -239,10 +239,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
             float const r1 = rng_.random_float();
             if (r1 <= 1.f - pn && ps > 0.f) {
-                intersection.prop           = interface->prop;
-                intersection.geo.p          = ray.point(t);
-                intersection.geo.uv         = interface->uv;
-                intersection.geo.part       = interface->part;
+                intersection.prop       = interface->prop;
+                intersection.geo.p      = ray.point(t);
+                intersection.geo.uv     = interface->uv;
+                intersection.geo.part   = interface->part;
                 intersection.subsurface = true;
 
                 float3 const ws = mu.s / (mt * ps);
@@ -378,10 +378,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                         transmittance = float3(0.f);
                         return true;
                     } else {
-                        intersection.prop           = interface->prop;
-                        intersection.geo.p          = ray.point(t_c);
-                        intersection.geo.uv         = interface->uv;
-                        intersection.geo.part       = interface->part;
+                        intersection.prop       = interface->prop;
+                        intersection.geo.p      = ray.point(t_c);
+                        intersection.geo.uv     = interface->uv;
+                        intersection.geo.part   = interface->part;
                         intersection.subsurface = true;
 
                         li            = float3(0.f);
@@ -396,10 +396,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                         transmittance = float3(0.f);
                         return true;
                     } else if (r1 < 1.f - mu_n / mt) {
-                        intersection.prop           = interface->prop;
-                        intersection.geo.p          = ray.point(t);
-                        intersection.geo.uv         = interface->uv;
-                        intersection.geo.part       = interface->part;
+                        intersection.prop       = interface->prop;
+                        intersection.geo.p      = ray.point(t);
+                        intersection.geo.uv     = interface->uv;
+                        intersection.geo.part   = interface->part;
                         intersection.subsurface = true;
 
                         li            = float3(0.f);
@@ -446,10 +446,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
                 float const r1 = rng_.random_float();
                 if (r1 <= 1.f - pn && ps > 0.f) {
-                    intersection.prop           = interface->prop;
-                    intersection.geo.p          = ray.point(t);
-                    intersection.geo.uv         = interface->uv;
-                    intersection.geo.part       = interface->part;
+                    intersection.prop       = interface->prop;
+                    intersection.geo.p      = ray.point(t);
+                    intersection.geo.uv     = interface->uv;
+                    intersection.geo.part   = interface->part;
                     intersection.subsurface = true;
 
                     float3 const ws = mu.s / (mt * ps);

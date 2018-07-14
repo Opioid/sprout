@@ -5,18 +5,6 @@
 #include "base/math/vector3.hpp"
 #include "photon_grid.hpp"
 
-namespace thread {
-class Pool;
-}
-
-namespace scene::material {
-class Sample;
-}
-
-namespace scene::prop {
-struct Interscection;
-}
-
 namespace rendering::integrator::photon {
 
 class Map {
@@ -32,7 +20,8 @@ class Map {
 
     uint32_t compile(uint32_t num_paths, thread::Pool& pool);
 
-    float3 li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample) const;
+    float3 li(scene::prop::Intersection const& intersection, scene::material::Sample const& samplem,
+              scene::Worker const& worker) const;
 
     size_t num_bytes() const;
 

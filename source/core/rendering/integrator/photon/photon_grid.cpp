@@ -4,9 +4,13 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop.hpp"
+#include "scene/prop/prop_intersection.inl"
+#include "scene/shape/shape.hpp"
 
 namespace rendering::integrator::photon {
 
@@ -85,7 +89,8 @@ void Grid::update(uint32_t num_photons, Photon* photons) {
     });
 
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2];
-    int32_t const len       = static_cast<int32_t>(num_photons);
+
+    int32_t const len = static_cast<int32_t>(num_photons);
 
     int32_t current = 0;
     for (int32_t c = 0; c < num_cells; ++c) {
@@ -134,24 +139,22 @@ static inline float kernel(float squared_distance, float inv_squared_radius) {
     return (3.f * math::Pi_inv) * (s * s);
 }
 
-float3 Grid::li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
-                uint32_t num_paths) const {
+float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
+                scene::Worker const& worker) const {
     if (0 == num_photons_) {
         return float3::identity();
     }
 
     float3 result = float3::identity();
 
-    float3 position = intersection.geo.p;
+    float3 const position = intersection.geo.p;
 
     int2 cells[4];
     adjacent_cells(position, cells);
 
     if (intersection.subsurface) {
-        float const squared_radius     = photon_radius_ * photon_radius_;
-        float const inv_squared_radius = 1.f / squared_radius;
-
-        float const f = 1.f / (static_cast<float>(num_paths) * squared_radius);
+        float const radius_2 = photon_radius_ * photon_radius_;
+        float const radius_3 = photon_radius_ * radius_2;
 
         for (uint32_t c = 0; c < 4; ++c) {
             int2 const cell = cells[c];
@@ -159,24 +162,25 @@ float3 Grid::li(scene::prop::Intersection const& intersection, scene::material::
             for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
                 auto const& photon = photons_[i];
 
-                if (float const squared_distance = math::squared_distance(photon.p, position);
-                    squared_distance <= squared_radius) {
+                if (photon.properties.test_not(Photon::Property::Volumetric)) {
+                    continue;
+                }
 
-                        float const k = kernel(squared_distance, inv_squared_radius);
+                if (math::squared_distance(photon.p, position) <= radius_2) {
+                    auto const bxdf = sample.evaluate(photon.wi);
 
-                        auto const bxdf = sample.evaluate(photon.wi);
-
-                        result += (k * f) *
-                                  (float3(photon.alpha) * bxdf.reflection);
-
+                    result += float3(photon.alpha) * bxdf.reflection;
                 }
             }
         }
-    } else {
-        float const squared_radius     = photon_radius_ * photon_radius_;
-        float const inv_squared_radius = 1.f / squared_radius;
 
-        float const f = 1.f / (static_cast<float>(num_paths) * squared_radius);
+        float3 const mu_s = scattering_coefficient(intersection, worker);
+
+        result /= (((4.f / 3.f) * math::Pi) * (radius_3 * static_cast<float>(num_paths))) * mu_s;
+
+    } else {
+        float const radius_2     = photon_radius_ * photon_radius_;
+        float const inv_radius_2 = 1.f / radius_2;
 
         for (uint32_t c = 0; c < 4; ++c) {
             int2 const cell = cells[c];
@@ -184,21 +188,27 @@ float3 Grid::li(scene::prop::Intersection const& intersection, scene::material::
             for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
                 auto const& photon = photons_[i];
 
-                if (float const squared_distance = math::squared_distance(photon.p, position);
-                    squared_distance <= squared_radius) {
-                    if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi); n_dot_wi > 0.f) {
+                if (photon.properties.test(Photon::Property::Volumetric)) {
+                    continue;
+                }
+
+                if (float const distance_2 = math::squared_distance(photon.p, position);
+                    distance_2 <= radius_2) {
+                    if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
+                        n_dot_wi > 0.f) {
                         float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
 
-                        float const k = kernel(squared_distance, inv_squared_radius);
+                        float const k = kernel(distance_2, inv_radius_2);
 
                         auto const bxdf = sample.evaluate(photon.wi);
 
-                        result += ((k * f) / clamped_n_dot_wi) *
-                                  (float3(photon.alpha) * bxdf.reflection);
+                        result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
                     }
                 }
             }
         }
+
+        result /= static_cast<float>(num_paths) * radius_2;
     }
 
     return result;
@@ -237,10 +247,6 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) {
                 if (pb.alpha[0] < 0.f) {
                     continue;
                 }
-
-                //                if (math::dot(pa.n, pb.n) < 0.5f) {
-                //                    continue;
-                //                }
 
                 if (math::squared_distance(pa.p, pb.p) < merge_distance) {
                     float3 const sum = float3(pa.alpha) + float3(pb.alpha);
@@ -408,6 +414,32 @@ void Grid::adjacent_cells(f_float3 v, int2 cells[4]) const {
         cells[2] = grid_[ic + o__0__0_m1_];
     } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
         cells[2] = grid_[ic + o__0__0_p1_];
+    }
+}
+
+float3 Grid::scattering_coefficient(Intersection const& intersection, scene::Worker const& worker) {
+    auto const& material = *intersection.material();
+
+    if (material.is_heterogeneous_volume()) {
+        scene::entity::Composed_transformation temp;
+        auto const& transformation = intersection.prop->transformation_at(0.f, temp);
+
+        float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
+
+        auto const   shape = intersection.prop->shape();
+        float3 const uvw   = shape->object_to_texture_point(local_position);
+
+        return material
+            .collision_coefficients(uvw, scene::material::Sampler_settings::Filter::Undefined,
+                                    worker)
+            .s;
+    } else if (material.is_textured_volume()) {
+        return material
+            .collision_coefficients(intersection.geo.uv,
+                                    scene::material::Sampler_settings::Filter::Undefined, worker)
+            .s;
+    } else {
+        return material.collision_coefficients().s;
     }
 }
 

@@ -130,7 +130,7 @@ uint32_t Worker::bake_photons(int32_t begin, int32_t end, float normalized_tick_
 
 float3 Worker::photon_li(Intersection const& intersection, Material_sample const& sample) const {
     if (photon_map_) {
-        return photon_map_->li(intersection, sample);
+        return photon_map_->li(intersection, sample, *this);
     }
 
     return float3::identity();

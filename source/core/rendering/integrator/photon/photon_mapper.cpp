@@ -114,6 +114,8 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                 break;
             }
 
+            float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+
             if (material_sample.ior_greater_one()) {
                 bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
                                                                   Bxdf_type::Transmission);
@@ -125,13 +127,13 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                            settings_.full_light_path) {
                     auto& photon = photons[num_photons];
 
-                    photon.p = intersection.geo.p;
-                    //                photon.n     = intersection.geo.n;
+                    photon.p        = intersection.geo.p;
                     photon.wi       = -ray.direction;
                     photon.alpha[0] = radiance[0];
                     photon.alpha[1] = radiance[1];
                     photon.alpha[2] = radiance[2];
-                    photon.caustic  = 0 == num_photons;
+                    photon.properties.set(Photon::Property::First_hit, 0 == num_photons);
+                    photon.properties.set(Photon::Property::Volumetric, intersection.subsurface);
 
                     iteration = i + 1;
 
@@ -145,11 +147,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                 } else if (!settings_.indirect_caustics) {
                     break;
                 }
-            }
 
-            float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-
-            if (material_sample.ior_greater_one()) {
                 float3 const nr      = radiance * sample_result.reflection / sample_result.pdf;
                 float const  average = math::average(nr) / math::average(radiance);
                 float const  continue_prob = std::min(1.f, average);

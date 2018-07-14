@@ -13,7 +13,7 @@ inline bool Intersection::hit() const {
     return nullptr != prop;
 }
 
-inline material::Material* Intersection::material() const {
+inline material::Material const* Intersection::material() const {
     return prop->material(geo.part);
 }
 
@@ -30,15 +30,15 @@ inline float Intersection::opacity(float time, Sampler_filter filter, Worker con
 }
 
 inline float3 Intersection::thin_absorption(f_float3 wo, float time, Sampler_filter filter,
-                                            Worker& worker) const {
+                                            Worker const& worker) const {
     return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
 }
 
 inline material::Sample const& Intersection::sample(f_float3 wo, Ray const& ray,
                                                     Sampler_filter filter, bool avoid_caustics,
-                                                    sampler::Sampler& sampler, Worker& worker,
+                                                    sampler::Sampler& sampler, Worker const& worker,
                                                     uint32_t depth) const {
-    material::Material* material = Intersection::material();
+    material::Material const* material = Intersection::material();
 
     Renderstate rs;
     rs.p = geo.p;

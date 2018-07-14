@@ -1,6 +1,7 @@
 #ifndef SU_RENDERING_INTEGRATOR_PHOTON_GRID_HPP
 #define SU_RENDERING_INTEGRATOR_PHOTON_GRID_HPP
 
+#include "base/flags/flags.hpp"
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
 
@@ -8,26 +9,37 @@ namespace thread {
 class Pool;
 }
 
-namespace scene::material {
+namespace scene {
+
+namespace material {
 class Sample;
 }
 
-namespace scene::prop {
+namespace prop {
 struct Intersection;
 }
+
+class Worker;
+
+}  // namespace scene
 
 namespace rendering::integrator::photon {
 
 struct Photon {
     float3 p;
-    //    float3 n;
     float3 wi;
     float  alpha[3];
-    bool   caustic;
+
+    enum class Property { First_hit = 1 << 0, Volumetric = 1 << 1 };
+
+    flags::Flags<Property> properties;
 };
 
 class Grid {
   public:
+    using Intersection    = scene::prop::Intersection;
+    using Material_sample = scene::material::Sample;
+
     Grid();
     ~Grid();
 
@@ -37,7 +49,8 @@ class Grid {
 
     uint32_t reduce_and_move(Photon* photons, uint32_t* num_reduced, thread::Pool& pool);
 
-    float3 li(scene::prop::Intersection const& intersection, const scene::material::Sample &sample, uint32_t num_paths) const;
+    float3 li(Intersection const& intersection, const Material_sample& sample, uint32_t num_paths,
+              scene::Worker const& worker) const;
 
     size_t num_bytes() const;
 
@@ -50,6 +63,9 @@ class Grid {
     int3 map3(f_float3 v, int8_t adjacent[3]) const;
 
     void adjacent_cells(f_float3 v, int2 cells[4]) const;
+
+    static float3 scattering_coefficient(Intersection const&  intersection,
+                                         scene::Worker const& worker);
 
     uint32_t num_photons_;
     Photon*  photons_;

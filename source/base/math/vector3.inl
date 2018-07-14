@@ -450,6 +450,13 @@ static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, float s) {
     return a;
 }
 
+static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, FVector3f_a b) {
+    a[0] /= b[0];
+    a[1] /= b[1];
+    a[2] /= b[2];
+    return a;
+}
+
 static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, float s) {
     float const is = 1.f / s;
     a[0] *= is;
