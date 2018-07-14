@@ -129,7 +129,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
             filter            = Sampler_filter::Nearest;
             treat_as_singular = false;
 
-            result += worker.photon_li(intersection.geo.p, intersection.geo.subsurface, material_sample);
+            result += worker.photon_li(intersection, material_sample);
         }
 
         if (0.f == ray.wavelength) {

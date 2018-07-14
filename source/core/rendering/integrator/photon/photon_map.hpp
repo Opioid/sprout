@@ -13,6 +13,10 @@ namespace scene::material {
 class Sample;
 }
 
+namespace scene::prop {
+struct Interscection;
+}
+
 namespace rendering::integrator::photon {
 
 class Map {
@@ -28,7 +32,7 @@ class Map {
 
     uint32_t compile(uint32_t num_paths, thread::Pool& pool);
 
-    float3 li(f_float3 position, bool is_volumetric, scene::material::Sample const& sample) const;
+    float3 li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample) const;
 
     size_t num_bytes() const;
 

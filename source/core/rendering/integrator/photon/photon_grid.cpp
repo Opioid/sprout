@@ -6,6 +6,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
+#include "scene/prop/prop_intersection.hpp"
 
 namespace rendering::integrator::photon {
 
@@ -133,7 +134,7 @@ static inline float kernel(float squared_distance, float inv_squared_radius) {
     return (3.f * math::Pi_inv) * (s * s);
 }
 
-float3 Grid::li(f_float3 position, bool is_volumetric, scene::material::Sample const& sample,
+float3 Grid::li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
                 uint32_t num_paths) const {
     if (0 == num_photons_) {
         return float3::identity();
@@ -141,10 +142,12 @@ float3 Grid::li(f_float3 position, bool is_volumetric, scene::material::Sample c
 
     float3 result = float3::identity();
 
+    float3 position = intersection.geo.p;
+
     int2 cells[4];
     adjacent_cells(position, cells);
 
-    if (is_volumetric) {
+    if (intersection.geo.subsurface) {
         float const squared_radius     = photon_radius_ * photon_radius_;
         float const inv_squared_radius = 1.f / squared_radius;
 

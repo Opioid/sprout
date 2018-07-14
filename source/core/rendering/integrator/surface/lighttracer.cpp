@@ -77,7 +77,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
                                                           Bxdf_type::Transmission);
 
         if (!singular) {
-            result += throughput * worker.photon_li(intersection.geo.p, intersection.geo.subsurface, material_sample);
+            result += throughput * worker.photon_li(intersection, material_sample);
             break;
         }
 
