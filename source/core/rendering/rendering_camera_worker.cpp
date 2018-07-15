@@ -40,7 +40,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 co
             sampler_->resume_pixel(sample_begin, rng);
             surface_integrator_->resume_pixel(sample_begin, rng);
 
-            const int2 pixel(x, y);
+            int2 const pixel(x, y);
 
             for (uint32_t i = sample_begin; i < sample_end; ++i) {
                 sampler_->generate_camera_sample(pixel, i, sample);

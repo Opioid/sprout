@@ -15,7 +15,7 @@ class Interpolated_function {
 
     ~Interpolated_function();
 
-    void from_array(float range_begin, float range_end, size_t num_samples, const T t[]);
+    void from_array(float range_begin, float range_end, size_t num_samples, T const t[]);
 
     T operator()(float x) const;
 
@@ -24,7 +24,8 @@ class Interpolated_function {
 
     float inverse_range_;
 
-    T* samples_ = nullptr;
+    size_t num_samples_ = 0;
+    T*     samples_     = nullptr;
 };
 
 }  // namespace math

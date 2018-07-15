@@ -36,7 +36,7 @@ void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scra
 void test() {
     std::cout << "sampler::testing::test()" << std::endl;
 
-    const int2 dimensions(512, 512);
+    int2 const dimensions(512, 512);
     Renderer   renderer(dimensions, 4);
     Byte3      target(Image::Description(Image::Type::Byte3, dimensions));
 

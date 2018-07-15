@@ -1,5 +1,5 @@
 #include "sky_model.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
 #include "hosek/ArHosekSkyModel.hpp"
@@ -19,11 +19,7 @@ Model::~Model() {
     release();
 }
 
-bool Model::init() {
-    if (!dirty_) {
-        return false;
-    }
-
+void Model::compile() {
     release();
 
     float const elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
@@ -32,10 +28,6 @@ bool Model::init() {
         skymodel_states_[i] = arhosekskymodelstate_alloc_init(elevation, turbidity_,
                                                               ground_albedo_[0]);
     }
-
-    dirty_ = false;
-
-    return true;
 }
 
 float3 Model::sun_direction() const {
@@ -43,20 +35,15 @@ float3 Model::sun_direction() const {
 }
 
 void Model::set_sun_direction(f_float3 direction) {
-    // Supposedly the sun direction in the disney cloud scene
-    sun_direction_ = float3(-0.5826f, -0.7660f, -0.2717f);
-    // sun_direction_ = direction;
-    dirty_ = true;
+    sun_direction_ = direction;
 }
 
 void Model::set_ground_albedo(f_float3 albedo) {
     ground_albedo_ = albedo;
-    dirty_         = true;
 }
 
 void Model::set_turbidity(float turbidity) {
     turbidity_ = turbidity;
-    dirty_     = true;
 }
 
 float3 Model::evaluate_sky(f_float3 wi) const {

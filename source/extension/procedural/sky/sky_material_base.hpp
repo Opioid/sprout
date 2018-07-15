@@ -1,19 +1,22 @@
-#pragma once
+#ifndef SU_EXTENSION_PROCEDURAL_SKY_BASE_MATERIAL_HPP
+#define SU_EXTENSION_PROCEDURAL_SKY_BASE_MATERIAL_HPP
 
 #include "core/scene/material/material.hpp"
 
-namespace procedural {
-namespace sky {
+namespace procedural::sky {
 
-class Model;
+class Sky;
 
 class Material : public scene::material::Material {
   public:
-    Material(Model& model);
+    Material(Sky& sky);
+
+    virtual float ior() const override final;
 
   protected:
-    Model& model_;
+    Sky& sky_;
 };
 
-}  // namespace sky
-}  // namespace procedural
+}  // namespace procedural::sky
+
+#endif

@@ -250,8 +250,8 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
         rnd::Generator rng(0, id);
 
         for (int32_t i = begin; i < end; ++i) {
-            const int2 c  = destination.coordinates_2(i);
-            const int2 kb = d - c;
+            int2 const c  = destination.coordinates_2(i);
+            int2 const kb = d - c;
 
             //			float2 const center = (float2(c) + float2(0.5f)) / float2(d);
 
@@ -278,7 +278,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 
                 int32_t const si = sy * d[0] + sx;
 
-                const int2 kc = kb + int2(sx, sy);
+                int2 const kc = kb + int2(sx, sy);
 
                 int32_t const ki = kc[1] * kd0 + kc[0];
 
@@ -318,7 +318,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
         auto const d = destination.description().dimensions.xy();
 
         for (int32_t i = begin; i < end; ++i) {
-            const int2 c = destination.coordinates_2(i);
+            int2 const c = destination.coordinates_2(i);
             float3     accum(0.f);
             float      weight_sum = 0.f;
             for (int32_t j = 0, len = gauss_width_; j < len; ++j) {
@@ -342,7 +342,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
         auto const d = destination.description().dimensions.xy();
 
         for (int32_t i = begin; i < end; ++i) {
-            const int2 c = destination.coordinates_2(i);
+            int2 const c = destination.coordinates_2(i);
             float3     accum(0.f);
             float      weight_sum = 0.f;
             for (int32_t j = 0, len = gauss_width_; j < len; ++j) {

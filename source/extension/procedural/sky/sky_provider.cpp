@@ -38,19 +38,20 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
                                            resource::Manager& manager) {
     Sky* sky = new Sky;
 
-    bool const bake = true;
+    static bool constexpr bake = true;
 
     std::shared_ptr<Material> sky_material;
+    std::shared_ptr<Material> sun_material;
 
     if (bake) {
-        sky_material = std::make_shared<Sky_baked_material>(sky->model());
+        sky_material = std::make_shared<Sky_baked_material>(*sky);
+        sun_material = std::make_shared<Sun_baked_material>(*sky);
     } else {
-        sky_material = std::make_shared<Sky_material>(sky->model());
+        sky_material = std::make_shared<Sky_material>(*sky);
+        sun_material = std::make_shared<Sun_material>(*sky);
     }
 
     manager.store<material::Material>("proc:sky", sky_material);
-
-    auto sun_material = std::make_shared<Sun_material>(sky->model());
 
     manager.store<material::Material>("proc:sun", sun_material);
 
@@ -65,8 +66,7 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
     sky->init(sky_prop, sun_prop);
     sky->set_propagate_visibility(true);
 
-    json::Value::ConstMemberIterator const p = extension_value.FindMember("parameters");
-    if (extension_value.MemberEnd() != p) {
+    if (auto const p = extension_value.FindMember("parameters"); extension_value.MemberEnd() != p) {
         sky->set_parameters(p->value);
     }
 

@@ -18,19 +18,20 @@ Celestial_disk::Celestial_disk() {
 
 bool Celestial_disk::intersect(Ray& ray, Transformation const&           transformation,
                                Node_stack& /*node_stack*/, Intersection& intersection) const {
-    float3 const& n = transformation.rotation.r[2];
-    float const   b = math::dot(n, ray.direction);
+    float3 const n = transformation.rotation.r[2];
+    float const  b = math::dot(n, ray.direction);
 
-    if (b > 0.f) {
+    if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
     }
 
     float const radius = transformation.scale[0];
     float const det    = (b * b) - math::dot(n, n) + (radius * radius);
 
-    if (det > 0.f && ray.max_t >= Ray_max_t) {
-        constexpr float hit_t = Almost_ray_max_t;
-        ray.max_t             = hit_t;
+    if (det > 0.f) {
+        float constexpr hit_t = Almost_ray_max_t;
+
+        ray.max_t = hit_t;
 
         intersection.p     = ray.point(hit_t);
         intersection.geo_n = n;
@@ -38,8 +39,9 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&           transfo
         intersection.b     = transformation.rotation.r[1];
         intersection.n     = n;
 
-        float3 const k     = ray.direction - n;
-        float3 const sk    = k / radius;
+        float3 const k  = ray.direction - n;
+        float3 const sk = k / radius;
+
         intersection.uv[0] = (math::dot(intersection.t, sk) + 1.f) * 0.5f;
         intersection.uv[1] = (math::dot(intersection.b, sk) + 1.f) * 0.5f;
 
@@ -54,25 +56,27 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&           transfo
 
 bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           transformation,
                                     Node_stack& /*node_stack*/, Intersection& intersection) const {
-    float3 const& n = transformation.rotation.r[2];
-    float const   b = math::dot(n, ray.direction);
+    float3 const n = transformation.rotation.r[2];
+    float const  b = math::dot(n, ray.direction);
 
-    if (b > 0.f) {
+    if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
     }
 
     float const radius = transformation.scale[0];
     float const det    = (b * b) - math::dot(n, n) + (radius * radius);
 
-    if (det > 0.f && ray.max_t >= Ray_max_t) {
-        constexpr float hit_t = Almost_ray_max_t;
-        ray.max_t             = hit_t;
+    if (det > 0.f) {
+        float constexpr hit_t = Almost_ray_max_t;
+
+        ray.max_t = hit_t;
 
         intersection.p     = ray.point(hit_t);
         intersection.geo_n = n;
 
-        float3 const k     = ray.direction - n;
-        float3 const sk    = k / radius;
+        float3 const k  = ray.direction - n;
+        float3 const sk = k / radius;
+
         intersection.uv[0] = (math::dot(intersection.t, sk) + 1.f) * 0.5f;
         intersection.uv[1] = (math::dot(intersection.b, sk) + 1.f) * 0.5f;
 
@@ -87,17 +91,17 @@ bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           tr
 
 bool Celestial_disk::intersect(Ray& ray, Transformation const&    transformation,
                                Node_stack& /*node_stack*/, float& epsilon) const {
-    float3 const& n = transformation.rotation.r[2];
-    float const   b = math::dot(n, ray.direction);
+    float3 const n = transformation.rotation.r[2];
+    float const  b = math::dot(n, ray.direction);
 
-    if (b > 0.f) {
+    if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
     }
 
     float const radius = transformation.scale[0];
     float const det    = (b * b) - math::dot(n, n) + (radius * radius);
 
-    if (det > 0.f && ray.max_t >= Ray_max_t) {
+    if (det > 0.f) {
         ray.max_t = Almost_ray_max_t;
         epsilon   = 5e-4f;
         return true;
@@ -108,17 +112,17 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&    transformation
 
 bool Celestial_disk::intersect_p(Ray const& ray, Transformation const& transformation,
                                  Node_stack& /*node_stack*/) const {
-    float3 const& n = transformation.rotation.r[2];
-    float const   b = math::dot(n, ray.direction);
+    float3 const n = transformation.rotation.r[2];
+    float const  b = math::dot(n, ray.direction);
 
-    if (b > 0.f) {
+    if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
     }
 
     float const radius = transformation.scale[0];
     float const det    = (b * b) - math::dot(n, n) + (radius * radius);
 
-    if (det > 0.f && ray.max_t >= Ray_max_t) {
+    if (det > 0.f) {
         return true;
     }
 

@@ -10,7 +10,7 @@ namespace image::texture::sampler {
 template <typename Address_mode_U, typename Address_mode_V>
 float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& texture,
                                                            float2         uv) const {
-    const int2 xy = map(texture, uv);
+    int2 const xy = map(texture, uv);
 
     return texture.at_1(xy[0], xy[1]);
 }
@@ -18,7 +18,7 @@ float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& textur
 template <typename Address_mode_U, typename Address_mode_V>
 float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& texture,
                                                             float2         uv) const {
-    const int2 xy = map(texture, uv);
+    int2 const xy = map(texture, uv);
 
     return texture.at_2(xy[0], xy[1]);
 }
@@ -26,7 +26,7 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& textu
 template <typename Address_mode_U, typename Address_mode_V>
 float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& texture,
                                                             float2         uv) const {
-    const int2 xy = map(texture, uv);
+    int2 const xy = map(texture, uv);
 
     return texture.at_3(xy[0], xy[1]);
 }
@@ -34,7 +34,7 @@ float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& textu
 template <typename Address_mode_U, typename Address_mode_V>
 float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& texture, float2 uv,
                                                            int32_t element) const {
-    const int2 xy = map(texture, uv);
+    int2 const xy = map(texture, uv);
 
     int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
@@ -44,7 +44,7 @@ float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& textur
 template <typename Address_mode_U, typename Address_mode_V>
 float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& texture, float2 uv,
                                                             int32_t element) const {
-    const int2 xy = map(texture, uv);
+    int2 const xy = map(texture, uv);
 
     int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
@@ -54,7 +54,7 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& textu
 template <typename Address_mode_U, typename Address_mode_V>
 float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& texture, float2 uv,
                                                             int32_t element) const {
-    const int2 xy = map(texture, uv);
+    int2 const xy = map(texture, uv);
 
     int32_t const min_element = std::min(texture.num_elements() - 1, element);
 

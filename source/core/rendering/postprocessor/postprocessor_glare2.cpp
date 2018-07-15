@@ -111,7 +111,7 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < kernel_dimensions_[0]; ++x) {
-                    const int2 p(-dim[0] + x, -dim[1] + y);
+                    int2 const p(-dim[0] + x, -dim[1] + y);
 
                     float const theta = math::length(float2(p)) * solid_angle;
 
@@ -262,9 +262,9 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
         [this, dim, &source](uint32_t /*id*/, int32_t begin, int32_t end) {
             float const threshold = threshold_;
 
-            const int2 offset = dim / 4;
+            int2 const offset = dim / 4;
 
-            const int2 source_dim = source.dimensions2();
+            int2 const source_dim = source.dimensions2();
 
             for (int32_t y = begin, i = begin * dim[0]; y < end; ++y) {
                 for (int32_t x = 0; x < dim[0]; ++x, ++i) {
@@ -322,17 +322,17 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
     math::idft_2d(high_pass_g_, high_pass_dft_g_, temp_, dim[0], dim[1], pool);
     math::idft_2d(high_pass_b_, high_pass_dft_b_, temp_, dim[0], dim[1], pool);
 
-    const int2 offset = dim / 4;
+    int2 const offset = dim / 4;
 
     pool.run_range(
         [this, dim, offset, &source, &destination](uint32_t /*id*/, int32_t begin, int32_t end) {
-            const int2 source_dim = source.dimensions2();
+            int2 const source_dim = source.dimensions2();
 
             float const intensity = intensity_;
 
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
-                    const int2 sc = int2(x, y) - offset;
+                    int2 const sc = int2(x, y) - offset;
 
                     int32_t const iy = (y + source_dim[1]) % dim[1];
                     int32_t const ix = (x + source_dim[0]) % dim[0];

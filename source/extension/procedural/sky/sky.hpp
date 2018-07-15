@@ -1,6 +1,7 @@
 #ifndef SU_EXTENSION_PROCEDURAL_SKY_HPP
 #define SU_EXTENSION_PROCEDURAL_SKY_HPP
 
+#include "base/math/matrix3x3.inl"
 #include "core/scene/entity/entity.hpp"
 #include "sky_model.hpp"
 
@@ -21,6 +22,13 @@ class Sky : public scene::entity::Entity {
 
     Model& model();
 
+    float3 sun_wi(float v) const;
+
+    float sun_v(f_float3 wi) const;
+
+    bool sky_changed_since_last_check();
+    bool sun_changed_since_last_check();
+
   private:
     void update();
 
@@ -38,6 +46,9 @@ class Sky : public scene::entity::Entity {
     float turbidity_ = 2.f;
 
     bool implicit_rotation_ = true;
+
+    bool sky_changed_;
+    bool sun_changed_;
 };
 
 }  // namespace procedural::sky

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_EXTENSION_PROCEDURAL_SKY_SKY_MATERIAL_HPP
+#define SU_EXTENSION_PROCEDURAL_SKY_SKY_MATERIAL_HPP
 
 #include "base/math/distribution/distribution_2d.hpp"
 #include "sky_material_base.hpp"
@@ -7,7 +8,7 @@ namespace procedural::sky {
 
 class Sky_material : public Material {
   public:
-    Sky_material(Model& model);
+    Sky_material(Sky& sky);
 
     virtual const scene::material::Sample& sample(f_float3 wo, const scene::Renderstate& rs,
                                                   Sampler_filter filter, sampler::Sampler& sampler,
@@ -24,14 +25,12 @@ class Sky_material : public Material {
                                   Transformation const& transformation, float area,
                                   bool importance_sampling, thread::Pool& pool) override final;
 
-    virtual float ior() const override final;
-
     virtual size_t num_bytes() const override final;
 };
 
 class Sky_baked_material : public Material {
   public:
-    Sky_baked_material(Model& model);
+    Sky_baked_material(Sky& sky);
     virtual ~Sky_baked_material() override;
 
     virtual const scene::material::Sample& sample(f_float3 wo, const scene::Renderstate& rs,
@@ -56,8 +55,6 @@ class Sky_baked_material : public Material {
                                   Transformation const& transformation, float area,
                                   bool importance_sampling, thread::Pool& pool) override final;
 
-    virtual float ior() const override final;
-
     virtual size_t num_bytes() const override final;
 
   private:
@@ -73,3 +70,5 @@ class Sky_baked_material : public Material {
 };
 
 }  // namespace procedural::sky
+
+#endif

@@ -298,7 +298,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         }
     */
 
-        static bool constexpr decomposition = true;
+        static bool constexpr decomposition = false;
 
         if (decomposition) {
             /*

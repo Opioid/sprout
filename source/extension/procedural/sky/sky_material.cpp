@@ -14,6 +14,7 @@
 #include "core/scene/scene_worker.inl"
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/shape/shape_sample.hpp"
+#include "sky.hpp"
 #include "sky_model.hpp"
 
 //#include "core/image/encoding/png/png_writer.hpp"
@@ -24,7 +25,7 @@ namespace procedural::sky {
 
 using namespace scene;
 
-Sky_material::Sky_material(Model& model) : Material(model) {}
+Sky_material::Sky_material(Sky& sky) : Material(sky) {}
 
 material::Sample const& Sky_material::sample(f_float3 wo, Renderstate const& rs,
                                              Sampler_filter /*filter*/,
@@ -36,35 +37,29 @@ material::Sample const& Sky_material::sample(f_float3 wo, Renderstate const& rs,
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.layer_.set(model_.evaluate_sky(-wo));
+    sample.layer_.set(sky_.model().evaluate_sky(-wo));
 
     return sample;
 }
 
 float3 Sky_material::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/, float /*time*/,
                                        Sampler_filter /*filter*/, Worker const& /*worker*/) const {
-    return model_.evaluate_sky(wi);
+    return sky_.model().evaluate_sky(wi);
 }
 
 float3 Sky_material::average_radiance(float /*area*/) const {
-    return model_.evaluate_sky(model_.zenith());
+    return sky_.model().evaluate_sky(sky_.model().zenith());
 }
 
 void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*pool*/) {
-    model_.init();
-}
-
-float Sky_material::ior() const {
-    return 1.5f;
-}
+                                    bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
 
 size_t Sky_material::num_bytes() const {
     return sizeof(*this);
 }
 
-Sky_baked_material::Sky_baked_material(Model& model) : Material(model) {}
+Sky_baked_material::Sky_baked_material(Sky& sky) : Material(sky) {}
 
 Sky_baked_material::~Sky_baked_material() {}
 
@@ -89,7 +84,7 @@ material::Sample const& Sky_baked_material::sample(f_float3 wo, Renderstate cons
 float3 Sky_baked_material::evaluate_radiance(f_float3 /*wi*/, float2        uv, float /*area*/,
                                              float /*time*/, Sampler_filter filter,
                                              Worker const& worker) const {
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_map_.sample_3(sampler, uv);
 }
 
@@ -117,14 +112,17 @@ float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter,
 void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t /*part*/,
                                           Transformation const& transformation, float /*area*/,
                                           bool importance_sampling, thread::Pool& /*pool*/) {
-    if (!model_.init()) {
+    using namespace image;
+
+    if (!sky_.sky_changed_since_last_check()) {
         return;
     }
 
-    const int2 d(256, 256);
+    int2 const d(256);
 
-    const image::Image::Description description(image::Image::Type::Float3, d);
-    auto                            cache = std::make_shared<image::Float3>(description);
+    Image::Description const description(Image::Type::Float3, d);
+
+    auto cache = std::make_shared<Float3>(description);
 
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
@@ -141,14 +139,16 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
                     cache->at(x, y) = packed_float3::identity;
             } else*/
             {
-                float3 const radiance = model_.evaluate_sky(/*sample.*/ wi);
-                cache->at(x, y)       = packed_float3(radiance);
+                float3 const radiance = sky_.model().evaluate_sky(/*sample.*/ wi);
+
+                cache->at(x, y) = packed_float3(radiance);
             }
         }
     }
 
-    auto cache_texture = std::make_shared<image::texture::Float3>(cache);
-    emission_map_      = Texture_adapter(cache_texture);
+    auto cache_texture = std::make_shared<texture::Float3>(cache);
+
+    emission_map_ = Texture_adapter(cache_texture);
 
     //	std::ofstream stream("sky.png", std::ios::binary);
     //	if (stream) {
@@ -189,12 +189,8 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
         // This controls how often the sky will be sampled,
         // Zenith sample cause less variance in one test (favoring the sun)...
         // average_emission_ = cache_texture->average_3();
-        average_emission_ = model_.evaluate_sky(model_.zenith());
+        average_emission_ = sky_.model().evaluate_sky(sky_.model().zenith());
     }
-}
-
-float Sky_baked_material::ior() const {
-    return 1.5f;
 }
 
 size_t Sky_baked_material::num_bytes() const {

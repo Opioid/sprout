@@ -15,7 +15,7 @@ namespace rgbe {
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
     const Header header = read_header(stream);
 
-    const int2 dimensions(header.width, header.height);
+    int2 const dimensions(header.width, header.height);
 
     auto image = std::make_shared<Float3>(Image::Description(Image::Type::Float3, dimensions));
 
