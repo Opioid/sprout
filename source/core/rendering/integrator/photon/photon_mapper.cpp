@@ -15,6 +15,8 @@
 
 namespace rendering::integrator::photon {
 
+using namespace scene;
+
 Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings)
     : Integrator(rng, take_settings),
       settings_(settings),
@@ -44,14 +46,14 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tic
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
-                map.insert(photons_[j], i + j);
+                map.insert(photons_[j], static_cast<uint32_t>(i) + j);
             }
 
             i += num_photons - 1;
 
             num_paths += num_iterations;
         } else {
-            std::cout << "sad" << std::endl;
+            return 0;
         }
     }
 
@@ -84,9 +86,9 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 
         bool specular_ray = false;
 
-        Ray                        ray;
-        scene::light::Light const* light;
-        scene::shape::Sample_from  light_sample;
+        Ray                 ray;
+        light::Light const* light;
+        shape::Sample_from  light_sample;
         if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, worker, ray, &light,
                                 light_sample)) {
             continue;
@@ -196,8 +198,8 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 }
 
 bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
-                                Worker& worker, Ray& ray, scene::light::Light const** light_out,
-                                scene::shape::Sample_from& light_sample) {
+                                Worker& worker, Ray& ray, light::Light const** light_out,
+                                shape::Sample_from& light_sample) {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);

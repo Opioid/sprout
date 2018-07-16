@@ -19,16 +19,19 @@ class Material_base : public material::Material {
 
     virtual float ior() const override final;
 
+    virtual void set_ior(float ior, float external_ior = 1.f);
+
+    virtual bool is_caustic() const override;
+
     void set_color_map(Texture_adapter const& color_map);
     void set_normal_map(Texture_adapter const& normal_map);
     void set_surface_map(Texture_adapter const& surface_map);
     void set_emission_map(Texture_adapter const& emission_map);
 
-    void         set_color(float3 const& color);
-    virtual void set_ior(float ior, float external_ior = 1.f);
-    void         set_roughness(float roughness);
-    void         set_metallic(float metallic);
-    void         set_emission_factor(float emission_factor);
+    void set_color(float3 const& color);
+    void set_roughness(float roughness);
+    void set_metallic(float metallic);
+    void set_emission_factor(float emission_factor);
 
   protected:
     using Texture_sampler_2D = image::texture::sampler::Sampler_2D;

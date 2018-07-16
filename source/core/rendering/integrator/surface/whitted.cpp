@@ -36,7 +36,7 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
     //	float3 opacity = intersection.thin_absorption(wo, ray.time, Sampler_filter::Undefined,
     // worker); 	float3 throughput = opacity;
 
-    //	while (math::any_lesser_one(opacity)) {
+    //	while (math::any_less_one(opacity)) {
     //		if (math::any_greater_zero(opacity)) {
     //			result += throughput * shade(ray, intersection, worker);
     //		}

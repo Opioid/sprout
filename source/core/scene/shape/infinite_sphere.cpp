@@ -180,10 +180,6 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
     float const phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
     float const theta = uv[1] * math::Pi;
 
-    //	float const sin_phi   = std::sin(phi);
-    //	float const cos_phi   = std::cos(phi);
-    //	float const sin_theta = std::sin(theta);
-    //	float const cos_theta = std::cos(theta);
     float sin_phi;
     float cos_phi;
     math::sincos(phi, sin_phi, cos_phi);
@@ -205,10 +201,59 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
     return true;
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, float2 /*uv*/,
-                             Transformation const& /*transformation*/, float /*area*/,
-                             bool /*two_sided*/, Sample_from& /*sample*/) const {
-    return false;
+bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&   transformation,
+                             float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
+                             uint32_t sampler_dimension, Sample_from& sample) const {
+
+
+
+    float const phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
+    float const theta = uv[1] * math::Pi;
+
+    float sin_phi;
+    float cos_phi;
+    math::sincos(phi, sin_phi, cos_phi);
+    float sin_theta;
+    float cos_theta;
+    math::sincos(theta, sin_theta, cos_theta);
+
+    float3 const p(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
+
+    sample.p = 10.f * math::transform_vector(p, transformation.rotation);
+
+
+    float2 const r0  = sampler.generate_sample_2D(sampler_dimension);
+    float3 const dir = math::sample_sphere_uniform(r0);
+
+    sample.dir   = -dir;
+
+
+
+    sample.uv = uv;
+    //   sample.t  = Ray_max_t;
+    // sin_theta because of the uv weight
+    sample.pdf     = 1.f / ((4.f * math::Pi) * sin_theta);
+    sample.epsilon = 5e-4f;
+
+    /*
+    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+    float3 const ls = math::sample_sphere_uniform(r0);
+
+    float3 const ws = transformation.position + (transformation.scale[0] * ls);
+
+    float3 x, y;
+    math::orthonormal_basis(ls, x, y);
+
+    float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
+    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, ls);
+
+    sample.p       = ws;
+    sample.dir     = dir;
+    sample.pdf     = 1.f / ((1.f * math::Pi) * area);
+    sample.epsilon = 5e-4f;
+    */
+
+    return true;
 }
 
 float Infinite_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& intersection,

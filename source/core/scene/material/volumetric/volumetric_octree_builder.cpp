@@ -83,7 +83,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
 
     int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
 
-    if (max_depth == depth || diff < 0.1f || math::any_lesser(half, 3)) {
+    if (max_depth == depth || diff < 0.1f || math::any_less(half, 3)) {
         for (uint32_t i = 0; i < 8; ++i) {
             node->children[i] = nullptr;
         }

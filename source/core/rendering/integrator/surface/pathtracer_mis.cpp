@@ -20,6 +20,8 @@
 
 namespace rendering::integrator::surface {
 
+using namespace scene;
+
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
                                Settings const& settings)
     : Integrator(rng, take_settings),
@@ -70,7 +72,8 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
     uint32_t const max_bounces = settings_.max_bounces;
 
     Sampler_filter filter = Sampler_filter::Undefined;
-    Bxdf_sample    sample_result;
+
+    Bxdf_sample sample_result;
 
     bool primary_ray       = true;
     bool treat_as_singular = true;
@@ -263,7 +266,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
                                       const Material_sample& material_sample, Sampler_filter filter,
                                       Worker& worker) {
     // Light source importance sample
-    scene::shape::Sample_to light_sample;
+    shape::Sample_to light_sample;
     if (!light.sample(intersection.geo.p, material_sample.geometric_normal(), history.time,
                       material_sample.is_translucent(), light_sampler(history.depth),
                       sampler_dimension, worker, light_sample)) {

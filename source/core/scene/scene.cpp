@@ -75,6 +75,18 @@ math::AABB const& Scene::aabb() const {
     return prop_bvh_.aabb();
 }
 
+math::AABB Scene::caustic_aabb() const {
+    math::AABB aabb = math::AABB::empty();
+
+    for (auto const p : finite_props_) {
+        if (p->has_caustic_material()) {
+            aabb.merge_assign(p->aabb());
+        }
+    }
+
+    return aabb;
+}
+
 bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const {
     return prop_bvh_.intersect(ray, node_stack, intersection);
 }
@@ -98,7 +110,9 @@ bool Scene::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker,
     }
 
     bool const visible = !prop_bvh_.intersect_p(ray, worker.node_stack());
-    o                  = visible ? 0.f : 1.f;
+
+    o = visible ? 0.f : 1.f;
+
     return visible;
 }
 
@@ -110,7 +124,9 @@ bool Scene::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const&
 
     float      o;
     bool const visible = opacity(ray, filter, worker, o);
-    ta                 = float3(o);
+
+    ta = float3(o);
+
     return visible;
 }
 

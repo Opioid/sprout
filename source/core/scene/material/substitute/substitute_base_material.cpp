@@ -16,7 +16,7 @@ float3 Material_base::evaluate_radiance(f_float3 /*wi*/, float2 uv, float /*area
                                         Sampler_filter filter, Worker const& worker) const {
     if (emission_map_.is_valid()) {
         // For some reason Clang needs this to find inherited Material::sampler_key_
-        auto& sampler = worker.sampler_2D(sampler_key(), filter);
+        auto const& sampler = worker.sampler_2D(sampler_key(), filter);
         return emission_factor_ * emission_map_.sample_3(sampler, uv);
     } else {
         return float3(0.f);
@@ -39,6 +39,15 @@ float Material_base::ior() const {
     return ior_;
 }
 
+void Material_base::set_ior(float ior, float external_ior) {
+    ior_         = ior;
+    constant_f0_ = fresnel::schlick_f0(external_ior, ior);
+}
+
+bool Material_base::is_caustic() const {
+    return false;
+}
+
 void Material_base::set_color_map(Texture_adapter const& color_map) {
     color_map_ = color_map;
 }
@@ -57,11 +66,6 @@ void Material_base::set_emission_map(Texture_adapter const& emission_map) {
 
 void Material_base::set_color(float3 const& color) {
     color_ = color;
-}
-
-void Material_base::set_ior(float ior, float external_ior) {
-    ior_         = ior;
-    constant_f0_ = fresnel::schlick_f0(external_ior, ior);
 }
 
 void Material_base::set_roughness(float roughness) {

@@ -56,7 +56,8 @@ class Sphere final : public Shape {
                         float area, bool two_sided, Sample_to& sample) const override final;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                        bool two_sided, Sample_from& sample) const override final;
+                        bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                        Sample_from& sample) const override final;
 
     virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
                          Transformation const& transformation, float area,

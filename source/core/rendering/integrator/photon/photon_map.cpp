@@ -9,13 +9,19 @@
 
 namespace rendering::integrator::photon {
 
+static float constexpr Merge_threshold = 0.15f;
+
 Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics)
     : num_photons_(num_photons),
       photons_(nullptr),
       radius_(radius),
       indirect_radius_factor_(indirect_radius_factor),
       separate_caustics_(separate_caustics),
-      num_reduced_(nullptr) {}
+      num_reduced_(nullptr),
+      caustic_grid_(radius, Merge_threshold),
+      indirect_grid_(indirect_radius_factor_ * radius_, Merge_threshold / indirect_radius_factor_)
+
+{}
 
 Map::~Map() {
     memory::free_aligned(num_reduced_);
@@ -27,25 +33,20 @@ void Map::init(uint32_t num_workers) {
     num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
 }
 
-void Map::resize(math::AABB const& aabb) {
-    float constexpr merge_threshold = 0.15f;
-
-    caustic_grid_.resize(aabb, radius_, merge_threshold);
-
-    if (separate_caustics_) {
-        indirect_grid_.resize(aabb, indirect_radius_factor_ * radius_,
-                              merge_threshold / indirect_radius_factor_);
-    }
-}
-
 void Map::insert(Photon const& photon, uint32_t index) {
     photons_[index] = photon;
 }
 
 uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
+    math::AABB const aabb = calculate_aabb(pool);
+
+    caustic_grid_.resize(aabb);
+
     num_paths_ = num_paths;
 
     if (separate_caustics_) {
+        indirect_grid_.resize(aabb);
+
         auto const indirect_photons = std::partition(
             photons_, photons_ + num_photons_,
             [](Photon const& p) { return p.properties.test(Photon::Property::First_hit); });
@@ -102,6 +103,16 @@ size_t Map::num_bytes() const {
     num_bytes += caustic_grid_.num_bytes() + indirect_grid_.num_bytes();
 
     return num_bytes;
+}
+
+math::AABB Map::calculate_aabb(thread::Pool& /*pool*/) const {
+    math::AABB aabb = math::AABB::empty();
+
+    for (uint32_t i = 0, len = num_photons_; i < len; ++i) {
+        aabb.insert(photons_[i].p);
+    }
+
+    return aabb;
 }
 
 }  // namespace rendering::integrator::photon

@@ -131,6 +131,10 @@ bool Material::is_pure_specular() const {
     return false;
 }
 
+bool Material::is_caustic() const {
+    return false;
+}
+
 bool Material::is_masked() const {
     return mask_.is_valid();
 }

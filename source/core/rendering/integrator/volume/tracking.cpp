@@ -26,7 +26,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
 
-    if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
+    if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
         return false;
     }
 
@@ -63,7 +63,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         transmitted *= imt * mu_n;
 
-        if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
+        if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
             return false;
         }
 
@@ -111,11 +111,11 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
         transmitted *= imt * mu_n;
 
         // TODO: Consider employing russian roulette instead of just aborting
-        if (math::all_lesser(transmitted, Tracking::Abort_epsilon)) {
+        if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
             return false;
         }
 
-        //        if (math::all_lesser(transmitted, 0.01f)) {
+        //        if (math::all_less(transmitted, 0.01f)) {
         //            static float constexpr q = 0.1f;
         //            if (rendering::russian_roulette(transmitted, q, rng.random_float())) {
         //                return false;

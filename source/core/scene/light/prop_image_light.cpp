@@ -87,7 +87,8 @@ bool Prop_image_light::sample(Transformation const& transformation, sampler::Sam
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, result)) {
+    if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, sampler,
+                                sampler_dimension, result)) {
         return false;
     }
 

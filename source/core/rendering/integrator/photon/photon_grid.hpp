@@ -40,10 +40,10 @@ class Grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Grid();
+    Grid(float radius, float merge_radius_factor);
     ~Grid();
 
-    void resize(math::AABB const& aabb, float radius, float merge_radius_factor);
+    void resize(math::AABB const& aabb);
 
     void update(uint32_t num_photons, Photon* photons);
 
@@ -70,7 +70,7 @@ class Grid {
     uint32_t num_photons_;
     Photon*  photons_;
 
-    float3 min_;
+    math::AABB aabb_;
 
     float photon_radius_;
     float inverse_cell_size_;

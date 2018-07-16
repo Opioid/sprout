@@ -290,12 +290,12 @@ static constexpr bool any_greater_equal(Vector3<T> const& a, Vector3<T> const& b
 }
 
 template <typename T>
-static constexpr bool any_lesser(Vector3<T> const& a, T s) {
+static constexpr bool any_less(Vector3<T> const& a, T s) {
     return a[0] < s || a[1] < s || a[2] < s;
 }
 
 template <typename T>
-static constexpr bool any_lesser(Vector3<T> const& a, Vector3<T> const& b) {
+static constexpr bool any_less(Vector3<T> const& a, Vector3<T> const& b) {
     return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
 }
 
@@ -681,7 +681,7 @@ static inline constexpr bool operator!=(FVector3f_a a, FVector3f_a b) {
     return a[0] != b[0] || a[1] != b[1] || a[2] != b[2];
 }
 
-static inline constexpr bool all_lesser(FVector3f_a v, float s) {
+static inline constexpr bool all_less(FVector3f_a v, float s) {
     return v[0] < s && v[1] < s && v[2] < s;
 }
 
@@ -709,15 +709,15 @@ static inline constexpr bool any_greater_equal(FVector3f_a a, FVector3f_a b) {
     return a[0] >= b[0] || a[1] >= b[1] || a[2] >= b[2];
 }
 
-static inline constexpr bool any_lesser(FVector3f_a v, float s) {
+static inline constexpr bool any_less(FVector3f_a v, float s) {
     return v[0] < s || v[1] < s || v[2] < s;
 }
 
-static inline constexpr bool any_lesser(FVector3f_a a, FVector3f_a b) {
+static inline constexpr bool any_less(FVector3f_a a, FVector3f_a b) {
     return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
 }
 
-static inline constexpr bool any_lesser_equal(FVector3f_a v, float s) {
+static inline constexpr bool any_less_equal(FVector3f_a v, float s) {
     return v[0] <= s || v[1] <= s || v[2] <= s;
 }
 

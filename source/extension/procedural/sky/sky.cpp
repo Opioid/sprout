@@ -33,8 +33,9 @@ void Sky::set_parameters(json::Value const& parameters) {
             sun_rotation_       = json::create_rotation_matrix(angles);
 
             // Supposedly the sun direction in the disney cloud scene
-//            sun_rotation_.r[2] = float3(-0.5826f, -0.7660f, -0.2717f);
-//            math::orthonormal_basis(sun_rotation_.r[2], sun_rotation_.r[0], sun_rotation_.r[1]);
+            //            sun_rotation_.r[2] = float3(-0.5826f, -0.7660f, -0.2717f);
+            //            math::orthonormal_basis(sun_rotation_.r[2], sun_rotation_.r[0],
+            //            sun_rotation_.r[1]);
 
             implicit_rotation_ = false;
         } else if ("ground_albedo" == n.name) {

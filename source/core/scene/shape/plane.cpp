@@ -180,7 +180,8 @@ bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
 }
 
 bool Plane::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                   float /*area*/, bool /*two_sided*/, Sample_from& /*sample*/) const {
+                   float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+                   uint32_t /*sampler_dimension*/, Sample_from& /*sample*/) const {
     return false;
 }
 

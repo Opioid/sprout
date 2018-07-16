@@ -62,7 +62,7 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const {
 
     int3 const v = int3(float3(num_cells_) * (factor_ * p));
 
-    if (math::any_lesser(v, 0) || math::any_greater_equal(v, num_cells_)) {
+    if (math::any_less(v, 0) || math::any_greater_equal(v, num_cells_)) {
         return false;
     }
 
@@ -113,7 +113,6 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const {
             ray.max_t = hit_t;
         }
     } else {
-
         ray.max_t = ray.min_t;
         return false;
     }

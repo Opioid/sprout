@@ -72,6 +72,7 @@ class Prop : public entity::Entity {
     material::Material const* material(uint32_t part) const;
 
     bool has_masked_material() const;
+    bool has_caustic_material() const;
     bool has_tinted_shadow() const;
     bool has_no_surface() const;
 

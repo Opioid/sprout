@@ -166,7 +166,8 @@ bool Prop::visible(uint32_t ray_depth) const {
 void Prop::on_set_transformation() {
     if (properties_.test(Property::Animated)) {
         static uint32_t constexpr num_steps = 3;
-        static float constexpr interval     = 1.f / static_cast<float>(num_steps + 1);
+
+        static float constexpr interval = 1.f / static_cast<float>(num_steps + 1);
 
         math::AABB aabb = shape_->transformed_aabb(world_frame_a_);
 
@@ -253,6 +254,16 @@ material::Material const* Prop::material(uint32_t part) const {
 
 bool Prop::has_masked_material() const {
     return properties_.test(Property::Masked_material);
+}
+
+bool Prop::has_caustic_material() const {
+    for (auto const& m : materials_) {
+        if (m->is_caustic()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool Prop::has_tinted_shadow() const {

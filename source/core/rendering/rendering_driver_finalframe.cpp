@@ -166,8 +166,6 @@ void Driver_finalframe::bake_photons(float normalized_tick_offset, float normali
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    photon_map_.resize(scene_.aabb());
-
     uint32_t num_paths = 0;
     uint32_t begin     = 0;
 
@@ -184,6 +182,11 @@ void Driver_finalframe::bake_photons(float normalized_tick_offset, float normali
 
         for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
             num_paths += photon_infos_[i].num_paths;
+        }
+
+        if (!num_paths) {
+            logging::info("No photons");
+            break;
         }
 
         uint32_t const new_begin = photon_map_.compile(num_paths, thread_pool_);

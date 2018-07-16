@@ -97,7 +97,8 @@ class Shape {
                         float area, bool two_sided, Sample_to& sample) const = 0;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                        bool two_sided, Sample_from& sample) const = 0;
+                        bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                        Sample_from& sample) const = 0;
 
     virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
                          Transformation const& transformation, float area,

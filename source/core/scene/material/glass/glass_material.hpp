@@ -29,6 +29,7 @@ class Glass : public Material {
     void set_ior(float ior);
 
     virtual bool is_pure_specular() const override final;
+    virtual bool is_caustic() const override final;
 
     static size_t sample_size();
 

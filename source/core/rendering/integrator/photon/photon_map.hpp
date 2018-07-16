@@ -14,18 +14,18 @@ class Map {
 
     void init(uint32_t num_workers);
 
-    void resize(math::AABB const& aabb);
-
     void insert(Photon const& photon, uint32_t index);
 
     uint32_t compile(uint32_t num_paths, thread::Pool& pool);
 
-    float3 li(scene::prop::Intersection const& intersection, scene::material::Sample const& samplem,
+    float3 li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
               scene::Worker const& worker) const;
 
     size_t num_bytes() const;
 
   private:
+    math::AABB calculate_aabb(thread::Pool& pool) const;
+
     uint32_t num_paths_;
 
     uint32_t num_photons_;

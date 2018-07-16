@@ -74,6 +74,10 @@ bool Glass::is_pure_specular() const {
     return true;
 }
 
+bool Glass::is_caustic() const {
+    return true;
+}
+
 size_t Glass::sample_size() {
     return sizeof(Sample);
 }

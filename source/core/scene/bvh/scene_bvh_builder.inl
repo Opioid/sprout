@@ -164,7 +164,7 @@ math::AABB Builder<T>::aabb(index begin, index end) {
     math::AABB aabb = math::AABB::empty();
 
     for (index i = begin; i != end; ++i) {
-        aabb = aabb.merge((*i)->aabb());
+        aabb.merge_assign((*i)->aabb());
     }
 
     return aabb;

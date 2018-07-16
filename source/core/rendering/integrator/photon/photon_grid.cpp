@@ -14,18 +14,21 @@
 
 namespace rendering::integrator::photon {
 
-Grid::Grid() : num_photons_(0), photons_(nullptr), dimensions_(0), grid_(nullptr) {}
+Grid::Grid(float radius, float merge_radius_factor)
+    : num_photons_(0),
+      photons_(nullptr),
+      photon_radius_(radius),
+      inverse_cell_size_(1.f / (2.f * radius)),
+      merge_radius_factor_(merge_radius_factor),
+      dimensions_(0),
+      grid_(nullptr) {}
 
 Grid::~Grid() {
     memory::free_aligned(grid_);
 }
 
-void Grid::resize(math::AABB const& aabb, float radius, float merge_radius_factor) {
-    photon_radius_       = radius;
-    inverse_cell_size_   = 1.f / (2.f * radius);
-    merge_radius_factor_ = merge_radius_factor;
-
-    min_ = aabb.min();
+void Grid::resize(math::AABB const& aabb) {
+    aabb_ = aabb;
 
     int3 const dimensions = map3(aabb.max()) + int3(1);
 
@@ -33,7 +36,7 @@ void Grid::resize(math::AABB const& aabb, float radius, float merge_radius_facto
 
     if (dimensions_ != dimensions) {
         dimensions_ = dimensions;
-        max_coords_ = dimensions - int3(1);
+        max_coords_ = math::max(dimensions - int3(1), 1);
 
         memory::free_aligned(grid_);
         grid_ = memory::allocate_aligned<int2>(static_cast<uint32_t>(num_cells));
@@ -145,9 +148,13 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
         return float3::identity();
     }
 
-    float3 result = float3::identity();
-
     float3 const position = intersection.geo.p;
+
+    if (!aabb_.intersect(position)) {
+        return float3::identity();
+    }
+
+    float3 result = float3::identity();
 
     int2 cells[4];
     adjacent_cells(position, cells);
@@ -265,13 +272,13 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) {
 }
 
 int32_t Grid::map1(f_float3 v) const {
-    int3 const c = static_cast<int3>(inverse_cell_size_ * (v - min_));
+    int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
 int3 Grid::map3(f_float3 v) const {
-    return static_cast<int3>(inverse_cell_size_ * (v - min_));
+    return static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 }
 
 static inline int8_t adjacent(float s) {
@@ -287,7 +294,7 @@ static inline int8_t adjacent(float s) {
 }
 
 int3 Grid::map3(f_float3 v, int8_t adjacent[3]) const {
-    float3 const r = inverse_cell_size_ * (v - min_);
+    float3 const r = inverse_cell_size_ * (v - aabb_.min());
 
     int3 const c = static_cast<int3>(r);
 
@@ -296,6 +303,10 @@ int3 Grid::map3(f_float3 v, int8_t adjacent[3]) const {
     adjacent[0] = photon::adjacent(d[0]);
     adjacent[1] = photon::adjacent(d[1]);
     adjacent[2] = photon::adjacent(d[2]);
+
+    if (math::any_less(c, 0)) {
+        return int3(0);
+    }
 
     return c;
 }
