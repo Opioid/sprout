@@ -17,7 +17,7 @@ namespace procedural::sky {
 
 using namespace scene;
 
-Provider provider;
+static Provider provider;
 
 void init(scene::Loader& loader, material::Provider& material_provider) {
     provider.set_scene_loader(loader);

@@ -706,11 +706,15 @@ static inline constexpr bool any_greater_equal(FVector3f_a v, float s) {
 }
 
 static inline constexpr bool any_greater_equal(FVector3f_a a, FVector3f_a b) {
-    return a[0] > b[0] || a[1] > b[1] || a[2] > b[2];
+    return a[0] >= b[0] || a[1] >= b[1] || a[2] >= b[2];
 }
 
 static inline constexpr bool any_lesser(FVector3f_a v, float s) {
     return v[0] < s || v[1] < s || v[2] < s;
+}
+
+static inline constexpr bool any_lesser(FVector3f_a a, FVector3f_a b) {
+    return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
 }
 
 static inline constexpr bool any_lesser_equal(FVector3f_a v, float s) {

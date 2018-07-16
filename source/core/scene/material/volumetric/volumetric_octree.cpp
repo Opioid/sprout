@@ -54,28 +54,21 @@ bool Gridtree::is_valid() const {
 }
 
 bool Gridtree::intersect(math::Ray& ray, CM& data) const {
-    math::AABB box(float3(0.f), float3(1.f));
+    float3 const p = ray.point(ray.min_t);
 
-    float3 p = ray.point(ray.min_t);
-
-    if (math::any_lesser(p, 0.f) || math::any_greater(p, 1.f)) {
-        float hit_t;
-        if (!box.intersect_p(ray, hit_t)) {
-            return false;
-        }
-
-        ray.min_t = hit_t;
-        p         = ray.point(hit_t);
+    if (math::any_greater(p, 1.f)) {
+        return false;
     }
 
     int3 const v = int3(float3(num_cells_) * (factor_ * p));
 
-    if (math::any_greater_equal(v, num_cells_)) {
+    if (math::any_lesser(v, 0) || math::any_greater_equal(v, num_cells_)) {
         return false;
     }
 
     uint32_t index = static_cast<uint32_t>((v[2] * num_cells_[1] + v[1]) * num_cells_[0] + v[0]);
 
+    math::AABB box;
     box.bounds[0] = float3(v) * cell_dimensions_;
     box.bounds[1] = math::min(box.bounds[0] + cell_dimensions_, 1.f);
 
@@ -120,6 +113,7 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const {
             ray.max_t = hit_t;
         }
     } else {
+
         ray.max_t = ray.min_t;
         return false;
     }
