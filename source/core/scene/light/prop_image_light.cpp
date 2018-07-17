@@ -71,8 +71,8 @@ bool Prop_image_light::sample(f_float3 p, Transformation const& transformation,
 }
 
 bool Prop_image_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
-                              uint32_t     sampler_dimension, Worker const& /*worker*/,
-                              Sample_from& result) const {
+                              uint32_t sampler_dimension, math::AABB const& bounds,
+                              Worker const& /*worker*/, Sample_from&        result) const {
     auto const material = prop_->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -88,7 +88,7 @@ bool Prop_image_light::sample(Transformation const& transformation, sampler::Sam
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
     if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, sampler,
-                                sampler_dimension, result)) {
+                                sampler_dimension, bounds, result)) {
         return false;
     }
 

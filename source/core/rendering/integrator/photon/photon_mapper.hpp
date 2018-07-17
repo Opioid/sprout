@@ -5,6 +5,10 @@
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler_random.hpp"
 
+namespace math {
+struct AABB;
+}
+
 namespace scene::shape {
 struct Sample_from;
 }
@@ -44,12 +48,14 @@ class Mapper : public Integrator {
     virtual size_t num_bytes() const override final;
 
   private:
-    uint32_t trace_photon(float normalized_tick_offset, float normalized_tick_slice, Worker& worker,
-                          uint32_t max_photons, Photon* photons, uint32_t& num_photons);
+    uint32_t trace_photon(float normalized_tick_offset, float normalized_tick_slice,
+                          math::AABB const& bounds, Worker& worker, uint32_t max_photons,
+                          Photon* photons, uint32_t& num_photons);
 
     bool generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
-                            Worker& worker, Ray& ray, scene::light::Light const** light,
-                            scene::shape::Sample_from& light_sample);
+                            math::AABB const& bounds, Worker& worker, Ray& ray,
+                            scene::light::Light const** light,
+                            scene::shape::Sample_from&  light_sample);
 
     const Settings settings_;
 

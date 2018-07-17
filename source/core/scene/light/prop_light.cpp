@@ -75,7 +75,7 @@ float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter 
 }
 
 bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Worker const& worker,
+                        uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                         Sample_from& result) const {
     auto material = prop_->material(part_);
 
@@ -84,7 +84,7 @@ bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& 
     bool const two_sided = material->is_two_sided();
 
     if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
-                                worker.node_stack(), result)) {
+                                bounds, worker.node_stack(), result)) {
         return false;
     }
 

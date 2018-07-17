@@ -119,12 +119,14 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 }
 
 bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) {
+    Scene const& scene = worker.scene();
+
     float const select = sampler_.generate_sample_1D(1);
 
-    auto const light = worker.scene().random_light(select);
+    auto const light = scene.random_light(select);
 
     scene::shape::Sample_from light_sample;
-    if (!light.ref.sample(time, sampler_, 0, worker, light_sample)) {
+    if (!light.ref.sample(time, sampler_, 0, scene.aabb(), worker, light_sample)) {
         return false;
     }
 

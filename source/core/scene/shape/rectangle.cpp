@@ -285,7 +285,8 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& tran
 
 bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                        bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                       Node_stack& /*node_stack*/, Sample_from& sample) const {
+                       math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                       Sample_from& sample) const {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = 2.f * r0 - float2(1.f);
 
@@ -356,7 +357,8 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
 
 bool Rectangle::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                        float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                       uint32_t /*sampler_dimension*/, Sample_from& /*sample*/) const {
+                       uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                       Sample_from& /*sample*/) const {
     return false;
 }
 

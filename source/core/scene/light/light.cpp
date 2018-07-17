@@ -24,11 +24,11 @@ bool Light::sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t s
 }
 
 bool Light::sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                   Worker const& worker, Sample_from& result) const {
+                   math::AABB const& bounds, Worker const& worker, Sample_from& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
-    return sample(transformation, sampler, sampler_dimension, worker, result);
+    return sample(transformation, sampler, sampler_dimension, bounds, worker, result);
 }
 
 bool Light::is_light(uint32_t id) {

@@ -69,7 +69,8 @@ class Mesh : public Shape {
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample_from& sample) const override final;
+                        math::AABB const& bounds, Node_stack& node_stack,
+                        Sample_from& sample) const override final;
 
     virtual float pdf(Ray const& ray, const shape::Intersection& intersection,
                       Transformation const& transformation, float area, bool two_sided,
@@ -80,7 +81,7 @@ class Mesh : public Shape {
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Sample_from& sample) const override final;
+                        math::AABB const& bounds, Sample_from& sample) const override final;
 
     virtual float pdf_uv(Ray const& ray, const shape::Intersection& intersection,
                          Transformation const& transformation, float area,

@@ -30,7 +30,7 @@ class Prop_light : public Light {
                             Worker const& worker) const override final;
 
     virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Worker const& worker,
+                        uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                         Sample_from& result) const override;
 
     virtual float3 evaluate(Sample_from const& sample, float time, Sampler_filter filter,

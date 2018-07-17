@@ -35,6 +35,8 @@ void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
                       float normalized_tick_slice, Worker& worker) {
+    math::AABB const& bounds = settings_.full_light_path ? worker.scene().aabb() : worker.scene().caustic_aabb();
+
     uint32_t num_paths = 0;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -42,7 +44,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tic
                                               static_cast<uint32_t>(end - i));
         uint32_t       num_photons;
         uint32_t const num_iterations = trace_photon(normalized_tick_offset, normalized_tick_slice,
-                                                     worker, max_photons, photons_, num_photons);
+                                                     bounds, worker, max_photons, photons_,
+                                                     num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -65,13 +68,14 @@ size_t Mapper::num_bytes() const {
 }
 
 uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tick_slice,
-                              Worker& worker, uint32_t max_photons, Photon* photons,
-                              uint32_t& num_photons) {
-    static constexpr uint32_t Max_iterations = 2048;
+                              math::AABB const& bounds, Worker& worker, uint32_t max_photons,
+                              Photon* photons, uint32_t& num_photons) {
+    // How often should we try to create a valid photon path?
+    static uint32_t constexpr Max_iterations = 1024 * 10;
 
     Sampler_filter const filter = Sampler_filter::Undefined;
 
-    const bool avoid_caustics = false;
+    bool const avoid_caustics = false;
 
     Bxdf_sample sample_result;
 
@@ -89,8 +93,8 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
         Ray                 ray;
         light::Light const* light;
         shape::Sample_from  light_sample;
-        if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, worker, ray, &light,
-                                light_sample)) {
+        if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, bounds, worker, ray,
+                                &light, light_sample)) {
             continue;
         }
 
@@ -107,7 +111,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
             auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
                                                               sampler_, worker);
 
-            if (material_sample.is_pure_emissive()) {
+            if (material_sample.is_pure_emissive() || !material_sample.same_hemisphere(wo)) {
                 break;
             }
 
@@ -198,13 +202,13 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 }
 
 bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
-                                Worker& worker, Ray& ray, light::Light const** light_out,
-                                shape::Sample_from& light_sample) {
+                                math::AABB const& bounds, Worker& worker, Ray& ray,
+                                light::Light const** light_out, shape::Sample_from& light_sample) {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
 
-    if (!light.ref.sample(0.f, sampler_, 0, worker, light_sample)) {
+    if (!light.ref.sample(0.f, sampler_, 0, bounds, worker, light_sample)) {
         return false;
     }
 

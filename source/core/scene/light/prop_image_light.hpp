@@ -16,7 +16,7 @@ class Prop_image_light : public Prop_light {
                         Sample_to& result) const override final;
 
     virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Worker const& worker,
+                        uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                         Sample_from& result) const override final;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,

@@ -68,7 +68,7 @@ class Light {
                             Worker const& worker) const = 0;
 
     virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Worker const& worker,
+                        uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                         Sample_from& result) const = 0;
 
     virtual float3 evaluate(Sample_from const& sample, float time, Sampler_filter filter,
@@ -81,7 +81,7 @@ class Light {
                 Worker const& worker, Sample_to& result) const;
 
     bool sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                Worker const& worker, Sample_from& result) const;
+                math::AABB const& bounds, Worker const& worker, Sample_from& result) const;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                       Sampler_filter filter, Worker const& worker) const = 0;

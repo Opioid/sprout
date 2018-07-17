@@ -27,8 +27,8 @@ float3 Null_light::evaluate(Sample_to const& /*sample*/, float /*time*/, Sampler
 }
 
 bool Null_light::sample(Transformation const& /*transformation*/, sampler::Sampler& /*sampler*/,
-                        uint32_t /*sampler_dimension*/, Worker const& /*worker*/,
-                        Sample_from& /*result*/) const {
+                        uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                        Worker const& /*worker*/, Sample_from& /*result*/) const {
     return false;
 }
 

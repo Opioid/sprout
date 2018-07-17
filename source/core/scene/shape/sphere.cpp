@@ -356,7 +356,8 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transf
 
 bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                     bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                    Node_stack& /*node_stack*/, Sample_from& sample) const {
+                    math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                    Sample_from& sample) const {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float3 const ls = math::sample_sphere_uniform(r0);
 
@@ -428,7 +429,8 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation con
 
 bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                     float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                    uint32_t /*sampler_dimension*/, Sample_from& /*sample*/) const {
+                    uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                    Sample_from& /*sample*/) const {
     return false;
 }
 
