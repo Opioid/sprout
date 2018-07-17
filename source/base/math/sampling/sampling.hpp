@@ -47,13 +47,57 @@ static inline float2 sample_disk_concentric(float2 uv) {
 
     theta *= Pi / 4.f;
 
-    //	float const sin_theta = std::sin(theta);
-    //	float const cos_theta = std::cos(theta);
     float sin_theta;
     float cos_theta;
     math::sincos(theta, sin_theta, cos_theta);
 
     return float2(cos_theta * r, sin_theta * r);
+}
+
+static inline float3 sample_oriented_disk_concentric(float2 uv, f_float3 x, f_float3 y) {
+    float const sx = 2.f * uv[0] - 1.f;
+    float const sy = 2.f * uv[1] - 1.f;
+
+    if (0.f == sx && 0.f == sy) {
+        return float3(0.f);
+    }
+
+    float r;
+    float theta;
+
+    if (sx >= -sy) {
+        if (sx > sy) {
+            // handle first region of disk
+            r = sx;
+            if (sy > 0.f) {
+                theta = sy / r;
+            } else {
+                theta = 8.f + sy / r;
+            }
+        } else {
+            // handle second region of disk
+            r     = sy;
+            theta = 2.f - sx / r;
+        }
+    } else {
+        if (sx <= sy) {
+            // handle third region of disk
+            r     = -sx;
+            theta = 4.f - sy / r;
+        } else {
+            // handle fourth region of disk
+            r     = -sy;
+            theta = 6.f + sx / r;
+        }
+    }
+
+    theta *= Pi / 4.f;
+
+    float sin_theta;
+    float cos_theta;
+    math::sincos(theta, sin_theta, cos_theta);
+
+    return (cos_theta * r) * x + (sin_theta * r) * y;
 }
 
 static inline float2 sample_triangle_uniform(float2 uv) {

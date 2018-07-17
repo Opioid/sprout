@@ -200,19 +200,25 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const&   transf
         return false;
     }
 
-    float3 const dir = math::disk_to_hemisphere_equidistant(disk);
+    float3 const ls = math::disk_to_hemisphere_equidistant(disk);
 
-    sample.dir = -math::transform_vector(dir, transformation.rotation);
+    float3 const ws = -math::transform_vector(ls, transformation.rotation);
+
+    float3 t, b;
+    math::orthonormal_basis(ws, t, b);
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const radius = math::length(bounds.extent());
+    float const radius = math::length(bounds.halfsize());
 
-    float3 const p = radius * math::sample_sphere_uniform(r0);
+    float3 const receciver_disk = math::sample_oriented_disk_concentric(r0, t, b);
 
+    float3 const p = bounds.position() + radius * (receciver_disk - ws);
+
+    sample.dir     = ws;
     sample.p       = p;
     sample.uv      = uv;
-    sample.pdf     = 1.f / ((2.f * math::Pi) * (4.f * math::Pi) * math::pow2(radius));
+    sample.pdf     = 1.f / ((2.f * math::Pi) * (1.f * math::Pi) * radius * radius);
     sample.epsilon = 5e-4f;
 
     return true;

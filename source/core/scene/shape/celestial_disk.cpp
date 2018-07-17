@@ -182,15 +182,20 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
     float  radius = transformation.scale[0];
     float3 ws     = radius * math::transform_vector(ls, transformation.rotation);
 
-    sample.dir = -math::normalize(ws - transformation.rotation.r[2]);
+    float3 const dir = -math::normalize(ws - transformation.rotation.r[2]);
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const bounds_radius = math::length(bounds.extent());
+    float const bounds_radius = math::length(bounds.halfsize());
 
-    sample.p = bounds_radius * math::sample_sphere_uniform(r0);
+    float3 const receciver_disk = math::sample_oriented_disk_concentric(
+        r0, transformation.rotation.r[0], transformation.rotation.r[1]);
 
-    sample.pdf     = 1.f / ((4.f * math::Pi) * (area * math::pow2(bounds_radius)));
+    float3 const p = bounds.position() + bounds_radius * (receciver_disk - dir);
+
+    sample.dir     = dir;
+    sample.p       = p;
+    sample.pdf     = 1.f / ((1.f * math::Pi) * (area * bounds_radius * bounds_radius));
     sample.epsilon = 5e-4f;
 
     return true;

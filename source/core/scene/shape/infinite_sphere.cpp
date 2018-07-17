@@ -215,19 +215,26 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     float cos_theta;
     math::sincos(theta, sin_theta, cos_theta);
 
-    float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
+    float3 const ls(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    sample.dir = -math::transform_vector(dir, transformation.rotation);
+    float3 const ws = -math::transform_vector(ls, transformation.rotation);
+
+    float3 t, b;
+    math::orthonormal_basis(ws, t, b);
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const radius = math::length(bounds.extent());
+    float const radius = math::length(bounds.halfsize());
 
-    sample.p = radius * math::sample_sphere_uniform(r0);
+    float3 const disk = math::sample_oriented_disk_concentric(r0, t, b);
 
-    sample.uv = uv;
+    float3 const p = bounds.position() + radius * (disk - ws);
+
+    sample.dir = ws;
+    sample.p   = p;
+    sample.uv  = uv;
     // sin_theta because of the uv weight
-    sample.pdf     = 1.f / ((4.f * math::Pi) * (4.f * math::Pi) * (sin_theta * math::pow2(radius)));
+    sample.pdf     = 1.f / ((4.f * math::Pi) * (1.f * math::Pi) * (sin_theta * radius * radius));
     sample.epsilon = 5e-4f;
 
     return true;
