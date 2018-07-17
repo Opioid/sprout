@@ -159,7 +159,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/,
 
 bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
                              float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                             uint32_t /*sampler_dimension*/, math::AABB const& bounds,
+                             uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
                              Node_stack& /*node_stack*/, Sample_from& /*sample*/) const {
     return false;
 }
@@ -223,16 +223,11 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     float const radius = math::length(bounds.extent());
 
-    float3 const p = radius * math::sample_sphere_uniform(r0);
-
-    sample.p = p;
+    sample.p = radius * math::sample_sphere_uniform(r0);
 
     sample.uv = uv;
-
     // sin_theta because of the uv weight
-
-    sample.pdf = 1.f / ((4.f * math::Pi) * sin_theta * (4.f * math::Pi * math::pow2(radius)));
-
+    sample.pdf     = 1.f / ((4.f * math::Pi) * (4.f * math::Pi) * (sin_theta * math::pow2(radius)));
     sample.epsilon = 5e-4f;
 
     return true;

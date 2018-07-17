@@ -188,11 +188,34 @@ bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                    float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                    uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                    Sample_from& /*sample*/) const {
-    return false;
+bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const&   transformation,
+                    float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
+                    uint32_t sampler_dimension, math::AABB const& bounds,
+                    Sample_from& sample) const {
+    float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
+
+    float const z = math::dot(disk, disk);
+    if (z > 1.f) {
+        sample.pdf = 0.f;
+        return false;
+    }
+
+    float3 const dir = math::disk_to_hemisphere_equidistant(disk);
+
+    sample.dir = -math::transform_vector(dir, transformation.rotation);
+
+    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+
+    float const radius = math::length(bounds.extent());
+
+    float3 const p = radius * math::sample_sphere_uniform(r0);
+
+    sample.p       = p;
+    sample.uv      = uv;
+    sample.pdf     = 1.f / ((2.f * math::Pi) * (4.f * math::Pi) * math::pow2(radius));
+    sample.epsilon = 5e-4f;
+
+    return true;
 }
 
 float Canopy::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,

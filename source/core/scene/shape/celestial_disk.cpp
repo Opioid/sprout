@@ -171,11 +171,29 @@ bool Celestial_disk::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation co
     return true;
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
-                            float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                            uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                            Node_stack& /*node_stack*/, Sample_from& /*sample*/) const {
-    return false;
+bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
+                            bool /*two_sided*/, sampler::Sampler& sampler,
+                            uint32_t sampler_dimension, math::AABB const& bounds,
+                            Node_stack& /*node_stack*/, Sample_from&      sample) const {
+    float2 r2 = sampler.generate_sample_2D(sampler_dimension);
+    float2 xy = math::sample_disk_concentric(r2);
+
+    float3 ls     = float3(xy, 0.f);
+    float  radius = transformation.scale[0];
+    float3 ws     = radius * math::transform_vector(ls, transformation.rotation);
+
+    sample.dir = -math::normalize(ws - transformation.rotation.r[2]);
+
+    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+
+    float const bounds_radius = math::length(bounds.extent());
+
+    sample.p = bounds_radius * math::sample_sphere_uniform(r0);
+
+    sample.pdf     = 1.f / ((4.f * math::Pi) * (area * math::pow2(bounds_radius)));
+    sample.epsilon = 5e-4f;
+
+    return true;
 }
 
 float Celestial_disk::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,

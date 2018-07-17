@@ -1,4 +1,5 @@
 #include "photon_mapper.hpp"
+#include "base/math/aabb.inl"
 #include "photon_map.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
@@ -10,8 +11,6 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
-
-#include <iostream>
 
 namespace rendering::integrator::photon {
 
@@ -35,7 +34,8 @@ void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
                       float normalized_tick_slice, Worker& worker) {
-    math::AABB const& bounds = settings_.full_light_path ? worker.scene().aabb() : worker.scene().caustic_aabb();
+    math::AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
+                                                         : worker.scene().caustic_aabb();
 
     uint32_t num_paths = 0;
 
@@ -72,6 +72,9 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                               Photon* photons, uint32_t& num_photons) {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
+
+    math::AABB unnatural_limit = bounds;
+    unnatural_limit.scale(8.f);
 
     Sampler_filter const filter = Sampler_filter::Undefined;
 
@@ -111,7 +114,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
             auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
                                                               sampler_, worker);
 
-            if (material_sample.is_pure_emissive() || !material_sample.same_hemisphere(wo)) {
+            if (material_sample.is_pure_emissive()) {
                 break;
             }
 
@@ -126,15 +129,17 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                 bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
                                                                   Bxdf_type::Transmission);
 
-                if (singular && !settings_.full_light_path) {
+                if (singular) {
                     specular_ray = true;
-                } else if ((specular_ray &&
-                            worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
-                           settings_.full_light_path) {
+                } else if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
+                           unnatural_limit.intersect(intersection.geo.p) &&
+                           ((specular_ray &&
+                             worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
+                            settings_.full_light_path)) {
                     auto& photon = photons[num_photons];
 
                     photon.p        = intersection.geo.p;
-                    photon.wi       = -ray.direction;
+                    photon.wi       = wo;
                     photon.alpha[0] = radiance[0];
                     photon.alpha[1] = radiance[1];
                     photon.alpha[2] = radiance[2];

@@ -112,6 +112,8 @@ math::AABB Map::calculate_aabb(thread::Pool& /*pool*/) const {
         aabb.insert(photons_[i].p);
     }
 
+    aabb.add(0.0001f);
+
     return aabb;
 }
 

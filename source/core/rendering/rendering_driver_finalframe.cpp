@@ -191,7 +191,7 @@ void Driver_finalframe::bake_photons(float normalized_tick_offset, float normali
 
         uint32_t const new_begin = photon_map_.compile(num_paths, thread_pool_);
 
-        if (new_begin == begin) {
+        if (new_begin <= begin) {
             break;
         }
 

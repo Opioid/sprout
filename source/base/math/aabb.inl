@@ -271,6 +271,18 @@ inline void AABB::insert(f_float3 p) {
     bounds[1] = math::max(p, bounds[1]);
 }
 
+inline void AABB::scale(float x) {
+    float3 const v = x * halfsize();
+    bounds[0] -= v;
+    bounds[1] += v;
+}
+
+inline void AABB::add(float x) {
+    float3 const v(x);
+    bounds[0] -= v;
+    bounds[1] += v;
+}
+
 inline AABB AABB::transform(const Matrix4x4f_a& m) const {
     float3 mx = m.x();
     float3 xa = bounds[0][0] * mx;

@@ -45,7 +45,7 @@ void Material_base::set_ior(float ior, float external_ior) {
 }
 
 bool Material_base::is_caustic() const {
-    return false;
+    return !surface_map_.is_valid() && roughness_ <= ggx::Min_roughness;
 }
 
 void Material_base::set_color_map(Texture_adapter const& color_map) {

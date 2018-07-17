@@ -241,6 +241,10 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) {
             continue;
         }
 
+        float3 position = pa.p;
+
+        int32_t local_reduced = 0;
+
         int2 cells[4];
         adjacent_cells(pa.p, cells);
 
@@ -256,15 +260,23 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) {
                 }
 
                 if (math::squared_distance(pa.p, pb.p) < merge_distance) {
+                    position += pb.p;
+
                     float3 const sum = float3(pa.alpha) + float3(pb.alpha);
-                    pa.alpha[0]      = sum[0];
-                    pa.alpha[1]      = sum[1];
-                    pa.alpha[2]      = sum[2];
+
+                    pa.alpha[0] = sum[0];
+                    pa.alpha[1] = sum[1];
+                    pa.alpha[2] = sum[2];
 
                     pb.alpha[0] = -1.f;
                     ++num_reduced;
+                    ++local_reduced;
                 }
             }
+        }
+
+        if (local_reduced > 0) {
+            pa.p = position / float(local_reduced + 1);
         }
     }
 

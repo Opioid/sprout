@@ -39,6 +39,9 @@ struct AABB {
 
     void insert(f_float3 p);
 
+    void scale(float x);
+    void add(float x);
+
     AABB transform(const Matrix4x4f_a& m) const;
 
     AABB merge(AABB const& other) const;
