@@ -19,7 +19,8 @@ class Image {
 
         uint32_t num_channels() const;
 
-        Type type       = Type::Undefined;
+        Type type = Type::Undefined;
+
         int3 dimensions = int3(0, 0, 0);
 
         int32_t num_elements = 0;

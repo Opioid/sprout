@@ -1027,10 +1027,11 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
     float3 absorption_color(0.f);
     bool   use_scattering_color = false;
     float3 scattering_color(0.f);
-    float  attenuation_distance = 1.f;
-    float  anisotropy           = 0.f;
-    float  a                    = 0.f;
-    float  b                    = 0.f;
+
+    float attenuation_distance = 1.f;
+    float anisotropy           = 0.f;
+    float a                    = 0.f;
+    float b                    = 0.f;
 
     for (auto& n : volumetric_value.GetObject()) {
         if ("color" == n.name) {
