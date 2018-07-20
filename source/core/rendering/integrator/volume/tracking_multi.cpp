@@ -189,7 +189,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
                     li            = float3(0.f);
                     transmittance = w;
-                    return true;
+                    return math::all_greater_equal(w, Tracking::Abort_epsilon);
                 }
             }
 
@@ -201,7 +201,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
         li            = float3(0.f);
         transmittance = w;
-        return true;
+        return math::all_greater_equal(w, Tracking::Abort_epsilon);
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
