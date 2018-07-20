@@ -1,4 +1,4 @@
-#include "box.hpp"
+#include "cube.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/sampling/sampling.hpp"
@@ -15,17 +15,18 @@
 
 namespace scene::shape {
 
-Box::Box() {
+Cube::Cube() {
     aabb_.set_min_max(float3(-1.f), float3(1.f));
+    inv_extent_ = 1.f / aabb_.extent();
 }
 
-bool Box::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                    Intersection& intersection) const {
-    return false;
+bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+                     Intersection& intersection) const {
+    return intersect_fast(ray, transformation, node_stack, intersection);
 }
 
-bool Box::intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                         Intersection& intersection) const {
+bool Cube::intersect_fast(Ray& ray, Transformation const&           transformation,
+                          Node_stack& /*node_stack*/, Intersection& intersection) const {
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
@@ -38,16 +39,21 @@ bool Box::intersect_fast(Ray& ray, Transformation const& transformation, Node_st
         return false;
     }
 
+    ray.max_t = hit_t;
+
     intersection.p = ray.point(hit_t);
 
     float3 const local_p = local_ray.point(hit_t);
     intersection.geo_n   = math::transform_vector(transformation.rotation, aabb.normal(local_p));
 
+    intersection.epsilon = 3e-3f * hit_t;
+    intersection.part    = 0;
+
     return true;
 }
 
-bool Box::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                    float& epsilon) const {
+bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+                     float& epsilon) const {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -75,8 +81,8 @@ bool Box::intersect(Ray& ray, Transformation const& transformation, Node_stack& 
     return false;
 }
 
-bool Box::intersect_p(Ray const& ray, Transformation const& transformation,
-                      Node_stack& /*node_stack*/) const {
+bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
+                       Node_stack& /*node_stack*/) const {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -100,8 +106,8 @@ bool Box::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Box::opacity(Ray const& ray, Transformation const& transformation, Materials const& materials,
-                   Sampler_filter filter, Worker const& worker) const {
+float Cube::opacity(Ray const& ray, Transformation const& transformation,
+                    Materials const& materials, Sampler_filter filter, Worker const& worker) const {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -141,22 +147,22 @@ float Box::opacity(Ray const& ray, Transformation const& transformation, Materia
     return 0.f;
 }
 
-float3 Box::thin_absorption(Ray const& ray, Transformation const& transformation,
-                            Materials const& materials, Sampler_filter filter,
-                            Worker const& worker) const {
+float3 Cube::thin_absorption(Ray const& ray, Transformation const& transformation,
+                             Materials const& materials, Sampler_filter filter,
+                             Worker const& worker) const {
     return float3(0.f);
 }
 
-bool Box::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
-                 float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                 Node_stack& node_stack, Sample_to& sample) const {
-    return Box::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
-                       node_stack, sample);
+bool Cube::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
+                  float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                  Node_stack& node_stack, Sample_to& sample) const {
+    return Cube::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
+                        node_stack, sample);
 }
 
-bool Box::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transformation,
-                 float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
-                 uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const {
+bool Cube::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transformation,
+                  float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
+                  uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius              = transformation.scale[0];
@@ -183,16 +189,16 @@ bool Box::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transform
     return true;
 }
 
-bool Box::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
-                 bool /*two_sided*/, sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                 math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                 Sample_from& /*sample*/) const {
+bool Cube::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+                  bool /*two_sided*/, sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                  math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
-float Box::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
-               Transformation const& transformation, float /*area*/, bool /*two_sided*/,
-               bool /*total_sphere*/) const {
+float Cube::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
+                Transformation const& transformation, float /*area*/, bool /*two_sided*/,
+                bool /*total_sphere*/) const {
     float3 const axis                = transformation.position - ray.origin;
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius_square       = transformation.scale[0] * transformation.scale[0];
@@ -203,21 +209,21 @@ float Box::pdf(Ray const&            ray, const shape::Intersection& /*intersect
     return math::cone_pdf_uniform(cos_theta_max);
 }
 
-bool Box::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
-                 Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                 Sample_to& /*sample*/) const {
+bool Cube::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
+                  Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Box::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                 float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                 uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                 Sample_from& /*sample*/) const {
+bool Cube::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
+                  float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+                  uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
-float Box::pdf_uv(Ray const& ray, Intersection const&             intersection,
-                  Transformation const& /*transformation*/, float area, bool /*two_sided*/) const {
+float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
+                   Transformation const& /*transformation*/, float area, bool /*two_sided*/) const {
     //	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
     //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     //	uv[1] =  std::acos(xyz[1]) * math::Pi_inv;
@@ -232,7 +238,7 @@ float Box::pdf_uv(Ray const& ray, Intersection const&             intersection,
     return sl / (c * area * sin_theta);
 }
 
-float Box::uv_weight(float2 uv) const {
+float Cube::uv_weight(float2 uv) const {
     float const sin_theta = std::sin(uv[1] * math::Pi);
 
     if (0.f == sin_theta) {
@@ -243,11 +249,11 @@ float Box::uv_weight(float2 uv) const {
     return 1.f / sin_theta;
 }
 
-float Box::area(uint32_t /*part*/, f_float3 scale) const {
+float Cube::area(uint32_t /*part*/, f_float3 scale) const {
     return (4.f * math::Pi) * (scale[0] * scale[0]);
 }
 
-size_t Box::num_bytes() const {
+size_t Cube::num_bytes() const {
     return sizeof(*this);
 }
 

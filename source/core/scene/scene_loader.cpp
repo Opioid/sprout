@@ -16,9 +16,9 @@
 #include "prop/prop.hpp"
 #include "resource/resource_manager.inl"
 #include "scene.hpp"
-#include "shape/box.hpp"
 #include "shape/canopy.hpp"
 #include "shape/celestial_disk.hpp"
+#include "shape/cube.hpp"
 #include "shape/disk.hpp"
 #include "shape/infinite_sphere.hpp"
 #include "shape/plane.hpp"
@@ -31,9 +31,9 @@ namespace scene {
 
 Loader::Loader(resource::Manager& manager, Material_ptr const& fallback_material)
     : resource_manager_(manager),
-      box_(std::make_shared<shape::Box>()),
       canopy_(std::make_shared<shape::Canopy>()),
       celestial_disk_(std::make_shared<shape::Celestial_disk>()),
+      cube_(std::make_shared<shape::Cube>()),
       disk_(std::make_shared<shape::Disk>()),
       infinite_sphere_(std::make_shared<shape::Infinite_sphere>()),
       plane_(std::make_shared<shape::Plane>()),
@@ -97,16 +97,16 @@ void Loader::register_mesh_generator(std::string const&          name,
     mesh_generators_[name] = generator;
 }
 
-std::shared_ptr<shape::Shape> Loader::box() {
-    return box_;
-}
-
-std::shared_ptr<shape::Shape> Loader::canopy() {
+Scene::Shape_ptr Loader::canopy() {
     return canopy_;
 }
 
-std::shared_ptr<shape::Shape> Loader::celestial_disk() {
+Scene::Shape_ptr Loader::celestial_disk() {
     return celestial_disk_;
+}
+
+Scene::Shape_ptr Loader::cube() {
+    return cube_;
 }
 
 size_t Loader::num_bytes() const {
@@ -238,9 +238,9 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
 
 prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& name,
                               Scene& scene) {
-    std::shared_ptr<shape::Shape> shape;
-    Materials                     materials;
-    json::Value const*            visibility = nullptr;
+    Shape_ptr          shape;
+    Materials          materials;
+    json::Value const* visibility = nullptr;
 
     for (auto& n : prop_value.GetObject()) {
         if ("shape" == n.name) {
@@ -300,7 +300,7 @@ entity::Entity* Loader::load_extension(std::string const& type, json::Value cons
     return nullptr;
 }
 
-std::shared_ptr<shape::Shape> Loader::load_shape(json::Value const& shape_value) {
+Scene::Shape_ptr Loader::load_shape(json::Value const& shape_value) {
     if (std::string const type = json::read_string(shape_value, "type"); !type.empty()) {
         return shape(type, shape_value);
     }
@@ -312,14 +312,13 @@ std::shared_ptr<shape::Shape> Loader::load_shape(json::Value const& shape_value)
     return nullptr;
 }
 
-std::shared_ptr<shape::Shape> Loader::shape(std::string const& type,
-                                            json::Value const& shape_value) const {
-    if ("Box" == type) {
-        return box_;
-    } else if ("Canopy" == type) {
+Scene::Shape_ptr Loader::shape(std::string const& type, json::Value const& shape_value) const {
+    if ("Canopy" == type) {
         return canopy_;
     } else if ("Celestial_disk" == type) {
         return celestial_disk_;
+    } else if ("Cube" == type) {
+        return cube_;
     } else if ("Disk" == type) {
         return disk_;
     } else if ("Infinite_sphere" == type) {

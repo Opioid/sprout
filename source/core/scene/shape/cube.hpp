@@ -1,13 +1,13 @@
-#ifndef SU_CORE_SCENE_SHAPE_BOX_HPP
-#define SU_CORE_SCENE_SHAPE_BOX_HPP
+#ifndef SU_CORE_SCENE_SHAPE_CUBE_HPP
+#define SU_CORE_SCENE_SHAPE_CUBE_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Box final : public Shape {
+class Cube final : public Shape {
   public:
-    Box();
+    Cube();
 
     virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                            Intersection& intersection) const override final;

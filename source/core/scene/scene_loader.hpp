@@ -57,6 +57,8 @@ class Scene;
 
 class Loader {
   public:
+    using Shape_ptr = std::shared_ptr<shape::Shape>;
+
     Loader(resource::Manager& manager, Material_ptr const& fallback_material);
     ~Loader();
 
@@ -65,9 +67,9 @@ class Loader {
     void register_extension_provider(std::string const& name, entity::Extension_provider* provider);
     void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
 
-    std::shared_ptr<shape::Shape> box();
-    std::shared_ptr<shape::Shape> canopy();
-    std::shared_ptr<shape::Shape> celestial_disk();
+    Shape_ptr canopy();
+    Shape_ptr celestial_disk();
+    Shape_ptr cube();
 
     size_t num_bytes() const;
 
@@ -85,10 +87,9 @@ class Loader {
     entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
                                    std::string const& name, Scene& scene);
 
-    std::shared_ptr<shape::Shape> load_shape(json::Value const& shape_value);
+    Shape_ptr load_shape(json::Value const& shape_value);
 
-    std::shared_ptr<shape::Shape> shape(std::string const& type,
-                                        json::Value const& shape_value) const;
+    Shape_ptr shape(std::string const& type, json::Value const& shape_value) const;
 
     void load_materials(json::Value const& materials_value, Scene& scene, Materials& materials);
 
@@ -96,19 +97,20 @@ class Loader {
 
     resource::Manager& resource_manager_;
 
-    std::shared_ptr<shape::Shape> box_;
-    std::shared_ptr<shape::Shape> canopy_;
-    std::shared_ptr<shape::Shape> celestial_disk_;
-    std::shared_ptr<shape::Shape> disk_;
-    std::shared_ptr<shape::Shape> infinite_sphere_;
-    std::shared_ptr<shape::Shape> plane_;
-    std::shared_ptr<shape::Shape> rectangle_;
-    std::shared_ptr<shape::Shape> sphere_;
+    Shape_ptr canopy_;
+    Shape_ptr celestial_disk_;
+    Shape_ptr cube_;
+    Shape_ptr disk_;
+    Shape_ptr infinite_sphere_;
+    Shape_ptr plane_;
+    Shape_ptr rectangle_;
+    Shape_ptr sphere_;
 
     Material_ptr fallback_material_;
 
     std::map<std::string, json::Value const*> local_materials_;
-    std::string                               mount_folder_;
+
+    std::string mount_folder_;
 
     std::map<std::string, entity::Extension_provider*> extension_providers_;
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;

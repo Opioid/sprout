@@ -69,7 +69,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
     Materials materials(1);
     materials[0] = material;
 
-    prop::Prop* volume = scene.create_prop(scene_loader_->box(), materials);
+    prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
     // volume::Volume* volume = scene.create_height_volume();
 
     math::Transformation transformation{float3::identity(),
