@@ -29,7 +29,7 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
         intersection.t = transformation.rotation.r[0];
         intersection.b = transformation.rotation.r[1];
 
-        float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
+        float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = math::normalize(xyz);
         intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
         intersection.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
@@ -55,7 +55,7 @@ bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           t
     if (ray.max_t >= Ray_max_t) {
         intersection.epsilon = 5e-4f;
 
-        float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
+        float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = math::normalize(xyz);
         intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
         intersection.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
@@ -120,7 +120,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 n,
 
     sample.wi = dir;
 
-    float3 xyz   = math::transform_vector_transposed(dir, transformation.rotation);
+    float3 xyz   = math::transform_vector_transposed(transformation.rotation, dir);
     xyz          = math::normalize(xyz);
     sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
@@ -143,7 +143,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/,
     float3 const dir = math::sample_sphere_uniform(uv);
 
     float3 const xyz = math::normalize(
-        math::transform_vector_transposed(dir, transformation.rotation));
+        math::transform_vector_transposed(transformation.rotation, dir));
 
     sample.wi      = dir;
     sample.uv[0]   = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
@@ -189,7 +189,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
 
     float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    sample.wi = math::transform_vector(dir, transformation.rotation);
+    sample.wi = math::transform_vector(transformation.rotation, dir);
     sample.uv = uv;
     sample.t  = Ray_max_t;
     // sin_theta because of the uv weight
@@ -217,7 +217,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     float3 const ls(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    float3 const ws = -math::transform_vector(ls, transformation.rotation);
+    float3 const ws = -math::transform_vector(transformation.rotation, ls);
 
     float3 t, b;
     math::orthonormal_basis(ws, t, b);

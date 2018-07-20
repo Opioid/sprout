@@ -155,60 +155,71 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
 
     Segment segments[num_segments + 2];
 
+    float ax = -0.4f * math::Pi;
+
     float3x3 rx;
-    float    ax = -0.4f * math::Pi;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[0].a = segment_controls[0] * rx;
-    segments[0].b = float3(0.f, segment_controls[0][1], -segment_controls[0][2]) * rx;
+    segments[0].a = math::transform_vector(rx, segment_controls[0]);
+    segments[0].b = math::transform_vector(
+        rx, float3(0.f, segment_controls[0][1], -segment_controls[0][2]));
 
     ax += -0.1f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[1].a = segments[0].a + segment_controls[1] * rx;
-    segments[1].b = segments[0].b +
-                    float3(0.f, segment_controls[1][1], -segment_controls[1][2]) * rx;
+    segments[1].a = segments[0].a + math::transform_vector(rx, segment_controls[1]);
+    segments[1].b = segments[0].b + math::transform_vector(rx, float3(0.f, segment_controls[1][1],
+                                                                      -segment_controls[1][2]));
 
     ax += -0.5f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[2].a = segments[1].a + segment_controls[2] * rx;
-    segments[2].b = segments[1].b +
-                    float3(0.f, segment_controls[2][1], -segment_controls[2][2]) * rx;
+    segments[2].a = segments[1].a + math::transform_vector(rx, segment_controls[2]);
+    segments[2].b = segments[1].b + math::transform_vector(rx, float3(0.f, segment_controls[2][1],
+                                                                      -segment_controls[2][2]));
 
     ax += -0.6f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[3].a = segments[2].a + segment_controls[3] * rx;
-    segments[3].b = segments[2].b +
-                    float3(0.f, segment_controls[3][1], -segment_controls[3][2]) * rx;
+    segments[3].a = segments[2].a + math::transform_vector(rx, segment_controls[3]);
+    segments[3].b = segments[2].b + math::transform_vector(rx, float3(0.f, segment_controls[3][1],
+                                                                      -segment_controls[3][2]));
 
     ax += -0.8f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[4].a = segments[3].a + segment_controls[4] * rx;
-    segments[4].b = segments[3].b +
-                    float3(0.f, segment_controls[4][1], -segment_controls[4][2]) * rx;
+    segments[4].a = segments[3].a + math::transform_vector(rx, segment_controls[4]);
+    segments[4].b = segments[3].b + math::transform_vector(rx, float3(0.f, segment_controls[4][1],
+                                                                      -segment_controls[4][2]));
 
     ax += -0.4f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[5].a = segments[4].a + segment_controls[5] * rx;
+    segments[5].a = segments[4].a + math::transform_vector(rx, segment_controls[5]);
 
     for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
         v.p = packed_float3(
-            float3(-segments[i].a[0], segments[i].a[1], segments[i].a[2]) * rotation + offset);
+            math::transform_vector(rotation,
+                                   float3(-segments[i].a[0], segments[i].a[1], segments[i].a[2])) +
+            offset);
 
         v.uv = float2(1.f - segment_uvs[i][0], segment_uvs[i][1]);
         vertices.push_back(v);
 
-        v.p  = packed_float3(float3(0.f, segments[i].b[1], segments[i].b[2]) * rotation + offset);
+        v.p = packed_float3(
+            math::transform_vector(rotation, float3(0.f, segments[i].b[1], segments[i].b[2])) +
+            offset);
         v.uv = float2(0.5f, segment_uvs[i][1]);
         vertices.push_back(v);
 
         v.p = packed_float3(
-            float3(segments[i].a[0], segments[i].a[1], segments[i].a[2]) * rotation + offset);
+            math::transform_vector(rotation,
+                                   float3(segments[i].a[0], segments[i].a[1], segments[i].a[2])) +
+            offset);
         v.uv = segment_uvs[i];
         vertices.push_back(v);
     }
 
     uint32_t i = num_segments + 1;
-    v.p        = packed_float3(float3(0.f, segments[i].a[1], segments[i].a[2]) * rotation + offset);
-    v.uv       = float2(0.5f, segment_uvs[i][1]);
+
+    v.p = packed_float3(
+        math::transform_vector(rotation, float3(0.f, segments[i].a[1], segments[i].a[2])) + offset);
+    v.uv = float2(0.5f, segment_uvs[i][1]);
+
     vertices.push_back(v);
 }
 

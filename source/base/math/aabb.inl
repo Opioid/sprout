@@ -256,6 +256,39 @@ inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const {
                  _mm_comige_ss(ray_max_t, min_t) & _mm_comige_ss(max_t, min_t));
 }
 
+inline float3 AABB::normal(f_float3 p) const {
+    float3 normal;
+
+    float3 const local_point = p - position();
+
+    float3 const size = halfsize();
+
+    float min = std::numeric_limits<float>::max();
+
+    float distance = std::abs(size[0] - std::abs(local_point[0]));
+    if (distance < min) {
+        min    = distance;
+        normal = float3(1.f, 0.f, 0.f);
+        normal *= math::sign(local_point[0]);
+    }
+
+    distance = std::abs(size[1] - std::abs(local_point[1]));
+    if (distance < min) {
+        min    = distance;
+        normal = float3(0.f, 1.f, 0.f);
+        normal *= math::sign(local_point[1]);
+    }
+
+    distance = std::abs(size[2] - std::abs(local_point[2]));
+    if (distance < min) {
+        min    = distance;
+        normal = float3(0.f, 0.f, 1.f);
+        normal *= math::sign(local_point[2]);
+    }
+
+    return normal;
+}
+
 inline void AABB::set_min_max(f_float3 min, f_float3 max) {
     bounds[0] = min;
     bounds[1] = max;

@@ -139,12 +139,15 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                           shape::Intersection& intersection) const {
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-    Vector  ray_origin      = simd::load_float4(ray.origin.v);
-    ray_origin              = math::transform_point(world_to_object, ray_origin);
-    Vector ray_direction    = simd::load_float4(ray.direction.v);
-    ray_direction           = math::transform_vector(world_to_object, ray_direction);
 
-    Vector               ray_inv_direction = math::reciprocal3(ray_direction);
+    Vector ray_origin = simd::load_float4(ray.origin.v);
+    ray_origin        = math::transform_point(world_to_object, ray_origin);
+
+    Vector ray_direction = simd::load_float4(ray.direction.v);
+    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+
+    Vector ray_inv_direction = math::reciprocal3(ray_direction);
+
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 
@@ -163,7 +166,8 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 
         float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
 
-        Vector   geo_n          = tree_.triangle_normal_v(pi.index);
+        Vector geo_n = tree_.triangle_normal_v(pi.index);
+
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
         Matrix3 rotation = math::load_float3x3(transformation.rotation);
@@ -254,8 +258,8 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 float Mesh::opacity(Ray const& ray, Transformation const& transformation,
                     Materials const& materials, Sampler_filter filter, Worker const& worker) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -266,8 +270,8 @@ float3 Mesh::thin_absorption(Ray const& ray, Transformation const& transformatio
                              Materials const& materials, Sampler_filter filter,
                              Worker const& worker) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -291,10 +295,10 @@ bool Mesh::sample(uint32_t part, f_float3 p, Transformation const& transformatio
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r2, sv, tc);
-    float3 const v = math::transform_point(sv, transformation.object_to_world);
+    float3 const v = math::transform_point(transformation.object_to_world, sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = math::transform_vector(sn, transformation.rotation);
+    float3 const wn = math::transform_vector(transformation.rotation, sn);
 
     float3 const axis = v - p;
     float const  sl   = math::squared_length(axis);
@@ -332,10 +336,10 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r0, sv, tc);
-    float3 const ws = math::transform_point(sv, transformation.object_to_world);
+    float3 const ws = math::transform_point(transformation.object_to_world, sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = math::transform_vector(sn, transformation.rotation);
+    float3 const wn = math::transform_vector(transformation.rotation, sn);
 
     float3 x, y;
     math::orthonormal_basis(wn, x, y);

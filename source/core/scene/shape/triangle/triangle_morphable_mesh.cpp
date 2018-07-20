@@ -35,8 +35,8 @@ uint32_t Morphable_mesh::num_parts() const {
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
                                Node_stack& node_stack, shape::Intersection& intersection) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -58,9 +58,9 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
         float    bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
-        float3 n_w     = math::transform_vector(n, transformation.rotation);
-        float3 t_w     = math::transform_vector(t, transformation.rotation);
+        float3 geo_n_w = math::transform_vector(transformation.rotation, geo_n);
+        float3 n_w     = math::transform_vector(transformation.rotation, n);
+        float3 t_w     = math::transform_vector(transformation.rotation, t);
         float3 b_w     = bitangent_sign * math::cross(n_w, t_w);
 
         intersection.p       = p_w;
@@ -82,8 +82,8 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
                                     Node_stack&          node_stack,
                                     shape::Intersection& intersection) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -97,10 +97,11 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
 
         float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
 
-        float3   geo_n          = tree_.triangle_normal(pi.index);
+        float3 geo_n = tree_.triangle_normal(pi.index);
+
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
+        float3 geo_n_w = math::transform_vector(transformation.rotation, geo_n);
 
         intersection.p       = p_w;
         intersection.geo_n   = geo_n_w;
@@ -117,8 +118,8 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
                                Node_stack& node_stack, float& epsilon) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -134,8 +135,8 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transformation,
                                  Node_stack& node_stack) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -146,8 +147,8 @@ float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformati
                               Materials const& materials, Sampler_filter filter,
                               Worker const& worker) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -158,8 +159,8 @@ float3 Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& tra
                                        Materials const& materials, Sampler_filter filter,
                                        Worker const& worker) const {
     math::Ray tray;
-    tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 

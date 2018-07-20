@@ -18,11 +18,11 @@ inline void Composed_transformation::set(math::Transformation const& t) {
 }
 
 inline float3 Composed_transformation::world_to_object_point(f_float3 p) const {
-    return math::transform_point(p, world_to_object);
+    return math::transform_point(world_to_object, p);
 }
 
 inline float3 Composed_transformation::world_to_object_vector(f_float3 v) const {
-    return math::transform_vector(v, world_to_object);
+    return math::transform_vector(world_to_object, v);
 }
 
 }  // namespace scene::entity

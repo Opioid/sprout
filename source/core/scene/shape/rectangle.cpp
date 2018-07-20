@@ -256,7 +256,7 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& tran
 
     float3 ls = float3(xy, 0.f);
     float3 ws = transformation.position +
-                math::transform_vector(scale * ls, transformation.rotation);
+                math::transform_vector(transformation.rotation, scale * ls);
 
     float3 axis = ws - p;
 
@@ -294,7 +294,7 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +
-                      math::transform_vector(scale * ls, transformation.rotation);
+                      math::transform_vector(transformation.rotation, scale * ls);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, transformation.rotation);
@@ -326,7 +326,7 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
                        Transformation const& transformation, float area, bool two_sided,
                        Sample_to& sample) const {
     float3 ls(-2.f * uv[0] + 1.f, -2.f * uv[1] + 1.f, 0.f);
-    float3 ws = math::transform_point(ls, transformation.object_to_world);
+    float3 ws = math::transform_point(transformation.object_to_world, ls);
 
     float3 axis = ws - p;
     float  sl   = math::squared_length(axis);

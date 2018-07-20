@@ -46,7 +46,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             float3 p = ray.point(t0);
             float3 n = math::normalize(p - transformation.position);
 
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
 
             float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
@@ -58,7 +58,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             float cos_phi   = std::cos(phi);
 
             float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-            t = math::normalize(math::transform_vector(t, transformation.rotation));
+            t = math::normalize(math::transform_vector(transformation.rotation, t));
 
             intersection.p     = p;
             intersection.t     = t;
@@ -82,7 +82,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             float3 p = ray.point(t1);
             float3 n = math::normalize(p - transformation.position);
 
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
 
             float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
@@ -94,7 +94,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             float cos_phi   = std::cos(phi);
 
             float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-            t = math::normalize(math::transform_vector(t, transformation.rotation));
+            t = math::normalize(math::transform_vector(transformation.rotation, t));
 
             intersection.p     = p;
             intersection.t     = t;
@@ -131,7 +131,7 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
             float3 p = ray.point(t0);
             float3 n = math::normalize(p - transformation.position);
 
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
 
             float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
@@ -156,7 +156,7 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
             float3 p = ray.point(t1);
             float3 n = math::normalize(p - transformation.position);
 
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
 
             float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
@@ -244,10 +244,12 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation,
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t0) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 n = math::normalize(ray.point(t0) - transformation.position);
+
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
+
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
@@ -256,10 +258,12 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation,
         float t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t1) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 n = math::normalize(ray.point(t1) - transformation.position);
+
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
+
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
@@ -282,10 +286,12 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t0) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 n = math::normalize(ray.point(t0) - transformation.position);
+
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
+
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
 
             return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
@@ -294,10 +300,12 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
         float t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t1) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 n = math::normalize(ray.point(t1) - transformation.position);
+
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
+
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
 
             return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
@@ -401,7 +409,7 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation con
     float cos_phi   = std::cos(phi);
 
     float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-    float3 ws = math::transform_point(ls, transformation.object_to_world);
+    float3 ws = math::transform_point(transformation.object_to_world, ls);
 
     float3 axis = ws - p;
     float  sl   = math::squared_length(axis);

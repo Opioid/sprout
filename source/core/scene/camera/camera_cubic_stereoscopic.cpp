@@ -80,7 +80,8 @@ bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
     uint32_t const face = view % 6;
-    direction           = math::normalize(direction * view_rotations_[face]);
+
+    direction = math::normalize(math::transform_vector(view_rotations_[face], direction));
 
     float const a = -std::atan2(direction[0], direction[2]);
 
@@ -89,14 +90,15 @@ bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint
 
     float const ipd_scale = 1.f - std::pow(std::abs(direction[1]), 12.f - ipd_falloff_ * 10.f);
 
-    uint32_t const eye        = view < 6 ? 0 : 1;
-    float3 const   eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
+    uint32_t const eye = view < 6 ? 0 : 1;
 
-    entity::Composed_transformation temp;
-    auto const&                     transformation = transformation_at(sample.time, temp);
+    float3 const eye_offset = math::transform_vector(rotation, ipd_scale * eye_offsets_[eye]);
 
-    ray = create_ray(math::transform_point(eye_offset, transformation.object_to_world),
-                     math::transform_vector(direction, transformation.object_to_world),
+    Transformation temp;
+    auto const&    transformation = transformation_at(sample.time, temp);
+
+    ray = create_ray(math::transform_point(transformation.object_to_world, eye_offset),
+                     math::transform_vector(transformation.object_to_world, direction),
                      sample.time);
 
     return true;

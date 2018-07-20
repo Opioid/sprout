@@ -39,9 +39,10 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
         intersection.part  = 0;
 
         // paraboloid, so doesn't match hemispherical camera
-        float3 xyz  = math::transform_vector_transposed(ray.direction, transformation.rotation);
-        xyz         = math::normalize(xyz);
-        float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+        float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
+        xyz        = math::normalize(xyz);
+
+        float2 disk        = math::hemisphere_to_disk_equidistant(xyz);
         intersection.uv[0] = 0.5f * disk[0] + 0.5f;
         intersection.uv[1] = 0.5f * disk[1] + 0.5f;
 
@@ -71,9 +72,10 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
         intersection.part  = 0;
 
         // paraboloid, so doesn't match hemispherical camera
-        float3 xyz  = math::transform_vector_transposed(ray.direction, transformation.rotation);
-        xyz         = math::normalize(xyz);
-        float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+        float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
+        xyz        = math::normalize(xyz);
+
+        float2 disk        = math::hemisphere_to_disk_equidistant(xyz);
         intersection.uv[0] = 0.5f * disk[0] + 0.5f;
         intersection.uv[1] = 0.5f * disk[1] + 0.5f;
 
@@ -138,7 +140,7 @@ bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation const& tra
     float3 const dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
     float3 const xyz = math::normalize(
-        math::transform_vector_transposed(dir, transformation.rotation));
+        math::transform_vector_transposed(transformation.rotation, dir));
     float2 const disk = math::hemisphere_to_disk_equidistant(xyz);
 
     sample.wi      = dir;
@@ -179,7 +181,7 @@ bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
 
     float3 const dir = math::disk_to_hemisphere_equidistant(disk);
 
-    sample.wi      = math::transform_vector(dir, transformation.rotation);
+    sample.wi      = math::transform_vector(transformation.rotation, dir);
     sample.uv      = uv;
     sample.t       = Ray_max_t;
     sample.pdf     = 1.f / (2.f * math::Pi);
@@ -202,7 +204,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const&   transf
 
     float3 const ls = math::disk_to_hemisphere_equidistant(disk);
 
-    float3 const ws = -math::transform_vector(ls, transformation.rotation);
+    float3 const ws = -math::transform_vector(transformation.rotation, ls);
 
     float3 t, b;
     math::orthonormal_basis(ws, t, b);

@@ -223,7 +223,7 @@ bool Disk::sample(uint32_t /*part*/, f_float3 p, Transformation const& transform
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +
-                      transformation.scale[0] * math::transform_vector(ls, transformation.rotation);
+                      transformation.scale[0] * math::transform_vector(transformation.rotation, ls);
 
     float3 const axis = ws - p;
 
@@ -265,7 +265,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +
-                      math::transform_vector(transformation.scale[0] * ls, transformation.rotation);
+                      math::transform_vector(transformation.rotation, transformation.scale[0] * ls);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, transformation.rotation);

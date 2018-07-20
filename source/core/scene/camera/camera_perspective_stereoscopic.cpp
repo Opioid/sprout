@@ -46,8 +46,8 @@ bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample
     entity::Composed_transformation temp;
     auto&                           transformation = transformation_at(sample.time, temp);
 
-    ray = create_ray(math::transform_point(eye_offsets_[view], transformation.object_to_world),
-                     math::transform_vector(direction, transformation.object_to_world),
+    ray = create_ray(math::transform_point(transformation.object_to_world, eye_offsets_[view]),
+                     math::transform_vector(transformation.object_to_world, direction),
                      sample.time);
 
     return true;

@@ -54,8 +54,8 @@ float3 Emission_grid::emission(math::Ray const& ray, Transformation const& trans
 
     float3 emission(0.f);
 
-    float3 const rp_o = math::transform_point(rn.origin, transformation.world_to_object);
-    float3 const rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
+    float3 const rp_o = math::transform_point(transformation.world_to_object, rn.origin);
+    float3 const rd_o = math::transform_vector(transformation.world_to_object, rn.direction);
 
     for (; min_t < rn.max_t; min_t += step_size) {
         float3 const p_o = rp_o + min_t * rd_o;  // r_o.point(min_t);
@@ -94,8 +94,8 @@ float3 Flow_vis_grid::emission(math::Ray const& ray, Transformation const& trans
 
     float3 emission(0.f);
 
-    float3 const rp_o = math::transform_point(rn.origin, transformation.world_to_object);
-    float3 const rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
+    float3 const rp_o = math::transform_point(transformation.world_to_object, rn.origin);
+    float3 const rd_o = math::transform_vector(transformation.world_to_object, rn.direction);
 
     for (; min_t < rn.max_t; min_t += step_size) {
         float3 const p_o = rp_o + min_t * rd_o;  // r_o.point(min_t);

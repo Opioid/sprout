@@ -32,7 +32,10 @@ struct AABB {
                      FVector ray_max_t) const;
 
     bool intersect_p(Ray const& ray, float& hit_t) const;
+
     bool intersect_inside(Ray const& ray, float& hit_t) const;
+
+    float3 normal(f_float3 p) const;
 
     void set_min_max(f_float3 min, f_float3 max);
     void set_min_max(FVector min, FVector max);

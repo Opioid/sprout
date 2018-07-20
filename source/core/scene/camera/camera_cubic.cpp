@@ -81,13 +81,13 @@ bool Cubic::generate_ray(sampler::Camera_sample const& sample, uint32_t view,
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
-    direction = math::normalize(direction * view_rotations_[view]);
+    direction = math::normalize(math::transform_vector(view_rotations_[view], direction));
 
-    entity::Composed_transformation temp;
-    auto&                           transformation = transformation_at(0.f, temp);
+    Transformation temp;
+    auto const&    transformation = transformation_at(0.f, temp);
 
-    ray = create_ray(math::transform_point(float3(0.f), transformation.object_to_world),
-                     math::transform_vector(direction, transformation.object_to_world),
+    ray = create_ray(math::transform_point(transformation.object_to_world, float3(0.f)),
+                     math::transform_vector(transformation.object_to_world, direction),
                      sample.time);
 
     return true;

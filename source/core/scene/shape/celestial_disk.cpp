@@ -160,7 +160,8 @@ bool Celestial_disk::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation co
 
     float3 ls     = float3(xy, 0.f);
     float  radius = transformation.scale[0];
-    float3 ws     = radius * math::transform_vector(ls, transformation.rotation);
+
+    float3 ws = radius * math::transform_vector(transformation.rotation, ls);
 
     sample.wi = math::normalize(ws - transformation.rotation.r[2]);
 
@@ -180,7 +181,8 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float3 ls     = float3(xy, 0.f);
     float  radius = transformation.scale[0];
-    float3 ws     = radius * math::transform_vector(ls, transformation.rotation);
+
+    float3 ws = radius * math::transform_vector(transformation.rotation, ls);
 
     float3 const dir = -math::normalize(ws - transformation.rotation.r[2]);
 

@@ -33,8 +33,7 @@ float Perspective::pixel_solid_angle() const {
     return fov_ / static_cast<float>(resolution_[0]);
 }
 
-bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
-                               scene::Ray&          ray) const {
+bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray& ray) const {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -57,10 +56,10 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
     Transformation temp;
     auto const&    transformation = transformation_at(sample.time, temp);
 
-    float3 const origin_w = math::transform_point(origin, transformation.object_to_world);
+    float3 const origin_w = math::transform_point(transformation.object_to_world, origin);
 
     direction                = math::normalize(direction);
-    float3 const direction_w = math::transform_vector(direction, transformation.object_to_world);
+    float3 const direction_w = math::transform_vector(transformation.object_to_world, direction);
 
     ray = create_ray(origin_w, direction_w, sample.time);
 
@@ -105,9 +104,9 @@ void Perspective::on_update(Worker& worker) {
     //	float3 right_top  ( ratio,  1.f, z);
     //	float3 left_bottom(-ratio, -1.f, z);
 
-    float3 left_top    = float3(-ratio, 1.f, 0.f) * lens_tilt_;
-    float3 right_top   = float3(ratio, 1.f, 0.f) * lens_tilt_;
-    float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
+    float3 left_top    = math::transform_vector(lens_tilt_, float3(-ratio, 1.f, 0.f));
+    float3 right_top   = math::transform_vector(lens_tilt_, float3(ratio, 1.f, 0.f));
+    float3 left_bottom = math::transform_vector(lens_tilt_, float3(-ratio, -1.f, 0.f));
 
     left_top[2] += z;
     right_top[2] += z;
@@ -128,9 +127,9 @@ void Perspective::update_focus(Worker& worker) {
         Transformation temp;
         auto const&    transformation = transformation_at(0.f, temp);
 
-        scene::Ray ray(transformation.position,
-                       math::transform_vector(direction, transformation.object_to_world), 0.f,
-                       Ray_max_t, 0, 0.f);
+        Ray ray(transformation.position,
+                math::transform_vector(transformation.object_to_world, direction), 0.f, Ray_max_t,
+                0, 0.f);
 
         prop::Intersection intersection;
         if (worker.intersect(ray, intersection)) {

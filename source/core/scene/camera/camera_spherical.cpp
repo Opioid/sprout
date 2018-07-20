@@ -52,7 +52,7 @@ bool Spherical::generate_ray(sampler::Camera_sample const& sample, uint32_t /*vi
     entity::Composed_transformation temp;
     auto&                           transformation = transformation_at(sample.time, temp);
 
-    ray = create_ray(transformation.position, math::transform_vector(dir, transformation.rotation),
+    ray = create_ray(transformation.position, math::transform_vector(transformation.rotation, dir),
                      sample.time);
 
     return true;

@@ -55,9 +55,11 @@ Model& Sky::model() {
 float3 Sky::sun_wi(float v) const {
     float const y = (2.f * v) - 1.f;
 
-    float3 const ls     = float3(0.5f, y, 0.f);
-    float const  radius = math::degrees_to_radians(model_.degrees());
-    float3 const ws     = radius * math::transform_vector(ls, sun_rotation_);
+    float3 const ls = float3(0.5f, y, 0.f);
+
+    float const radius = math::degrees_to_radians(model_.degrees());
+
+    float3 const ws = radius * math::transform_vector(sun_rotation_, ls);
 
     return math::normalize(ws - sun_rotation_.r[2]);
 }

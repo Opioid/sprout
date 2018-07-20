@@ -4,7 +4,7 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -21,150 +21,29 @@ Box::Box() {
 
 bool Box::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                     Intersection& intersection) const {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = math::dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - math::dot(v, v) + (radius * radius);
-
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
-        float t0   = b - dist;
-
-        if (t0 > ray.min_t && t0 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t0;
-
-            float3 p = ray.point(t0);
-            float3 n = math::normalize(p - transformation.position);
-
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-            xyz        = math::normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
-            float theta = std::acos(xyz[1]);
-
-            // avoid singularity at poles
-            float sin_theta = std::max(std::sin(theta), 0.00001f);
-            float sin_phi   = std::sin(phi);
-            float cos_phi   = std::cos(phi);
-
-            float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-            t = math::normalize(math::transform_vector(t, transformation.rotation));
-
-            intersection.p     = p;
-            intersection.t     = t;
-            intersection.b     = -math::cross(t, n);
-            intersection.n     = n;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
-            intersection.part  = 0;
-
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
-
-            ray.max_t = t0;
-            return true;
-        }
-
-        float t1 = b + dist;
-
-        if (t1 > ray.min_t && t1 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t1;
-
-            float3 p = ray.point(t1);
-            float3 n = math::normalize(p - transformation.position);
-
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-            xyz        = math::normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
-            float theta = std::acos(xyz[1]);
-
-            // avoid singularity at poles
-            float sin_theta = std::max(std::sin(theta), 0.00001f);
-            float sin_phi   = std::sin(phi);
-            float cos_phi   = std::cos(phi);
-
-            float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-            t = math::normalize(math::transform_vector(t, transformation.rotation));
-
-            intersection.p     = p;
-            intersection.t     = t;
-            intersection.b     = -math::cross(t, n);
-            intersection.n     = n;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
-            intersection.part  = 0;
-
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
-
-            ray.max_t = t1;
-            return true;
-        }
-    }
-
     return false;
 }
 
 bool Box::intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                          Intersection& intersection) const {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = math::dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - math::dot(v, v) + (radius * radius);
+    float3 const local_origin = transformation.world_to_object_point(ray.origin);
+    float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
-        float t0   = b - dist;
+    math::Ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t0;
+    math::AABB const aabb(float3(-1.f), float3(1.f));
 
-            float3 p = ray.point(t0);
-            float3 n = math::normalize(p - transformation.position);
-
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-            xyz        = math::normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
-            float theta = std::acos(xyz[1]);
-
-            intersection.p     = p;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
-            intersection.part  = 0;
-
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
-
-            ray.max_t = t0;
-            return true;
-        }
-
-        float t1 = b + dist;
-
-        if (t1 > ray.min_t && t1 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t1;
-
-            float3 p = ray.point(t1);
-            float3 n = math::normalize(p - transformation.position);
-
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-            xyz        = math::normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
-            float theta = std::acos(xyz[1]);
-
-            intersection.p     = p;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
-            intersection.part  = 0;
-
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
-
-            ray.max_t = t1;
-            return true;
-        }
+    float hit_t;
+    if (!aabb.intersect_p(local_ray, hit_t)) {
+        return false;
     }
 
-    return false;
+    intersection.p = ray.point(hit_t);
+
+    float3 const local_p = local_ray.point(hit_t);
+    intersection.geo_n   = math::transform_vector(transformation.rotation, aabb.normal(local_p));
+
+    return true;
 }
 
 bool Box::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
@@ -233,10 +112,12 @@ float Box::opacity(Ray const& ray, Transformation const& transformation, Materia
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t0) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 n = math::normalize(ray.point(t0) - transformation.position);
+
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
+
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
@@ -245,10 +126,12 @@ float Box::opacity(Ray const& ray, Transformation const& transformation, Materia
         float t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t1) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+            float3 n = math::normalize(ray.point(t1) - transformation.position);
+
+            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
             xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
+
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
@@ -261,38 +144,6 @@ float Box::opacity(Ray const& ray, Transformation const& transformation, Materia
 float3 Box::thin_absorption(Ray const& ray, Transformation const& transformation,
                             Materials const& materials, Sampler_filter filter,
                             Worker const& worker) const {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = math::dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - math::dot(v, v) + (radius * radius);
-
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
-        float t0   = b - dist;
-
-        if (t0 > ray.min_t && t0 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t0) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-            xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
-
-            return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
-        }
-
-        float t1 = b + dist;
-
-        if (t1 > ray.min_t && t1 < ray.max_t) {
-            float3 n   = math::normalize(ray.point(t1) - transformation.position);
-            float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-            xyz        = math::normalize(xyz);
-            float2 uv  = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
-
-            return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
-        }
-    }
-
     return float3(0.f);
 }
 
