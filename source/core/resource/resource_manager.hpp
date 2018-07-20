@@ -62,6 +62,7 @@ class Manager {
     Typed_cache<T>* typed_cache();
 
     file::System& filesystem_;
+
     thread::Pool& thread_pool_;
 
     std::map<uint32_t, Cache*> caches_;

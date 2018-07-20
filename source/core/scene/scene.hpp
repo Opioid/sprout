@@ -71,6 +71,10 @@ class Scene {
 
     math::AABB caustic_aabb() const;
 
+    bool is_infinite() const;
+
+    bool has_volumes() const;
+
     bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
 
     bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const;
@@ -99,8 +103,6 @@ class Scene {
     };
     Light light(uint32_t id) const;
     Light random_light(float random) const;
-
-    bool has_volumes() const;
 
     void  tick(thread::Pool& thread_pool);
     float seek(float time, thread::Pool& thread_pool);

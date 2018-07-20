@@ -49,8 +49,8 @@ class Mapper : public Integrator {
 
   private:
     uint32_t trace_photon(float normalized_tick_offset, float normalized_tick_slice,
-                          math::AABB const& bounds, Worker& worker, uint32_t max_photons,
-                          Photon* photons, uint32_t& num_photons);
+                          math::AABB const& bounds, bool infinite_world, Worker& worker,
+                          uint32_t max_photons, Photon* photons, uint32_t& num_photons);
 
     bool generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
                             math::AABB const& bounds, Worker& worker, Ray& ray,

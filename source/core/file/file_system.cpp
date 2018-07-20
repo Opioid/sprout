@@ -7,16 +7,16 @@
 
 namespace file {
 
-std::unique_ptr<std::istream> System::read_stream(std::string const& name) const {
+std::unique_ptr<std::istream> System::read_stream(std::string_view name) const {
     std::string resolved_name;
     return read_stream(name, resolved_name);
 }
 
-std::unique_ptr<std::istream> System::read_stream(std::string const& name,
-                                                  std::string&       resolved_name) const {
+std::unique_ptr<std::istream> System::read_stream(std::string_view name,
+                                                  std::string&     resolved_name) const {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
-        throw std::runtime_error("Stream \"" + name + "\" could not be opened");
+        throw std::runtime_error("Stream \"" + std::string(name) + "\" could not be opened");
     }
 
     const Type type = query_type(*stream);
@@ -45,7 +45,7 @@ void System::pop_mount() {
     mount_folders_.pop_back();
 }
 
-std::istream* System::open_read_stream(std::string const& name, std::string& resolved_name) const {
+std::istream* System::open_read_stream(std::string_view name, std::string& resolved_name) const {
     // TODO: Use something like std::filesytem::exists() when it is available
 
     for (auto const& f : mount_folders_) {
@@ -54,7 +54,7 @@ std::istream* System::open_read_stream(std::string const& name, std::string& res
             continue;
         }
 
-        resolved_name = f + name;
+        resolved_name = f + std::string(name);
 
         std::istream* stream = new std::ifstream(resolved_name, std::ios::binary);
         if (*stream) {
@@ -64,7 +64,7 @@ std::istream* System::open_read_stream(std::string const& name, std::string& res
         delete stream;
     }
 
-    std::istream* stream = new std::ifstream(name, std::ios::binary);
+    std::istream* stream = new std::ifstream(name.data(), std::ios::binary);
     if (*stream) {
         resolved_name = name;
         return stream;

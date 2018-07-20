@@ -135,7 +135,7 @@ class Material {
     virtual size_t num_bytes() const = 0;
 
   protected:
-    virtual void set_parameter(std::string const& name, json::Value const& value);
+    virtual void set_parameter(std::string_view name, json::Value const& value);
 
   private:
     uint32_t sampler_key_;

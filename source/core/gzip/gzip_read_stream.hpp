@@ -19,7 +19,7 @@ class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
 
     Filebuffer();
 
-    virtual ~Filebuffer();
+    virtual ~Filebuffer() override;
 
     bool is_open() const;
 

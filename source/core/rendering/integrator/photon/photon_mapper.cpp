@@ -37,6 +37,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tic
     math::AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
                                                          : worker.scene().caustic_aabb();
 
+    bool const infinite_world = worker.scene().is_infinite();
+
     uint32_t num_paths = 0;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -44,8 +46,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tic
                                               static_cast<uint32_t>(end - i));
         uint32_t       num_photons;
         uint32_t const num_iterations = trace_photon(normalized_tick_offset, normalized_tick_slice,
-                                                     bounds, worker, max_photons, photons_,
-                                                     num_photons);
+                                                     bounds, infinite_world, worker, max_photons,
+                                                     photons_, num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -68,8 +70,8 @@ size_t Mapper::num_bytes() const {
 }
 
 uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tick_slice,
-                              math::AABB const& bounds, Worker& worker, uint32_t max_photons,
-                              Photon* photons, uint32_t& num_photons) {
+                              math::AABB const& bounds, bool infinite_world, Worker& worker,
+                              uint32_t max_photons, Photon* photons, uint32_t& num_photons) {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -132,10 +134,13 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                 if (singular) {
                     specular_ray = true;
                 } else if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
-                           unnatural_limit.intersect(intersection.geo.p) &&
                            ((specular_ray &&
                              worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
                             settings_.full_light_path)) {
+                    if (infinite_world && !unnatural_limit.intersect(intersection.geo.p)) {
+                        break;
+                    }
+
                     auto& photon = photons[num_photons];
 
                     photon.p        = intersection.geo.p;

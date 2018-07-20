@@ -152,7 +152,7 @@ bool Material::is_two_sided() const {
     return two_sided_;
 }
 
-void Material::set_parameter(std::string const& /*name*/, json::Value const& /*value*/) {}
+void Material::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 
 float3 Material::rainbow_[Num_bands];
 

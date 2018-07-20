@@ -87,6 +87,14 @@ math::AABB Scene::caustic_aabb() const {
     return aabb;
 }
 
+bool Scene::is_infinite() const {
+    return !infinite_props_.empty() || !infinite_volumes_.empty();
+}
+
+bool Scene::has_volumes() const {
+    return has_volumes_;
+}
+
 bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const {
     return prop_bvh_.intersect(ray, node_stack, intersection);
 }
@@ -180,10 +188,6 @@ Scene::Light Scene::random_light(float random) const {
     SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
 
     return {*lights_[l.offset], l.pdf};
-}
-
-bool Scene::has_volumes() const {
-    return has_volumes_;
 }
 
 void Scene::tick(thread::Pool& thread_pool) {

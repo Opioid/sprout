@@ -34,8 +34,8 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool
     return true;
 }
 
-bool Writer::write(std::string const& name, Byte3 const& image) {
-    std::ofstream stream(name, std::ios::binary);
+bool Writer::write(std::string_view name, Byte3 const& image) {
+    std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
     }
@@ -57,8 +57,8 @@ bool Writer::write(std::string const& name, Byte3 const& image) {
     return true;
 }
 
-bool Writer::write(std::string const& name, Byte1 const& image) {
-    std::ofstream stream(name, std::ios::binary);
+bool Writer::write(std::string_view name, Byte1 const& image) {
+    std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
     }
@@ -80,16 +80,16 @@ bool Writer::write(std::string const& name, Byte1 const& image) {
     return true;
 }
 
-bool Writer::write(std::string const& name, float const* data, int2 dimensions, float scale) {
-    std::ofstream stream(name, std::ios::binary);
+bool Writer::write(std::string_view name, float const* data, int2 dimensions, float scale) {
+    std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
     }
 
-    int32_t const        area = dimensions[0] * dimensions[1];
+    uint32_t const       area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
     std::vector<uint8_t> bytes(area);
 
-    for (int32_t i = 0; i < area; ++i) {
+    for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = static_cast<uint8_t>(scale * data[i]);
     }
 
@@ -108,16 +108,16 @@ bool Writer::write(std::string const& name, float const* data, int2 dimensions, 
     return true;
 }
 
-bool Writer::write(std::string const& name, float2 const* data, int2 dimensions, float scale) {
-    std::ofstream stream(name, std::ios::binary);
+bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, float scale) {
+    std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
     }
 
-    int32_t const      area = dimensions[0] * dimensions[1];
+    uint32_t const     area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
     std::vector<byte3> bytes(area);
 
-    for (int32_t i = 0; i < area; ++i) {
+    for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
                          static_cast<uint8_t>(scale * data[i][1]), 0);
     }
@@ -137,17 +137,16 @@ bool Writer::write(std::string const& name, float2 const* data, int2 dimensions,
     return true;
 }
 
-bool Writer::write(std::string const& name, packed_float3 const* data, int2 dimensions,
-                   float scale) {
-    std::ofstream stream(name, std::ios::binary);
+bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimensions, float scale) {
+    std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
     }
 
-    int32_t const      area = dimensions[0] * dimensions[1];
+    uint32_t const     area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
     std::vector<byte3> bytes(area);
 
-    for (int32_t i = 0; i < area; ++i) {
+    for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
                          static_cast<uint8_t>(scale * data[i][1]),
                          static_cast<uint8_t>(scale * data[i][2]));
