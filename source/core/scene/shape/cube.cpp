@@ -39,6 +39,10 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
         return false;
     }
 
+    if (hit_t > ray.max_t) {
+        return false;
+    }
+
     ray.max_t = hit_t;
 
     intersection.p = ray.point(hit_t);
@@ -147,9 +151,9 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation,
     return 0.f;
 }
 
-float3 Cube::thin_absorption(Ray const& ray, Transformation const& transformation,
-                             Materials const& materials, Sampler_filter filter,
-                             Worker const& worker) const {
+float3 Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+                             Materials const& /*materials*/, Sampler_filter /*filter*/,
+                             Worker const& /*worker*/) const {
     return float3(0.f);
 }
 
