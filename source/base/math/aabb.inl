@@ -268,22 +268,18 @@ inline float3 AABB::normal(f_float3 p) const {
     float distance = std::abs(size[0] - std::abs(local_point[0]));
     if (distance < min) {
         min    = distance;
-        normal = float3(1.f, 0.f, 0.f);
-        normal *= math::sign(local_point[0]);
+        normal = float3(math::copysign1(local_point[0]), 0.f, 0.f);
     }
 
     distance = std::abs(size[1] - std::abs(local_point[1]));
     if (distance < min) {
         min    = distance;
-        normal = float3(0.f, 1.f, 0.f);
-        normal *= math::sign(local_point[1]);
+        normal = float3(0.f, math::copysign1(local_point[1]), 0.f);
     }
 
     distance = std::abs(size[2] - std::abs(local_point[2]));
     if (distance < min) {
-        min    = distance;
-        normal = float3(0.f, 0.f, 1.f);
-        normal *= math::sign(local_point[2]);
+        normal = float3(0.f, 0.f, math::copysign1(local_point[2]));
     }
 
     return normal;
