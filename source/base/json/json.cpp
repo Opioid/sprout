@@ -36,7 +36,7 @@ std::tuple<size_t, size_t> calculate_line_number(std::istream& stream, size_t of
     return {line, column};
 }
 
-std::string read_error(rapidjson::Document& document, std::istream& stream) {
+std::string read_error(rapidjson::Document const& document, std::istream& stream) {
     auto [line, column] = calculate_line_number(stream, document.GetErrorOffset());
 
     std::stringstream sstream;

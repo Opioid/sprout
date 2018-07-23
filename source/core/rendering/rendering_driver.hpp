@@ -49,23 +49,29 @@ class Camera_worker;
 
 class Driver {
   public:
-    Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
+    using Scene  = scene::Scene;
+    using Camera = scene::camera::Camera;
+
+    Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
            uint32_t max_material_sample_size);
     ~Driver();
 
-    scene::camera::Camera& camera();
+    Camera& camera();
 
-    scene::Scene const& scene() const;
+    Scene const& scene() const;
 
     size_t num_bytes() const;
 
   protected:
-    scene::Scene& scene_;
-    take::View&   view_;
+    Scene& scene_;
+
+    take::View& view_;
+
     thread::Pool& thread_pool_;
 
     Camera_worker* workers_;
-    Tile_queue     tiles_;
+
+    Tile_queue tiles_;
 
     image::Float4 target_;
 

@@ -50,8 +50,9 @@ uint3 read_uint3(json::Value const& value);
 
 // math::quaternion read_quaternion(rapidjson::Value const& value);
 
-float3x3         create_rotation_matrix(float3 const& xyz);
-float3x3         read_rotation_matrix(json::Value const& value);
+float3x3 create_rotation_matrix(float3 const& xyz);
+float3x3 read_rotation_matrix(json::Value const& value);
+
 math::Quaternion read_local_rotation(json::Value const& value);
 
 std::string read_string(json::Value const& value);

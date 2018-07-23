@@ -9,7 +9,7 @@ namespace rnd {
 // This is a copy of
 // http://en.cppreference.com/w/cpp/algorithm/random_shuffle
 template <typename T>
-void biased_shuffle(T* data, uint32_t count, Generator& rng) {
+void biased_shuffle(T* data, uint32_t count, Generator& rng) noexcept {
     //	for (uint32_t i = count - 1; i > 0; --i) {
     //		uint32_t const other = rng.random_uint() % (i + 1);
 
@@ -18,7 +18,9 @@ void biased_shuffle(T* data, uint32_t count, Generator& rng) {
 
     // Divisionless optimization with slight bias from
     // https://lemire.me/blog/2016/06/30/fast-random-shuffling/
-    // (Upper variant has bias as well?!)
+    // (Upper variant has bias as well!)
+    // More related information:
+    // http://www.pcg-random.org/posts/bounded-rands.html
     for (uint64_t i = static_cast<uint64_t>(count - 1); i > 0; --i) {
         uint64_t const r     = static_cast<uint64_t>(rng.random_uint());
         uint64_t const m     = r * (i + 1);

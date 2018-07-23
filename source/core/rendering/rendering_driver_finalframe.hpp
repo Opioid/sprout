@@ -21,7 +21,7 @@ namespace rendering {
 
 class Driver_finalframe : public Driver {
   public:
-    Driver_finalframe(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
+    Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                       uint32_t max_sample_size);
 
     using Exporters = std::vector<std::unique_ptr<exporting::Sink>>;
@@ -34,9 +34,8 @@ class Driver_finalframe : public Driver {
 
     void bake_photons(float normalized_tick_offset, float normalized_tick_slice);
 
-    static uint32_t calculate_progress_range(scene::Scene const&          scene,
-                                             const scene::camera::Camera& camera,
-                                             uint32_t                     num_tiles,
+    static uint32_t calculate_progress_range(Scene const& scene, Camera const& camera,
+                                             uint32_t num_tiles,
                                              uint32_t num_samples_per_iteration);
 
     uint32_t current_sample_;

@@ -269,9 +269,10 @@ std::unique_ptr<rendering::sensor::Sensor> Loader::load_sensor(json::Value const
                                                                int2               dimensions) {
     using namespace rendering::sensor;
 
-    bool                  alpha_transparency = false;
-    float                 exposure           = 0.f;
-    float3                clamp_max(-1.f);
+    bool   alpha_transparency = false;
+    float  exposure           = 0.f;
+    float3 clamp_max(-1.f);
+
     filter::Filter const* filter = nullptr;
 
     for (auto& n : sensor_value.GetObject()) {

@@ -309,6 +309,8 @@ Scene::Shape_ptr Loader::load_shape(json::Value const& shape_value) {
         return resource_manager_.load<shape::Shape>(file);
     }
 
+    logging::error("Cannot create shape: Neither shape nor type.");
+
     return nullptr;
 }
 

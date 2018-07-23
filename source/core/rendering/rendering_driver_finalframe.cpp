@@ -16,8 +16,8 @@
 
 namespace rendering {
 
-Driver_finalframe::Driver_finalframe(take::Take& take, scene::Scene& scene,
-                                     thread::Pool& thread_pool, uint32_t max_sample_size)
+Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
+                                     uint32_t max_sample_size)
     : Driver(take, scene, thread_pool, max_sample_size) {}
 
 void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor) {
@@ -141,8 +141,10 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         tiles_.restart();
 
-        thread_pool_.run_parallel([this, v, sample_begin, sample_end, normalized_tick_offset,
-                                   normalized_tick_slice, &progressor](uint32_t index) {
+        thread_pool_.run_parallel([
+            this, v, sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice,
+            &progressor
+        ](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
             for (int4 tile; tiles_.pop(tile);) {
@@ -170,15 +172,15 @@ void Driver_finalframe::bake_photons(float normalized_tick_offset, float normali
     uint32_t begin     = 0;
 
     for (;;) {
-        thread_pool_.run_range(
-            [this, normalized_tick_offset, normalized_tick_slice](uint32_t id, int32_t begin,
-                                                                  int32_t end) {
-                auto& worker = workers_[id];
+        thread_pool_.run_range([ this, normalized_tick_offset, normalized_tick_slice ](
+                                   uint32_t id, int32_t begin, int32_t end) noexcept {
+            auto& worker = workers_[id];
 
-                photon_infos_[id].num_paths = worker.bake_photons(
-                    begin, end, normalized_tick_offset, normalized_tick_slice);
-            },
-            static_cast<int32_t>(begin), static_cast<int32_t>(photon_settings_.num_photons));
+            photon_infos_[id].num_paths = worker.bake_photons(begin, end, normalized_tick_offset,
+                                                              normalized_tick_slice);
+        },
+                               static_cast<int32_t>(begin),
+                               static_cast<int32_t>(photon_settings_.num_photons));
 
         for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
             num_paths += photon_infos_[i].num_paths;
@@ -209,9 +211,8 @@ void Driver_finalframe::bake_photons(float normalized_tick_offset, float normali
     photons_baked_ = true;
 }
 
-uint32_t Driver_finalframe::calculate_progress_range(scene::Scene const&          scene,
-                                                     const scene::camera::Camera& camera,
-                                                     uint32_t                     num_tiles,
+uint32_t Driver_finalframe::calculate_progress_range(Scene const& scene, Camera const& camera,
+                                                     uint32_t num_tiles,
                                                      uint32_t num_samples_per_iteration) {
     float num_subframes = 1.f;
 

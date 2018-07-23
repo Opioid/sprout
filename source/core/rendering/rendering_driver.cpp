@@ -17,7 +17,7 @@ namespace rendering {
 
 using namespace image;
 
-Driver::Driver(take::Take& take, scene::Scene& scene, thread::Pool& thread_pool,
+Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                uint32_t max_material_sample_size)
     : scene_(scene),
       view_(take.view),
