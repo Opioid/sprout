@@ -25,11 +25,14 @@ Specialized materials for metal and glass are also available.
 There is support for a few built in shapes (sphere, disk, plane...) as well as triangle meshes.
 Those shapes are shared between solid objects, volumetric objects, and light emitters.
 
-Support for heterogeneous participating media and subsurface scattering is based on [[http://drz.disneyresearch.com/~jnovak/publications/SDTracking/SDTracking.pdf][spectral tracking]].
+Support for heterogeneous participating media and subsurface scattering is based 
+on the spectral tracking technique [[http://drz.disneyresearch.com/~jnovak/publications/SDTracking/SDTracking.pdf][described here]].
+
+A rudimentary photon mapper can assist with caustic paths.
 
 A render is configurable by json files 
 that describe the different parts of the scene (shapes, lights, material parameters etc.) 
-as well as the camera settings.
+as well as camera and renderer settings.
 
 ** Gallery
 
