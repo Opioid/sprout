@@ -2,9 +2,21 @@
 #define SU_CORE_RESOURCE_IDENTIFIABLE_HPP
 
 #include <string>
-#include "id_manager.hpp"
+#include <vector>
 
 namespace resource {
+
+class ID_manager {
+  public:
+    uint32_t id(std::string const& type_name);
+
+    std::string_view name(uint32_t id) const;
+
+  private:
+    std::vector<std::string>& names() const;
+};
+
+extern ID_manager id_manager;
 
 template <typename T>
 class Identifiable {

@@ -1,4 +1,4 @@
-#include "id_manager.hpp"
+#include "identifiable.hpp"
 
 namespace resource {
 
