@@ -47,11 +47,11 @@ class Material_base : public material::Material {
 
     float3 color_;
 
-    float  ior_;
-    float  constant_f0_;
-    float  roughness_;
-    float  metallic_;
-    float  emission_factor_;
+    float ior_;
+    float constant_f0_;
+    float roughness_;
+    float metallic_;
+    float emission_factor_;
 };
 
 }  // namespace scene::material::substitute
