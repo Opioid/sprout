@@ -28,7 +28,7 @@ class Material_base : public material::Material {
     void set_surface_map(Texture_adapter const& surface_map);
     void set_emission_map(Texture_adapter const& emission_map);
 
-    void set_color(float3 const& color);
+    void set_color(f_float3 color);
     void set_roughness(float roughness);
     void set_metallic(float metallic);
     void set_emission_factor(float emission_factor);
@@ -46,6 +46,7 @@ class Material_base : public material::Material {
     Texture_adapter emission_map_;
 
     float3 color_;
+
     float  ior_;
     float  constant_f0_;
     float  roughness_;

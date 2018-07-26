@@ -21,7 +21,6 @@
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/volume/emission.hpp"
-#include "rendering/integrator/volume/flow_vis.hpp"
 #include "rendering/integrator/volume/tracking_multi.hpp"
 #include "rendering/integrator/volume/tracking_single.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
@@ -494,7 +493,6 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
 
 std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_integrator_factory(
     json::Value const& integrator_value, Settings const& settings, uint32_t num_workers) {
-    using namespace rendering::integrator;
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
@@ -502,10 +500,6 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
             return std::make_shared<Emission_factory>(settings, num_workers, step_size);
-        } else if ("Flow_vis" == n.name) {
-            float const step_size = json::read_float(n.value, "step_size", 1.f);
-
-            return std::make_shared<Flow_vis_factory>(settings, num_workers, step_size);
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
