@@ -18,7 +18,7 @@ material::Sample const& Material_translucent::sample(f_float3 wo, Renderstate co
                                                      Worker const& worker, uint32_t depth) const {
     auto& sample = worker.sample<Sample_translucent>(depth);
 
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
     set_sample(wo, rs, sampler, sample);
 
