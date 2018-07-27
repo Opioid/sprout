@@ -412,7 +412,7 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_v
 
 static inline float2 interpolate_uv(FVector u, FVector v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
-    const Vector w = math::sub(math::sub(simd::One, u), v);
+    Vector const w = math::sub(math::sub(simd::One, u), v);
 
     float3 const auv(a.n_u[3], a.t_v[3], 0.f);
     Vector       va = simd::load_float4(auv.v);
@@ -452,7 +452,7 @@ static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_v
 static inline void interpolate_data(FVector u, FVector v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c,
                                     float3& n, float3& t, float2& tc) {
-    const Vector w = math::sub(math::sub(simd::One, u), v);
+    Vector const w = math::sub(math::sub(simd::One, u), v);
 
     Vector va = math::mul(w, simd::load_float4(a.n_u.v));
     Vector vb = math::mul(u, simd::load_float4(b.n_u.v));
@@ -482,7 +482,7 @@ static inline void interpolate_data(FVector u, FVector v, const Shading_vertex_M
 static inline void interpolate_data(FVector u, FVector v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c,
                                     Vector& n, Vector& t, float2& tc) {
-    const Vector w = math::sub(math::sub(simd::One, u), v);
+    Vector const w = math::sub(math::sub(simd::One, u), v);
 
     Vector va = math::mul(w, simd::load_float4(a.n_u.v));
     Vector vb = math::mul(u, simd::load_float4(b.n_u.v));

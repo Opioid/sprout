@@ -83,12 +83,15 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
             return false;*/
 
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-    Vector  ray_origin      = simd::load_float4(ray.origin.v);
-    ray_origin              = math::transform_point(world_to_object, ray_origin);
-    Vector ray_direction    = simd::load_float4(ray.direction.v);
-    ray_direction           = math::transform_vector(world_to_object, ray_direction);
 
-    Vector               ray_inv_direction = math::reciprocal3(ray_direction);
+    Vector ray_origin = simd::load_float4(ray.origin.v);
+    ray_origin        = math::transform_point(world_to_object, ray_origin);
+
+    Vector ray_direction = simd::load_float4(ray.direction.v);
+    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+
+    Vector ray_inv_direction = math::reciprocal3(ray_direction);
+
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 
@@ -188,16 +191,19 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                      float& epsilon) const {
     const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-    Vector        ray_origin      = simd::load_float4(ray.origin.v);
-    ray_origin                    = math::transform_point(world_to_object, ray_origin);
-    Vector ray_direction          = simd::load_float4(ray.direction.v);
-    ray_direction                 = math::transform_vector(world_to_object, ray_direction);
 
-    const Vector         ray_inv_direction = math::reciprocal3(ray_direction);
+    Vector ray_origin = simd::load_float4(ray.origin.v);
+    ray_origin        = math::transform_point(world_to_object, ray_origin);
+
+    Vector ray_direction = simd::load_float4(ray.direction.v);
+    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+
+    Vector const ray_inv_direction = math::reciprocal3(ray_direction);
+
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 
-    const Vector ray_min_t = simd::load_float(&ray.min_t);
+    Vector const ray_min_t = simd::load_float(&ray.min_t);
     Vector       ray_max_t = simd::load_float(&ray.max_t);
 
     if (tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t, ray_max_t,
@@ -222,12 +228,15 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
     //	return tree_.intersect_p(tray, node_stack);
 
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-    Vector  ray_origin      = simd::load_float4(ray.origin.v);
-    ray_origin              = math::transform_point(world_to_object, ray_origin);
-    Vector ray_direction    = simd::load_float4(ray.direction.v);
-    ray_direction           = math::transform_vector(world_to_object, ray_direction);
 
-    Vector               ray_inv_direction = math::reciprocal3(ray_direction);
+    Vector ray_origin = simd::load_float4(ray.origin.v);
+    ray_origin        = math::transform_point(world_to_object, ray_origin);
+
+    Vector ray_direction = simd::load_float4(ray.direction.v);
+    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+
+    Vector ray_inv_direction = math::reciprocal3(ray_direction);
+
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 

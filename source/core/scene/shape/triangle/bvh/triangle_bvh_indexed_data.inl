@@ -170,12 +170,12 @@ template <typename SV>
 Vector Indexed_data<SV>::normal_v(uint32_t index) const {
     auto const tri = triangles_[index];
 
-    const Vector ap = simd::load_float4(intersection_vertices_[tri.a].v);
-    const Vector bp = simd::load_float4(intersection_vertices_[tri.b].v);
-    const Vector cp = simd::load_float4(intersection_vertices_[tri.c].v);
+    Vector const ap = simd::load_float4(intersection_vertices_[tri.a].v);
+    Vector const bp = simd::load_float4(intersection_vertices_[tri.b].v);
+    Vector const cp = simd::load_float4(intersection_vertices_[tri.c].v);
 
-    const Vector e1 = math::sub(bp, ap);
-    const Vector e2 = math::sub(cp, ap);
+    Vector const e1 = math::sub(bp, ap);
+    Vector const e2 = math::sub(cp, ap);
 
     return math::normalized3(math::cross3(e1, e2));
 }
@@ -606,12 +606,12 @@ Vector Hybrid_data<IV, SV>::normal_v(uint32_t index) const {
     const IV&      b  = intersection_vertices_[vi + 1];
     const IV&      c  = intersection_vertices_[vi + 2];
 
-    const Vector ap = simd::load_float4(a.p.v);
-    const Vector bp = simd::load_float4(b.p.v);
-    const Vector cp = simd::load_float4(c.p.v);
+    Vector const ap = simd::load_float4(a.p.v);
+    Vector const bp = simd::load_float4(b.p.v);
+    Vector const cp = simd::load_float4(c.p.v);
 
-    const Vector e1 = math::sub(bp, ap);
-    const Vector e2 = math::sub(cp, ap);
+    Vector const e1 = math::sub(bp, ap);
+    Vector const e2 = math::sub(cp, ap);
 
     return math::normalized3(math::cross3(e1, e2));
 }

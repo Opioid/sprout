@@ -243,7 +243,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
         float const weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
 
         float const intensity = weight * intensity_;
-        // const Vector intensity = simd::set_float4(intensity_);
+        // Vector const intensity = simd::set_float4(intensity_);
 
         int32_t const kd0 = kernel_dimensions_[0];
 
@@ -297,8 +297,8 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
                                     Vector glare = simd::Zero;
                                     for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky,
                krow += kd0) { int32_t si = (cd1 + ky) * d[0]; for (int32_t ki = kb[0] + krow, kl =
-               ke[0] + krow; ki < kl; ++ki, ++si) { const Vector k =
-               simd::load_float4(kernel_[ki].v); const Vector h =
+               ke[0] + krow; ki < kl; ++ki, ++si) { Vector const k =
+               simd::load_float4(kernel_[ki].v); Vector const h =
                simd::load_float4(high_pass_[si].v);
 
                                                     glare = math::add(glare, math::mul(k, h));

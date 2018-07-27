@@ -4,7 +4,7 @@
 
 namespace procedural::mesh {
 
-Grass grass;
+static Grass grass;
 
 void init(scene::Loader& loader) {
     loader.register_mesh_generator("Grass", &grass);
