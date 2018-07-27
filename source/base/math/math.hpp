@@ -17,12 +17,12 @@ static float constexpr Pi     = Pi_t<float>;
 static float constexpr Pi_inv = Pi_inv_t<float>;
 
 template <typename T>
-static constexpr T degrees_to_radians(T degrees) {
+static T constexpr degrees_to_radians(T degrees) {
     return degrees * (Pi_t<T> / T(180));
 }
 
 template <typename T>
-static constexpr T radians_to_degrees(T radians) {
+static T constexpr radians_to_degrees(T radians) {
     return radians * (T(180) / Pi_t<T>);
 }
 
@@ -32,7 +32,7 @@ static T cot(T x) {
 }
 
 template <typename T>
-static constexpr int sign(T val) {
+static int constexpr sign(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
@@ -52,7 +52,7 @@ static T clamp(T a, T mi, T ma) {
 }
 
 template <typename T>
-static constexpr T lerp(T a, T b, T t) {
+static T constexpr lerp(T a, T b, T t) {
     T u = T(1) - t;
     return u * a + t * b;
 }
@@ -63,28 +63,28 @@ static T exp2(T x) {
 }
 
 template <typename T>
-static constexpr T pow2(T x) {
+static T constexpr pow2(T x) {
     return x * x;
 }
 
 template <typename T>
-static constexpr T pow3(T x) {
+static T constexpr pow3(T x) {
     return (x * x) * x;
 }
 
 template <typename T>
-static constexpr T pow4(T x) {
+static T constexpr pow4(T x) {
     const T x2 = x * x;
     return x2 * x2;
 }
 
 template <typename T>
-static constexpr T pow5(T x) {
+static T constexpr pow5(T x) {
     return pow4(x) * x;
 }
 
 template <typename T>
-static constexpr T mod(T k, T n) {
+static T constexpr mod(T k, T n) {
     // Works for negative k: % is the remainder, not modulo
     return (k %= n) < T(0) ? k + n : k;
 }

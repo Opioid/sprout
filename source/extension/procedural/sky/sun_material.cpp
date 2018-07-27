@@ -102,6 +102,11 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
     }
 
     emission_.from_array(0.f, 1.f, cache.size(), cache.data());
+
+    float3 const wi(0.f, -1.f, 0.f);
+    float3 const r = emission_(sky_.sun_v(wi));
+
+    return;
 }
 
 size_t Sun_baked_material::num_bytes() const {
