@@ -3,7 +3,7 @@
 
 namespace scene::light {
 
-const Light::Transformation& Null_light::transformation_at(float /*time*/,
+Light::Transformation const& Null_light::transformation_at(float /*time*/,
                                                            Transformation& transformation) const {
     return transformation;
 }

@@ -2,39 +2,14 @@
 
 ** Miscellaneous [2/3]
 
-*** DONE PCG Random Number Generator 
-[[http://www.pcg-random.org/]]
-
-*** DONE Replace #pragma once with #define guards
-
 *** TODO Investigate clang optimization report
 -fsave-optimization-record
 
 ** Integrators [1/1]
 
-*** DONE Subsurface scattering [2/2]
-- [X] Implement single scattering
-  - [X] Direct light only
-  - [X] Indirect illumination
-- [X] Implement multiple scattering
-  - [X] Monte-carlo integrator
-  - [X] Next event estimation
-
 ** Materials [0/3]
 
-*** TODO Microfacets [2/3]
-**** DONE Correlated shadowing/masking function [2/2]
-- [X] Reflections
-- [X] Refractions
-
-[[https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf]]
-[[http://twvideo01.ubm-us.net/o1/vault/gdc2017/Presentations/Hammon_Earl_PBR_Diffuse_Lighting.pdf]]
-
-**** DONE Look into normalized Disney BRDF (see frostbite presentation)
-The results look very good. Apparently rough surfaces were much too bright before.
-I'm not sure what this means for the subsurface scattering case, but I tried to modify it accordingly.
-
-**** TODO Thin-film [0/2]
+*** TODO Thin-film [0/2]
 - [ ] Implement [[https://belcour.github.io/blog/research/2017/05/01/brdf-thin-film.html]]
 - [ ] Evaluate difference to existing thin-film Fresnel
 
@@ -45,14 +20,7 @@ Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin, or H
 Consider adding support for separate samplers per different textures in a single material.
 E.g nearest neighbor filter for albedo color and bilinear for normal map.
 
-** Renderer [1/2]
-
-*** DONE Lock-free tile enumeration [2/2]
-- [X] Pre-determined "Tiled scanline" with initial offset (seemed slower)
-- [X] Atomics for access to next tile
-
-It seems that the mutex communication is not the bottleneck in this scenario. 
-Something with atomics might be interesting, but will probably not noticeably affect overall performance.
+** Renderer [0/1]
 
 *** TODO Deterministic random numbers
 Currently (some) random numbers are seeded per worker.
@@ -94,13 +62,11 @@ A typical example is when texture data is being loaded during BVH construction.
 Proof of concept for binary files showed good improvements in loading time. 
 File size on disk generally seems to be higher, though (somewhat surprisingly for me).
 
-** Build system [1/2]
+** Build system [0/1]
 
 *** TODO Investigate more Travis CI usage
 
-*** DONE Consider cmake-based build system
-
-** Scene [1/2]
+** Scene [0/1]
 
 *** TODO Faster scene update [0/2]
 Investigate opportunities to parallelize some parts of scene update
@@ -111,7 +77,3 @@ Investigate opportunities to parallelize some parts of scene update
 - [ ] Updating of entity transformations
 
 The results are disappointing so far (e.g. less than 2x speedup for 12 threads).
-
-*** DONE Streamline zero lights case
-For example by automatically adding a null-light to scenes that otherwise don't have a light. 
-This would remove some checks spread out over the codebase. 
