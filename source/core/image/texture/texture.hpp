@@ -15,7 +15,7 @@ class Texture {
     Texture(std::shared_ptr<Image> const& image);
     virtual ~Texture();
 
-    const Image* image() const;
+    Image const& image() const;
 
     int32_t       num_channels() const;
     int32_t       width() const;

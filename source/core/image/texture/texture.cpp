@@ -12,8 +12,8 @@ Texture::Texture(std::shared_ptr<Image> const& image)
 
 Texture::~Texture() {}
 
-const Image* Texture::image() const {
-    return untyped_image_.get();
+Image const& Texture::image() const {
+    return *untyped_image_.get();
 }
 
 int32_t Texture::num_channels() const {

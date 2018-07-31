@@ -16,7 +16,7 @@ Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid
 Grid::~Grid() {}
 
 void Grid::compile() {
-    auto const& texture = *grid_.texture();
+    auto const& texture = grid_.texture();
 
     Octree_builder builder;
     builder.build(tree_, texture, cm_);

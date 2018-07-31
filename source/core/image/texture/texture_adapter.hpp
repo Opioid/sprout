@@ -24,7 +24,7 @@ class Adapter {
 
     bool is_valid() const;
 
-    Texture const* texture() const;
+    Texture const& texture() const;
 
     using Sampler_2D = sampler::Sampler_2D;
 

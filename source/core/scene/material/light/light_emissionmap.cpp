@@ -75,8 +75,9 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
     }
 
     if (importance_sampling) {
-        auto const texture = emission_map_.texture();
-        auto const d       = texture->dimensions_2();
+        auto const& texture = emission_map_.texture();
+
+        auto const d = texture.dimensions_2();
 
         std::vector<math::Distribution_2D::Distribution_impl> conditional(d[1]);
 
@@ -87,10 +88,11 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
         float const ef = emission_factor_;
 
         pool.run_range(
-            [&conditional, &artws, &shape, texture, d, rd, ef](uint32_t id, int32_t begin,
-                                                               int32_t end) {
+            [&conditional, &artws, &shape, &texture, d, rd, ef](uint32_t id, int32_t begin,
+                                                                int32_t end) {
                 std::vector<float> luminance(d[0]);
-                float4             artw(0.f);
+
+                float4 artw(0.f);
 
                 for (int32_t y = begin; y < end; ++y) {
                     float const v = rd[1] * (static_cast<float>(y) + 0.5f);
@@ -100,7 +102,7 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const radiance = ef * texture->at_3(x, y);
+                        float3 const radiance = ef * texture.at_3(x, y);
 
                         luminance[x] = uv_weight * spectrum::luminance(radiance);
 
@@ -126,7 +128,7 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
 
         distribution_.init(conditional);
     } else {
-        average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
+        average_emission_ = emission_factor_ * emission_map_.texture().average_3();
     }
 
     if (is_two_sided()) {

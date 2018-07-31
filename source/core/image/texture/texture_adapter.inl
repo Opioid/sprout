@@ -27,8 +27,8 @@ inline bool Adapter::is_valid() const {
     return !texture_ == false;
 }
 
-inline Texture const* Adapter::texture() const {
-    return texture_.get();
+inline Texture const& Adapter::texture() const {
+    return *texture_.get();
 }
 
 inline float Adapter::sample_1(Sampler_2D const& sampler, float2 uv) const noexcept {
