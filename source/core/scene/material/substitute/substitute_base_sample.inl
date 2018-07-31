@@ -23,6 +23,7 @@ template <typename Coating>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
     f_float3 wi, const Coating& coating_layer) const {
     float3 const h        = math::normalize(wo_ + wi);
+
     float const  wo_dot_h = clamp_dot(wo_, h);
 
     auto const coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_);
@@ -137,13 +138,12 @@ bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(f_float3 
 
     fresnel::Schlick const schlick(f0_);
 
-    float3     ggx_fresnel;
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
-                                                schlick, ggx_fresnel);
+                                                schlick);
 
     float const pdf = 0.5f * (d.pdf + ggx.pdf);
 
-    // Apparantly weight by (1 - fresnel) is not correct!
+    // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
 
     return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
@@ -166,9 +166,8 @@ void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(f_float3        
 
     fresnel::Schlick const schlick(f0_);
 
-    float3     ggx_fresnel;
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h, *this,
-                                                schlick, ggx_fresnel);
+                                                schlick);
 
     result.reflection = n_dot_wi * (result.reflection + ggx.reflection);
     result.pdf        = 0.5f * (result.pdf + ggx.pdf);
@@ -182,9 +181,8 @@ void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(f_float3       
 
     fresnel::Schlick const schlick(f0_);
 
-    float3      ggx_fresnel;
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler,
-                                                   ggx_fresnel, result);
+                                                   result);
 
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, *this);
 
