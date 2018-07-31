@@ -22,9 +22,9 @@ template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
     f_float3 wi, const Coating& coating_layer) const {
-    float3 const h        = math::normalize(wo_ + wi);
+    float3 const h = math::normalize(wo_ + wi);
 
-    float const  wo_dot_h = clamp_dot(wo_, h);
+    float const wo_dot_h = clamp_dot(wo_, h);
 
     auto const coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_);
 
@@ -181,8 +181,7 @@ void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(f_float3       
 
     fresnel::Schlick const schlick(f0_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler,
-                                                   result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
 
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, *this);
 
