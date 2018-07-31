@@ -80,6 +80,7 @@ elseif (MSVC)
 
 	# To avoid warning spam originates from rapidjson
 	add_definitions(-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
+    add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
 endif ()
 
 include(base/base.cmake)

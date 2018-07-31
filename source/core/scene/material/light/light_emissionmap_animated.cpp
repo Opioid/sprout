@@ -19,15 +19,14 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
       emission_map_(emission_map),
       average_emission_(float3(-1.f)),
       emission_factor_(emission_factor),
-      frame_length_(animation_duration /
-                    static_cast<float>(emission_map.texture()->num_elements())),
+      frame_length_(animation_duration / static_cast<float>(emission_map.texture().num_elements())),
       element_(0) {}
 
 Emissionmap_animated::~Emissionmap_animated() {}
 
 void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
-    int32_t element = static_cast<int32_t>(absolute_time / frame_length_) %
-                      emission_map_.texture()->num_elements();
+    int32_t const element = static_cast<int32_t>(absolute_time / frame_length_) %
+                            emission_map_.texture().num_elements();
 
     if (element != element_) {
         element_          = element;
@@ -106,8 +105,9 @@ void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t 
     }
 
     if (importance_sampling) {
-        auto const texture = emission_map_.texture();
-        auto const d       = texture->dimensions_2();
+        auto const& texture = emission_map_.texture();
+
+        auto const d = texture.dimensions_2();
 
         std::vector<math::Distribution_2D::Distribution_impl> conditional(d[1]);
 
@@ -120,10 +120,11 @@ void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t 
         float const ef = emission_factor_;
 
         pool.run_range(
-            [&conditional, &artws, &shape, texture, d, rd, element, ef](uint32_t id, int32_t begin,
-                                                                        int32_t end) {
+            [&conditional, &artws, &shape, &texture, d, rd, element, ef](uint32_t id, int32_t begin,
+                                                                         int32_t end) {
                 std::vector<float> luminance(d[0]);
-                float4             artw(0.f);
+
+                float4 artw(0.f);
 
                 for (int32_t y = begin; y < end; ++y) {
                     float const v = rd[1] * (static_cast<float>(y) + 0.5f);
@@ -133,7 +134,7 @@ void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t 
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const radiance = ef * texture->at_element_3(x, y, element);
+                        float3 const radiance = ef * texture.at_element_3(x, y, element);
 
                         luminance[x] = uv_weight * spectrum::luminance(radiance);
 
@@ -159,7 +160,7 @@ void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t 
 
         distribution_.init(conditional);
     } else {
-        average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
+        average_emission_ = emission_factor_ * emission_map_.texture().average_3();
     }
 
     if (is_two_sided()) {

@@ -83,10 +83,12 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
             return false;*/
 
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-    Vector  ray_origin      = simd::load_float4(ray.origin.v);
-    ray_origin              = math::transform_point(world_to_object, ray_origin);
-    Vector ray_direction    = simd::load_float4(ray.direction.v);
-    ray_direction           = math::transform_vector(world_to_object, ray_direction);
+
+    Vector ray_origin = simd::load_float4(ray.origin.v);
+    ray_origin        = math::transform_point(world_to_object, ray_origin);
+
+    Vector ray_direction = simd::load_float4(ray.direction.v);
+    ray_direction        = math::transform_vector(world_to_object, ray_direction);
 
     Vector ray_inv_direction = math::reciprocal3(ray_direction);
 

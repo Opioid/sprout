@@ -24,27 +24,27 @@ class Adapter {
 
     bool is_valid() const;
 
-    Texture const* texture() const;
+    Texture const& texture() const;
 
     using Sampler_2D = sampler::Sampler_2D;
 
-    float  sample_1(Sampler_2D const& sampler, float2 uv) const;
-    float2 sample_2(Sampler_2D const& sampler, float2 uv) const;
-    float3 sample_3(Sampler_2D const& sampler, float2 uv) const;
+    float  sample_1(Sampler_2D const& sampler, float2 uv) const noexcept;
+    float2 sample_2(Sampler_2D const& sampler, float2 uv) const noexcept;
+    float3 sample_3(Sampler_2D const& sampler, float2 uv) const noexcept;
 
-    float  sample_1(Sampler_2D const& sampler, float2 uv, int32_t element) const;
-    float2 sample_2(Sampler_2D const& sampler, float2 uv, int32_t element) const;
-    float3 sample_3(Sampler_2D const& sampler, float2 uv, int32_t element) const;
+    float  sample_1(Sampler_2D const& sampler, float2 uv, int32_t element) const noexcept;
+    float2 sample_2(Sampler_2D const& sampler, float2 uv, int32_t element) const noexcept;
+    float3 sample_3(Sampler_2D const& sampler, float2 uv, int32_t element) const noexcept;
 
-    float2 address(Sampler_2D const& sampler, float2 uv) const;
+    float2 address(Sampler_2D const& sampler, float2 uv) const noexcept;
 
     using Sampler_3D = sampler::Sampler_3D;
 
-    float  sample_1(Sampler_3D const& sampler, float3 const& uvw) const;
-    float2 sample_2(Sampler_3D const& sampler, float3 const& uvw) const;
-    float3 sample_3(Sampler_3D const& sampler, float3 const& uvw) const;
+    float  sample_1(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
+    float2 sample_2(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
+    float3 sample_3(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
 
-    float3 address(Sampler_3D const& sampler, float3 const& uvw) const;
+    float3 address(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
 
   private:
     std::shared_ptr<Texture> texture_;

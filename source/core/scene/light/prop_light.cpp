@@ -16,7 +16,7 @@ void Prop_light::init(Prop* prop, uint32_t part) {
     part_ = part;
 }
 
-const Light::Transformation& Prop_light::transformation_at(float           time,
+Light::Transformation const& Prop_light::transformation_at(float           time,
                                                            Transformation& transformation) const {
     return prop_->transformation_at(time, transformation);
 }
@@ -24,7 +24,7 @@ const Light::Transformation& Prop_light::transformation_at(float           time,
 bool Prop_light::sample(f_float3 p, f_float3 n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
                         Worker const& worker, Sample_to& result) const {
-    auto material = prop_->material(part_);
+    auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 
@@ -51,7 +51,7 @@ bool Prop_light::sample(f_float3 p, f_float3 n, Transformation const& transforma
 
 bool Prop_light::sample(f_float3 p, Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const {
-    auto material = prop_->material(part_);
+    auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 
@@ -67,7 +67,7 @@ bool Prop_light::sample(f_float3 p, Transformation const& transformation, sample
 
 float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter filter,
                             Worker const& worker) const {
-    auto material = prop_->material(part_);
+    auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 
@@ -77,7 +77,7 @@ float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter 
 bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                         Sample_from& result) const {
-    auto material = prop_->material(part_);
+    auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 
@@ -93,7 +93,7 @@ bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& 
 
 float3 Prop_light::evaluate(Sample_from const& sample, float time, Sampler_filter filter,
                             Worker const& worker) const {
-    auto material = prop_->material(part_);
+    auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 

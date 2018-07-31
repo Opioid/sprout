@@ -68,7 +68,7 @@ float Sky::sun_v(f_float3 wi) const {
     float3 const k  = wi - sun_rotation_.r[2];
     float3 const sk = k / math::degrees_to_radians(model_.degrees());
 
-    return (math::dot(sun_rotation_.r[1], sk) + 1.f) * 0.5f;
+    return std::max((math::dot(sun_rotation_.r[1], sk) + 1.f) * 0.5f, 0.f);
 }
 
 bool Sky::sky_changed_since_last_check() {

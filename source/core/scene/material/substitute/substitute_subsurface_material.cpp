@@ -24,7 +24,7 @@ Material_subsurface::Material_subsurface(Sampler_settings const& sampler_setting
 
 void Material_subsurface::compile() {
     if (density_map_.is_valid()) {
-        auto const& texture = *density_map_.texture();
+        auto const& texture = density_map_.texture();
 
         volumetric::Octree_builder builder;
         builder.build(tree_, texture, cm_);

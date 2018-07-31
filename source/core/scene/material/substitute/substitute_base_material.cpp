@@ -25,7 +25,7 @@ float3 Material_base::evaluate_radiance(f_float3 /*wi*/, float2 uv, float /*area
 
 float3 Material_base::average_radiance(float /*area*/) const {
     if (emission_map_.is_valid()) {
-        return emission_factor_ * emission_map_.texture()->average_3();
+        return emission_factor_ * emission_map_.texture().average_3();
     } else {
         return float3(0.f);
     }

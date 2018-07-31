@@ -25,7 +25,8 @@ class Interpolated_function {
     float inverse_range_;
 
     size_t num_samples_ = 0;
-    T*     samples_     = nullptr;
+
+    T* samples_ = nullptr;
 };
 
 }  // namespace math
