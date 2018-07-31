@@ -574,7 +574,7 @@ static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b
 // https://twitter.com/ian_mallett/status/846631289822232577
 /*
 static inline void orthonormal_basis_sse(Vector3f_a const& n, Vector3f_a& t,
-Vector3f_a& b) { const Vector u = simd::load_float3(n.v);
+Vector3f_a& b) { Vector const u = simd::load_float3(n.v);
 
         float const sign = copysign1(n[2]);
 

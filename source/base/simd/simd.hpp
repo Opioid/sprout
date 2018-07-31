@@ -51,10 +51,10 @@ using Vector = __m128;
 
 // Fix-up for (1st-6th) Vector parameters that are pass-in-register for x64 unix and vector call;
 // by reference otherwise
-using FVector = const Vector;
+using FVector = Vector const;
 
 // Fix-up for (7th+) Vector parameters to pass by reference
-using RVector = const Vector&;
+using RVector = Vector const&;
 
 }  // namespace simd
 

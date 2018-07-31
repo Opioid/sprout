@@ -104,20 +104,20 @@ inline bool AABB::intersect_p(Ray const& ray) const {
     Vector ray_min_t         = simd::load_float(&ray.min_t);
     Vector ray_max_t         = simd::load_float(&ray.max_t);
 
-    const Vector bb_min = simd::load_float4(bounds[0].v);
-    const Vector bb_max = simd::load_float4(bounds[1].v);
+    Vector const bb_min = simd::load_float4(bounds[0].v);
+    Vector const bb_max = simd::load_float4(bounds[1].v);
 
-    const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
-    const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
+    Vector const l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
+    Vector const l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
 
     // the order we use for those min/max is vital to filter out
     // NaNs that happens when an inv_dir is +/- inf and
     // (box_min - pos) is 0. inf * 0 = NaN
-    const Vector filtered_l1a = math::min(l1, simd::Infinity);
-    const Vector filtered_l2a = math::min(l2, simd::Infinity);
+    Vector const filtered_l1a = math::min(l1, simd::Infinity);
+    Vector const filtered_l2a = math::min(l2, simd::Infinity);
 
-    const Vector filtered_l1b = math::max(l1, simd::Neg_infinity);
-    const Vector filtered_l2b = math::max(l2, simd::Neg_infinity);
+    Vector const filtered_l1b = math::max(l1, simd::Neg_infinity);
+    Vector const filtered_l2b = math::max(l2, simd::Neg_infinity);
 
     // now that we're back on our feet, test those slabs.
     Vector max_t = math::max(filtered_l1a, filtered_l2a);
@@ -136,20 +136,20 @@ inline bool AABB::intersect_p(Ray const& ray) const {
 
 inline bool AABB::intersect_p(FVector ray_origin, FVector ray_inv_direction, FVector ray_min_t,
                               FVector ray_max_t) const {
-    const Vector bb_min = simd::load_float4(bounds[0].v);
-    const Vector bb_max = simd::load_float4(bounds[1].v);
+    Vector const bb_min = simd::load_float4(bounds[0].v);
+    Vector const bb_max = simd::load_float4(bounds[1].v);
 
-    const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
-    const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
+    Vector const l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
+    Vector const l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
 
     // the order we use for those min/max is vital to filter out
     // NaNs that happens when an inv_dir is +/- inf and
     // (box_min - pos) is 0. inf * 0 = NaN
-    const Vector filtered_l1a = math::min(l1, simd::Infinity);
-    const Vector filtered_l2a = math::min(l2, simd::Infinity);
+    Vector const filtered_l1a = math::min(l1, simd::Infinity);
+    Vector const filtered_l2a = math::min(l2, simd::Infinity);
 
-    const Vector filtered_l1b = math::max(l1, simd::Neg_infinity);
-    const Vector filtered_l2b = math::max(l2, simd::Neg_infinity);
+    Vector const filtered_l1b = math::max(l1, simd::Neg_infinity);
+    Vector const filtered_l2b = math::max(l2, simd::Neg_infinity);
 
     // now that we're back on our feet, test those slabs.
     Vector max_t = math::max(filtered_l1a, filtered_l2a);
@@ -172,20 +172,20 @@ inline bool AABB::intersect_p(Ray const& ray, float& hit_t) const {
     Vector ray_min_t         = simd::load_float(&ray.min_t);
     Vector ray_max_t         = simd::load_float(&ray.max_t);
 
-    const Vector bb_min = simd::load_float4(bounds[0].v);
-    const Vector bb_max = simd::load_float4(bounds[1].v);
+    Vector const bb_min = simd::load_float4(bounds[0].v);
+    Vector const bb_max = simd::load_float4(bounds[1].v);
 
-    const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
-    const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
+    Vector const l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
+    Vector const l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
 
     // the order we use for those min/max is vital to filter out
     // NaNs that happens when an inv_dir is +/- inf and
     // (box_min - pos) is 0. inf * 0 = NaN
-    const Vector filtered_l1a = math::min(l1, simd::Infinity);
-    const Vector filtered_l2a = math::min(l2, simd::Infinity);
+    Vector const filtered_l1a = math::min(l1, simd::Infinity);
+    Vector const filtered_l2a = math::min(l2, simd::Infinity);
 
-    const Vector filtered_l1b = math::max(l1, simd::Neg_infinity);
-    const Vector filtered_l2b = math::max(l2, simd::Neg_infinity);
+    Vector const filtered_l1b = math::max(l1, simd::Neg_infinity);
+    Vector const filtered_l2b = math::max(l2, simd::Neg_infinity);
 
     // now that we're back on our feet, test those slabs.
     Vector max_t = math::max(filtered_l1a, filtered_l2a);

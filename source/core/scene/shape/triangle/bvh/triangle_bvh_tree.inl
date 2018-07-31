@@ -72,10 +72,10 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
     uint32_t index = 0xFFFFFFFF;
 
-    const Vector ray_origin        = simd::load_float4(ray.origin.v);
-    const Vector ray_direction     = simd::load_float4(ray.direction.v);
-    const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    const Vector ray_min_t         = simd::load_float(&ray.min_t);
+    Vector const ray_origin        = simd::load_float4(ray.origin.v);
+    Vector const ray_direction     = simd::load_float4(ray.direction.v);
+    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+    Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
     Vector       u;
     Vector       v;
@@ -125,10 +125,10 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack) const {
 
     uint32_t index = 0xFFFFFFFF;
 
-    const Vector ray_origin        = simd::load_float4(ray.origin.v);
-    const Vector ray_direction     = simd::load_float4(ray.direction.v);
-    const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    const Vector ray_min_t         = simd::load_float(&ray.min_t);
+    Vector const ray_origin        = simd::load_float4(ray.origin.v);
+    Vector const ray_direction     = simd::load_float4(ray.direction.v);
+    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+    Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
 
     while (0xFFFFFFFF != n) {
@@ -260,11 +260,11 @@ bool Tree<Data>::intersect_p(math::Ray const& ray, Node_stack& node_stack) const
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
-    const Vector ray_origin        = simd::load_float4(ray.origin.v);
-    const Vector ray_direction     = simd::load_float4(ray.direction.v);
-    const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    const Vector ray_min_t         = simd::load_float(&ray.min_t);
-    const Vector ray_max_t         = simd::load_float(&ray.max_t);
+    Vector const ray_origin        = simd::load_float4(ray.origin.v);
+    Vector const ray_direction     = simd::load_float4(ray.direction.v);
+    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+    Vector const ray_min_t         = simd::load_float(&ray.min_t);
+    Vector const ray_max_t         = simd::load_float(&ray.max_t);
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -342,12 +342,12 @@ float Tree<Data>::opacity(math::Ray& ray, float time, Materials const& materials
 
     float opacity = 0.f;
 
-    const Vector ray_origin        = simd::load_float4(ray.origin.v);
-    const Vector ray_direction     = simd::load_float4(ray.direction.v);
-    const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    const Vector ray_min_t         = simd::load_float(&ray.min_t);
+    Vector const ray_origin        = simd::load_float4(ray.origin.v);
+    Vector const ray_direction     = simd::load_float4(ray.direction.v);
+    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+    Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
-    const Vector max_t             = ray_max_t;
+    Vector const max_t             = ray_max_t;
 
     Vector u;
     Vector v;
@@ -406,12 +406,12 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, Materials const& mater
 
     float3 absorption(0.f);
 
-    const Vector ray_origin        = simd::load_float4(ray.origin.v);
-    const Vector ray_direction     = simd::load_float4(ray.direction.v);
-    const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    const Vector ray_min_t         = simd::load_float(&ray.min_t);
+    Vector const ray_origin        = simd::load_float4(ray.origin.v);
+    Vector const ray_direction     = simd::load_float4(ray.direction.v);
+    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+    Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
-    const Vector max_t             = ray_max_t;
+    Vector const max_t             = ray_max_t;
 
     Vector u;
     Vector v;
