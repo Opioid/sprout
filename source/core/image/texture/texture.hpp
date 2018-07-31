@@ -57,7 +57,8 @@ class Texture {
   protected:
     std::shared_ptr<Image> untyped_image_;
 
-    int3   back_;
+    int3 back_;
+
     float3 dimensions_float_;
 };
 
