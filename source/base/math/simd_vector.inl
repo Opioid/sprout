@@ -109,26 +109,17 @@ static inline Vector normalized3(FVector v) {
     return mul(rsqrt(dot3(v, v)), v);
 }
 
-static inline Vector SU_CALLCONV cross3(FVector a, FVector b) noexcept {
-    // [ a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x ]
+// https://geometrian.com/programming/tutorials/cross-product/index.php
+static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
+    Vector tmp0 = _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 0, 2, 1));
+    Vector tmp1 = _mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 0, 2, 1));
 
-    // y1,z1,x1,w1
-    Vector temp0 = SU_PERMUTE_PS(a, _MM_SHUFFLE(3, 0, 2, 1));
-    // z2,x2,y2,w2
-    Vector temp1 = SU_PERMUTE_PS(b, _MM_SHUFFLE(3, 1, 0, 2));
-    // Perform the left operation
-    Vector result = _mm_mul_ps(temp0, temp1);
-    // z1,x1,y1,w1
-    temp0 = SU_PERMUTE_PS(temp0, _MM_SHUFFLE(3, 0, 2, 1));
-    // y2,z2,x2,w2
-    temp1 = SU_PERMUTE_PS(temp1, _MM_SHUFFLE(3, 1, 0, 2));
-    // Perform the right operation
-    temp0 = _mm_mul_ps(temp0, temp1);
-    // Subract the right from left, and return answer
-    result = _mm_sub_ps(result, temp0);
-    // Set w to zero
-    //	return _mm_and_ps(result, Mask3);
-    return result;
+    tmp0 = _mm_mul_ps(tmp0, a);
+    tmp1 = _mm_mul_ps(tmp1, b);
+
+    Vector tmp2 = _mm_sub_ps(tmp0, tmp1);
+
+    return _mm_shuffle_ps(tmp2, tmp2, _MM_SHUFFLE(3, 0, 2, 1));
 }
 
 static inline Vector SU_CALLCONV rcp(FVector x) noexcept {

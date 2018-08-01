@@ -113,8 +113,10 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         float2 uv;
         tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
 
-        Vector   geo_n          = tree_.triangle_normal_v(pi.index);
-        Vector   bitangent_sign = simd::set_float4(tree_.triangle_bitangent_sign(pi.index));
+        Vector geo_n = tree_.triangle_normal_v(pi.index);
+
+        Vector bitangent_sign = simd::set_float4(tree_.triangle_bitangent_sign(pi.index));
+
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
         Matrix3 rotation = math::load_float3x3(transformation.rotation);
