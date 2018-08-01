@@ -35,80 +35,84 @@ namespace bvh {
 template <typename Data>
 class Tree {
   public:
-    Tree();
-    ~Tree();
+    Tree() noexcept;
+
+    ~Tree() noexcept;
 
     using Node = scene::bvh::Node;
 
-    Node* allocate_nodes(uint32_t num_nodes);
+    Node* allocate_nodes(uint32_t num_nodes) noexcept;
 
-    math::AABB aabb() const;
+    math::AABB aabb() const noexcept;
 
-    uint32_t num_parts() const;
+    uint32_t num_parts() const noexcept;
 
-    uint32_t num_triangles() const;
-    uint32_t num_triangles(uint32_t part) const;
+    uint32_t num_triangles() const noexcept;
+    uint32_t num_triangles(uint32_t part) const noexcept;
 
-    uint32_t current_triangle() const;
+    uint32_t current_triangle() const noexcept;
 
-    bool intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const;
+    bool intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const
+        noexcept;
 
-    bool intersect(math::Ray& ray, Node_stack& node_stack) const;
-
-    bool intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-                   FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                   Node_stack& node_stack, Intersection& intersection) const;
+    bool intersect(math::Ray& ray, Node_stack& node_stack) const noexcept;
 
     bool intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
                    FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                   Node_stack& node_stack) const;
+                   Node_stack& node_stack, Intersection& intersection) const noexcept;
 
-    bool intersect_p(math::Ray const& ray, Node_stack& node_stack) const;
+    bool intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
+                   FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
+                   Node_stack& node_stack) const noexcept;
+
+    bool intersect_p(math::Ray const& ray, Node_stack& node_stack) const noexcept;
 
     bool intersect_p(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
                      FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
-                     Node_stack& node_stack) const;
+                     Node_stack& node_stack) const noexcept;
 
     float opacity(math::Ray& ray, float time, Materials const& materials,
-                  material::Sampler_settings::Filter filter, Worker const& worker) const;
+                  material::Sampler_settings::Filter filter, Worker const& worker) const noexcept;
 
     float3 absorption(math::Ray& ray, float time, Materials const& materials,
-                      material::Sampler_settings::Filter filter, Worker const& worker) const;
+                      material::Sampler_settings::Filter filter, Worker const& worker) const
+        noexcept;
 
     void interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
-                                   float2& tc) const;
+                                   float2& tc) const noexcept;
 
     void interpolate_triangle_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
-                                   float2& tc) const;
+                                   float2& tc) const noexcept;
 
     void interpolate_triangle_data(FVector u, FVector v, uint32_t index, Vector& n, Vector& t,
-                                   float2& tc) const;
+                                   float2& tc) const noexcept;
 
-    float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;
+    float2 interpolate_triangle_uv(uint32_t index, float2 uv) const noexcept;
 
-    float2 interpolate_triangle_uv(FVector u, FVector v, uint32_t index) const;
+    float2 interpolate_triangle_uv(FVector u, FVector v, uint32_t index) const noexcept;
 
-    float    triangle_bitangent_sign(uint32_t index) const;
-    uint32_t triangle_material_index(uint32_t index) const;
+    float triangle_bitangent_sign(uint32_t index) const noexcept;
 
-    float3 triangle_normal(uint32_t index) const;
-    Vector triangle_normal_v(uint32_t index) const;
+    uint32_t triangle_material_index(uint32_t index) const noexcept;
 
-    float triangle_area(uint32_t index) const;
-    float triangle_area(uint32_t index, f_float3 scale) const;
+    float3 triangle_normal(uint32_t index) const noexcept;
+    Vector triangle_normal_v(uint32_t index) const noexcept;
 
-    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const;
-    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
-    void sample(uint32_t index, float2 r2, float3& p) const;
+    float triangle_area(uint32_t index) const noexcept;
+    float triangle_area(uint32_t index, f_float3 scale) const noexcept;
 
-    void allocate_parts(uint32_t num_parts);
+    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const noexcept;
+    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
+    void sample(uint32_t index, float2 r2, float3& p) const noexcept;
 
-    void allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices);
+    void allocate_parts(uint32_t num_parts) noexcept;
+
+    void allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      const std::vector<Vertex>& vertices);
+                      const std::vector<Vertex>& vertices) noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
     uint32_t num_nodes_;

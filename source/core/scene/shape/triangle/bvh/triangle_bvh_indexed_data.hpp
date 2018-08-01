@@ -23,55 +23,64 @@ class Indexed_data {
   public:
     using Vertices = std::vector<Vertex>;
 
-    Indexed_data();
-    ~Indexed_data();
+    Indexed_data() noexcept;
 
-    uint32_t num_triangles() const;
-    uint32_t current_triangle() const;
+    ~Indexed_data() noexcept;
 
-    bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
+    uint32_t num_triangles() const noexcept;
 
-    bool intersect_p(uint32_t index, math::Ray const& ray) const;
+    uint32_t current_triangle() const noexcept;
+
+    bool intersect(uint32_t index, math::Ray& ray, float2& uv) const noexcept;
+
+    bool intersect_p(uint32_t index, math::Ray const& ray) const noexcept;
 
     bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t, uint32_t index,
-                   Vector& u, Vector& v) const;
+                   Vector& u, Vector& v) const noexcept;
 
     bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-                   uint32_t index) const;
+                   uint32_t index) const noexcept;
 
     bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
-                     uint32_t index) const;
+                     uint32_t index) const noexcept;
 
-    void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
+    void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const
+        noexcept;
+
     void interpolate_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
-                          float2& tc) const;
+                          float2& tc) const noexcept;
+
     void interpolate_data(FVector u, FVector v, uint32_t index, Vector& n, Vector& t,
-                          float2& tc) const;
+                          float2& tc) const noexcept;
 
-    float2 interpolate_uv(uint32_t index, float2 uv) const;
-    float2 interpolate_uv(FVector u, FVector v, uint32_t index) const;
+    float2 interpolate_uv(uint32_t index, float2 uv) const noexcept;
 
-    float    bitangent_sign(uint32_t index) const;
-    uint32_t material_index(uint32_t index) const;
+    float2 interpolate_uv(FVector u, FVector v, uint32_t index) const noexcept;
 
-    float3 normal(uint32_t index) const;
-    Vector normal_v(uint32_t index) const;
+    float bitangent_sign(uint32_t index) const noexcept;
 
-    float area(uint32_t index) const;
-    float area(uint32_t index, f_float3 scale) const;
+    uint32_t material_index(uint32_t index) const noexcept;
 
-    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
+    float3 normal(uint32_t index) const noexcept;
 
-    void allocate_triangles(uint32_t num_triangles, Vertices const& vertices);
+    Vector normal_v(uint32_t index) const noexcept;
+
+    float area(uint32_t index) const noexcept;
+
+    float area(uint32_t index, f_float3 scale) const noexcept;
+
+    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
+
+    void allocate_triangles(uint32_t num_triangles, Vertices const& vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertices const& vertices);
+                      Vertices const& vertices) noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
     struct alignas(16) Index_triangle {
         Index_triangle(uint32_t a, uint32_t b, uint32_t c, float bitangent_sign,
-                       uint32_t material_index);
+                       uint32_t material_index) noexcept;
 
         uint32_t a, b, c;
         uint32_t bts : 1;

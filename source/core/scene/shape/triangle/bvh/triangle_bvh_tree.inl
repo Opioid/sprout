@@ -14,17 +14,18 @@
 namespace scene::shape::triangle::bvh {
 
 template <typename Data>
-Tree<Data>::Tree() : num_nodes_(0), nodes_(nullptr), num_parts_(0), num_part_triangles_(nullptr) {}
+Tree<Data>::Tree() noexcept
+    : num_nodes_(0), nodes_(nullptr), num_parts_(0), num_part_triangles_(nullptr) {}
 
 template <typename Data>
-Tree<Data>::~Tree() {
+Tree<Data>::~Tree() noexcept {
     delete[] num_part_triangles_;
 
     memory::free_aligned(nodes_);
 }
 
 template <typename Data>
-scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
+scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) noexcept {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
@@ -36,7 +37,7 @@ scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 }
 
 template <typename Data>
-math::AABB Tree<Data>::aabb() const {
+math::AABB Tree<Data>::aabb() const noexcept {
     if (nodes_) {
         return math::AABB(float3(nodes_[0].min()), float3(nodes_[0].max()));
     } else {
@@ -45,28 +46,28 @@ math::AABB Tree<Data>::aabb() const {
 }
 
 template <typename Data>
-uint32_t Tree<Data>::num_parts() const {
+uint32_t Tree<Data>::num_parts() const noexcept {
     return num_parts_;
 }
 
 template <typename Data>
-uint32_t Tree<Data>::num_triangles() const {
+uint32_t Tree<Data>::num_triangles() const noexcept {
     return data_.num_triangles();
 }
 
 template <typename Data>
-uint32_t Tree<Data>::num_triangles(uint32_t part) const {
+uint32_t Tree<Data>::num_triangles(uint32_t part) const noexcept {
     return num_part_triangles_[part];
 }
 
 template <typename Data>
-uint32_t Tree<Data>::current_triangle() const {
+uint32_t Tree<Data>::current_triangle() const noexcept {
     return data_.current_triangle();
 }
 
 template <typename Data>
-bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
-                           Intersection& intersection) const {
+bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const
+    noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -119,7 +120,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 }
 
 template <typename Data>
-bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack) const {
+bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -168,7 +169,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack) const {
 template <typename Data>
 bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
                            FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                           Node_stack& node_stack, Intersection& intersection) const {
+                           Node_stack& node_stack, Intersection& intersection) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -216,7 +217,7 @@ bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ra
 template <typename Data>
 bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
                            FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                           Node_stack& node_stack) const {
+                           Node_stack& node_stack) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -256,7 +257,7 @@ bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ra
 }
 
 template <typename Data>
-bool Tree<Data>::intersect_p(math::Ray const& ray, Node_stack& node_stack) const {
+bool Tree<Data>::intersect_p(math::Ray const& ray, Node_stack& node_stack) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -298,7 +299,7 @@ bool Tree<Data>::intersect_p(math::Ray const& ray, Node_stack& node_stack) const
 template <typename Data>
 bool Tree<Data>::intersect_p(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
                              FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
-                             Node_stack& node_stack) const {
+                             Node_stack& node_stack) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -333,7 +334,8 @@ bool Tree<Data>::intersect_p(FVector ray_origin, FVector ray_direction, FVector 
 
 template <typename Data>
 float Tree<Data>::opacity(math::Ray& ray, float time, Materials const& materials,
-                          material::Sampler_settings::Filter filter, Worker const& worker) const {
+                          material::Sampler_settings::Filter filter, Worker const& worker) const
+    noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);
@@ -396,8 +398,8 @@ float Tree<Data>::opacity(math::Ray& ray, float time, Materials const& materials
 
 template <typename Data>
 float3 Tree<Data>::absorption(math::Ray& ray, float time, Materials const& materials,
-                              material::Sampler_settings::Filter filter,
-                              Worker const&                      worker) const {
+                              material::Sampler_settings::Filter filter, Worker const& worker) const
+    noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);
@@ -464,79 +466,80 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, Materials const& mater
 
 template <typename Data>
 void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
-                                           float2& tc) const {
+                                           float2& tc) const noexcept {
     data_.interpolate_data(index, uv, n, t, tc);
 }
 
 template <typename Data>
 void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index, float3& n,
-                                           float3& t, float2& tc) const {
+                                           float3& t, float2& tc) const noexcept {
     data_.interpolate_data(u, v, index, n, t, tc);
 }
 
 template <typename Data>
 void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index, Vector& n,
-                                           Vector& t, float2& tc) const {
+                                           Vector& t, float2& tc) const noexcept {
     data_.interpolate_data(u, v, index, n, t, tc);
 }
 
 template <typename Data>
-float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const {
+float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const noexcept {
     return data_.interpolate_uv(index, uv);
 }
 
 template <typename Data>
-float2 Tree<Data>::interpolate_triangle_uv(FVector u, FVector v, uint32_t index) const {
+float2 Tree<Data>::interpolate_triangle_uv(FVector u, FVector v, uint32_t index) const noexcept {
     return data_.interpolate_uv(u, v, index);
 }
 
 template <typename Data>
-float Tree<Data>::triangle_bitangent_sign(uint32_t index) const {
+float Tree<Data>::triangle_bitangent_sign(uint32_t index) const noexcept {
     return data_.bitangent_sign(index);
 }
 
 template <typename Data>
-uint32_t Tree<Data>::triangle_material_index(uint32_t index) const {
+uint32_t Tree<Data>::triangle_material_index(uint32_t index) const noexcept {
     return data_.material_index(index);
 }
 
 template <typename Data>
-float3 Tree<Data>::triangle_normal(uint32_t index) const {
+float3 Tree<Data>::triangle_normal(uint32_t index) const noexcept {
     return data_.normal(index);
 }
 
 template <typename Data>
-Vector Tree<Data>::triangle_normal_v(uint32_t index) const {
+Vector Tree<Data>::triangle_normal_v(uint32_t index) const noexcept {
     return data_.normal_v(index);
 }
 
 template <typename Data>
-float Tree<Data>::triangle_area(uint32_t index) const {
+float Tree<Data>::triangle_area(uint32_t index) const noexcept {
     return data_.area(index);
 }
 
 template <typename Data>
-float Tree<Data>::triangle_area(uint32_t index, f_float3 scale) const {
+float Tree<Data>::triangle_area(uint32_t index, f_float3 scale) const noexcept {
     return data_.area(index, scale);
 }
 
 template <typename Data>
-void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const {
+void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const
+    noexcept {
     data_.sample(index, r2, p, n, tc);
 }
 
 template <typename Data>
-void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
+void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept {
     data_.sample(index, r2, p, tc);
 }
 
 template <typename Data>
-void Tree<Data>::sample(uint32_t index, float2 r2, float3& p) const {
+void Tree<Data>::sample(uint32_t index, float2 r2, float3& p) const noexcept {
     data_.sample(index, r2, p);
 }
 
 template <typename Data>
-void Tree<Data>::allocate_parts(uint32_t num_parts) {
+void Tree<Data>::allocate_parts(uint32_t num_parts) noexcept {
     if (num_parts != num_parts_) {
         num_parts_ = num_parts;
         delete[] num_part_triangles_;
@@ -549,20 +552,21 @@ void Tree<Data>::allocate_parts(uint32_t num_parts) {
 }
 
 template <typename Data>
-void Tree<Data>::allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices) {
+void Tree<Data>::allocate_triangles(uint32_t                   num_triangles,
+                                    const std::vector<Vertex>& vertices) noexcept {
     data_.allocate_triangles(num_triangles, vertices);
 }
 
 template <typename Data>
 void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                              const std::vector<Vertex>& vertices) {
+                              const std::vector<Vertex>& vertices) noexcept {
     ++num_part_triangles_[material_index];
 
     data_.add_triangle(a, b, c, material_index, vertices);
 }
 
 template <typename Data>
-size_t Tree<Data>::num_bytes() const {
+size_t Tree<Data>::num_bytes() const noexcept {
     return sizeof(*this) + num_nodes_ * sizeof(Node) + num_parts_ * sizeof(uint32_t) +
            data_.num_bytes();
 }

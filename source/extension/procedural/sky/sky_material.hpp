@@ -31,6 +31,7 @@ class Sky_material : public Material {
 class Sky_baked_material : public Material {
   public:
     Sky_baked_material(Sky& sky);
+
     virtual ~Sky_baked_material() override;
 
     virtual const scene::material::Sample& sample(f_float3 wo, const scene::Renderstate& rs,

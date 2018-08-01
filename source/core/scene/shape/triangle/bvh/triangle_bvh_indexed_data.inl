@@ -11,7 +11,7 @@
 namespace scene::shape::triangle::bvh {
 
 template <typename SV>
-Indexed_data<SV>::Indexed_data()
+Indexed_data<SV>::Indexed_data() noexcept
     : num_triangles_(0),
       current_triangle_(0),
       num_vertices_(0),
@@ -20,24 +20,24 @@ Indexed_data<SV>::Indexed_data()
       shading_vertices_(nullptr) {}
 
 template <typename SV>
-Indexed_data<SV>::~Indexed_data() {
+Indexed_data<SV>::~Indexed_data() noexcept {
     memory::free_aligned(shading_vertices_);
     memory::free_aligned(intersection_vertices_);
     memory::free_aligned(triangles_);
 }
 
 template <typename SV>
-uint32_t Indexed_data<SV>::num_triangles() const {
+uint32_t Indexed_data<SV>::num_triangles() const noexcept {
     return num_triangles_;
 }
 
 template <typename SV>
-uint32_t Indexed_data<SV>::current_triangle() const {
+uint32_t Indexed_data<SV>::current_triangle() const noexcept {
     return current_triangle_;
 }
 
 template <typename SV>
-bool Indexed_data<SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
+bool Indexed_data<SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) const noexcept {
     auto const   t = triangles_[index];
     float3 const a = intersection_vertices_[t.a];
     float3 const b = intersection_vertices_[t.b];
@@ -47,7 +47,7 @@ bool Indexed_data<SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) con
 }
 
 template <typename SV>
-bool Indexed_data<SV>::intersect_p(uint32_t index, math::Ray const& ray) const {
+bool Indexed_data<SV>::intersect_p(uint32_t index, math::Ray const& ray) const noexcept {
     auto const   tri = triangles_[index];
     float3 const a   = intersection_vertices_[tri.a];
     float3 const b   = intersection_vertices_[tri.b];
@@ -58,7 +58,7 @@ bool Indexed_data<SV>::intersect_p(uint32_t index, math::Ray const& ray) const {
 
 template <typename SV>
 bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-                                 uint32_t index, Vector& u, Vector& v) const {
+                                 uint32_t index, Vector& u, Vector& v) const noexcept {
     auto const   tri = triangles_[index];
     float const* a   = intersection_vertices_[tri.a].v;
     float const* b   = intersection_vertices_[tri.b].v;
@@ -69,7 +69,7 @@ bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_
 
 template <typename SV>
 bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-                                 uint32_t index) const {
+                                 uint32_t index) const noexcept {
     auto const   tri = triangles_[index];
     float const* a   = intersection_vertices_[tri.a].v;
     float const* b   = intersection_vertices_[tri.b].v;
@@ -80,7 +80,7 @@ bool Indexed_data<SV>::intersect(FVector origin, FVector direction, FVector min_
 
 template <typename SV>
 bool Indexed_data<SV>::intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
-                                   uint32_t index) const {
+                                   uint32_t index) const noexcept {
     auto const   tri = triangles_[index];
     float const* a   = intersection_vertices_[tri.a].v;
     float const* b   = intersection_vertices_[tri.b].v;
@@ -91,7 +91,7 @@ bool Indexed_data<SV>::intersect_p(FVector origin, FVector direction, FVector mi
 
 template <typename SV>
 void Indexed_data<SV>::interpolate_data(uint32_t index, float2 uv, float3& n, float3& t,
-                                        float2& tc) const {
+                                        float2& tc) const noexcept {
     auto const tri = triangles_[index];
     const SV&  a   = shading_vertices_[tri.a];
     const SV&  b   = shading_vertices_[tri.b];
@@ -102,7 +102,7 @@ void Indexed_data<SV>::interpolate_data(uint32_t index, float2 uv, float3& n, fl
 
 template <typename SV>
 void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
-                                        float2& tc) const {
+                                        float2& tc) const noexcept {
     auto const tri = triangles_[index];
     const SV&  a   = shading_vertices_[tri.a];
     const SV&  b   = shading_vertices_[tri.b];
@@ -113,7 +113,7 @@ void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index, fl
 
 template <typename SV>
 void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index, Vector& n, Vector& t,
-                                        float2& tc) const {
+                                        float2& tc) const noexcept {
     auto const tri = triangles_[index];
     const SV&  a   = shading_vertices_[tri.a];
     const SV&  b   = shading_vertices_[tri.b];
@@ -123,7 +123,7 @@ void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index, Ve
 }
 
 template <typename SV>
-float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const {
+float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const noexcept {
     auto const tri = triangles_[index];
     const SV&  sa  = shading_vertices_[tri.a];
     const SV&  sb  = shading_vertices_[tri.b];
@@ -133,7 +133,7 @@ float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const {
 }
 
 template <typename SV>
-float2 Indexed_data<SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const {
+float2 Indexed_data<SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const noexcept {
     auto const tri = triangles_[index];
     const SV&  sa  = shading_vertices_[tri.a];
     const SV&  sb  = shading_vertices_[tri.b];
@@ -143,19 +143,19 @@ float2 Indexed_data<SV>::interpolate_uv(FVector u, FVector v, uint32_t index) co
 }
 
 template <typename SV>
-float Indexed_data<SV>::bitangent_sign(uint32_t index) const {
+float Indexed_data<SV>::bitangent_sign(uint32_t index) const noexcept {
     static float constexpr signs[2] = {1.f, -1.f};
 
     return signs[triangles_[index].bts];
 }
 
 template <typename SV>
-uint32_t Indexed_data<SV>::material_index(uint32_t index) const {
+uint32_t Indexed_data<SV>::material_index(uint32_t index) const noexcept {
     return triangles_[index].material_index;
 }
 
 template <typename SV>
-float3 Indexed_data<SV>::normal(uint32_t index) const {
+float3 Indexed_data<SV>::normal(uint32_t index) const noexcept {
     auto const   tri = triangles_[index];
     float3 const a   = intersection_vertices_[tri.a];
     float3 const b   = intersection_vertices_[tri.b];
@@ -167,7 +167,7 @@ float3 Indexed_data<SV>::normal(uint32_t index) const {
 }
 
 template <typename SV>
-Vector Indexed_data<SV>::normal_v(uint32_t index) const {
+Vector Indexed_data<SV>::normal_v(uint32_t index) const noexcept {
     auto const tri = triangles_[index];
 
     Vector const ap = simd::load_float4(intersection_vertices_[tri.a].v);
@@ -181,7 +181,7 @@ Vector Indexed_data<SV>::normal_v(uint32_t index) const {
 }
 
 template <typename SV>
-float Indexed_data<SV>::area(uint32_t index) const {
+float Indexed_data<SV>::area(uint32_t index) const noexcept {
     auto const   tri = triangles_[index];
     float3 const a   = intersection_vertices_[tri.a];
     float3 const b   = intersection_vertices_[tri.b];
@@ -191,7 +191,7 @@ float Indexed_data<SV>::area(uint32_t index) const {
 }
 
 template <typename SV>
-float Indexed_data<SV>::area(uint32_t index, f_float3 scale) const {
+float Indexed_data<SV>::area(uint32_t index, f_float3 scale) const noexcept {
     auto const   tri = triangles_[index];
     float3 const a   = intersection_vertices_[tri.a];
     float3 const b   = intersection_vertices_[tri.b];
@@ -201,7 +201,7 @@ float Indexed_data<SV>::area(uint32_t index, f_float3 scale) const {
 }
 
 template <typename SV>
-void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
+void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept {
     SOFT_ASSERT(index < num_triangles_);
 
     float2 const uv = math::sample_triangle_uniform(r2);
@@ -221,7 +221,8 @@ void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) 
 }
 
 template <typename SV>
-void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertices const& vertices) {
+void Indexed_data<SV>::allocate_triangles(uint32_t        num_triangles,
+                                          Vertices const& vertices) noexcept {
     uint32_t const num_vertices = static_cast<uint32_t>(vertices.size());
 
     if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
@@ -248,7 +249,7 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertices const
 
 template <typename SV>
 void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                                    Vertices const& vertices) {
+                                    Vertices const& vertices) noexcept {
     float bitanget_sign = 1.f;
 
     if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f) ||
@@ -262,14 +263,15 @@ void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t
 }
 
 template <typename SV>
-size_t Indexed_data<SV>::num_bytes() const {
+size_t Indexed_data<SV>::num_bytes() const noexcept {
     return sizeof(*this) + num_triangles_ * sizeof(Index_triangle) +
            num_vertices_ * (sizeof(float3) + sizeof(SV));
 }
 
 template <typename SV>
 Indexed_data<SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                                 float bitangent_sign, uint32_t material_index)
+                                                 float    bitangent_sign,
+                                                 uint32_t material_index) noexcept
     : a(a), b(b), c(c), bts(bitangent_sign < 0.f ? 1 : 0), material_index(material_index) {}
 
 template <typename V>
