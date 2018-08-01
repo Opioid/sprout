@@ -313,30 +313,30 @@ static bool any_inf(Vector3<T> const& v) {
 // Aligned 3D float vector
 //==============================================================================
 
-inline constexpr Vector3f_a::Vector3f_a(float const* a) : v{a[0], a[1], a[2], 0.f} {}
+inline constexpr Vector3f_a::Vector3f_a(float const* a) noexcept : v{a[0], a[1], a[2], 0.f} {}
 
-inline constexpr Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}
+inline constexpr Vector3f_a::Vector3f_a(float s) noexcept : v{s, s, s, 0.f} {}
 
-inline constexpr Vector3f_a::Vector3f_a(Vector2<float> const xy, float z)
+inline constexpr Vector3f_a::Vector3f_a(Vector2<float> const xy, float z) noexcept
     : v{xy[0], xy[1], z, 0.f} {}
 
 template <typename T>
-constexpr Vector3f_a::Vector3f_a(Vector3<T> const& a)
+constexpr Vector3f_a::Vector3f_a(Vector3<T> const& a) noexcept
     : v{float(a[0]), float(a[1]), float(a[2]), 0.f} {}
 
-inline constexpr Vector2<float> Vector3f_a::xy() const {
+inline constexpr Vector2<float> Vector3f_a::xy() const noexcept {
     return Vector2<float>(v[0], v[1]);
 }
 
-inline constexpr float Vector3f_a::operator[](uint32_t i) const {
+inline constexpr float Vector3f_a::operator[](uint32_t i) const noexcept {
     return v[i];
 }
 
-inline constexpr float& Vector3f_a::operator[](uint32_t i) {
+inline constexpr float& Vector3f_a::operator[](uint32_t i) noexcept {
     return v[i];
 }
 
-inline float Vector3f_a::absolute_max(uint32_t& i) const {
+inline float Vector3f_a::absolute_max(uint32_t& i) const noexcept {
     float const ax = std::abs(v[0]);
     float const ay = std::abs(v[1]);
     float const az = std::abs(v[2]);
@@ -355,15 +355,15 @@ inline float Vector3f_a::absolute_max(uint32_t& i) const {
     return az;
 }
 
-inline constexpr Vector3f_a Vector3f_a::identity() {
+inline constexpr Vector3f_a Vector3f_a::identity() noexcept {
     return Vector3f_a(0.f, 0.f, 0.f);
 }
 
-static inline constexpr Vector3f_a operator+(FVector3f_a a, float s) {
+static inline constexpr Vector3f_a operator+(FVector3f_a a, float s) noexcept {
     return Vector3f_a(a[0] + s, a[1] + s, a[2] + s);
 }
 
-static inline constexpr Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a operator+(FVector3f_a a, FVector3f_a b) noexcept {
     //	__m128 ma = simd::load_float3(a.v);
     //	__m128 mb = simd::load_float3(b.v);
     //	__m128 mr = _mm_add_ps(ma, mb);
@@ -374,90 +374,90 @@ static inline constexpr Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
     return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
 }
 
-static inline constexpr Vector3f_a operator-(FVector3f_a a, float s) {
+static inline constexpr Vector3f_a operator-(FVector3f_a a, float s) noexcept {
     return Vector3f_a(a[0] - s, a[1] - s, a[2] - s);
 }
 
-static inline constexpr Vector3f_a operator-(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a operator-(FVector3f_a a, FVector3f_a b) noexcept {
     return Vector3f_a(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
-static inline constexpr Vector3f_a operator*(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a operator*(FVector3f_a a, FVector3f_a b) noexcept {
     return Vector3f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2]);
 }
 
-static inline constexpr Vector3f_a operator/(FVector3f_a a, float s) {
+static inline constexpr Vector3f_a operator/(FVector3f_a a, float s) noexcept {
     float const is = 1.f / s;
     return Vector3f_a(is * a[0], is * a[1], is * a[2]);
 }
 
-static inline constexpr Vector3f_a operator/(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a operator/(FVector3f_a a, FVector3f_a b) noexcept {
     return Vector3f_a(a[0] / b[0], a[1] / b[1], a[2] / b[2]);
 }
 
-static inline constexpr Vector3f_a operator+(float s, FVector3f_a v) {
+static inline constexpr Vector3f_a operator+(float s, FVector3f_a v) noexcept {
     return Vector3f_a(s + v[0], s + v[1], s + v[2]);
 }
 
-static inline constexpr Vector3f_a operator-(float s, FVector3f_a v) {
+static inline constexpr Vector3f_a operator-(float s, FVector3f_a v) noexcept {
     return Vector3f_a(s - v[0], s - v[1], s - v[2]);
 }
 
-static inline constexpr Vector3f_a operator*(float s, FVector3f_a v) {
+static inline constexpr Vector3f_a operator*(float s, FVector3f_a v) noexcept {
     return Vector3f_a(s * v[0], s * v[1], s * v[2]);
 }
 
-static inline constexpr Vector3f_a operator/(float s, FVector3f_a v) {
+static inline constexpr Vector3f_a operator/(float s, FVector3f_a v) noexcept {
     return Vector3f_a(s / v[0], s / v[1], s / v[2]);
 }
 
-static inline constexpr Vector3f_a operator-(FVector3f_a v) {
+static inline constexpr Vector3f_a operator-(FVector3f_a v) noexcept {
     return Vector3f_a(-v[0], -v[1], -v[2]);
 }
 
-static inline constexpr Vector3f_a& operator+=(Vector3f_a& a, FVector3f_a b) {
+static inline constexpr Vector3f_a& operator+=(Vector3f_a& a, FVector3f_a b) noexcept {
     a[0] += b[0];
     a[1] += b[1];
     a[2] += b[2];
     return a;
 }
 
-static inline constexpr Vector3f_a& operator-=(Vector3f_a& a, float b) {
+static inline constexpr Vector3f_a& operator-=(Vector3f_a& a, float b) noexcept {
     a[0] -= b;
     a[1] -= b;
     a[2] -= b;
     return a;
 }
 
-static inline constexpr Vector3f_a& operator-=(Vector3f_a& a, FVector3f_a b) {
+static inline constexpr Vector3f_a& operator-=(Vector3f_a& a, FVector3f_a b) noexcept {
     a[0] -= b[0];
     a[1] -= b[1];
     a[2] -= b[2];
     return a;
 }
 
-static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, FVector3f_a b) {
+static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, FVector3f_a b) noexcept {
     a[0] *= b[0];
     a[1] *= b[1];
     a[2] *= b[2];
     return a;
 }
 
-static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, float s) {
+static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, float s) noexcept {
     a[0] *= s;
     a[1] *= s;
     a[2] *= s;
     return a;
 }
 
-static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, FVector3f_a b) {
+static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, FVector3f_a b) noexcept {
     a[0] /= b[0];
     a[1] /= b[1];
     a[2] /= b[2];
     return a;
 }
 
-static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, float s) {
+static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, float s) noexcept {
     float const is = 1.f / s;
     a[0] *= is;
     a[1] *= is;
@@ -465,7 +465,7 @@ static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, float s) {
     return a;
 }
 
-static inline constexpr float dot(FVector3f_a a, FVector3f_a b) {
+static inline constexpr float dot(FVector3f_a a, FVector3f_a b) noexcept {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
@@ -473,11 +473,11 @@ static inline float length(FVector3f_a v) {
     return std::sqrt(dot(v, v));
 }
 
-static inline constexpr float squared_length(FVector3f_a v) {
+static inline constexpr float squared_length(FVector3f_a v) noexcept {
     return dot(v, v);
 }
 
-static inline Vector3f_a normalize(FVector3f_a v) {
+static inline Vector3f_a normalize(FVector3f_a v) noexcept {
     // This is slowest on both machines
     //	return v / length(v);
 
@@ -485,7 +485,7 @@ static inline Vector3f_a normalize(FVector3f_a v) {
     return rsqrt(dot(v, v)) * v;
 }
 
-static inline Vector3f_a reciprocal(FVector3f_a v) {
+static inline Vector3f_a reciprocal(FVector3f_a v) noexcept {
     //	return Vector3f_a(1.f / v[0], 1.f / v[1], 1.f / v[2]);
 
     Vector sx = simd::load_float4(v.v);
@@ -499,24 +499,24 @@ static inline Vector3f_a reciprocal(FVector3f_a v) {
     return result;
 }
 
-static inline constexpr Vector3f_a cross(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a cross(FVector3f_a a, FVector3f_a b) noexcept {
     return Vector3f_a(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
                       a[0] * b[1] - a[1] * b[0]);
 }
 
-static inline constexpr Vector3f_a project(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a project(FVector3f_a a, FVector3f_a b) noexcept {
     return dot(b, a) * b;
 }
 
-static inline float distance(FVector3f_a a, FVector3f_a b) {
+static inline float distance(FVector3f_a a, FVector3f_a b) noexcept {
     return length(a - b);
 }
 
-static inline constexpr float squared_distance(FVector3f_a a, FVector3f_a b) {
+static inline constexpr float squared_distance(FVector3f_a a, FVector3f_a b) noexcept {
     return squared_length(a - b);
 }
 
-static inline constexpr Vector3f_a saturate(FVector3f_a v) {
+static inline constexpr Vector3f_a saturate(FVector3f_a v) noexcept {
     return Vector3f_a(std::clamp(v[0], 0.f, 1.f), std::clamp(v[1], 0.f, 1.f),
                       std::clamp(v[2], 0.f, 1.f));
 }
@@ -531,20 +531,20 @@ static inline Vector3f_a exp(FVector3f_a v) {
     return r;
 }
 
-static inline Vector3f_a pow(FVector3f_a v, float e) {
+static inline Vector3f_a pow(FVector3f_a v, float e) noexcept {
     return Vector3f_a(std::pow(v[0], e), std::pow(v[1], e), std::pow(v[2], e));
 }
 
-static inline constexpr Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t) {
+static inline constexpr Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t) noexcept {
     float const u = 1.f - t;
     return u * a + t * b;
 }
 
-static inline constexpr Vector3f_a reflect(FVector3f_a normal, FVector3f_a v) {
+static inline constexpr Vector3f_a reflect(FVector3f_a normal, FVector3f_a v) noexcept {
     return 2.f * dot(v, normal) * normal - v;
 }
 
-static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
+static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) noexcept {
     // https://gist.github.com/roxlu/3082114
     /*
             // Handle the singularity
@@ -599,59 +599,59 @@ Vector3f_a& b) { Vector const u = simd::load_float3(n.v);
         simd::store_float4(b.v, _mm_sub_ps(temp4, temp5));
 }*/
 
-static inline Vector3f_a tangent(FVector3f_a n) {
+static inline Vector3f_a tangent(FVector3f_a n) noexcept {
     float const sign = std::copysign(1.f, n[2]);
     float const c    = -1.f / (sign + n[2]);
     float const d    = n[0] * n[1] * c;
     return Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 }
 
-static inline constexpr Vector3f_a min(FVector3f_a a, float s) {
+static inline constexpr Vector3f_a min(FVector3f_a a, float s) noexcept {
     return Vector3f_a(std::min(a[0], s), std::min(a[1], s), std::min(a[2], s));
 }
 
-static inline constexpr Vector3f_a min(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a min(FVector3f_a a, FVector3f_a b) noexcept {
     return Vector3f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]));
 }
 
-static inline constexpr Vector3f_a max(FVector3f_a a, float s) {
+static inline constexpr Vector3f_a max(FVector3f_a a, float s) noexcept {
     return Vector3f_a(std::max(a[0], s), std::max(a[1], s), std::max(a[2], s));
 }
 
-static inline constexpr Vector3f_a clamp(FVector3f_a v, float mi, float ma) {
+static inline constexpr Vector3f_a clamp(FVector3f_a v, float mi, float ma) noexcept {
     return Vector3f_a(std::min(std::max(v[0], mi), ma), std::min(std::max(v[1], mi), ma),
                       std::min(std::max(v[2], mi), ma));
 }
 
-static inline constexpr Vector3f_a max(FVector3f_a a, FVector3f_a b) {
+static inline constexpr Vector3f_a max(FVector3f_a a, FVector3f_a b) noexcept {
     return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
-static inline constexpr float min_component(FVector3f_a v) {
+static inline constexpr float min_component(FVector3f_a v) noexcept {
     return std::min(std::min(v[0], v[1]), v[2]);
 }
 
-static inline constexpr float max_component(FVector3f_a v) {
+static inline constexpr float max_component(FVector3f_a v) noexcept {
     return std::max(std::max(v[0], v[1]), v[2]);
 }
 
-static inline constexpr float average(FVector3f_a c) {
+static inline constexpr float average(FVector3f_a c) noexcept {
     return (c[0] + c[1] + c[2]) / 3.f;
 }
 
-static inline constexpr float checksum(FVector3f_a v) {
+static inline constexpr float checksum(FVector3f_a v) noexcept {
     return v[0] + v[1] + v[2];
 }
 
-static inline Vector3f_a abs(FVector3f_a v) {
+static inline Vector3f_a abs(FVector3f_a v) noexcept {
     return Vector3f_a(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]));
 }
 
-static inline Vector3f_a cos(FVector3f_a v) {
+static inline Vector3f_a cos(FVector3f_a v) noexcept {
     return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 
-static inline Vector3f_a sqrt(FVector3f_a v) {
+static inline Vector3f_a sqrt(FVector3f_a v) noexcept {
     //	return Vector3f_a(std::sqrt(v[0]), std::sqrt(v[1]), std::sqrt(v[2]));
 
     Vector x = simd::load_float3(v.v);
@@ -662,7 +662,7 @@ static inline Vector3f_a sqrt(FVector3f_a v) {
     return r;
 }
 
-static inline Vector3f_a log(FVector3f_a v) {
+static inline Vector3f_a log(FVector3f_a v) noexcept {
     //	return Vector3f_a(std::log(v[0]), std::log(v[1]), std::log(v[2]));
 
     Vector x = simd::load_float4(v.v);
@@ -673,67 +673,67 @@ static inline Vector3f_a log(FVector3f_a v) {
     return r;
 }
 
-static inline constexpr bool operator==(FVector3f_a a, FVector3f_a b) {
+static inline constexpr bool operator==(FVector3f_a a, FVector3f_a b) noexcept {
     return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
 }
 
-static inline constexpr bool operator!=(FVector3f_a a, FVector3f_a b) {
+static inline constexpr bool operator!=(FVector3f_a a, FVector3f_a b) noexcept {
     return a[0] != b[0] || a[1] != b[1] || a[2] != b[2];
 }
 
-static inline constexpr bool all_less(FVector3f_a v, float s) {
+static inline constexpr bool all_less(FVector3f_a v, float s) noexcept {
     return v[0] < s && v[1] < s && v[2] < s;
 }
 
-static inline constexpr bool all_greater_equal(FVector3f_a v, float s) {
+static inline constexpr bool all_greater_equal(FVector3f_a v, float s) noexcept {
     return v[0] >= s && v[1] >= s && v[2] >= s;
 }
 
-static inline constexpr bool any_negative(FVector3f_a v) {
+static inline constexpr bool any_negative(FVector3f_a v) noexcept {
     return v[0] < 0.f || v[1] < 0.f || v[2] < 0.f;
 }
 
-static inline constexpr bool any_greater_zero(FVector3f_a v) {
+static inline constexpr bool any_greater_zero(FVector3f_a v) noexcept {
     return v[0] > 0.f || v[1] > 0.f || v[2] > 0.f;
 }
 
-static inline constexpr bool any_greater(FVector3f_a v, float s) {
+static inline constexpr bool any_greater(FVector3f_a v, float s) noexcept {
     return v[0] > s || v[1] > s || v[2] > s;
 }
 
-static inline constexpr bool any_greater_equal(FVector3f_a v, float s) {
+static inline constexpr bool any_greater_equal(FVector3f_a v, float s) noexcept {
     return v[0] >= s || v[1] >= s || v[2] >= s;
 }
 
-static inline constexpr bool any_greater_equal(FVector3f_a a, FVector3f_a b) {
+static inline constexpr bool any_greater_equal(FVector3f_a a, FVector3f_a b) noexcept {
     return a[0] >= b[0] || a[1] >= b[1] || a[2] >= b[2];
 }
 
-static inline constexpr bool any_less(FVector3f_a v, float s) {
+static inline constexpr bool any_less(FVector3f_a v, float s) noexcept {
     return v[0] < s || v[1] < s || v[2] < s;
 }
 
-static inline constexpr bool any_less(FVector3f_a a, FVector3f_a b) {
+static inline constexpr bool any_less(FVector3f_a a, FVector3f_a b) noexcept {
     return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
 }
 
-static inline constexpr bool any_less_equal(FVector3f_a v, float s) {
+static inline constexpr bool any_less_equal(FVector3f_a v, float s) noexcept {
     return v[0] <= s || v[1] <= s || v[2] <= s;
 }
 
-static inline bool any_nan(FVector3f_a v) {
+static inline bool any_nan(FVector3f_a v) noexcept {
     return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]);
 }
 
-static inline bool any_inf(FVector3f_a v) {
+static inline bool any_inf(FVector3f_a v) noexcept {
     return std::isinf(v[0]) || std::isinf(v[1]) || std::isinf(v[2]);
 }
 
-static inline bool all_finite(FVector3f_a v) {
+static inline bool all_finite(FVector3f_a v) noexcept {
     return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
 }
 
-static inline bool all_finite_and_positive(FVector3f_a v) {
+static inline bool all_finite_and_positive(FVector3f_a v) noexcept {
     return std::isfinite(v[0]) && v[0] >= 0.f && std::isfinite(v[1]) && v[1] >= 0.f &&
            std::isfinite(v[2]) && v[2] >= 0.f;
 }

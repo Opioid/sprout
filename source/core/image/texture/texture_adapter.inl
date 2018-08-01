@@ -9,25 +9,25 @@
 
 namespace image::texture {
 
-inline Adapter::Adapter() {}
+inline Adapter::Adapter() noexcept {}
 
-inline Adapter::Adapter(std::shared_ptr<Texture> const& texture)
+inline Adapter::Adapter(std::shared_ptr<Texture> const& texture) noexcept
     : texture_(texture), scale_(float2(1.f, 1.f)) {}
 
-inline Adapter::Adapter(std::shared_ptr<Texture> const& texture, float2 scale)
+inline Adapter::Adapter(std::shared_ptr<Texture> const& texture, float2 scale) noexcept
     : texture_(texture), scale_(scale) {}
 
 inline Adapter::~Adapter() {}
 
-inline bool Adapter::operator==(const Adapter& other) const {
+inline bool Adapter::operator==(const Adapter& other) const noexcept {
     return texture_ == other.texture_ && scale_ == other.scale_;
 }
 
-inline bool Adapter::is_valid() const {
+inline bool Adapter::is_valid() const noexcept {
     return !texture_ == false;
 }
 
-inline Texture const& Adapter::texture() const {
+inline Texture const& Adapter::texture() const noexcept {
     return *texture_.get();
 }
 

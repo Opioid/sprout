@@ -13,15 +13,15 @@ class Sampler_2D {
   public:
     virtual ~Sampler_2D() {}
 
-    virtual float  sample_1(Texture const& texture, float2 uv) const = 0;
-    virtual float2 sample_2(Texture const& texture, float2 uv) const = 0;
-    virtual float3 sample_3(Texture const& texture, float2 uv) const = 0;
+    virtual float  sample_1(Texture const& texture, float2 uv) const noexcept = 0;
+    virtual float2 sample_2(Texture const& texture, float2 uv) const noexcept = 0;
+    virtual float3 sample_3(Texture const& texture, float2 uv) const noexcept = 0;
 
-    virtual float  sample_1(Texture const& texture, float2 uv, int32_t element) const = 0;
-    virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element) const = 0;
-    virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element) const = 0;
+    virtual float  sample_1(Texture const& texture, float2 uv, int32_t element) const noexcept = 0;
+    virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element) const noexcept = 0;
+    virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element) const noexcept = 0;
 
-    virtual float2 address(float2 uv) const = 0;
+    virtual float2 address(float2 uv) const noexcept = 0;
 };
 
 }  // namespace sampler

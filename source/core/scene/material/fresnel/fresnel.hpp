@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_FRESNEL_HPP
+#define SU_CORE_SCENE_MATERIAL_FRESNEL_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -24,7 +25,8 @@ class Schlick_blending {
   private:
     float3 const a_;
     float3 const b_;
-    float const  f0_;
+
+    float const f0_;
 };
 
 class Thinfilm {
@@ -70,7 +72,8 @@ class Weighted {
     float3 operator()(float wo_dot_h) const;
 
   private:
-    const T     fresnel_;
+    T const fresnel_;
+
     float const weight_;
 };
 
@@ -79,3 +82,5 @@ using Thinfilm_weighted  = Weighted<Thinfilm>;
 using Conductor_weighted = Weighted<Conductor>;
 
 }  // namespace scene::material::fresnel
+
+#endif

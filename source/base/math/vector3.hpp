@@ -83,27 +83,27 @@ struct alignas(16) Vector3f_a {
     // 4 instead of 3 in order to hide pad warning
     float v[4];
 
-    Vector3f_a() = default;
+    Vector3f_a() noexcept = default;
 
-    constexpr Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
+    constexpr Vector3f_a(float x, float y, float z) noexcept : v{x, y, z, 0.f} {}
 
-    constexpr Vector3f_a(float const* a);
+    constexpr Vector3f_a(float const* a) noexcept;
 
-    explicit constexpr Vector3f_a(float s);
+    explicit constexpr Vector3f_a(float s) noexcept;
 
-    explicit constexpr Vector3f_a(Vector2<float> const xy, float z);
+    explicit constexpr Vector3f_a(Vector2<float> const xy, float z) noexcept;
 
     template <typename T>
-    explicit constexpr Vector3f_a(Vector3<T> const& a);
+    explicit constexpr Vector3f_a(Vector3<T> const& a) noexcept;
 
-    constexpr Vector2<float> xy() const;
+    constexpr Vector2<float> xy() const noexcept;
 
-    constexpr float  operator[](uint32_t i) const;
-    constexpr float& operator[](uint32_t i);
+    constexpr float  operator[](uint32_t i) const noexcept;
+    constexpr float& operator[](uint32_t i) noexcept;
 
-    float absolute_max(uint32_t& i) const;
+    float absolute_max(uint32_t& i) const noexcept;
 
-    static constexpr Vector3f_a identity();
+    static constexpr Vector3f_a identity() noexcept;
 };
 
 }  // namespace math

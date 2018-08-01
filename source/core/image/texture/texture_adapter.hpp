@@ -15,16 +15,16 @@ class Texture;
 
 class Adapter {
   public:
-    Adapter();
-    Adapter(std::shared_ptr<Texture> const& texture);
-    Adapter(std::shared_ptr<Texture> const& texture, float2 scale);
+    Adapter() noexcept;
+    Adapter(std::shared_ptr<Texture> const& texture) noexcept;
+    Adapter(std::shared_ptr<Texture> const& texture, float2 scale) noexcept;
     ~Adapter();
 
-    bool operator==(const Adapter& other) const;
+    bool operator==(const Adapter& other) const noexcept;
 
-    bool is_valid() const;
+    bool is_valid() const noexcept;
 
-    Texture const& texture() const;
+    Texture const& texture() const noexcept;
 
     using Sampler_2D = sampler::Sampler_2D;
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_FRESNEL_INL
+#define SU_CORE_SCENE_MATERIAL_FRESNEL_INL
 
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
@@ -172,3 +173,5 @@ float3 Weighted<T>::operator()(float wo_dot_h) const {
 }
 
 }  // namespace scene::material::fresnel
+
+#endif

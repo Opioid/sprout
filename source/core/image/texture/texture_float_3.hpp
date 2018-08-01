@@ -33,7 +33,7 @@ class Float3 final : public Texture {
     virtual float4 at_4(int32_t x, int32_t y, int32_t z) const override final;
 
   private:
-    const image::Float3& image_;
+    image::Float3 const& image_;
 };
 
 }  // namespace image::texture
