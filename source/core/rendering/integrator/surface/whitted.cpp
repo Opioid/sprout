@@ -16,19 +16,19 @@
 
 namespace rendering::integrator::surface {
 
-Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings)
+Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
     : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
-void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
+void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
     uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
     sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
 }
 
-void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
     sampler_.resume_pixel(sample, scramble);
 }
 
-float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     //	float3 result(0.f);
 
     //	float3 const wo = -ray.direction;
@@ -60,7 +60,7 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) {
     return shade(ray, intersection, worker);
 }
 
-float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& worker) {
+float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept {
     float3 result(0.f);
 
     float3 const wo = -ray.direction;
@@ -82,7 +82,7 @@ float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& 
 }
 
 float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                      const Material_sample& material_sample, Worker& worker) {
+                                      const Material_sample& material_sample, Worker& worker) noexcept {
     float3 result(0.f);
 
     float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -119,22 +119,22 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     return settings_.num_light_samples_reciprocal * result;
 }
 
-size_t Whitted::num_bytes() const {
+size_t Whitted::num_bytes() const noexcept {
     return sizeof(*this) + sampler_.num_bytes();
 }
 
 Whitted_factory::Whitted_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                                 uint32_t num_light_samples)
+                                 uint32_t num_light_samples) noexcept
     : Factory(take_settings), integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {
     settings_.num_light_samples            = num_light_samples;
     settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 }
 
-Whitted_factory::~Whitted_factory() {
+Whitted_factory::~Whitted_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Whitted_factory::create(uint32_t id, rnd::Generator& rng) const {
+Integrator* Whitted_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Whitted(rng, take_settings_, settings_);
 }
 

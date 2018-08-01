@@ -16,24 +16,24 @@ namespace rendering::integrator::photon {
 
 using namespace scene;
 
-Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings)
+Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
     : Integrator(rng, take_settings),
       settings_(settings),
       sampler_(rng),
       photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
 
-Mapper::~Mapper() {
+Mapper::~Mapper() noexcept {
     memory::free_aligned(photons_);
 }
 
-void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) {
+void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) noexcept {
     sampler_.resize(1, 1, 1, 1);
 }
 
-void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
-                      float normalized_tick_slice, Worker& worker) {
+                      float normalized_tick_slice, Worker& worker) noexcept {
     math::AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
                                                          : worker.scene().caustic_aabb();
 
@@ -65,13 +65,13 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tic
     return num_paths;
 }
 
-size_t Mapper::num_bytes() const {
+size_t Mapper::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
 uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tick_slice,
                               math::AABB const& bounds, bool infinite_world, Worker& worker,
-                              uint32_t max_photons, Photon* photons, uint32_t& num_photons) {
+                              uint32_t max_photons, Photon* photons, uint32_t& num_photons) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -213,7 +213,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 
 bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
                                 math::AABB const& bounds, Worker& worker, Ray& ray,
-                                light::Light const** light_out, shape::Sample_from& light_sample) {
+                                light::Light const** light_out, shape::Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);

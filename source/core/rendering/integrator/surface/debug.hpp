@@ -5,7 +5,7 @@
 
 namespace rendering::integrator::surface {
 
-class alignas(64) Debug : public Integrator {
+class alignas(64) Debug final : public Integrator {
   public:
     struct Settings {
         enum class Vector { Tangent, Bitangent, Geometric_normal, Shading_normal, UV };
@@ -13,15 +13,15 @@ class alignas(64) Debug : public Integrator {
         Vector vector;
     };
 
-    Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
+    Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
 
-    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
 
-    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
+    float3 li(Ray& ray, Intersection& intersection, Worker& worker) noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
     Settings settings_;
@@ -29,14 +29,14 @@ class alignas(64) Debug : public Integrator {
     sampler::Random sampler_;
 };
 
-class Debug_factory : public Factory {
+class Debug_factory final : public Factory {
   public:
     Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                  Debug::Settings::Vector vector);
+                  Debug::Settings::Vector vector) noexcept;
 
-    ~Debug_factory();
+    ~Debug_factory() noexcept override final;
 
-    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
+    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Debug* integrators_;

@@ -22,14 +22,14 @@
 
 namespace rendering::integrator::volume {
 
-Tracking_single::Tracking_single(rnd::Generator& rng, take::Settings const& take_settings)
+Tracking_single::Tracking_single(rnd::Generator& rng, take::Settings const& take_settings) noexcept
     : Integrator(rng, take_settings), sampler_(rng) {}
 
-void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
-void Tracking_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Tracking_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
 /*
 static inline void max_probabilities(float mt,
                                                                          float3 const& mu_a,
@@ -112,7 +112,7 @@ const ms = math::average(mu_s * w); float const mn = math::average(mu_n * w); fl
 */
 static inline void avg_history_probabilities(float mt, float3 const& mu_s, float3 const& mu_n,
                                              float3 const& w, float& ps, float& pn, float3& ws,
-                                             float3& wn) {
+                                             float3& wn) noexcept {
     float const ms = math::average(mu_s * w);
     float const mn = math::average(mu_n * w);
     float const c  = 1.f / (ms + mn);
@@ -134,12 +134,12 @@ math::average(mu_s * w); float const mn = math::average(mu_n * w); float const c
         wn = (mu_n / (mt * pn));
 }
 */
-bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
+bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& transmittance) noexcept {
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
 bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
-                                Worker& worker, float3& li, float3& transmittance) {
+                                Worker& worker, float3& li, float3& transmittance) noexcept {
     bool const hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
     if (!hit) {
         li            = float3(0.f);
@@ -253,12 +253,12 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_fi
     return true;
 }
 
-size_t Tracking_single::num_bytes() const {
+size_t Tracking_single::num_bytes() const noexcept {
     return sizeof(*this) + sampler_.num_bytes();
 }
 
 float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
-                                     Intersection const& intersection, Worker& worker) {
+                                     Intersection const& intersection, Worker& worker) noexcept {
     float3 result = float3::identity();
 
     Ray shadow_ray;
@@ -295,15 +295,15 @@ float3 Tracking_single::direct_light(Ray const& ray, f_float3 position,
 }
 
 Tracking_single_factory::Tracking_single_factory(take::Settings const& take_settings,
-                                                 uint32_t              num_integrators)
+                                                 uint32_t              num_integrators) noexcept
     : Factory(take_settings, num_integrators),
       integrators_(memory::allocate_aligned<Tracking_single>(num_integrators)) {}
 
-Tracking_single_factory::~Tracking_single_factory() {
+Tracking_single_factory::~Tracking_single_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Tracking_single_factory::create(uint32_t id, rnd::Generator& rng) const {
+Integrator* Tracking_single_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Tracking_single(rng, take_settings_);
 }
 

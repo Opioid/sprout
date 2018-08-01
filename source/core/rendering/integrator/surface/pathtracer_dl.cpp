@@ -19,18 +19,18 @@
 namespace rendering::integrator::surface {
 
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
-                             Settings const& settings)
+                             Settings const& settings) noexcept
     : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
-void Pathtracer_DL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+void Pathtracer_DL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
-void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
     sampler_.resume_pixel(sample, scramble);
 }
 
-float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     Sampler_filter filter = Sampler_filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -130,7 +130,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
                                    const Material_sample& material_sample, Sampler_filter filter,
-                                   Worker& worker) {
+                                   Worker& worker) noexcept {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -170,7 +170,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     return settings_.num_light_samples_reciprocal * result;
 }
 
-size_t Pathtracer_DL::num_bytes() const {
+size_t Pathtracer_DL::num_bytes() const noexcept {
     return sizeof(*this) + sampler_.num_bytes();
 }
 
@@ -178,7 +178,7 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings
                                              uint32_t num_integrators, uint32_t min_bounces,
                                              uint32_t max_bounces,
                                              float    path_termination_probability,
-                                             uint32_t num_light_samples, bool enable_caustics)
+                                             uint32_t num_light_samples, bool enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_DL>(num_integrators)) {
     settings_.min_bounces                   = min_bounces;
@@ -189,11 +189,11 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings
     settings_.avoid_caustics                = !enable_caustics;
 }
 
-Pathtracer_DL_factory::~Pathtracer_DL_factory() {
+Pathtracer_DL_factory::~Pathtracer_DL_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Pathtracer_DL_factory::create(uint32_t id, rnd::Generator& rng) const {
+Integrator* Pathtracer_DL_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Pathtracer_DL(rng, take_settings_, settings_);
 }
 

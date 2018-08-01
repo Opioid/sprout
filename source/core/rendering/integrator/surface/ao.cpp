@@ -11,18 +11,18 @@
 
 namespace rendering::integrator::surface {
 
-AO::AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings)
+AO::AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
     : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
-void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 
-void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
     sampler_.resume_pixel(sample, scramble);
 }
 
-float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     float result = 0.f;
 
     Ray occlusion_ray;
@@ -52,23 +52,23 @@ float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
     return float3(result);
 }
 
-size_t AO::num_bytes() const {
+size_t AO::num_bytes() const noexcept {
     return sizeof(*this) + sampler_.num_bytes();
 }
 
 AO_factory::AO_factory(take::Settings const& settings, uint32_t num_integrators,
-                       uint32_t num_samples, float radius)
+                       uint32_t num_samples, float radius) noexcept
     : Factory(settings), integrators_(memory::allocate_aligned<AO>(num_integrators)) {
     settings_.num_samples            = num_samples;
     settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
     settings_.radius                 = radius;
 }
 
-AO_factory::~AO_factory() {
+AO_factory::~AO_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* AO_factory::create(uint32_t id, rnd::Generator& rng) const {
+Integrator* AO_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) AO(rng, take_settings_, settings_);
 }
 

@@ -20,12 +20,12 @@
 
 namespace rendering::integrator::volume {
 
-Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings)
+Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings) noexcept
     : Integrator(rng, take_settings) {}
 
-void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
 
-void Tracking_multi::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Tracking_multi::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
 /*
 static inline void max_probabilities(float mt,
                                                                          float3 const& mu_a,
@@ -120,12 +120,12 @@ const& mu_s, float3 const& mu_n, float3 const& w, float& ps, float& pn, float3& 
         wn = (mu_n / (mt * pn));
 }
 */
-bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
+bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& transmittance) noexcept {
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
 bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
-                               Worker& worker, float3& li, float3& transmittance) {
+                               Worker& worker, float3& li, float3& transmittance) noexcept {
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li            = float3(0.f);
         transmittance = float3(1.f);
@@ -471,20 +471,20 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
     }
 }
 
-size_t Tracking_multi::num_bytes() const {
+size_t Tracking_multi::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
 Tracking_multi_factory::Tracking_multi_factory(take::Settings const& take_settings,
-                                               uint32_t              num_integrators)
+                                               uint32_t              num_integrators) noexcept
     : Factory(take_settings, num_integrators),
       integrators_(memory::allocate_aligned<Tracking_multi>(num_integrators)) {}
 
-Tracking_multi_factory::~Tracking_multi_factory() {
+Tracking_multi_factory::~Tracking_multi_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Tracking_multi_factory::create(uint32_t id, rnd::Generator& rng) const {
+Integrator* Tracking_multi_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Tracking_multi(rng, take_settings_);
 }
 

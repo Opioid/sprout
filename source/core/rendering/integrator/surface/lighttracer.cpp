@@ -19,15 +19,15 @@
 namespace rendering::integrator::surface {
 
 Lighttracer::Lighttracer(rnd::Generator& rng, take::Settings const& take_settings,
-                         Settings const& settings)
+                         Settings const& settings) noexcept
     : Integrator(rng, take_settings),
       settings_(settings),
       sampler_(rng),
       material_samplers_{rng, rng, rng} {}
 
-Lighttracer::~Lighttracer() {}
+Lighttracer::~Lighttracer() noexcept {}
 
-void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     for (auto& s : material_samplers_) {
@@ -35,7 +35,7 @@ void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel
     }
 }
 
-void Lighttracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+void Lighttracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
     sampler_.resume_pixel(sample, scramble);
 
     for (auto& s : material_samplers_) {
@@ -43,7 +43,7 @@ void Lighttracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
     }
 }
 
-float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     Sampler_filter filter = Sampler_filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -118,7 +118,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
     return result;
 }
 
-bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) {
+bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) noexcept {
     Scene const& scene = worker.scene();
 
     float const select = sampler_.generate_sample_1D(1);
@@ -143,7 +143,7 @@ bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float
 
 float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersection,
                                  const Material_sample& material_sample, Sampler_filter filter,
-                                 Worker& worker) {
+                                 Worker& worker) noexcept {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -180,7 +180,7 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
     return result;
 }
 
-sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
+sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
     if (Num_material_samplers > bounce) {
         return material_samplers_[bounce];
     }
@@ -188,7 +188,7 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
     return sampler_;
 }
 
-size_t Lighttracer::num_bytes() const {
+size_t Lighttracer::num_bytes() const noexcept {
     size_t sampler_bytes = 0;
 
     for (auto& s : material_samplers_) {
@@ -200,20 +200,20 @@ size_t Lighttracer::num_bytes() const {
 
 Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          uint32_t num_integrators, uint32_t min_bounces,
-                                         uint32_t max_bounces, float path_termination_probability)
+                                         uint32_t max_bounces, float path_termination_probability) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces, 1.f - path_termination_probability} {}
 
-Lighttracer_factory::~Lighttracer_factory() {
+Lighttracer_factory::~Lighttracer_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Lighttracer_factory::create(uint32_t id, rnd::Generator& rng) const {
+Integrator* Lighttracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Lighttracer(rng, take_settings_, settings_);
 }
 
-uint32_t Lighttracer_factory::max_sample_depth() const {
+uint32_t Lighttracer_factory::max_sample_depth() const noexcept {
     return 2;
 }
 

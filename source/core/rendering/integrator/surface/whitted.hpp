@@ -18,21 +18,21 @@ class alignas(64) Whitted final : public Integrator {
         float    num_light_samples_reciprocal;
     };
 
-    Whitted(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
+    Whitted(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
 
-    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
 
-    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
+    float3 li(Ray& ray, Intersection& intersection, Worker& worker) noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
-    float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker);
+    float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept;
 
     float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                 const Material_sample& material_sample, Worker& worker);
+                                 const Material_sample& material_sample, Worker& worker) noexcept;
 
     const Settings settings_;
 
@@ -42,11 +42,11 @@ class alignas(64) Whitted final : public Integrator {
 class Whitted_factory final : public Factory {
   public:
     Whitted_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                    uint32_t num_light_samples);
+                    uint32_t num_light_samples) noexcept;
 
-    ~Whitted_factory();
+    ~Whitted_factory() noexcept override final;
 
-    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const;
+    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Whitted* integrators_;

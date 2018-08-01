@@ -15,26 +15,26 @@ class alignas(64) Lighttracer final : public Integrator {
         float    path_continuation_probability;
     };
 
-    Lighttracer(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
+    Lighttracer(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
 
-    virtual ~Lighttracer() override final;
+    ~Lighttracer() noexcept override final;
 
-    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
 
-    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
+    float3 li(Ray& ray, Intersection& intersection, Worker& worker) noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
-    bool generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance);
+    bool generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) noexcept;
 
     float3 direct_light(Ray const& ray, Intersection const& intersection,
                         const Material_sample& material_sample, Sampler_filter filter,
-                        Worker& worker);
+                        Worker& worker) noexcept;
 
-    sampler::Sampler& material_sampler(uint32_t bounce);
+    sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 
     const Settings settings_;
 
@@ -48,13 +48,13 @@ class Lighttracer_factory final : public Factory {
   public:
     Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
                         uint32_t min_bounces, uint32_t max_bounces,
-                        float path_termination_probability);
+                        float path_termination_probability) noexcept;
 
-    virtual ~Lighttracer_factory() override final;
+    ~Lighttracer_factory() noexcept override final;
 
-    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
+    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
-    virtual uint32_t max_sample_depth() const override final;
+    uint32_t max_sample_depth() const noexcept override final;
 
   private:
     Lighttracer* integrators_;

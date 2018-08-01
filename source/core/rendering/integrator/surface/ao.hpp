@@ -20,15 +20,15 @@ class alignas(64) AO final : public Integrator {
         float    radius;
     };
 
-    AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
+    AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
 
-    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
 
-    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
+    float3 li(Ray& ray, Intersection& intersection, Worker& worker) noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
     const Settings settings_;
@@ -39,11 +39,11 @@ class alignas(64) AO final : public Integrator {
 class AO_factory final : public Factory {
   public:
     AO_factory(take::Settings const& settings, uint32_t num_integrators, uint32_t num_samples,
-               float radius);
+               float radius) noexcept;
 
-    ~AO_factory();
+    ~AO_factory() noexcept override final;
 
-    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const;
+    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     AO* integrators_;

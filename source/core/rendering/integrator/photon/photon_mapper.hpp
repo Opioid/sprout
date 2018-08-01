@@ -35,27 +35,28 @@ class Mapper : public Integrator {
         bool full_light_path;
     };
 
-    Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings);
-    virtual ~Mapper() override;
+    Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
 
-    virtual void prepare(Scene const& scene, uint32_t num_photons) override final;
+    ~Mapper() noexcept override;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
+    void prepare(Scene const& scene, uint32_t num_photons) noexcept override final;
+
+    void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
 
     uint32_t bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
-                  float normalized_tick_slice, Worker& worker);
+                  float normalized_tick_slice, Worker& worker) noexcept;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
     uint32_t trace_photon(float normalized_tick_offset, float normalized_tick_slice,
                           math::AABB const& bounds, bool infinite_world, Worker& worker,
-                          uint32_t max_photons, Photon* photons, uint32_t& num_photons);
+                          uint32_t max_photons, Photon* photons, uint32_t& num_photons) noexcept;
 
     bool generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
                             math::AABB const& bounds, Worker& worker, Ray& ray,
                             scene::light::Light const** light,
-                            scene::shape::Sample_from&  light_sample);
+                            scene::shape::Sample_from&  light_sample) noexcept;
 
     const Settings settings_;
 

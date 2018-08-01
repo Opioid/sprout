@@ -65,17 +65,19 @@ class Integrator {
     using Prop            = scene::prop::Prop;
     using Intersection    = scene::prop::Intersection;
 
-    Integrator(rnd::Generator& rng, take::Settings const& settings);
-    virtual ~Integrator();
+    Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept;
 
-    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) = 0;
+    virtual ~Integrator() noexcept;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) = 0;
+    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept = 0;
 
-    virtual size_t num_bytes() const = 0;
+    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept = 0;
+
+    virtual size_t num_bytes() const noexcept = 0;
 
   protected:
     rnd::Generator&      rng_;
+
     take::Settings const take_settings_;
 };
 

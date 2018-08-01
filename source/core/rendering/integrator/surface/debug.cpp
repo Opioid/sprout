@@ -10,14 +10,14 @@
 
 namespace rendering::integrator::surface {
 
-Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings)
+Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
     : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
-void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
 
-void Debug::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Debug::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
 
-float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
+float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     float3 vector;
 
     switch (settings_.vector) {
@@ -47,27 +47,26 @@ float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
             break;
         default:
             return float3(0.f);
-            break;
     }
 
     return float3(0.5f * (vector + float3(1.f)));
 }
 
-size_t Debug::num_bytes() const {
+size_t Debug::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
 Debug_factory::Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                             Debug::Settings::Vector vector)
+                             Debug::Settings::Vector vector) noexcept
     : Factory(take_settings), integrators_(memory::allocate_aligned<Debug>(num_integrators)) {
     settings_.vector = vector;
 }
 
-Debug_factory::~Debug_factory() {
+Debug_factory::~Debug_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Debug_factory::create(uint32_t id, rnd::Generator& rng) const {
+Integrator* Debug_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Debug(rng, take_settings_, settings_);
 }
 
