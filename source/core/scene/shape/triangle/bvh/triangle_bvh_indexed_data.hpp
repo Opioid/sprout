@@ -93,8 +93,10 @@ class Indexed_data {
     uint32_t num_vertices_;
 
     Index_triangle* triangles_;
-    float3*         intersection_vertices_;
-    SV*             shading_vertices_;
+
+    float3* intersection_vertices_;
+
+    SV* shading_vertices_;
 };
 
 template <typename V>
@@ -103,6 +105,7 @@ class Indexed_data_interleaved {
     using Vertices = std::vector<Vertex>;
 
     Indexed_data_interleaved();
+
     ~Indexed_data_interleaved();
 
     uint32_t num_triangles() const;
@@ -150,7 +153,8 @@ class Indexed_data_interleaved {
     };
 
     Index_triangle* triangles_;
-    V*              vertices_;
+
+    V* vertices_;
 };
 
 template <typename IV, typename SV>
@@ -220,8 +224,10 @@ class Hybrid_data {
     uint32_t num_shading_vertices_;
 
     Index_triangle* triangles_;
-    IV*             intersection_vertices_;
-    SV*             shading_vertices_;
+
+    IV* intersection_vertices_;
+
+    SV* shading_vertices_;
 };
 
 }  // namespace bvh
