@@ -47,9 +47,9 @@ class Pathtracer_DL_factory final : public Factory {
                           float path_termination_probability, uint32_t num_light_samples,
                           bool enable_caustics) noexcept;
 
-   ~Pathtracer_DL_factory() noexcept override final;
+    ~Pathtracer_DL_factory() noexcept override final;
 
-   Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Pathtracer_DL* integrators_;

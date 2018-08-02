@@ -10,21 +10,19 @@
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio(rnd::Generator& rng)
+Golden_ratio::Golden_ratio(rnd::Generator& rng) noexcept
     : Sampler(rng), samples_2D_(nullptr), samples_1D_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
     memory::free_aligned(samples_2D_);
 }
 
-void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
-    sample.pixel    = pixel;
-    sample.pixel_uv = samples_2D_[index];
-    sample.lens_uv  = samples_2D_[num_samples_ + index];
-    sample.time     = samples_1D_[index];
+Camera_sample Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
+    return Camera_sample{pixel, samples_2D_[index], samples_2D_[num_samples_ + index],
+                         samples_1D_[index]};
 }
 
-float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
+float2 Golden_ratio::generate_sample_2D(uint32_t dimension) noexcept {
     SOFT_ASSERT(current_sample_2D_[dimension] < num_samples_);
 
     uint32_t const current = current_sample_2D_[dimension]++;
@@ -32,7 +30,7 @@ float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
     return samples_2D_[dimension * num_samples_ + current];
 }
 
-float Golden_ratio::generate_sample_1D(uint32_t dimension) {
+float Golden_ratio::generate_sample_1D(uint32_t dimension) noexcept {
     SOFT_ASSERT(current_sample_1D_[dimension] < num_samples_);
 
     uint32_t const current = current_sample_1D_[dimension]++;
@@ -40,12 +38,12 @@ float Golden_ratio::generate_sample_1D(uint32_t dimension) {
     return samples_1D_[dimension * num_samples_ + current];
 }
 
-size_t Golden_ratio::num_bytes() const {
+size_t Golden_ratio::num_bytes() const noexcept {
     return num_samples_ * num_dimensions_2D_ * sizeof(float2) +
            num_samples_ * num_dimensions_1D_ * sizeof(float);
 }
 
-void Golden_ratio::on_resize() {
+void Golden_ratio::on_resize() noexcept {
     memory::free_aligned(samples_2D_);
 
     float* buffer = memory::allocate_aligned<float>(num_samples_ * 2 * num_dimensions_2D_ +
@@ -55,7 +53,7 @@ void Golden_ratio::on_resize() {
     samples_1D_ = buffer + num_samples_ * 2 * num_dimensions_2D_;
 }
 
-void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
+void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) noexcept {
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
         float2 const r(scramble.random_float(), scramble.random_float());
 

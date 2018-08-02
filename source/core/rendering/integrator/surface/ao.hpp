@@ -1,7 +1,6 @@
 #ifndef SU_CORE_RENDERING_INTEGRATRO_SURFACE_AO_HPP
 #define SU_CORE_RENDERING_INTEGRATRO_SURFACE_AO_HPP
 
-#include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "surface_integrator.hpp"
 // #include "sampler/sampler_halton.hpp"

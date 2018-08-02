@@ -15,22 +15,23 @@
 
 namespace scene::shape {
 
-Sphere::Sphere() {
+Sphere::Sphere() noexcept {
     aabb_.set_min_max(float3(-1.f), float3(1.f));
     inv_extent_ = 1.f / aabb_.extent();
 }
 
-math::AABB Sphere::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const {
+math::AABB Sphere::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const
+    noexcept {
     return transformed_aabb(t);
 }
 
-math::AABB Sphere::transformed_aabb(math::Transformation const& t) const {
+math::AABB Sphere::transformed_aabb(math::Transformation const& t) const noexcept {
     float3 const halfsize(t.scale[0]);
     return math::AABB(t.position - halfsize, t.position + halfsize);
 }
 
 bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       Intersection& intersection) const {
+                       Intersection& intersection) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -115,7 +116,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 }
 
 bool Sphere::intersect_fast(Ray& ray, Transformation const&           transformation,
-                            Node_stack& /*node_stack*/, Intersection& intersection) const {
+                            Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -178,7 +179,7 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
 }
 
 bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       float& epsilon) const {
+                       float& epsilon) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -207,7 +208,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 }
 
 bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
-                         Node_stack& /*node_stack*/) const {
+                         Node_stack& /*node_stack*/) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -232,8 +233,8 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Sphere::opacity(Ray const& ray, Transformation const& transformation,
-                      Materials const& materials, Sampler_filter filter,
-                      Worker const& worker) const {
+                      Materials const& materials, Sampler_filter filter, Worker const& worker) const
+    noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -275,7 +276,7 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation,
 
 float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformation,
                                Materials const& materials, Sampler_filter filter,
-                               Worker const& worker) const {
+                               Worker const& worker) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -317,15 +318,16 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
 
 bool Sphere::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
                     float area, bool two_sided, sampler::Sampler& sampler,
-                    uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const {
+                    uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const
+    noexcept {
     return Sphere::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                           node_stack, sample);
 }
 
 bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transformation,
                     float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
-                    uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
-                    Sample_to& sample) const {
+                    uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
+    noexcept {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius              = transformation.scale[0];
@@ -365,7 +367,7 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transf
 bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                     bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
                     math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                    Sample_from& sample) const {
+                    Sample_from& sample) const noexcept {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float3 const ls = math::sample_sphere_uniform(r0);
 
@@ -387,7 +389,7 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
 
 float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
                   Transformation const& transformation, float /*area*/, bool /*two_sided*/,
-                  bool /*total_sphere*/) const {
+                  bool /*total_sphere*/) const noexcept {
     float3 const axis                = transformation.position - ray.origin;
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius_square       = transformation.scale[0] * transformation.scale[0];
@@ -399,7 +401,7 @@ float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*inters
 }
 
 bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation const& transformation,
-                    float area, bool /*two_sided*/, Sample_to& sample) const {
+                    float area, bool /*two_sided*/, Sample_to& sample) const noexcept {
     float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
     float theta = uv[1] * math::Pi;
 
@@ -438,13 +440,13 @@ bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation con
 bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                     float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                     uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                    Sample_from& /*sample*/) const {
+                    Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
 float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersection,
-                     Transformation const& /*transformation*/, float area,
-                     bool /*two_sided*/) const {
+                     Transformation const& /*transformation*/, float area, bool /*two_sided*/) const
+    noexcept {
     //	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
     //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     //	uv[1] =  std::acos(xyz[1]) * math::Pi_inv;
@@ -459,7 +461,7 @@ float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersectio
     return sl / (c * area * sin_theta);
 }
 
-float Sphere::uv_weight(float2 uv) const {
+float Sphere::uv_weight(float2 uv) const noexcept {
     float const sin_theta = std::sin(uv[1] * math::Pi);
 
     if (0.f == sin_theta) {
@@ -470,11 +472,11 @@ float Sphere::uv_weight(float2 uv) const {
     return 1.f / sin_theta;
 }
 
-float Sphere::area(uint32_t /*part*/, f_float3 scale) const {
+float Sphere::area(uint32_t /*part*/, f_float3 scale) const noexcept {
     return (4.f * math::Pi) * (scale[0] * scale[0]);
 }
 
-size_t Sphere::num_bytes() const {
+size_t Sphere::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

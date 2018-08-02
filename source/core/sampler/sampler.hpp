@@ -13,30 +13,31 @@ struct Camera_sample;
 
 class Sampler {
   public:
-    Sampler(rnd::Generator& rng);
-    virtual ~Sampler();
+    Sampler(rnd::Generator& rng) noexcept;
+
+    virtual ~Sampler() noexcept;
 
     void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
+                uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) noexcept;
 
-    void resume_pixel(uint32_t iteration, rnd::Generator& scramble);
+    void resume_pixel(uint32_t iteration, rnd::Generator& scramble) noexcept;
 
-    rnd::Generator& rng();
+    rnd::Generator& rng() noexcept;
 
-    uint32_t num_samples() const;
+    uint32_t num_samples() const noexcept;
 
-    virtual void generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) = 0;
+    virtual Camera_sample generate_camera_sample(int2 pixel, uint32_t index) noexcept = 0;
 
-    virtual float2 generate_sample_2D(uint32_t dimension = 0) = 0;
+    virtual float2 generate_sample_2D(uint32_t dimension = 0) noexcept = 0;
 
-    virtual float generate_sample_1D(uint32_t dimension = 0) = 0;
+    virtual float generate_sample_1D(uint32_t dimension = 0) noexcept = 0;
 
-    virtual size_t num_bytes() const = 0;
+    virtual size_t num_bytes() const noexcept = 0;
 
   protected:
-    virtual void on_resize() = 0;
+    virtual void on_resize() noexcept = 0;
 
-    virtual void on_resume_pixel(rnd::Generator& scramble) = 0;
+    virtual void on_resume_pixel(rnd::Generator& scramble) noexcept = 0;
 
     rnd::Generator& rng_;
 

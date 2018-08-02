@@ -55,7 +55,8 @@ class Gridtree {
 
     CM* allocate_data(uint32_t num_data) noexcept;
 
-    void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions, int3 const& num_cells) noexcept;
+    void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions,
+                        int3 const& num_cells) noexcept;
 
     bool is_valid() const noexcept;
 

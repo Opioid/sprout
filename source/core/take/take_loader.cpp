@@ -39,7 +39,6 @@
 #include "rendering/sensor/transparent.hpp"
 #include "rendering/sensor/unfiltered.inl"
 #include "resource/resource_manager.inl"
-#include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_hammersley.hpp"
 #include "sampler/sampler_ld.hpp"
@@ -357,8 +356,6 @@ std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(json::Value const
             return std::make_shared<sampler::Random_factory>(num_workers);
         } else if ("Hammersley" == n.name) {
             return std::make_shared<sampler::Hammersley_factory>(num_workers);
-        } else if ("EMS" == n.name) {
-            return std::make_shared<sampler::EMS_factory>(num_workers);
         } else if ("Golden_ratio" == n.name) {
             return std::make_shared<sampler::Golden_ratio_factory>(num_workers);
         } else if ("LD" == n.name) {

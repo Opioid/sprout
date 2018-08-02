@@ -178,7 +178,8 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings
                                              uint32_t num_integrators, uint32_t min_bounces,
                                              uint32_t max_bounces,
                                              float    path_termination_probability,
-                                             uint32_t num_light_samples, bool enable_caustics) noexcept
+                                             uint32_t num_light_samples,
+                                             bool     enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_DL>(num_integrators)) {
     settings_.min_bounces                   = min_bounces;

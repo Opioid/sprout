@@ -15,7 +15,8 @@ Emission::Emission(rnd::Generator& rng, take::Settings const& take_settings,
                    Settings const& settings) noexcept
     : Integrator(rng, take_settings), settings_(settings) {}
 
-void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
+void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {
+}
 
 void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
 

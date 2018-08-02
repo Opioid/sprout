@@ -14,7 +14,7 @@ namespace rendering {
 
 void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 const& tile,
                            uint32_t sample_begin, uint32_t sample_end, float normalized_tick_offset,
-                           float normalized_tick_slice) {
+                           float normalized_tick_slice) noexcept {
     auto& sensor = camera.sensor();
 
     int4 bounds = camera.view_bounds(view);
@@ -25,9 +25,6 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 co
         int4(bounds.xy() + tile.xy(), bounds.xy() + tile.zw()));
     isolated_bounds[2] -= isolated_bounds[0];
     isolated_bounds[3] -= isolated_bounds[1];
-
-    sampler::Camera_sample sample;
-    scene::Ray             ray;
 
     // Actually, we just need a unique number (>= #workers) per tile here.
     // Maybe we can come up with a more elegant solution sometime...
@@ -43,11 +40,11 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 co
             int2 const pixel(x, y);
 
             for (uint32_t i = sample_begin; i < sample_end; ++i) {
-                sampler_->generate_camera_sample(pixel, i, sample);
+                sampler::Camera_sample sample = sampler_->generate_camera_sample(pixel, i);
 
                 sample.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
-                if (camera.generate_ray(sample, view, ray)) {
+                if (scene::Ray ray; camera.generate_ray(sample, view, ray)) {
                     const float4 color = li(ray, camera.interface_stack());
                     sensor.add_sample(sample, color, isolated_bounds, bounds);
                 } else {

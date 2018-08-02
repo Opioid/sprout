@@ -76,7 +76,7 @@ class Integrator {
     virtual size_t num_bytes() const noexcept = 0;
 
   protected:
-    rnd::Generator&      rng_;
+    rnd::Generator& rng_;
 
     take::Settings const take_settings_;
 };

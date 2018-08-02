@@ -134,7 +134,8 @@ math::average(mu_s * w); float const mn = math::average(mu_n * w); float const c
         wn = (mu_n / (mt * pn));
 }
 */
-bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& transmittance) noexcept {
+bool Tracking_single::transmittance(Ray const& ray, Worker& worker,
+                                    float3& transmittance) noexcept {
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 

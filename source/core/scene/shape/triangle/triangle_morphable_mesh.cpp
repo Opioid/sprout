@@ -18,22 +18,23 @@
 namespace scene::shape::triangle {
 
 Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection,
-                               uint32_t                                 num_parts)
+                               uint32_t                                 num_parts) noexcept
     : collection_(collection) {
     tree_.allocate_parts(num_parts);
     vertices_.resize(collection_->vertices(0).size());
 }
 
-void Morphable_mesh::init() {
+void Morphable_mesh::init() noexcept {
     aabb_ = tree_.aabb();
 }
 
-uint32_t Morphable_mesh::num_parts() const {
+uint32_t Morphable_mesh::num_parts() const noexcept {
     return tree_.num_parts();
 }
 
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack, shape::Intersection& intersection) const {
+                               Node_stack& node_stack, shape::Intersection& intersection) const
+    noexcept {
     math::Ray tray;
     tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -79,8 +80,8 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 }
 
 bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformation,
-                                    Node_stack&          node_stack,
-                                    shape::Intersection& intersection) const {
+                                    Node_stack& node_stack, shape::Intersection& intersection) const
+    noexcept {
     math::Ray tray;
     tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -116,7 +117,7 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
 }
 
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack, float& epsilon) const {
+                               Node_stack& node_stack, float& epsilon) const noexcept {
     math::Ray tray;
     tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -133,7 +134,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 }
 
 bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transformation,
-                                 Node_stack& node_stack) const {
+                                 Node_stack& node_stack) const noexcept {
     math::Ray tray;
     tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -145,7 +146,7 @@ bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transform
 
 float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformation,
                               Materials const& materials, Sampler_filter filter,
-                              Worker const& worker) const {
+                              Worker const& worker) const noexcept {
     math::Ray tray;
     tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -157,7 +158,7 @@ float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformati
 
 float3 Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
                                        Materials const& materials, Sampler_filter filter,
-                                       Worker const& worker) const {
+                                       Worker const& worker) const noexcept {
     math::Ray tray;
     tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -171,7 +172,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 /*n*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                            Sample_to& /*sample*/) const {
+                            Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
@@ -179,26 +180,26 @@ bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                            Sample_to& /*sample*/) const {
+                            Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
                             float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                            Node_stack& /*node_stack*/, Sample_from& /*sample*/) const {
+                            Node_stack& /*node_stack*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
 float Morphable_mesh::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
                           Transformation const& /*transformation*/, float /*area*/,
-                          bool /*two_sided*/, bool /*total_sphere*/) const {
+                          bool /*two_sided*/, bool /*total_sphere*/) const noexcept {
     return 0.f;
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, Sample_to& /*sample*/) const {
+                            bool /*two_sided*/, Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
@@ -206,39 +207,39 @@ bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                            Sample_from& /*sample*/) const {
+                            Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
 float Morphable_mesh::pdf_uv(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
                              Transformation const& /*transformation*/, float /*area*/,
-                             bool /*two_sided*/) const {
+                             bool /*two_sided*/) const noexcept {
     return 0.f;
 }
 
-float Morphable_mesh::uv_weight(float2 /*uv*/) const {
+float Morphable_mesh::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Morphable_mesh::area(uint32_t /*part*/, f_float3 /*scale*/) const {
+float Morphable_mesh::area(uint32_t /*part*/, f_float3 /*scale*/) const noexcept {
     return 1.f;
 }
 
-bool Morphable_mesh::is_complex() const {
+bool Morphable_mesh::is_complex() const noexcept {
     return true;
 }
 
-bool Morphable_mesh::is_analytical() const {
+bool Morphable_mesh::is_analytical() const noexcept {
     return false;
 }
 
-void Morphable_mesh::prepare_sampling(uint32_t /*part*/) {}
+void Morphable_mesh::prepare_sampling(uint32_t /*part*/) noexcept {}
 
-Morphable_shape* Morphable_mesh::morphable_shape() {
+Morphable_shape* Morphable_mesh::morphable_shape() noexcept {
     return this;
 }
 
-void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) {
+void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) noexcept {
     collection_->morph(a, b, weight, pool, vertices_);
 
     bvh::Builder_SAH builder(16, 64);
@@ -247,7 +248,7 @@ void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& p
     init();
 }
 
-size_t Morphable_mesh::num_bytes() const {
+size_t Morphable_mesh::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

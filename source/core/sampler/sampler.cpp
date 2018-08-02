@@ -4,7 +4,7 @@
 
 namespace sampler {
 
-Sampler::Sampler(rnd::Generator& rng)
+Sampler::Sampler(rnd::Generator& rng) noexcept
     : rng_(rng),
       num_samples_(0),
       num_samples_per_iteration_(0),
@@ -13,12 +13,12 @@ Sampler::Sampler(rnd::Generator& rng)
       current_sample_2D_(nullptr),
       current_sample_1D_(nullptr) {}
 
-Sampler::~Sampler() {
+Sampler::~Sampler() noexcept {
     memory::free_aligned(current_sample_2D_);
 }
 
 void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                     uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) {
+                     uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) noexcept {
     uint32_t const num_samples = num_iterations * num_samples_per_iteration;
 
     if (num_samples != num_samples_ || num_samples_per_iteration != num_samples_per_iteration_ ||
@@ -39,7 +39,7 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
     }
 }
 
-void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) {
+void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) noexcept {
     uint32_t const sample = iteration * num_samples_per_iteration_;
 
     for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
@@ -49,11 +49,11 @@ void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) {
     on_resume_pixel(scramble);
 }
 
-rnd::Generator& Sampler::rng() {
+rnd::Generator& Sampler::rng() noexcept {
     return rng_;
 }
 
-uint32_t Sampler::num_samples() const {
+uint32_t Sampler::num_samples() const noexcept {
     return num_samples_;
 }
 

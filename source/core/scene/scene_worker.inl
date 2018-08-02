@@ -6,7 +6,7 @@
 namespace scene {
 
 template <typename T>
-T& Worker::sample(uint32_t depth) const {
+T& Worker::sample(uint32_t depth) const noexcept {
     return sample_cache_.get<T>(depth);
 }
 

@@ -10,7 +10,8 @@
 
 namespace rendering::integrator::surface {
 
-Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
+Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings,
+             Settings const& settings) noexcept
     : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
 void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}

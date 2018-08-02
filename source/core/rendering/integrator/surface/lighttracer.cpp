@@ -118,7 +118,8 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker) noe
     return result;
 }
 
-bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) noexcept {
+bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray,
+                                     float3& radiance) noexcept {
     Scene const& scene = worker.scene();
 
     float const select = sampler_.generate_sample_1D(1);
@@ -200,7 +201,8 @@ size_t Lighttracer::num_bytes() const noexcept {
 
 Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          uint32_t num_integrators, uint32_t min_bounces,
-                                         uint32_t max_bounces, float path_termination_probability) noexcept
+                                         uint32_t max_bounces,
+                                         float    path_termination_probability) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces, 1.f - path_termination_probability} {}

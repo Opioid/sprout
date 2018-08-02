@@ -29,37 +29,39 @@ class Worker {
     using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
     using Intersection       = prop::Intersection;
 
-    Worker();
-    ~Worker();
+    Worker() noexcept;
+
+    ~Worker() noexcept;
 
     void init(uint32_t id, take::Settings const& settings, Scene const& scene,
-              uint32_t max_material_sample_size, uint32_t max_material_sample_depth);
+              uint32_t max_material_sample_size, uint32_t max_material_sample_depth) noexcept;
 
-    uint32_t id() const;
+    uint32_t id() const noexcept;
 
-    bool intersect(Ray& ray, Intersection& intersection) const;
-    bool intersect(Ray& ray, float& epsilon) const;
+    bool intersect(Ray& ray, Intersection& intersection) const noexcept;
+    bool intersect(Ray& ray, float& epsilon) const noexcept;
 
-    bool resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter);
+    bool resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter) noexcept;
 
-    bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter);
+    bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
+                                    Sampler_filter filter) noexcept;
 
-    bool visibility(Ray const& ray) const;
+    bool visibility(Ray const& ray) const noexcept;
 
-    bool masked_visibility(Ray const& ray, Sampler_filter filter, float& mv) const;
+    bool masked_visibility(Ray const& ray, Sampler_filter filter, float& mv) const noexcept;
 
-    Scene const& scene() const;
+    Scene const& scene() const noexcept;
 
-    shape::Node_stack& node_stack() const;
+    shape::Node_stack& node_stack() const noexcept;
 
-    material::Sample_cache& sample_cache() const;
+    material::Sample_cache& sample_cache() const noexcept;
 
     template <typename T>
-    T& sample(uint32_t depth) const;
+    T& sample(uint32_t depth) const noexcept;
 
-    Texture_sampler_2D const& sampler_2D(uint32_t key, Sampler_filter filter) const;
+    Texture_sampler_2D const& sampler_2D(uint32_t key, Sampler_filter filter) const noexcept;
 
-    Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const;
+    Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const noexcept;
 
   private:
     uint32_t id_;

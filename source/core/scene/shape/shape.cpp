@@ -5,29 +5,30 @@
 
 namespace scene::shape {
 
-Shape::~Shape() {}
+Shape::~Shape() noexcept {}
 
-math::AABB const& Shape::aabb() const {
+math::AABB const& Shape::aabb() const noexcept {
     return aabb_;
 }
 
-float3 Shape::object_to_texture_point(f_float3 p) const {
+float3 Shape::object_to_texture_point(f_float3 p) const noexcept {
     return (p - aabb_.bounds[0]) * inv_extent_;
 }
 
-float3 Shape::object_to_texture_vector(f_float3 v) const {
+float3 Shape::object_to_texture_vector(f_float3 v) const noexcept {
     return v * inv_extent_;
 }
 
-math::AABB Shape::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const {
+math::AABB Shape::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const
+    noexcept {
     return aabb_.transform(m);
 }
 
-math::AABB Shape::transformed_aabb(math::Transformation const& t) const {
+math::AABB Shape::transformed_aabb(math::Transformation const& t) const noexcept {
     return transformed_aabb(float4x4(t), t);
 }
 
-uint32_t Shape::num_parts() const {
+uint32_t Shape::num_parts() const noexcept {
     return 1;
 }
 
@@ -38,21 +39,21 @@ uint32_t Shape::num_parts() const {
 //	return false;
 //}
 
-bool Shape::is_complex() const {
+bool Shape::is_complex() const noexcept {
     return false;
 }
 
-bool Shape::is_finite() const {
+bool Shape::is_finite() const noexcept {
     return true;
 }
 
-bool Shape::is_analytical() const {
+bool Shape::is_analytical() const noexcept {
     return true;
 }
 
-void Shape::prepare_sampling(uint32_t /*part*/) {}
+void Shape::prepare_sampling(uint32_t /*part*/) noexcept {}
 
-Morphable_shape* Shape::morphable_shape() {
+Morphable_shape* Shape::morphable_shape() noexcept {
     return nullptr;
 }
 

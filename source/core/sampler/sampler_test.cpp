@@ -6,7 +6,6 @@
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
 #include "image/typed_image.inl"
-#include "sampler_ems.hpp"
 #include "sampler_golden_ratio.hpp"
 #include "sampler_hammersley.hpp"
 #include "sampler_random.hpp"

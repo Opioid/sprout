@@ -16,7 +16,8 @@ namespace rendering::integrator::photon {
 
 using namespace scene;
 
-Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
+Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings,
+               Settings const& settings) noexcept
     : Integrator(rng, take_settings),
       settings_(settings),
       sampler_(rng),
@@ -71,7 +72,8 @@ size_t Mapper::num_bytes() const noexcept {
 
 uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tick_slice,
                               math::AABB const& bounds, bool infinite_world, Worker& worker,
-                              uint32_t max_photons, Photon* photons, uint32_t& num_photons) noexcept {
+                              uint32_t max_photons, Photon* photons,
+                              uint32_t& num_photons) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -213,7 +215,8 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 
 bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
                                 math::AABB const& bounds, Worker& worker, Ray& ray,
-                                light::Light const** light_out, shape::Sample_from& light_sample) noexcept {
+                                light::Light const** light_out,
+                                shape::Sample_from&  light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);

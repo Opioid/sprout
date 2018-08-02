@@ -12,17 +12,18 @@
 
 namespace scene::shape {
 
-Rectangle::Rectangle() {
+Rectangle::Rectangle() noexcept {
     aabb_.set_min_max(float3(-1.f, -1.f, -0.1f), float3(1.f, 1.f, 0.1f));
 }
 
 bool Rectangle::intersect(Ray& ray, Transformation const&           transformation,
-                          Node_stack& /*node_stack*/, Intersection& intersection) const {
+                          Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     f_float3 normal = transformation.rotation.r[2];
-    float    d      = math::dot(normal, transformation.position);
-    float    denom  = -math::dot(normal, ray.direction);
-    float    numer  = math::dot(normal, ray.origin) - d;
-    float    hit_t  = numer / denom;
+
+    float d     = math::dot(normal, transformation.position);
+    float denom = -math::dot(normal, ray.direction);
+    float numer = math::dot(normal, ray.origin) - d;
+    float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
@@ -62,7 +63,8 @@ bool Rectangle::intersect(Ray& ray, Transformation const&           transformati
 }
 
 bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transformation,
-                               Node_stack& /*node_stack*/, Intersection& intersection) const {
+                               Node_stack& /*node_stack*/, Intersection& intersection) const
+    noexcept {
     f_float3 normal = transformation.rotation.r[2];
     float    d      = math::dot(normal, transformation.position);
     float    denom  = -math::dot(normal, ray.direction);
@@ -104,7 +106,7 @@ bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transfo
 }
 
 bool Rectangle::intersect(Ray& ray, Transformation const&    transformation,
-                          Node_stack& /*node_stack*/, float& epsilon) const {
+                          Node_stack& /*node_stack*/, float& epsilon) const noexcept {
     f_float3 normal = transformation.rotation.r[2];
     float    d      = math::dot(normal, transformation.position);
     float    denom  = -math::dot(normal, ray.direction);
@@ -138,7 +140,7 @@ bool Rectangle::intersect(Ray& ray, Transformation const&    transformation,
 }
 
 bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation,
-                            Node_stack& /*node_stack*/) const {
+                            Node_stack& /*node_stack*/) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
     float         d      = math::dot(normal, transformation.position);
     float         denom  = -math::dot(normal, ray.direction);
@@ -171,7 +173,7 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation
 
 float Rectangle::opacity(Ray const& ray, Transformation const& transformation,
                          Materials const& materials, Sampler_filter filter,
-                         Worker const& worker) const {
+                         Worker const& worker) const noexcept {
     f_float3 normal = transformation.rotation.r[2];
     float    d      = math::dot(normal, transformation.position);
     float    denom  = -math::dot(normal, ray.direction);
@@ -205,7 +207,7 @@ float Rectangle::opacity(Ray const& ray, Transformation const& transformation,
 
 float3 Rectangle::thin_absorption(Ray const& ray, Transformation const& transformation,
                                   Materials const& materials, Sampler_filter filter,
-                                  Worker const& worker) const {
+                                  Worker const& worker) const noexcept {
     f_float3 normal = transformation.rotation.r[2];
     float    d      = math::dot(normal, transformation.position);
     float    denom  = -math::dot(normal, ray.direction);
@@ -240,7 +242,7 @@ float3 Rectangle::thin_absorption(Ray const& ray, Transformation const& transfor
 bool Rectangle::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
                        Transformation const& transformation, float area, bool two_sided,
                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-                       Node_stack& node_stack, Sample_to& sample) const {
+                       Node_stack& node_stack, Sample_to& sample) const noexcept {
     return Rectangle::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                              node_stack, sample);
 }
@@ -248,7 +250,7 @@ bool Rectangle::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
 bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& transformation,
                        float area, bool two_sided, sampler::Sampler& sampler,
                        uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
-                       Sample_to& sample) const {
+                       Sample_to& sample) const noexcept {
     float2 r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 xy = 2.f * r2 - float2(1.f);
 
@@ -286,7 +288,7 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, Transformation const& tran
 bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                        bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
                        math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                       Sample_from& sample) const {
+                       Sample_from& sample) const noexcept {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = 2.f * r0 - float2(1.f);
 
@@ -309,7 +311,7 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
 
 float Rectangle::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
                      Transformation const& transformation, float area, bool two_sided,
-                     bool /*total_sphere*/) const {
+                     bool /*total_sphere*/) const noexcept {
     f_float3 normal = transformation.rotation.r[2];
 
     float c = -math::dot(normal, ray.direction);
@@ -324,7 +326,7 @@ float Rectangle::pdf(Ray const&            ray, const shape::Intersection& /*int
 
 bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
                        Transformation const& transformation, float area, bool two_sided,
-                       Sample_to& sample) const {
+                       Sample_to& sample) const noexcept {
     float3 ls(-2.f * uv[0] + 1.f, -2.f * uv[1] + 1.f, 0.f);
     float3 ws = math::transform_point(transformation.object_to_world, ls);
 
@@ -358,24 +360,25 @@ bool Rectangle::sample(uint32_t /*part*/, f_float3 p, float2 uv,
 bool Rectangle::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                        float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                        uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                       Sample_from& /*sample*/) const {
+                       Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
 float Rectangle::pdf_uv(Ray const& ray, Intersection const& intersection,
-                        Transformation const& transformation, float area, bool two_sided) const {
+                        Transformation const& transformation, float area, bool two_sided) const
+    noexcept {
     return pdf(ray, intersection, transformation, area, two_sided, false);
 }
 
-float Rectangle::uv_weight(float2 /*uv*/) const {
+float Rectangle::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Rectangle::area(uint32_t /*part*/, f_float3 scale) const {
+float Rectangle::area(uint32_t /*part*/, f_float3 scale) const noexcept {
     return 4.f * scale[0] * scale[1];
 }
 
-size_t Rectangle::num_bytes() const {
+size_t Rectangle::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

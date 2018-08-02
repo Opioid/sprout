@@ -3,7 +3,6 @@
 #include "base/math/print.hpp"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
-#include "sampler/sampler_constant.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/material/disney/disney.inl"
 #include "scene/material/ggx/ggx.inl"

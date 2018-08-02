@@ -6,32 +6,29 @@
 
 namespace sampler {
 
-Uniform::Uniform(rnd::Generator& rng) : Sampler(rng) {}
+Uniform::Uniform(rnd::Generator& rng) noexcept : Sampler(rng) {}
 
-void Uniform::generate_camera_sample(int2 pixel, uint32_t /*index*/, Camera_sample& sample) {
-    float2 s2d(0.5f, 0.5f);
+Camera_sample Uniform::generate_camera_sample(int2 pixel, uint32_t /*index*/) noexcept {
+    float2 const s2d(0.5f, 0.5f);
 
-    sample.pixel    = pixel;
-    sample.pixel_uv = s2d;
-    sample.lens_uv  = s2d.yx();
-    sample.time     = rng_.random_float();
+    return Camera_sample{pixel, s2d, s2d.yx(), rng_.random_float()};
 }
 
-float2 Uniform::generate_sample_2D(uint32_t /*dimension*/) {
+float2 Uniform::generate_sample_2D(uint32_t /*dimension*/) noexcept {
     return float2(rng_.random_float(), rng_.random_float());
 }
 
-float Uniform::generate_sample_1D(uint32_t /*dimension*/) {
+float Uniform::generate_sample_1D(uint32_t /*dimension*/) noexcept {
     return rng_.random_float();
 }
 
-size_t Uniform::num_bytes() const {
+size_t Uniform::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Uniform::on_resize() {}
+void Uniform::on_resize() noexcept {}
 
-void Uniform::on_resume_pixel(rnd::Generator& /*scramble*/) {}
+void Uniform::on_resume_pixel(rnd::Generator& /*scramble*/) noexcept {}
 
 Uniform_factory::Uniform_factory(uint32_t num_samplers)
     : Factory(num_samplers), samplers_(memory::allocate_aligned<Uniform>(num_samplers)) {}

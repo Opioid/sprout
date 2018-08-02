@@ -16,7 +16,8 @@
 
 namespace rendering::integrator::surface {
 
-Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
+Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings,
+                 Settings const& settings) noexcept
     : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
 void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
@@ -82,7 +83,8 @@ float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& 
 }
 
 float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                      const Material_sample& material_sample, Worker& worker) noexcept {
+                                      const Material_sample& material_sample,
+                                      Worker&                worker) noexcept {
     float3 result(0.f);
 
     float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;

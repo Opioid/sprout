@@ -17,7 +17,8 @@ class alignas(64) Pathtracer final : public Integrator {
         bool avoid_caustics;
     };
 
-    Pathtracer(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
+    Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
+               Settings const& settings) noexcept;
 
     ~Pathtracer() noexcept override final;
 

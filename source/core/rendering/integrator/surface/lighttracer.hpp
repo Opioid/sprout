@@ -15,7 +15,8 @@ class alignas(64) Lighttracer final : public Integrator {
         float    path_continuation_probability;
     };
 
-    Lighttracer(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
+    Lighttracer(rnd::Generator& rng, take::Settings const& take_settings,
+                Settings const& settings) noexcept;
 
     ~Lighttracer() noexcept override final;
 

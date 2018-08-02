@@ -32,7 +32,7 @@ class Prop : public entity::Entity {
     using Sampler_filter = material::Sampler_settings::Filter;
     using Shape_ptr      = std::shared_ptr<shape::Shape>;
 
-    virtual ~Prop() override;
+    ~Prop() override;
 
     void morph(thread::Pool& pool);
 
@@ -56,7 +56,7 @@ class Prop : public entity::Entity {
 
     void set_shape_and_materials(Shape_ptr const& shape, Materials const& materials);
 
-    virtual void set_parameters(json::Value const& parameters) override;
+    void set_parameters(json::Value const& parameters) override;
 
     void prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
                           thread::Pool& pool);
@@ -83,7 +83,7 @@ class Prop : public entity::Entity {
 
     bool visible(uint32_t ray_depth) const;
 
-    virtual void on_set_transformation() override final;
+    void on_set_transformation() override final;
 
     // Pre-transformed AABB in world space.
     // For moving objects it must cover the entire area occupied by the object during the tick.

@@ -7,32 +7,29 @@
 
 namespace sampler {
 
-Hammersley::Hammersley(rnd::Generator& rng) : Sampler(rng) {}
+Hammersley::Hammersley(rnd::Generator& rng) noexcept : Sampler(rng) {}
 
-void Hammersley::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
+Camera_sample Hammersley::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
     float2 s2d = math::hammersley(index, num_samples_, scramble_);
 
-    sample.pixel    = pixel;
-    sample.pixel_uv = s2d;
-    sample.lens_uv  = s2d.yx();
-    sample.time     = rng_.random_float();
+    return Camera_sample{pixel, s2d, s2d.yx(), rng_.random_float()};
 }
 
-float2 Hammersley::generate_sample_2D(uint32_t /*dimension*/) {
+float2 Hammersley::generate_sample_2D(uint32_t /*dimension*/) noexcept {
     return math::hammersley(current_sample_2D_[0]++, num_samples_, scramble_);
 }
 
-float Hammersley::generate_sample_1D(uint32_t /*dimension*/) {
+float Hammersley::generate_sample_1D(uint32_t /*dimension*/) noexcept {
     return rng_.random_float();
 }
 
-size_t Hammersley::num_bytes() const {
+size_t Hammersley::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Hammersley::on_resize() {}
+void Hammersley::on_resize() noexcept {}
 
-void Hammersley::on_resume_pixel(rnd::Generator& scramble) {
+void Hammersley::on_resume_pixel(rnd::Generator& scramble) noexcept {
     scramble_ = scramble.random_uint();
 }
 

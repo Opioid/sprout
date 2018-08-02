@@ -45,43 +45,44 @@ class Worker : public scene::Worker {
   public:
     using Ray = scene::Ray;
 
-    ~Worker();
+    ~Worker() noexcept;
 
     void init(uint32_t id, take::Settings const& settings, scene::Scene const& scene,
               uint32_t max_material_sample_size, uint32_t num_samples_per_pixel,
               integrator::surface::Factory& surface_integrator_factory,
               integrator::volume::Factory&  volume_integrator_factory,
               sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
-              take::Photon_settings const& photon_settings_);
+              take::Photon_settings const& photon_settings_) noexcept;
 
-    float4 li(Ray& ray, const scene::prop::Interface_stack& interface_stack);
+    float4 li(Ray& ray, const scene::prop::Interface_stack& interface_stack) noexcept;
 
     using Material_sample = scene::material::Sample;
 
     bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter, float3& li,
-                float3& transmittance);
+                float3& transmittance) noexcept;
 
     bool transmitted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
-                                float3& tv);
+                                float3& tv) noexcept;
 
-    sampler::Sampler* sampler();
+    sampler::Sampler* sampler() noexcept;
 
-    scene::prop::Interface_stack& interface_stack();
+    scene::prop::Interface_stack& interface_stack() noexcept;
 
-    void interface_change(f_float3 dir, Intersection const& intersection);
+    void interface_change(f_float3 dir, Intersection const& intersection) noexcept;
 
     uint32_t bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
-                          float normalized_tick_slice);
+                          float normalized_tick_slice) noexcept;
 
-    float3 photon_li(Intersection const& intersection, Material_sample const& sample) const;
+    float3 photon_li(Intersection const& intersection, Material_sample const& sample) const
+        noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   protected:
-    bool transmittance(Ray const& ray, float3& transmittance);
+    bool transmittance(Ray const& ray, float3& transmittance) noexcept;
 
     bool tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
-                           float3& tv);
+                           float3& tv) noexcept;
 
     integrator::surface::Integrator* surface_integrator_ = nullptr;
     integrator::volume::Integrator*  volume_integrator_  = nullptr;
