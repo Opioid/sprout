@@ -13,6 +13,7 @@ namespace integrator::surface {
 class Integrator : public integrator::Integrator {
   public:
     Integrator(rnd::Generator& rng, take::Settings const& settings);
+
     virtual ~Integrator();
 
     virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) = 0;
@@ -21,6 +22,7 @@ class Integrator : public integrator::Integrator {
 class Factory {
   public:
     Factory(take::Settings const& settings);
+
     virtual ~Factory();
 
     virtual Integrator* create(uint32_t id, rnd::Generator& rng) const = 0;
