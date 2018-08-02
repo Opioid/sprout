@@ -11,7 +11,7 @@
 
 namespace scene::camera {
 
-Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution)
+Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) noexcept
     : Stereoscopic(int2(resolution[0], resolution[0])) {
     float const f = static_cast<float>(resolution[0]);
 
@@ -57,24 +57,24 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution)
     set_interpupillary_distance_falloff(0.36f);
 }
 
-uint32_t Cubic_stereoscopic::num_views() const {
+uint32_t Cubic_stereoscopic::num_views() const noexcept {
     return 12;
 }
 
-int2 Cubic_stereoscopic::sensor_dimensions() const {
+int2 Cubic_stereoscopic::sensor_dimensions() const noexcept {
     return sensor_dimensions_;
 }
 
-int4 Cubic_stereoscopic::view_bounds(uint32_t view) const {
+int4 Cubic_stereoscopic::view_bounds(uint32_t view) const noexcept {
     return view_bounds_[view];
 }
 
-float Cubic_stereoscopic::pixel_solid_angle() const {
+float Cubic_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
 bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t view,
-                                      scene::Ray& ray) const {
+                                      scene::Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -104,13 +104,13 @@ bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint
     return true;
 }
 
-void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) {
+void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) noexcept {
     ipd_falloff_ = std::sqrt(ipd_falloff);
 }
 
-void Cubic_stereoscopic::on_update(Worker& /*worker*/) {}
+void Cubic_stereoscopic::on_update(Worker& /*worker*/) noexcept {}
 
-void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
+void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("stereo" == name) {
         for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
             std::string const  node_name  = n->name.GetString();

@@ -9,10 +9,9 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
-namespace scene {
-namespace camera {
+namespace scene::camera {
 
-Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) : Stereoscopic(resolution) {
+Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) noexcept : Stereoscopic(resolution) {
     set_fov(90.f);
 
     view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
@@ -20,24 +19,24 @@ Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) : Stereoscop
                            int2(resolution[0] * 2, resolution[1]) - int2(1));
 }
 
-uint32_t Perspective_stereoscopic::num_views() const {
+uint32_t Perspective_stereoscopic::num_views() const noexcept {
     return 2;
 }
 
-int2 Perspective_stereoscopic::sensor_dimensions() const {
+int2 Perspective_stereoscopic::sensor_dimensions() const noexcept {
     return int2(resolution_[0] * 2, resolution_[1]);
 }
 
-int4 Perspective_stereoscopic::view_bounds(uint32_t view) const {
+int4 Perspective_stereoscopic::view_bounds(uint32_t view) const noexcept {
     return view_bounds_[view];
 }
 
-float Perspective_stereoscopic::pixel_solid_angle() const {
+float Perspective_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
 bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t view,
-                                            scene::Ray& ray) const {
+                                            scene::Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -53,7 +52,7 @@ bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample
     return true;
 }
 
-void Perspective_stereoscopic::set_fov(float fov) {
+void Perspective_stereoscopic::set_fov(float fov) noexcept {
     float2 fr(resolution_);
     float  ratio = fr[0] / fr[1];
 
@@ -67,9 +66,9 @@ void Perspective_stereoscopic::set_fov(float fov) {
     d_y_ = (left_bottom - left_top_) / fr[1];
 }
 
-void Perspective_stereoscopic::on_update(Worker& /*worker*/) {}
+void Perspective_stereoscopic::on_update(Worker& /*worker*/) noexcept {}
 
-void Perspective_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
+void Perspective_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("fov" == name) {
         set_fov(math::degrees_to_radians(json::read_float(value)));
     } else if ("stereo" == name) {
@@ -78,4 +77,3 @@ void Perspective_stereoscopic::set_parameter(std::string_view name, json::Value 
 }
 
 }  // namespace camera
-}  // namespace scene

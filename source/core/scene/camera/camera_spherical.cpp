@@ -10,30 +10,30 @@
 
 namespace scene::camera {
 
-Spherical::Spherical(int2 resolution) : Camera(resolution) {
+Spherical::Spherical(int2 resolution) noexcept : Camera(resolution) {
     float2 fr(resolution);
     d_x_ = 1.f / fr[0];
     d_y_ = 1.f / fr[1];
 }
 
-uint32_t Spherical::num_views() const {
+uint32_t Spherical::num_views() const noexcept {
     return 1;
 }
 
-int2 Spherical::sensor_dimensions() const {
+int2 Spherical::sensor_dimensions() const noexcept {
     return resolution_;
 }
 
-int4 Spherical::view_bounds(uint32_t /*view*/) const {
+int4 Spherical::view_bounds(uint32_t /*view*/) const noexcept {
     return int4(int2(0, 0), resolution_ - int2(1, 1));
 }
 
-float Spherical::pixel_solid_angle() const {
+float Spherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Spherical::generate_ray(sampler::Camera_sample const& sample, uint32_t /*view*/,
-                             scene::Ray&                   ray) const {
+bool Spherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
+                             Ray&                   ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];
@@ -49,7 +49,7 @@ bool Spherical::generate_ray(sampler::Camera_sample const& sample, uint32_t /*vi
 
     float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    entity::Composed_transformation temp;
+    Transformation temp;
     auto&                           transformation = transformation_at(sample.time, temp);
 
     ray = create_ray(transformation.position, math::transform_vector(transformation.rotation, dir),
@@ -58,8 +58,8 @@ bool Spherical::generate_ray(sampler::Camera_sample const& sample, uint32_t /*vi
     return true;
 }
 
-void Spherical::on_update(Worker& /*worker*/) {}
+void Spherical::on_update(Worker& /*worker*/) noexcept {}
 
-void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
+void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
 
 }  // namespace scene::camera

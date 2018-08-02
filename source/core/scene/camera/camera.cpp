@@ -15,11 +15,11 @@
 
 namespace scene::camera {
 
-Camera::Camera(int2 resolution) : resolution_(resolution) {}
+Camera::Camera(int2 resolution) noexcept : resolution_(resolution) {}
 
-Camera::~Camera() {}
+Camera::~Camera() noexcept {}
 
-void Camera::update(Scene const& scene, Worker& worker) {
+void Camera::update(Scene const& scene, Worker& worker) noexcept {
     calculate_world_transformation();
 
     interface_stack_.clear();
@@ -53,7 +53,7 @@ void Camera::update(Scene const& scene, Worker& worker) {
     on_update(worker);
 }
 
-void Camera::set_parameters(json::Value const& parameters) {
+void Camera::set_parameters(json::Value const& parameters) noexcept {
     for (auto& n : parameters.GetObject()) {
         if ("frame_duration" == n.name) {
             frame_duration_ = json::read_float(n.value);
@@ -72,41 +72,41 @@ void Camera::set_parameters(json::Value const& parameters) {
     }
 }
 
-int2 Camera::resolution() const {
+int2 Camera::resolution() const noexcept {
     return resolution_;
 }
 
-rendering::sensor::Sensor& Camera::sensor() const {
+rendering::sensor::Sensor& Camera::sensor() const noexcept {
     return *sensor_;
 }
 
-void Camera::set_sensor(std::unique_ptr<Sensor> sensor) {
+void Camera::set_sensor(std::unique_ptr<Sensor> sensor) noexcept {
     sensor_ = std::move(sensor);
 }
 
-prop::Interface_stack const& Camera::interface_stack() const {
+prop::Interface_stack const& Camera::interface_stack() const noexcept {
     return interface_stack_;
 }
 
-float Camera::frame_duration() const {
+float Camera::frame_duration() const noexcept {
     return frame_duration_;
 }
 
-void Camera::set_frame_duration(float frame_duration) {
+void Camera::set_frame_duration(float frame_duration) noexcept {
     frame_duration_ = frame_duration;
 }
 
-bool Camera::motion_blur() const {
+bool Camera::motion_blur() const noexcept {
     return motion_blur_;
 }
 
-void Camera::set_motion_blur(bool motion_blur) {
+void Camera::set_motion_blur(bool motion_blur) noexcept {
     motion_blur_ = motion_blur;
 }
 
-void Camera::on_set_transformation() {}
+void Camera::on_set_transformation() noexcept {}
 
-Ray Camera::create_ray(f_float3 origin, f_float3 direction, float time) {
+Ray Camera::create_ray(f_float3 origin, f_float3 direction, float time) noexcept {
     return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);
 }
 

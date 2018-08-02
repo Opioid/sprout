@@ -9,23 +9,23 @@ class Cubic : public Camera {
   public:
     enum class Layout { xmxymyzmz, xmxy_myzmz };
 
-    Cubic(Layout layout, int2 resolution);
+    Cubic(Layout layout, int2 resolution) noexcept;
 
-    virtual uint32_t num_views() const override final;
+    uint32_t num_views() const noexcept override final;
 
-    virtual int2 sensor_dimensions() const override final;
+    int2 sensor_dimensions() const noexcept override final;
 
-    virtual int4 view_bounds(uint32_t view) const override final;
+    int4 view_bounds(uint32_t view) const noexcept override final;
 
-    virtual float pixel_solid_angle() const override final;
+    float pixel_solid_angle() const noexcept override final;
 
-    virtual bool generate_ray(sampler::Camera_sample const& sample, uint32_t view,
-                              scene::Ray& ray) const override final;
+    bool generate_ray(Camera_sample const& sample, uint32_t view,
+                              Ray& ray) const noexcept override final;
 
   private:
-    virtual void on_update(Worker& worker) override final;
+    void on_update(Worker& worker) noexcept override final;
 
-    virtual void set_parameter(std::string_view name, json::Value const& value) override final;
+    void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
 
     float3 left_top_;
     float3 d_x_;

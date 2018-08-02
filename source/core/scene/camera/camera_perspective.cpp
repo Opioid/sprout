@@ -14,26 +14,26 @@
 
 namespace scene::camera {
 
-Perspective::Perspective(int2 resolution)
+Perspective::Perspective(int2 resolution) noexcept
     : Camera(resolution), fov_(math::degrees_to_radians(60.f)) {}
 
-uint32_t Perspective::num_views() const {
+uint32_t Perspective::num_views() const noexcept {
     return 1;
 }
 
-int2 Perspective::sensor_dimensions() const {
+int2 Perspective::sensor_dimensions() const noexcept {
     return resolution_;
 }
 
-int4 Perspective::view_bounds(uint32_t /*view*/) const {
+int4 Perspective::view_bounds(uint32_t /*view*/) const noexcept {
     return int4(int2(0, 0), resolution_ - int2(1));
 }
 
-float Perspective::pixel_solid_angle() const {
+float Perspective::pixel_solid_angle() const noexcept {
     return fov_ / static_cast<float>(resolution_[0]);
 }
 
-bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray& ray) const {
+bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -66,11 +66,11 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/, R
     return true;
 }
 
-void Perspective::set_fov(float fov) {
+void Perspective::set_fov(float fov) noexcept {
     fov_ = fov;
 }
 
-void Perspective::set_lens(const Lens& lens) {
+void Perspective::set_lens(Lens const& lens) noexcept {
     float const a = math::degrees_to_radians(lens.angle);
     float const c = std::cos(a);
     float const s = std::sin(a);
@@ -85,7 +85,7 @@ void Perspective::set_lens(const Lens& lens) {
     lens_radius_ = lens.radius;
 }
 
-void Perspective::set_focus(const Focus& focus) {
+void Perspective::set_focus(Focus const& focus) noexcept {
     focus_ = focus;
 
     focus_.point[0] *= static_cast<float>(resolution_[0]);
@@ -94,7 +94,7 @@ void Perspective::set_focus(const Focus& focus) {
     focus_distance_ = focus_.distance;
 }
 
-void Perspective::on_update(Worker& worker) {
+void Perspective::on_update(Worker& worker) noexcept {
     float2 const fr(resolution_);
     float const  ratio = fr[0] / fr[1];
 
@@ -119,7 +119,7 @@ void Perspective::on_update(Worker& worker) {
     update_focus(worker);
 }
 
-void Perspective::update_focus(Worker& worker) {
+void Perspective::update_focus(Worker& worker) noexcept {
     if (focus_.use_point && lens_radius_ > 0.f) {
         float3 direction = left_top_ + focus_.point[0] * d_x_ + focus_.point[1] * d_y_;
         direction        = math::normalize(direction);
@@ -140,7 +140,7 @@ void Perspective::update_focus(Worker& worker) {
     }
 }
 
-void Perspective::set_parameter(std::string_view name, json::Value const& value) {
+void Perspective::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("fov" == name) {
         set_fov(math::degrees_to_radians(json::read_float(value)));
     } else if ("lens" == name) {
@@ -154,7 +154,7 @@ void Perspective::set_parameter(std::string_view name, json::Value const& value)
     }
 }
 
-void Perspective::load_lens(json::Value const& lens_value, Lens& lens) {
+void Perspective::load_lens(json::Value const& lens_value, Lens& lens) noexcept {
     for (auto const& n : lens_value.GetObject()) {
         if ("angle" == n.name) {
             lens.angle = json::read_float(n.value);
@@ -168,7 +168,7 @@ void Perspective::load_lens(json::Value const& lens_value, Lens& lens) {
     }
 }
 
-void Perspective::load_focus(json::Value const& focus_value, Focus& focus) {
+void Perspective::load_focus(json::Value const& focus_value, Focus& focus) noexcept {
     focus.use_point = false;
 
     for (auto const& n : focus_value.GetObject()) {

@@ -10,7 +10,7 @@
 
 namespace scene::camera {
 
-Cubic::Cubic(Layout layout, int2 resolution) : Camera(int2(resolution[0], resolution[1])) {
+Cubic::Cubic(Layout layout, int2 resolution) noexcept : Camera(int2(resolution[0], resolution[1])) {
     float f = static_cast<float>(resolution[0]);
 
     left_top_ = float3(-1.f, 1.f, 1.f);
@@ -22,7 +22,7 @@ Cubic::Cubic(Layout layout, int2 resolution) : Camera(int2(resolution[0], resolu
     d_y_ = (left_bottom - left_top_) / f;
 
     if (Layout::xmxymyzmz == layout) {
-        for (uint32_t i = 0; i < 6; ++i) {
+        for (int32_t i = 0; i < 6; ++i) {
             int2 offset = int2(resolution[0] * i, 0);
 
             view_bounds_[i] = int4{offset, offset + resolution_};
@@ -59,24 +59,24 @@ Cubic::Cubic(Layout layout, int2 resolution) : Camera(int2(resolution[0], resolu
     math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 }
 
-uint32_t Cubic::num_views() const {
+uint32_t Cubic::num_views() const noexcept {
     return 6;
 }
 
-int2 Cubic::sensor_dimensions() const {
+int2 Cubic::sensor_dimensions() const noexcept {
     return sensor_dimensions_;
 }
 
-int4 Cubic::view_bounds(uint32_t view) const {
+int4 Cubic::view_bounds(uint32_t view) const noexcept {
     return view_bounds_[view];
 }
 
-float Cubic::pixel_solid_angle() const {
+float Cubic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic::generate_ray(sampler::Camera_sample const& sample, uint32_t view,
-                         scene::Ray& ray) const {
+bool Cubic::generate_ray(Camera_sample const& sample, uint32_t view,
+                         Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -93,8 +93,8 @@ bool Cubic::generate_ray(sampler::Camera_sample const& sample, uint32_t view,
     return true;
 }
 
-void Cubic::on_update(Worker& /*worker*/) {}
+void Cubic::on_update(Worker& /*worker*/) noexcept {}
 
-void Cubic::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
+void Cubic::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
 
 }  // namespace scene::camera

@@ -22,21 +22,21 @@ namespace rendering {
 class Driver_finalframe : public Driver {
   public:
     Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-                      uint32_t max_sample_size);
+                      uint32_t max_sample_size) noexcept;
 
     using Exporters = std::vector<std::unique_ptr<exporting::Sink>>;
 
-    void render(Exporters& exporters, progress::Sink& progressor);
+    void render(Exporters& exporters, progress::Sink& progressor) noexcept;
 
   private:
     void render_subframe(float normalized_tick_offset, float normalized_tick_slice,
-                         float normalized_frame_slice, progress::Sink& progressor);
+                         float normalized_frame_slice, progress::Sink& progressor) noexcept;
 
-    void bake_photons(float normalized_tick_offset, float normalized_tick_slice);
+    void bake_photons(float normalized_tick_offset, float normalized_tick_slice) noexcept;
 
     static uint32_t calculate_progress_range(Scene const& scene, Camera const& camera,
                                              uint32_t num_tiles,
-                                             uint32_t num_samples_per_iteration);
+                                             uint32_t num_samples_per_iteration) noexcept;
 
     uint32_t current_sample_;
 

@@ -21,35 +21,35 @@ class Perspective : public Camera {
         bool use_point = false;
     };
 
-    Perspective(int2 resolution);
+    Perspective(int2 resolution) noexcept;
 
-    virtual uint32_t num_views() const override final;
+    uint32_t num_views() const noexcept override final;
 
-    virtual int2 sensor_dimensions() const override final;
+    int2 sensor_dimensions() const noexcept override final;
 
-    virtual int4 view_bounds(uint32_t view) const override final;
+    int4 view_bounds(uint32_t view) const noexcept override final;
 
-    virtual float pixel_solid_angle() const override final;
+    float pixel_solid_angle() const noexcept override final;
 
-    virtual bool generate_ray(Camera_sample const& sample, uint32_t view,
-                              Ray& ray) const override final;
+    bool generate_ray(Camera_sample const& sample, uint32_t view,
+                              Ray& ray) const noexcept override final;
 
-    void set_fov(float fov);
+    void set_fov(float fov) noexcept;
 
-    void set_lens(const Lens& lens);
+    void set_lens(Lens const& lens) noexcept;
 
-    void set_focus(const Focus& focus);
+    void set_focus(Focus const& focus) noexcept;
 
   private:
-    virtual void on_update(Worker& worker) override final;
+    void on_update(Worker& worker) noexcept override final;
 
-    void update_focus(Worker& worker);
+    void update_focus(Worker& worker) noexcept;
 
-    virtual void set_parameter(std::string_view name, json::Value const& value) override final;
+    void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
 
-    static void load_lens(json::Value const& lens_value, Lens& lens);
+    void load_lens(json::Value const& lens_value, Lens& lens) noexcept;
 
-    static void load_focus(json::Value const& focus_value, Focus& focus);
+    void load_focus(json::Value const& focus_value, Focus& focus) noexcept;
 
     float3 left_top_;
     float3 d_x_;

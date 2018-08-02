@@ -14,7 +14,7 @@
 
 namespace scene::camera {
 
-Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) : Stereoscopic(resolution) {
+Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) noexcept : Stereoscopic(resolution) {
     float2 const fr(resolution);
     d_x_ = 1.f / fr[0];
     d_y_ = 1.f / fr[1];
@@ -24,24 +24,24 @@ Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) : Stereoscopic(r
                            int2(resolution[0], resolution[1] * 2) - int2(1));
 }
 
-uint32_t Spherical_stereoscopic::num_views() const {
+uint32_t Spherical_stereoscopic::num_views() const noexcept {
     return 2;
 }
 
-int2 Spherical_stereoscopic::sensor_dimensions() const {
+int2 Spherical_stereoscopic::sensor_dimensions() const noexcept {
     return view_bounds_[1].zw();
 }
 
-int4 Spherical_stereoscopic::view_bounds(uint32_t view) const {
+int4 Spherical_stereoscopic::view_bounds(uint32_t view) const noexcept {
     return view_bounds_[view];
 }
 
-float Spherical_stereoscopic::pixel_solid_angle() const {
+float Spherical_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Spherical_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t view,
-                                          scene::Ray& ray) const {
+bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t view,
+                                          Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float const x = d_x_ * coordinates[0];
@@ -70,9 +70,9 @@ bool Spherical_stereoscopic::generate_ray(sampler::Camera_sample const& sample, 
     return true;
 }
 
-void Spherical_stereoscopic::on_update(Worker& /*worker*/) {}
+void Spherical_stereoscopic::on_update(Worker& /*worker*/) noexcept {}
 
-void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
+void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("stereo" == name) {
         for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
             std::string const  node_name  = n->name.GetString();

@@ -17,10 +17,10 @@
 namespace rendering {
 
 Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-                                     uint32_t max_sample_size)
+                                     uint32_t max_sample_size) noexcept
     : Driver(take, scene, thread_pool, max_sample_size) {}
 
-void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor) {
+void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor) noexcept {
     photons_baked_ = false;
 
     auto& camera = *view_.camera;
@@ -30,6 +30,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
                                                              view_.num_samples_per_pixel);
 
     float const start_frame = static_cast<float>(view_.start_frame);
+
     float       tick_offset = scene_.seek(start_frame * camera.frame_duration(), thread_pool_);
     float       tick_rest   = scene_.tick_duration() - tick_offset;
 
@@ -124,7 +125,7 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 }
 
 void Driver_finalframe::render_subframe(float normalized_tick_offset, float normalized_tick_slice,
-                                        float normalized_frame_slice, progress::Sink& progressor) {
+                                        float normalized_frame_slice, progress::Sink& progressor) noexcept {
     bake_photons(normalized_tick_offset, normalized_tick_slice);
 
     float const num_samples       = static_cast<float>(view_.num_samples_per_pixel);
@@ -159,7 +160,7 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
     current_sample_ = sample_end;
 }
 
-void Driver_finalframe::bake_photons(float normalized_tick_offset, float normalized_tick_slice) {
+void Driver_finalframe::bake_photons(float normalized_tick_offset, float normalized_tick_slice) noexcept {
     if (/*photons_baked_ || */ !photon_infos_) {
         return;
     }
@@ -213,7 +214,7 @@ void Driver_finalframe::bake_photons(float normalized_tick_offset, float normali
 
 uint32_t Driver_finalframe::calculate_progress_range(Scene const& scene, Camera const& camera,
                                                      uint32_t num_tiles,
-                                                     uint32_t num_samples_per_iteration) {
+                                                     uint32_t num_samples_per_iteration) noexcept {
     float num_subframes = 1.f;
 
     if (camera.frame_duration() > 0.f && camera.motion_blur()) {
