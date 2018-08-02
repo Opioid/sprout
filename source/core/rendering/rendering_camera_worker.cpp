@@ -44,7 +44,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 co
 
                 sample.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
-                if (scene::Ray ray; camera.generate_ray(sample, view, ray)) {
+                if (Ray ray; camera.generate_ray(sample, view, ray)) {
                     const float4 color = li(ray, camera.interface_stack());
                     sensor.add_sample(sample, color, isolated_bounds, bounds);
                 } else {
