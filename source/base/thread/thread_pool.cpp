@@ -9,7 +9,7 @@
 
 namespace thread {
 
-Pool::Pool(uint32_t num_threads)
+Pool::Pool(uint32_t num_threads) noexcept
     : num_threads_(num_threads),
       uniques_(num_threads),
       threads_(num_threads)
@@ -25,7 +25,7 @@ Pool::Pool(uint32_t num_threads)
     async_thread_ = std::thread(async_loop, std::ref(async_));
 }
 
-Pool::~Pool() {
+Pool::~Pool() noexcept {
     quit_ = true;
 
     wake_all();
@@ -41,21 +41,23 @@ Pool::~Pool() {
     async_thread_.join();
 }
 
-uint32_t Pool::num_threads() const {
+uint32_t Pool::num_threads() const noexcept {
     return num_threads_;
 }
 
-void Pool::run_parallel(Parallel_program program) {
+void Pool::run_parallel(Parallel_program program) noexcept {
     parallel_program_ = program;
-    range_program_    = nullptr;
+
+    range_program_ = nullptr;
 
     wake_all();
 
     wait_all();
 }
 
-void Pool::run_range(Range_program program, int32_t begin, int32_t end) {
-    range_program_    = program;
+void Pool::run_range(Range_program program, int32_t begin, int32_t end) noexcept {
+    range_program_ = program;
+
     parallel_program_ = nullptr;
 
     wake_all(begin, end);
@@ -63,7 +65,7 @@ void Pool::run_range(Range_program program, int32_t begin, int32_t end) {
     wait_all();
 }
 
-void Pool::run_async(Async_program program) {
+void Pool::run_async(Async_program program) noexcept {
     wait_async();
 
     async_.program = program;
@@ -71,12 +73,12 @@ void Pool::run_async(Async_program program) {
     wake_async();
 }
 
-void Pool::wait_async() {
+void Pool::wait_async() noexcept {
     std::unique_lock<std::mutex> lock(async_.mutex);
-    async_.done_signal.wait(lock, [this] { return !async_.wake; });
+    async_.done_signal.wait(lock, [this]() noexcept { return !async_.wake; });
 }
 
-void Pool::wake_all() {
+void Pool::wake_all() noexcept {
     for (auto& u : uniques_) {
         std::unique_lock<std::mutex> lock(u.mutex);
         u.wake = true;
@@ -85,7 +87,7 @@ void Pool::wake_all() {
     }
 }
 
-void Pool::wake_all(int32_t begin, int32_t end) {
+void Pool::wake_all(int32_t begin, int32_t end) noexcept {
 #ifdef GRANULAR_TASKS
     float const   range     = static_cast<float>(end - begin);
     float const   num_tasks = static_cast<float>(tasks_.size());
@@ -99,9 +101,10 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 
     wake_all();
 #else
-    float const   range       = static_cast<float>(end - begin);
-    float const   num_threads = static_cast<float>(threads_.size());
-    int32_t const step        = static_cast<int32_t>(std::ceil(range / num_threads));
+    float const range       = static_cast<float>(end - begin);
+    float const num_threads = static_cast<float>(threads_.size());
+
+    int32_t const step = static_cast<int32_t>(std::ceil(range / num_threads));
 
     int32_t b = 0;
     int32_t e = begin;
@@ -120,26 +123,26 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 #endif
 }
 
-void Pool::wake_async() {
+void Pool::wake_async() noexcept {
     std::unique_lock<std::mutex> lock(async_.mutex);
     async_.wake = true;
     lock.unlock();
     async_.wake_signal.notify_one();
 }
 
-void Pool::wait_all() {
+void Pool::wait_all() noexcept {
     for (auto& u : uniques_) {
         std::unique_lock<std::mutex> lock(u.mutex);
-        u.done_signal.wait(lock, [&u] { return !u.wake; });
+        u.done_signal.wait(lock, [&u]() noexcept { return !u.wake; });
     }
 }
 
-void Pool::loop(uint32_t id) {
+void Pool::loop(uint32_t id) noexcept {
     Unique& unique = uniques_[id];
 
     for (;;) {
         std::unique_lock<std::mutex> lock(unique.mutex);
-        unique.wake_signal.wait(lock, [&unique] { return unique.wake; });
+        unique.wake_signal.wait(lock, [&unique]() noexcept { return unique.wake; });
 
         if (quit_) {
             break;
@@ -163,10 +166,10 @@ void Pool::loop(uint32_t id) {
     }
 }
 
-void Pool::async_loop(Async& async) {
+void Pool::async_loop(Async& async) noexcept {
     for (;;) {
         std::unique_lock<std::mutex> lock(async.mutex);
-        async.wake_signal.wait(lock, [&async] { return async.wake; });
+        async.wake_signal.wait(lock, [&async]() noexcept { return async.wake; });
 
         if (async.quit) {
             break;

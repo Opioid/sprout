@@ -31,8 +31,8 @@ class Perspective : public Camera {
 
     float pixel_solid_angle() const noexcept override final;
 
-    bool generate_ray(Camera_sample const& sample, uint32_t view,
-                              Ray& ray) const noexcept override final;
+    bool generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const
+        noexcept override final;
 
     void set_fov(float fov) noexcept;
 

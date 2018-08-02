@@ -20,24 +20,27 @@ class Pool {
     using Range_program    = std::function<void(uint32_t, int32_t, int32_t)>;
     using Async_program    = std::function<void()>;
 
-    Pool(uint32_t num_threads);
-    ~Pool();
+    Pool(uint32_t num_threads) noexcept;
 
-    uint32_t num_threads() const;
+    ~Pool() noexcept;
 
-    void run_parallel(Parallel_program program);
-    void run_range(Range_program program, int32_t begin, int32_t end);
+    uint32_t num_threads() const noexcept;
 
-    void run_async(Async_program program);
-    void wait_async();
+    void run_parallel(Parallel_program program) noexcept;
+
+    void run_range(Range_program program, int32_t begin, int32_t end) noexcept;
+
+    void run_async(Async_program program) noexcept;
+
+    void wait_async() noexcept;
 
   private:
-    void wake_all();
-    void wake_all(int32_t begin, int32_t end);
+    void wake_all() noexcept;
+    void wake_all(int32_t begin, int32_t end) noexcept;
 
-    void wake_async();
+    void wake_async() noexcept;
 
-    void wait_all();
+    void wait_all() noexcept;
 
     struct Unique {
         int32_t                 begin;
@@ -62,9 +65,11 @@ class Pool {
     bool quit_ = false;
 
     Parallel_program parallel_program_;
-    Range_program    range_program_;
 
-    std::vector<Unique>      uniques_;
+    Range_program range_program_;
+
+    std::vector<Unique> uniques_;
+
     std::vector<std::thread> threads_;
 
     struct Task {
@@ -76,12 +81,13 @@ class Pool {
     Task_queue<Task> tasks_;
 #endif
 
-    Async       async_;
+    Async async_;
+
     std::thread async_thread_;
 
-    void loop(uint32_t id);
+    void loop(uint32_t id) noexcept;
 
-    static void async_loop(Async& async);
+    static void async_loop(Async& async) noexcept;
 };
 
 }  // namespace thread

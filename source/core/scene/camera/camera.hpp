@@ -43,7 +43,8 @@ class Camera : public entity::Entity {
 
     void update(Scene const& scene, Worker& worker) noexcept;
 
-    virtual bool generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const noexcept = 0;
+    virtual bool generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const
+        noexcept = 0;
 
     void set_parameters(json::Value const& parameters) noexcept override final;
 
@@ -51,13 +52,13 @@ class Camera : public entity::Entity {
 
     Sensor& sensor() const noexcept;
 
-    void    set_sensor(std::unique_ptr<Sensor> sensor) noexcept;
+    void set_sensor(std::unique_ptr<Sensor> sensor) noexcept;
 
     prop::Interface_stack const& interface_stack() const noexcept;
 
     float frame_duration() const noexcept;
 
-    void  set_frame_duration(float frame_duration) noexcept;
+    void set_frame_duration(float frame_duration) noexcept;
 
     bool motion_blur() const noexcept;
 
@@ -83,7 +84,7 @@ class Camera : public entity::Entity {
 
     float frame_duration_ = 1.f / 60.f;
 
-    bool  motion_blur_    = true;
+    bool motion_blur_ = true;
 };
 
 }  // namespace camera

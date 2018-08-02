@@ -11,7 +11,8 @@
 
 namespace scene::camera {
 
-Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) noexcept : Stereoscopic(resolution) {
+Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) noexcept
+    : Stereoscopic(resolution) {
     set_fov(90.f);
 
     view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
@@ -68,7 +69,8 @@ void Perspective_stereoscopic::set_fov(float fov) noexcept {
 
 void Perspective_stereoscopic::on_update(Worker& /*worker*/) noexcept {}
 
-void Perspective_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
+void Perspective_stereoscopic::set_parameter(std::string_view   name,
+                                             json::Value const& value) noexcept {
     if ("fov" == name) {
         set_fov(math::degrees_to_radians(json::read_float(value)));
     } else if ("stereo" == name) {
@@ -76,4 +78,4 @@ void Perspective_stereoscopic::set_parameter(std::string_view name, json::Value 
     }
 }
 
-}  // namespace camera
+}  // namespace scene::camera

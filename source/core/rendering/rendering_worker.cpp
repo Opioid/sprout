@@ -102,10 +102,6 @@ bool Worker::transmitted_visibility(Ray& ray, Intersection const& intersection,
     return false;
 }
 
-sampler::Sampler* Worker::sampler() noexcept {
-    return sampler_;
-}
-
 scene::prop::Interface_stack& Worker::interface_stack() noexcept {
     return interface_stack_;
 }

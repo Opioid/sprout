@@ -64,8 +64,6 @@ class Worker : public scene::Worker {
     bool transmitted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
                                 float3& tv) noexcept;
 
-    sampler::Sampler* sampler() noexcept;
-
     scene::prop::Interface_stack& interface_stack() noexcept;
 
     void interface_change(f_float3 dir, Intersection const& intersection) noexcept;

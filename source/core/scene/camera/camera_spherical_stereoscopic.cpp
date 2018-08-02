@@ -14,7 +14,8 @@
 
 namespace scene::camera {
 
-Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) noexcept : Stereoscopic(resolution) {
+Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) noexcept
+    : Stereoscopic(resolution) {
     float2 const fr(resolution);
     d_x_ = 1.f / fr[0];
     d_y_ = 1.f / fr[1];
@@ -72,7 +73,8 @@ bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t 
 
 void Spherical_stereoscopic::on_update(Worker& /*worker*/) noexcept {}
 
-void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
+void Spherical_stereoscopic::set_parameter(std::string_view   name,
+                                           json::Value const& value) noexcept {
     if ("stereo" == name) {
         for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
             std::string const  node_name  = n->name.GetString();

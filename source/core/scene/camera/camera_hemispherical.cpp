@@ -33,8 +33,8 @@ float Hemispherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
-                                 Ray&                   ray) const noexcept {
+bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray& ray) const
+    noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];
@@ -51,7 +51,7 @@ bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
     float3 dir = math::disk_to_hemisphere_equidistant(float2(x, y));
 
     Transformation temp;
-    auto&                           transformation = transformation_at(sample.time, temp);
+    auto&          transformation = transformation_at(sample.time, temp);
 
     ray.origin = transformation.position;
     ray.set_direction(math::transform_vector(transformation.rotation, dir));
@@ -65,6 +65,7 @@ bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
 
 void Hemispherical::on_update(Worker& /*worker*/) noexcept {}
 
-void Hemispherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
+void Hemispherical::set_parameter(std::string_view /*name*/,
+                                  json::Value const& /*value*/) noexcept {}
 
 }  // namespace scene::camera

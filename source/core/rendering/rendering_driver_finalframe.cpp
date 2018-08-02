@@ -31,8 +31,8 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
     float const start_frame = static_cast<float>(view_.start_frame);
 
-    float       tick_offset = scene_.seek(start_frame * camera.frame_duration(), thread_pool_);
-    float       tick_rest   = scene_.tick_duration() - tick_offset;
+    float tick_offset = scene_.seek(start_frame * camera.frame_duration(), thread_pool_);
+    float tick_rest   = scene_.tick_duration() - tick_offset;
 
     camera.update(scene_, workers_[0]);
 
@@ -125,7 +125,8 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 }
 
 void Driver_finalframe::render_subframe(float normalized_tick_offset, float normalized_tick_slice,
-                                        float normalized_frame_slice, progress::Sink& progressor) noexcept {
+                                        float           normalized_frame_slice,
+                                        progress::Sink& progressor) noexcept {
     bake_photons(normalized_tick_offset, normalized_tick_slice);
 
     float const num_samples       = static_cast<float>(view_.num_samples_per_pixel);
@@ -160,7 +161,8 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
     current_sample_ = sample_end;
 }
 
-void Driver_finalframe::bake_photons(float normalized_tick_offset, float normalized_tick_slice) noexcept {
+void Driver_finalframe::bake_photons(float normalized_tick_offset,
+                                     float normalized_tick_slice) noexcept {
     if (/*photons_baked_ || */ !photon_infos_) {
         return;
     }

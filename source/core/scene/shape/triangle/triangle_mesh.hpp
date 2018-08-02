@@ -47,7 +47,7 @@ class Mesh : public Shape {
     //							 FVector ray_min_t, FVector ray_max_t,
     //							 Transformation const& transformation,
     //							 Node_stack& node_stack) const noexcept
-    //override
+    // override
     // final;
 
     float opacity(Ray const& ray, Transformation const& transformation, Materials const& materials,

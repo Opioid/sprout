@@ -75,8 +75,7 @@ float Cubic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic::generate_ray(Camera_sample const& sample, uint32_t view,
-                         Ray& ray) const noexcept {
+bool Cubic::generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
