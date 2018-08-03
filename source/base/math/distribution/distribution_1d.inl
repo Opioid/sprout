@@ -99,7 +99,8 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, size_t len
 
 //==================================================================================================
 
-inline void Distribution_lut_1D::init(float const* data, uint32_t len, uint32_t lut_bucket_size) noexcept {
+inline void Distribution_lut_1D::init(float const* data, uint32_t len,
+                                      uint32_t lut_bucket_size) noexcept {
     precompute_1D_pdf_cdf(data, len);
 
     uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
@@ -134,7 +135,8 @@ inline Distribution_lut_1D::Discrete Distribution_lut_1D::sample_discrete(float 
     return {offset, pdf_[offset]};
 }
 
-inline Distribution_lut_1D::Continuous Distribution_lut_1D::sample_continuous(float r) const noexcept {
+inline Distribution_lut_1D::Continuous Distribution_lut_1D::sample_continuous(float r) const
+    noexcept {
     uint32_t const offset = sample(r);
 
     float const c = cdf_[offset + 1];
@@ -412,7 +414,8 @@ inline float Distribution_implicit_pdf_lut_lin_1D::integral() const noexcept {
     return integral_;
 }
 
-static inline uint32_t search(float const* buffer, uint32_t begin, /*uint32_t end,*/ float key) noexcept {
+static inline uint32_t search(float const* buffer, uint32_t begin,
+                              /*uint32_t end,*/ float key) noexcept {
     //	for (uint32_t i = begin; i < end; ++i) {
     //		if (buffer[i] >= key) {
     //			return i;

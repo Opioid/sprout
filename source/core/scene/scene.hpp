@@ -76,22 +76,25 @@ class Scene {
 
     bool has_volumes() const noexcept;
 
-    bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const noexcept;
+    bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
+        noexcept;
 
     bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const noexcept;
 
-    bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const noexcept;
+    bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
+        noexcept;
 
     bool intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept;
 
-    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const noexcept;
+    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const
+        noexcept;
 
     bool thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
                          float3& ta) const noexcept;
 
-    float    tick_duration() const noexcept;
+    float tick_duration() const noexcept;
 
-    float    simulation_time() const noexcept;
+    float simulation_time() const noexcept;
 
     uint64_t current_tick() const noexcept;
 
@@ -107,7 +110,7 @@ class Scene {
     Light light(uint32_t id) const noexcept;
     Light random_light(float random) const noexcept;
 
-    void  tick(thread::Pool& thread_pool) noexcept;
+    void tick(thread::Pool& thread_pool) noexcept;
 
     float seek(float time, thread::Pool& thread_pool) noexcept;
 
@@ -118,9 +121,10 @@ class Scene {
 
     Prop* create_prop(Shape_ptr const& shape, Materials const& materials) noexcept;
 
-    Prop* create_prop(Shape_ptr const& shape, Materials const& materials, std::string const& name) noexcept;
+    Prop* create_prop(Shape_ptr const& shape, Materials const& materials,
+                      std::string const& name) noexcept;
 
-    light::Prop_light*       create_prop_light(Prop* prop, uint32_t part) noexcept;
+    light::Prop_light* create_prop_light(Prop* prop, uint32_t part) noexcept;
 
     light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part) noexcept;
 

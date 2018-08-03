@@ -95,7 +95,8 @@ bool Scene::has_volumes() const noexcept {
     return has_volumes_;
 }
 
-bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const noexcept {
+bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
+    noexcept {
     return prop_bvh_.intersect(ray, node_stack, intersection);
 }
 
@@ -112,7 +113,8 @@ bool Scene::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
     return prop_bvh_.intersect_p(ray, node_stack);
 }
 
-bool Scene::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const noexcept {
+bool Scene::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const
+    noexcept {
     if (has_masked_material_) {
         return prop_bvh_.opacity(ray, filter, worker, o);
     }

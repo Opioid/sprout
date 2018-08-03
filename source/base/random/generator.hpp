@@ -13,7 +13,7 @@ class Generator {
 
     uint32_t random_uint() noexcept;
 
-    float    random_float() noexcept;
+    float random_float() noexcept;
 
   private:
     uint32_t advance_pcg32() noexcept;

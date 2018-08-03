@@ -101,7 +101,8 @@ float read_float(rapidjson::Value const& value) noexcept {
     return value.GetFloat();
 }
 
-float read_float(rapidjson::Value const& value, std::string_view name, float default_value) noexcept {
+float read_float(rapidjson::Value const& value, std::string_view name,
+                 float default_value) noexcept {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return node->value.GetFloat();
     }
@@ -113,7 +114,8 @@ float2 read_float2(rapidjson::Value const& value) noexcept {
     return float2(value[0u].GetFloat(), value[1].GetFloat());
 }
 
-float2 read_float2(rapidjson::Value const& value, std::string_view name, float2 default_value) noexcept {
+float2 read_float2(rapidjson::Value const& value, std::string_view name,
+                   float2 default_value) noexcept {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return read_float2(node->value);
     }
@@ -147,7 +149,8 @@ uint32_t read_uint(rapidjson::Value const& value) noexcept {
     return value.GetUint();
 }
 
-uint32_t read_uint(rapidjson::Value const& value, std::string_view name, uint32_t default_value) noexcept {
+uint32_t read_uint(rapidjson::Value const& value, std::string_view name,
+                   uint32_t default_value) noexcept {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return node->value.GetUint();
     }
@@ -171,7 +174,8 @@ uint2 read_uint2(rapidjson::Value const& value) noexcept {
     return uint2(value[0].GetUint(), value[1].GetUint());
 }
 
-uint2 read_uint2(rapidjson::Value const& value, std::string_view name, uint2 default_value) noexcept {
+uint2 read_uint2(rapidjson::Value const& value, std::string_view name,
+                 uint2 default_value) noexcept {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return read_uint2(node->value);
     }
@@ -231,7 +235,8 @@ std::string read_string(rapidjson::Value const& value, std::string_view name,
     return default_value;
 }
 
-void read_transformation(rapidjson::Value const& value, math::Transformation& transformation) noexcept {
+void read_transformation(rapidjson::Value const& value,
+                         math::Transformation&   transformation) noexcept {
     for (auto& n : value.GetObject()) {
         std::string_view const node_name(n.name.GetString(), n.name.GetStringLength());
 

@@ -28,14 +28,16 @@ float2 read_float2(json::Value const& value) noexcept;
 float2 read_float2(json::Value const& value, std::string_view name, float2 default_value) noexcept;
 
 float3 read_float3(json::Value const& value) noexcept;
-float3 read_float3(json::Value const& value, std::string_view name, float3 const& default_value) noexcept;
+float3 read_float3(json::Value const& value, std::string_view name,
+                   float3 const& default_value) noexcept;
 
 float4 read_float4(rapidjson::Value const& value) noexcept;
 
 int32_t read_int(rapidjson::Value const& value) noexcept;
 
 uint32_t read_uint(json::Value const& value) noexcept;
-uint32_t read_uint(json::Value const& value, std::string_view name, uint32_t default_value = 0) noexcept;
+uint32_t read_uint(json::Value const& value, std::string_view name,
+                   uint32_t default_value = 0) noexcept;
 
 int2 read_int2(json::Value const& value) noexcept;
 int2 read_int2(json::Value const& value, std::string_view name, int2 default_value) noexcept;

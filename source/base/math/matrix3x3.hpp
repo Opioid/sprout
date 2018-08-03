@@ -104,12 +104,12 @@ struct Vector4f_a;
 struct alignas(16) Matrix3x3f_a {
     Vector3f_a r[3];
 
-    Matrix3x3f_a() = default;
+    Matrix3x3f_a() noexcept = default;
 
     constexpr Matrix3x3f_a(float m00, float m01, float m02, float m10, float m11, float m12,
-                           float m20, float m21, float m22);
+                           float m20, float m21, float m22) noexcept;
 
-    static constexpr Matrix3x3f_a identity();
+    static Matrix3x3f_a constexpr identity() noexcept;
 };
 
 }  // namespace math
