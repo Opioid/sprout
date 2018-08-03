@@ -17,7 +17,7 @@ namespace scene::light {
 bool Prop_image_light::sample(float3 const& p, float3 const& n,
                               Transformation const& transformation, bool total_sphere,
                               sampler::Sampler& sampler, uint32_t  sampler_dimension,
-                              Worker const& /*worker*/, Sample_to& result) const {
+                              Worker const& /*worker*/, Sample_to& result) const noexcept {
     auto const material = prop_->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -46,7 +46,7 @@ bool Prop_image_light::sample(float3 const& p, float3 const& n,
 
 bool Prop_image_light::sample(float3 const& p, Transformation const& transformation,
                               sampler::Sampler& sampler, uint32_t  sampler_dimension,
-                              Worker const& /*worker*/, Sample_to& result) const {
+                              Worker const& /*worker*/, Sample_to& result) const noexcept {
     auto const material = prop_->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -72,7 +72,7 @@ bool Prop_image_light::sample(float3 const& p, Transformation const& transformat
 
 bool Prop_image_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
                               uint32_t sampler_dimension, math::AABB const& bounds,
-                              Worker const& /*worker*/, Sample_from&        result) const {
+                              Worker const& /*worker*/, Sample_from&        result) const noexcept {
     auto const material = prop_->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -98,7 +98,7 @@ bool Prop_image_light::sample(Transformation const& transformation, sampler::Sam
 }
 
 float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bool /*total_sphere*/,
-                            Sampler_filter filter, Worker const& worker) const {
+                            Sampler_filter filter, Worker const& worker) const noexcept {
     Transformation temp;
     auto const&    transformation = prop_->transformation_at(ray.time, temp);
 
@@ -117,7 +117,7 @@ float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bo
     return shape_pdf * material_pdf;
 }
 
-void Prop_image_light::prepare_sampling(uint32_t light_id, thread::Pool& pool) {
+void Prop_image_light::prepare_sampling(uint32_t light_id, thread::Pool& pool) noexcept {
     prop_->prepare_sampling(part_, light_id, true, pool);
 }
 

@@ -5,29 +5,29 @@
 
 namespace memory {
 
-void* allocate_aligned(size_t size);
+void* allocate_aligned(size_t size) noexcept;
 
 template <typename T>
-T* allocate_aligned(size_t count) {
+T* allocate_aligned(size_t count) noexcept {
     return reinterpret_cast<T*>(allocate_aligned(count * sizeof(T)));
 }
 
-void free_aligned(void* pointer);
+void free_aligned(void* pointer) noexcept;
 
 template <class T>
-void safe_destruct(T* t) {
+void safe_destruct(T* t) noexcept {
     if (t) {
         t->~T();
     }
 }
 
 template <class T>
-void safe_destruct(T& t) {
+void safe_destruct(T& t) noexcept {
     t.~T();
 }
 
 template <typename T>
-T* construct_aligned(size_t count) {
+T* construct_aligned(size_t count) noexcept {
     // This is more complicated than expected. See for example:
     // https://stackoverflow.com/questions/8720425/array-placement-new-requires-unspecified-overhead-in-the-buffer
     // Basically there is a small memory overhead for placement new[] that is "unknown" beforehand,
@@ -47,7 +47,7 @@ T* construct_aligned(size_t count) {
 }
 
 template <typename T>
-void destroy_aligned(T* objects, size_t count) {
+void destroy_aligned(T* objects, size_t count) noexcept {
     for (size_t i = 0; i < count; ++i) {
         objects[i].~T();
     }

@@ -9,31 +9,31 @@ namespace math {
 
 class Distribution_1D {
   public:
-    void init(float const* data, size_t len);
+    void init(float const* data, size_t len) noexcept;
 
-    float integral() const;
+    float integral() const noexcept;
 
-    uint32_t sample(float r) const;
+    uint32_t sample(float r) const noexcept;
 
     struct Discrete {
         uint32_t offset;
         float    pdf;
     };
-    Discrete sample_discrete(float r) const;
+    Discrete sample_discrete(float r) const noexcept;
 
     struct Continuous {
         float offset;
         float pdf;
     };
-    Continuous sample_continuous(float r) const;
+    Continuous sample_continuous(float r) const noexcept;
 
-    float pdf(uint32_t index) const;
-    float pdf(float u) const;
+    float pdf(uint32_t index) const noexcept;
+    float pdf(float u) const noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
-    void precompute_1D_pdf_cdf(float const* data, size_t len);
+    void precompute_1D_pdf_cdf(float const* data, size_t len) noexcept;
 
     std::vector<float> pdf_;
     std::vector<float> cdf_;
@@ -47,34 +47,35 @@ class Distribution_1D {
 
 class Distribution_lut_1D {
   public:
-    void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0);
+    void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0) noexcept;
 
-    float integral() const;
+    float integral() const noexcept;
 
-    uint32_t sample(float r) const;
+    uint32_t sample(float r) const noexcept;
 
     struct Discrete {
         uint32_t offset;
         float    pdf;
     };
-    Discrete sample_discrete(float r) const;
+    Discrete sample_discrete(float r) const noexcept;
 
     struct Continuous {
         float offset;
         float pdf;
     };
-    Continuous sample_continuous(float r) const;
+    Continuous sample_continuous(float r) const noexcept;
 
-    float pdf(uint32_t index) const;
-    float pdf(float u) const;
+    float pdf(uint32_t index) const noexcept;
+    float pdf(float u) const noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
-    uint32_t map(float s) const;
+    uint32_t map(float s) const noexcept;
 
-    void precompute_1D_pdf_cdf(float const* data, uint32_t len);
-    void init_lut(uint32_t lut_size);
+    void precompute_1D_pdf_cdf(float const* data, uint32_t len) noexcept;
+
+    void init_lut(uint32_t lut_size) noexcept;
 
     std::vector<uint32_t> lut_;
     std::vector<float>    pdf_;
@@ -88,39 +89,41 @@ class Distribution_lut_1D {
 
 class Distribution_implicit_pdf_lut_1D {
   public:
-    Distribution_implicit_pdf_lut_1D();
-    ~Distribution_implicit_pdf_lut_1D();
+    Distribution_implicit_pdf_lut_1D() noexcept;
 
-    void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0);
+    ~Distribution_implicit_pdf_lut_1D() noexcept;
 
-    float integral() const;
+    void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0) noexcept;
 
-    uint32_t sample(float r) const;
+    float integral() const noexcept;
+
+    uint32_t sample(float r) const noexcept;
 
     struct Discrete {
         uint32_t offset;
         float    pdf;
     };
-    Discrete sample_discrete(float r) const;
+    Discrete sample_discrete(float r) const noexcept;
 
     struct Continuous {
         float offset;
         float pdf;
     };
-    Continuous sample_continuous(float r) const;
+    Continuous sample_continuous(float r) const noexcept;
 
-    float pdf(uint32_t index) const;
-    float pdf(float u) const;
+    float pdf(uint32_t index) const noexcept;
+    float pdf(float u) const noexcept;
 
-    uint32_t lut_size() const;
+    uint32_t lut_size() const noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
-    uint32_t map(float s) const;
+    uint32_t map(float s) const noexcept;
 
-    void precompute_1D_pdf_cdf(float const* data, uint32_t len);
-    void init_lut(uint32_t lut_size);
+    void precompute_1D_pdf_cdf(float const* data, uint32_t len) noexcept;
+
+    void init_lut(uint32_t lut_size) noexcept;
 
     uint32_t* lut_;
     uint32_t  lut_size_;
@@ -136,39 +139,41 @@ class Distribution_implicit_pdf_lut_1D {
 
 class Distribution_implicit_pdf_lut_lin_1D {
   public:
-    Distribution_implicit_pdf_lut_lin_1D();
-    ~Distribution_implicit_pdf_lut_lin_1D();
+    Distribution_implicit_pdf_lut_lin_1D() noexcept;
 
-    void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0);
+    ~Distribution_implicit_pdf_lut_lin_1D() noexcept;
 
-    float integral() const;
+    void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0) noexcept;
 
-    uint32_t sample(float r) const;
+    float integral() const noexcept;
+
+    uint32_t sample(float r) const noexcept;
 
     struct Discrete {
         uint32_t offset;
         float    pdf;
     };
-    Discrete sample_discrete(float r) const;
+    Discrete sample_discrete(float r) const noexcept;
 
     struct Continuous {
         float offset;
         float pdf;
     };
-    Continuous sample_continuous(float r) const;
+    Continuous sample_continuous(float r) const noexcept;
 
-    float pdf(uint32_t index) const;
-    float pdf(float u) const;
+    float pdf(uint32_t index) const noexcept;
+    float pdf(float u) const noexcept;
 
-    uint32_t lut_size() const;
+    uint32_t lut_size() const noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
-    uint32_t map(float s) const;
+    uint32_t map(float s) const noexcept;
 
-    void precompute_1D_pdf_cdf(float const* data, uint32_t len);
-    void init_lut(uint32_t lut_size);
+    void precompute_1D_pdf_cdf(float const* data, uint32_t len) noexcept;
+
+    void init_lut(uint32_t lut_size) noexcept;
 
     uint32_t* lut_;
     uint32_t  lut_size_;

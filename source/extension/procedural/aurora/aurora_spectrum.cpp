@@ -13,9 +13,9 @@ using namespace ::spectrum;
 math::Interpolated_function<float3> color;
 
 void init() {
-    const Interpolated CIE_X(CIE_Wavelengths_360_830_1nm, CIE_X_360_830_1nm, CIE_XYZ_Num);
-    const Interpolated CIE_Y(CIE_Wavelengths_360_830_1nm, CIE_Y_360_830_1nm, CIE_XYZ_Num);
-    const Interpolated CIE_Z(CIE_Wavelengths_360_830_1nm, CIE_Z_360_830_1nm, CIE_XYZ_Num);
+    Interpolated const CIE_X(CIE_Wavelengths_360_830_1nm, CIE_X_360_830_1nm, CIE_XYZ_Num);
+    Interpolated const CIE_Y(CIE_Wavelengths_360_830_1nm, CIE_Y_360_830_1nm, CIE_XYZ_Num);
+    Interpolated const CIE_Z(CIE_Wavelengths_360_830_1nm, CIE_Z_360_830_1nm, CIE_XYZ_Num);
 
     constexpr float wl_427 = 427.8f;
     float3 const    cie_427(CIE_X.evaluate(wl_427), CIE_Y.evaluate(wl_427), CIE_Z.evaluate(wl_427));

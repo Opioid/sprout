@@ -5,25 +5,25 @@
 
 namespace rnd {
 
-inline Generator::Generator(uint64_t state, uint64_t sequence)
+inline Generator::Generator(uint64_t state, uint64_t sequence) noexcept
     : state_(0), inc_((sequence << 1u) | 1u) {
     random_uint();
     state_ += state;
     random_uint();
 }
 
-inline uint32_t Generator::random_uint() {
+inline uint32_t Generator::random_uint() noexcept {
     return advance_pcg32();
 }
 
-inline float Generator::random_float() {
+inline float Generator::random_float() noexcept {
     uint32_t const bits = advance_pcg32();
 
     return 2.3283064365386963e-10f * static_cast<float>(bits);
 }
 
-inline uint32_t Generator::advance_pcg32() {
-    const uint64_t oldstate = state_;
+inline uint32_t Generator::advance_pcg32() noexcept {
+    uint64_t const oldstate = state_;
 
     // Advance internal state
     state_ = oldstate * 6364136223846793005ull + (inc_ | 1);

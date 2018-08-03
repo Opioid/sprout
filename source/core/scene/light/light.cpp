@@ -5,11 +5,11 @@
 
 namespace scene::light {
 
-Light::~Light() {}
+Light::~Light() noexcept {}
 
 bool Light::sample(float3 const& p, float3 const& n, float time, bool total_sphere,
                    sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                   Sample_to& result) const {
+                   Sample_to& result) const noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
@@ -17,7 +17,8 @@ bool Light::sample(float3 const& p, float3 const& n, float time, bool total_sphe
 }
 
 bool Light::sample(float3 const& p, float time, sampler::Sampler& sampler,
-                   uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const {
+                   uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const
+    noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
@@ -25,14 +26,15 @@ bool Light::sample(float3 const& p, float time, sampler::Sampler& sampler,
 }
 
 bool Light::sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                   math::AABB const& bounds, Worker const& worker, Sample_from& result) const {
+                   math::AABB const& bounds, Worker const& worker, Sample_from& result) const
+    noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
     return sample(transformation, sampler, sampler_dimension, bounds, worker, result);
 }
 
-bool Light::is_light(uint32_t id) {
+bool Light::is_light(uint32_t id) noexcept {
     return 0xFFFFFFFF != id;
 }
 

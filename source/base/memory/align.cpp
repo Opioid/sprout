@@ -8,7 +8,7 @@
 
 namespace memory {
 
-void* allocate_aligned(size_t size) {
+void* allocate_aligned(size_t size) noexcept {
     constexpr size_t L1_cache_line_size = 64;
 
 #ifdef _WIN32
@@ -23,7 +23,7 @@ void* allocate_aligned(size_t size) {
 #endif
 }
 
-void free_aligned(void* pointer) {
+void free_aligned(void* pointer) noexcept {
 #ifdef _WIN32
     _aligned_free(pointer);
 #else

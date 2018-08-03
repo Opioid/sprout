@@ -9,15 +9,15 @@
 
 namespace math {
 
-inline void Distribution_1D::init(float const* data, size_t len) {
+inline void Distribution_1D::init(float const* data, size_t len) noexcept {
     precompute_1D_pdf_cdf(data, len);
 }
 
-inline float Distribution_1D::integral() const {
+inline float Distribution_1D::integral() const noexcept {
     return integral_;
 }
 
-inline uint32_t Distribution_1D::sample(float r) const {
+inline uint32_t Distribution_1D::sample(float r) const noexcept {
     auto it = std::lower_bound(cdf_.begin(), cdf_.end(), r);
 
     uint32_t offset = 0;
@@ -28,13 +28,13 @@ inline uint32_t Distribution_1D::sample(float r) const {
     return offset;
 }
 
-inline Distribution_1D::Discrete Distribution_1D::sample_discrete(float r) const {
+inline Distribution_1D::Discrete Distribution_1D::sample_discrete(float r) const noexcept {
     uint32_t const offset = sample(r);
 
     return {offset, pdf_[offset]};
 }
 
-inline Distribution_1D::Continuous Distribution_1D::sample_continuous(float r) const {
+inline Distribution_1D::Continuous Distribution_1D::sample_continuous(float r) const noexcept {
     uint32_t const offset = sample(r);
 
     float const c = cdf_[offset + 1];
@@ -43,21 +43,21 @@ inline Distribution_1D::Continuous Distribution_1D::sample_continuous(float r) c
     return {(static_cast<float>(offset) + t) / size_, pdf_[offset]};
 }
 
-inline float Distribution_1D::pdf(uint32_t index) const {
+inline float Distribution_1D::pdf(uint32_t index) const noexcept {
     return pdf_[index];
 }
 
-inline float Distribution_1D::pdf(float u) const {
+inline float Distribution_1D::pdf(float u) const noexcept {
     uint32_t const offset = static_cast<uint32_t>(u * size_);
 
     return pdf_[offset];
 }
 
-inline size_t Distribution_1D::num_bytes() const {
+inline size_t Distribution_1D::num_bytes() const noexcept {
     return sizeof(*this) + sizeof(float) * (pdf_.size() + cdf_.size());
 }
 
-inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, size_t len) {
+inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, size_t len) noexcept {
     float integral = 0.f;
     for (size_t i = 0; i < len; ++i) {
         integral += data[i];
@@ -99,7 +99,7 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, size_t len
 
 //==================================================================================================
 
-inline void Distribution_lut_1D::init(float const* data, uint32_t len, uint32_t lut_bucket_size) {
+inline void Distribution_lut_1D::init(float const* data, uint32_t len, uint32_t lut_bucket_size) noexcept {
     precompute_1D_pdf_cdf(data, len);
 
     uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
@@ -109,11 +109,11 @@ inline void Distribution_lut_1D::init(float const* data, uint32_t len, uint32_t 
     init_lut(lut_size);
 }
 
-inline float Distribution_lut_1D::integral() const {
+inline float Distribution_lut_1D::integral() const noexcept {
     return integral_;
 }
 
-inline uint32_t Distribution_lut_1D::sample(float r) const {
+inline uint32_t Distribution_lut_1D::sample(float r) const noexcept {
     uint32_t const bucket = map(r);
 
     uint32_t const begin = lut_[bucket];
@@ -128,13 +128,13 @@ inline uint32_t Distribution_lut_1D::sample(float r) const {
     return 0;
 }
 
-inline Distribution_lut_1D::Discrete Distribution_lut_1D::sample_discrete(float r) const {
+inline Distribution_lut_1D::Discrete Distribution_lut_1D::sample_discrete(float r) const noexcept {
     uint32_t const offset = sample(r);
 
     return {offset, pdf_[offset]};
 }
 
-inline Distribution_lut_1D::Continuous Distribution_lut_1D::sample_continuous(float r) const {
+inline Distribution_lut_1D::Continuous Distribution_lut_1D::sample_continuous(float r) const noexcept {
     uint32_t const offset = sample(r);
 
     float const c = cdf_[offset + 1];
@@ -143,26 +143,26 @@ inline Distribution_lut_1D::Continuous Distribution_lut_1D::sample_continuous(fl
     return {(static_cast<float>(offset) + t) / size_, pdf_[offset]};
 }
 
-inline float Distribution_lut_1D::pdf(uint32_t index) const {
+inline float Distribution_lut_1D::pdf(uint32_t index) const noexcept {
     return pdf_[index];
 }
 
-inline float Distribution_lut_1D::pdf(float u) const {
+inline float Distribution_lut_1D::pdf(float u) const noexcept {
     uint32_t const offset = static_cast<uint32_t>(u * size_);
 
     return pdf_[offset];
 }
 
-inline size_t Distribution_lut_1D::num_bytes() const {
+inline size_t Distribution_lut_1D::num_bytes() const noexcept {
     return sizeof(*this) + sizeof(float) * (pdf_.size() + cdf_.size()) +
            sizeof(uint32_t) * lut_.size();
 }
 
-inline uint32_t Distribution_lut_1D::map(float s) const {
+inline uint32_t Distribution_lut_1D::map(float s) const noexcept {
     return static_cast<uint32_t>(s * lut_range_);
 }
 
-inline void Distribution_lut_1D::precompute_1D_pdf_cdf(float const* data, uint32_t len) {
+inline void Distribution_lut_1D::precompute_1D_pdf_cdf(float const* data, uint32_t len) noexcept {
     float integral = 0.f;
     for (uint32_t i = 0; i < len; ++i) {
         integral += data[i];
@@ -202,8 +202,9 @@ inline void Distribution_lut_1D::precompute_1D_pdf_cdf(float const* data, uint32
     size_ = static_cast<float>(len);
 }
 
-inline void Distribution_lut_1D::init_lut(uint32_t lut_size) {
-    lut_.resize(lut_size + 2), lut_range_ = static_cast<float>(lut_size);
+inline void Distribution_lut_1D::init_lut(uint32_t lut_size) noexcept {
+    lut_.resize(lut_size + 2);
+    lut_range_ = static_cast<float>(lut_size);
 
     lut_[0] = 0;
 
@@ -231,16 +232,16 @@ inline void Distribution_lut_1D::init_lut(uint32_t lut_size) {
 
 //==================================================================================================
 
-inline Distribution_implicit_pdf_lut_1D::Distribution_implicit_pdf_lut_1D()
+inline Distribution_implicit_pdf_lut_1D::Distribution_implicit_pdf_lut_1D() noexcept
     : lut_(nullptr), lut_size_(0), cdf_(nullptr), cdf_size_(0) {}
 
-inline Distribution_implicit_pdf_lut_1D::~Distribution_implicit_pdf_lut_1D() {
+inline Distribution_implicit_pdf_lut_1D::~Distribution_implicit_pdf_lut_1D() noexcept {
     memory::free_aligned(cdf_);
     memory::free_aligned(lut_);
 }
 
 inline void Distribution_implicit_pdf_lut_1D::init(float const* data, uint32_t len,
-                                                   uint32_t lut_bucket_size) {
+                                                   uint32_t lut_bucket_size) noexcept {
     precompute_1D_pdf_cdf(data, len);
 
     uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
@@ -250,11 +251,11 @@ inline void Distribution_implicit_pdf_lut_1D::init(float const* data, uint32_t l
     init_lut(lut_size);
 }
 
-inline float Distribution_implicit_pdf_lut_1D::integral() const {
+inline float Distribution_implicit_pdf_lut_1D::integral() const noexcept {
     return integral_;
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_1D::sample(float r) const {
+inline uint32_t Distribution_implicit_pdf_lut_1D::sample(float r) const noexcept {
     uint32_t const bucket = map(r);
 
     uint32_t const begin = lut_[bucket];
@@ -270,14 +271,14 @@ inline uint32_t Distribution_implicit_pdf_lut_1D::sample(float r) const {
 }
 
 inline Distribution_implicit_pdf_lut_1D::Discrete Distribution_implicit_pdf_lut_1D::sample_discrete(
-    float r) const {
+    float r) const noexcept {
     uint32_t const offset = sample(r);
 
     return {offset, cdf_[offset + 1] - cdf_[offset]};
 }
 
 inline Distribution_implicit_pdf_lut_1D::Continuous
-Distribution_implicit_pdf_lut_1D::sample_continuous(float r) const {
+Distribution_implicit_pdf_lut_1D::sample_continuous(float r) const noexcept {
     uint32_t const offset = sample(r);
 
     float const c = cdf_[offset + 1];
@@ -294,30 +295,30 @@ Distribution_implicit_pdf_lut_1D::sample_continuous(float r) const {
     return {result, v};
 }
 
-inline float Distribution_implicit_pdf_lut_1D::pdf(uint32_t index) const {
+inline float Distribution_implicit_pdf_lut_1D::pdf(uint32_t index) const noexcept {
     return cdf_[index + 1] - cdf_[index];
 }
 
-inline float Distribution_implicit_pdf_lut_1D::pdf(float u) const {
+inline float Distribution_implicit_pdf_lut_1D::pdf(float u) const noexcept {
     uint32_t const offset = static_cast<uint32_t>(u * size_);
 
     return cdf_[offset + 1] - cdf_[offset];
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_1D::lut_size() const {
+inline uint32_t Distribution_implicit_pdf_lut_1D::lut_size() const noexcept {
     return lut_size_ - 2;
 }
 
-inline size_t Distribution_implicit_pdf_lut_1D::num_bytes() const {
+inline size_t Distribution_implicit_pdf_lut_1D::num_bytes() const noexcept {
     return sizeof(*this) + sizeof(float) * cdf_size_ + sizeof(uint32_t) * lut_size_;
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_1D::map(float s) const {
+inline uint32_t Distribution_implicit_pdf_lut_1D::map(float s) const noexcept {
     return static_cast<uint32_t>(s * lut_range_);
 }
 
 inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(float const* data,
-                                                                    uint32_t     len) {
+                                                                    uint32_t     len) noexcept {
     float integral = 0.f;
     for (uint32_t i = 0; i < len; ++i) {
         integral += data[i];
@@ -353,7 +354,7 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(float const*
     size_ = static_cast<float>(len);
 }
 
-inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
+inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) noexcept {
     lut_size_  = lut_size + 2;
     lut_       = memory::allocate_aligned<uint32_t>(lut_size_);
     lut_range_ = static_cast<float>(lut_size);
@@ -388,16 +389,16 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
 // https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
 // For the data I tested the
 
-inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1D()
+inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1D() noexcept
     : lut_(nullptr), lut_size_(0), cdf_(nullptr), cdf_size_(0) {}
 
-inline Distribution_implicit_pdf_lut_lin_1D::~Distribution_implicit_pdf_lut_lin_1D() {
+inline Distribution_implicit_pdf_lut_lin_1D::~Distribution_implicit_pdf_lut_lin_1D() noexcept {
     memory::free_aligned(cdf_);
     memory::free_aligned(lut_);
 }
 
 inline void Distribution_implicit_pdf_lut_lin_1D::init(float const* data, uint32_t len,
-                                                       uint32_t lut_bucket_size) {
+                                                       uint32_t lut_bucket_size) noexcept {
     precompute_1D_pdf_cdf(data, len);
 
     uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
@@ -407,11 +408,11 @@ inline void Distribution_implicit_pdf_lut_lin_1D::init(float const* data, uint32
     init_lut(lut_size);
 }
 
-inline float Distribution_implicit_pdf_lut_lin_1D::integral() const {
+inline float Distribution_implicit_pdf_lut_lin_1D::integral() const noexcept {
     return integral_;
 }
 
-static inline uint32_t search(float const* buffer, uint32_t begin, /*uint32_t end,*/ float key) {
+static inline uint32_t search(float const* buffer, uint32_t begin, /*uint32_t end,*/ float key) noexcept {
     //	for (uint32_t i = begin; i < end; ++i) {
     //		if (buffer[i] >= key) {
     //			return i;
@@ -428,7 +429,7 @@ static inline uint32_t search(float const* buffer, uint32_t begin, /*uint32_t en
     }
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample(float r) const {
+inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample(float r) const noexcept {
     uint32_t const bucket = map(r);
 
     uint32_t const begin = lut_[bucket];
@@ -444,7 +445,7 @@ inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample(float r) const {
 }
 
 inline Distribution_implicit_pdf_lut_lin_1D::Discrete
-Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) const {
+Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) const noexcept {
     uint32_t const offset = sample(r);
 
     SOFT_ASSERT(offset + 1 < cdf_size_);
@@ -453,7 +454,7 @@ Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) const {
 }
 
 inline Distribution_implicit_pdf_lut_lin_1D::Continuous
-Distribution_implicit_pdf_lut_lin_1D::sample_continuous(float r) const {
+Distribution_implicit_pdf_lut_lin_1D::sample_continuous(float r) const noexcept {
     uint32_t const offset = sample(r);
 
     SOFT_ASSERT(offset + 1 < cdf_size_);
@@ -472,13 +473,13 @@ Distribution_implicit_pdf_lut_lin_1D::sample_continuous(float r) const {
     return {result, v};
 }
 
-inline float Distribution_implicit_pdf_lut_lin_1D::pdf(uint32_t index) const {
+inline float Distribution_implicit_pdf_lut_lin_1D::pdf(uint32_t index) const noexcept {
     SOFT_ASSERT(index + 1 < cdf_size_);
 
     return cdf_[index + 1] - cdf_[index];
 }
 
-inline float Distribution_implicit_pdf_lut_lin_1D::pdf(float u) const {
+inline float Distribution_implicit_pdf_lut_lin_1D::pdf(float u) const noexcept {
     uint32_t const offset = static_cast<uint32_t>(u * size_);
 
     SOFT_ASSERT(offset + 1 < cdf_size_);
@@ -486,20 +487,20 @@ inline float Distribution_implicit_pdf_lut_lin_1D::pdf(float u) const {
     return cdf_[offset + 1] - cdf_[offset];
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_lin_1D::lut_size() const {
+inline uint32_t Distribution_implicit_pdf_lut_lin_1D::lut_size() const noexcept {
     return lut_size_ - 2;
 }
 
-inline size_t Distribution_implicit_pdf_lut_lin_1D::num_bytes() const {
+inline size_t Distribution_implicit_pdf_lut_lin_1D::num_bytes() const noexcept {
     return sizeof(*this) + sizeof(float) * cdf_size_ + sizeof(uint32_t) * lut_size_;
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_lin_1D::map(float s) const {
+inline uint32_t Distribution_implicit_pdf_lut_lin_1D::map(float s) const noexcept {
     return static_cast<uint32_t>(s * lut_range_);
 }
 
 inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float const* data,
-                                                                        uint32_t     len) {
+                                                                        uint32_t     len) noexcept {
     float integral = 0.f;
     for (uint32_t i = 0; i < len; ++i) {
         integral += data[i];
@@ -535,7 +536,7 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
     size_ = static_cast<float>(len);
 }
 
-inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) {
+inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) noexcept {
     lut_size_  = lut_size + 2;
     lut_       = memory::allocate_aligned<uint32_t>(lut_size_);
     lut_range_ = static_cast<float>(lut_size);

@@ -62,75 +62,81 @@ class Scene {
     using Entity         = entity::Entity;
     using Prop           = prop::Prop;
 
-    Scene(take::Settings const& settings);
-    ~Scene();
+    Scene(take::Settings const& settings) noexcept;
 
-    void finish();
+    ~Scene() noexcept;
 
-    math::AABB const& aabb() const;
+    void finish() noexcept;
 
-    math::AABB caustic_aabb() const;
+    math::AABB const& aabb() const noexcept;
 
-    bool is_infinite() const;
+    math::AABB caustic_aabb() const noexcept;
 
-    bool has_volumes() const;
+    bool is_infinite() const noexcept;
 
-    bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
+    bool has_volumes() const noexcept;
 
-    bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const;
+    bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const noexcept;
 
-    bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
+    bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const noexcept;
 
-    bool intersect_p(Ray const& ray, Node_stack& node_stack) const;
+    bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const noexcept;
 
-    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const;
+    bool intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept;
+
+    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const noexcept;
 
     bool thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                         float3& ta) const;
+                         float3& ta) const noexcept;
 
-    float    tick_duration() const;
-    float    simulation_time() const;
-    uint64_t current_tick() const;
+    float    tick_duration() const noexcept;
 
-    Entity* entity(size_t index) const;
-    Entity* entity(std::string_view name) const;
+    float    simulation_time() const noexcept;
 
-    std::vector<light::Light*> const& lights() const;
+    uint64_t current_tick() const noexcept;
+
+    Entity* entity(size_t index) const noexcept;
+    Entity* entity(std::string_view name) const noexcept;
+
+    std::vector<light::Light*> const& lights() const noexcept;
 
     struct Light {
         const light::Light& ref;
         float               pdf;
     };
-    Light light(uint32_t id) const;
-    Light random_light(float random) const;
+    Light light(uint32_t id) const noexcept;
+    Light random_light(float random) const noexcept;
 
-    void  tick(thread::Pool& thread_pool);
-    float seek(float time, thread::Pool& thread_pool);
+    void  tick(thread::Pool& thread_pool) noexcept;
 
-    void compile(thread::Pool& pool);
+    float seek(float time, thread::Pool& thread_pool) noexcept;
 
-    entity::Dummy* create_dummy();
-    entity::Dummy* create_dummy(std::string const& name);
+    void compile(thread::Pool& pool) noexcept;
 
-    Prop* create_prop(Shape_ptr const& shape, Materials const& materials);
+    entity::Dummy* create_dummy() noexcept;
+    entity::Dummy* create_dummy(std::string const& name) noexcept;
 
-    Prop* create_prop(Shape_ptr const& shape, Materials const& materials, std::string const& name);
+    Prop* create_prop(Shape_ptr const& shape, Materials const& materials) noexcept;
 
-    light::Prop_light*       create_prop_light(Prop* prop, uint32_t part);
-    light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
+    Prop* create_prop(Shape_ptr const& shape, Materials const& materials, std::string const& name) noexcept;
 
-    void add_extension(Entity* extension);
-    void add_extension(Entity* extension, std::string const& name);
+    light::Prop_light*       create_prop_light(Prop* prop, uint32_t part) noexcept;
 
-    void add_material(Material_ptr const& material);
-    void add_animation(std::shared_ptr<animation::Animation> const& animation);
+    light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part) noexcept;
 
-    void create_animation_stage(Entity* entity, animation::Animation* animation);
+    void add_extension(Entity* extension) noexcept;
+    void add_extension(Entity* extension, std::string const& name) noexcept;
 
-    size_t num_bytes() const;
+    void add_material(Material_ptr const& material) noexcept;
+
+    void add_animation(std::shared_ptr<animation::Animation> const& animation) noexcept;
+
+    void create_animation_stage(Entity* entity, animation::Animation* animation) noexcept;
+
+    size_t num_bytes() const noexcept;
 
   private:
-    void add_named_entity(Entity* entity, std::string const& name);
+    void add_named_entity(Entity* entity, std::string const& name) noexcept;
 
     take::Settings const take_settings_;
 

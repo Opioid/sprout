@@ -9,30 +9,30 @@ namespace spectrum {
 template <int32_t N>
 class Discrete_spectral_power_distribution {
   public:
-    Discrete_spectral_power_distribution() = default;
+    Discrete_spectral_power_distribution() noexcept = default;
 
-    Discrete_spectral_power_distribution(const Interpolated& interpolated);
+    Discrete_spectral_power_distribution(Interpolated const& interpolated) noexcept;
 
-    constexpr float value(int32_t bin) const;
+    float constexpr value(int32_t bin) const noexcept;
 
-    void set_bin(int32_t bin, float value);
+    void set_bin(int32_t bin, float value) noexcept;
 
-    void set_at_wavelength(float lambda, float value);
+    void set_at_wavelength(float lambda, float value) noexcept;
 
-    void clear(float s);
+    void clear(float s) noexcept;
 
-    constexpr float3 XYZ() const;
+    float3 constexpr XYZ() const noexcept;
 
-    constexpr float3 normalized_XYZ() const;
+    float3 constexpr normalized_XYZ() const noexcept;
 
-    static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
+    static void init(float start_wavelength = 380.f, float end_wavelength = 720.f) noexcept;
 
-    static int32_t constexpr num_bands();
+    static int32_t constexpr num_bands() noexcept;
 
-    static float constexpr wavelength_center(int32_t bin);
+    static float constexpr wavelength_center(int32_t bin) noexcept;
 
-    static float constexpr start_wavelength();
-    static float constexpr end_wavelength();
+    static float constexpr start_wavelength() noexcept;
+    static float constexpr end_wavelength() noexcept;
 
   private:
     alignas(16) float values_[N];

@@ -11,19 +11,20 @@
 
 namespace scene::light {
 
-void Prop_light::init(Prop* prop, uint32_t part) {
+void Prop_light::init(Prop* prop, uint32_t part) noexcept {
     prop_ = prop;
     part_ = part;
 }
 
 Light::Transformation const& Prop_light::transformation_at(float           time,
-                                                           Transformation& transformation) const {
+                                                           Transformation& transformation) const
+    noexcept {
     return prop_->transformation_at(time, transformation);
 }
 
 bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Worker const& worker, Sample_to& result) const {
+                        Worker const& worker, Sample_to& result) const noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -51,7 +52,7 @@ bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& 
 
 bool Prop_light::sample(float3 const& p, Transformation const& transformation,
                         sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                        Sample_to& result) const {
+                        Sample_to& result) const noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -67,7 +68,7 @@ bool Prop_light::sample(float3 const& p, Transformation const& transformation,
 }
 
 float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter filter,
-                            Worker const& worker) const {
+                            Worker const& worker) const noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -77,7 +78,7 @@ float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter 
 
 bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
-                        Sample_from& result) const {
+                        Sample_from& result) const noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -93,7 +94,7 @@ bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& 
 }
 
 float3 Prop_light::evaluate(Sample_from const& sample, float time, Sampler_filter filter,
-                            Worker const& worker) const {
+                            Worker const& worker) const noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -102,7 +103,7 @@ float3 Prop_light::evaluate(Sample_from const& sample, float time, Sampler_filte
 }
 
 float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-                      Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+                      Sampler_filter /*filter*/, Worker const& /*worker*/) const noexcept {
     Transformation temp;
     auto const&    transformation = prop_->transformation_at(ray.time, temp);
 
@@ -113,7 +114,7 @@ float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool tot
     return prop_->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
 }
 
-float3 Prop_light::power(math::AABB const& scene_bb) const {
+float3 Prop_light::power(math::AABB const& scene_bb) const noexcept {
     float const area = prop_->area(part_);
 
     float3 const radiance = prop_->material(part_)->average_radiance(area);
@@ -125,11 +126,11 @@ float3 Prop_light::power(math::AABB const& scene_bb) const {
     }
 }
 
-void Prop_light::prepare_sampling(uint32_t light_id, thread::Pool& pool) {
+void Prop_light::prepare_sampling(uint32_t light_id, thread::Pool& pool) noexcept {
     prop_->prepare_sampling(part_, light_id, false, pool);
 }
 
-bool Prop_light::equals(Prop const* prop, uint32_t part) const {
+bool Prop_light::equals(Prop const* prop, uint32_t part) const noexcept {
     return prop_ == prop && part_ == part;
 }
 

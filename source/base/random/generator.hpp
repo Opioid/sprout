@@ -9,13 +9,14 @@ namespace rnd {
 
 class Generator {
   public:
-    Generator(uint64_t state = 0, uint64_t sequence = 0);
+    Generator(uint64_t state = 0, uint64_t sequence = 0) noexcept;
 
-    uint32_t random_uint();
-    float    random_float();
+    uint32_t random_uint() noexcept;
+
+    float    random_float() noexcept;
 
   private:
-    uint32_t advance_pcg32();
+    uint32_t advance_pcg32() noexcept;
 
     uint64_t state_;
     uint64_t inc_;

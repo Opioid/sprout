@@ -13,7 +13,7 @@ namespace sampler {
 Golden_ratio::Golden_ratio(rnd::Generator& rng) noexcept
     : Sampler(rng), samples_2D_(nullptr), samples_1D_(nullptr) {}
 
-Golden_ratio::~Golden_ratio() {
+Golden_ratio::~Golden_ratio() noexcept {
     memory::free_aligned(samples_2D_);
 }
 

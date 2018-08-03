@@ -16,7 +16,7 @@ static inline float3 constexpr XYZ_to_linear_RGB(float3 const& xyz) noexcept {
                   0.0052982f * xyz[0] - 0.0146949f * xyz[1] + 1.0093968f * xyz[2]);
 }
 
-constexpr uint32_t CIE_XYZ_Num = (830 - 360) + 1;  // 471
+uint32_t constexpr CIE_XYZ_Num = (830 - 360) + 1;  // 471
 
 extern float const CIE_X_360_830_1nm[CIE_XYZ_Num];
 extern float const CIE_Y_360_830_1nm[CIE_XYZ_Num];
