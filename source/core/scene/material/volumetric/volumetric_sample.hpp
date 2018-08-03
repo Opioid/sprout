@@ -9,7 +9,7 @@ class Sample final : public material::Sample {
   public:
     virtual Layer const& base_layer() const override final;
 
-    virtual bxdf::Result evaluate(f_float3 wi) const override final;
+    virtual bxdf::Result evaluate(float3 const& wi) const override final;
 
     virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
@@ -19,9 +19,9 @@ class Sample final : public material::Sample {
 
   public:
     struct Layer : public material::Sample::Layer {
-        float phase(f_float3 wo, f_float3 wi) const;
+        float phase(float3 const& wo, float3 const& wi) const;
 
-        float sample(f_float3 wo, float2 r2, float3& wi) const;
+        float sample(float3 const& wo, float2 r2, float3& wi) const;
 
         float anisotropy;
     };

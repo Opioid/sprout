@@ -9,7 +9,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample::evaluate(f_float3 wi) const {
+bxdf::Result Sample::evaluate(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }

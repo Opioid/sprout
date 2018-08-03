@@ -8,12 +8,12 @@ class Glass_thin : public Material {
   public:
     Glass_thin(Sampler_settings const& sampler_settings);
 
-    virtual material::Sample const& sample(f_float3 wo, Renderstate const& rs,
+    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
                                            Worker const& worker,
                                            uint32_t      depth) const override final;
 
-    virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
+    virtual float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, float time,
                                    Sampler_filter filter,
                                    Worker const&  worker) const override final;
 

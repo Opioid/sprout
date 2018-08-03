@@ -29,8 +29,9 @@ void Material::compile() {}
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-float3 Material::evaluate_radiance(f_float3 /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
-                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
+                                   float /*time*/, Sampler_filter /*filter*/,
+                                   Worker const& /*worker*/) const {
     return float3(0.f);
 }
 
@@ -61,7 +62,7 @@ float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter,
     }
 }
 
-float3 Material::thin_absorption(f_float3 /*wo*/, f_float3 /*n*/, float2 uv, float time,
+float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, float2 uv, float time,
                                  Sampler_filter filter, Worker const& worker) const {
     return float3(opacity(uv, time, filter, worker));
 }
@@ -86,7 +87,7 @@ CC Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
     return {float3::identity(), float3::identity()};
 }
 
-CC Material::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
+CC Material::collision_coefficients(float3 const& /*p*/, Sampler_filter /*filter*/,
                                     Worker const& /*worker*/) const {
     return {float3::identity(), float3::identity()};
 }

@@ -11,11 +11,11 @@ struct Ray;
 
 struct AABB {
     AABB() = default;
-    constexpr AABB(f_float3 min, f_float3 max);
+    constexpr AABB(float3 const& min, float3 const& max);
     AABB(FVector min, FVector max);
 
-    f_float3 min() const;
-    f_float3 max() const;
+    float3 const& min() const;
+    float3 const& max() const;
 
     float3 position() const;
     float3 halfsize() const;
@@ -24,7 +24,7 @@ struct AABB {
     float surface_area() const;
     float volume() const;
 
-    bool intersect(f_float3 p) const;
+    bool intersect(float3 const& p) const;
 
     bool intersect_p(Ray const& ray) const;
 
@@ -35,12 +35,12 @@ struct AABB {
 
     bool intersect_inside(Ray const& ray, float& hit_t) const;
 
-    float3 normal(f_float3 p) const;
+    float3 normal(float3 const& p) const;
 
-    void set_min_max(f_float3 min, f_float3 max);
+    void set_min_max(float3 const& min, float3 const& max);
     void set_min_max(FVector min, FVector max);
 
-    void insert(f_float3 p);
+    void insert(float3 const& p);
 
     void scale(float x);
     void add(float x);

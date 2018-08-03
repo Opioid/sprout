@@ -130,14 +130,14 @@ inline float Triangle_MT::area() const noexcept {
     return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(f_float3 scale) const noexcept {
+inline float Triangle_MT::area(float3 const& scale) const noexcept {
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;
     return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
-static inline bool intersect(f_float3 a, f_float3 b, f_float3 c, math::Ray& ray,
+static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, math::Ray& ray,
                              float2& uv) noexcept {
     float3 e1 = b - a;
     float3 e2 = c - a;
@@ -268,7 +268,8 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
     return false;
 }
 
-static inline bool intersect_p(f_float3 a, f_float3 b, f_float3 c, math::Ray const& ray) noexcept {
+static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c,
+                               math::Ray const& ray) noexcept {
     // Implementation A
     /*	float3 e1 = b.p - a.p;
             float3 e2 = c.p - a.p;
@@ -362,18 +363,19 @@ static inline bool intersect_p(FVector origin, FVector direction, FVector min_t,
                  _mm_ucomige_ss(hit_t, min_t) & _mm_ucomige_ss(max_t, hit_t));
 }
 
-static inline void interpolate_p(f_float3 a, f_float3 b, f_float3 c, float2 uv,
+static inline void interpolate_p(float3 const& a, float3 const& b, float3 const& c, float2 uv,
                                  float3& p) noexcept {
     float const w = 1.f - uv[0] - uv[1];
 
     p = w * a + uv[0] * b + uv[1] * c;
 }
 
-static inline float area(f_float3 a, f_float3 b, f_float3 c) noexcept {
+static inline float area(float3 const& a, float3 const& b, float3 const& c) noexcept {
     return 0.5f * math::length(math::cross(b - a, c - a));
 }
 
-static inline float area(f_float3 a, f_float3 b, f_float3 c, f_float3 scale) noexcept {
+static inline float area(float3 const& a, float3 const& b, float3 const& c,
+                         float3 const& scale) noexcept {
     float3 const sa = scale * a;
     float3 const sb = scale * b;
     float3 const sc = scale * c;
@@ -649,7 +651,7 @@ inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c)
 }
 
 inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                  f_float3 scale) noexcept {
+                  float3 const& scale) noexcept {
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;

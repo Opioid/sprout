@@ -19,7 +19,7 @@ inline void Clearcoat::set(float f0, float alpha, float alpha2) {
 }
 
 template <typename Layer>
-Result Clearcoat::evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_dot_h,
+Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                            float /*internal_ior*/, Layer const& layer) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
@@ -37,7 +37,7 @@ Result Clearcoat::evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_d
 }
 
 template <typename Layer>
-void Clearcoat::sample(f_float3 wo, float /*internal_ior*/, Layer const& layer,
+void Clearcoat::sample(float3 const& wo, float /*internal_ior*/, Layer const& layer,
                        sampler::Sampler& sampler, float3& attenuation, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -59,7 +59,7 @@ inline void Thinfilm::set(float ior, float alpha, float alpha2, float thickness)
 }
 
 template <typename Layer>
-Result Thinfilm::evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_dot_h,
+Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                           float internal_ior, Layer const& layer) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
@@ -77,7 +77,7 @@ Result Thinfilm::evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_do
 }
 
 template <typename Layer>
-void Thinfilm::sample(f_float3 wo, float internal_ior, Layer const& layer,
+void Thinfilm::sample(float3 const& wo, float internal_ior, Layer const& layer,
                       sampler::Sampler& sampler, float3& attenuation, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -92,13 +92,13 @@ void Thinfilm::sample(f_float3 wo, float internal_ior, Layer const& layer,
 }
 
 template <typename Coating>
-Result Coating_layer<Coating>::evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_dot_h,
-                                        float internal_ior) const {
+Result Coating_layer<Coating>::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
+                                        float wo_dot_h, float internal_ior) const {
     return Coating::evaluate(wi, wo, h, wo_dot_h, internal_ior, *this);
 }
 
 template <typename Coating>
-void Coating_layer<Coating>::sample(f_float3 wo, float internal_ior, sampler::Sampler& sampler,
+void Coating_layer<Coating>::sample(float3 const& wo, float internal_ior, sampler::Sampler& sampler,
                                     float3& attenuation, bxdf::Sample& result) const {
     Coating::sample(wo, internal_ior, *this, sampler, attenuation, result);
 }

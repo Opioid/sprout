@@ -99,7 +99,7 @@ class Tree {
     Vector triangle_normal_v(uint32_t index) const noexcept;
 
     float triangle_area(uint32_t index) const noexcept;
-    float triangle_area(uint32_t index, f_float3 scale) const noexcept;
+    float triangle_area(uint32_t index, float3 const& scale) const noexcept;
 
     void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const noexcept;
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;

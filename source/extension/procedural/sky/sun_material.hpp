@@ -10,12 +10,12 @@ class Sun_material : public Material {
   public:
     Sun_material(Sky& sky);
 
-    virtual const scene::material::Sample& sample(f_float3 wo, scene::Renderstate const& rs,
+    virtual const scene::material::Sample& sample(float3 const& wo, scene::Renderstate const& rs,
                                                   Sampler_filter filter, sampler::Sampler& sampler,
                                                   scene::Worker const& worker,
                                                   uint32_t             depth) const override final;
 
-    virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
                                      Sampler_filter       filter,
                                      const scene::Worker& worker) const override final;
 
@@ -32,12 +32,12 @@ class Sun_baked_material : public Material {
   public:
     Sun_baked_material(Sky& sky);
 
-    virtual const scene::material::Sample& sample(f_float3 wo, scene::Renderstate const& rs,
+    virtual const scene::material::Sample& sample(float3 const& wo, scene::Renderstate const& rs,
                                                   Sampler_filter filter, sampler::Sampler& sampler,
                                                   scene::Worker const& worker,
                                                   uint32_t             depth) const override final;
 
-    virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
                                      Sampler_filter       filter,
                                      const scene::Worker& worker) const override final;
 

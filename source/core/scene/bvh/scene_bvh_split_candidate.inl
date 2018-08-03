@@ -12,11 +12,12 @@ Split_candidate<T>::Split_candidate(const math::Plane& plane, uint8_t axis)
     : plane_(plane), axis_(axis) {}
 
 template <typename T>
-Split_candidate<T>::Split_candidate(uint8_t split_axis, f_float3 pos, const std::vector<T*>& data)
+Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos,
+                                    const std::vector<T*>& data)
     : Split_candidate(split_axis, pos, data.begin(), data.end()) {}
 
 template <typename T>
-Split_candidate<T>::Split_candidate(uint8_t split_axis, f_float3 pos, index begin, index end)
+Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end)
     : axis_(split_axis) {
     key_ = 0;
 

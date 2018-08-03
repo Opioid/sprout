@@ -13,7 +13,7 @@
 namespace scene::material::oren_nayar {
 
 template <typename Layer>
-float3 Isotropic::reflection(f_float3 wi, f_float3 wo, float n_dot_wi, float n_dot_wo,
+float3 Isotropic::reflection(float3 const& wi, float3 const& wo, float n_dot_wi, float n_dot_wo,
                              Layer const& layer, float& pdf) {
     float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.alpha2_);
 
@@ -26,8 +26,8 @@ float3 Isotropic::reflection(f_float3 wi, f_float3 wo, float n_dot_wi, float n_d
 }
 
 template <typename Layer>
-float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result) {
+float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         sampler::Sampler& sampler, bxdf::Sample& result) {
     float2 s2d = sampler.generate_sample_2D();
 
     float3 is = math::sample_hemisphere_cosine(s2d);
@@ -47,7 +47,8 @@ float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, sample
     return n_dot_wi;
 }
 
-inline float Isotropic::f(f_float3 wi, f_float3 wo, float n_dot_wi, float n_dot_wo, float alpha2) {
+inline float Isotropic::f(float3 const& wi, float3 const& wo, float n_dot_wi, float n_dot_wo,
+                          float alpha2) {
     float wi_dot_wo = math::dot(wi, wo);
 
     float s = wi_dot_wo - n_dot_wi * n_dot_wo;

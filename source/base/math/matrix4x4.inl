@@ -430,7 +430,8 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03, fl
     : r{Vector4f_a(m00, m01, m02, m03), Vector4f_a(m10, m11, m12, m13),
         Vector4f_a(m20, m21, m22, m23), Vector4f_a(m30, m31, m32, m33)} {}
 
-static inline Matrix4x4f_a compose(VMatrix3x3f_a basis, FVector3f_a scale, FVector3f_a origin) {
+static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a const& scale,
+                                   Vector3f_a const& origin) {
     Matrix4x4f_a m;
 
     m.r[0][0] = basis.r[0][0] * scale[0];
@@ -456,7 +457,8 @@ static inline Matrix4x4f_a compose(VMatrix3x3f_a basis, FVector3f_a scale, FVect
     return m;
 }
 
-static inline Matrix4x4f_a compose(VMatrix4x4f_a basis, FVector3f_a scale, FVector3f_a origin) {
+static inline Matrix4x4f_a compose(Matrix4x4f_a const& basis, Vector3f_a const& scale,
+                                   Vector3f_a const& origin) {
     Matrix4x4f_a m;
 
     m.r[0][0] = basis.r[0][0] * scale[0];
@@ -502,7 +504,7 @@ inline Vector3f_a Matrix4x4f_a::w() const {
     return r[3].xyz();
 }
 
-static inline Matrix4x4f_a operator*(VMatrix4x4f_a a, const Matrix4x4f_a& b) {
+static inline Matrix4x4f_a operator*(Matrix4x4f_a const& a, const Matrix4x4f_a& b) {
     return Matrix4x4f_a((a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0]) +
                             (a.r[0][2] * b.r[2][0] + a.r[0][3] * b.r[3][0]),
                         (a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1]) +
@@ -540,25 +542,25 @@ static inline Matrix4x4f_a operator*(VMatrix4x4f_a a, const Matrix4x4f_a& b) {
                             (a.r[3][2] * b.r[2][3] + a.r[3][3] * b.r[3][3]));
 }
 
-static inline Vector3f_a transform_vector(VMatrix4x4f_a m, FVector3f_a v) {
+static inline Vector3f_a transform_vector(Matrix4x4f_a const& m, Vector3f_a const& v) {
     return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
                       v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
                       v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector_transposed(VMatrix4x4f_a m, FVector3f_a v) {
+static inline Vector3f_a transform_vector_transposed(Matrix4x4f_a const& m, Vector3f_a const& v) {
     return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
                       v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
                       v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_point(VMatrix4x4f_a m, FVector3f_a v) {
+static inline Vector3f_a transform_point(Matrix4x4f_a const& m, Vector3f_a const& v) {
     return Vector3f_a((v[0] * m.r[0][0] + v[1] * m.r[1][0]) + (v[2] * m.r[2][0] + m.r[3][0]),
                       (v[0] * m.r[0][1] + v[1] * m.r[1][1]) + (v[2] * m.r[2][1] + m.r[3][1]),
                       (v[0] * m.r[0][2] + v[1] * m.r[1][2]) + (v[2] * m.r[2][2] + m.r[3][2]));
 }
 
-static inline Matrix4x4f_a affine_inverted(VMatrix4x4f_a m) {
+static inline Matrix4x4f_a affine_inverted(Matrix4x4f_a const& m) {
     Matrix4x4f_a o;
 
     float id;
@@ -624,7 +626,7 @@ static inline Matrix4x4f_a affine_inverted(VMatrix4x4f_a m) {
     return o;
 }
 
-static inline void set_translation(Matrix4x4f_a& m, FVector3f_a v) {
+static inline void set_translation(Matrix4x4f_a& m, Vector3f_a const& v) {
     m.r[0][0] = 1.f;
     m.r[0][1] = 0.f;
     m.r[0][2] = 0.f;

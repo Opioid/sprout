@@ -37,7 +37,7 @@ class Provider : public scene::entity::Extension_provider {
     void simulate_particle(float3 const& start, float peak_height, rnd::Generator& rng,
                            Volume_rasterizer& renderer) const;
 
-    float3 world_to_grid(f_float3 position) const;
+    float3 world_to_grid(float3 const& position) const;
 
     scene::Loader* scene_loader_ = nullptr;
 

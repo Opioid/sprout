@@ -18,7 +18,7 @@ Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_side
 
 Emissionmap::~Emissionmap() {}
 
-material::Sample const& Emissionmap::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Emissionmap::sample(float3 const& wo, Renderstate const& rs,
                                             Sampler_filter filter, sampler::Sampler& /*sampler*/,
                                             Worker const& worker, uint32_t depth) const {
     auto& sample = worker.sample<Sample>(depth);
@@ -35,8 +35,9 @@ material::Sample const& Emissionmap::sample(f_float3 wo, Renderstate const& rs,
     return sample;
 }
 
-float3 Emissionmap::evaluate_radiance(f_float3 /*wi*/, float2 uv, float /*area*/, float /*time*/,
-                                      Sampler_filter filter, Worker const& worker) const {
+float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
+                                      float /*time*/, Sampler_filter filter,
+                                      Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_factor_ * emission_map_.sample_3(sampler, uv);
 }

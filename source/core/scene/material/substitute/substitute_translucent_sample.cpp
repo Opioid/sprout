@@ -12,7 +12,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_translucent::evaluate(f_float3 wi) const {
+bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
     // No side check needed because the material is two-sided by definition.
 
     // This is a bit complicated to explain:

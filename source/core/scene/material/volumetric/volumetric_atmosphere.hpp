@@ -17,7 +17,7 @@ class Atmosphere final : public Material {
                                  math::Ray const& ray, float step_size, rnd::Generator& rng,
                                  Sampler_filter filter, Worker const& worker) const override final;
 
-    virtual float3 scattering(Transformation const& transformation, f_float3 p,
+    virtual float3 scattering(Transformation const& transformation, float3 const& p,
                               Sampler_filter filter, Worker const& worker) const override final;
 
     virtual size_t num_bytes() const override final;

@@ -67,7 +67,7 @@ class Indexed_data {
 
     float area(uint32_t index) const noexcept;
 
-    float area(uint32_t index, f_float3 scale) const noexcept;
+    float area(uint32_t index, float3 const& scale) const noexcept;
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
 
@@ -125,7 +125,7 @@ class Indexed_data_interleaved {
     float3 normal(uint32_t index) const;
 
     float area(uint32_t index) const;
-    float area(uint32_t index, f_float3 scale) const;
+    float area(uint32_t index, float3 const& scale) const;
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
@@ -197,7 +197,7 @@ class Hybrid_data {
     Vector normal_v(uint32_t index) const;
 
     float area(uint32_t index) const;
-    float area(uint32_t index, f_float3 scale) const;
+    float area(uint32_t index, float3 const& scale) const;
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 

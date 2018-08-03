@@ -19,7 +19,7 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample_rough::evaluate(f_float3 wi) const {
+bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }

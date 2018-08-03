@@ -10,7 +10,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 /*wi*/) const {
+bxdf::Result Sample::evaluate(float3 const& /*wi*/) const {
     return {float3::identity(), 0.f};
 }
 
@@ -27,7 +27,7 @@ bool Sample::is_pure_emissive() const {
     return true;
 }
 
-void Sample::Layer::set(f_float3 radiance) {
+void Sample::Layer::set(float3 const& radiance) {
     radiance_ = radiance;
 }
 

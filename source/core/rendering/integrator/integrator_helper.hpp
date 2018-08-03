@@ -10,11 +10,11 @@ static inline float attenuation(float distance, float c) {
     return math::exp(-distance * c);
 }
 
-static inline float3 attenuation(float distance, f_float3 c) {
+static inline float3 attenuation(float distance, float3 const& c) {
     return math::exp(-distance * c);
 }
 
-static inline float3 attenuation(f_float3 start, f_float3 end, f_float3 c) {
+static inline float3 attenuation(float3 const& start, float3 const& end, float3 const& c) {
     return attenuation(math::distance(start, end), c);
 }
 

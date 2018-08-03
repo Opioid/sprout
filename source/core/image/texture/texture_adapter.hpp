@@ -40,11 +40,11 @@ class Adapter {
 
     using Sampler_3D = sampler::Sampler_3D;
 
-    float  sample_1(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
-    float2 sample_2(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
-    float3 sample_3(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
+    float  sample_1(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
+    float2 sample_2(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
+    float3 sample_3(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
 
-    float3 address(Sampler_3D const& sampler, f_float3 uvw) const noexcept;
+    float3 address(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
 
   private:
     std::shared_ptr<Texture> texture_;

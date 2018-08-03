@@ -106,7 +106,7 @@ scene::prop::Interface_stack& Worker::interface_stack() noexcept {
     return interface_stack_;
 }
 
-void Worker::interface_change(f_float3 dir, Intersection const& intersection) noexcept {
+void Worker::interface_change(float3 const& dir, Intersection const& intersection) noexcept {
     if (intersection.same_hemisphere(dir)) {
         interface_stack_.remove(intersection);
     } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {

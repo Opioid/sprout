@@ -64,7 +64,7 @@ float3 Sky::sun_wi(float v) const {
     return math::normalize(ws - sun_rotation_.r[2]);
 }
 
-float Sky::sun_v(f_float3 wi) const {
+float Sky::sun_v(float3 const& wi) const {
     float3 const k  = wi - sun_rotation_.r[2];
     float3 const sk = k / math::degrees_to_radians(model_.degrees());
 

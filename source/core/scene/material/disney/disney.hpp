@@ -25,8 +25,8 @@ class Isotropic {
                                    Layer const& layer);
 
     template <typename Layer>
-    static float reflect(f_float3 wo, float n_dot_wo, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result);
+    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         sampler::Sampler& sampler, bxdf::Sample& result);
 
   private:
     template <typename Layer>
@@ -40,8 +40,8 @@ class Isotropic_no_lambert {
                                    Layer const& layer);
 
     template <typename Layer>
-    static float reflect(f_float3 wo, float n_dot_wo, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result);
+    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         sampler::Sampler& sampler, bxdf::Sample& result);
 
   private:
     template <typename Layer>
@@ -59,8 +59,8 @@ class Isotropic_scaled_lambert {
                                    Layer const& layer);
 
     template <typename Layer>
-    static float reflect(f_float3 wo, float n_dot_wo, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result);
+    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         sampler::Sampler& sampler, bxdf::Sample& result);
 
   private:
     template <typename Layer>

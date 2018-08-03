@@ -10,8 +10,8 @@
 namespace scene::material::ggx {
 
 template <typename Layer>
-bool check(const bxdf::Sample& result, f_float3 wo, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-           Layer const& layer, float2 xi) {
+bool check(const bxdf::Sample& result, float3 const& wo, float n_dot_wi, float n_dot_wo,
+           float wo_dot_h, Layer const& layer, float2 xi) {
     using namespace testing;
 
     if (!std::isfinite(result.pdf) || !math::all_finite(result.wi) ||

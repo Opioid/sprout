@@ -13,7 +13,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 wi) const {
+bxdf::Result Sample::evaluate(float3 const& wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const pdf      = n_dot_wi * math::Pi_inv;
     return {pdf * layer_.diffuse_color, pdf};

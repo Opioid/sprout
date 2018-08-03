@@ -27,7 +27,7 @@ using namespace scene;
 
 Sky_material::Sky_material(Sky& sky) : Material(sky) {}
 
-material::Sample const& Sky_material::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Sky_material::sample(float3 const& wo, Renderstate const& rs,
                                              Sampler_filter /*filter*/,
                                              sampler::Sampler& /*sampler*/, Worker const& worker,
                                              uint32_t depth) const {
@@ -42,8 +42,9 @@ material::Sample const& Sky_material::sample(f_float3 wo, Renderstate const& rs,
     return sample;
 }
 
-float3 Sky_material::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/, float /*time*/,
-                                       Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+float3 Sky_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
+                                       float /*time*/, Sampler_filter /*filter*/,
+                                       Worker const& /*worker*/) const {
     return sky_.model().evaluate_sky(wi);
 }
 
@@ -63,7 +64,7 @@ Sky_baked_material::Sky_baked_material(Sky& sky) : Material(sky) {}
 
 Sky_baked_material::~Sky_baked_material() {}
 
-material::Sample const& Sky_baked_material::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Sky_baked_material::sample(float3 const& wo, Renderstate const& rs,
                                                    Sampler_filter filter,
                                                    sampler::Sampler& /*sampler*/,
                                                    Worker const& worker, uint32_t depth) const {
@@ -81,7 +82,7 @@ material::Sample const& Sky_baked_material::sample(f_float3 wo, Renderstate cons
     return sample;
 }
 
-float3 Sky_baked_material::evaluate_radiance(f_float3 /*wi*/, float2        uv, float /*area*/,
+float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
                                              float /*time*/, Sampler_filter filter,
                                              Worker const& worker) const {
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);

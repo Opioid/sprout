@@ -23,11 +23,11 @@ class Clearcoat : public Coating_base {
 
   protected:
     template <typename Layer>
-    Result evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_dot_h, float internal_ior,
-                    Layer const& layer) const;
+    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                    float internal_ior, Layer const& layer) const;
 
     template <typename Layer>
-    void sample(f_float3 wo, float internal_ior, Layer const& layer, sampler::Sampler& sampler,
+    void sample(float3 const& wo, float internal_ior, Layer const& layer, sampler::Sampler& sampler,
                 float3& attenuation, bxdf::Sample& result) const;
 
   public:
@@ -42,11 +42,11 @@ class Thinfilm : public Coating_base {
 
   protected:
     template <typename Layer>
-    Result evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_dot_h, float internal_ior,
-                    Layer const& layer) const;
+    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                    float internal_ior, Layer const& layer) const;
 
     template <typename Layer>
-    void sample(f_float3 wo, float internal_ior, Layer const& layer, sampler::Sampler& sampler,
+    void sample(float3 const& wo, float internal_ior, Layer const& layer, sampler::Sampler& sampler,
                 float3& attenuation, bxdf::Sample& result) const;
 
   public:
@@ -59,11 +59,11 @@ class Thinfilm : public Coating_base {
 template <typename Coating>
 class Coating_layer : public Sample::Layer, public Coating {
   public:
-    Result evaluate(f_float3 wi, f_float3 wo, float3 const& h, float wo_dot_h,
+    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     float internal_ior) const;
 
-    void sample(f_float3 wo, float internal_ior, sampler::Sampler& sampler, float3& attenuation,
-                bxdf::Sample& result) const;
+    void sample(float3 const& wo, float internal_ior, sampler::Sampler& sampler,
+                float3& attenuation, bxdf::Sample& result) const;
 };
 
 using Clearcoat_layer = Coating_layer<Clearcoat>;

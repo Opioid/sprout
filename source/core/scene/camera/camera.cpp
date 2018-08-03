@@ -106,7 +106,7 @@ void Camera::set_motion_blur(bool motion_blur) noexcept {
 
 void Camera::on_set_transformation() noexcept {}
 
-Ray Camera::create_ray(f_float3 origin, f_float3 direction, float time) noexcept {
+Ray Camera::create_ray(float3 const& origin, float3 const& direction, float time) noexcept {
     return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);
 }
 

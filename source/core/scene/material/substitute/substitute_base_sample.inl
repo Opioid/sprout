@@ -21,7 +21,7 @@ float3 Sample_base<Diffuse, Layer_data...>::radiance() const {
 template <typename Diffuse, class... Layer_data>
 template <typename Coating>
 bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
-    f_float3 wi, const Coating& coating_layer) const {
+    float3 const& wi, const Coating& coating_layer) const {
     float3 const h = math::normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
@@ -105,8 +105,8 @@ void Sample_base<Diffuse, Layer_data...>::pure_specular_sample_and_coating(
 }
 
 template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::set(f_float3 color, f_float3 radiance, float ior,
-                                                     float constant_f0, float roughness,
+void Sample_base<Diffuse, Layer_data...>::Layer::set(float3 const& color, float3 const& radiance,
+                                                     float ior, float constant_f0, float roughness,
                                                      float metallic) {
     diffuse_color_ = (1.f - metallic) * color;
     f0_            = math::lerp(float3(constant_f0), color, metallic);
@@ -122,8 +122,10 @@ void Sample_base<Diffuse, Layer_data...>::Layer::set(f_float3 color, f_float3 ra
 }
 
 template <typename Diffuse, class... Layer_data>
-bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(f_float3 wi, f_float3 wo,
-                                                                       f_float3 h, float wo_dot_h,
+bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(float3 const& wi,
+                                                                       float3 const& wo,
+                                                                       float3 const& h,
+                                                                       float         wo_dot_h,
                                                                        bool avoid_caustics) const {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
@@ -150,7 +152,7 @@ bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(f_float3 
 }
 
 template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(f_float3          wo,
+void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(float3 const&     wo,
                                                                 sampler::Sampler& sampler,
                                                                 bool              avoid_caustics,
                                                                 bxdf::Sample&     result) const {
@@ -174,7 +176,7 @@ void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(f_float3        
 }
 
 template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(f_float3          wo,
+void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(float3 const&     wo,
                                                                  sampler::Sampler& sampler,
                                                                  bxdf::Sample&     result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
@@ -190,7 +192,7 @@ void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(f_float3       
 }
 
 template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::pure_specular_sample(f_float3          wo,
+void Sample_base<Diffuse, Layer_data...>::Layer::pure_specular_sample(float3 const&     wo,
                                                                       sampler::Sampler& sampler,
                                                                       bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);

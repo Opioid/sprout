@@ -210,7 +210,7 @@ static inline Quaternion create(float3x3 const& m) noexcept {
     return temp;
 }
 
-static inline float3x3 create_matrix3x3(FQuaternion q) noexcept {
+static inline float3x3 create_matrix3x3(Quaternion const& q) noexcept {
     float const d = dot(q, q);
     float const s = 2.f / d;
 
@@ -265,14 +265,14 @@ static inline Quaternion create_rotation_z(float a) noexcept {
     return Quaternion(0.f, 0.f, std::sin(a * 0.5f), std::cos(a * 0.5f));
 }
 
-static inline Quaternion mul(FQuaternion a, FQuaternion b) noexcept {
+static inline Quaternion mul(Quaternion const& a, Quaternion const& b) noexcept {
     return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
                       (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
                       (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
                       (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
-static inline Quaternion slerp(FQuaternion a, FQuaternion b, float t) noexcept {
+static inline Quaternion slerp(Quaternion const& a, Quaternion const& b, float t) noexcept {
     // calc cosine theta
     float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 

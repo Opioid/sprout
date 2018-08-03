@@ -14,10 +14,10 @@
 
 namespace scene::light {
 
-bool Prop_image_light::sample(f_float3 p, f_float3 n, Transformation const& transformation,
-                              bool total_sphere, sampler::Sampler& sampler,
-                              uint32_t   sampler_dimension, Worker const& /*worker*/,
-                              Sample_to& result) const {
+bool Prop_image_light::sample(float3 const& p, float3 const& n,
+                              Transformation const& transformation, bool total_sphere,
+                              sampler::Sampler& sampler, uint32_t  sampler_dimension,
+                              Worker const& /*worker*/, Sample_to& result) const {
     auto const material = prop_->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -44,7 +44,7 @@ bool Prop_image_light::sample(f_float3 p, f_float3 n, Transformation const& tran
     return false;
 }
 
-bool Prop_image_light::sample(f_float3 p, Transformation const& transformation,
+bool Prop_image_light::sample(float3 const& p, Transformation const& transformation,
                               sampler::Sampler& sampler, uint32_t  sampler_dimension,
                               Worker const& /*worker*/, Sample_to& result) const {
     auto const material = prop_->material(part_);

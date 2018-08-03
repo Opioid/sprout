@@ -152,14 +152,14 @@ float3 Plane::thin_absorption(Ray const& ray, Transformation const& transformati
     return float3(0.f);
 }
 
-bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 /*n*/,
+bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*n*/,
                    Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                    sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                    Node_stack& /*node_stack*/, Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
-bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation const& /*transformation*/,
+bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*transformation*/,
                    float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                    uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
                    Sample_to& /*sample*/) const noexcept {
@@ -179,7 +179,7 @@ float Plane::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/
     return 0.f;
 }
 
-bool Plane::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                    Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                    Sample_to& /*sample*/) const noexcept {
     return false;
@@ -202,7 +202,7 @@ float Plane::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Plane::area(uint32_t /*part*/, f_float3 /*scale*/) const noexcept {
+float Plane::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
     return 1.f;
 }
 

@@ -23,7 +23,7 @@ class alignas(64) Tracking_single final : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    float3 direct_light(Ray const& ray, f_float3 position, Intersection const& intersection,
+    float3 direct_light(Ray const& ray, float3 const& position, Intersection const& intersection,
                         Worker& worker) noexcept;
 
     sampler::Random sampler_;

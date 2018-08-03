@@ -13,7 +13,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return base_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 wi) const {
+bxdf::Result Sample::evaluate(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -95,7 +95,7 @@ void Sample::Base_layer::set(float3 const& color_a, float3 const& color_b, float
     alpha2_  = alpha2;
 }
 
-bxdf::Result Sample::Base_layer::evaluate(f_float3 wi, f_float3 wo, float3 const& h,
+bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                           float wo_dot_h) const {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
@@ -113,7 +113,7 @@ bxdf::Result Sample::Base_layer::evaluate(f_float3 wi, f_float3 wo, float3 const
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample::Base_layer::sample(f_float3 wo, sampler::Sampler& sampler,
+void Sample::Base_layer::sample(float3 const& wo, sampler::Sampler& sampler,
                                 bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -135,7 +135,7 @@ void Sample::Flakes_layer::set(float3 const& ior, float3 const& absorption, floa
     weight_     = weight;
 }
 
-bxdf::Result Sample::Flakes_layer::evaluate(f_float3 wi, f_float3 wo, float3 const& h,
+bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                             float wo_dot_h, float3& fresnel_result) const {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
@@ -149,8 +149,8 @@ bxdf::Result Sample::Flakes_layer::evaluate(f_float3 wi, f_float3 wo, float3 con
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample::Flakes_layer::sample(f_float3 wo, sampler::Sampler& sampler, float3& fresnel_result,
-                                  bxdf::Sample& result) const {
+void Sample::Flakes_layer::sample(float3 const& wo, sampler::Sampler& sampler,
+                                  float3& fresnel_result, bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     const fresnel::Conductor_weighted conductor({ior_, absorption_}, weight_);

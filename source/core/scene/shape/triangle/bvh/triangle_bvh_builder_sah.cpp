@@ -42,7 +42,7 @@ Builder_SAH::Build_node::~Build_node() {
     delete children[1];
 }
 
-Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, f_float3 p, bool spatial)
+Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, float3 const& p, bool spatial)
     : aabb_0_(math::AABB::empty()),
       aabb_1_(math::AABB::empty()),
       d_(p.v[split_axis]),
@@ -263,7 +263,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
             split_candidates_.emplace_back(Z, max, false);
         }
     } else {
-        f_float3 min = aabb.min();
+        float3 const& min = aabb.min();
 
         float3 const step = (2.f * halfsize) / static_cast<float>(num_slices_);
         for (uint32_t i = 1, len = num_slices_; i < len; ++i) {

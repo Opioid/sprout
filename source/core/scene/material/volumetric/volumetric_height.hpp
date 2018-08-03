@@ -19,7 +19,7 @@ public:
 
 private:
 
-        virtual float density(f_float3 p, Transformation const& transformation,
+        virtual float density(float3 const& p, Transformation const& transformation,
                                                   Sampler_filter filter, Worker const& worker) const
 override final;
 

@@ -14,7 +14,7 @@ Material::Material(Sampler_settings const& sampler_settings)
 
 Material::~Material() {}
 
-material::Sample const& Material::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
                                          Worker const& worker, uint32_t depth) const {
     if (rs.subsurface) {
@@ -42,7 +42,7 @@ CM Material::control_medium() const {
     return cm_;
 }
 
-void Material::set_attenuation(f_float3 absorption_color, f_float3 scattering_color,
+void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                                float distance) {
     attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
 

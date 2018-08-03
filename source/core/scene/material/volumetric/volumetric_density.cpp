@@ -20,7 +20,7 @@ CC Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
     return cc_;
 }
 
-CC Density::collision_coefficients(f_float3 uvw, Sampler_filter filter,
+CC Density::collision_coefficients(float3 const& uvw, Sampler_filter filter,
                                    Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 

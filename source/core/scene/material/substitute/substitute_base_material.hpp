@@ -9,7 +9,7 @@ class Material_base : public material::Material {
   public:
     Material_base(Sampler_settings const& sampler_settings, bool two_sided);
 
-    virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
                                      Sampler_filter filter,
                                      Worker const&  worker) const override final;
 
@@ -28,7 +28,7 @@ class Material_base : public material::Material {
     void set_surface_map(Texture_adapter const& surface_map);
     void set_emission_map(Texture_adapter const& emission_map);
 
-    void set_color(f_float3 color);
+    void set_color(float3 const& color);
     void set_roughness(float roughness);
     void set_metallic(float metallic);
     void set_emission_factor(float emission_factor);
@@ -37,7 +37,7 @@ class Material_base : public material::Material {
     using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 
     template <typename Sample>
-    void set_sample(f_float3 wo, Renderstate const& rs, Texture_sampler_2D const& sampler,
+    void set_sample(float3 const& wo, Renderstate const& rs, Texture_sampler_2D const& sampler,
                     Sample& sample) const;
 
     Texture_adapter color_map_;

@@ -13,7 +13,7 @@ class Sample_base : public material::Sample {
 
   protected:
     template <typename Coating>
-    bxdf::Result base_and_coating_evaluate(f_float3 wi, const Coating& coating_layer) const;
+    bxdf::Result base_and_coating_evaluate(float3 const& wi, const Coating& coating_layer) const;
 
     template <typename Coating>
     void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler,
@@ -33,18 +33,19 @@ class Sample_base : public material::Sample {
 
   public:
     struct Layer : material::Sample::Layer, Layer_data... {
-        void set(f_float3 color, f_float3 radiance, float ior, float constant_f0, float roughness,
-                 float metallic);
+        void set(float3 const& color, float3 const& radiance, float ior, float constant_f0,
+                 float roughness, float metallic);
 
-        bxdf::Result base_evaluate(f_float3 wi, f_float3 wo, f_float3 h, float wo_dot_h,
-                                   bool avoid_caustics) const;
+        bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
+                                   float wo_dot_h, bool avoid_caustics) const;
 
-        void diffuse_sample(f_float3 wo, sampler::Sampler& sampler, bool avoid_caustics,
+        void diffuse_sample(float3 const& wo, sampler::Sampler& sampler, bool avoid_caustics,
                             bxdf::Sample& result) const;
 
-        void specular_sample(f_float3 wo, sampler::Sampler& sampler, bxdf::Sample& result) const;
+        void specular_sample(float3 const& wo, sampler::Sampler& sampler,
+                             bxdf::Sample& result) const;
 
-        void pure_specular_sample(f_float3 wo, sampler::Sampler& sampler,
+        void pure_specular_sample(float3 const& wo, sampler::Sampler& sampler,
                                   bxdf::Sample& result) const;
 
         float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const;

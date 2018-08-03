@@ -40,7 +40,7 @@ void Material_subsurface::compile() {
     //	majorant_mu_t_ = max_extinction;
 }
 
-material::Sample const& Material_subsurface::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstate const& rs,
                                                     Sampler_filter filter,
                                                     sampler::Sampler& /*sampler*/,
                                                     Worker const& worker, uint32_t depth) const {
@@ -73,8 +73,8 @@ void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
 }
 
-void Material_subsurface::set_attenuation(f_float3 absorption_color, f_float3 scattering_color,
-                                          float distance) {
+void Material_subsurface::set_attenuation(float3 const& absorption_color,
+                                          float3 const& scattering_color, float distance) {
     absorption_color_ = absorption_color;
 
     attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
@@ -133,7 +133,7 @@ CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
     return {mu_a, mu_s};
 }
 
-CC Material_subsurface::collision_coefficients(f_float3 p, Sampler_filter filter,
+CC Material_subsurface::collision_coefficients(float3 const& p, Sampler_filter filter,
                                                Worker const& worker) const {
     SOFT_ASSERT(density_map_.is_valid());
 
@@ -175,7 +175,8 @@ size_t Material_subsurface::sample_size() {
     return sizeof(Sample_subsurface);
 }
 
-float Material_subsurface::density(f_float3 p, Sampler_filter filter, Worker const& worker) const {
+float Material_subsurface::density(float3 const& p, Sampler_filter filter,
+                                   Worker const& worker) const {
     // p is in object space already
 
     float3 p_g = 0.5f * (float3(1.f) + p);
@@ -185,7 +186,7 @@ float Material_subsurface::density(f_float3 p, Sampler_filter filter, Worker con
     return density_map_.sample_1(sampler, p_g);
 }
 
-float3 Material_subsurface::color(f_float3 p, Sampler_filter /*filter*/,
+float3 Material_subsurface::color(float3 const& p, Sampler_filter /*filter*/,
                                   Worker const& /*worker*/) const {
     float3 p_g = 0.5f * (float3(1.f) + p);
 

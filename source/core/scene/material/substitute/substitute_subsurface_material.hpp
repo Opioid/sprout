@@ -13,7 +13,7 @@ class Material_subsurface final : public Material_base {
 
     virtual void compile() override final;
 
-    virtual material::Sample const& sample(f_float3 wo, Renderstate const& rs,
+    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
                                            Worker const& worker,
                                            uint32_t      depth) const override final;
@@ -22,7 +22,8 @@ class Material_subsurface final : public Material_base {
 
     void set_density_map(Texture_adapter const& density_map);
 
-    void set_attenuation(f_float3 absorption_color, f_float3 scattering_color, float distance);
+    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+                         float distance);
 
     void set_volumetric_anisotropy(float anisotropy);
 
@@ -40,7 +41,7 @@ class Material_subsurface final : public Material_base {
     virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
-    virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
+    virtual CC collision_coefficients(float3 const& p, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
     virtual CM control_medium() const override final;
@@ -53,9 +54,9 @@ class Material_subsurface final : public Material_base {
     static size_t sample_size();
 
   private:
-    float density(f_float3 p, Sampler_filter filter, Worker const& worker) const;
+    float density(float3 const& p, Sampler_filter filter, Worker const& worker) const;
 
-    float3 color(f_float3 p, Sampler_filter filter, Worker const& worker) const;
+    float3 color(float3 const& p, Sampler_filter filter, Worker const& worker) const;
 
     Texture_adapter density_map_;
 

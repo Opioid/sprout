@@ -22,7 +22,7 @@ class Grid final : public Density {
     virtual size_t num_bytes() const override final;
 
   private:
-    virtual float density(f_float3 uvw, Sampler_filter filter,
+    virtual float density(float3 const& uvw, Sampler_filter filter,
                           Worker const& worker) const override final;
 
     Texture_adapter grid_;
@@ -43,7 +43,7 @@ class Emission_grid final : public Material {
     virtual size_t num_bytes() const override final;
 
   private:
-    float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
+    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const;
 
     Texture_adapter grid_;
 };
@@ -61,9 +61,9 @@ class Flow_vis_grid final : public Material {
     virtual size_t num_bytes() const override final;
 
   private:
-    float density(f_float3 p, Sampler_filter filter, Worker const& worker) const;
+    float density(float3 const& p, Sampler_filter filter, Worker const& worker) const;
 
-    float3 emission(f_float3 p, Sampler_filter filter, Worker const& worker) const;
+    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const;
 
     Texture_adapter grid_;
 };

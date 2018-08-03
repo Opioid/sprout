@@ -10,7 +10,7 @@ class Material : public material::Material {
     Material(Sampler_settings const& sampler_settings);
     virtual ~Material() override;
 
-    virtual material::Sample const& sample(f_float3 wo, Renderstate const& rs,
+    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
                                            Worker const& worker,
                                            uint32_t      depth) const override final;
@@ -19,7 +19,8 @@ class Material : public material::Material {
 
     virtual CM control_medium() const override final;
 
-    void set_attenuation(f_float3 absorption_color, f_float3 scattering_color, float distance);
+    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+                         float distance);
 
     void set_anisotropy(float anisotropy);
 

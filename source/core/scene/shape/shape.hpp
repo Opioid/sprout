@@ -39,8 +39,8 @@ class Shape {
 
     math::AABB const& aabb() const noexcept;
 
-    float3 object_to_texture_point(f_float3 p) const noexcept;
-    float3 object_to_texture_vector(f_float3 v) const noexcept;
+    float3 object_to_texture_point(float3 const& p) const noexcept;
+    float3 object_to_texture_vector(float3 const& v) const noexcept;
 
     virtual math::AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
         noexcept;
@@ -74,14 +74,15 @@ class Shape {
                                    Materials const& materials, Sampler_filter filter,
                                    Worker const& worker) const noexcept = 0;
 
-    virtual bool sample(uint32_t part, f_float3 p, f_float3 n, Transformation const& transformation,
+    virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
+                        Transformation const& transformation, float area, bool two_sided,
+                        sampler::Sampler& sampler, uint32_t sampler_dimension,
+                        Node_stack& node_stack, Sample_to& sample) const noexcept = 0;
+
+    virtual bool sample(uint32_t part, float3 const& p, Transformation const& transformation,
                         float area, bool two_sided, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const
         noexcept = 0;
-
-    virtual bool sample(uint32_t part, f_float3 p, Transformation const& transformation, float area,
-                        bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample_to& sample) const noexcept = 0;
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
@@ -96,8 +97,9 @@ class Shape {
 
     // The following three functions are used for textured lights
     // and should have the uv weight baked in!
-    virtual bool sample(uint32_t part, f_float3 p, float2 uv, Transformation const& transformation,
-                        float area, bool two_sided, Sample_to& sample) const noexcept = 0;
+    virtual bool sample(uint32_t part, float3 const& p, float2 uv,
+                        Transformation const& transformation, float area, bool two_sided,
+                        Sample_to& sample) const noexcept = 0;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
                         bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
@@ -109,7 +111,7 @@ class Shape {
 
     virtual float uv_weight(float2 uv) const noexcept = 0;
 
-    virtual float area(uint32_t part, f_float3 scale) const noexcept = 0;
+    virtual float area(uint32_t part, float3 const& scale) const noexcept = 0;
 
     virtual bool is_complex() const noexcept;
     virtual bool is_finite() const noexcept;

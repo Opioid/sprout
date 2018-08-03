@@ -26,7 +26,7 @@ CC Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
     return cc_;
 }
 
-CC Homogeneous::collision_coefficients(f_float3 /*p*/, Sampler_filter /*filter*/,
+CC Homogeneous::collision_coefficients(float3 const& /*p*/, Sampler_filter /*filter*/,
                                        Worker const& /*worker*/) const {
     return cc_;
 }

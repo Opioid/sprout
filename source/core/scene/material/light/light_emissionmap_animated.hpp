@@ -16,11 +16,11 @@ class Emissionmap_animated : public Material {
 
     virtual void tick(float absolute_time, float time_slice) override final;
 
-    virtual material::Sample const& sample(f_float3 wo, Renderstate const& rs,
+    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
                                            Worker const& worker, uint32_t depth) const override;
 
-    virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
                                      Sampler_filter filter,
                                      Worker const&  worker) const override final;
 

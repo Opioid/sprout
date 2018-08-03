@@ -68,7 +68,7 @@ float Data_interleaved<Triangle>::area(uint32_t index) const {
 }
 
 template <typename Triangle>
-float Data_interleaved<Triangle>::area(uint32_t index, f_float3 scale) const {
+float Data_interleaved<Triangle>::area(uint32_t index, float3 const& scale) const {
     return triangles_[index].area(scale);
 }
 

@@ -21,7 +21,7 @@ Light::Transformation const& Prop_light::transformation_at(float           time,
     return prop_->transformation_at(time, transformation);
 }
 
-bool Prop_light::sample(f_float3 p, f_float3 n, Transformation const& transformation,
+bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
                         Worker const& worker, Sample_to& result) const {
     auto const material = prop_->material(part_);
@@ -49,8 +49,9 @@ bool Prop_light::sample(f_float3 p, f_float3 n, Transformation const& transforma
     return true;
 }
 
-bool Prop_light::sample(f_float3 p, Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const {
+bool Prop_light::sample(float3 const& p, Transformation const& transformation,
+                        sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
+                        Sample_to& result) const {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);

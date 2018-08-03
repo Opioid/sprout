@@ -14,7 +14,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 wi) const {
+bxdf::Result Sample::evaluate(float3 const& wi) const {
     float3 const n         = math::cross(layer_.t_, layer_.b_);
     bool const   same_side = math::dot(n, layer_.n_) > 0.f;
 

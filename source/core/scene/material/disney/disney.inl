@@ -31,8 +31,8 @@ bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_w
 }
 
 template <typename Layer>
-float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result) {
+float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         sampler::Sampler& sampler, bxdf::Sample& result) {
     float2 const s2d = sampler.generate_sample_2D();
     float3 const is  = math::sample_hemisphere_cosine(s2d);
     float3 const wi  = math::normalize(layer.tangent_to_world(is));
@@ -89,7 +89,7 @@ bxdf::Result Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, fl
 }
 
 template <typename Layer>
-float Isotropic_no_lambert::reflect(f_float3 wo, float n_dot_wo, Layer const& layer,
+float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
                                     sampler::Sampler& sampler, bxdf::Sample& result) {
     float2 const s2d = sampler.generate_sample_2D();
     float3 const is  = math::sample_hemisphere_cosine(s2d);
@@ -137,7 +137,7 @@ bxdf::Result Isotropic_scaled_lambert::reflection(float h_dot_wi, float n_dot_wi
 }
 
 template <typename Layer>
-float Isotropic_scaled_lambert::reflect(f_float3 wo, float n_dot_wo, Layer const& layer,
+float Isotropic_scaled_lambert::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
                                         sampler::Sampler& sampler, bxdf::Sample& result) {
     float2 const s2d = sampler.generate_sample_2D();
     float3 const is  = math::sample_hemisphere_cosine(s2d);

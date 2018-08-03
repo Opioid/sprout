@@ -9,7 +9,7 @@ namespace scene::material::sky {
 Material_overcast::Material_overcast(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-material::Sample const& Material_overcast::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Material_overcast::sample(float3 const& wo, Renderstate const& rs,
                                                   Sampler_filter /*filter*/,
                                                   sampler::Sampler& /*sampler*/,
                                                   Worker const& worker, uint32_t depth) const {
@@ -23,7 +23,7 @@ material::Sample const& Material_overcast::sample(f_float3 wo, Renderstate const
     return sample;
 }
 
-float3 Material_overcast::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
+float3 Material_overcast::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
                                             float /*time*/, Sampler_filter /*filter*/,
                                             Worker const& /*worker*/) const {
     return overcast(wi);
@@ -49,7 +49,7 @@ void Material_overcast::set_emission(float3 const& radiance) {
     color_ = radiance;
 }
 
-float3 Material_overcast::overcast(f_float3 wi) const {
+float3 Material_overcast::overcast(float3 const& wi) const {
     return ((1.f + 2.f * math::dot(float3(0.f, 1.f, 0.f), wi)) / 3.f) * color_;
 }
 

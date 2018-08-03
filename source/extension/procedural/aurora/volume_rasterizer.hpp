@@ -17,7 +17,7 @@ class Volume_rasterizer {
 
     void clear();
 
-    void splat(f_float3 position, float3 const& color);
+    void splat(float3 const& position, float3 const& color);
 
     float3* data();
 

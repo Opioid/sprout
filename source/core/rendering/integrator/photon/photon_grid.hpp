@@ -57,12 +57,12 @@ class Grid {
   private:
     uint32_t reduce(int32_t begin, int32_t end);
 
-    int32_t map1(f_float3 v) const;
+    int32_t map1(float3 const& v) const;
 
-    int3 map3(f_float3 v) const;
-    int3 map3(f_float3 v, int8_t adjacent[3]) const;
+    int3 map3(float3 const& v) const;
+    int3 map3(float3 const& v, int8_t adjacent[3]) const;
 
-    void adjacent_cells(f_float3 v, int2 cells[4]) const;
+    void adjacent_cells(float3 const& v, int2 cells[4]) const;
 
     static float3 scattering_coefficient(Intersection const&  intersection,
                                          scene::Worker const& worker);

@@ -64,7 +64,7 @@ class Builder_SAH /*: private Builder_base*/ {
 
     class Split_candidate {
       public:
-        Split_candidate(uint8_t split_axis, f_float3 p, bool spatial);
+        Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
 
         void evaluate(const References& references, float aabb_surface_area);
 

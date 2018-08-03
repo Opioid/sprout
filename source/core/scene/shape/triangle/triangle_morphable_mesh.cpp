@@ -168,7 +168,7 @@ float3 Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& tra
     return tree_.absorption(tray, ray.time, materials, filter, worker);
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 /*n*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*n*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
@@ -176,7 +176,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 /*n*/,
     return false;
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
@@ -197,7 +197,7 @@ float Morphable_mesh::pdf(Ray const& /*ray*/, const shape::Intersection& /*inter
     return 0.f;
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, Sample_to& /*sample*/) const noexcept {
     return false;
@@ -221,7 +221,7 @@ float Morphable_mesh::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Morphable_mesh::area(uint32_t /*part*/, f_float3 /*scale*/) const noexcept {
+float Morphable_mesh::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
     return 1.f;
 }
 

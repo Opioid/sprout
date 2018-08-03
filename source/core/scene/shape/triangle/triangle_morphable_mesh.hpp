@@ -42,11 +42,12 @@ class Morphable_mesh : public Shape, public Morphable_shape {
                            Materials const& materials, Sampler_filter filter,
                            Worker const& worker) const noexcept override final;
 
-    bool sample(uint32_t part, f_float3 p, f_float3 n, Transformation const& transformation,
-                float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                Node_stack& node_stack, Sample_to& sample) const noexcept override final;
+    bool sample(uint32_t part, float3 const& p, float3 const& n,
+                Transformation const& transformation, float area, bool two_sided,
+                sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                Sample_to& sample) const noexcept override final;
 
-    bool sample(uint32_t part, f_float3 p, Transformation const& transformation, float area,
+    bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
                 bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
                 Node_stack& node_stack, Sample_to& sample) const noexcept override final;
 
@@ -58,7 +59,7 @@ class Morphable_mesh : public Shape, public Morphable_shape {
               Transformation const& transformation, float area, bool two_sided,
               bool total_sphere) const noexcept override final;
 
-    bool sample(uint32_t part, f_float3 p, float2 uv, Transformation const& transformation,
+    bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& transformation,
                 float area, bool two_sided, Sample_to& sample) const noexcept override final;
 
     bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
@@ -71,7 +72,7 @@ class Morphable_mesh : public Shape, public Morphable_shape {
 
     float uv_weight(float2 uv) const noexcept override final;
 
-    float area(uint32_t part, f_float3 scale) const noexcept override final;
+    float area(uint32_t part, float3 const& scale) const noexcept override final;
 
     bool is_complex() const noexcept override final;
 

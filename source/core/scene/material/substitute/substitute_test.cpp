@@ -14,7 +14,7 @@
 namespace scene::material::substitute::testing {
 
 struct Setup {
-    void test(f_float3 wi, f_float3 wo, float3 const& t, float3 const& b, float3 const& n,
+    void test(float3 const& wi, float3 const& wo, float3 const& t, float3 const& b, float3 const& n,
               sampler::Sampler& sampler);
 
     float3 color       = float3(1.f);
@@ -113,8 +113,8 @@ void test() {
     */
 }
 
-void Setup::test(f_float3 wi, f_float3 wo, float3 const& t, float3 const& b, float3 const& n,
-                 sampler::Sampler& sampler) {
+void Setup::test(float3 const& wi, float3 const& wo, float3 const& t, float3 const& b,
+                 float3 const& n, sampler::Sampler& sampler) {
     Sample sample;
 
     sample.layer_.set(color, radiance, ior, constant_f0, roughness, metallic);

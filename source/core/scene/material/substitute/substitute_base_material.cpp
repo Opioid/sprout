@@ -12,8 +12,9 @@ namespace scene::material::substitute {
 Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
-float3 Material_base::evaluate_radiance(f_float3 /*wi*/, float2 uv, float /*area*/, float /*time*/,
-                                        Sampler_filter filter, Worker const& worker) const {
+float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
+                                        float /*time*/, Sampler_filter filter,
+                                        Worker const& worker) const {
     if (emission_map_.is_valid()) {
         // For some reason Clang needs this to find inherited Material::sampler_key_
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -64,7 +65,7 @@ void Material_base::set_emission_map(Texture_adapter const& emission_map) {
     emission_map_ = emission_map;
 }
 
-void Material_base::set_color(f_float3 color) {
+void Material_base::set_color(float3 const& color) {
     color_ = color;
 }
 

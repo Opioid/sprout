@@ -518,7 +518,7 @@ float Tree<Data>::triangle_area(uint32_t index) const noexcept {
 }
 
 template <typename Data>
-float Tree<Data>::triangle_area(uint32_t index, f_float3 scale) const noexcept {
+float Tree<Data>::triangle_area(uint32_t index, float3 const& scale) const noexcept {
     return data_.area(index, scale);
 }
 

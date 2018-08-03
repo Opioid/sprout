@@ -24,7 +24,7 @@ class Sky : public scene::entity::Entity {
 
     float3 sun_wi(float v) const;
 
-    float sun_v(f_float3 wi) const;
+    float sun_v(float3 const& wi) const;
 
     bool sky_changed_since_last_check();
     bool sun_changed_since_last_check();

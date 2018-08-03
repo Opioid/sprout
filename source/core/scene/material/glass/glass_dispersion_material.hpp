@@ -9,7 +9,7 @@ class Glass_dispersion final : public Glass {
   public:
     Glass_dispersion(Sampler_settings const& sampler_settings);
 
-    virtual material::Sample const& sample(f_float3 wo, Renderstate const& rs,
+    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
                                            Worker const& worker,
                                            uint32_t      depth) const override final;

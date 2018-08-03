@@ -125,16 +125,16 @@ float3 Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trans
     return float3(0.f);
 }
 
-bool Canopy::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
-                    float area, bool two_sided, sampler::Sampler& sampler,
-                    uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const
-    noexcept {
+bool Canopy::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
+                    Transformation const& transformation, float area, bool two_sided,
+                    sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                    Sample_to& sample) const noexcept {
     return Canopy::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                           node_stack, sample);
 }
 
-bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, sampler::Sampler&    sampler,
+bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& transformation,
+                    float /*area*/, bool /*two_sided*/, sampler::Sampler&         sampler,
                     uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
     noexcept {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
@@ -169,7 +169,7 @@ float Canopy::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*
     return 1.f / (2.f * math::Pi);
 }
 
-bool Canopy::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
+bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
                     Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                     Sample_to&            sample) const noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
@@ -244,7 +244,7 @@ float Canopy::uv_weight(float2 uv) const noexcept {
     return 1.f;
 }
 
-float Canopy::area(uint32_t /*part*/, f_float3 /*scale*/) const noexcept {
+float Canopy::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
     return 2.f * math::Pi;
 }
 

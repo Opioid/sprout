@@ -34,11 +34,11 @@ float3 Model::sun_direction() const {
     return sun_direction_;
 }
 
-void Model::set_sun_direction(f_float3 direction) {
+void Model::set_sun_direction(float3 const& direction) {
     sun_direction_ = direction;
 }
 
-void Model::set_ground_albedo(f_float3 albedo) {
+void Model::set_ground_albedo(float3 const& albedo) {
     ground_albedo_ = albedo;
 }
 
@@ -46,7 +46,7 @@ void Model::set_turbidity(float turbidity) {
     turbidity_ = turbidity;
 }
 
-float3 Model::evaluate_sky(f_float3 wi) const {
+float3 Model::evaluate_sky(float3 const& wi) const {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
     float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
@@ -74,7 +74,7 @@ float3 Model::evaluate_sky(f_float3 wi) const {
     return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
 }
 
-float3 Model::evaluate_sky_and_sun(f_float3 wi) const {
+float3 Model::evaluate_sky_and_sun(float3 const& wi) const {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
     float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 

@@ -290,14 +290,15 @@ float3 Mesh::thin_absorption(Ray const& ray, Transformation const& transformatio
     return tree_.absorption(tray, ray.time, materials, filter, worker);
 }
 
-bool Mesh::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
-                  float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& node_stack, Sample_to& sample) const noexcept {
+bool Mesh::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
+                  Transformation const& transformation, float area, bool two_sided,
+                  sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                  Sample_to& sample) const noexcept {
     return Mesh::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                         node_stack, sample);
 }
 
-bool Mesh::sample(uint32_t part, f_float3 p, Transformation const& transformation, float area,
+bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
                   bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
                   Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float const  r  = sampler.generate_sample_1D(sampler_dimension);
@@ -380,7 +381,7 @@ float Mesh::pdf(Ray const& ray, const shape::Intersection&      intersection,
     return sl / (c * area);
 }
 
-bool Mesh::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const noexcept {
     return false;
@@ -403,7 +404,7 @@ float Mesh::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Mesh::area(uint32_t part, f_float3 scale) const noexcept {
+float Mesh::area(uint32_t part, float3 const& scale) const noexcept {
     // HACK: This only really works for uniform scales!
     return distributions_[part].distribution.integral() * scale[0] * scale[1];
 }

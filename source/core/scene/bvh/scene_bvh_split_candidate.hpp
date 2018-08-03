@@ -11,11 +11,11 @@ template <typename T>
 class Split_candidate {
   public:
     Split_candidate(const math::Plane& plane, uint8_t axis);
-    Split_candidate(uint8_t split_axis, f_float3 pos, const std::vector<T*>& data);
+    Split_candidate(uint8_t split_axis, float3 const& pos, const std::vector<T*>& data);
 
     using index = typename std::vector<T*>::iterator;
 
-    Split_candidate(uint8_t split_axis, f_float3 pos, index begin, index end);
+    Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end);
 
     uint64_t key() const;
 

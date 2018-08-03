@@ -34,7 +34,7 @@ size_t Grid::num_bytes() const {
     return sizeof(*this) + tree_.num_bytes();
 }
 
-float Grid::density(f_float3 uvw, Sampler_filter filter, Worker const& worker) const {
+float Grid::density(float3 const& uvw, Sampler_filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     return grid_.sample_1(sampler, uvw);
@@ -69,7 +69,7 @@ size_t Emission_grid::num_bytes() const {
     return sizeof(*this);
 }
 
-float3 Emission_grid::emission(f_float3 p, Sampler_filter filter, Worker const& worker) const {
+float3 Emission_grid::emission(float3 const& p, Sampler_filter filter, Worker const& worker) const {
     // p is in object space already
 
     float3 p_g = 0.5f * (float3(1.f) + p);
@@ -126,7 +126,7 @@ size_t Flow_vis_grid::num_bytes() const {
     return sizeof(*this);
 }
 
-float Flow_vis_grid::density(f_float3 p, Sampler_filter filter, Worker const& worker) const {
+float Flow_vis_grid::density(float3 const& p, Sampler_filter filter, Worker const& worker) const {
     // p is in object space already
 
     float3 p_g = 0.5f * (float3(1.f) + p);
@@ -137,7 +137,7 @@ float Flow_vis_grid::density(f_float3 p, Sampler_filter filter, Worker const& wo
     return grid_.sample_1(sampler, p_g);
 }
 
-float3 Flow_vis_grid::emission(f_float3 p, Sampler_filter filter, Worker const& worker) const {
+float3 Flow_vis_grid::emission(float3 const& p, Sampler_filter filter, Worker const& worker) const {
     // p is in object space already
 
     float3 p_g = 0.5f * (float3(1.f) + p);

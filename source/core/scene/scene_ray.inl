@@ -6,8 +6,8 @@
 
 namespace scene {
 
-inline Ray::Ray(f_float3 origin, f_float3 direction, float min_t, float max_t, uint32_t depth,
-                float time, float wavelength /*, Properties properties*/)
+inline Ray::Ray(float3 const& origin, float3 const& direction, float min_t, float max_t,
+                uint32_t depth, float time, float wavelength /*, Properties properties*/)
     : math::Ray(origin, direction, min_t, max_t, depth),
       time(time),
       wavelength(wavelength) /*, properties(properties)*/ {}

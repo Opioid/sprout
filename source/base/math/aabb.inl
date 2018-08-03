@@ -11,18 +11,18 @@
 
 namespace math {
 
-inline constexpr AABB::AABB(f_float3 min, f_float3 max) : bounds{min, max} {}
+inline constexpr AABB::AABB(float3 const& min, float3 const& max) : bounds{min, max} {}
 
 inline AABB::AABB(FVector min, FVector max) {
     simd::store_float4(bounds[0].v, min);
     simd::store_float4(bounds[1].v, max);
 }
 
-inline f_float3 AABB::min() const {
+inline float3 const& AABB::min() const {
     return bounds[0];
 }
 
-inline f_float3 AABB::max() const {
+inline float3 const& AABB::max() const {
     return bounds[1];
 }
 
@@ -48,7 +48,7 @@ inline float AABB::volume() const {
     return d[0] * d[1] * d[2];
 }
 
-inline bool AABB::intersect(f_float3 p) const {
+inline bool AABB::intersect(float3 const& p) const {
     if (p[0] >= bounds[0][0] && p[0] <= bounds[1][0] && p[1] >= bounds[0][1] &&
         p[1] <= bounds[1][1] && p[2] >= bounds[0][2] && p[2] <= bounds[1][2]) {
         return true;
@@ -256,7 +256,7 @@ inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const {
                  _mm_comige_ss(ray_max_t, min_t) & _mm_comige_ss(max_t, min_t));
 }
 
-inline float3 AABB::normal(f_float3 p) const {
+inline float3 AABB::normal(float3 const& p) const {
     float3 normal;
 
     float3 const local_point = p - position();
@@ -285,7 +285,7 @@ inline float3 AABB::normal(f_float3 p) const {
     return normal;
 }
 
-inline void AABB::set_min_max(f_float3 min, f_float3 max) {
+inline void AABB::set_min_max(float3 const& min, float3 const& max) {
     bounds[0] = min;
     bounds[1] = max;
 }
@@ -295,7 +295,7 @@ inline void AABB::set_min_max(FVector min, FVector max) {
     simd::store_float4(bounds[1].v, max);
 }
 
-inline void AABB::insert(f_float3 p) {
+inline void AABB::insert(float3 const& p) {
     bounds[0] = math::min(p, bounds[0]);
     bounds[1] = math::max(p, bounds[1]);
 }

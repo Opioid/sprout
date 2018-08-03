@@ -67,11 +67,11 @@ class Material {
 
     virtual void tick(float absolute_time, float time_slice);
 
-    virtual const Sample& sample(f_float3 wo, Renderstate const& rs, Sampler_filter filter,
+    virtual const Sample& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
                                  sampler::Sampler& sampler, Worker const& worker,
                                  uint32_t depth) const = 0;
 
-    virtual float3 evaluate_radiance(f_float3 wi, float2 uv, float area, float time,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
                                      Sampler_filter filter, Worker const& worker) const;
 
     virtual float3 average_radiance(float area) const;
@@ -88,7 +88,7 @@ class Material {
 
     virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const;
 
-    virtual float3 thin_absorption(f_float3 wo, f_float3 n, float2 uv, float time,
+    virtual float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, float time,
                                    Sampler_filter filter, Worker const& worker) const;
 
     virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
@@ -102,7 +102,7 @@ class Material {
 
     virtual CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const;
 
-    virtual CC collision_coefficients(f_float3 p, Sampler_filter filter,
+    virtual CC collision_coefficients(float3 const& p, Sampler_filter filter,
                                       Worker const& worker) const;
 
     virtual CM control_medium() const;

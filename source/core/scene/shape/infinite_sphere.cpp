@@ -109,7 +109,7 @@ float3 Infinite_sphere::thin_absorption(Ray const& /*ray*/,
     return float3(0.f);
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 n,
+bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& n,
                              Transformation const& transformation, float /*area*/,
                              bool /*two_sided*/, sampler::Sampler& sampler,
                              uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
@@ -136,7 +136,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, f_float3 n,
     return true;
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/,
+bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
                              Transformation const& transformation, float /*area*/,
                              bool /*two_sided*/, sampler::Sampler& sampler,
                              uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
@@ -176,7 +176,7 @@ float Infinite_sphere::pdf(Ray const& /*ray*/, const shape::Intersection& /*inte
     }
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, f_float3 /*p*/, float2 uv,
+bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
                              Transformation const& transformation, float /*area*/,
                              bool /*two_sided*/, Sample_to& sample) const noexcept {
     float const phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
@@ -264,7 +264,7 @@ float Infinite_sphere::uv_weight(float2 uv) const noexcept {
     return sin_theta;
 }
 
-float Infinite_sphere::area(uint32_t /*part*/, f_float3 /*scale*/) const noexcept {
+float Infinite_sphere::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
     return 4.f * math::Pi;
 }
 

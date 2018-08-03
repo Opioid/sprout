@@ -40,7 +40,7 @@ void Material_coating<Coating>::set_coating_color(float3 const& color) {
 
 template <typename Coating>
 template <typename Sample>
-void Material_coating<Coating>::set_coating_basis(f_float3 wo, Renderstate const& rs,
+void Material_coating<Coating>::set_coating_basis(float3 const& wo, Renderstate const& rs,
                                                   Texture_sampler_2D const& sampler,
                                                   Sample&                   sample) const {
     if (Material_base::normal_map_ == coating_normal_map_) {

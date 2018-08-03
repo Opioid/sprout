@@ -316,16 +316,16 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
     return float3(0.f);
 }
 
-bool Sphere::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
-                    float area, bool two_sided, sampler::Sampler& sampler,
-                    uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const
-    noexcept {
+bool Sphere::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
+                    Transformation const& transformation, float area, bool two_sided,
+                    sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                    Sample_to& sample) const noexcept {
     return Sphere::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                           node_stack, sample);
 }
 
-bool Sphere::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transformation,
-                    float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
+bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
+                    float /*area*/, bool /*two_sided*/, sampler::Sampler&     sampler,
                     uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
     noexcept {
     float3 const axis                = transformation.position - p;
@@ -400,8 +400,9 @@ float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*inters
     return math::cone_pdf_uniform(cos_theta_max);
 }
 
-bool Sphere::sample(uint32_t /*part*/, f_float3 p, float2 uv, Transformation const& transformation,
-                    float area, bool /*two_sided*/, Sample_to& sample) const noexcept {
+bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
+                    Transformation const& transformation, float area, bool /*two_sided*/,
+                    Sample_to& sample) const noexcept {
     float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
     float theta = uv[1] * math::Pi;
 
@@ -472,7 +473,7 @@ float Sphere::uv_weight(float2 uv) const noexcept {
     return 1.f / sin_theta;
 }
 
-float Sphere::area(uint32_t /*part*/, f_float3 scale) const noexcept {
+float Sphere::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     return (4.f * math::Pi) * (scale[0] * scale[0]);
 }
 

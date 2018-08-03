@@ -13,7 +13,7 @@
 namespace scene::material::substitute {
 
 template <typename Sample>
-void Material_base::set_sample(f_float3 wo, Renderstate const& rs,
+void Material_base::set_sample(float3 const& wo, Renderstate const& rs,
                                Texture_sampler_2D const& sampler, Sample& sample) const {
     sample.set_basis(rs.geo_n, wo);
 

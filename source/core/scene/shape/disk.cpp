@@ -209,15 +209,16 @@ float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformatio
     return float3(0.f);
 }
 
-bool Disk::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
-                  float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& node_stack, Sample_to& sample) const noexcept {
+bool Disk::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
+                  Transformation const& transformation, float area, bool two_sided,
+                  sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                  Sample_to& sample) const noexcept {
     return Disk::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                         node_stack, sample);
 }
 
-bool Disk::sample(uint32_t /*part*/, f_float3 p, Transformation const& transformation, float area,
-                  bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
+                  float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
                   Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = math::sample_disk_concentric(r2);
@@ -294,7 +295,7 @@ float Disk::pdf(Ray const&            ray, const shape::Intersection& /*intersec
     return sl / (c * area);
 }
 
-bool Disk::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+bool Disk::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const noexcept {
     return false;
@@ -317,7 +318,7 @@ float Disk::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Disk::area(uint32_t /*part*/, f_float3 scale) const noexcept {
+float Disk::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     return math::Pi * scale[0] * scale[0];
 }
 

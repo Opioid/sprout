@@ -62,19 +62,19 @@ inline float2 Adapter::address(Sampler_2D const& sampler, float2 uv) const noexc
     return sampler.address(scale_ * uv);
 }
 
-inline float Adapter::sample_1(Sampler_3D const& sampler, f_float3 uvw) const noexcept {
+inline float Adapter::sample_1(Sampler_3D const& sampler, float3 const& uvw) const noexcept {
     return sampler.sample_1(*texture_, uvw);
 }
 
-inline float2 Adapter::sample_2(Sampler_3D const& sampler, f_float3 uvw) const noexcept {
+inline float2 Adapter::sample_2(Sampler_3D const& sampler, float3 const& uvw) const noexcept {
     return sampler.sample_2(*texture_, uvw);
 }
 
-inline float3 Adapter::sample_3(Sampler_3D const& sampler, f_float3 uvw) const noexcept {
+inline float3 Adapter::sample_3(Sampler_3D const& sampler, float3 const& uvw) const noexcept {
     return sampler.sample_3(*texture_, uvw);
 }
 
-inline float3 Adapter::address(Sampler_3D const& sampler, f_float3 uvw) const noexcept {
+inline float3 Adapter::address(Sampler_3D const& sampler, float3 const& uvw) const noexcept {
     return sampler.address(uvw);
 }
 

@@ -34,7 +34,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
     }
 }
 
-material::Sample const& Emissionmap_animated::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Emissionmap_animated::sample(float3 const& wo, Renderstate const& rs,
                                                      Sampler_filter filter,
                                                      sampler::Sampler& /*sampler*/,
                                                      Worker const& worker, uint32_t depth) const {
@@ -52,7 +52,7 @@ material::Sample const& Emissionmap_animated::sample(f_float3 wo, Renderstate co
     return sample;
 }
 
-float3 Emissionmap_animated::evaluate_radiance(f_float3 /*wi*/, float2        uv, float /*area*/,
+float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
                                                float /*time*/, Sampler_filter filter,
                                                Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);

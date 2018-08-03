@@ -9,7 +9,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 /*wi*/) const {
+bxdf::Result Sample::evaluate(float3 const& /*wi*/) const {
     return {float3::identity(), 0.f};
 }
 

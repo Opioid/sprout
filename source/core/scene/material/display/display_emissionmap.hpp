@@ -8,7 +8,7 @@ class Emissionmap : public light::Emissionmap {
   public:
     Emissionmap(Sampler_settings const& sampler_settings, bool two_sided);
 
-    virtual material::Sample const& sample(f_float3 wo, Renderstate const& rs,
+    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
                                            Worker const& worker,
                                            uint32_t      depth) const override final;

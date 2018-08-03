@@ -21,11 +21,11 @@ inline void Composed_transformation::set(math::Transformation const& t) {
     scale    = t.scale;
 }
 
-inline float3 Composed_transformation::world_to_object_point(f_float3 p) const {
+inline float3 Composed_transformation::world_to_object_point(float3 const& p) const {
     return math::transform_point(world_to_object, p);
 }
 
-inline float3 Composed_transformation::world_to_object_vector(f_float3 v) const {
+inline float3 Composed_transformation::world_to_object_vector(float3 const& v) const {
     return math::transform_vector(world_to_object, v);
 }
 

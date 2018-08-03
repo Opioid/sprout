@@ -42,7 +42,7 @@ struct Triangle_MT {
     float3 normal() const noexcept;
 
     float area() const noexcept;
-    float area(f_float3 scale) const noexcept;
+    float area(float3 const& scale) const noexcept;
 };
 
 struct Shading_vertex_MT {

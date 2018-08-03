@@ -16,7 +16,7 @@ const material::Sample::Layer& Sample::base_layer() const {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(f_float3 /*wi*/) const {
+bxdf::Result Sample::evaluate(float3 const& /*wi*/) const {
     return {float3::identity(), 0.f};
 }
 
@@ -61,7 +61,8 @@ void Sample::set(float3 const& refraction_color, float ior, float ior_outside) {
     ior_outside_ = ior_outside;
 }
 
-float Sample::BSDF::reflect(f_float3 wo, f_float3 n, float n_dot_wo, bxdf::Sample& result) {
+float Sample::BSDF::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
+                            bxdf::Sample& result) {
     result.reflection = float3(1.f);
     result.wi         = math::normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
@@ -72,8 +73,8 @@ float Sample::BSDF::reflect(f_float3 wo, f_float3 n, float n_dot_wo, bxdf::Sampl
     return 1.f;
 }
 
-float Sample::BSDF::refract(f_float3 wo, f_float3 n, f_float3 color, float n_dot_wo, float n_dot_t,
-                            float eta_i, bxdf::Sample& result) {
+float Sample::BSDF::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
+                            float n_dot_t, float eta_i, bxdf::Sample& result) {
     result.reflection = color;
     result.wi         = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * wo);
     result.pdf        = 1.f;

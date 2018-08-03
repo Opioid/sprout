@@ -9,7 +9,7 @@ class Sample : public material::Sample {
   public:
     virtual Layer const& base_layer() const override final;
 
-    virtual bxdf::Result evaluate(f_float3 wi) const override final;
+    virtual bxdf::Result evaluate(float3 const& wi) const override final;
 
     virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
 
@@ -23,10 +23,11 @@ class Sample : public material::Sample {
 
     class BSDF {
       public:
-        static float reflect(f_float3 wo, f_float3 n, float n_dot_wo, bxdf::Sample& result);
+        static float reflect(float3 const& wo, float3 const& n, float n_dot_wo,
+                             bxdf::Sample& result);
 
-        static float refract(f_float3 wo, f_float3 n, f_float3 color, float n_dot_wo, float n_dot_t,
-                             float eta_i, bxdf::Sample& result);
+        static float refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
+                             float n_dot_t, float eta_i, bxdf::Sample& result);
     };
 };
 

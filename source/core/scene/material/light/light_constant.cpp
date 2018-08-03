@@ -11,7 +11,7 @@ namespace scene::material::light {
 Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-material::Sample const& Constant::sample(f_float3 wo, Renderstate const& rs,
+material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
                                          Worker const& worker, uint32_t depth) const {
     auto& sample = worker.sample<Sample>(depth);
@@ -25,7 +25,7 @@ material::Sample const& Constant::sample(f_float3 wo, Renderstate const& rs,
     return sample;
 }
 
-float3 Constant::evaluate_radiance(f_float3 /*wi*/, float2 /*uv*/, float area, float /*time*/,
+float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float area, float /*time*/,
                                    Sampler_filter /*filter*/, Worker const& /*worker*/) const {
     return emittance_.radiance(area);
 }

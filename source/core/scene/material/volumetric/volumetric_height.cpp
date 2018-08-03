@@ -73,7 +73,7 @@ size_t Height::num_bytes() const {
         return sizeof(*this);
 }
 
-float Height::density(f_float3 p, Transformation const& transformation,
+float Height::density(float3 const& p, Transformation const& transformation,
                                           Sampler_filter filter, Worker const& worker) const {
         // p is in object space already
 

@@ -158,15 +158,16 @@ float3 Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transfo
     return float3(0.f);
 }
 
-bool Cube::sample(uint32_t part, f_float3 p, f_float3 /*n*/, Transformation const& transformation,
-                  float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& node_stack, Sample_to& sample) const noexcept {
+bool Cube::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
+                  Transformation const& transformation, float area, bool two_sided,
+                  sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                  Sample_to& sample) const noexcept {
     return Cube::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                         node_stack, sample);
 }
 
-bool Cube::sample(uint32_t /*part*/, f_float3 p, Transformation const&  transformation,
-                  float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
+bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
+                  float /*area*/, bool /*two_sided*/, sampler::Sampler&     sampler,
                   uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
     noexcept {
     float3 const axis                = transformation.position - p;
@@ -215,7 +216,7 @@ float Cube::pdf(Ray const&            ray, const shape::Intersection& /*intersec
     return math::cone_pdf_uniform(cos_theta_max);
 }
 
-bool Cube::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+bool Cube::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const noexcept {
     return false;
@@ -256,7 +257,7 @@ float Cube::uv_weight(float2 uv) const noexcept {
     return 1.f / sin_theta;
 }
 
-float Cube::area(uint32_t /*part*/, f_float3 scale) const noexcept {
+float Cube::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     return (4.f * math::Pi) * (scale[0] * scale[0]);
 }
 

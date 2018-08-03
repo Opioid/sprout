@@ -56,12 +56,12 @@ class Light {
     virtual Transformation const& transformation_at(float           time,
                                                     Transformation& transformation) const = 0;
 
-    virtual bool sample(f_float3 p, f_float3 n, Transformation const& transformation,
+    virtual bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
                         Worker const& worker, Sample_to& result) const = 0;
 
-    virtual bool sample(f_float3 p, Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Worker const& worker,
+    virtual bool sample(float3 const& p, Transformation const& transformation,
+                        sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const = 0;
 
     virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
@@ -74,10 +74,11 @@ class Light {
     virtual float3 evaluate(Sample_from const& sample, float time, Sampler_filter filter,
                             Worker const& worker) const = 0;
 
-    bool sample(f_float3 p, f_float3 n, float time, bool total_sphere, sampler::Sampler& sampler,
-                uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const;
+    bool sample(float3 const& p, float3 const& n, float time, bool total_sphere,
+                sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
+                Sample_to& result) const;
 
-    bool sample(f_float3 p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(float3 const& p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
                 Worker const& worker, Sample_to& result) const;
 
     bool sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,

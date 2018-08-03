@@ -7,12 +7,12 @@ namespace scene::light {
 
 class Prop_image_light : public Prop_light {
   public:
-    virtual bool sample(f_float3 p, f_float3 n, Transformation const& transformation,
+    virtual bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
                         bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
                         Worker const& worker, Sample_to& result) const override final;
 
-    virtual bool sample(f_float3 p, Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Worker const& worker,
+    virtual bool sample(float3 const& p, Transformation const& transformation,
+                        sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const override final;
 
     virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,

@@ -20,7 +20,7 @@ using namespace scene;
 
 Sun_material::Sun_material(Sky& sky) : Material(sky) {}
 
-const material::Sample& Sun_material::sample(f_float3 wo, Renderstate const& rs,
+const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const& rs,
                                              Sampler_filter /*filter*/,
                                              sampler::Sampler& /*sampler*/, Worker const& worker,
                                              uint32_t depth) const {
@@ -35,8 +35,9 @@ const material::Sample& Sun_material::sample(f_float3 wo, Renderstate const& rs,
     return sample;
 }
 
-float3 Sun_material::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/, float /*time*/,
-                                       Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+float3 Sun_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
+                                       float /*time*/, Sampler_filter /*filter*/,
+                                       const Worker& /*worker*/) const {
     return sky_.model().evaluate_sky_and_sun(wi);
 }
 
@@ -54,7 +55,7 @@ size_t Sun_material::num_bytes() const {
 
 Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
 
-const material::Sample& Sun_baked_material::sample(f_float3 wo, Renderstate const& rs,
+const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate const& rs,
                                                    Sampler_filter /*filter*/,
                                                    sampler::Sampler& /*sampler*/,
                                                    Worker const& worker, uint32_t depth) const {
@@ -71,7 +72,7 @@ const material::Sample& Sun_baked_material::sample(f_float3 wo, Renderstate cons
     return sample;
 }
 
-float3 Sun_baked_material::evaluate_radiance(f_float3 wi, float2 /*uv*/, float /*area*/,
+float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
                                              float /*time*/, Sampler_filter /*filter*/,
                                              const Worker& /*worker*/) const {
     return emission_(sky_.sun_v(wi));

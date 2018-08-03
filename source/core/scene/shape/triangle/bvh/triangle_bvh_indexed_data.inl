@@ -203,7 +203,7 @@ float Indexed_data<SV>::area(uint32_t index) const noexcept {
 }
 
 template <typename SV>
-float Indexed_data<SV>::area(uint32_t index, f_float3 scale) const noexcept {
+float Indexed_data<SV>::area(uint32_t index, float3 const& scale) const noexcept {
     auto const tri = triangles_[index];
 
     float3 const a = intersection_vertices_[tri.a];
@@ -394,7 +394,7 @@ float Indexed_data_interleaved<V>::area(uint32_t index) const {
 }
 
 template <typename V>
-float Indexed_data_interleaved<V>::area(uint32_t index, f_float3 scale) const {
+float Indexed_data_interleaved<V>::area(uint32_t index, float3 const& scale) const {
     auto const& tri = triangles_[index];
 
     V const& a = vertices_[tri.a];
@@ -664,7 +664,7 @@ float Hybrid_data<IV, SV>::area(uint32_t index) const {
 }
 
 template <typename IV, typename SV>
-float Hybrid_data<IV, SV>::area(uint32_t index, f_float3 scale) const {
+float Hybrid_data<IV, SV>::area(uint32_t index, float3 const& scale) const {
     uint32_t const vi = index * 3;
 
     IV const& a = intersection_vertices_[vi + 0];

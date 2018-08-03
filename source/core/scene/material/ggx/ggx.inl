@@ -219,8 +219,8 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 }
 
 template <typename Layer, typename Fresnel>
-float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, Fresnel const& fresnel,
-                         sampler::Sampler& sampler, bxdf::Sample& result) {
+float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
     float3 fresnel_result;
     return reflect(wo, n_dot_wo, layer, fresnel, sampler, fresnel_result, result);
 }
@@ -229,7 +229,7 @@ float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, Fresne
 /*
 
 template<typename Layer, typename Fresnel>
-float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer,
+float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
                                                  Fresnel const& fresnel, sampler::Sampler& sampler,
                                                  float3& fresnel_result, bxdf::Sample& result) {
         // Roughness zero will always have zero specular term (or worse NaN)
@@ -280,8 +280,9 @@ float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer,
 */
 
 template <typename Layer, typename Fresnel>
-float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, Fresnel const& fresnel,
-                         sampler::Sampler& sampler, float3& fresnel_result, bxdf::Sample& result) {
+float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
+                         bxdf::Sample& result) {
     // Roughness zero will always have zero specular term (or worse NaN)
     // For reflections we could do a perfect mirror,
     // but the decision is to always use a minimum roughness instead
@@ -352,9 +353,9 @@ float Isotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, Fresne
 }
 
 template <typename Layer, typename IOR, typename Fresnel>
-float Isotropic::reflect_internally(f_float3 wo, float n_dot_wo, Layer const& layer, IOR const& ior,
-                                    Fresnel const& fresnel, sampler::Sampler& sampler,
-                                    bxdf::Sample& result) {
+float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer const& layer,
+                                    IOR const& ior, Fresnel const& fresnel,
+                                    sampler::Sampler& sampler, bxdf::Sample& result) {
     // Roughness zero will always have zero specular term (or worse NaN)
     // For reflections we could do a perfect mirror,
     // but the decision is to always use a minimum roughness instead
@@ -427,8 +428,8 @@ float Isotropic::reflect_internally(f_float3 wo, float n_dot_wo, Layer const& la
 }
 
 template <typename Layer, typename Fresnel>
-float Isotropic::refract(f_float3 wo, float n_dot_wo, Layer const& layer, Fresnel const& fresnel,
-                         sampler::Sampler& sampler, bxdf::Sample& result) {
+float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer,
+                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
     return refract(wo, n_dot_wo, layer, layer, fresnel, sampler, result);
 }
 
@@ -436,7 +437,7 @@ float Isotropic::refract(f_float3 wo, float n_dot_wo, Layer const& layer, Fresne
 // https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 
 template <typename Layer, typename IOR, typename Fresnel>
-float Isotropic::refract(f_float3 wo, float n_dot_wo, Layer const& layer, IOR const& ior,
+float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, IOR const& ior,
                          Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
     /*
             // Roughness zero will always have zero specular term (or worse NaN)
@@ -690,8 +691,8 @@ float Isotropic::refract(f_float3 wo, float n_dot_wo, Layer const& layer, IOR co
 }
 
 template <typename Layer, typename Fresnel>
-bxdf::Result Anisotropic::reflection(f_float3 h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-                                     Layer const& layer, Fresnel const& fresnel) {
+bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_dot_wo,
+                                     float wo_dot_h, Layer const& layer, Fresnel const& fresnel) {
     float const n_dot_h = math::saturate(math::dot(layer.n_, h));
 
     float const x_dot_h = math::dot(layer.t_, h);
@@ -710,8 +711,9 @@ bxdf::Result Anisotropic::reflection(f_float3 h, float n_dot_wi, float n_dot_wo,
 }
 
 template <typename Layer, typename Fresnel>
-float Anisotropic::reflect(f_float3 wo, float n_dot_wo, Layer const& layer, Fresnel const& fresnel,
-                           sampler::Sampler& sampler, bxdf::Sample& result) {
+float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+                           Fresnel const& fresnel, sampler::Sampler& sampler,
+                           bxdf::Sample& result) {
     float2 const xi = sampler.generate_sample_2D();
 
     float const phi     = (2.f * math::Pi) * xi[0];

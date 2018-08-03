@@ -66,7 +66,7 @@ class Worker : public scene::Worker {
 
     scene::prop::Interface_stack& interface_stack() noexcept;
 
-    void interface_change(f_float3 dir, Intersection const& intersection) noexcept;
+    void interface_change(float3 const& dir, Intersection const& intersection) noexcept;
 
     uint32_t bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
                           float normalized_tick_slice) noexcept;

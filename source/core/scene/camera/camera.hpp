@@ -71,7 +71,7 @@ class Camera : public entity::Entity {
 
     void on_set_transformation() noexcept override final;
 
-    static Ray create_ray(f_float3 origin, f_float3 direction, float time) noexcept;
+    static Ray create_ray(float3 const& origin, float3 const& direction, float time) noexcept;
 
     int2 resolution_;
 

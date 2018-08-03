@@ -11,11 +11,11 @@ math::AABB const& Shape::aabb() const noexcept {
     return aabb_;
 }
 
-float3 Shape::object_to_texture_point(f_float3 p) const noexcept {
+float3 Shape::object_to_texture_point(float3 const& p) const noexcept {
     return (p - aabb_.bounds[0]) * inv_extent_;
 }
 
-float3 Shape::object_to_texture_vector(f_float3 v) const noexcept {
+float3 Shape::object_to_texture_vector(float3 const& v) const noexcept {
     return v * inv_extent_;
 }
 

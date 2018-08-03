@@ -283,13 +283,13 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) {
     return num_reduced;
 }
 
-int32_t Grid::map1(f_float3 v) const {
+int32_t Grid::map1(float3 const& v) const {
     int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
-int3 Grid::map3(f_float3 v) const {
+int3 Grid::map3(float3 const& v) const {
     return static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 }
 
@@ -305,7 +305,7 @@ static inline int8_t adjacent(float s) {
     return 0;
 }
 
-int3 Grid::map3(f_float3 v, int8_t adjacent[3]) const {
+int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const {
     float3 const r = inverse_cell_size_ * (v - aabb_.min());
 
     int3 const c = static_cast<int3>(r);
@@ -323,7 +323,7 @@ int3 Grid::map3(f_float3 v, int8_t adjacent[3]) const {
     return c;
 }
 
-void Grid::adjacent_cells(f_float3 v, int2 cells[4]) const {
+void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const {
     int8_t     adjacent[3];
     int3 const c = math::min(map3(v, adjacent), max_coords_);
 

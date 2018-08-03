@@ -8,7 +8,7 @@ namespace scene::material::fresnel {
 class Schlick {
   public:
     Schlick(float f0);
-    Schlick(f_float3 f0);
+    Schlick(float3 const& f0);
 
     float3 operator()(float wo_dot_h) const;
 
@@ -18,7 +18,7 @@ class Schlick {
 
 class Schlick_blending {
   public:
-    Schlick_blending(f_float3 a, f_float3 b, float f0);
+    Schlick_blending(float3 const& a, float3 const& b, float f0);
 
     float3 operator()(float wo_dot_h) const;
 
@@ -44,7 +44,7 @@ class Thinfilm {
 
 class Conductor {
   public:
-    Conductor(f_float3 eta, f_float3 k);
+    Conductor(float3 const& eta, float3 const& k);
 
     float3 operator()(float wo_dot_h) const;
 
@@ -56,7 +56,7 @@ class Conductor {
 class Constant {
   public:
     Constant(float f);
-    Constant(f_float3 f);
+    Constant(float3 const& f);
 
     float3 operator()(float wo_dot_h) const;
 

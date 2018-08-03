@@ -6,7 +6,7 @@
 
 namespace math {
 
-inline Ray::Ray(f_float3 origin, f_float3 direction, float min_t, float max_t)
+inline Ray::Ray(float3 const& origin, float3 const& direction, float min_t, float max_t)
     : origin(origin),
       direction(direction),
       inv_direction(reciprocal(direction)),
@@ -16,7 +16,8 @@ inline Ray::Ray(f_float3 origin, f_float3 direction, float min_t, float max_t)
             inv_direction[1] < 0.f ? uint8_t(1u) : uint8_t(0u),
             inv_direction[2] < 0.f ? uint8_t(1u) : uint8_t(0u)} {}
 
-inline Ray::Ray(f_float3 origin, f_float3 direction, float min_t, float max_t, uint32_t depth)
+inline Ray::Ray(float3 const& origin, float3 const& direction, float min_t, float max_t,
+                uint32_t depth)
     : origin(origin),
       direction(direction),
       inv_direction(reciprocal(direction)),
@@ -27,8 +28,8 @@ inline Ray::Ray(f_float3 origin, f_float3 direction, float min_t, float max_t, u
             inv_direction[2] < 0.f ? uint8_t(1u) : uint8_t(0u)},
       depth(depth) {}
 
-inline Ray::Ray(f_float3 origin, f_float3 direction, f_float3 inv_direction, float min_t,
-                float max_t, uint8_t sign_x, uint8_t sign_y, uint8_t sign_z)
+inline Ray::Ray(float3 const& origin, float3 const& direction, float3 const& inv_direction,
+                float min_t, float max_t, uint8_t sign_x, uint8_t sign_y, uint8_t sign_z)
     : origin(origin),
       direction(direction),
       inv_direction(inv_direction),
@@ -36,7 +37,7 @@ inline Ray::Ray(f_float3 origin, f_float3 direction, f_float3 inv_direction, flo
       max_t(max_t),
       signs{sign_x, sign_y, sign_z} {}
 
-inline void Ray::set_direction(f_float3 v) {
+inline void Ray::set_direction(float3 const& v) {
     direction     = v;
     inv_direction = reciprocal(v);
 

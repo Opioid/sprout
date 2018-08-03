@@ -145,7 +145,7 @@ float3 Celestial_disk::thin_absorption(Ray const& /*ray*/, Transformation const&
     return float3(0.f);
 }
 
-bool Celestial_disk::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
+bool Celestial_disk::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
                             Transformation const& transformation, float area, bool two_sided,
                             sampler::Sampler& sampler, uint32_t sampler_dimension,
                             Node_stack& node_stack, Sample_to& sample) const noexcept {
@@ -153,10 +153,10 @@ bool Celestial_disk::sample(uint32_t part, f_float3 p, f_float3 /*n*/,
                                   sampler_dimension, node_stack, sample);
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, f_float3 /*p*/, Transformation const& transformation,
-                            float area, bool /*two_sided*/, sampler::Sampler& sampler,
-                            uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
-                            Sample_to& sample) const noexcept {
+bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
+                            Transformation const& transformation, float area, bool /*two_sided*/,
+                            sampler::Sampler& sampler, uint32_t    sampler_dimension,
+                            Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float2 r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 xy = math::sample_disk_concentric(r2);
 
@@ -211,7 +211,7 @@ float Celestial_disk::pdf(Ray const& /*ray*/, const shape::Intersection& /*inter
     return 1.f / area;
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, f_float3 /*p*/, float2 /*uv*/,
+bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, Sample_to& /*sample*/) const noexcept {
     return false;
@@ -235,7 +235,7 @@ float Celestial_disk::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Celestial_disk::area(uint32_t /*part*/, f_float3 scale) const noexcept {
+float Celestial_disk::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     float const radius = scale[0];
     return math::Pi * (radius * radius);
 }

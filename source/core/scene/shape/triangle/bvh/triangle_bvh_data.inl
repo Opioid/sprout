@@ -77,7 +77,8 @@ float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index) const 
 }
 
 template <typename Intersection_triangle, typename Shading_triangle>
-float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index, f_float3 scale) const {
+float Data<Intersection_triangle, Shading_triangle>::area(uint32_t      index,
+                                                          float3 const& scale) const {
     return intersection_triangles_[index].area(scale);
 }
 

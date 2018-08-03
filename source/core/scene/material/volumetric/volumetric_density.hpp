@@ -16,12 +16,12 @@ class Density : public Material {
     virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
-    virtual CC collision_coefficients(f_float3 uvw, Sampler_filter filter,
+    virtual CC collision_coefficients(float3 const& uvw, Sampler_filter filter,
                                       Worker const& worker) const override final;
 
   private:
     // expects p in object space!
-    virtual float density(f_float3 p, Sampler_filter filter, Worker const& worker) const = 0;
+    virtual float density(float3 const& p, Sampler_filter filter, Worker const& worker) const = 0;
 };
 
 }  // namespace scene::material::volumetric
