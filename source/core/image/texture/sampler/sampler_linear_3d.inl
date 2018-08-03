@@ -77,7 +77,6 @@ float3 Linear_3D<Address_mode>::address(float3 const& uvw) const noexcept {
 template <typename Address_mode>
 float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, int3& xyz,
                                     int3& xyz1) noexcept {
-    auto const& b = texture.back_3();
     auto const& d = texture.dimensions_float3();
 
     float const u = Address_mode::f(uvw[0]) * d[0] - 0.5f;
@@ -91,6 +90,8 @@ float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, i
     int32_t const x = static_cast<int32_t>(fu);
     int32_t const y = static_cast<int32_t>(fv);
     int32_t const z = static_cast<int32_t>(fw);
+
+    auto const& b = texture.back_3();
 
     xyz[0] = Address_mode::lower_bound(x, b[0]);
     xyz[1] = Address_mode::lower_bound(y, b[1]);

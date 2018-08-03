@@ -1,7 +1,9 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_NEAREST_2D_INL
+#define SU_CORE_IMAGE_TEXTURE_SAMPLER_NEAREST_2D_INL
 
 #include <algorithm>
 #include "address_mode.hpp"
+#include "base/math/vector2.inl"
 #include "image/texture/texture.hpp"
 #include "sampler_nearest_2d.hpp"
 
@@ -68,14 +70,17 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::address(float2 uv) const noex
 
 template <typename Address_mode_U, typename Address_mode_V>
 int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(Texture const& texture, float2 uv) noexcept {
-    auto const b = texture.back_2();
     auto const d = texture.dimensions_float2();
 
     float const u = Address_mode_U::f(uv[0]);
     float const v = Address_mode_V::f(uv[1]);
+
+    auto const b = texture.back_2();
 
     return int2(std::min(static_cast<int32_t>(u * d[0]), b[0]),
                 std::min(static_cast<int32_t>(v * d[1]), b[1]));
 }
 
 }  // namespace image::texture::sampler
+
+#endif

@@ -36,7 +36,6 @@ class Texture {
     virtual float  at_1(int32_t x, int32_t y) const noexcept = 0;
     virtual float2 at_2(int32_t x, int32_t y) const noexcept = 0;
     virtual float3 at_3(int32_t x, int32_t y) const noexcept = 0;
-    virtual float4 at_4(int32_t x, int32_t y) const noexcept = 0;
 
     virtual void gather_1(int4 const& xy_xy1, float c[4]) const noexcept  = 0;
     virtual void gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept = 0;
@@ -45,17 +44,13 @@ class Texture {
     virtual float  at_element_1(int32_t x, int32_t y, int32_t element) const noexcept = 0;
     virtual float2 at_element_2(int32_t x, int32_t y, int32_t element) const noexcept = 0;
     virtual float3 at_element_3(int32_t x, int32_t y, int32_t element) const noexcept = 0;
-    virtual float4 at_element_4(int32_t x, int32_t y, int32_t element) const noexcept = 0;
 
     virtual float  at_1(int32_t x, int32_t y, int32_t z) const noexcept = 0;
     virtual float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept = 0;
     virtual float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept = 0;
-    virtual float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept = 0;
 
     float3 average_3() const noexcept;
     float3 average_3(int32_t element) const noexcept;
-
-    float4 average_4() const noexcept;
 
   protected:
     std::shared_ptr<Image> untyped_image_;

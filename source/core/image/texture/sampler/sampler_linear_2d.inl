@@ -40,20 +40,6 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 
     texture.gather_3(xy_xy1, c);
 
     return bilinear(c, st[0], st[1]);
-
-    //	int32_t const width = texture.width();
-
-    //	int32_t const y0 = width * xy_xy1[1];
-
-    //	float3 const c0 = texture.at_3(y0 + xy_xy1[0]);
-    //	float3 const c1 = texture.at_3(y0 + xy_xy1[2]);
-
-    //	int32_t const y1 = width * xy_xy1[3];
-
-    //	float3 const c2 = texture.at_3(y1 + xy_xy1[0]);
-    //	float3 const c3 = texture.at_3(y1 + xy_xy1[2]);
-
-    //	return bilinear(c0, c1, c2, c3, st[0], st[1]);
 }
 
 template <typename Address_U, typename Address_V>
@@ -112,7 +98,6 @@ float2 Linear_2D<Address_U, Address_V>::address(float2 uv) const noexcept {
 template <typename Address_U, typename Address_V>
 float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv,
                                             int4& xy_xy1) noexcept {
-    auto const b = texture.back_2();
     auto const d = texture.dimensions_float2();
 
     float const u = Address_U::f(uv[0]) * d[0] - 0.5f;
@@ -123,6 +108,8 @@ float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv,
 
     int32_t const x = static_cast<int32_t>(fu);
     int32_t const y = static_cast<int32_t>(fv);
+
+    auto const b = texture.back_2();
 
     xy_xy1[0] = Address_U::lower_bound(x, b[0]);
     xy_xy1[1] = Address_V::lower_bound(y, b[1]);

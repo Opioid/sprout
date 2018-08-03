@@ -29,10 +29,6 @@ float3 Float3::at_3(int32_t x, int32_t y) const noexcept {
     //	return float3(image_.at(x, y));
 }
 
-float4 Float3::at_4(int32_t x, int32_t y) const noexcept {
-    return float4(image_.load(x, y), 1.f);
-}
-
 void Float3::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
     packed_float3 v[4];
     image_.gather(xy_xy1, v);
@@ -77,10 +73,6 @@ float3 Float3::at_element_3(int32_t x, int32_t y, int32_t element) const noexcep
     return float3(image_.at_element(x, y, element));
 }
 
-float4 Float3::at_element_4(int32_t x, int32_t y, int32_t element) const noexcept {
-    return float4(image_.at_element(x, y, element), 1.f);
-}
-
 float Float3::at_1(int32_t x, int32_t y, int32_t z) const noexcept {
     return image_.load(x, y, z)[0];
 }
@@ -93,10 +85,6 @@ float3 Float3::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
     return float3(image_.load(x, y, z));
 
     //	return float3(image_.at(x, y, z));
-}
-
-float4 Float3::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
-    return float4(image_.load(x, y, z), 1.f);
 }
 
 }  // namespace image::texture

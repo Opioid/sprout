@@ -76,18 +76,4 @@ float3 Texture::average_3(int32_t element) const noexcept {
     return average / (df[0] * df[1]);
 }
 
-float4 Texture::average_4() const noexcept {
-    float4 average(0.f);
-
-    auto const d = dimensions_2();
-    for (int32_t y = 0; y < d[1]; ++y) {
-        for (int32_t x = 0; x < d[0]; ++x) {
-            average += at_4(x, y);
-        }
-    }
-
-    auto const df = dimensions_float2();
-    return average / (df[0] * df[1]);
-}
-
 }  // namespace image::texture

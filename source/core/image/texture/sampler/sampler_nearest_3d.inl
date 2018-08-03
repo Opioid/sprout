@@ -38,12 +38,13 @@ float3 Nearest_3D<Address_mode>::address(float3 const& uvw) const noexcept {
 
 template <typename Address_mode>
 int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) noexcept {
-    auto const& b = texture.back_3();
     auto const& d = texture.dimensions_float3();
 
     float const u = Address_mode::f(uvw[0]);
     float const v = Address_mode::f(uvw[1]);
     float const w = Address_mode::f(uvw[2]);
+
+    auto const& b = texture.back_3();
 
     return int3(std::min(static_cast<int32_t>(u * d[0]), b[0]),
                 std::min(static_cast<int32_t>(v * d[1]), b[1]),

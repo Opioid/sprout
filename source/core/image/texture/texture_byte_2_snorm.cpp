@@ -36,12 +36,6 @@ float3 Byte2_snorm::at_3(int32_t x, int32_t y) const noexcept {
                   encoding::cached_snorm_to_float(value[1]), 0.f);
 }
 
-float4 Byte2_snorm::at_4(int32_t x, int32_t y) const noexcept {
-    auto const value = image_.load(x, y);
-    return float4(encoding::cached_snorm_to_float(value[0]),
-                  encoding::cached_snorm_to_float(value[1]), 0.f, 1.f);
-}
-
 void Byte2_snorm::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
     byte2 v[4];
     image_.gather(xy_xy1, v);
@@ -103,12 +97,6 @@ float3 Byte2_snorm::at_element_3(int32_t x, int32_t y, int32_t element) const no
                   encoding::cached_snorm_to_float(value[1]), 0.f);
 }
 
-float4 Byte2_snorm::at_element_4(int32_t x, int32_t y, int32_t element) const noexcept {
-    auto const value = image_.load_element(x, y, element);
-    return float4(encoding::cached_snorm_to_float(value[0]),
-                  encoding::cached_snorm_to_float(value[1]), 0.f, 1.f);
-}
-
 float Byte2_snorm::at_1(int32_t x, int32_t y, int32_t z) const noexcept {
     auto const value = image_.load(x, y, z);
     return encoding::cached_snorm_to_float(value[0]);
@@ -124,12 +112,6 @@ float3 Byte2_snorm::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
     auto const value = image_.load(x, y, z);
     return float3(encoding::cached_snorm_to_float(value[0]),
                   encoding::cached_snorm_to_float(value[1]), 0.f);
-}
-
-float4 Byte2_snorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
-    auto const value = image_.load(x, y, z);
-    return float4(encoding::cached_snorm_to_float(value[0]),
-                  encoding::cached_snorm_to_float(value[1]), 0.f, 1.f);
 }
 
 }  // namespace image::texture

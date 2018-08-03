@@ -27,10 +27,6 @@ float3 Float1::at_3(int32_t x, int32_t y) const noexcept {
     return float3(image_.load(x, y), 0.f, 0.f);
 }
 
-float4 Float1::at_4(int32_t x, int32_t y) const noexcept {
-    return float4(image_.load(x, y), 0.f, 0.f, 1.f);
-}
-
 void Float1::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
     image_.gather(xy_xy1, c);
 }
@@ -67,10 +63,6 @@ float3 Float1::at_element_3(int32_t x, int32_t y, int32_t element) const noexcep
     return float3(image_.at_element(x, y, element), 0.f, 0.f);
 }
 
-float4 Float1::at_element_4(int32_t x, int32_t y, int32_t element) const noexcept {
-    return float4(image_.at_element(x, y, element), 0.f, 0.f, 1.f);
-}
-
 float Float1::at_1(int32_t x, int32_t y, int32_t z) const noexcept {
     return image_.load(x, y, z);
 }
@@ -81,10 +73,6 @@ float2 Float1::at_2(int32_t x, int32_t y, int32_t z) const noexcept {
 
 float3 Float1::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
     return float3(image_.load(x, y, z), 0.f, 0.f);
-}
-
-float4 Float1::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
-    return float4(image_.load(x, y, z), 0.f, 0.f, 1.f);
 }
 
 }  // namespace image::texture
