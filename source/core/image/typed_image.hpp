@@ -9,50 +9,50 @@ namespace image {
 template <typename T>
 class Typed_image final : public Image {
   public:
-    Typed_image() = default;
-    Typed_image(const Image::Description& description);
-    ~Typed_image();
+    Typed_image() noexcept = default;
+    Typed_image(const Image::Description& description) noexcept;
+    ~Typed_image() noexcept;
 
-    Typed_image<T> clone() const;
+    Typed_image<T> clone() const noexcept;
 
-    void resize(const Image::Description& description);
+    void resize(const Image::Description& description) noexcept;
 
-    void clear(T v);
+    void clear(T v) noexcept;
 
-    T load(int32_t index) const;
+    T load(int32_t index) const noexcept;
 
-    T* address(int32_t index) const;
+    T* address(int32_t index) const noexcept;
 
-    void store(int32_t index, T v);
+    void store(int32_t index, T v) noexcept;
 
-    T const& at(int32_t index) const;
-    T&       at(int32_t index);
+    T const& at(int32_t index) const noexcept;
+    T&       at(int32_t index) noexcept;
 
-    T load(int32_t x, int32_t y) const;
+    T load(int32_t x, int32_t y) const noexcept;
 
-    void store(int32_t x, int32_t y, T v);
+    void store(int32_t x, int32_t y, T v) noexcept;
 
-    T load_element(int32_t x, int32_t y, int32_t element) const;
+    T load_element(int32_t x, int32_t y, int32_t element) const noexcept;
 
-    T const& at(int32_t x, int32_t y) const;
-    T&       at(int32_t x, int32_t y);
+    T const& at(int32_t x, int32_t y) const noexcept;
+    T&       at(int32_t x, int32_t y) noexcept;
 
-    T const& at_element(int32_t x, int32_t y, int32_t element) const;
-    T&       at_element(int32_t x, int32_t y, int32_t element);
+    T const& at_element(int32_t x, int32_t y, int32_t element) const noexcept;
+    T&       at_element(int32_t x, int32_t y, int32_t element) noexcept;
 
-    T load(int32_t x, int32_t y, int32_t z) const;
+    T load(int32_t x, int32_t y, int32_t z) const noexcept;
 
-    T const& at(int32_t x, int32_t y, int32_t z) const;
-    T&       at(int32_t x, int32_t y, int32_t z);
+    T const& at(int32_t x, int32_t y, int32_t z) const noexcept;
+    T&       at(int32_t x, int32_t y, int32_t z) noexcept;
 
-    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
-    T&       at_element(int32_t x, int32_t y, int32_t z, int32_t element);
+    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const noexcept;
+    T&       at_element(int32_t x, int32_t y, int32_t z, int32_t element) noexcept;
 
-    void gather(int4 const& xy_xy1, T c[4]) const;
+    void gather(int4 const& xy_xy1, T c[4]) const noexcept;
 
-    void square_transpose();
+    void square_transpose() noexcept;
 
-    T* data() const;
+    T* data() const noexcept;
 
     size_t num_bytes() const noexcept override final;
 

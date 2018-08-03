@@ -9,7 +9,7 @@ namespace image::texture::sampler {
 template <typename Address_U, typename Address_V>
 class Linear_2D : public Sampler_2D {
   public:
-    float sample_1(Texture const& texture, float2 uv) const noexcept override final;
+    float  sample_1(Texture const& texture, float2 uv) const noexcept override final;
     float2 sample_2(Texture const& texture, float2 uv) const noexcept override final;
     float3 sample_3(Texture const& texture, float2 uv) const noexcept override final;
 

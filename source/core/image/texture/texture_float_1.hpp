@@ -19,8 +19,8 @@ class Float1 final : public Texture {
     float4 at_4(int32_t x, int32_t y) const noexcept override final;
 
     void gather_1(int4 const& xy_xy1, float c[4]) const noexcept override final;
-    void   gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept override final;
-    void   gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept override final;
+    void gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept override final;
+    void gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept override final;
 
     float  at_element_1(int32_t x, int32_t y, int32_t element) const noexcept override final;
     float2 at_element_2(int32_t x, int32_t y, int32_t element) const noexcept override final;

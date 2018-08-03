@@ -44,7 +44,7 @@ void Byte1_unorm::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
 
     c[0] = encoding::cached_unorm_to_float(v[0]);
     c[1] = encoding::cached_unorm_to_float(v[1]);
-    c[2] =              encoding::cached_unorm_to_float(v[2]);
+    c[2] = encoding::cached_unorm_to_float(v[2]);
     c[3] = encoding::cached_unorm_to_float(v[3]);
 }
 

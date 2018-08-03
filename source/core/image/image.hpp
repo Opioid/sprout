@@ -33,7 +33,7 @@ class Image {
 
     Description const& description() const noexcept;
 
-    int2    dimensions2() const noexcept;
+    int2 dimensions2() const noexcept;
 
     int32_t area() const noexcept;
     int32_t volume() const noexcept;

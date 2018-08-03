@@ -54,31 +54,13 @@ void Float3::gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept {
 }
 
 void Float3::gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept {
-    /*	packed_float3 v[4];
-            image_.gather(xy_xy1, v);
+    packed_float3 v[4];
+    image_.gather(xy_xy1, v);
 
-            c[0] = float3(v[0]);
-            c[1] = float3(v[1]);
-            c[2] = float3(v[2]);
-            c[3] = float3(v[3]);*/
-
-    int32_t const width = image_.description().dimensions[0];
-
-    int32_t const y0 = width * xy_xy1[1];
-
-    packed_float3 const v0 = image_.load(y0 + xy_xy1[0]);
-    c[0]                   = float3(v0);
-
-    packed_float3 const v1 = image_.load(y0 + xy_xy1[2]);
-    c[1]                   = float3(v1);
-
-    int32_t const y1 = width * xy_xy1[3];
-
-    packed_float3 const v2 = image_.load(y1 + xy_xy1[0]);
-    c[2]                   = float3(v2);
-
-    packed_float3 const v3 = image_.load(y1 + xy_xy1[2]);
-    c[3]                   = float3(v3);
+    c[0] = float3(v[0]);
+    c[1] = float3(v[1]);
+    c[2] = float3(v[2]);
+    c[3] = float3(v[3]);
 }
 
 float Float3::at_element_1(int32_t x, int32_t y, int32_t element) const noexcept {

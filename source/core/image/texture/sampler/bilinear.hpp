@@ -5,7 +5,8 @@
 
 namespace image::texture::sampler {
 
-static inline float bilinear(float c00, float c10, float c01, float c11, float s, float t) noexcept {
+static inline float bilinear(float c00, float c10, float c01, float c11, float s,
+                             float t) noexcept {
     float const _s = 1.f - s;
     float const _t = 1.f - t;
 
@@ -19,7 +20,8 @@ static inline float bilinear(float const c[4], float s, float t) noexcept {
     return _t * (_s * c[0] + s * c[1]) + t * (_s * c[2] + s * c[3]);
 }
 
-static inline float2 bilinear(float2 c00, float2 c10, float2 c01, float2 c11, float s, float t) noexcept {
+static inline float2 bilinear(float2 c00, float2 c10, float2 c01, float2 c11, float s,
+                              float t) noexcept {
     float const _s = 1.f - s;
     float const _t = 1.f - t;
 

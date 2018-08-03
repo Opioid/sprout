@@ -49,9 +49,9 @@ void Byte3_unorm::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
     byte3 v[4];
     image_.gather(xy_xy1, v);
 
-    c[0] =   encoding::cached_unorm_to_float(v[0][0]);
+    c[0] = encoding::cached_unorm_to_float(v[0][0]);
     c[1] = encoding::cached_unorm_to_float(v[1][0]);
-    c[2] =    encoding::cached_unorm_to_float(v[2][0]);
+    c[2] = encoding::cached_unorm_to_float(v[2][0]);
     c[3] = encoding::cached_unorm_to_float(v[3][0]);
 }
 
