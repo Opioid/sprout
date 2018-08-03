@@ -7,32 +7,32 @@ namespace image::texture {
 
 class Byte2_unorm final : public Texture {
   public:
-    Byte2_unorm(std::shared_ptr<Image> image);
+    Byte2_unorm(std::shared_ptr<Image> image) noexcept;
 
-    virtual float  at_1(int32_t i) const override final;
-    virtual float3 at_3(int32_t i) const override final;
+    float  at_1(int32_t i) const noexcept override final;
+    float3 at_3(int32_t i) const noexcept override final;
 
-    virtual float  at_1(int32_t x, int32_t y) const override final;
-    virtual float2 at_2(int32_t x, int32_t y) const override final;
-    virtual float3 at_3(int32_t x, int32_t y) const override final;
-    virtual float4 at_4(int32_t x, int32_t y) const override final;
+    float  at_1(int32_t x, int32_t y) const noexcept override final;
+    float2 at_2(int32_t x, int32_t y) const noexcept override final;
+    float3 at_3(int32_t x, int32_t y) const noexcept override final;
+    float4 at_4(int32_t x, int32_t y) const noexcept override final;
 
-    virtual float4 gather_1(int4 const& xy_xy1) const override final;
-    virtual void   gather_2(int4 const& xy_xy1, float2 c[4]) const override final;
-    virtual void   gather_3(int4 const& xy_xy1, float3 c[4]) const override final;
+    void gather_1(int4 const& xy_xy1, float c[4]) const noexcept override final;
+    void   gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept override final;
+    void   gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept override final;
 
-    virtual float  at_element_1(int32_t x, int32_t y, int32_t element) const override final;
-    virtual float2 at_element_2(int32_t x, int32_t y, int32_t element) const override final;
-    virtual float3 at_element_3(int32_t x, int32_t y, int32_t element) const override final;
-    virtual float4 at_element_4(int32_t x, int32_t y, int32_t element) const override final;
+    float  at_element_1(int32_t x, int32_t y, int32_t element) const noexcept override final;
+    float2 at_element_2(int32_t x, int32_t y, int32_t element) const noexcept override final;
+    float3 at_element_3(int32_t x, int32_t y, int32_t element) const noexcept override final;
+    float4 at_element_4(int32_t x, int32_t y, int32_t element) const noexcept override final;
 
-    virtual float  at_1(int32_t x, int32_t y, int32_t z) const override final;
-    virtual float2 at_2(int32_t x, int32_t y, int32_t z) const override final;
-    virtual float3 at_3(int32_t x, int32_t y, int32_t z) const override final;
-    virtual float4 at_4(int32_t x, int32_t y, int32_t z) const override final;
+    float  at_1(int32_t x, int32_t y, int32_t z) const noexcept override final;
+    float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept override final;
+    float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept override final;
+    float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept override final;
 
   private:
-    const Byte2& image_;
+    Byte2 const& image_;
 };
 
 }  // namespace image::texture

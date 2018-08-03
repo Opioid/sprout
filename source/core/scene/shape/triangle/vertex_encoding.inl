@@ -38,7 +38,7 @@ inline void Norm23x2_Sign1x2::decode(packed_float3& v, float& s) const {
     s = signs[e];
 }
 
-inline void Norm23x2_Sign1x2::encode(const packed_float3& v, float s) {
+inline void Norm23x2_Sign1x2::encode(packed_float3 const& v, float s) {
     uint32_t const x = static_cast<uint32_t>((v[0] + 1.f) * (0.5f * FN));
     uint32_t const y = static_cast<uint32_t>((v[1] + 1.f) * (0.5f * FN));
 

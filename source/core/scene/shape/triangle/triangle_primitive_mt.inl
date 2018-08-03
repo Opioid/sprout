@@ -399,7 +399,7 @@ static inline void interpolate_data(const Shading_vertex_MT& a, const Shading_ve
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline Shading_vertex_MTC::Shading_vertex_MTC(const packed_float3& n, const packed_float3& t,
+inline Shading_vertex_MTC::Shading_vertex_MTC(packed_float3 const& n, packed_float3 const& t,
                                               float2 uv) noexcept
     : n_u(n, uv[0]), t_v(t, uv[1]) {
     // Not too happy about handling degenerate tangents here (only one very special case even)
@@ -532,13 +532,13 @@ inline short4 float_to_snorm16(float3 const& v, float s) noexcept {
                   encoding::float_to_snorm16(v[2]), float_to_xnorm(s));
 }
 
-inline short4 float_to_snorm16(const packed_float3& v, float s) noexcept {
+inline short4 float_to_snorm16(packed_float3 const& v, float s) noexcept {
     return short4(encoding::float_to_snorm16(v[0]), encoding::float_to_snorm16(v[1]),
                   encoding::float_to_snorm16(v[2]), float_to_xnorm(s));
 }
 
-inline Vertex_MTC::Vertex_MTC(const packed_float3& p, const packed_float3& n,
-                              const packed_float3& t, float2 uv) noexcept
+inline Vertex_MTC::Vertex_MTC(packed_float3 const& p, packed_float3 const& n,
+                              packed_float3 const& t, float2 uv) noexcept
     : p(p), n_u(n, uv[0]), t_v(t, uv[1]) {
     // Not too happy about handling degenerate tangents here (only one very special case even)
     if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {

@@ -7,7 +7,7 @@ namespace scene::shape::triangle {
 
 struct Norm23x2_Sign1x2 {
     void decode(packed_float3& v, float& s) const;
-    void encode(const packed_float3& v, float s);
+    void encode(packed_float3 const& v, float s);
 
     uint16_t data[3];
 };

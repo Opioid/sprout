@@ -53,14 +53,14 @@ struct Shading_vertex_MT {
 };
 
 struct Shading_vertex_MTC {
-    Shading_vertex_MTC(const packed_float3& n, const packed_float3& t, float2 uv) noexcept;
+    Shading_vertex_MTC(packed_float3 const& n, packed_float3 const& t, float2 uv) noexcept;
 
     float4 n_u;
     float4 t_v;
 };
 
 struct Vertex_MTC {
-    Vertex_MTC(const packed_float3& p, const packed_float3& n, const packed_float3& t,
+    Vertex_MTC(packed_float3 const& p, packed_float3 const& n, packed_float3 const& t,
                float2 uv) noexcept;
 
     float3 p;

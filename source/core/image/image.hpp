@@ -11,13 +11,13 @@ class Image {
     enum class Type { Undefined, Byte1, Byte2, Byte3, Float1, Float2, Float3, Float4 };
 
     struct Description {
-        Description() = default;
-        Description(Type type, int2 dimensions, int32_t num_elements = 1);
-        Description(Type type, int3 const& dimensions, int32_t num_elements = 1);
+        Description() noexcept = default;
+        Description(Type type, int2 dimensions, int32_t num_elements = 1) noexcept;
+        Description(Type type, int3 const& dimensions, int32_t num_elements = 1) noexcept;
 
-        size_t num_pixels() const;
+        size_t num_pixels() const noexcept;
 
-        uint32_t num_channels() const;
+        int32_t num_channels() const noexcept;
 
         Type type = Type::Undefined;
 
@@ -28,6 +28,7 @@ class Image {
 
     Image() = default;
     Image(Description const& description);
+
     virtual ~Image();
 
     Description const& description() const;

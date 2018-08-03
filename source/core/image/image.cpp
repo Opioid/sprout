@@ -3,17 +3,17 @@
 
 namespace image {
 
-Image::Description::Description(Type type, int2 dimensions, int32_t num_elements)
+Image::Description::Description(Type type, int2 dimensions, int32_t num_elements) noexcept
     : type(type), dimensions(dimensions, 1), num_elements(num_elements) {}
 
-Image::Description::Description(Type type, int3 const& dimensions, int32_t num_elements)
+Image::Description::Description(Type type, int3 const& dimensions, int32_t num_elements) noexcept
     : type(type), dimensions(dimensions), num_elements(num_elements) {}
 
-size_t Image::Description::num_pixels() const {
+size_t Image::Description::num_pixels() const noexcept {
     return static_cast<size_t>(dimensions[0] * dimensions[1] * dimensions[2] * num_elements);
 }
 
-uint32_t Image::Description::num_channels() const {
+int32_t Image::Description::num_channels() const noexcept {
     switch (type) {
         case Type::Byte1:
         case Type::Float1:

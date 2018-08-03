@@ -14,7 +14,8 @@ float Linear_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 u
     int4         xy_xy1;
     float2 const st = map(texture, uv, xy_xy1);
 
-    const float4 c = texture.gather_1(xy_xy1);
+    float c[4];
+    texture.gather_1(xy_xy1, c);
 
     return bilinear(c, st[0], st[1]);
 }
@@ -61,7 +62,7 @@ float Linear_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 u
     int4         xy_xy1;
     float2 const st = map(texture, uv, xy_xy1);
 
-    int32_t min_element = std::min(texture.num_elements() - 1, element);
+    int32_t const min_element = std::min(texture.num_elements() - 1, element);
 
     float const c00 = texture.at_element_1(xy_xy1[0], xy_xy1[1], min_element);
     float const c01 = texture.at_element_1(xy_xy1[2], xy_xy1[1], min_element);
