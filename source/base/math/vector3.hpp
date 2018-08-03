@@ -18,61 +18,61 @@ template <typename T>
 struct Vector3 {
     T v[3];
 
-    Vector3() = default;
+    Vector3() noexcept = default;
 
-    constexpr Vector3(T x, T y, T z) : v{x, y, z} {}
+    constexpr Vector3(T x, T y, T z) noexcept : v{x, y, z} {}
 
-    explicit constexpr Vector3(T s);
+    explicit constexpr Vector3(T s) noexcept;
 
-    explicit constexpr Vector3(Vector2<T> xy, T z = T(0));
+    explicit constexpr Vector3(Vector2<T> xy, T z = T(0)) noexcept;
 
-    explicit constexpr Vector3(T const* v);
+    explicit constexpr Vector3(T const* v) noexcept;
 
-    explicit constexpr Vector3(Vector3f_a const& a);
+    explicit constexpr Vector3(Vector3f_a const& a) noexcept;
 
     template <typename U>
-    explicit constexpr Vector3(Vector3<U> const& a);
+    explicit constexpr Vector3(Vector3<U> const& a) noexcept;
 
-    constexpr Vector2<T> xy() const;
+    constexpr Vector2<T> xy() const noexcept;
 
-    constexpr T  operator[](uint32_t i) const;
-    constexpr T& operator[](uint32_t i);
+    constexpr T  operator[](uint32_t i) const noexcept;
+    constexpr T& operator[](uint32_t i) noexcept;
 
-    Vector3 operator+(T s) const;
+    Vector3 operator+(T s) const noexcept;
 
-    Vector3 operator+(Vector3 const& a) const;
+    Vector3 operator+(Vector3 const& a) const noexcept;
 
-    Vector3 operator-(T s) const;
+    Vector3 operator-(T s) const noexcept;
 
-    Vector3 operator-(Vector3 const& v) const;
+    Vector3 operator-(Vector3 const& v) const noexcept;
 
-    Vector3 operator*(Vector3 const& a) const;
+    Vector3 operator*(Vector3 const& a) const noexcept;
 
-    Vector3 operator/(T s) const;
+    Vector3 operator/(T s) const noexcept;
 
-    Vector3 operator/(Vector3 const& v) const;
+    Vector3 operator/(Vector3 const& v) const noexcept;
 
-    Vector3 operator-() const;
+    Vector3 operator-() const noexcept;
 
-    Vector3& operator+=(Vector3 const& a);
+    Vector3& operator+=(Vector3 const& a) noexcept;
 
-    Vector3& operator-=(Vector3 const& a);
+    Vector3& operator-=(Vector3 const& a) noexcept;
 
-    Vector3& operator*=(Vector3 const& a);
+    Vector3& operator*=(Vector3 const& a) noexcept;
 
-    Vector3& operator*=(T s);
+    Vector3& operator*=(T s) noexcept;
 
-    Vector3& operator/=(T s);
+    Vector3& operator/=(T s) noexcept;
 
-    bool operator==(Vector3 const& a) const;
+    bool operator==(Vector3 const& a) const noexcept;
 
-    bool operator!=(Vector3 const& a) const;
+    bool operator!=(Vector3 const& a) const noexcept;
 
     //	explicit operator unsigned int() const;
 
-    T absolute_max(uint32_t& i) const;
+    T absolute_max(uint32_t& i) const noexcept;
 
-    static constexpr Vector3 identity();
+    static constexpr Vector3 identity() noexcept;
 };
 
 //==============================================================================

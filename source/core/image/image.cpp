@@ -31,34 +31,34 @@ int32_t Image::Description::num_channels() const noexcept {
     }
 }
 
-Image::Image(Description const& description) : description_(description) {}
+Image::Image(Description const& description) noexcept : description_(description) {}
 
-Image::~Image() {}
+Image::~Image() noexcept {}
 
-const Image::Description& Image::description() const {
+const Image::Description& Image::description() const noexcept {
     return description_;
 }
 
-int2 Image::dimensions2() const {
+int2 Image::dimensions2() const noexcept {
     return description_.dimensions.xy();
 }
 
-int32_t Image::area() const {
+int32_t Image::area() const noexcept {
     return description_.dimensions[0] * description_.dimensions[1];
 }
 
-int32_t Image::volume() const {
+int32_t Image::volume() const noexcept {
     return description_.dimensions[0] * description_.dimensions[1] * description_.dimensions[2];
 }
 
-int2 Image::coordinates_2(int32_t index) const {
+int2 Image::coordinates_2(int32_t index) const noexcept {
     int2 c;
     c[1] = index / description_.dimensions[0];
     c[0] = index - c[1] * description_.dimensions[0];
     return c;
 }
 
-void Image::resize(Description const& description) {
+void Image::resize(Description const& description) noexcept {
     description_ = description;
 }
 

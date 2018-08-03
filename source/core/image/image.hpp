@@ -26,23 +26,24 @@ class Image {
         int32_t num_elements = 0;
     };
 
-    Image() = default;
-    Image(Description const& description);
+    Image() noexcept = default;
+    Image(Description const& description) noexcept;
 
-    virtual ~Image();
+    virtual ~Image() noexcept;
 
-    Description const& description() const;
+    Description const& description() const noexcept;
 
-    int2    dimensions2() const;
-    int32_t area() const;
-    int32_t volume() const;
+    int2    dimensions2() const noexcept;
 
-    int2 coordinates_2(int32_t index) const;
+    int32_t area() const noexcept;
+    int32_t volume() const noexcept;
 
-    virtual size_t num_bytes() const = 0;
+    int2 coordinates_2(int32_t index) const noexcept;
+
+    virtual size_t num_bytes() const noexcept = 0;
 
   protected:
-    void resize(Description const& description);
+    void resize(Description const& description) noexcept;
 
     Description description_;
 };

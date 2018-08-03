@@ -170,7 +170,7 @@ T* Typed_image<T>::data() const {
 }
 
 template <typename T>
-size_t Typed_image<T>::num_bytes() const {
+size_t Typed_image<T>::num_bytes() const noexcept {
     return sizeof(*this) + description_.dimensions[0] * description_.dimensions[1] *
                                description_.dimensions[2] * description_.num_elements * sizeof(T);
 }

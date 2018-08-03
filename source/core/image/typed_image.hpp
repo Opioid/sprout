@@ -54,7 +54,7 @@ class Typed_image final : public Image {
 
     T* data() const;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
     T* data_ = nullptr;
