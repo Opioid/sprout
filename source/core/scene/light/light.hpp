@@ -51,7 +51,7 @@ class Light {
     using Sample_to      = shape::Sample_to;
     using Sample_from    = shape::Sample_from;
 
-    virtual ~Light();
+    virtual ~Light() noexcept;
 
     virtual Transformation const& transformation_at(float           time,
                                                     Transformation& transformation) const
