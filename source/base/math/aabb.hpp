@@ -10,53 +10,59 @@ namespace math {
 struct Ray;
 
 struct AABB {
-    AABB() = default;
-    constexpr AABB(float3 const& min, float3 const& max);
-    AABB(FVector min, FVector max);
+    AABB() noexcept = default;
 
-    float3 const& min() const;
-    float3 const& max() const;
+    constexpr AABB(float3 const& min, float3 const& max) noexcept;
 
-    float3 position() const;
-    float3 halfsize() const;
-    float3 extent() const;
+    AABB(FVector min, FVector max) noexcept;
 
-    float surface_area() const;
-    float volume() const;
+    float3 const& min() const noexcept;
+    float3 const& max() const noexcept;
 
-    bool intersect(float3 const& p) const;
+    float3 position() const noexcept;
+    float3 halfsize() const noexcept;
+    float3 extent() const noexcept;
 
-    bool intersect_p(Ray const& ray) const;
+    float surface_area() const noexcept;
+
+    float volume() const noexcept;
+
+    bool intersect(float3 const& p) const noexcept;
+
+    bool intersect_p(Ray const& ray) const noexcept;
 
     bool intersect_p(FVector ray_origin, FVector ray_inv_direction, FVector ray_min_t,
-                     FVector ray_max_t) const;
+                     FVector ray_max_t) const noexcept;
 
-    bool intersect_p(Ray const& ray, float& hit_t) const;
+    bool intersect_p(Ray const& ray, float& hit_t) const noexcept;
 
-    bool intersect_inside(Ray const& ray, float& hit_t) const;
+    bool intersect_inside(Ray const& ray, float& hit_t) const noexcept;
 
-    float3 normal(float3 const& p) const;
+    float3 normal(float3 const& p) const noexcept;
 
-    void set_min_max(float3 const& min, float3 const& max);
-    void set_min_max(FVector min, FVector max);
+    void set_min_max(float3 const& min, float3 const& max) noexcept;
+    void set_min_max(FVector min, FVector max) noexcept;
 
-    void insert(float3 const& p);
+    void insert(float3 const& p) noexcept;
 
-    void scale(float x);
-    void add(float x);
+    void scale(float x) noexcept;
 
-    AABB transform(const Matrix4x4f_a& m) const;
+    void add(float x) noexcept;
 
-    AABB merge(AABB const& other) const;
-    void merge_assign(AABB const& other);
+    AABB transform(float4x4 const& m) const noexcept;
 
-    void clip_min(float d, uint8_t axis);
-    void clip_max(float d, uint8_t axis);
+    AABB merge(AABB const& other) const noexcept;
 
-    bool operator==(AABB const& other) const;
+    void merge_assign(AABB const& other) noexcept;
 
-    static constexpr AABB empty();
-    static constexpr AABB infinite();
+    void clip_min(float d, uint8_t axis) noexcept;
+    void clip_max(float d, uint8_t axis) noexcept;
+
+    bool operator==(AABB const& other) const noexcept;
+
+    static constexpr AABB empty() noexcept;
+
+    static constexpr AABB infinite() noexcept;
 
     float3 bounds[2];
 };

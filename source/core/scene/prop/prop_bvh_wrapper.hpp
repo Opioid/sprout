@@ -22,24 +22,27 @@ class BVH_wrapper {
   public:
     using Sampler_filter = material::Sampler_settings::Filter;
 
-    bvh::Tree<Prop>& tree();
+    bvh::Tree<Prop>& tree() noexcept;
 
-    void set_infinite_props(std::vector<Prop*> const& infite_props);
+    void set_infinite_props(std::vector<Prop*> const& infite_props) noexcept;
 
-    math::AABB const& aabb() const;
+    math::AABB const& aabb() const noexcept;
 
-    bool intersect(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
+    bool intersect(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const
+        noexcept;
 
-    bool intersect_fast(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
+    bool intersect_fast(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const
+        noexcept;
 
-    bool intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const;
+    bool intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const noexcept;
 
-    bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const;
+    bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const noexcept;
 
-    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const;
+    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const
+        noexcept;
 
     bool thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                         float3& ta) const;
+                         float3& ta) const noexcept;
 
   private:
     bvh::Tree<Prop> tree_;

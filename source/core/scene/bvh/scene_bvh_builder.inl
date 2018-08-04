@@ -11,17 +11,17 @@
 namespace scene::bvh {
 
 template <typename T>
-Builder<T>::Builder() : root_(new Build_node) {
+Builder<T>::Builder() noexcept : root_(new Build_node) {
     root_->clear();
 }
 
 template <typename T>
-Builder<T>::~Builder() {
+Builder<T>::~Builder() noexcept {
     delete root_;
 }
 
 template <typename T>
-void Builder<T>::build(Tree<T>& tree, std::vector<T*>& finite_props) {
+void Builder<T>::build(Tree<T>& tree, std::vector<T*>& finite_props) noexcept {
     tree.clear();
 
     tree.data_.reserve(finite_props.size());
@@ -44,13 +44,13 @@ void Builder<T>::build(Tree<T>& tree, std::vector<T*>& finite_props) {
 }
 
 template <typename T>
-Builder<T>::Build_node::~Build_node() {
+Builder<T>::Build_node::~Build_node() noexcept {
     delete children[0];
     delete children[1];
 }
 
 template <typename T>
-void Builder<T>::Build_node::clear() {
+void Builder<T>::Build_node::clear() noexcept {
     delete children[0];
     children[0] = nullptr;
     delete children[1];
@@ -66,7 +66,7 @@ void Builder<T>::Build_node::clear() {
 
 template <typename T>
 void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_shapes,
-                       std::vector<T*>& out_data) {
+                       std::vector<T*>& out_data) noexcept {
     node->aabb = aabb(begin, end);
 
     if (static_cast<uint32_t>(std::distance(begin, end)) <= max_shapes) {
@@ -97,7 +97,8 @@ void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_sh
 }
 
 template <typename T>
-Split_candidate<T> Builder<T>::splitting_plane(math::AABB const& /*aabb*/, index begin, index end) {
+Split_candidate<T> Builder<T>::splitting_plane(math::AABB const& /*aabb*/, index begin,
+                                               index end) noexcept {
     split_candidates_.clear();
 
     float3 average = float3::identity();
@@ -122,7 +123,7 @@ Split_candidate<T> Builder<T>::splitting_plane(math::AABB const& /*aabb*/, index
 }
 
 template <typename T>
-void Builder<T>::serialize(Build_node* node) {
+void Builder<T>::serialize(Build_node* node) noexcept {
     auto& n = new_node();
     n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 
@@ -133,23 +134,24 @@ void Builder<T>::serialize(Build_node* node) {
 
         serialize(node->children[1]);
     } else {
-        const uint8_t num_primitives = static_cast<uint8_t>(node->props_end - node->offset);
+        uint8_t const num_primitives = static_cast<uint8_t>(node->props_end - node->offset);
         n.set_leaf_node(node->offset, num_primitives);
     }
 }
 
 template <typename T>
-bvh::Node& Builder<T>::new_node() {
+bvh::Node& Builder<T>::new_node() noexcept {
     return nodes_[current_node_++];
 }
 
 template <typename T>
-uint32_t Builder<T>::current_node_index() const {
+uint32_t Builder<T>::current_node_index() const noexcept {
     return current_node_;
 }
 
 template <typename T>
-void Builder<T>::assign(Build_node* node, index begin, index end, std::vector<T*>& out_props) {
+void Builder<T>::assign(Build_node* node, index begin, index end,
+                        std::vector<T*>& out_props) noexcept {
     node->offset = static_cast<uint32_t>(out_props.size());
 
     for (index i = begin; i != end; ++i) {
@@ -160,7 +162,7 @@ void Builder<T>::assign(Build_node* node, index begin, index end, std::vector<T*
 }
 
 template <typename T>
-math::AABB Builder<T>::aabb(index begin, index end) {
+math::AABB Builder<T>::aabb(index begin, index end) noexcept {
     math::AABB aabb = math::AABB::empty();
 
     for (index i = begin; i != end; ++i) {

@@ -9,7 +9,7 @@ static constexpr char base64_rfc4648_alphabet[] = {
     'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
     'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
 
-std::string encode(const uint8_t* data, size_t size) {
+std::string encode(uint8_t const* data, size_t size) {
     std::ostringstream result;
     uint32_t           i = 0;
     unsigned char      char_array_3[3];

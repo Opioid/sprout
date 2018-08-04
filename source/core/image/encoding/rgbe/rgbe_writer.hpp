@@ -20,7 +20,7 @@ class Writer : public image::Writer {
 
     static void write_pixels_rle(std::ostream& stream, Float4 const& image);
 
-    static void write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t num_bytes);
+    static void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes);
 
     static byte4 float_to_rgbe(float4 const& c);
 };

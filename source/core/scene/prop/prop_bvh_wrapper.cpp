@@ -9,22 +9,23 @@
 
 namespace scene::prop {
 
-bvh::Tree<Prop>& BVH_wrapper::tree() {
+bvh::Tree<Prop>& BVH_wrapper::tree() noexcept {
     return tree_;
 }
 
-void BVH_wrapper::set_infinite_props(std::vector<Prop*> const& infite_props) {
+void BVH_wrapper::set_infinite_props(std::vector<Prop*> const& infite_props) noexcept {
     num_infinite_props_ = static_cast<uint32_t>(infite_props.size());
     infinite_props_     = infite_props.data();
 }
 
-math::AABB const& BVH_wrapper::aabb() const {
+math::AABB const& BVH_wrapper::aabb() const noexcept {
     return tree_.aabb_;
 }
 
 bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
-                            Intersection& intersection) const {
-    bool        hit  = false;
+                            Intersection& intersection) const noexcept {
+    bool hit = false;
+
     Prop const* prop = nullptr;
 
     node_stack.clear();
@@ -86,8 +87,9 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
 }
 
 bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
-                                 Intersection& intersection) const {
-    bool        hit  = false;
+                                 Intersection& intersection) const noexcept {
+    bool hit = false;
+
     Prop const* prop = nullptr;
 
     node_stack.clear();
@@ -148,7 +150,8 @@ bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
     return hit;
 }
 
-bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const {
+bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const
+    noexcept {
     bool hit = false;
 
     node_stack.clear();
@@ -205,7 +208,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsi
     return hit;
 }
 
-bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) const {
+bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) const noexcept {
     node_stack.clear();
     if (0 != tree_.num_nodes_) {
         node_stack.push(0);
@@ -262,7 +265,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) con
 }
 
 bool BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                          float& o) const {
+                          float& o) const noexcept {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -325,7 +328,7 @@ bool BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& w
 }
 
 bool BVH_wrapper::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                                  float3& ta) const {
+                                  float3& ta) const noexcept {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();

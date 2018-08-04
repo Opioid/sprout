@@ -82,7 +82,7 @@ void Builder_SAH::serialize(Build_node* node, Triangles const& triangles, Vertic
 
         serialize(node->children[1], triangles, vertices, tree);
     } else {
-        const uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+        uint8_t const num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
         n.set_leaf_node(node->start_index, num_primitives);
 
         for (auto const p : node->primitives) {

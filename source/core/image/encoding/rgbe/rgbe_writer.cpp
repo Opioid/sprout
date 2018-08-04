@@ -82,7 +82,7 @@ void Writer::write_pixels_rle(std::ostream& stream, Float4 const& image) {
 // Run length encoding adds considerable complexity but does
 // save some space.  For each scanline, each channel (r,g,b,e) is
 // encoded separately for better compression.
-void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t num_bytes) {
+void Writer::write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes) {
     constexpr uint32_t min_run_length = 4;
 
     uint8_t  buffer[2];

@@ -223,7 +223,7 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 
     info.bytes_per_pixel = info.num_channels;
 
-    const uint8_t interlace = chunk.data[12];
+    uint8_t const interlace = chunk.data[12];
     if (interlace) {
         throw std::runtime_error("Interlaced PNG not supported");
     }

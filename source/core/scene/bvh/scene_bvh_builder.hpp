@@ -16,17 +16,19 @@ struct Tree;
 template <typename T>
 class Builder {
   public:
-    Builder();
-    ~Builder();
+    Builder() noexcept;
 
-    void build(Tree<T>& tree, std::vector<T*>& finite_props);
+    ~Builder() noexcept;
+
+    void build(Tree<T>& tree, std::vector<T*>& finite_props) noexcept;
 
   private:
     struct Build_node {
-        Build_node() = default;
-        ~Build_node();
+        Build_node() noexcept = default;
 
-        void clear();
+        ~Build_node() noexcept;
+
+        void clear() noexcept;
 
         math::AABB aabb;
 
@@ -41,19 +43,20 @@ class Builder {
     using index = typename std::vector<T*>::iterator;
 
     void split(Build_node* node, index begin, index end, uint32_t max_shapes,
-               std::vector<T*>& out_props);
+               std::vector<T*>& out_props) noexcept;
 
-    Split_candidate<T> splitting_plane(math::AABB const& aabb, index begin, index end);
+    Split_candidate<T> splitting_plane(math::AABB const& aabb, index begin, index end) noexcept;
 
-    void serialize(Build_node* node);
+    void serialize(Build_node* node) noexcept;
 
-    Node& new_node();
+    Node& new_node() noexcept;
 
-    uint32_t current_node_index() const;
+    uint32_t current_node_index() const noexcept;
 
-    static void assign(Build_node* node, index begin, index end, std::vector<T*>& out_data);
+    static void assign(Build_node* node, index begin, index end,
+                       std::vector<T*>& out_data) noexcept;
 
-    static math::AABB aabb(index begin, index end);
+    static math::AABB aabb(index begin, index end) noexcept;
 
     std::vector<Split_candidate<T>> split_candidates_;
 

@@ -11,44 +11,44 @@
 
 namespace math {
 
-inline constexpr AABB::AABB(float3 const& min, float3 const& max) : bounds{min, max} {}
+inline constexpr AABB::AABB(float3 const& min, float3 const& max) noexcept : bounds{min, max} {}
 
-inline AABB::AABB(FVector min, FVector max) {
+inline AABB::AABB(FVector min, FVector max) noexcept {
     simd::store_float4(bounds[0].v, min);
     simd::store_float4(bounds[1].v, max);
 }
 
-inline float3 const& AABB::min() const {
+inline float3 const& AABB::min() const noexcept {
     return bounds[0];
 }
 
-inline float3 const& AABB::max() const {
+inline float3 const& AABB::max() const noexcept {
     return bounds[1];
 }
 
-inline float3 AABB::position() const {
+inline float3 AABB::position() const noexcept {
     return 0.5f * (bounds[0] + bounds[1]);
 }
 
-inline float3 AABB::halfsize() const {
+inline float3 AABB::halfsize() const noexcept {
     return 0.5f * (bounds[1] - bounds[0]);
 }
 
-inline float3 AABB::extent() const {
+inline float3 AABB::extent() const noexcept {
     return bounds[1] - bounds[0];
 }
 
-inline float AABB::surface_area() const {
+inline float AABB::surface_area() const noexcept {
     float3 const d = bounds[1] - bounds[0];
     return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);
 }
 
-inline float AABB::volume() const {
+inline float AABB::volume() const noexcept {
     float3 const d = bounds[1] - bounds[0];
     return d[0] * d[1] * d[2];
 }
 
-inline bool AABB::intersect(float3 const& p) const {
+inline bool AABB::intersect(float3 const& p) const noexcept {
     if (p[0] >= bounds[0][0] && p[0] <= bounds[1][0] && p[1] >= bounds[0][1] &&
         p[1] <= bounds[1][1] && p[2] >= bounds[0][2] && p[2] <= bounds[1][2]) {
         return true;
@@ -60,7 +60,7 @@ inline bool AABB::intersect(float3 const& p) const {
 // This test is presented in the paper
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
-inline bool AABB::intersect_p(Ray const& ray) const {
+inline bool AABB::intersect_p(Ray const& ray) const noexcept {
     /*	int8_t sign_0 = ray.signs[0];
             float min_t = (bounds[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
             float max_t = (bounds[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
@@ -135,7 +135,7 @@ inline bool AABB::intersect_p(Ray const& ray) const {
 }
 
 inline bool AABB::intersect_p(FVector ray_origin, FVector ray_inv_direction, FVector ray_min_t,
-                              FVector ray_max_t) const {
+                              FVector ray_max_t) const noexcept {
     Vector const bb_min = simd::load_float4(bounds[0].v);
     Vector const bb_max = simd::load_float4(bounds[1].v);
 
@@ -166,7 +166,7 @@ inline bool AABB::intersect_p(FVector ray_origin, FVector ray_inv_direction, FVe
                  _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_p(Ray const& ray, float& hit_t) const {
+inline bool AABB::intersect_p(Ray const& ray, float& hit_t) const noexcept {
     Vector ray_origin        = simd::load_float4(ray.origin.v);
     Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
     Vector ray_min_t         = simd::load_float(&ray.min_t);
@@ -211,7 +211,7 @@ inline bool AABB::intersect_p(Ray const& ray, float& hit_t) const {
                  _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const {
+inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const noexcept {
     Vector const ray_origin        = simd::load_float4(ray.origin.v);
     Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
@@ -256,7 +256,7 @@ inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const {
                  _mm_comige_ss(ray_max_t, min_t) & _mm_comige_ss(max_t, min_t));
 }
 
-inline float3 AABB::normal(float3 const& p) const {
+inline float3 AABB::normal(float3 const& p) const noexcept {
     float3 normal;
 
     float3 const local_point = p - position();
@@ -285,79 +285,79 @@ inline float3 AABB::normal(float3 const& p) const {
     return normal;
 }
 
-inline void AABB::set_min_max(float3 const& min, float3 const& max) {
+inline void AABB::set_min_max(float3 const& min, float3 const& max) noexcept {
     bounds[0] = min;
     bounds[1] = max;
 }
 
-inline void AABB::set_min_max(FVector min, FVector max) {
+inline void AABB::set_min_max(FVector min, FVector max) noexcept {
     simd::store_float4(bounds[0].v, min);
     simd::store_float4(bounds[1].v, max);
 }
 
-inline void AABB::insert(float3 const& p) {
+inline void AABB::insert(float3 const& p) noexcept {
     bounds[0] = math::min(p, bounds[0]);
     bounds[1] = math::max(p, bounds[1]);
 }
 
-inline void AABB::scale(float x) {
+inline void AABB::scale(float x) noexcept {
     float3 const v = x * halfsize();
     bounds[0] -= v;
     bounds[1] += v;
 }
 
-inline void AABB::add(float x) {
+inline void AABB::add(float x) noexcept {
     float3 const v(x);
     bounds[0] -= v;
     bounds[1] += v;
 }
 
-inline AABB AABB::transform(const Matrix4x4f_a& m) const {
-    float3 mx = m.x();
-    float3 xa = bounds[0][0] * mx;
-    float3 xb = bounds[1][0] * mx;
+inline AABB AABB::transform(float4x4 const& m) const noexcept {
+    float3 const mx = m.x();
+    float3 const xa = bounds[0][0] * mx;
+    float3 const xb = bounds[1][0] * mx;
 
-    float3 my = m.y();
-    float3 ya = bounds[0][1] * my;
-    float3 yb = bounds[1][1] * my;
+    float3 const my = m.y();
+    float3 const ya = bounds[0][1] * my;
+    float3 const yb = bounds[1][1] * my;
 
-    float3 mz = m.z();
-    float3 za = bounds[0][2] * mz;
-    float3 zb = bounds[1][2] * mz;
+    float3 const mz = m.z();
+    float3 const za = bounds[0][2] * mz;
+    float3 const zb = bounds[1][2] * mz;
 
-    float3 mw = m.w();
+    float3 const mw = m.w();
 
     return AABB((math::min(xa, xb) + math::min(ya, yb)) + (math::min(za, zb) + mw),
                 (math::max(xa, xb) + math::max(ya, yb)) + (math::max(za, zb) + mw));
 }
 
-inline AABB AABB::merge(AABB const& other) const {
+inline AABB AABB::merge(AABB const& other) const noexcept {
     return AABB(math::min(bounds[0], other.bounds[0]), math::max(bounds[1], other.bounds[1]));
 }
 
-inline void AABB::merge_assign(AABB const& other) {
+inline void AABB::merge_assign(AABB const& other) noexcept {
     bounds[0] = math::min(bounds[0], other.bounds[0]);
     bounds[1] = math::max(bounds[1], other.bounds[1]);
 }
 
-inline void AABB::clip_min(float d, uint8_t axis) {
+inline void AABB::clip_min(float d, uint8_t axis) noexcept {
     bounds[0].v[axis] = std::max(d, bounds[0][axis]);
 }
 
-inline void AABB::clip_max(float d, uint8_t axis) {
+inline void AABB::clip_max(float d, uint8_t axis) noexcept {
     bounds[1].v[axis] = std::min(d, bounds[1][axis]);
 }
 
-inline bool AABB::operator==(AABB const& other) const {
+inline bool AABB::operator==(AABB const& other) const noexcept {
     return bounds[0] == other.bounds[0] && bounds[1] == other.bounds[1];
 }
 
-inline constexpr AABB AABB::empty() {
+inline constexpr AABB AABB::empty() noexcept {
     constexpr float max = std::numeric_limits<float>::max();
     return AABB(float3(max), float3(-max));
 }
 
-inline constexpr AABB AABB::infinite() {
+inline constexpr AABB AABB::infinite() noexcept {
     constexpr float max = std::numeric_limits<float>::max();
     return AABB(float3(-max), float3(max));
 }
