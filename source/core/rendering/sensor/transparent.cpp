@@ -6,15 +6,15 @@
 
 namespace rendering::sensor {
 
-Transparent::Transparent(int2 dimensions, float exposure)
+Transparent::Transparent(int2 dimensions, float exposure) noexcept
     : Sensor(dimensions, exposure),
       pixels_(memory::allocate_aligned<Pixel>(dimensions[0] * dimensions[1])) {}
 
-Transparent::~Transparent() {
+Transparent::~Transparent() noexcept {
     memory::free_aligned(pixels_);
 }
 
-void Transparent::clear() {
+void Transparent::clear() noexcept {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
         pixels_[i].color      = float4(0.f);
@@ -22,16 +22,16 @@ void Transparent::clear() {
     }
 }
 
-bool Transparent::has_alpha_transparency() const {
+bool Transparent::has_alpha_transparency() const noexcept {
     return true;
 }
 
-size_t Transparent::num_bytes() const {
+size_t Transparent::num_bytes() const noexcept {
     auto const d = dimensions();
     return d[0] * d[1] * sizeof(Pixel);
 }
 
-void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) {
+void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) noexcept {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -39,7 +39,7 @@ void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) {
     value.weight_sum += weight;
 }
 
-void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight) {
+void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -50,13 +50,13 @@ void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight
     atomic::add_assign(value.weight_sum, weight);
 }
 
-void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) const {
+void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept {
     float const exposure_factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
         auto const& value = pixels_[i];
 
-        const float4 color = value.color / value.weight_sum;
+        float4 const color = value.color / value.weight_sum;
 
         target.at(i) = float4(exposure_factor * color.xyz(), std::min(color[3], 1.f));
     }

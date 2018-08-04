@@ -18,7 +18,7 @@ void dft_1d(float2* result, float const* source, int32_t num) {
     int32_t const r  = num % 4;
     int32_t const m4 = num - r;
 
-    const float4 zott = float4(0.f, 1.f, 2.f, 3.f);
+    float4 const zott = float4(0.f, 1.f, 2.f, 3.f);
     Vector const zv   = simd::load_float4(zott.v);
 
     for (int32_t k = 0, len = num / 2; k <= len; ++k) {

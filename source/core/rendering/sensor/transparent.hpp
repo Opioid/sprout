@@ -8,21 +8,22 @@ namespace rendering::sensor {
 
 class Transparent : public Sensor {
   public:
-    Transparent(int2 dimensions, float exposure);
-    virtual ~Transparent();
+    Transparent(int2 dimensions, float exposure) noexcept;
 
-    virtual void clear() override final;
+    ~Transparent() noexcept override;
 
-    virtual bool has_alpha_transparency() const override final;
+    void clear() noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    bool has_alpha_transparency() const noexcept override final;
+
+    size_t num_bytes() const noexcept override final;
 
   protected:
-    virtual void add_pixel(int2 pixel, float4 const& color, float weight) override final;
+    void add_pixel(int2 pixel, float4 const& color, float weight) noexcept override final;
 
-    virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) override final;
+    void add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept override final;
 
-    virtual void resolve(int32_t begin, int32_t end, image::Float4& target) const override final;
+    void resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept override final;
 
     struct Pixel {
         float4 color;

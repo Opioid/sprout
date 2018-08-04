@@ -8,7 +8,7 @@ namespace rendering::postprocessor {
 
 class Backplate : public Postprocessor {
   public:
-    Backplate(const Texture_ptr& backplate);
+    Backplate(Texture_ptr const& backplate);
 
     virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) override final;
 

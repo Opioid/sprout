@@ -104,10 +104,11 @@ class Scene {
     std::vector<light::Light*> const& lights() const noexcept;
 
     struct Light {
-        const light::Light& ref;
+        light::Light const& ref;
         float               pdf;
     };
     Light light(uint32_t id) const noexcept;
+
     Light random_light(float random) const noexcept;
 
     void tick(thread::Pool& thread_pool) noexcept;

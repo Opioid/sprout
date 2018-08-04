@@ -7,22 +7,22 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp>
-Unfiltered<Base, Clamp>::Unfiltered(int2 dimensions, float exposure, const Clamp& clamp)
+Unfiltered<Base, Clamp>::Unfiltered(int2 dimensions, float exposure, const Clamp& clamp) noexcept
     : Base(dimensions, exposure), clamp_(clamp) {}
 
 template <class Base, class Clamp>
-int32_t Unfiltered<Base, Clamp>::filter_radius_int() const {
+int32_t Unfiltered<Base, Clamp>::filter_radius_int() const noexcept {
     return 0;
 }
 
 template <class Base, class Clamp>
-int4 Unfiltered<Base, Clamp>::isolated_tile(int4 const& tile) const {
+int4 Unfiltered<Base, Clamp>::isolated_tile(int4 const& tile) const noexcept {
     return tile;
 }
 
 template <class Base, class Clamp>
 void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, float4 const& color,
-                                         int4 const& /*isolated_bounds*/, int4 const& bounds) {
+                                         int4 const& /*isolated_bounds*/, int4 const& bounds) noexcept {
     Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 

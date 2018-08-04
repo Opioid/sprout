@@ -447,8 +447,8 @@ static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_v
                                     float2& tc) noexcept {
     float const w = 1.f - uv[0] - uv[1];
 
-    const float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
-    const float4 t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
+    float4 const n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
+    float4 const t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
 
     n = math::normalize(n_u.xyz());
     t = math::normalize(t_v.xyz());
