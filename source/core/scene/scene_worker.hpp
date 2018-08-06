@@ -5,6 +5,7 @@
 #include "base/random/generator.hpp"
 #include "material/material_sample_cache.hpp"
 #include "material/sampler_cache.hpp"
+#include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
 #include "take/take_settings.hpp"
 
@@ -63,6 +64,14 @@ class Worker {
 
     Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const noexcept;
 
+    float top_ior() const noexcept;
+
+    prop::Interface_stack& interface_stack() noexcept;
+
+    float outside_ior(float3 const& wo, Intersection const& intersection) const noexcept;
+
+    void interface_change(float3 const& dir, Intersection const& intersection) noexcept;
+
   private:
     uint32_t id_;
 
@@ -76,7 +85,11 @@ class Worker {
     mutable shape::Node_stack node_stack_;
 
     mutable material::Sample_cache sample_cache_;
-    material::Sampler_cache const  sampler_cache_;
+
+    material::Sampler_cache const sampler_cache_;
+
+    prop::Interface_stack interface_stack_;
+    prop::Interface_stack interface_stack_temp_;
 };
 
 }  // namespace scene

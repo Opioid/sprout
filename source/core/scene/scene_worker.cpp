@@ -4,6 +4,7 @@
 #include "base/random/generator.inl"
 #include "material/material_sample.hpp"
 #include "material/sampler_cache.hpp"
+#include "prop/interface_stack.inl"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.inl"
 #include "scene.hpp"
@@ -110,6 +111,30 @@ Texture_sampler_2D const& Worker::sampler_2D(uint32_t key, Sampler_filter filter
 
 Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Sampler_filter filter) const noexcept {
     return sampler_cache_.sampler_3D(key, filter);
+}
+
+float Worker::top_ior() const noexcept {
+    return interface_stack_.top_ior();
+}
+
+prop::Interface_stack& Worker::interface_stack() noexcept {
+    return interface_stack_;
+}
+
+float Worker::outside_ior(float3 const& wo, Intersection const& intersection) const noexcept {
+    if (intersection.same_hemisphere(wo)) {
+        return interface_stack_.peek_ior(intersection);
+    } else {
+        return interface_stack_.top_ior();
+    }
+}
+
+void Worker::interface_change(float3 const& dir, Intersection const& intersection) noexcept {
+    if (intersection.same_hemisphere(dir)) {
+        interface_stack_.remove(intersection);
+    } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
+        interface_stack_.push(intersection);
+    }
 }
 
 }  // namespace scene

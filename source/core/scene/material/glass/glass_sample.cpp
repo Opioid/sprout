@@ -21,14 +21,15 @@ bxdf::Result Sample::evaluate(float3 const& /*wi*/) const {
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
-    float3 n     = layer_.n_;
-    float  eta_i = 1.f / ior_;
-    float  eta_t = ior_;
+    float3 n = layer_.n_;
+
+    float eta_i = ior_outside_ / ior_;
+    float eta_t = ior_ / ior_outside_;
 
     if (!same_hemisphere(wo_)) {
-        n     = -n;
-        eta_t = eta_i;
-        eta_i = ior_;
+        n = -n;
+
+        std::swap(eta_i, eta_t);
     }
 
     float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
@@ -38,15 +39,15 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float f;
     if (sint2 >= 1.f) {
         n_dot_t = 0.f;
-        f       = 1.f;
+
+        f = 1.f;
     } else {
         n_dot_t = std::sqrt(1.f - sint2);
-        f       = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+
+        f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
     }
 
-    float const p = sampler.generate_sample_1D();
-
-    if (p < f) {
+    if (sampler.generate_sample_1D() < f) {
         BSDF::reflect(wo_, n, n_dot_wo, result);
     } else {
         BSDF::refract(wo_, n, color_, n_dot_wo, n_dot_t, eta_i, result);

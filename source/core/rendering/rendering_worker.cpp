@@ -22,9 +22,9 @@ namespace rendering {
 
 Worker::~Worker() noexcept {
     delete photon_mapper_;
-    memory::safe_destruct(sampler_);
-    memory::safe_destruct(volume_integrator_);
-    memory::safe_destruct(surface_integrator_);
+    memory::destroy(sampler_);
+    memory::destroy(volume_integrator_);
+    memory::destroy(surface_integrator_);
 }
 
 void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene const& scene,
@@ -100,18 +100,6 @@ bool Worker::transmitted_visibility(Ray& ray, Intersection const& intersection,
     }
 
     return false;
-}
-
-scene::prop::Interface_stack& Worker::interface_stack() noexcept {
-    return interface_stack_;
-}
-
-void Worker::interface_change(float3 const& dir, Intersection const& intersection) noexcept {
-    if (intersection.same_hemisphere(dir)) {
-        interface_stack_.remove(intersection);
-    } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
-        interface_stack_.push(intersection);
-    }
 }
 
 uint32_t Worker::bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,

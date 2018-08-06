@@ -10,22 +10,22 @@
 
 namespace scene::prop {
 
-inline material::Material const* Interface_stack::Interface::material() const {
+inline material::Material const* Interface_stack::Interface::material() const noexcept {
     return prop->material(part);
 }
 
-inline bool Interface_stack::Interface::matches(Intersection const& intersection) const {
+inline bool Interface_stack::Interface::matches(Intersection const& intersection) const noexcept {
     return prop == intersection.prop && part == intersection.geo.part;
 }
 
-inline Interface_stack::Interface_stack()
+inline Interface_stack::Interface_stack() noexcept
     : stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
 
-inline Interface_stack::~Interface_stack() {
+inline Interface_stack::~Interface_stack() noexcept {
     memory::free_aligned(stack_);
 }
 
-inline void Interface_stack::operator=(Interface_stack const& other) {
+inline void Interface_stack::operator=(Interface_stack const& other) noexcept {
     index_ = other.index_;
 
     for (int32_t i = 0, len = index_; i < len; ++i) {
@@ -33,7 +33,7 @@ inline void Interface_stack::operator=(Interface_stack const& other) {
     }
 }
 
-inline void Interface_stack::swap(Interface_stack& other) {
+inline void Interface_stack::swap(Interface_stack& other) noexcept {
     Interface* temp = stack_;
     stack_          = other.stack_;
     other.stack_    = temp;
@@ -41,15 +41,15 @@ inline void Interface_stack::swap(Interface_stack& other) {
     index_ = other.index_;
 }
 
-inline bool Interface_stack::empty() const {
+inline bool Interface_stack::empty() const noexcept {
     return 0 == index_;
 }
 
-inline void Interface_stack::clear() {
+inline void Interface_stack::clear() noexcept {
     index_ = 0;
 }
 
-inline Interface_stack::Interface const* Interface_stack::top() const {
+inline Interface_stack::Interface const* Interface_stack::top() const noexcept {
     if (index_ > 0) {
         return &stack_[index_ - 1];
     }
@@ -57,7 +57,15 @@ inline Interface_stack::Interface const* Interface_stack::top() const {
     return nullptr;
 }
 
-inline bool Interface_stack::top_is_vacuum() const {
+inline float Interface_stack::top_ior() const noexcept {
+    if (index_ > 0) {
+        return stack_[index_ - 1].material()->ior();
+    }
+
+    return 1.f;
+}
+
+inline bool Interface_stack::top_is_vacuum() const noexcept {
     if (index_ > 0) {
         return 1.f == stack_[index_ - 1].material()->ior();
     }
@@ -65,7 +73,7 @@ inline bool Interface_stack::top_is_vacuum() const {
     return true;
 }
 
-inline bool Interface_stack::top_is_vacuum_or_pure_specular() const {
+inline bool Interface_stack::top_is_vacuum_or_pure_specular() const noexcept {
     if (index_ > 0) {
         auto const material = stack_[index_ - 1].material();
         return 1.f == material->ior() || material->is_pure_specular();
@@ -74,14 +82,14 @@ inline bool Interface_stack::top_is_vacuum_or_pure_specular() const {
     return true;
 }
 
-inline void Interface_stack::push(Intersection const& intersection) {
+inline void Interface_stack::push(Intersection const& intersection) noexcept {
     if (index_ < Num_entries - 1) {
         stack_[index_] = {intersection.prop, intersection.geo.uv, intersection.geo.part};
         ++index_;
     }
 }
 
-inline bool Interface_stack::remove(Intersection const& intersection) {
+inline bool Interface_stack::remove(Intersection const& intersection) noexcept {
     int32_t const back = index_ - 1;
     for (int32_t i = back; i >= 0; --i) {
         if (stack_[i].matches(intersection)) {
@@ -97,13 +105,24 @@ inline bool Interface_stack::remove(Intersection const& intersection) {
     return false;
 }
 
-inline void Interface_stack::pop() {
+inline float Interface_stack::peek_ior(Intersection const& intersection) const noexcept {
+    int32_t const back = index_ - 1;
+    for (int32_t i = back; i >= 1; --i) {
+        if (stack_[i].matches(intersection)) {
+            return stack_[i - 1].material()->ior();
+        }
+    }
+
+    return 1.f;
+}
+
+inline void Interface_stack::pop() noexcept {
     if (index_ > 0) {
         --index_;
     }
 }
 
-inline size_t Interface_stack::num_bytes() const {
+inline size_t Interface_stack::num_bytes() const noexcept {
     return sizeof(*this) + Num_entries * sizeof(Interface);
 }
 

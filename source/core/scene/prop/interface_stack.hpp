@@ -19,36 +19,43 @@ class Prop;
 class Interface_stack {
   public:
     struct Interface {
-        material::Material const* material() const;
+        material::Material const* material() const noexcept;
 
-        bool matches(Intersection const& intersection) const;
+        bool matches(Intersection const& intersection) const noexcept;
 
         Prop const* prop;
         float2      uv;
         uint32_t    part;
     };
 
-    Interface_stack();
-    ~Interface_stack();
+    Interface_stack() noexcept;
 
-    void operator=(Interface_stack const& other);
+    ~Interface_stack() noexcept;
 
-    void swap(Interface_stack& other);
+    void operator=(Interface_stack const& other) noexcept;
 
-    bool empty() const;
+    void swap(Interface_stack& other) noexcept;
 
-    void clear();
+    bool empty() const noexcept;
 
-    const Interface* top() const;
+    void clear() noexcept;
 
-    bool top_is_vacuum() const;
-    bool top_is_vacuum_or_pure_specular() const;
+    Interface const* top() const noexcept;
 
-    void push(Intersection const& intersection);
-    bool remove(Intersection const& intersection);
-    void pop();
+    float top_ior() const noexcept;
 
-    size_t num_bytes() const;
+    bool top_is_vacuum() const noexcept;
+    bool top_is_vacuum_or_pure_specular() const noexcept;
+
+    void push(Intersection const& intersection) noexcept;
+
+    bool remove(Intersection const& intersection) noexcept;
+
+    float peek_ior(Intersection const& intersection) const noexcept;
+
+    void pop() noexcept;
+
+    size_t num_bytes() const noexcept;
 
   private:
     static int32_t constexpr Num_entries = 16;

@@ -15,14 +15,14 @@ T* allocate_aligned(size_t count) noexcept {
 void free_aligned(void* pointer) noexcept;
 
 template <class T>
-void safe_destruct(T* t) noexcept {
+void destroy(T* t) noexcept {
     if (t) {
         t->~T();
     }
 }
 
 template <class T>
-void safe_destruct(T& t) noexcept {
+void destroy(T& t) noexcept {
     t.~T();
 }
 

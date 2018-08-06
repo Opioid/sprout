@@ -1,7 +1,6 @@
 #ifndef SU_CORE_RENDERING_WORKER_HPP
 #define SU_CORE_RENDERING_WORKER_HPP
 
-#include "scene/prop/interface_stack.hpp"
 #include "scene/scene_worker.hpp"
 
 namespace sampler {
@@ -64,10 +63,6 @@ class Worker : public scene::Worker {
     bool transmitted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
                                 float3& tv) noexcept;
 
-    scene::prop::Interface_stack& interface_stack() noexcept;
-
-    void interface_change(float3 const& dir, Intersection const& intersection) noexcept;
-
     uint32_t bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
                           float normalized_tick_slice) noexcept;
 
@@ -89,9 +84,6 @@ class Worker : public scene::Worker {
 
     integrator::photon::Mapper* photon_mapper_ = nullptr;
     integrator::photon::Map*    photon_map_    = nullptr;
-
-    scene::prop::Interface_stack interface_stack_;
-    scene::prop::Interface_stack interface_stack_temp_;
 };
 
 }  // namespace rendering

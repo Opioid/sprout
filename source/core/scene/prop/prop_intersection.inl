@@ -6,6 +6,7 @@
 #include "prop_intersection.hpp"
 #include "scene/scene_ray.hpp"
 #include "scene/scene_renderstate.hpp"
+#include "scene/scene_worker.hpp"
 
 namespace scene::prop {
 
@@ -56,7 +57,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
     rs.uv             = geo.uv;
     rs.area           = area();
     rs.time           = ray.time;
-    rs.ior            = 1.f;
+    rs.ior            = worker.outside_ior(wo, *this);
     rs.wavelength     = ray.wavelength;
     rs.subsurface     = subsurface;
     rs.avoid_caustics = avoid_caustics;

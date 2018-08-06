@@ -19,7 +19,8 @@ class Unfiltered : public Base {
     virtual int4 isolated_tile(int4 const& tile) const noexcept override final;
 
     virtual void add_sample(sampler::Camera_sample const& sample, float4 const& color,
-                            int4 const& isolated_bounds, int4 const& bounds) noexcept override final;
+                            int4 const& isolated_bounds,
+                            int4 const& bounds) noexcept override final;
 
   private:
     Clamp clamp_;

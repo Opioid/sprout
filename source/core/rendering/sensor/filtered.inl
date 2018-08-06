@@ -101,7 +101,8 @@ void Filtered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, flo
 
 template <class Base, class Clamp>
 void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4 const& color,
-                                               int4 const& isolated_bounds, int4 const& bounds) noexcept {
+                                               int4 const& isolated_bounds,
+                                               int4 const& bounds) noexcept {
     //	if (pixel[0] >= bounds[0] && pixel[0] <= bounds[2]
     //	&&	pixel[1] >= bounds[1] && pixel[1] <= bounds[3]) {
 
