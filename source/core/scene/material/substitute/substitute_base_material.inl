@@ -13,7 +13,7 @@
 namespace scene::material::substitute {
 
 template <typename Sample>
-void Material_base::set_sample(float3 const& wo, Renderstate const& rs,
+void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float outside_ior,
                                Texture_sampler_2D const& sampler, Sample& sample) const {
     sample.set_basis(rs.geo_n, wo);
 
@@ -47,7 +47,7 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs,
         radiance = float3::identity();
     }
 
-    sample.layer_.set(color, radiance, ior_, fresnel::schlick_f0(ior_, rs.ior), surface[0],
+    sample.layer_.set(color, radiance, ior_, fresnel::schlick_f0(ior_, outside_ior), surface[0],
                       surface[1]);
     sample.avoid_caustics_ = rs.avoid_caustics;
 }

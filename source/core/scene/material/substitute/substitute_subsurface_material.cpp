@@ -58,7 +58,7 @@ material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstat
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, sampler, sample);
+    set_sample(wo, rs, rs.ior, sampler, sample);
 
     sample.set(anisotropy_, ior_, rs.ior);
 

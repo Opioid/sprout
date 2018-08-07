@@ -8,7 +8,7 @@
 namespace scene::material::substitute {
 
 Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided)
-    : Material_coating<coating::Clearcoat>(sampler_settings, two_sided) {}
+    : Material_coating<coating::Clearcoat_data>(sampler_settings, two_sided) {}
 
 material::Sample const& Material_clearcoat::sample(float3 const& wo, Renderstate const& rs,
                                                    Sampler_filter filter,
@@ -18,21 +18,24 @@ material::Sample const& Material_clearcoat::sample(float3 const& wo, Renderstate
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, sampler, sample);
+    set_sample(wo, rs, coating_.ior_, sampler, sample);
 
     set_coating_basis(wo, rs, sampler, sample);
 
-    sample.coating_.set(coating_.f0_, coating_.alpha_, coating_.alpha2_);
+    sample.coating_.set(fresnel::schlick_f0(coating_.ior_, rs.ior), coating_.alpha_,
+                        coating_.alpha2_);
 
     return sample;
 }
 
 void Material_clearcoat::set_clearcoat(float ior, float roughness) {
-    coating_.f0_      = fresnel::schlick_f0(1.f, ior);
-    roughness         = ggx::clamp_roughness(roughness);
-    float const alpha = roughness * roughness;
-    coating_.alpha_   = alpha;
-    coating_.alpha2_  = alpha * alpha;
+    coating_.ior_ = ior;
+
+    float const r     = ggx::clamp_roughness(roughness);
+    float const alpha = r * r;
+
+    coating_.alpha_  = alpha;
+    coating_.alpha2_ = alpha * alpha;
 }
 
 size_t Material_clearcoat::sample_size() {
@@ -50,7 +53,7 @@ material::Sample const& Material_thinfilm::sample(float3 const& wo, Renderstate 
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, sampler, sample);
+    set_sample(wo, rs, coating_.ior_, sampler, sample);
 
     set_coating_basis(wo, rs, sampler, sample);
 
@@ -60,9 +63,11 @@ material::Sample const& Material_thinfilm::sample(float3 const& wo, Renderstate 
 }
 
 void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) {
-    coating_.ior_       = ior;
-    roughness           = ggx::clamp_roughness(roughness);
-    float const alpha   = roughness * roughness;
+    coating_.ior_ = ior;
+
+    float const r     = ggx::clamp_roughness(roughness);
+    float const alpha = r * r;
+
     coating_.alpha_     = alpha;
     coating_.alpha2_    = alpha * alpha;
     coating_.thickness_ = thickness;

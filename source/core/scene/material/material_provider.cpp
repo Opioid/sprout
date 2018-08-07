@@ -803,25 +803,27 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
                                        resource::Manager& manager) {
     Sampler_settings sampler_settings;
 
-    Texture_adapter     color_map;
-    Texture_adapter     normal_map;
-    Texture_adapter     surface_map;
-    Texture_adapter     emission_map;
-    Texture_adapter     mask;
-    Texture_adapter     density_map;
-    bool                two_sided = false;
-    float3              color(0.6f, 0.6f, 0.6f);
-    bool                use_absorption_color = false;
-    float3              absorption_color(0.f);
-    bool                use_scattering_color = false;
-    float3              scattering_color(0.f);
-    float               roughness             = 0.9f;
-    float               metallic              = 0.f;
-    float               ior                   = 1.46f;
-    float               emission_factor       = 1.f;
-    float               thickness             = 0.f;
-    float               attenuation_distance  = 0.f;
-    float               volumetric_anisotropy = 0.f;
+    Texture_adapter color_map;
+    Texture_adapter normal_map;
+    Texture_adapter surface_map;
+    Texture_adapter emission_map;
+    Texture_adapter mask;
+    Texture_adapter density_map;
+
+    bool   two_sided = false;
+    float3 color(0.6f, 0.6f, 0.6f);
+    bool   use_absorption_color = false;
+    float3 absorption_color(0.f);
+    bool   use_scattering_color = false;
+    float3 scattering_color(0.f);
+    float  roughness             = 0.9f;
+    float  metallic              = 0.f;
+    float  ior                   = 1.46f;
+    float  emission_factor       = 1.f;
+    float  thickness             = 0.f;
+    float  attenuation_distance  = 0.f;
+    float  volumetric_anisotropy = 0.f;
+
     Coating_description coating;
 
     for (auto& n : substitute_value.GetObject()) {
@@ -960,7 +962,7 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
             material->set_emission_map(emission_map);
 
             material->set_color(color);
-            material->set_ior(ior /*, clearcoat.ior*/);
+            material->set_ior(ior);
             material->set_roughness(roughness);
             material->set_metallic(metallic);
             material->set_emission_factor(emission_factor);

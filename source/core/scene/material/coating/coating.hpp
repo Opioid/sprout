@@ -17,6 +17,12 @@ struct Coating_base {
     float  weight_;
 };
 
+struct Clearcoat_data : public Coating_base {
+    float ior_;
+    float alpha_;
+    float alpha2_;
+};
+
 class Clearcoat : public Coating_base {
   public:
     void set(float f0, float alpha, float alpha2);

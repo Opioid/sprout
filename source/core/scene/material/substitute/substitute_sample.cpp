@@ -14,8 +14,9 @@ bxdf::Result Sample::evaluate(float3 const& wi) const {
         return {float3::identity(), 0.f};
     }
 
-    float3 const h        = math::normalize(wo_ + wi);
-    float const  wo_dot_h = clamp_dot(wo_, h);
+    float3 const h = math::normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
 
     return layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 }

@@ -10,7 +10,7 @@ class Material_coating : public Material_base {
   public:
     Material_coating(Sampler_settings const& sampler_settings, bool two_sided);
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const override final;
 
     void set_coating_weight_map(Texture_adapter const& weight_map);
     void set_coating_normal_map(Texture_adapter const& normal_map);
@@ -29,14 +29,13 @@ class Material_coating : public Material_base {
     Coating coating_;
 };
 
-class Material_clearcoat : public Material_coating<coating::Clearcoat> {
+class Material_clearcoat : public Material_coating<coating::Clearcoat_data> {
   public:
     Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided);
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const override final;
 
     void set_clearcoat(float ior, float roughness);
 
@@ -47,10 +46,9 @@ class Material_thinfilm : public Material_coating<coating::Thinfilm> {
   public:
     Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const override final;
 
     void set_thinfilm(float ior, float roughness, float thickness);
 

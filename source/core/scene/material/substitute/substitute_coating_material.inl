@@ -53,7 +53,7 @@ void Material_coating<Coating>::set_coating_basis(float3 const& wo, Renderstate 
     }
 
     if (coating_weight_map_.is_valid()) {
-        float weight = coating_weight_map_.sample_1(sampler, rs.uv);
+        float const weight = coating_weight_map_.sample_1(sampler, rs.uv);
         sample.coating_.set_color_and_weight(coating_.color_, weight);
     } else {
         sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
