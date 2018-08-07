@@ -64,8 +64,6 @@ class Worker {
 
     Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const noexcept;
 
-    float top_ior() const noexcept;
-
     prop::Interface_stack& interface_stack() noexcept;
 
     float outside_ior(float3 const& wo, Intersection const& intersection) const noexcept;

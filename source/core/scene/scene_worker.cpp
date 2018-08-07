@@ -113,19 +113,15 @@ Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Sampler_filter filter
     return sampler_cache_.sampler_3D(key, filter);
 }
 
-float Worker::top_ior() const noexcept {
-    return interface_stack_.top_ior();
-}
-
 prop::Interface_stack& Worker::interface_stack() noexcept {
     return interface_stack_;
 }
 
 float Worker::outside_ior(float3 const& wo, Intersection const& intersection) const noexcept {
     if (intersection.same_hemisphere(wo)) {
-        return interface_stack_.peek_ior(intersection);
-    } else {
         return interface_stack_.top_ior();
+    } else {
+        return interface_stack_.peek_ior(intersection);
     }
 }
 

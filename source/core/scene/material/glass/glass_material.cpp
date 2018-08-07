@@ -28,10 +28,6 @@ material::Sample const& Glass::sample(float3 const& wo, Renderstate const& rs,
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    //    if (rs.ior > 1.f) {
-    //        return sample;
-    //    }
-
     sample.set(refraction_color_, ior_, rs.ior);
 
     return sample;

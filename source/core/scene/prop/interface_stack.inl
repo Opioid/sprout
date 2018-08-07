@@ -106,14 +106,16 @@ inline bool Interface_stack::remove(Intersection const& intersection) noexcept {
 }
 
 inline float Interface_stack::peek_ior(Intersection const& intersection) const noexcept {
-    int32_t const back = index_ - 1;
-    for (int32_t i = back; i >= 1; --i) {
-        if (stack_[i].matches(intersection)) {
-            return stack_[i - 1].material()->ior();
-        }
+    if (index_ <= 1) {
+        return 1.f;
     }
 
-    return 1.f;
+    int32_t const back = index_ - 1;
+    if (stack_[back].matches(intersection)) {
+        return stack_[back - 1].material()->ior();
+    } else {
+        return stack_[back].material()->ior();
+    }
 }
 
 inline void Interface_stack::pop() noexcept {
