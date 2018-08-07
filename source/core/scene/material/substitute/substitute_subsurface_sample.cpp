@@ -53,13 +53,13 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-void Sample_subsurface::set(float anisotropy, float ior, float outside_ior) {
+void Sample_subsurface::set(float anisotropy, float ior, float ior_outside) {
     anisotropy_ = anisotropy;
 
     ior_.ior_i_ = ior;
-    ior_.ior_o_ = outside_ior;
-    ior_.eta_i_ = outside_ior / ior;
-    ior_.eta_t_ = ior / outside_ior;
+    ior_.ior_o_ = ior_outside;
+    ior_.eta_i_ = ior_outside / ior;
+    ior_.eta_t_ = ior / ior_outside;
 }
 
 void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,

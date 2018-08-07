@@ -9,12 +9,11 @@ class Glass_dispersion final : public Glass {
   public:
     Glass_dispersion(Sampler_settings const& sampler_settings);
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const override final;
 
     void set_abbe(float abbe);
 

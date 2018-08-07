@@ -7,18 +7,11 @@ namespace scene::material::glass {
 
 class Sample_rough final : public material::Sample {
   public:
-    virtual Layer const& base_layer() const override final;
+    Layer const& base_layer() const override final;
 
-    virtual bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const override final;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
-
-    struct IOR {
-        float ior_i_;
-        float ior_o_;
-        float eta_i_;
-        float eta_t_;
-    };
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
     void set(float3 const& refraction_color, float3 const& absorption_color,
              float attenuation_distance, float ior, float ior_outside, float alpha);
@@ -32,6 +25,13 @@ class Sample_rough final : public material::Sample {
     };
 
     Layer layer_;
+
+    struct IOR {
+        float ior_i_;
+        float ior_o_;
+        float eta_i_;
+        float eta_t_;
+    };
 
     IOR ior_;
 

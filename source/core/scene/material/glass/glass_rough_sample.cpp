@@ -27,9 +27,10 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    float3 const h        = math::normalize(wo_ + wi);
-    float const  wo_dot_h = clamp_dot(wo_, h);
-    float const  n_dot_h  = math::saturate(math::dot(layer_.n_, h));
+    float3 const h = math::normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
+    float const n_dot_h  = math::saturate(math::dot(layer_.n_, h));
 
     fresnel::Schlick const schlick(layer_.f0_);
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
@@ -85,7 +86,7 @@ void Sample_rough::set(float3 const& refraction_color, float3 const& absorption_
     layer_.absorption_coefficient_ = material::extinction_coefficient(absorption_color,
                                                                       attenuation_distance);
 
-    layer_.f0_     = fresnel::schlick_f0(ior_outside, ior);
+    layer_.f0_     = fresnel::schlick_f0(ior, ior_outside);
     layer_.alpha_  = alpha;
     layer_.alpha2_ = alpha * alpha;
 

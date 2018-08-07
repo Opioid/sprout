@@ -57,7 +57,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
     rs.uv             = geo.uv;
     rs.area           = area();
     rs.time           = ray.time;
-    rs.ior            = worker.outside_ior(wo, *this);
+    rs.ior            = worker.ior_outside(wo, *this);
     rs.wavelength     = ray.wavelength;
     rs.subsurface     = subsurface;
     rs.avoid_caustics = avoid_caustics;

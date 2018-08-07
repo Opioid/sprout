@@ -9,19 +9,18 @@ class Glass_rough : public Material {
   public:
     Glass_rough(Sampler_settings const& sampler_settings);
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const override final;
 
-    virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-                                          Worker const& worker) const override final;
+    float3 absorption_coefficient(float2 uv, Sampler_filter filter,
+                                  Worker const& worker) const override final;
 
-    virtual float ior() const override final;
+    float ior() const override final;
 
-    virtual bool is_scattering_volume() const override final;
+    bool is_scattering_volume() const override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const override final;
 
     void set_normal_map(Texture_adapter const& normal_map);
     void set_roughness_map(Texture_adapter const& roughness_map);
@@ -40,9 +39,10 @@ class Glass_rough : public Material {
     float3 refraction_color_;
     float3 absorption_coefficient_;
     float3 absorption_color_;
-    float  attenuation_distance_;
-    float  ior_;
-    float  alpha_;
+
+    float attenuation_distance_;
+    float ior_;
+    float alpha_;
 };
 
 }  // namespace scene::material::glass

@@ -5,25 +5,25 @@
 
 namespace scene::material {
 
-static inline float abs_dot(float3 const& a, float3 const& b) {
+static inline float abs_dot(float3 const& a, float3 const& b) noexcept {
     return std::abs(math::dot(a, b));
 }
 
 constexpr float Dot_min = 0.00001f;
 
-static inline float clamp(float x) {
+static inline float clamp(float x) noexcept {
     return std::clamp(x, Dot_min, 1.f);
 }
 
-static inline float clamp_dot(float3 const& a, float3 const& b) {
+static inline float clamp_dot(float3 const& a, float3 const& b) noexcept {
     return std::clamp(math::dot(a, b), Dot_min, 1.f);
 }
 
-static inline float clamp_reverse_dot(float3 const& a, float3 const& b) {
+static inline float clamp_reverse_dot(float3 const& a, float3 const& b) noexcept {
     return std::clamp(-math::dot(a, b), Dot_min, 1.f);
 }
 
-static inline float clamp_abs_dot(float3 const& a, float3 const& b) {
+static inline float clamp_abs_dot(float3 const& a, float3 const& b) noexcept {
     return std::clamp(std::abs(math::dot(a, b)), Dot_min, 1.f);
 }
 

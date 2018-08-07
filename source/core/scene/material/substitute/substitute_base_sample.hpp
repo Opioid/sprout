@@ -34,8 +34,8 @@ class Sample_base : public material::Sample {
 
   public:
     struct Layer : material::Sample::Layer {
-        void set(float3 const& color, float3 const& radiance, float ior, float constant_f0,
-                 float roughness, float metallic);
+        void set(float3 const& color, float3 const& radiance, float ior, float f0, float roughness,
+                 float metallic);
 
         bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                    float wo_dot_h, bool avoid_caustics) const;

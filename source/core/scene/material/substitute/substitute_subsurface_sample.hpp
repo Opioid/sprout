@@ -12,7 +12,7 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
-    void set(float anisotropy, float ior, float outside_ior);
+    void set(float anisotropy, float ior, float ior_outside);
 
   private:
     void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,

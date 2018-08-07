@@ -117,7 +117,7 @@ prop::Interface_stack& Worker::interface_stack() noexcept {
     return interface_stack_;
 }
 
-float Worker::outside_ior(float3 const& wo, Intersection const& intersection) const noexcept {
+float Worker::ior_outside(float3 const& wo, Intersection const& intersection) const noexcept {
     if (intersection.same_hemisphere(wo)) {
         return interface_stack_.top_ior();
     } else {

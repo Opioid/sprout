@@ -108,9 +108,9 @@ void Sample_base<Diffuse>::pure_specular_sample_and_coating(Coating const&    co
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::set(float3 const& color, float3 const& radiance, float ior,
-                                      float constant_f0, float roughness, float metallic) {
+                                      float f0, float roughness, float metallic) {
     diffuse_color_ = (1.f - metallic) * color;
-    f0_            = math::lerp(float3(constant_f0), color, metallic);
+    f0_            = math::lerp(float3(f0), color, metallic);
     emission_      = radiance;
     ior_           = ior;
     roughness_     = roughness;

@@ -8,19 +8,19 @@ namespace scene::shape {
 
 class Node_stack {
   public:
-    Node_stack(uint32_t size);
+    Node_stack(uint32_t size) noexcept;
 
-    ~Node_stack();
+    ~Node_stack() noexcept;
 
-    bool empty() const;
+    bool empty() const noexcept;
 
-    void clear();
+    void clear() noexcept;
 
-    void push(uint32_t value);
+    void push(uint32_t value) noexcept;
 
-    uint32_t pop();
+    uint32_t pop() noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
     uint32_t  num_elements_;
