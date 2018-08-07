@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_HPP
 
 #include "scene/material/material_sample.hpp"
 
 namespace scene::material::substitute {
 
-template <typename Diffuse, class... Layer_data>
+template <typename Diffuse>
 class Sample_base : public material::Sample {
   public:
     Layer const& base_layer() const override final;
@@ -32,7 +33,7 @@ class Sample_base : public material::Sample {
                                           bxdf::Sample& result) const;
 
   public:
-    struct Layer : material::Sample::Layer, Layer_data... {
+    struct Layer : material::Sample::Layer {
         void set(float3 const& color, float3 const& radiance, float ior, float constant_f0,
                  float roughness, float metallic);
 
@@ -67,3 +68,5 @@ class Sample_base : public material::Sample {
 };
 
 }  // namespace scene::material::substitute
+
+#endif

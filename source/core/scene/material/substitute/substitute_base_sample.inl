@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_INL
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_INL
 
 #include "base/math/vector3.inl"
 #include "scene/material/coating/coating.inl"
@@ -8,20 +9,20 @@
 
 namespace scene::material::substitute {
 
-template <typename Diffuse, class... Layer_data>
-const material::Sample::Layer& Sample_base<Diffuse, Layer_data...>::base_layer() const {
+template <typename Diffuse>
+const material::Sample::Layer& Sample_base<Diffuse>::base_layer() const {
     return layer_;
 }
 
-template <typename Diffuse, class... Layer_data>
-float3 Sample_base<Diffuse, Layer_data...>::radiance() const {
+template <typename Diffuse>
+float3 Sample_base<Diffuse>::radiance() const {
     return layer_.emission_;
 }
 
-template <typename Diffuse, class... Layer_data>
+template <typename Diffuse>
 template <typename Coating>
-bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
-    float3 const& wi, Coating const& coating_layer) const {
+bxdf::Result Sample_base<Diffuse>::base_and_coating_evaluate(float3 const&  wi,
+                                                             Coating const& coating_layer) const {
     float3 const h = math::normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
@@ -34,11 +35,11 @@ bxdf::Result Sample_base<Diffuse, Layer_data...>::base_and_coating_evaluate(
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
 }
 
-template <typename Diffuse, class... Layer_data>
+template <typename Diffuse>
 template <typename Coating>
-void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(Coating const&    coating_layer,
-                                                                  sampler::Sampler& sampler,
-                                                                  bxdf::Sample&     result) const {
+void Sample_base<Diffuse>::base_and_coating_sample(Coating const&    coating_layer,
+                                                   sampler::Sampler& sampler,
+                                                   bxdf::Sample&     result) const {
     float const p = sampler.generate_sample_1D();
 
     if (p < 0.5f) {
@@ -63,11 +64,11 @@ void Sample_base<Diffuse, Layer_data...>::base_and_coating_sample(Coating const&
     }
 }
 
-template <typename Diffuse, class... Layer_data>
+template <typename Diffuse>
 template <typename Coating>
-void Sample_base<Diffuse, Layer_data...>::diffuse_sample_and_coating(Coating const& coating_layer,
-                                                                     sampler::Sampler& sampler,
-                                                                     bxdf::Sample& result) const {
+void Sample_base<Diffuse>::diffuse_sample_and_coating(Coating const&    coating_layer,
+                                                      sampler::Sampler& sampler,
+                                                      bxdf::Sample&     result) const {
     layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -77,11 +78,11 @@ void Sample_base<Diffuse, Layer_data...>::diffuse_sample_and_coating(Coating con
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
 }
 
-template <typename Diffuse, class... Layer_data>
+template <typename Diffuse>
 template <typename Coating>
-void Sample_base<Diffuse, Layer_data...>::specular_sample_and_coating(Coating const& coating_layer,
-                                                                      sampler::Sampler& sampler,
-                                                                      bxdf::Sample& result) const {
+void Sample_base<Diffuse>::specular_sample_and_coating(Coating const&    coating_layer,
+                                                       sampler::Sampler& sampler,
+                                                       bxdf::Sample&     result) const {
     layer_.specular_sample(wo_, sampler, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -91,10 +92,11 @@ void Sample_base<Diffuse, Layer_data...>::specular_sample_and_coating(Coating co
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
 }
 
-template <typename Diffuse, class... Layer_data>
+template <typename Diffuse>
 template <typename Coating>
-void Sample_base<Diffuse, Layer_data...>::pure_specular_sample_and_coating(
-    Coating const& coating_layer, sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_base<Diffuse>::pure_specular_sample_and_coating(Coating const&    coating_layer,
+                                                            sampler::Sampler& sampler,
+                                                            bxdf::Sample&     result) const {
     layer_.pure_specular_sample(wo_, sampler, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -104,10 +106,9 @@ void Sample_base<Diffuse, Layer_data...>::pure_specular_sample_and_coating(
     result.pdf        = 0.5f * (result.pdf + coating.pdf);
 }
 
-template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::set(float3 const& color, float3 const& radiance,
-                                                     float ior, float constant_f0, float roughness,
-                                                     float metallic) {
+template <typename Diffuse>
+void Sample_base<Diffuse>::Layer::set(float3 const& color, float3 const& radiance, float ior,
+                                      float constant_f0, float roughness, float metallic) {
     diffuse_color_ = (1.f - metallic) * color;
     f0_            = math::lerp(float3(constant_f0), color, metallic);
     emission_      = radiance;
@@ -121,12 +122,10 @@ void Sample_base<Diffuse, Layer_data...>::Layer::set(float3 const& color, float3
     metallic_ = metallic;
 }
 
-template <typename Diffuse, class... Layer_data>
-bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(float3 const& wi,
-                                                                       float3 const& wo,
-                                                                       float3 const& h,
-                                                                       float         wo_dot_h,
-                                                                       bool avoid_caustics) const {
+template <typename Diffuse>
+bxdf::Result Sample_base<Diffuse>::Layer::base_evaluate(float3 const& wi, float3 const& wo,
+                                                        float3 const& h, float wo_dot_h,
+                                                        bool avoid_caustics) const {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -151,11 +150,9 @@ bxdf::Result Sample_base<Diffuse, Layer_data...>::Layer::base_evaluate(float3 co
     return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
 }
 
-template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(float3 const&     wo,
-                                                                sampler::Sampler& sampler,
-                                                                bool              avoid_caustics,
-                                                                bxdf::Sample&     result) const {
+template <typename Diffuse>
+void Sample_base<Diffuse>::Layer::diffuse_sample(float3 const& wo, sampler::Sampler& sampler,
+                                                 bool avoid_caustics, bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
 
@@ -175,10 +172,9 @@ void Sample_base<Diffuse, Layer_data...>::Layer::diffuse_sample(float3 const&   
     result.pdf        = 0.5f * (result.pdf + ggx.pdf);
 }
 
-template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(float3 const&     wo,
-                                                                 sampler::Sampler& sampler,
-                                                                 bxdf::Sample&     result) const {
+template <typename Diffuse>
+void Sample_base<Diffuse>::Layer::specular_sample(float3 const& wo, sampler::Sampler& sampler,
+                                                  bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -191,10 +187,9 @@ void Sample_base<Diffuse, Layer_data...>::Layer::specular_sample(float3 const&  
     result.pdf        = 0.5f * (result.pdf + d.pdf);
 }
 
-template <typename Diffuse, class... Layer_data>
-void Sample_base<Diffuse, Layer_data...>::Layer::pure_specular_sample(float3 const&     wo,
-                                                                      sampler::Sampler& sampler,
-                                                                      bxdf::Sample& result) const {
+template <typename Diffuse>
+void Sample_base<Diffuse>::Layer::pure_specular_sample(float3 const& wo, sampler::Sampler& sampler,
+                                                       bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -203,9 +198,8 @@ void Sample_base<Diffuse, Layer_data...>::Layer::pure_specular_sample(float3 con
     result.reflection *= n_dot_wi;
 }
 
-template <typename Diffuse, class... Layer_data>
-float Sample_base<Diffuse, Layer_data...>::Layer::base_diffuse_fresnel_hack(float n_dot_wi,
-                                                                            float n_dot_wo) const {
+template <typename Diffuse>
+float Sample_base<Diffuse>::Layer::base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const {
     // I think this is what we have to weigh lambert with if it is added to a microfacet BRDF.
     // At the moment this is only used with the "translucent" material,
     // which is kind of hacky anyway.
@@ -219,3 +213,5 @@ float Sample_base<Diffuse, Layer_data...>::Layer::base_diffuse_fresnel_hack(floa
 }
 
 }  // namespace scene::material::substitute
+
+#endif
