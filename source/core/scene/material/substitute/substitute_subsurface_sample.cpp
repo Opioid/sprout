@@ -14,8 +14,9 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const {
         return {float3::identity(), 0.f};
     }
 
-    float3 const h        = math::normalize(wo_ + wi);
-    float const  wo_dot_h = clamp_dot(wo_, h);
+    float3 const h = math::normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
 
     auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
     result.pdf *= 0.5f;
@@ -52,9 +53,13 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-void Sample_subsurface::set(float anisotropy, IOR const& ior) {
+void Sample_subsurface::set(float anisotropy, float ior, float outside_ior) {
     anisotropy_ = anisotropy;
-    ior_        = ior;
+
+    ior_.ior_i_ = ior;
+    ior_.ior_o_ = outside_ior;
+    ior_.eta_i_ = outside_ior / ior;
+    ior_.eta_t_ = ior / outside_ior;
 }
 
 void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,

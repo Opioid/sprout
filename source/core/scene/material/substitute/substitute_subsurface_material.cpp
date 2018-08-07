@@ -60,7 +60,7 @@ material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstat
 
     set_sample(wo, rs, sampler, sample);
 
-    sample.set(anisotropy_, sior_);
+    sample.set(anisotropy_, ior_, rs.ior);
 
     return sample;
 }
@@ -86,15 +86,6 @@ void Material_subsurface::set_attenuation(float3 const& absorption_color,
 
 void Material_subsurface::set_volumetric_anisotropy(float anisotropy) {
     anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
-}
-
-void Material_subsurface::set_ior(float ior, float external_ior) {
-    Material_base::set_ior(ior, external_ior);
-
-    sior_.ior_i_ = ior;
-    sior_.ior_o_ = external_ior;
-    sior_.eta_i_ = external_ior / ior;
-    sior_.eta_t_ = ior / external_ior;
 }
 
 float3 Material_subsurface::emission(math::Ray const& /*ray*/,

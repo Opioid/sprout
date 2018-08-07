@@ -81,7 +81,7 @@ void size() {
 
     print_size<scene::bvh::Split_candidate<scene::prop::Prop>>("Split_candidate", 32);
 
-    print_size<scene::Worker>("scene::Worker", 200);
+    print_size<scene::Worker>("scene::Worker", 232);
     print_size<rendering::Camera_worker>("rendering::Camera_worker", 320);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 128);

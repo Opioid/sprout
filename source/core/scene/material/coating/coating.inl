@@ -26,8 +26,9 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
 
     float const n_dot_h = math::saturate(math::dot(layer.n_, h));
 
-    const fresnel::Schlick_weighted schlick(f0_, weight_);
-    float3                          fresnel;
+    fresnel::Schlick_weighted const schlick(f0_, weight_);
+
+    float3     fresnel;
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
                                                 schlick, fresnel);
 
@@ -41,7 +42,7 @@ void Clearcoat::sample(float3 const& wo, float /*internal_ior*/, Layer const& la
                        sampler::Sampler& sampler, float3& attenuation, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    const fresnel::Schlick_weighted schlick(f0_, weight_);
+    fresnel::Schlick_weighted const schlick(f0_, weight_);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, schlick, sampler,
                                                    attenuation, result);
@@ -67,7 +68,8 @@ Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, f
     float const n_dot_h = math::saturate(math::dot(layer.n_, h));
 
     const fresnel::Thinfilm_weighted thinfilm({1.f, ior_, internal_ior, thickness_}, weight_);
-    float3                           fresnel;
+
+    float3     fresnel;
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
                                                 thinfilm, fresnel);
 

@@ -40,9 +40,8 @@ float Material_base::ior() const {
     return ior_;
 }
 
-void Material_base::set_ior(float ior, float external_ior) {
-    ior_         = ior;
-    constant_f0_ = fresnel::schlick_f0(external_ior, ior);
+void Material_base::set_ior(float ior) {
+    ior_ = ior;
 }
 
 bool Material_base::is_caustic() const {

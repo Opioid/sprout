@@ -7,28 +7,28 @@ namespace scene::material::substitute {
 template <typename Diffuse, class... Layer_data>
 class Sample_base : public material::Sample {
   public:
-    virtual Layer const& base_layer() const override final;
+    Layer const& base_layer() const override final;
 
-    virtual float3 radiance() const override final;
+    float3 radiance() const override final;
 
   protected:
     template <typename Coating>
-    bxdf::Result base_and_coating_evaluate(float3 const& wi, const Coating& coating_layer) const;
+    bxdf::Result base_and_coating_evaluate(float3 const& wi, Coating const& coating_layer) const;
 
     template <typename Coating>
-    void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler,
+    void base_and_coating_sample(Coating const& coating_layer, sampler::Sampler& sampler,
                                  bxdf::Sample& result) const;
 
     template <typename Coating>
-    void diffuse_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
+    void diffuse_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
                                     bxdf::Sample& result) const;
 
     template <typename Coating>
-    void specular_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
+    void specular_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
                                      bxdf::Sample& result) const;
 
     template <typename Coating>
-    void pure_specular_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
+    void pure_specular_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
                                           bxdf::Sample& result) const;
 
   public:

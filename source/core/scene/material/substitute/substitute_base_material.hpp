@@ -9,19 +9,18 @@ class Material_base : public material::Material {
   public:
     Material_base(Sampler_settings const& sampler_settings, bool two_sided);
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
-                                     Sampler_filter filter,
-                                     Worker const&  worker) const override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+                             Sampler_filter filter, Worker const& worker) const override final;
 
-    virtual float3 average_radiance(float area) const override final;
+    float3 average_radiance(float area) const override final;
 
-    virtual bool has_emission_map() const override final;
+    bool has_emission_map() const override final;
 
-    virtual float ior() const override final;
+    float ior() const override final;
 
-    virtual void set_ior(float ior, float external_ior = 1.f);
+    void set_ior(float ior);
 
-    virtual bool is_caustic() const override;
+    bool is_caustic() const override;
 
     void set_color_map(Texture_adapter const& color_map);
     void set_normal_map(Texture_adapter const& normal_map);
@@ -48,7 +47,6 @@ class Material_base : public material::Material {
     float3 color_;
 
     float ior_;
-    float constant_f0_;
     float roughness_;
     float metallic_;
     float emission_factor_;

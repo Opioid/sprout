@@ -47,7 +47,8 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs,
         radiance = float3::identity();
     }
 
-    sample.layer_.set(color, radiance, ior_, constant_f0_, surface[0], surface[1]);
+    sample.layer_.set(color, radiance, ior_, fresnel::schlick_f0(ior_, rs.ior), surface[0],
+                      surface[1]);
     sample.avoid_caustics_ = rs.avoid_caustics;
 }
 
