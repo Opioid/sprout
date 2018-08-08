@@ -53,14 +53,15 @@ class Driver {
     using Camera = scene::camera::Camera;
 
     Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-           uint32_t max_material_sample_size);
-    ~Driver();
+           uint32_t max_material_sample_size) noexcept;
 
-    Camera& camera();
+    ~Driver() noexcept;
 
-    Scene const& scene() const;
+    Camera& camera() noexcept;
 
-    size_t num_bytes() const;
+    Scene const& scene() const noexcept;
+
+    size_t num_bytes() const noexcept;
 
   protected:
     Scene& scene_;

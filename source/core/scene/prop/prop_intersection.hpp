@@ -27,26 +27,26 @@ class Prop;
 struct Intersection {
     using Sampler_filter = material::Sampler_settings::Filter;
 
-    bool hit() const;
+    bool hit() const noexcept;
 
-    material::Material const* material() const;
+    material::Material const* material() const noexcept;
 
-    bool is_light() const;
+    bool is_light() const noexcept;
 
-    uint32_t light_id() const;
+    uint32_t light_id() const noexcept;
 
-    float area() const;
+    float area() const noexcept;
 
-    float opacity(float time, Sampler_filter filter, Worker const& worker) const;
+    float opacity(float time, Sampler_filter filter, Worker const& worker) const noexcept;
 
     float3 thin_absorption(float3 const& wo, float const time, Sampler_filter filter,
-                           Worker const& worker) const;
+                           Worker const& worker) const noexcept;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Sampler_filter filter,
                                    bool avoid_caustics, sampler::Sampler& sampler,
-                                   Worker const& worker, uint32_t depth = 0) const;
+                                   Worker const& worker, uint32_t depth = 0) const noexcept;
 
-    bool same_hemisphere(float3 const& v) const;
+    bool same_hemisphere(float3 const& v) const noexcept;
 
     Prop const* prop;
 

@@ -18,7 +18,7 @@ namespace rendering {
 using namespace image;
 
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-               uint32_t max_material_sample_size)
+               uint32_t max_material_sample_size) noexcept
     : scene_(scene),
       view_(take.view),
       thread_pool_(thread_pool),
@@ -55,20 +55,20 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
     }
 }
 
-Driver::~Driver() {
+Driver::~Driver() noexcept {
     delete[] photon_infos_;
     memory::destroy_aligned(workers_, thread_pool_.num_threads());
 }
 
-scene::camera::Camera& Driver::camera() {
+scene::camera::Camera& Driver::camera() noexcept {
     return *view_.camera;
 }
 
-scene::Scene const& Driver::scene() const {
+scene::Scene const& Driver::scene() const noexcept {
     return scene_;
 }
 
-size_t Driver::num_bytes() const {
+size_t Driver::num_bytes() const noexcept {
     // Every worker must have exactly the same size, so we only need to query a single one
     size_t const worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();
 

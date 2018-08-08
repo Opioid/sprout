@@ -42,7 +42,8 @@ class Factory;
 
 class Worker : public scene::Worker {
   public:
-    using Ray = scene::Ray;
+    using Ray             = scene::Ray;
+    using Material_sample = scene::material::Sample;
 
     ~Worker() noexcept;
 
@@ -54,8 +55,6 @@ class Worker : public scene::Worker {
               take::Photon_settings const& photon_settings_) noexcept;
 
     float4 li(Ray& ray, const scene::prop::Interface_stack& interface_stack) noexcept;
-
-    using Material_sample = scene::material::Sample;
 
     bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter, float3& li,
                 float3& transmittance) noexcept;

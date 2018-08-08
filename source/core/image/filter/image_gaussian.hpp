@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_FILTER_GAUSSIAN_HPP
+#define SU_CORE_IMAGE_FILTER_GAUSSIAN_HPP
 
 #include <vector>
 #include "image/typed_image.hpp"
@@ -7,15 +8,14 @@ namespace thread {
 class Pool;
 }
 
-namespace image {
-namespace filter {
+namespace image::filter {
 
 template <typename T>
 class Gaussian {
   public:
-    Gaussian(float radius, float alpha);
+    Gaussian(float radius, float alpha) noexcept;
 
-    void apply(Typed_image<T>& target, thread::Pool& pool);
+    void apply(Typed_image<T>& target, thread::Pool& pool) noexcept;
 
   private:
     Typed_image<T> scratch_;
@@ -28,5 +28,6 @@ class Gaussian {
     std::vector<K> kernel_;
 };
 
-}  // namespace filter
-}  // namespace image
+}  // namespace image::filter
+
+#endif

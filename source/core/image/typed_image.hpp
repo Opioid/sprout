@@ -11,6 +11,7 @@ class Typed_image final : public Image {
   public:
     Typed_image() noexcept = default;
     Typed_image(const Image::Description& description) noexcept;
+
     ~Typed_image() noexcept;
 
     Typed_image<T> clone() const noexcept;

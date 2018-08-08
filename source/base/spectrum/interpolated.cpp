@@ -3,12 +3,13 @@
 
 namespace spectrum {
 
-Interpolated::Interpolated(float const* wavelengths, float const* intensities, size_t len) {
+Interpolated::Interpolated(float const* wavelengths, float const* intensities,
+                           size_t len) noexcept {
     wavelengths_.assign(wavelengths, wavelengths + len);
     intensities_.assign(intensities, intensities + len);
 }
 
-float Interpolated::start_wavelength() const {
+float Interpolated::start_wavelength() const noexcept {
     if (!wavelengths_.empty()) {
         return wavelengths_[0];
     }
@@ -16,7 +17,7 @@ float Interpolated::start_wavelength() const {
     return 0.f;
 }
 
-float Interpolated::end_wavelength() const {
+float Interpolated::end_wavelength() const noexcept {
     size_t const len = wavelengths_.size();
     if (len > 0) {
         return wavelengths_[len - 1];
@@ -25,7 +26,7 @@ float Interpolated::end_wavelength() const {
     return 0.f;
 }
 
-float Interpolated::evaluate(float wl) const {
+float Interpolated::evaluate(float wl) const noexcept {
     auto result = std::equal_range(wavelengths_.begin(), wavelengths_.end(), wl);
 
     //	size_t index0 = static_cast<size_t>(result.first  - wavelengths_.begin());
@@ -44,7 +45,7 @@ float Interpolated::evaluate(float wl) const {
     }
 }
 
-float Interpolated::integrate(float a, float b) const {
+float Interpolated::integrate(float a, float b) const noexcept {
     size_t const len = wavelengths_.size();
     if (len < 2) {
         return 0.f;

@@ -10,35 +10,36 @@
 
 namespace scene::prop {
 
-inline bool Intersection::hit() const {
+inline bool Intersection::hit() const noexcept {
     return nullptr != prop;
 }
 
-inline material::Material const* Intersection::material() const {
+inline material::Material const* Intersection::material() const noexcept {
     return prop->material(geo.part);
 }
 
-inline uint32_t Intersection::light_id() const {
+inline uint32_t Intersection::light_id() const noexcept {
     return prop->light_id(geo.part);
 }
 
-inline float Intersection::area() const {
+inline float Intersection::area() const noexcept {
     return prop->area(geo.part);
 }
 
-inline float Intersection::opacity(float time, Sampler_filter filter, Worker const& worker) const {
+inline float Intersection::opacity(float time, Sampler_filter filter, Worker const& worker) const
+    noexcept {
     return material()->opacity(geo.uv, time, filter, worker);
 }
 
 inline float3 Intersection::thin_absorption(float3 const& wo, float time, Sampler_filter filter,
-                                            Worker const& worker) const {
+                                            Worker const& worker) const noexcept {
     return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
 }
 
 inline material::Sample const& Intersection::sample(float3 const& wo, Ray const& ray,
                                                     Sampler_filter filter, bool avoid_caustics,
                                                     sampler::Sampler& sampler, Worker const& worker,
-                                                    uint32_t depth) const {
+                                                    uint32_t depth) const noexcept {
     material::Material const* material = Intersection::material();
 
     Renderstate rs;
@@ -65,7 +66,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
     return material->sample(wo, rs, filter, sampler, worker, depth);
 }
 
-inline bool Intersection::same_hemisphere(float3 const& v) const {
+inline bool Intersection::same_hemisphere(float3 const& v) const noexcept {
     return math::dot(geo.geo_n, v) > 0.f;
 }
 

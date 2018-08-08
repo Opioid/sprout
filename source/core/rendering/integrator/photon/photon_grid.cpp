@@ -14,7 +14,7 @@
 
 namespace rendering::integrator::photon {
 
-Grid::Grid(float radius, float merge_radius_factor)
+Grid::Grid(float radius, float merge_radius_factor) noexcept
     : num_photons_(0),
       photons_(nullptr),
       photon_radius_(radius),
@@ -23,11 +23,11 @@ Grid::Grid(float radius, float merge_radius_factor)
       dimensions_(0),
       grid_(nullptr) {}
 
-Grid::~Grid() {
+Grid::~Grid() noexcept {
     memory::free_aligned(grid_);
 }
 
-void Grid::resize(math::AABB const& aabb) {
+void Grid::resize(math::AABB const& aabb) noexcept {
     aabb_ = aabb;
 
     int3 const dimensions = map3(aabb.max()) + int3(1);
@@ -76,7 +76,7 @@ void Grid::resize(math::AABB const& aabb) {
     }
 }
 
-void Grid::update(uint32_t num_photons, Photon* photons) {
+void Grid::update(uint32_t num_photons, Photon* photons) noexcept {
     num_photons_ = num_photons;
     photons_     = photons;
 
@@ -84,12 +84,13 @@ void Grid::update(uint32_t num_photons, Photon* photons) {
         return;
     }
 
-    std::sort(photons, photons + num_photons, [this](Photon const& a, Photon const& b) -> bool {
-        int32_t const ida = map1(a.p);
-        int32_t const idb = map1(b.p);
+    std::sort(photons,
+              photons + num_photons, [this](Photon const& a, Photon const& b) noexcept->bool {
+                  int32_t const ida = map1(a.p);
+                  int32_t const idb = map1(b.p);
 
-        return ida < idb;
-    });
+                  return ida < idb;
+              });
 
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2];
 
@@ -109,7 +110,8 @@ void Grid::update(uint32_t num_photons, Photon* photons) {
     }
 }
 
-uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced, thread::Pool& pool) {
+uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced,
+                               thread::Pool& pool) noexcept {
     pool.run_range([this, num_reduced](uint32_t id, int32_t begin,
                                        int32_t end) { num_reduced[id] = reduce(begin, end); },
                    0, static_cast<int32_t>(num_photons_));
@@ -143,7 +145,7 @@ static inline float kernel(float squared_distance, float inv_squared_radius) {
 }
 
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
-                scene::Worker const& worker) const {
+                scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
         return float3::identity();
     }
@@ -221,7 +223,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     return result;
 }
 
-size_t Grid::num_bytes() const {
+size_t Grid::num_bytes() const noexcept {
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2];
 
     size_t const num_bytes = static_cast<uint32_t>(num_cells) * sizeof(int2);
@@ -229,7 +231,7 @@ size_t Grid::num_bytes() const {
     return num_bytes;
 }
 
-uint32_t Grid::reduce(int32_t begin, int32_t end) {
+uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
     float const merge_distance = math::pow2(merge_radius_factor_ * photon_radius_);
 
     uint32_t num_reduced = 0;
@@ -283,13 +285,13 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) {
     return num_reduced;
 }
 
-int32_t Grid::map1(float3 const& v) const {
+int32_t Grid::map1(float3 const& v) const noexcept {
     int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
-int3 Grid::map3(float3 const& v) const {
+int3 Grid::map3(float3 const& v) const noexcept {
     return static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 }
 
@@ -305,7 +307,7 @@ static inline int8_t adjacent(float s) {
     return 0;
 }
 
-int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const {
+int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const noexcept {
     float3 const r = inverse_cell_size_ * (v - aabb_.min());
 
     int3 const c = static_cast<int3>(r);
@@ -323,7 +325,7 @@ int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const {
     return c;
 }
 
-void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const {
+void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
     int8_t     adjacent[3];
     int3 const c = math::min(map3(v, adjacent), max_coords_);
 
@@ -440,7 +442,10 @@ void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const {
     }
 }
 
-float3 Grid::scattering_coefficient(Intersection const& intersection, scene::Worker const& worker) {
+float3 Grid::scattering_coefficient(Intersection const&  intersection,
+                                    scene::Worker const& worker) noexcept {
+    using Filter_settings = scene::material::Sampler_settings::Filter;
+
     auto const& material = *intersection.material();
 
     if (material.is_heterogeneous_volume()) {
@@ -452,14 +457,10 @@ float3 Grid::scattering_coefficient(Intersection const& intersection, scene::Wor
         auto const   shape = intersection.prop->shape();
         float3 const uvw   = shape->object_to_texture_point(local_position);
 
-        return material
-            .collision_coefficients(uvw, scene::material::Sampler_settings::Filter::Undefined,
-                                    worker)
-            .s;
+        return material.collision_coefficients(uvw, Filter_settings::Undefined, worker).s;
     } else if (material.is_textured_volume()) {
         return material
-            .collision_coefficients(intersection.geo.uv,
-                                    scene::material::Sampler_settings::Filter::Undefined, worker)
+            .collision_coefficients(intersection.geo.uv, Filter_settings::Undefined, worker)
             .s;
     } else {
         return material.collision_coefficients().s;

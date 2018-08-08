@@ -11,7 +11,8 @@ namespace rendering::integrator::photon {
 
 static float constexpr Merge_threshold = 0.15f;
 
-Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics)
+Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
+         bool separate_caustics) noexcept
     : num_photons_(num_photons),
       photons_(nullptr),
       radius_(radius),
@@ -23,21 +24,21 @@ Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool 
 
 {}
 
-Map::~Map() {
+Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);
     memory::free_aligned(photons_);
 }
 
-void Map::init(uint32_t num_workers) {
+void Map::init(uint32_t num_workers) noexcept {
     photons_     = memory::allocate_aligned<Photon>(num_photons_);
     num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
 }
 
-void Map::insert(Photon const& photon, uint32_t index) {
+void Map::insert(Photon const& photon, uint32_t index) noexcept {
     photons_[index] = photon;
 }
 
-uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
+uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
     math::AABB const aabb = calculate_aabb(pool);
 
     caustic_grid_.resize(aabb);
@@ -92,12 +93,12 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) {
 }
 
 float3 Map::li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
-               scene::Worker const& worker) const {
+               scene::Worker const& worker) const noexcept {
     return caustic_grid_.li(intersection, sample, num_paths_, worker) +
            indirect_grid_.li(intersection, sample, num_paths_, worker);
 }
 
-size_t Map::num_bytes() const {
+size_t Map::num_bytes() const noexcept {
     size_t num_bytes = num_photons_ * sizeof(Photon);
 
     num_bytes += caustic_grid_.num_bytes() + indirect_grid_.num_bytes();
@@ -105,7 +106,7 @@ size_t Map::num_bytes() const {
     return num_bytes;
 }
 
-math::AABB Map::calculate_aabb(thread::Pool& /*pool*/) const {
+math::AABB Map::calculate_aabb(thread::Pool& /*pool*/) const noexcept {
     math::AABB aabb = math::AABB::empty();
 
     for (uint32_t i = 0, len = num_photons_; i < len; ++i) {

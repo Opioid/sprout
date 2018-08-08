@@ -12,22 +12,22 @@ namespace integrator::surface {
 
 class Integrator : public integrator::Integrator {
   public:
-    Integrator(rnd::Generator& rng, take::Settings const& settings);
+    Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept;
 
-    virtual ~Integrator();
+    ~Integrator() noexcept override;
 
-    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) = 0;
+    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker) noexcept = 0;
 };
 
 class Factory {
   public:
-    Factory(take::Settings const& settings);
+    Factory(take::Settings const& settings) noexcept;
 
-    virtual ~Factory();
+    virtual ~Factory() noexcept;
 
-    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const = 0;
+    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept = 0;
 
-    virtual uint32_t max_sample_depth() const;
+    virtual uint32_t max_sample_depth() const noexcept;
 
   protected:
     take::Settings const& take_settings_;

@@ -2,16 +2,16 @@
 
 namespace rendering::integrator::surface {
 
-Integrator::Integrator(rnd::Generator& rng, take::Settings const& settings)
+Integrator::Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept
     : integrator::Integrator(rng, settings) {}
 
-Integrator::~Integrator() {}
+Integrator::~Integrator() noexcept {}
 
-Factory::Factory(take::Settings const& settings) : take_settings_(settings) {}
+Factory::Factory(take::Settings const& settings) noexcept : take_settings_(settings) {}
 
-Factory::~Factory() {}
+Factory::~Factory() noexcept {}
 
-uint32_t Factory::max_sample_depth() const {
+uint32_t Factory::max_sample_depth() const noexcept {
     return 1;
 }
 

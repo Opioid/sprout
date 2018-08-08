@@ -8,16 +8,16 @@ namespace spectrum {
 
 class Interpolated {
   public:
-    Interpolated() = default;
+    Interpolated() noexcept = default;
 
-    Interpolated(float const* wavelengths, float const* intensities, size_t len);
+    Interpolated(float const* wavelengths, float const* intensities, size_t len) noexcept;
 
-    float start_wavelength() const;
-    float end_wavelength() const;
+    float start_wavelength() const noexcept;
+    float end_wavelength() const noexcept;
 
-    float evaluate(float wl) const;
+    float evaluate(float wl) const noexcept;
 
-    float integrate(float a, float b) const;
+    float integrate(float a, float b) const noexcept;
 
   private:
     std::vector<float> wavelengths_;

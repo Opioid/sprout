@@ -9,22 +9,24 @@ namespace rendering::integrator::photon {
 
 class Map {
   public:
-    Map(uint32_t num_photons, float radius, float indirect_radius_factor, bool separate_caustics);
-    ~Map();
+    Map(uint32_t num_photons, float radius, float indirect_radius_factor,
+        bool separate_caustics) noexcept;
 
-    void init(uint32_t num_workers);
+    ~Map() noexcept;
 
-    void insert(Photon const& photon, uint32_t index);
+    void init(uint32_t num_workers) noexcept;
 
-    uint32_t compile(uint32_t num_paths, thread::Pool& pool);
+    void insert(Photon const& photon, uint32_t index) noexcept;
+
+    uint32_t compile(uint32_t num_paths, thread::Pool& pool) noexcept;
 
     float3 li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
-              scene::Worker const& worker) const;
+              scene::Worker const& worker) const noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
-    math::AABB calculate_aabb(thread::Pool& pool) const;
+    math::AABB calculate_aabb(thread::Pool& pool) const noexcept;
 
     uint32_t num_paths_;
 
