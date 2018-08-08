@@ -10,13 +10,15 @@
 
 namespace scene::material::metal {
 
-Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided)
+Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings,
+                                       bool                    two_sided) noexcept
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material_isotropic::sample(float3 const& wo, Renderstate const& rs,
                                                    Sampler_filter filter,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker, uint32_t depth) const {
+                                                   Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<Sample_isotropic>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -35,41 +37,43 @@ material::Sample const& Material_isotropic::sample(float3 const& wo, Renderstate
     return sample;
 }
 
-float Material_isotropic::ior() const {
+float Material_isotropic::ior() const noexcept {
     return ior_[0];
 }
 
-size_t Material_isotropic::num_bytes() const {
+size_t Material_isotropic::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) {
+void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) noexcept {
     normal_map_ = normal_map;
 }
 
-void Material_isotropic::set_ior(float3 const& ior) {
+void Material_isotropic::set_ior(float3 const& ior) noexcept {
     ior_ = ior;
 }
 
-void Material_isotropic::set_absorption(float3 const& absorption) {
+void Material_isotropic::set_absorption(float3 const& absorption) noexcept {
     absorption_ = absorption;
 }
 
-void Material_isotropic::set_roughness(float roughness) {
+void Material_isotropic::set_roughness(float roughness) noexcept {
     roughness_ = ggx::clamp_roughness(roughness);
 }
 
-size_t Material_isotropic::sample_size() {
+size_t Material_isotropic::sample_size() noexcept {
     return sizeof(Sample_isotropic);
 }
 
-Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided)
+Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings,
+                                           bool                    two_sided) noexcept
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material_anisotropic::sample(float3 const& wo, Renderstate const& rs,
                                                      Sampler_filter filter,
                                                      sampler::Sampler& /*sampler*/,
-                                                     Worker const& worker, uint32_t depth) const {
+                                                     Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<Sample_anisotropic>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -97,35 +101,35 @@ material::Sample const& Material_anisotropic::sample(float3 const& wo, Rendersta
     return sample;
 }
 
-float Material_anisotropic::ior() const {
+float Material_anisotropic::ior() const noexcept {
     return ior_[0];
 }
 
-size_t Material_anisotropic::num_bytes() const {
+size_t Material_anisotropic::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Material_anisotropic::set_normal_map(Texture_adapter const& normal_map) {
+void Material_anisotropic::set_normal_map(Texture_adapter const& normal_map) noexcept {
     normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(Texture_adapter const& direction_map) {
+void Material_anisotropic::set_direction_map(Texture_adapter const& direction_map) noexcept {
     direction_map_ = direction_map;
 }
 
-void Material_anisotropic::set_ior(float3 const& ior) {
+void Material_anisotropic::set_ior(float3 const& ior) noexcept {
     ior_ = ior;
 }
 
-void Material_anisotropic::set_absorption(float3 const& absorption) {
+void Material_anisotropic::set_absorption(float3 const& absorption) noexcept {
     absorption_ = absorption;
 }
 
-void Material_anisotropic::set_roughness(float2 roughness) {
+void Material_anisotropic::set_roughness(float2 roughness) noexcept {
     roughness_ = float2(ggx::clamp_roughness(roughness[0]), ggx::clamp_roughness(roughness[1]));
 }
 
-size_t Material_anisotropic::sample_size() {
+size_t Material_anisotropic::sample_size() noexcept {
     return sizeof(Sample_anisotropic);
 }
 

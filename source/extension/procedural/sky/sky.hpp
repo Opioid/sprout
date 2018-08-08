@@ -13,26 +13,27 @@ namespace procedural::sky {
 
 class Sky : public scene::entity::Entity {
   public:
-    Sky() = default;
-    virtual ~Sky() override;
+    Sky() noexcept = default;
 
-    virtual void set_parameters(json::Value const& parameters) override final;
+    ~Sky() noexcept override;
 
-    void init(scene::prop::Prop* sky, scene::prop::Prop* sun);
+    void set_parameters(json::Value const& parameters) noexcept override final;
 
-    Model& model();
+    void init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept;
 
-    float3 sun_wi(float v) const;
+    Model& model() noexcept;
 
-    float sun_v(float3 const& wi) const;
+    float3 sun_wi(float v) const noexcept;
 
-    bool sky_changed_since_last_check();
-    bool sun_changed_since_last_check();
+    float sun_v(float3 const& wi) const noexcept;
+
+    bool sky_changed_since_last_check() noexcept;
+    bool sun_changed_since_last_check() noexcept;
 
   private:
-    void update();
+    void update() noexcept;
 
-    virtual void on_set_transformation() override final;
+    void on_set_transformation() noexcept override final;
 
     Model model_;
 

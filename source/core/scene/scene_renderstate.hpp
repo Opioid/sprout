@@ -6,13 +6,13 @@
 namespace scene {
 
 struct Renderstate {
-    float3 tangent_to_world(float3 const& v) const {
+    float3 tangent_to_world(float3 const& v) const noexcept {
         return float3(v[0] * t[0] + v[1] * b[0] + v[2] * n[0],
                       v[0] * t[1] + v[1] * b[1] + v[2] * n[1],
                       v[0] * t[2] + v[1] * b[2] + v[2] * n[2]);
     }
 
-    float3 tangent_to_world(float2 v) const {
+    float3 tangent_to_world(float2 v) const noexcept {
         return float3(v[0] * t[0] + v[1] * b[0], v[0] * t[1] + v[1] * b[1],
                       v[0] * t[2] + v[1] * b[2]);
     }

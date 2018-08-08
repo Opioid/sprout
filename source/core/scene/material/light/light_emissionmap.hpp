@@ -7,36 +7,39 @@ namespace scene::material::light {
 
 class Emissionmap : public Material {
   public:
-    Emissionmap(Sampler_settings const& sampler_settings, bool two_sided);
-    ~Emissionmap();
+    Emissionmap(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+
+    ~Emissionmap() noexcept;
 
     virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker, uint32_t depth) const override;
+                                           Worker const& worker, uint32_t depth) const
+        noexcept override;
 
     virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
-                                     Sampler_filter filter,
-                                     Worker const&  worker) const override final;
+                                     Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual float3 average_radiance(float area) const override final;
+    virtual float3 average_radiance(float area) const noexcept override final;
 
-    virtual float ior() const override;
+    virtual float ior() const noexcept override;
 
-    virtual bool has_emission_map() const override final;
+    virtual bool has_emission_map() const noexcept override final;
 
-    virtual Sample_2D radiance_sample(float2 r2) const override final;
+    virtual Sample_2D radiance_sample(float2 r2) const noexcept override final;
 
-    virtual float emission_pdf(float2 uv, Sampler_filter filter,
-                               Worker const& worker) const override final;
+    virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
     virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
                                   Transformation const& transformation, float area,
-                                  bool importance_sampling, thread::Pool& pool) override final;
+                                  bool          importance_sampling,
+                                  thread::Pool& pool) noexcept override final;
 
-    virtual size_t num_bytes() const override;
+    virtual size_t num_bytes() const noexcept override;
 
-    void set_emission_map(Texture_adapter const& emission_map);
-    void set_emission_factor(float emission_factor);
+    void set_emission_map(Texture_adapter const& emission_map) noexcept;
+    void set_emission_factor(float emission_factor) noexcept;
 
   protected:
     Texture_adapter emission_map_;

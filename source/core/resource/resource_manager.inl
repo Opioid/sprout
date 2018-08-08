@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RESOURCE_MANAGER_INL
+#define SU_CORE_RESOURCE_MANAGER_INL
 
 #include "resource_cache.inl"
 #include "resource_manager.hpp"
@@ -7,9 +8,10 @@
 namespace resource {
 
 template <typename T>
-void Manager::register_provider(Provider<T>& provider) {
-    uint32_t const id  = Provider<T>::id();
-    auto           old = caches_.find(id);
+void Manager::register_provider(Provider<T>& provider) noexcept {
+    uint32_t const id = Provider<T>::id();
+
+    auto old = caches_.find(id);
 
     if (caches_.end() != old) {
         delete old->second;
@@ -53,7 +55,8 @@ std::shared_ptr<T> Manager::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-std::shared_ptr<T> Manager::get(std::string const& filename, memory::Variant_map const& options) {
+std::shared_ptr<T> Manager::get(std::string const&         filename,
+                                memory::Variant_map const& options) noexcept {
     if (filename.empty()) {
         return nullptr;
     }
@@ -70,7 +73,7 @@ std::shared_ptr<T> Manager::get(std::string const& filename, memory::Variant_map
 
 template <typename T>
 void Manager::store(std::string const& name, std::shared_ptr<T> resource,
-                    memory::Variant_map const& options) {
+                    memory::Variant_map const& options) noexcept {
     if (name.empty() || !resource) {
         return;
     }
@@ -86,7 +89,7 @@ void Manager::store(std::string const& name, std::shared_ptr<T> resource,
 }
 
 template <typename T>
-size_t Manager::num_bytes() const {
+size_t Manager::num_bytes() const noexcept {
     const Typed_cache<T>* cache = typed_cache<T>();
     if (!cache) {
         return 0;
@@ -96,7 +99,7 @@ size_t Manager::num_bytes() const {
 }
 
 template <typename T>
-const Typed_cache<T>* Manager::typed_cache() const {
+const Typed_cache<T>* Manager::typed_cache() const noexcept {
     auto cache = caches_.find(Provider<T>::id());
 
     if (caches_.end() == cache) {
@@ -107,7 +110,7 @@ const Typed_cache<T>* Manager::typed_cache() const {
 }
 
 template <typename T>
-Typed_cache<T>* Manager::typed_cache() {
+Typed_cache<T>* Manager::typed_cache() noexcept {
     auto cache = caches_.find(Provider<T>::id());
 
     if (caches_.end() == cache) {
@@ -118,3 +121,5 @@ Typed_cache<T>* Manager::typed_cache() {
 }
 
 }  // namespace resource
+
+#endif

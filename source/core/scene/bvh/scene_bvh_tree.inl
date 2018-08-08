@@ -8,17 +8,17 @@
 namespace scene::bvh {
 
 template <typename T>
-Tree<T>::~Tree() {
+Tree<T>::~Tree() noexcept {
     memory::free_aligned(nodes_);
 }
 
 template <typename T>
-void Tree<T>::clear() {
+void Tree<T>::clear() noexcept {
     data_.clear();
 }
 
 template <typename T>
-bvh::Node* Tree<T>::allocate_nodes(uint32_t num_nodes) {
+bvh::Node* Tree<T>::allocate_nodes(uint32_t num_nodes) noexcept {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 

@@ -9,9 +9,9 @@ class Sky;
 
 class Material : public scene::material::Material {
   public:
-    Material(Sky& sky);
+    Material(Sky& sky) noexcept;
 
-    virtual float ior() const override final;
+    float ior() const noexcept override final;
 
   protected:
     Sky& sky_;

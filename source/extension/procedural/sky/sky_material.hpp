@@ -8,58 +8,59 @@ namespace procedural::sky {
 
 class Sky_material : public Material {
   public:
-    Sky_material(Sky& sky);
+    Sky_material(Sky& sky) noexcept;
 
-    virtual const scene::material::Sample& sample(float3 const& wo, const scene::Renderstate& rs,
-                                                  Sampler_filter filter, sampler::Sampler& sampler,
-                                                  const scene::Worker& worker,
-                                                  uint32_t             depth) const override final;
+    const scene::material::Sample& sample(float3 const& wo, const scene::Renderstate& rs,
+                                          Sampler_filter filter, sampler::Sampler& sampler,
+                                          const scene::Worker& worker, uint32_t depth) const
+        noexcept override final;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
-                                     Sampler_filter       filter,
-                                     const scene::Worker& worker) const override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+                             Sampler_filter filter, const scene::Worker& worker) const
+        noexcept override final;
 
-    virtual float3 average_radiance(float area) const override final;
+    float3 average_radiance(float area) const noexcept override final;
 
-    virtual void prepare_sampling(const Shape& shape, uint32_t part,
-                                  Transformation const& transformation, float area,
-                                  bool importance_sampling, thread::Pool& pool) override final;
+    void prepare_sampling(const Shape& shape, uint32_t part, Transformation const& transformation,
+                          float area, bool importance_sampling,
+                          thread::Pool& pool) noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 };
 
 class Sky_baked_material : public Material {
   public:
-    Sky_baked_material(Sky& sky);
+    Sky_baked_material(Sky& sky) noexcept;
 
-    virtual ~Sky_baked_material() override;
+    ~Sky_baked_material() noexcept override;
 
-    virtual const scene::material::Sample& sample(float3 const& wo, const scene::Renderstate& rs,
-                                                  Sampler_filter filter, sampler::Sampler& sampler,
-                                                  const scene::Worker& worker,
-                                                  uint32_t             depth) const override final;
+    const scene::material::Sample& sample(float3 const& wo, const scene::Renderstate& rs,
+                                          Sampler_filter filter, sampler::Sampler& sampler,
+                                          const scene::Worker& worker, uint32_t depth) const
+        noexcept override final;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
-                                     Sampler_filter       filter,
-                                     const scene::Worker& worker) const override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+                             Sampler_filter filter, const scene::Worker& worker) const
+        noexcept override final;
 
-    virtual float3 average_radiance(float area) const override final;
+    float3 average_radiance(float area) const noexcept override final;
 
-    virtual bool has_emission_map() const override final;
+    bool has_emission_map() const noexcept override final;
 
-    virtual Sample_2D radiance_sample(float2 r2) const override final;
+    Sample_2D radiance_sample(float2 r2) const noexcept override final;
 
-    virtual float emission_pdf(float2 uv, Sampler_filter filter,
-                               const scene::Worker& worker) const override final;
+    float emission_pdf(float2 uv, Sampler_filter filter, const scene::Worker& worker) const
+        noexcept override final;
 
-    virtual void prepare_sampling(const Shape& shape, uint32_t part,
-                                  Transformation const& transformation, float area,
-                                  bool importance_sampling, thread::Pool& pool) override final;
+    void prepare_sampling(const Shape& shape, uint32_t part, Transformation const& transformation,
+                          float area, bool importance_sampling,
+                          thread::Pool& pool) noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
-    static float3 unclipped_canopy_mapping(Transformation const& transformation, float2 uv);
+    static float3 unclipped_canopy_mapping(Transformation const& transformation,
+                                           float2                uv) noexcept;
 
     Texture_adapter emission_map_;
 

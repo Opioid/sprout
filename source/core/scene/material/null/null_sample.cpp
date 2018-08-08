@@ -5,15 +5,15 @@
 
 namespace scene::material::null {
 
-const material::Sample::Layer& Sample::base_layer() const {
+const material::Sample::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& /*wi*/) const {
+bxdf::Result Sample::evaluate(float3 const& /*wi*/) const noexcept {
     return {float3::identity(), 0.f};
 }
 
-void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
     result.reflection = float3(1.f);
     result.wi         = -wo_;
     result.pdf        = 1.f;
@@ -21,7 +21,7 @@ void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const {
     result.type.clear(bxdf::Type::Transmission);
 }
 
-bool Sample::ior_greater_one() const {
+bool Sample::ior_greater_one() const noexcept {
     return false;
 }
 

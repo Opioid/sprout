@@ -15,7 +15,7 @@ namespace scene::material {
 
 static inline float3 sample_normal(float3 const& wo, Renderstate const& rs,
                                    image::texture::Adapter const&             map,
-                                   image::texture::sampler::Sampler_2D const& sampler) {
+                                   image::texture::sampler::Sampler_2D const& sampler) noexcept {
     float3 const nm = map.sample_3(sampler, rs.uv);
     float3 const n  = math::normalize(rs.tangent_to_world(nm));
 

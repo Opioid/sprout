@@ -7,17 +7,17 @@ namespace scene::material::glass {
 
 class Glass_dispersion final : public Glass {
   public:
-    Glass_dispersion(Sampler_settings const& sampler_settings);
+    Glass_dispersion(Sampler_settings const& sampler_settings) noexcept;
 
     material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
-                                   uint32_t depth) const override final;
+                                   uint32_t depth) const noexcept override final;
 
-    size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    void set_abbe(float abbe);
+    void set_abbe(float abbe) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   private:
     float abbe_;

@@ -7,11 +7,11 @@
 
 namespace scene::material::metal {
 
-const material::Sample::Layer& Sample_isotropic::base_layer() const {
+const material::Sample::Layer& Sample_isotropic::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
+bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_) || (avoid_caustics_ && layer_.alpha_ <= ggx::Min_alpha)) {
         return {float3::identity(), 0.f};
     }
@@ -19,8 +19,9 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
-    float3 const h        = math::normalize(wo_ + wi);
-    float const  wo_dot_h = clamp_dot(wo_, h);
+    float3 const h = math::normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
 
     float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
@@ -31,7 +32,7 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -47,7 +48,8 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
     result.wavelength = 0.f;
 }
 
-void Sample_isotropic::Layer::set(float3 const& ior, float3 const& absorption, float roughness) {
+void Sample_isotropic::Layer::set(float3 const& ior, float3 const& absorption,
+                                  float roughness) noexcept {
     ior_        = ior;
     absorption_ = absorption;
 
@@ -57,11 +59,11 @@ void Sample_isotropic::Layer::set(float3 const& ior, float3 const& absorption, f
     alpha2_ = alpha * alpha;
 }
 
-const material::Sample::Layer& Sample_anisotropic::base_layer() const {
+const material::Sample::Layer& Sample_anisotropic::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
+bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -69,8 +71,9 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
-    float3 const h        = math::normalize(wo_ + wi);
-    float const  wo_dot_h = clamp_dot(wo_, h);
+    float3 const h = math::normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
 
     const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
     auto const ggx = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, layer_,
@@ -79,7 +82,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -95,7 +98,8 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
     result.wavelength = 0.f;
 }
 
-void Sample_anisotropic::Layer::set(float3 const& ior, float3 const& absorption, float2 roughness) {
+void Sample_anisotropic::Layer::set(float3 const& ior, float3 const& absorption,
+                                    float2 roughness) noexcept {
     ior_        = ior;
     absorption_ = absorption;
 

@@ -8,19 +8,20 @@ namespace scene::material {
 
 class Sample_cache {
   public:
-    ~Sample_cache();
+    ~Sample_cache() noexcept;
 
-    void init(uint32_t max_sample_size, uint32_t max_depth);
+    void init(uint32_t max_sample_size, uint32_t max_depth) noexcept;
 
     template <typename T>
-    T& get(uint32_t depth);
+    T& get(uint32_t depth) noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
     uint32_t max_sample_size_ = 0;
     uint32_t buffer_size_     = 0;
-    char*    buffer_          = nullptr;
+
+    char* buffer_ = nullptr;
 };
 
 }  // namespace scene::material

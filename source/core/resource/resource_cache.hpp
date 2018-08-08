@@ -30,9 +30,9 @@ class Typed_cache : public Cache {
     std::shared_ptr<T> get(std::string const& filename, memory::Variant_map const& options);
 
     void store(std::string const& name, memory::Variant_map const& options,
-               std::shared_ptr<T> const& resource);
+               std::shared_ptr<T> const& resource) noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
     Provider<T>& provider_;

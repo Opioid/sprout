@@ -9,13 +9,14 @@
 
 namespace scene::material::glass {
 
-Glass_dispersion::Glass_dispersion(Sampler_settings const& sampler_settings)
+Glass_dispersion::Glass_dispersion(Sampler_settings const& sampler_settings) noexcept
     : Glass(sampler_settings) {}
 
 material::Sample const& Glass_dispersion::sample(float3 const& wo, Renderstate const& rs,
                                                  Sampler_filter filter,
                                                  sampler::Sampler& /*sampler*/,
-                                                 Worker const& worker, uint32_t depth) const {
+                                                 Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<Sample_dispersion>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -35,15 +36,15 @@ material::Sample const& Glass_dispersion::sample(float3 const& wo, Renderstate c
     return sample;
 }
 
-size_t Glass_dispersion::num_bytes() const {
+size_t Glass_dispersion::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Glass_dispersion::set_abbe(float abbe) {
+void Glass_dispersion::set_abbe(float abbe) noexcept {
     abbe_ = abbe;
 }
 
-size_t Glass_dispersion::sample_size() {
+size_t Glass_dispersion::sample_size() noexcept {
     return sizeof(Sample_dispersion);
 }
 

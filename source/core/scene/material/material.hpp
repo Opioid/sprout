@@ -55,87 +55,90 @@ class Material {
     using Shape          = shape::Shape;
     using Transformation = entity::Composed_transformation;
 
-    Material(Sampler_settings const& sampler_settings, bool two_sided);
+    Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    virtual ~Material();
+    virtual ~Material() noexcept;
 
-    void set_mask(Texture_adapter const& mask);
+    void set_mask(Texture_adapter const& mask) noexcept;
 
-    void set_parameters(json::Value const& parameters);
+    void set_parameters(json::Value const& parameters) noexcept;
 
-    virtual void compile();
+    virtual void compile() noexcept;
 
-    virtual void tick(float absolute_time, float time_slice);
+    virtual void tick(float absolute_time, float time_slice) noexcept;
 
     virtual const Sample& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
                                  sampler::Sampler& sampler, Worker const& worker,
-                                 uint32_t depth) const = 0;
+                                 uint32_t depth) const noexcept = 0;
 
     virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
-                                     Sampler_filter filter, Worker const& worker) const;
+                                     Sampler_filter filter, Worker const& worker) const noexcept;
 
-    virtual float3 average_radiance(float area) const;
+    virtual float3 average_radiance(float area) const noexcept;
 
-    virtual bool has_emission_map() const;
+    virtual bool has_emission_map() const noexcept;
 
     struct Sample_2D {
         float2 uv;
         float  pdf;
     };
-    virtual Sample_2D radiance_sample(float2 r2) const;
+    virtual Sample_2D radiance_sample(float2 r2) const noexcept;
 
-    virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const;
+    virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
+        noexcept;
 
-    virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const;
+    virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const
+        noexcept;
 
     virtual float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, float time,
-                                   Sampler_filter filter, Worker const& worker) const;
+                                   Sampler_filter filter, Worker const& worker) const noexcept;
 
     virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
                             float step_size, rnd::Generator& rng, Sampler_filter filter,
-                            Worker const& worker) const;
+                            Worker const& worker) const noexcept;
 
     virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-                                          Worker const& worker) const;
+                                          Worker const& worker) const noexcept;
 
-    virtual CC collision_coefficients() const;
+    virtual CC collision_coefficients() const noexcept;
 
-    virtual CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const;
+    virtual CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const
+        noexcept;
 
     virtual CC collision_coefficients(float3 const& p, Sampler_filter filter,
-                                      Worker const& worker) const;
+                                      Worker const& worker) const noexcept;
 
-    virtual CM control_medium() const;
+    virtual CM control_medium() const noexcept;
 
-    virtual volumetric::Gridtree const* volume_tree() const;
+    virtual volumetric::Gridtree const* volume_tree() const noexcept;
 
-    virtual bool is_heterogeneous_volume() const;
-    virtual bool is_textured_volume() const;
-    virtual bool is_scattering_volume() const;
+    virtual bool is_heterogeneous_volume() const noexcept;
+    virtual bool is_textured_volume() const noexcept;
+    virtual bool is_scattering_volume() const noexcept;
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part,
                                   Transformation const& transformation, float area,
-                                  bool importance_sampling, thread::Pool& pool);
+                                  bool importance_sampling, thread::Pool& pool) noexcept;
 
-    virtual bool is_animated() const;
+    virtual bool is_animated() const noexcept;
 
-    virtual bool has_tinted_shadow() const;
+    virtual bool has_tinted_shadow() const noexcept;
 
-    virtual float ior() const = 0;
+    virtual float ior() const noexcept = 0;
 
-    uint32_t sampler_key() const;
+    uint32_t sampler_key() const noexcept;
 
-    virtual bool is_pure_specular() const;
-    virtual bool is_caustic() const;
-    virtual bool is_masked() const;
+    virtual bool is_pure_specular() const noexcept;
+    virtual bool is_caustic() const noexcept;
+    virtual bool is_masked() const noexcept;
 
-    bool is_emissive() const;
-    bool is_two_sided() const;
+    bool is_emissive() const noexcept;
+    bool is_two_sided() const noexcept;
 
-    virtual size_t num_bytes() const = 0;
+    virtual size_t num_bytes() const noexcept = 0;
 
   protected:
-    virtual void set_parameter(std::string_view name, json::Value const& value);
+    virtual void set_parameter(std::string_view name, json::Value const& value) noexcept;
 
   private:
     uint32_t sampler_key_;
@@ -146,9 +149,9 @@ class Material {
     Texture_adapter mask_;
 
   public:
-    static void init_rainbow();
+    static void init_rainbow() noexcept;
 
-    static float3 spectrum_at_wavelength(float lambda, float value = 1.f);
+    static float3 spectrum_at_wavelength(float lambda, float value = 1.f) noexcept;
 
     static int32_t constexpr Num_bands = 16;
 

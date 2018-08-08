@@ -8,12 +8,12 @@
 
 namespace scene::material::debug {
 
-Material::Material(Sampler_settings const& sampler_settings)
+Material::Material(Sampler_settings const& sampler_settings) noexcept
     : material::Material(sampler_settings, true) {}
 
 material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const {
+                                         Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -23,11 +23,11 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     return sample;
 }
 
-float Material::ior() const {
+float Material::ior() const noexcept {
     return 1.47f;
 }
 
-size_t Material::num_bytes() const {
+size_t Material::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

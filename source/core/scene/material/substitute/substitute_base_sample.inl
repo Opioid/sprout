@@ -10,19 +10,20 @@
 namespace scene::material::substitute {
 
 template <typename Diffuse>
-const material::Sample::Layer& Sample_base<Diffuse>::base_layer() const {
+const material::Sample::Layer& Sample_base<Diffuse>::base_layer() const noexcept {
     return layer_;
 }
 
 template <typename Diffuse>
-float3 Sample_base<Diffuse>::radiance() const {
+float3 Sample_base<Diffuse>::radiance() const noexcept {
     return layer_.emission_;
 }
 
 template <typename Diffuse>
 template <typename Coating>
 bxdf::Result Sample_base<Diffuse>::base_and_coating_evaluate(float3 const&  wi,
-                                                             Coating const& coating_layer) const {
+                                                             Coating const& coating_layer) const
+    noexcept {
     float3 const h = math::normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
@@ -39,7 +40,7 @@ template <typename Diffuse>
 template <typename Coating>
 void Sample_base<Diffuse>::base_and_coating_sample(Coating const&    coating_layer,
                                                    sampler::Sampler& sampler,
-                                                   bxdf::Sample&     result) const {
+                                                   bxdf::Sample&     result) const noexcept {
     float const p = sampler.generate_sample_1D();
 
     if (p < 0.5f) {
@@ -68,7 +69,7 @@ template <typename Diffuse>
 template <typename Coating>
 void Sample_base<Diffuse>::diffuse_sample_and_coating(Coating const&    coating_layer,
                                                       sampler::Sampler& sampler,
-                                                      bxdf::Sample&     result) const {
+                                                      bxdf::Sample&     result) const noexcept {
     layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -82,7 +83,7 @@ template <typename Diffuse>
 template <typename Coating>
 void Sample_base<Diffuse>::specular_sample_and_coating(Coating const&    coating_layer,
                                                        sampler::Sampler& sampler,
-                                                       bxdf::Sample&     result) const {
+                                                       bxdf::Sample&     result) const noexcept {
     layer_.specular_sample(wo_, sampler, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -96,7 +97,7 @@ template <typename Diffuse>
 template <typename Coating>
 void Sample_base<Diffuse>::pure_specular_sample_and_coating(Coating const&    coating_layer,
                                                             sampler::Sampler& sampler,
-                                                            bxdf::Sample&     result) const {
+                                                            bxdf::Sample& result) const noexcept {
     layer_.pure_specular_sample(wo_, sampler, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -108,7 +109,7 @@ void Sample_base<Diffuse>::pure_specular_sample_and_coating(Coating const&    co
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::set(float3 const& color, float3 const& radiance, float ior,
-                                      float f0, float roughness, float metallic) {
+                                      float f0, float roughness, float metallic) noexcept {
     diffuse_color_ = (1.f - metallic) * color;
     f0_            = math::lerp(float3(f0), color, metallic);
     emission_      = radiance;
@@ -125,7 +126,7 @@ void Sample_base<Diffuse>::Layer::set(float3 const& color, float3 const& radianc
 template <typename Diffuse>
 bxdf::Result Sample_base<Diffuse>::Layer::base_evaluate(float3 const& wi, float3 const& wo,
                                                         float3 const& h, float wo_dot_h,
-                                                        bool avoid_caustics) const {
+                                                        bool avoid_caustics) const noexcept {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -152,7 +153,8 @@ bxdf::Result Sample_base<Diffuse>::Layer::base_evaluate(float3 const& wi, float3
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::diffuse_sample(float3 const& wo, sampler::Sampler& sampler,
-                                                 bool avoid_caustics, bxdf::Sample& result) const {
+                                                 bool avoid_caustics, bxdf::Sample& result) const
+    noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
 
@@ -174,7 +176,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(float3 const& wo, sampler::Samp
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::specular_sample(float3 const& wo, sampler::Sampler& sampler,
-                                                  bxdf::Sample& result) const {
+                                                  bxdf::Sample& result) const noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -189,7 +191,7 @@ void Sample_base<Diffuse>::Layer::specular_sample(float3 const& wo, sampler::Sam
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::pure_specular_sample(float3 const& wo, sampler::Sampler& sampler,
-                                                       bxdf::Sample& result) const {
+                                                       bxdf::Sample& result) const noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -199,7 +201,8 @@ void Sample_base<Diffuse>::Layer::pure_specular_sample(float3 const& wo, sampler
 }
 
 template <typename Diffuse>
-float Sample_base<Diffuse>::Layer::base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const {
+float Sample_base<Diffuse>::Layer::base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const
+    noexcept {
     // I think this is what we have to weigh lambert with if it is added to a microfacet BRDF.
     // At the moment this is only used with the "translucent" material,
     // which is kind of hacky anyway.

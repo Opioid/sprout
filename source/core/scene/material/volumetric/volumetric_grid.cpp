@@ -10,44 +10,45 @@
 
 namespace scene::material::volumetric {
 
-Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid)
+Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept
     : Density(sampler_settings), grid_(grid) {}
 
-Grid::~Grid() {}
+Grid::~Grid() noexcept {}
 
-void Grid::compile() {
+void Grid::compile() noexcept {
     auto const& texture = grid_.texture();
 
     Octree_builder builder;
     builder.build(tree_, texture, cm_);
 }
 
-Gridtree const* Grid::volume_tree() const {
+Gridtree const* Grid::volume_tree() const noexcept {
     return &tree_;
 }
 
-bool Grid::is_heterogeneous_volume() const {
+bool Grid::is_heterogeneous_volume() const noexcept {
     return true;
 }
 
-size_t Grid::num_bytes() const {
+size_t Grid::num_bytes() const noexcept {
     return sizeof(*this) + tree_.num_bytes();
 }
 
-float Grid::density(float3 const& uvw, Sampler_filter filter, Worker const& worker) const {
+float Grid::density(float3 const& uvw, Sampler_filter filter, Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     return grid_.sample_1(sampler, uvw);
 }
 
-Emission_grid::Emission_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid)
+Emission_grid::Emission_grid(Sampler_settings const& sampler_settings,
+                             Texture_adapter const&  grid) noexcept
     : Material(sampler_settings), grid_(grid) {}
 
-Emission_grid::~Emission_grid() {}
+Emission_grid::~Emission_grid() noexcept {}
 
 float3 Emission_grid::emission(math::Ray const& ray, Transformation const& transformation,
                                float step_size, rnd::Generator& rng, Sampler_filter filter,
-                               Worker const& worker) const {
+                               Worker const& worker) const noexcept {
     const math::Ray rn = ray.normalized();
 
     float min_t = rn.min_t + rng.random_float() * step_size;
@@ -65,11 +66,12 @@ float3 Emission_grid::emission(math::Ray const& ray, Transformation const& trans
     return step_size * emission;
 }
 
-size_t Emission_grid::num_bytes() const {
+size_t Emission_grid::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-float3 Emission_grid::emission(float3 const& p, Sampler_filter filter, Worker const& worker) const {
+float3 Emission_grid::emission(float3 const& p, Sampler_filter filter, Worker const& worker) const
+    noexcept {
     // p is in object space already
 
     float3 p_g = 0.5f * (float3(1.f) + p);
@@ -80,14 +82,15 @@ float3 Emission_grid::emission(float3 const& p, Sampler_filter filter, Worker co
     return 0.00001f * grid_.sample_3(sampler, p_g);
 }
 
-Flow_vis_grid::Flow_vis_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid)
+Flow_vis_grid::Flow_vis_grid(Sampler_settings const& sampler_settings,
+                             Texture_adapter const&  grid) noexcept
     : Material(sampler_settings), grid_(grid) {}
 
 Flow_vis_grid::~Flow_vis_grid() {}
 
 float3 Flow_vis_grid::emission(math::Ray const& ray, Transformation const& transformation,
                                float step_size, rnd::Generator& rng, Sampler_filter filter,
-                               Worker const& worker) const {
+                               Worker const& worker) const noexcept {
     const math::Ray rn = ray.normalized();
 
     float min_t = rn.min_t + rng.random_float() * step_size;
@@ -122,11 +125,12 @@ float3 Flow_vis_grid::emission(math::Ray const& ray, Transformation const& trans
             */
 }
 
-size_t Flow_vis_grid::num_bytes() const {
+size_t Flow_vis_grid::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-float Flow_vis_grid::density(float3 const& p, Sampler_filter filter, Worker const& worker) const {
+float Flow_vis_grid::density(float3 const& p, Sampler_filter filter, Worker const& worker) const
+    noexcept {
     // p is in object space already
 
     float3 p_g = 0.5f * (float3(1.f) + p);
@@ -137,7 +141,8 @@ float Flow_vis_grid::density(float3 const& p, Sampler_filter filter, Worker cons
     return grid_.sample_1(sampler, p_g);
 }
 
-float3 Flow_vis_grid::emission(float3 const& p, Sampler_filter filter, Worker const& worker) const {
+float3 Flow_vis_grid::emission(float3 const& p, Sampler_filter filter, Worker const& worker) const
+    noexcept {
     // p is in object space already
 
     float3 p_g = 0.5f * (float3(1.f) + p);

@@ -18,9 +18,9 @@ float3 triangle_max(float3 const& a, float3 const& b, float3 const& c, float3 co
 
 float triangle_area(float3 const& a, float3 const& b, float3 const& c);
 
-uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, const math::Plane& p);
+uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, math::Plane const& p);
 
 bool triangle_completely_behind(float3 const& a, float3 const& b, float3 const& c,
-                                const math::Plane& p);
+                                math::Plane const& p);
 
 }  // namespace scene::shape::triangle::bvh

@@ -19,23 +19,23 @@ using namespace scene;
 
 static Provider provider;
 
-void init(scene::Loader& loader, material::Provider& material_provider) {
+void init(scene::Loader& loader, material::Provider& material_provider) noexcept {
     provider.set_scene_loader(loader);
     provider.set_material_provider(material_provider);
 
     loader.register_extension_provider("Sky", &provider);
 }
 
-void Provider::set_scene_loader(Loader& loader) {
+void Provider::set_scene_loader(Loader& loader) noexcept {
     scene_loader_ = &loader;
 }
 
-void Provider::set_material_provider(material::Provider& material_provider) {
+void Provider::set_material_provider(material::Provider& material_provider) noexcept {
     material_provider_ = &material_provider;
 }
 
 entity::Entity* Provider::create_extension(json::Value const& extension_value, Scene& scene,
-                                           resource::Manager& manager) {
+                                           resource::Manager& manager) noexcept {
     Sky* sky = new Sky;
 
     static bool constexpr bake = true;

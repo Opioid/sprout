@@ -7,19 +7,20 @@ namespace scene::material::metallic_paint {
 
 class Sample : public material::Sample {
   public:
-    virtual Layer const& base_layer() const override final;
+    Layer const& base_layer() const noexcept override final;
 
-    virtual bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
     struct Base_layer : material::Sample::Layer {
-        void set(float3 const& color_a, float3 const& color_b, float alpha, float alpha2);
+        void set(float3 const& color_a, float3 const& color_b, float alpha, float alpha2) noexcept;
 
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                              float wo_dot_h) const;
+                              float wo_dot_h) const noexcept;
 
-        void sample(float3 const& wo, sampler::Sampler& sampler, bxdf::Sample& result) const;
+        void sample(float3 const& wo, sampler::Sampler& sampler, bxdf::Sample& result) const
+            noexcept;
 
         float3 color_a_;
         float3 color_b_;
@@ -30,13 +31,13 @@ class Sample : public material::Sample {
 
     struct Flakes_layer : material::Sample::Layer {
         void set(float3 const& ior, float3 const& absorption, float alpha, float alpha2,
-                 float weight);
+                 float weight) noexcept;
 
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                              float3& fresnel_result) const;
+                              float3& fresnel_result) const noexcept;
 
         void sample(float3 const& wo, sampler::Sampler& sampler, float3& fresnel_result,
-                    bxdf::Sample& result) const;
+                    bxdf::Sample& result) const noexcept;
 
         float3 ior_;
         float3 absorption_;

@@ -9,14 +9,14 @@
 
 namespace scene::material::volumetric {
 
-Material::Material(Sampler_settings const& sampler_settings)
+Material::Material(Sampler_settings const& sampler_settings) noexcept
     : material::Material(sampler_settings, true) {}
 
 Material::~Material() {}
 
 material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const {
+                                         Worker const& worker, uint32_t depth) const noexcept {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>(depth);
 
@@ -34,26 +34,26 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     return sample;
 }
 
-float Material::ior() const {
+float Material::ior() const noexcept {
     return 1.f;
 }
 
-CM Material::control_medium() const {
+CM Material::control_medium() const noexcept {
     return cm_;
 }
 
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                               float distance) {
+                               float distance) noexcept {
     attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
 
     cm_ = CM(cc_);
 }
 
-void Material::set_anisotropy(float anisotropy) {
+void Material::set_anisotropy(float anisotropy) noexcept {
     anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
-size_t Material::sample_size() {
+size_t Material::sample_size() noexcept {
     return sizeof(Sample);
 }
 

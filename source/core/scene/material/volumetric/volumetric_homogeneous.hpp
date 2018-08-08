@@ -7,24 +7,24 @@ namespace scene::material::volumetric {
 
 class Homogeneous final : public Material {
   public:
-    Homogeneous(Sampler_settings const& sampler_settings);
+    Homogeneous(Sampler_settings const& sampler_settings) noexcept;
 
-    virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
-                            float step_size, rnd::Generator& rng, Sampler_filter filter,
-                            Worker const& worker) const override final;
+    float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
+                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-                                          Worker const& worker) const override final;
+    float3 absorption_coefficient(float2 uv, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual CC collision_coefficients() const override final;
+    CC collision_coefficients() const noexcept override final;
 
-    virtual CC collision_coefficients(float2 uv, Sampler_filter filter,
-                                      Worker const& worker) const override final;
+    CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual CC collision_coefficients(float3 const& p, Sampler_filter filter,
-                                      Worker const& worker) const override final;
+    CC collision_coefficients(float3 const& p, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 };
 
 }  // namespace scene::material::volumetric

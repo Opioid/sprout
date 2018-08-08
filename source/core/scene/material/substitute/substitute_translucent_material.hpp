@@ -6,19 +6,18 @@ namespace scene::material::substitute {
 
 class Material_translucent : public Material_base {
   public:
-    Material_translucent(Sampler_settings const& sampler_settings);
+    Material_translucent(Sampler_settings const& sampler_settings) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    void set_thickness(float thickness);
-    void set_attenuation_distance(float attenuation_distance);
+    void set_thickness(float thickness) noexcept;
+    void set_attenuation_distance(float attenuation_distance) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   private:
     float thickness_;

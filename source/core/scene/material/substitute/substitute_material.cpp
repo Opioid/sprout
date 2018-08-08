@@ -10,12 +10,12 @@
 
 namespace scene::material::substitute {
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : Material_base(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const {
+                                         Worker const& worker, uint32_t depth) const noexcept {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>(depth);
@@ -27,11 +27,11 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     return sample;
 }
 
-size_t Material::num_bytes() const {
+size_t Material::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-size_t Material::sample_size() {
+size_t Material::sample_size() noexcept {
     return sizeof(Sample);
 }
 

@@ -6,10 +6,10 @@
 namespace resource {
 
 template <typename T>
-Provider<T>::Provider(std::string const& name) : Identifiable<T>(name) {}
+Provider<T>::Provider(std::string const& name) noexcept : Identifiable<T>(name) {}
 
 template <typename T>
-Provider<T>::~Provider() {}
+Provider<T>::~Provider() noexcept {}
 
 }  // namespace resource
 

@@ -7,32 +7,31 @@ namespace scene::material::metallic_paint {
 
 class Material : public material::Material {
   public:
-    Material(Sampler_settings const& sampler_settings, bool two_sided);
+    Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual float ior() const override final;
+    float ior() const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    void set_color(float3 const& a, float3 const& b);
-    void set_roughness(float roughness);
+    void set_color(float3 const& a, float3 const& b) noexcept;
+    void set_roughness(float roughness) noexcept;
 
-    void set_flakes_mask(Texture_adapter const& mask);
-    void set_flakes_normal_map(Texture_adapter const& normal_map);
-    void set_flakes_ior(float3 const& ior);
-    void set_flakes_absorption(float3 const& absorption);
-    void set_flakes_roughness(float roughness);
+    void set_flakes_mask(Texture_adapter const& mask) noexcept;
+    void set_flakes_normal_map(Texture_adapter const& normal_map) noexcept;
+    void set_flakes_ior(float3 const& ior) noexcept;
+    void set_flakes_absorption(float3 const& absorption) noexcept;
+    void set_flakes_roughness(float roughness) noexcept;
 
-    void set_coating_weight(float weight);
-    void set_coating_color(float3 const& color);
+    void set_coating_weight(float weight) noexcept;
+    void set_coating_color(float3 const& color) noexcept;
 
-    void set_clearcoat(float ior, float roughness);
+    void set_clearcoat(float ior, float roughness) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   protected:
     Texture_adapter flakes_mask_;

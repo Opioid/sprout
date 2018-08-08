@@ -7,24 +7,24 @@ namespace scene::material::volumetric {
 
 class Material : public material::Material {
   public:
-    Material(Sampler_settings const& sampler_settings);
-    virtual ~Material() override;
+    Material(Sampler_settings const& sampler_settings) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    ~Material() noexcept override;
 
-    virtual float ior() const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual CM control_medium() const override final;
+    float ior() const noexcept override final;
+
+    CM control_medium() const noexcept override final;
 
     void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                         float distance);
+                         float distance) noexcept;
 
-    void set_anisotropy(float anisotropy);
+    void set_anisotropy(float anisotropy) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   protected:
     CC    cc_;

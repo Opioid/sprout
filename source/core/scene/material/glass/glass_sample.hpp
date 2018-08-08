@@ -7,13 +7,13 @@ namespace scene::material::glass {
 
 class Sample : public material::Sample {
   public:
-    Layer const& base_layer() const override final;
+    Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override;
 
-    void set(float3 const& refraction_color, float ior, float ior_outside);
+    void set(float3 const& refraction_color, float ior, float ior_outside) noexcept;
 
     Layer layer_;
 
@@ -24,10 +24,10 @@ class Sample : public material::Sample {
     class BSDF {
       public:
         static float reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                             bxdf::Sample& result);
+                             bxdf::Sample& result) noexcept;
 
         static float refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                             float n_dot_t, float eta_i, bxdf::Sample& result);
+                             float n_dot_t, float eta_i, bxdf::Sample& result) noexcept;
     };
 };
 

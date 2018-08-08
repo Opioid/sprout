@@ -43,19 +43,19 @@ class Sample {
         float3 n_;
     };
 
-    virtual Layer const& base_layer() const = 0;
+    virtual Layer const& base_layer() const noexcept = 0;
 
-    virtual bxdf::Result evaluate(float3 const& wi) const = 0;
+    virtual bxdf::Result evaluate(float3 const& wi) const noexcept = 0;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const = 0;
+    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept = 0;
 
-    virtual float3 radiance() const;
+    virtual float3 radiance() const noexcept;
 
-    virtual bool is_pure_emissive() const;
+    virtual bool is_pure_emissive() const noexcept;
 
-    virtual bool is_translucent() const;
+    virtual bool is_translucent() const noexcept;
 
-    virtual bool ior_greater_one() const;
+    virtual bool ior_greater_one() const noexcept;
 
     float3 const& wo() const noexcept;
 

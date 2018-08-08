@@ -7,26 +7,26 @@
 
 namespace scene::material::fresnel {
 
-static inline float schlick_f0(float n0, float n1) {
+static inline float schlick_f0(float n0, float n1) noexcept {
     float const t = (n0 - n1) / (n0 + n1);
     return t * t;
 }
 
-static inline float schlick(float wo_dot_h, float f0) {
+static inline float schlick(float wo_dot_h, float f0) noexcept {
     return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
     // Gaussian approximation
     // return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-static inline float3 schlick(float wo_dot_h, float3 const& f0) {
+static inline float3 schlick(float wo_dot_h, float3 const& f0) noexcept {
     return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
     // Gaussian approximation
     // return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& k) {
+static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& k) noexcept {
     float3 tmp_f = eta * eta + k * k;
 
     float  wo_dot_h2 = wo_dot_h * wo_dot_h;
@@ -40,7 +40,8 @@ static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& 
     return 0.5f * (r_p + r_o);
 }
 
-static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
+static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i,
+                               float eta_t) noexcept {
     float const r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t) /
                       (eta_t * cos_theta_i + eta_i * cos_theta_t);
 
@@ -51,27 +52,27 @@ static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i
 }
 
 // Amplitude reflection coefficient (s-polarized)
-static inline float rs(float n1, float n2, float cosI, float cosT) {
+static inline float rs(float n1, float n2, float cosI, float cosT) noexcept {
     return (n1 * cosI - n2 * cosT) / (n1 * cosI + n2 * cosT);
 }
 
 // Amplitude reflection coefficient (p-polarized)
-static inline float rp(float n1, float n2, float cosI, float cosT) {
+static inline float rp(float n1, float n2, float cosI, float cosT) noexcept {
     return (n2 * cosI - n1 * cosT) / (n1 * cosT + n2 * cosI);
 }
 
 // Amplitude transmission coefficient (s-polarized)
-static inline float ts(float n1, float n2, float cosI, float cosT) {
+static inline float ts(float n1, float n2, float cosI, float cosT) noexcept {
     return 2.f * n1 * cosI / (n1 * cosI + n2 * cosT);
 }
 
 // Amplitude transmission coefficient (p-polarized)
-static inline float tp(float n1, float n2, float cosI, float cosT) {
+static inline float tp(float n1, float n2, float cosI, float cosT) noexcept {
     return 2.f * n1 * cosI / (n1 * cosT + n2 * cosI);
 }
 
 static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
-                              float internal_ior, float thickness) {
+                              float internal_ior, float thickness) noexcept {
     // Precompute the reflection phase changes (depends on IOR)
     float delta10 = (thinfilm_ior < external_ior) ? math::Pi : 0.f;
     float delta12 = (thinfilm_ior < internal_ior) ? math::Pi : 0.f;
@@ -120,55 +121,57 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
     return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
-static inline float3 schlick_blending(float wo_dot_h, float3 const& a, float3 const& b, float f0) {
+static inline float3 schlick_blending(float wo_dot_h, float3 const& a, float3 const& b,
+                                      float f0) noexcept {
     return math::lerp(a, b, schlick(wo_dot_h, f0));
 }
 
-inline Schlick::Schlick(float f0) : f0_(f0) {}
+inline Schlick::Schlick(float f0) noexcept : f0_(f0) {}
 
-inline Schlick::Schlick(float3 const& f0) : f0_(f0) {}
+inline Schlick::Schlick(float3 const& f0) noexcept : f0_(f0) {}
 
-inline float3 Schlick::operator()(float wo_dot_h) const {
+inline float3 Schlick::operator()(float wo_dot_h) const noexcept {
     return schlick(wo_dot_h, f0_);
 }
 
-inline Schlick_blending::Schlick_blending(float3 const& a, float3 const& b, float f0)
+inline Schlick_blending::Schlick_blending(float3 const& a, float3 const& b, float f0) noexcept
     : a_(a), b_(b), f0_(f0) {}
 
-inline float3 Schlick_blending::operator()(float wo_dot_h) const {
+inline float3 Schlick_blending::operator()(float wo_dot_h) const noexcept {
     return schlick_blending(wo_dot_h, a_, b_, f0_);
 }
 
 inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior, float internal_ior,
-                          float thickness)
+                          float thickness) noexcept
     : external_ior_(external_ior),
       thinfilm_ior_(thinfilm_ior),
       internal_ior_(internal_ior),
       thickness_(thickness) {}
 
-inline float3 Thinfilm::operator()(float wo_dot_h) const {
+inline float3 Thinfilm::operator()(float wo_dot_h) const noexcept {
     return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
 }
 
-inline Conductor::Conductor(float3 const& eta, float3 const& k) : eta_(eta), k_(k) {}
+inline Conductor::Conductor(float3 const& eta, float3 const& k) noexcept : eta_(eta), k_(k) {}
 
-inline float3 Conductor::operator()(float wo_dot_h) const {
+inline float3 Conductor::operator()(float wo_dot_h) const noexcept {
     return conductor(wo_dot_h, eta_, k_);
 }
 
-inline Constant::Constant(float f) : f_(f) {}
+inline Constant::Constant(float f) noexcept : f_(f) {}
 
-inline Constant::Constant(float3 const& f) : f_(f) {}
+inline Constant::Constant(float3 const& f) noexcept : f_(f) {}
 
-inline float3 Constant::operator()(float /*wo_dot_h*/) const {
+inline float3 Constant::operator()(float /*wo_dot_h*/) const noexcept {
     return f_;
 }
 
 template <typename T>
-Weighted<T>::Weighted(T const& fresnel, float weight) : fresnel_(fresnel), weight_(weight) {}
+Weighted<T>::Weighted(T const& fresnel, float weight) noexcept
+    : fresnel_(fresnel), weight_(weight) {}
 
 template <typename T>
-float3 Weighted<T>::operator()(float wo_dot_h) const {
+float3 Weighted<T>::operator()(float wo_dot_h) const noexcept {
     return weight_ * fresnel_(wo_dot_h);
 }
 

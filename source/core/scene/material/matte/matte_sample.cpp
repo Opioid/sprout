@@ -7,18 +7,19 @@
 
 namespace scene::material::matte {
 
-const material::Sample::Layer& Sample::base_layer() const {
+const material::Sample::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& wi) const {
+bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
     //	float3 brdf = lambert::Isotropic::reflection(layer_.diffuse_color, n_dot_wi, layer_, pdf);
 
-    float3 h        = math::normalize(wo_ + wi);
-    float  h_dot_wi = clamp_dot(h, wi);
+    float3 const h = math::normalize(wo_ + wi);
+
+    float const h_dot_wi = clamp_dot(h, wi);
 
     //	float const wi_dot_wo = math::dot(wi, wo_);
     //	float const sl_wi_wo = 2.f + 2.f * wi_dot_wo;
@@ -32,7 +33,7 @@ bxdf::Result Sample::evaluate(float3 const& wi) const {
     return {n_dot_wi * brdf.reflection, brdf.pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     //	float const n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler,
     // result);
 
@@ -45,7 +46,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     result.wavelength = 0.f;
 }
 
-void Sample::Layer::set(float3 const& color) {
+void Sample::Layer::set(float3 const& color) noexcept {
     diffuse_color_ = color;
     roughness_     = 1.f;
     alpha2_        = math::pow4(roughness_);

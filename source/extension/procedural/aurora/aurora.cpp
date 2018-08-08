@@ -2,8 +2,8 @@
 
 namespace procedural::aurora {
 
-void Aurora::set_parameters(json::Value const& /*parameters*/) {}
+void Aurora::set_parameters(json::Value const& /*parameters*/) noexcept {}
 
-void Aurora::on_set_transformation() {}
+void Aurora::on_set_transformation() noexcept {}
 
 }  // namespace procedural::aurora

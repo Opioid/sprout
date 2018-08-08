@@ -12,9 +12,9 @@
 
 namespace scene::prop {
 
-Prop::~Prop() {}
+Prop::~Prop() noexcept {}
 
-void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& materials) {
+void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& materials) noexcept {
     set_shape(shape);
 
     parts_.resize(shape->num_parts());
@@ -36,7 +36,7 @@ void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& mate
     }
 }
 
-void Prop::morph(thread::Pool& pool) {
+void Prop::morph(thread::Pool& pool) noexcept {
     /*if (properties_.test(Property::Animated))*/ {
         if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
             morphable->morph(local_frame_a_.morphing.targets[0], local_frame_a_.morphing.targets[1],
@@ -45,7 +45,8 @@ void Prop::morph(thread::Pool& pool) {
     }
 }
 
-bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const {
+bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const
+    noexcept {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -60,8 +61,8 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& inte
     return shape_->intersect(ray, transformation, node_stack, intersection);
 }
 
-bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack,
-                          shape::Intersection& intersection) const {
+bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const
+    noexcept {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -76,7 +77,7 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack,
     return shape_->intersect_fast(ray, transformation, node_stack, intersection);
 }
 
-bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
+bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const noexcept {
     //	if (!visible(ray.depth)) {
     //		return false;
     //	}
@@ -95,7 +96,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const {
     return shape_->intersect(ray, transformation, node_stack, epsilon);
 }
 
-bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const {
+bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
     if (!visible_in_shadow()) {
         return false;
     }
@@ -128,19 +129,19 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const {
 //							   transformation, node_stack);
 //}
 
-shape::Shape const* Prop::shape() const {
+shape::Shape const* Prop::shape() const noexcept {
     return shape_.get();
 }
 
-shape::Shape* Prop::shape() {
+shape::Shape* Prop::shape() noexcept {
     return shape_.get();
 }
 
-math::AABB const& Prop::aabb() const {
+math::AABB const& Prop::aabb() const noexcept {
     return aabb_;
 }
 
-void Prop::set_shape(Shape_ptr const& shape) {
+void Prop::set_shape(Shape_ptr const& shape) noexcept {
     shape_ = shape;
 
     properties_.clear();
@@ -149,7 +150,7 @@ void Prop::set_shape(Shape_ptr const& shape) {
     properties_.set(Property::Visible_in_shadow);
 }
 
-bool Prop::visible(uint32_t ray_depth) const {
+bool Prop::visible(uint32_t ray_depth) const noexcept {
     if (0 == ray_depth) {
         if (!properties_.test(Property::Visible_in_camera)) {
             return false;
@@ -163,7 +164,7 @@ bool Prop::visible(uint32_t ray_depth) const {
     return true;
 }
 
-void Prop::on_set_transformation() {
+void Prop::on_set_transformation() noexcept {
     if (properties_.test(Property::Animated)) {
         static uint32_t constexpr num_steps = 3;
 
@@ -184,10 +185,10 @@ void Prop::on_set_transformation() {
     }
 }
 
-void Prop::set_parameters(json::Value const& /*parameters*/) {}
+void Prop::set_parameters(json::Value const& /*parameters*/) noexcept {}
 
 void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
-                            thread::Pool& pool) {
+                            thread::Pool& pool) noexcept {
     shape_->prepare_sampling(part);
 
     Transformation temp;
@@ -202,7 +203,7 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_impo
                                        material_importance_sampling, pool);
 }
 
-float Prop::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const {
+float Prop::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const noexcept {
     if (!has_masked_material()) {
         return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
     }
@@ -221,7 +222,8 @@ float Prop::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker)
     return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
 
-float3 Prop::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const {
+float3 Prop::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const
+    noexcept {
     if (!has_tinted_shadow()) {
         return float3(opacity(ray, filter, worker));
     }
@@ -240,23 +242,23 @@ float3 Prop::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const
     return shape_->thin_absorption(ray, transformation, materials_, filter, worker);
 }
 
-float Prop::area(uint32_t part) const {
+float Prop::area(uint32_t part) const noexcept {
     return parts_[part].area;
 }
 
-uint32_t Prop::light_id(uint32_t part) const {
+uint32_t Prop::light_id(uint32_t part) const noexcept {
     return parts_[part].light_id;
 }
 
-material::Material const* Prop::material(uint32_t part) const {
+material::Material const* Prop::material(uint32_t part) const noexcept {
     return materials_[part].get();
 }
 
-bool Prop::has_masked_material() const {
+bool Prop::has_masked_material() const noexcept {
     return properties_.test(Property::Masked_material);
 }
 
-bool Prop::has_caustic_material() const {
+bool Prop::has_caustic_material() const noexcept {
     for (auto const& m : materials_) {
         if (m->is_caustic()) {
             return true;
@@ -266,15 +268,15 @@ bool Prop::has_caustic_material() const {
     return false;
 }
 
-bool Prop::has_tinted_shadow() const {
+bool Prop::has_tinted_shadow() const noexcept {
     return properties_.test(Property::Tinted_shadow);
 }
 
-bool Prop::has_no_surface() const {
+bool Prop::has_no_surface() const noexcept {
     return 1 == materials_.size() && 1.f == materials_[0]->ior();
 }
 
-size_t Prop::num_bytes() const {
+size_t Prop::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

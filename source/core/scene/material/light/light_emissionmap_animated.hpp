@@ -10,41 +10,41 @@ class Emissionmap_animated : public Material {
   public:
     Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided,
                          Texture_adapter const& emission_map, float emission_factor,
-                         float animation_duration);
+                         float animation_duration) noexcept;
 
-    ~Emissionmap_animated();
+    ~Emissionmap_animated() noexcept;
 
-    virtual void tick(float absolute_time, float time_slice) override final;
+    void tick(float absolute_time, float time_slice) noexcept override final;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker, uint32_t depth) const override;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
-                                     Sampler_filter filter,
-                                     Worker const&  worker) const override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+                             Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual float3 average_radiance(float area) const override final;
+    float3 average_radiance(float area) const noexcept override final;
 
-    virtual float ior() const override;
+    float ior() const noexcept override;
 
-    virtual bool has_emission_map() const override final;
+    bool has_emission_map() const noexcept override final;
 
-    virtual Sample_2D radiance_sample(float2 r2) const override final;
+    Sample_2D radiance_sample(float2 r2) const noexcept override final;
 
-    virtual float emission_pdf(float2 uv, Sampler_filter filter,
-                               Worker const& worker) const override final;
+    float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual float opacity(float2 uv, float time, Sampler_filter filter,
-                          Worker const& worker) const override final;
+    float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
-                                  Transformation const& transformation, float area,
-                                  bool importance_sampling, thread::Pool& pool) override final;
+    void prepare_sampling(shape::Shape const& shape, uint32_t part,
+                          Transformation const& transformation, float area,
+                          bool importance_sampling, thread::Pool& pool) noexcept override final;
 
-    virtual bool is_animated() const override final;
+    bool is_animated() const noexcept override final;
 
-    virtual size_t num_bytes() const override;
+    size_t num_bytes() const noexcept override;
 
   protected:
     Texture_adapter emission_map_;

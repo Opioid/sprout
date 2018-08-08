@@ -4,34 +4,35 @@
 
 namespace scene::material::volumetric {
 
-Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) : Material(sampler_settings) {}
+Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) noexcept
+    : Material(sampler_settings) {}
 
 float3 Homogeneous::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
                              float /*step_size*/, rnd::Generator& /*rng*/,
-                             Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+                             Sampler_filter /*filter*/, Worker const& /*worker*/) const noexcept {
     return float3::identity();
 }
 
 float3 Homogeneous::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
-                                           Worker const& /*worker*/) const {
+                                           Worker const& /*worker*/) const noexcept {
     return cc_.a;
 }
 
-CC Homogeneous::collision_coefficients() const {
+CC Homogeneous::collision_coefficients() const noexcept {
     return cc_;
 }
 
 CC Homogeneous::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
-                                       Worker const& /*worker*/) const {
+                                       Worker const& /*worker*/) const noexcept {
     return cc_;
 }
 
 CC Homogeneous::collision_coefficients(float3 const& /*p*/, Sampler_filter /*filter*/,
-                                       Worker const& /*worker*/) const {
+                                       Worker const& /*worker*/) const noexcept {
     return cc_;
 }
 
-size_t Homogeneous::num_bytes() const {
+size_t Homogeneous::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

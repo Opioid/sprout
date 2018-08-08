@@ -12,15 +12,15 @@
 
 namespace scene::material::glass {
 
-const material::Sample::Layer& Sample::base_layer() const {
+const material::Sample::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& /*wi*/) const {
+bxdf::Result Sample::evaluate(float3 const& /*wi*/) const noexcept {
     return {float3::identity(), 0.f};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     float3 n = layer_.n_;
 
     float eta_i = ior_outside_ / ior_;
@@ -56,14 +56,14 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     result.wavelength = 0.f;
 }
 
-void Sample::set(float3 const& refraction_color, float ior, float ior_outside) {
+void Sample::set(float3 const& refraction_color, float ior, float ior_outside) noexcept {
     color_       = refraction_color;
     ior_         = ior;
     ior_outside_ = ior_outside;
 }
 
 float Sample::BSDF::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                            bxdf::Sample& result) {
+                            bxdf::Sample& result) noexcept {
     result.reflection = float3(1.f);
     result.wi         = math::normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
@@ -75,7 +75,7 @@ float Sample::BSDF::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
 }
 
 float Sample::BSDF::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                            float n_dot_t, float eta_i, bxdf::Sample& result) {
+                            float n_dot_t, float eta_i, bxdf::Sample& result) noexcept {
     result.reflection = color;
     result.wi         = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * wo);
     result.pdf        = 1.f;

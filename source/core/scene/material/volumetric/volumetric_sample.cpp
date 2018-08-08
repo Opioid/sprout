@@ -7,17 +7,23 @@
 
 namespace scene::material::volumetric {
 
-const material::Sample::Layer& Sample::base_layer() const {
+static inline float phase_hg(float cos_theta, float g) noexcept {
+    float const gg    = g * g;
+    float const denom = 1.f + gg + 2.f * g * cos_theta;
+    return (1.f / (4.f * math::Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
+}
+
+const material::Sample::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& wi) const {
+bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
     float const phase = layer_.phase(wo_, wi);
 
     return {float3(phase), phase};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     float2 const r2 = sampler.generate_sample_2D();
 
     float3      dir;
@@ -30,7 +36,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 
-bool Sample::is_translucent() const {
+bool Sample::is_translucent() const noexcept {
     return true;
 }
 
@@ -38,14 +44,14 @@ void Sample::set(float anisotropy) {
     layer_.anisotropy = anisotropy;
 }
 
-float Sample::Layer::phase(float3 const& wo, float3 const& wi) const {
+float Sample::Layer::phase(float3 const& wo, float3 const& wi) const noexcept {
     float const g = anisotropy;
     return phase_hg(math::dot(wo, wi), g);
     //	float const k = 1.55f * g - (0.55f * g) * (g * g);
     //	return phase_schlick(math::dot(wo, wi), k);
 }
 
-float Sample::Layer::sample(float3 const& wo, float2 r2, float3& wi) const {
+float Sample::Layer::sample(float3 const& wo, float2 r2, float3& wi) const noexcept {
     float const g = anisotropy;
 
     float cos_theta;
@@ -67,17 +73,6 @@ float Sample::Layer::sample(float3 const& wo, float2 r2, float3& wi) const {
     wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
 
     return phase_hg(-cos_theta, g);
-}
-
-float Sample::phase_hg(float cos_theta, float g) {
-    float const gg    = g * g;
-    float const denom = 1.f + gg + 2.f * g * cos_theta;
-    return (1.f / (4.f * math::Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
-}
-
-float Sample::phase_schlick(float cos_theta, float k) {
-    float const d = 1.f - (k * cos_theta);
-    return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
 }
 
 }  // namespace scene::material::volumetric

@@ -13,12 +13,12 @@
 
 namespace scene::material::display {
 
-Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided)
+Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : material::Material(sampler_settings, two_sided) {}
 
 material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const {
+                                         Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -32,36 +32,36 @@ material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs
 
 float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
                                    float /*time*/, Sampler_filter /*filter*/,
-                                   Worker const& /*worker*/) const {
+                                   Worker const& /*worker*/) const noexcept {
     return emission_;
 }
 
-float3 Constant::average_radiance(float /*area*/) const {
+float3 Constant::average_radiance(float /*area*/) const noexcept {
     return emission_;
 }
 
-float Constant::ior() const {
+float Constant::ior() const noexcept {
     return ior_;
 }
 
-size_t Constant::num_bytes() const {
+size_t Constant::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Constant::set_emission(float3 const& radiance) {
+void Constant::set_emission(float3 const& radiance) noexcept {
     emission_ = radiance;
 }
 
-void Constant::set_roughness(float roughness) {
+void Constant::set_roughness(float roughness) noexcept {
     roughness_ = roughness;
 }
 
-void Constant::set_ior(float ior) {
+void Constant::set_ior(float ior) noexcept {
     ior_ = ior;
     f0_  = fresnel::schlick_f0(1.f, ior);
 }
 
-size_t Constant::sample_size() {
+size_t Constant::sample_size() noexcept {
     return sizeof(Sample);
 }
 

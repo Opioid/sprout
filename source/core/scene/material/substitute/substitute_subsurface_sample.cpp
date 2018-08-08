@@ -9,7 +9,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const {
+bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -23,7 +23,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const {
     return result;
 }
 
-void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     bool const same_side = same_hemisphere(wo_);
 
     float const p = sampler.generate_sample_1D();
@@ -53,7 +53,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-void Sample_subsurface::set(float anisotropy, float ior, float ior_outside) {
+void Sample_subsurface::set(float anisotropy, float ior, float ior_outside) noexcept {
     anisotropy_ = anisotropy;
 
     ior_.ior_i_ = ior;
@@ -63,7 +63,7 @@ void Sample_subsurface::set(float anisotropy, float ior, float ior_outside) {
 }
 
 void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-                                bxdf::Sample& result) const {
+                                bxdf::Sample& result) const noexcept {
     IOR tmp_ior;
 
     if (same_side) {
@@ -86,7 +86,7 @@ void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sam
 }
 
 void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-                                           bxdf::Sample& result) const {
+                                           bxdf::Sample& result) const noexcept {
     IOR tmp_ior;
 
     tmp_ior.ior_i_ = ior_.ior_o_;

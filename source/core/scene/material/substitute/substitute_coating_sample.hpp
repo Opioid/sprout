@@ -10,9 +10,9 @@ namespace scene::material::substitute {
 template <typename Coating_layer>
 class Sample_coating : public Sample_base<disney::Isotropic> {
   public:
-    virtual bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
     Coating_layer coating_;
 };

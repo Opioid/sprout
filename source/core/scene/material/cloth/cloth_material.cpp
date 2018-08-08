@@ -8,12 +8,12 @@
 
 namespace scene::material::cloth {
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : material::Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const {
+                                         Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -40,27 +40,27 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     return sample;
 }
 
-float Material::ior() const {
+float Material::ior() const noexcept {
     return 1.5f;
 }
 
-size_t Material::num_bytes() const {
+size_t Material::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Material::set_color_map(Texture_adapter const& color_map) {
+void Material::set_color_map(Texture_adapter const& color_map) noexcept {
     color_map_ = color_map;
 }
 
-void Material::set_normal_map(Texture_adapter const& normal_map) {
+void Material::set_normal_map(Texture_adapter const& normal_map) noexcept {
     normal_map_ = normal_map;
 }
 
-void Material::set_color(float3 const& color) {
+void Material::set_color(float3 const& color) noexcept {
     color_ = color;
 }
 
-size_t Material::sample_size() {
+size_t Material::sample_size() noexcept {
     return sizeof(Sample);
 }
 

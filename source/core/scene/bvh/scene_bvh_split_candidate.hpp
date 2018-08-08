@@ -10,18 +10,18 @@ namespace scene::bvh {
 template <typename T>
 class Split_candidate {
   public:
-    Split_candidate(const math::Plane& plane, uint8_t axis);
-    Split_candidate(uint8_t split_axis, float3 const& pos, const std::vector<T*>& data);
+    Split_candidate(math::Plane const& plane, uint8_t axis) noexcept;
+    Split_candidate(uint8_t split_axis, float3 const& pos, std::vector<T*> const& data) noexcept;
 
     using index = typename std::vector<T*>::iterator;
 
-    Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end);
+    Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end) noexcept;
 
-    uint64_t key() const;
+    uint64_t key() const noexcept;
 
-    const math::Plane& plane() const;
+    math::Plane const& plane() const noexcept;
 
-    uint8_t axis() const;
+    uint8_t axis() const noexcept;
 
   private:
     math::Plane plane_;

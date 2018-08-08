@@ -9,21 +9,21 @@ namespace scene::material::volumetric {
 
 class Grid final : public Density {
   public:
-    Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
+    Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
 
-    virtual ~Grid() override final;
+    ~Grid() noexcept override final;
 
-    virtual void compile() override final;
+    void compile() noexcept override final;
 
-    virtual Gridtree const* volume_tree() const override final;
+    Gridtree const* volume_tree() const noexcept override final;
 
-    virtual bool is_heterogeneous_volume() const override final;
+    bool is_heterogeneous_volume() const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
-    virtual float density(float3 const& uvw, Sampler_filter filter,
-                          Worker const& worker) const override final;
+    float density(float3 const& uvw, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
     Texture_adapter grid_;
 
@@ -32,38 +32,38 @@ class Grid final : public Density {
 
 class Emission_grid final : public Material {
   public:
-    Emission_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
+    Emission_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
 
-    virtual ~Emission_grid() override final;
+    ~Emission_grid() noexcept override final;
 
-    virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
-                            float step_size, rnd::Generator& rng, Sampler_filter filter,
-                            Worker const& worker) const override final;
+    float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
+                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
-    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const;
+    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
 
     Texture_adapter grid_;
 };
 
 class Flow_vis_grid final : public Material {
   public:
-    Flow_vis_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
+    Flow_vis_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
 
-    virtual ~Flow_vis_grid() override final;
+    ~Flow_vis_grid() noexcept override final;
 
-    virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
-                            float step_size, rnd::Generator& rng, Sampler_filter filter,
-                            Worker const& worker) const override final;
+    float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
+                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
   private:
-    float density(float3 const& p, Sampler_filter filter, Worker const& worker) const;
+    float density(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
 
-    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const;
+    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
 
     Texture_adapter grid_;
 };

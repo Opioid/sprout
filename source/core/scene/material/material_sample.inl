@@ -58,19 +58,19 @@ inline float3 Sample::Layer::world_to_tangent(float3 const& v) const noexcept {
                   v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline float3 Sample::radiance() const {
+inline float3 Sample::radiance() const noexcept {
     return float3::identity();
 }
 
-inline bool Sample::is_pure_emissive() const {
+inline bool Sample::is_pure_emissive() const noexcept {
     return false;
 }
 
-inline bool Sample::is_translucent() const {
+inline bool Sample::is_translucent() const noexcept {
     return false;
 }
 
-inline bool Sample::ior_greater_one() const {
+inline bool Sample::ior_greater_one() const noexcept {
     return true;
 }
 

@@ -8,12 +8,12 @@
 
 namespace scene::material::light {
 
-Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided)
+Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const {
+                                         Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -26,11 +26,12 @@ material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs
 }
 
 float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float area, float /*time*/,
-                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const {
+                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const
+    noexcept {
     return emittance_.radiance(area);
 }
 
-float3 Constant::average_radiance(float area) const {
+float3 Constant::average_radiance(float area) const noexcept {
     float3 radiance = emittance_.radiance(area);
 
     if (is_two_sided()) {
@@ -40,23 +41,23 @@ float3 Constant::average_radiance(float area) const {
     return radiance;
 }
 
-float Constant::ior() const {
+float Constant::ior() const noexcept {
     return 1.5f;
 }
 
-bool Constant::has_emission_map() const {
+bool Constant::has_emission_map() const noexcept {
     return false;
 }
 
-size_t Constant::num_bytes() const {
+size_t Constant::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-::light::Emittance& Constant::emittance() {
+::light::Emittance& Constant::emittance() noexcept {
     return emittance_;
 }
 
-size_t Constant::sample_size() {
+size_t Constant::sample_size() noexcept {
     return sizeof(Sample);
 }
 

@@ -11,12 +11,12 @@
 
 namespace scene::material::glass {
 
-Glass_thin::Glass_thin(Sampler_settings const& sampler_settings)
+Glass_thin::Glass_thin(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings, true) {}
 
 material::Sample const& Glass_thin::sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                           Worker const& worker, uint32_t depth) const {
+                                           Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample_thin>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -35,7 +35,7 @@ material::Sample const& Glass_thin::sample(float3 const& wo, Renderstate const& 
 }
 
 float3 Glass_thin::thin_absorption(float3 const& wo, float3 const& n, float2 uv, float time,
-                                   Sampler_filter filter, Worker const& worker) const {
+                                   Sampler_filter filter, Worker const& worker) const noexcept {
     float const n_dot_wi              = clamp_abs_dot(wo, n);
     float const approximated_distance = thickness_ / n_dot_wi;
 
@@ -45,42 +45,42 @@ float3 Glass_thin::thin_absorption(float3 const& wo, float3 const& n, float2 uv,
     return opacity(uv, time, filter, worker) * (1.f - refraction_color_ * attenuation);
 }
 
-float Glass_thin::ior() const {
+float Glass_thin::ior() const noexcept {
     return ior_;
 }
 
-bool Glass_thin::has_tinted_shadow() const {
+bool Glass_thin::has_tinted_shadow() const noexcept {
     return true;
 }
 
-bool Glass_thin::is_scattering_volume() const {
+bool Glass_thin::is_scattering_volume() const noexcept {
     return false;
 }
 
-size_t Glass_thin::num_bytes() const {
+size_t Glass_thin::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Glass_thin::set_normal_map(Texture_adapter const& normal_map) {
+void Glass_thin::set_normal_map(Texture_adapter const& normal_map) noexcept {
     normal_map_ = normal_map;
 }
 
-void Glass_thin::set_refraction_color(float3 const& color) {
+void Glass_thin::set_refraction_color(float3 const& color) noexcept {
     refraction_color_ = color;
 }
 
-void Glass_thin::set_attenuation(float3 const& absorption_color, float distance) {
+void Glass_thin::set_attenuation(float3 const& absorption_color, float distance) noexcept {
     absorption_coefficient_ = extinction_coefficient(absorption_color, distance);
 }
-void Glass_thin::set_ior(float ior) {
+void Glass_thin::set_ior(float ior) noexcept {
     ior_ = ior;
 }
 
-void Glass_thin::set_thickness(float thickness) {
+void Glass_thin::set_thickness(float thickness) noexcept {
     thickness_ = thickness;
 }
 
-size_t Glass_thin::sample_size() {
+size_t Glass_thin::sample_size() noexcept {
     return sizeof(Sample_thin);
 }
 

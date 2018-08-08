@@ -9,13 +9,14 @@
 
 namespace scene::material::substitute {
 
-Material_translucent::Material_translucent(Sampler_settings const& sampler_settings)
+Material_translucent::Material_translucent(Sampler_settings const& sampler_settings) noexcept
     : Material_base(sampler_settings, true) {}
 
 material::Sample const& Material_translucent::sample(float3 const& wo, Renderstate const& rs,
                                                      Sampler_filter filter,
                                                      sampler::Sampler& /*sampler*/,
-                                                     Worker const& worker, uint32_t depth) const {
+                                                     Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<Sample_translucent>(depth);
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -30,19 +31,19 @@ material::Sample const& Material_translucent::sample(float3 const& wo, Rendersta
     return sample;
 }
 
-size_t Material_translucent::num_bytes() const {
+size_t Material_translucent::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Material_translucent::set_thickness(float thickness) {
+void Material_translucent::set_thickness(float thickness) noexcept {
     thickness_ = thickness;
 }
 
-void Material_translucent::set_attenuation_distance(float attenuation_distance) {
+void Material_translucent::set_attenuation_distance(float attenuation_distance) noexcept {
     attenuation_distance_ = attenuation_distance;
 }
 
-size_t Material_translucent::sample_size() {
+size_t Material_translucent::sample_size() noexcept {
     return sizeof(Sample_translucent);
 }
 

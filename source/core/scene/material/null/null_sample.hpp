@@ -7,13 +7,13 @@ namespace scene::material::null {
 
 class Sample final : public material::Sample {
   public:
-    virtual Layer const& base_layer() const override final;
+    Layer const& base_layer() const noexcept override final;
 
-    virtual bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    virtual bool ior_greater_one() const override final;
+    bool ior_greater_one() const noexcept override final;
 
   private:
     material::Sample::Layer layer_;

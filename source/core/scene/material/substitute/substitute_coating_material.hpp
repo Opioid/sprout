@@ -8,20 +8,20 @@ namespace scene::material::substitute {
 template <typename Coating>
 class Material_coating : public Material_base {
   public:
-    Material_coating(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_coating(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    void set_coating_weight_map(Texture_adapter const& weight_map);
-    void set_coating_normal_map(Texture_adapter const& normal_map);
+    void set_coating_weight_map(Texture_adapter const& weight_map) noexcept;
+    void set_coating_normal_map(Texture_adapter const& normal_map) noexcept;
 
-    void set_coating_weight(float weight);
-    void set_coating_color(float3 const& color);
+    void set_coating_weight(float weight) noexcept;
+    void set_coating_color(float3 const& color) noexcept;
 
   protected:
     template <typename Sample>
     void set_coating_basis(float3 const& wo, Renderstate const& rs,
-                           Texture_sampler_2D const& sampler, Sample& sample) const;
+                           Texture_sampler_2D const& sampler, Sample& sample) const noexcept;
 
     Texture_adapter coating_weight_map_;
     Texture_adapter coating_normal_map_;
@@ -31,28 +31,28 @@ class Material_coating : public Material_base {
 
 class Material_clearcoat : public Material_coating<coating::Clearcoat_data> {
   public:
-    Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
     material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
-                                   uint32_t depth) const override final;
+                                   uint32_t depth) const noexcept override final;
 
-    void set_clearcoat(float ior, float roughness);
+    void set_clearcoat(float ior, float roughness) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 };
 
 class Material_thinfilm : public Material_coating<coating::Thinfilm> {
   public:
-    Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
     material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
-                                   uint32_t depth) const override final;
+                                   uint32_t depth) const noexcept override final;
 
-    void set_thinfilm(float ior, float roughness, float thickness);
+    void set_thinfilm(float ior, float roughness, float thickness) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 };
 
 }  // namespace scene::material::substitute

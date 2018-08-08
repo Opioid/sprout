@@ -7,31 +7,31 @@ namespace scene::material::glass {
 
 class Glass : public Material {
   public:
-    Glass(Sampler_settings const& sampler_settings);
+    Glass(Sampler_settings const& sampler_settings) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker, uint32_t depth) const override;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override;
 
-    virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-                                          Worker const& worker) const override final;
+    float3 absorption_coefficient(float2 uv, Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual float ior() const override final;
+    float ior() const noexcept override final;
 
-    virtual bool is_scattering_volume() const override final;
+    bool is_scattering_volume() const noexcept override final;
 
-    virtual size_t num_bytes() const override;
+    size_t num_bytes() const noexcept override;
 
-    void set_normal_map(Texture_adapter const& normal_map);
+    void set_normal_map(Texture_adapter const& normal_map) noexcept;
 
-    void set_refraction_color(float3 const& color);
-    void set_attenuation(float3 const& absorption_color, float distance);
-    void set_ior(float ior);
+    void set_refraction_color(float3 const& color) noexcept;
+    void set_attenuation(float3 const& absorption_color, float distance) noexcept;
+    void set_ior(float ior) noexcept;
 
-    virtual bool is_pure_specular() const override final;
-    virtual bool is_caustic() const override final;
+    bool is_pure_specular() const noexcept override final;
+    bool is_caustic() const noexcept override final;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   protected:
     Texture_adapter normal_map_;

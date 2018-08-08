@@ -6,23 +6,22 @@ namespace scene::material::cloth {
 
 class Material : public material::Material {
   public:
-    Material(Sampler_settings const& sampler_settings, bool two_sided);
+    Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual float ior() const override final;
+    float ior() const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    void set_color_map(Texture_adapter const& color_map);
-    void set_normal_map(Texture_adapter const& normal_map);
+    void set_color_map(Texture_adapter const& color_map) noexcept;
+    void set_normal_map(Texture_adapter const& normal_map) noexcept;
 
-    void set_color(float3 const& color);
+    void set_color(float3 const& color) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   private:
     Texture_adapter color_map_;

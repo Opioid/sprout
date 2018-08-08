@@ -9,12 +9,12 @@
 
 namespace scene::material::substitute {
 
-Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided)
+Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : material::Material(sampler_settings, two_sided) {}
 
 float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
                                         float /*time*/, Sampler_filter filter,
-                                        Worker const& worker) const {
+                                        Worker const& worker) const noexcept {
     if (emission_map_.is_valid()) {
         // For some reason Clang needs this to find inherited Material::sampler_key_
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -24,7 +24,7 @@ float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2   uv, float
     }
 }
 
-float3 Material_base::average_radiance(float /*area*/) const {
+float3 Material_base::average_radiance(float /*area*/) const noexcept {
     if (emission_map_.is_valid()) {
         return emission_factor_ * emission_map_.texture().average_3();
     } else {
@@ -32,51 +32,51 @@ float3 Material_base::average_radiance(float /*area*/) const {
     }
 }
 
-bool Material_base::has_emission_map() const {
+bool Material_base::has_emission_map() const noexcept {
     return emission_map_.is_valid();
 }
 
-float Material_base::ior() const {
+float Material_base::ior() const noexcept {
     return ior_;
 }
 
-void Material_base::set_ior(float ior) {
+void Material_base::set_ior(float ior) noexcept {
     ior_ = ior;
 }
 
-bool Material_base::is_caustic() const {
+bool Material_base::is_caustic() const noexcept {
     return !surface_map_.is_valid() && roughness_ <= ggx::Min_roughness;
 }
 
-void Material_base::set_color_map(Texture_adapter const& color_map) {
+void Material_base::set_color_map(Texture_adapter const& color_map) noexcept {
     color_map_ = color_map;
 }
 
-void Material_base::set_normal_map(Texture_adapter const& normal_map) {
+void Material_base::set_normal_map(Texture_adapter const& normal_map) noexcept {
     normal_map_ = normal_map;
 }
 
-void Material_base::set_surface_map(Texture_adapter const& surface_map) {
+void Material_base::set_surface_map(Texture_adapter const& surface_map) noexcept {
     surface_map_ = surface_map;
 }
 
-void Material_base::set_emission_map(Texture_adapter const& emission_map) {
+void Material_base::set_emission_map(Texture_adapter const& emission_map) noexcept {
     emission_map_ = emission_map;
 }
 
-void Material_base::set_color(float3 const& color) {
+void Material_base::set_color(float3 const& color) noexcept {
     color_ = color;
 }
 
-void Material_base::set_roughness(float roughness) {
+void Material_base::set_roughness(float roughness) noexcept {
     roughness_ = ggx::clamp_roughness(roughness);
 }
 
-void Material_base::set_metallic(float metallic) {
+void Material_base::set_metallic(float metallic) noexcept {
     metallic_ = metallic;
 }
 
-void Material_base::set_emission_factor(float emission_factor) {
+void Material_base::set_emission_factor(float emission_factor) noexcept {
     emission_factor_ = emission_factor;
 }
 

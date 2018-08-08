@@ -6,9 +6,10 @@
 
 namespace scene::material {
 
-inline CM::CM(float x) : minorant_mu_a(x), minorant_mu_s(x), minorant_mu_t(x), majorant_mu_t(x) {}
+inline CM::CM(float x) noexcept
+    : minorant_mu_a(x), minorant_mu_s(x), minorant_mu_t(x), majorant_mu_t(x) {}
 
-inline CM::CM(CC const& cc) {
+inline CM::CM(CC const& cc) noexcept {
     minorant_mu_a = /*0.5f **/ math::min_component(cc.a);
     minorant_mu_s = /*0.5f **/ math::min_component(cc.s);
     minorant_mu_t = minorant_mu_a + minorant_mu_s;

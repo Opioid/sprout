@@ -7,10 +7,10 @@ namespace procedural::aurora {
 
 class Aurora : public scene::entity::Entity {
   public:
-    virtual void set_parameters(json::Value const& parameters) override final;
+    void set_parameters(json::Value const& parameters) noexcept override final;
 
   private:
-    virtual void on_set_transformation() override final;
+    void on_set_transformation() noexcept override final;
 };
 
 }  // namespace procedural::aurora

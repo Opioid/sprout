@@ -9,33 +9,35 @@ namespace procedural::sky {
 
 class Model {
   public:
-    Model();
-    ~Model();
+    Model() noexcept;
 
-    void compile();
+    ~Model() noexcept;
 
-    float3 sun_direction() const;
+    void compile() noexcept;
 
-    void set_sun_direction(float3 const& direction);
+    float3 sun_direction() const noexcept;
 
-    void set_ground_albedo(float3 const& albedo);
-    void set_turbidity(float turbidity);
+    void set_sun_direction(float3 const& direction) noexcept;
 
-    float3 evaluate_sky(float3 const& wi) const;
+    void set_ground_albedo(float3 const& albedo) noexcept;
 
-    float3 evaluate_sky_and_sun(float3 const& wi) const;
+    void set_turbidity(float turbidity) noexcept;
 
-    static float constexpr degrees() {
+    float3 evaluate_sky(float3 const& wi) const noexcept;
+
+    float3 evaluate_sky_and_sun(float3 const& wi) const noexcept;
+
+    static float constexpr degrees() noexcept {
         // 0.255 should match hosek
         return 0.255f;
     }
 
-    static float3 constexpr zenith() {
+    static float3 constexpr zenith() noexcept {
         return float3(0.f, 1.f, 0.f);
     }
 
   private:
-    void release();
+    void release() noexcept;
 
     float3 sun_direction_;
 

@@ -12,7 +12,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
+bxdf::Result Sample_translucent::evaluate(float3 const& wi) const noexcept {
     // No side check needed because the material is two-sided by definition.
 
     // This is a bit complicated to explain:
@@ -53,7 +53,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
     return result;
 }
 
-void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     // No side check needed because the material is two-sided by definition.
 
     float const p = sampler.generate_sample_1D();
@@ -93,12 +93,12 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result)
     }
 }
 
-bool Sample_translucent::is_translucent() const {
+bool Sample_translucent::is_translucent() const noexcept {
     return thickness_ > 0.f;
 }
 
 void Sample_translucent::set(float3 const& diffuse_color, float thickness,
-                             float attenuation_distance) {
+                             float attenuation_distance) noexcept {
     thickness_ = thickness;
 
     if (thickness > 0.f) {

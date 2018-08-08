@@ -7,30 +7,33 @@
 
 namespace scene::material::debug {
 
-constexpr float3 color_front(0.5f, 1.f, 0.f);
-constexpr float3 color_back(1.f, 0.f, 0.5f);
+static float3 constexpr color_front(0.5f, 1.f, 0.f);
+static float3 constexpr color_back(1.f, 0.f, 0.5f);
 
-const material::Sample::Layer& Sample::base_layer() const {
+const material::Sample::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& wi) const {
-    float3 const n         = math::cross(layer_.t_, layer_.b_);
-    bool const   same_side = math::dot(n, layer_.n_) > 0.f;
+bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
+    float3 const n = math::cross(layer_.t_, layer_.b_);
+
+    bool const same_side = math::dot(n, layer_.n_) > 0.f;
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
 
     float3 const color = same_side ? color_front : color_back;
 
-    float const  pdf     = n_dot_wi * math::Pi_inv;
+    float const pdf = n_dot_wi * math::Pi_inv;
+
     float3 const lambert = math::Pi_inv * color;
 
     return {n_dot_wi * lambert, pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
-    float3 const n         = math::cross(layer_.t_, layer_.b_);
-    bool const   same_side = math::dot(n, layer_.n_) > 0.f;
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+    float3 const n = math::cross(layer_.t_, layer_.b_);
+
+    bool const same_side = math::dot(n, layer_.n_) > 0.f;
 
     float2 const s2d = sampler.generate_sample_2D();
 

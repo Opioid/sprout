@@ -7,16 +7,15 @@ namespace scene::material::substitute {
 
 class Material : public Material_base {
   public:
-    Material(Sampler_settings const& sampler_settings, bool two_sided);
+    Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 };
 
 }  // namespace scene::material::substitute

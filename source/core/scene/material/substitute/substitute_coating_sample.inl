@@ -10,7 +10,7 @@
 namespace scene::material::substitute {
 
 template <typename Coating_layer>
-bxdf::Result Sample_coating<Coating_layer>::evaluate(float3 const& wi) const {
+bxdf::Result Sample_coating<Coating_layer>::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -19,7 +19,8 @@ bxdf::Result Sample_coating<Coating_layer>::evaluate(float3 const& wi) const {
 }
 
 template <typename Coating_layer>
-void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
+    noexcept {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

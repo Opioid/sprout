@@ -15,11 +15,11 @@
 
 namespace scene::material::glass {
 
-const material::Sample::Layer& Sample_rough::base_layer() const {
+const material::Sample::Layer& Sample_rough::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
+bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }
@@ -39,7 +39,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
     return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
 }
 
-void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     //	float const p = sampler.generate_sample_1D();
 
     //	if (p < 0.5f) {
@@ -81,8 +81,10 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 }
 
 void Sample_rough::set(float3 const& refraction_color, float3 const& absorption_color,
-                       float attenuation_distance, float ior, float ior_outside, float alpha) {
-    layer_.color_                  = refraction_color;
+                       float attenuation_distance, float ior, float ior_outside,
+                       float alpha) noexcept {
+    layer_.color_ = refraction_color;
+
     layer_.absorption_coefficient_ = material::extinction_coefficient(absorption_color,
                                                                       attenuation_distance);
 
@@ -97,7 +99,7 @@ void Sample_rough::set(float3 const& refraction_color, float3 const& absorption_
 }
 
 void Sample_rough::reflect(Layer const& layer, sampler::Sampler& sampler,
-                           bxdf::Sample& result) const {
+                           bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
     fresnel::Schlick const schlick(layer.f0_);
@@ -109,7 +111,7 @@ void Sample_rough::reflect(Layer const& layer, sampler::Sampler& sampler,
 }
 
 void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-                                      bxdf::Sample& result) const {
+                                      bxdf::Sample& result) const noexcept {
     IOR tmp_ior;
 
     tmp_ior.ior_i_ = ior_.ior_o_;
@@ -128,7 +130,7 @@ void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& samp
 }
 
 void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-                           bxdf::Sample& result) const {
+                           bxdf::Sample& result) const noexcept {
     IOR tmp_ior;
 
     if (same_side) {

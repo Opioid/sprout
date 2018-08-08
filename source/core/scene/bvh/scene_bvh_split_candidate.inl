@@ -8,16 +8,17 @@
 namespace scene::bvh {
 
 template <typename T>
-Split_candidate<T>::Split_candidate(const math::Plane& plane, uint8_t axis)
+Split_candidate<T>::Split_candidate(math::Plane const& plane, uint8_t axis) noexcept
     : plane_(plane), axis_(axis) {}
 
 template <typename T>
 Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos,
-                                    const std::vector<T*>& data)
+                                    std::vector<T*> const& data) noexcept
     : Split_candidate(split_axis, pos, data.begin(), data.end()) {}
 
 template <typename T>
-Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end)
+Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index begin,
+                                    index end) noexcept
     : axis_(split_axis) {
     key_ = 0;
 
@@ -65,17 +66,17 @@ Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index
 }
 
 template <typename T>
-uint64_t Split_candidate<T>::key() const {
+uint64_t Split_candidate<T>::key() const noexcept {
     return key_;
 }
 
 template <typename T>
-const math::Plane& Split_candidate<T>::plane() const {
+math::Plane const& Split_candidate<T>::plane() const noexcept {
     return plane_;
 }
 
 template <typename T>
-uint8_t Split_candidate<T>::axis() const {
+uint8_t Split_candidate<T>::axis() const noexcept {
     return axis_;
 }
 

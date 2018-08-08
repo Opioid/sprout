@@ -11,12 +11,12 @@
 
 namespace scene::material::glass {
 
-Glass_rough::Glass_rough(Sampler_settings const& sampler_settings)
+Glass_rough::Glass_rough(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings, false) {}
 
 material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const& rs,
                                             Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                            Worker const& worker, uint32_t depth) const {
+                                            Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample_rough>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -44,35 +44,35 @@ material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const&
 }
 
 float3 Glass_rough::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
-                                           Worker const& /*worker*/) const {
+                                           Worker const& /*worker*/) const noexcept {
     return absorption_coefficient_;
 }
 
-float Glass_rough::ior() const {
+float Glass_rough::ior() const noexcept {
     return ior_;
 }
 
-bool Glass_rough::is_scattering_volume() const {
+bool Glass_rough::is_scattering_volume() const noexcept {
     return false;
 }
 
-size_t Glass_rough::num_bytes() const {
+size_t Glass_rough::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Glass_rough::set_normal_map(Texture_adapter const& normal_map) {
+void Glass_rough::set_normal_map(Texture_adapter const& normal_map) noexcept {
     normal_map_ = normal_map;
 }
 
-void Glass_rough::set_roughness_map(Texture_adapter const& roughness_map) {
+void Glass_rough::set_roughness_map(Texture_adapter const& roughness_map) noexcept {
     roughness_map_ = roughness_map;
 }
 
-void Glass_rough::set_refraction_color(float3 const& color) {
+void Glass_rough::set_refraction_color(float3 const& color) noexcept {
     refraction_color_ = color;
 }
 
-void Glass_rough::set_attenuation(float3 const& absorption_color, float distance) {
+void Glass_rough::set_attenuation(float3 const& absorption_color, float distance) noexcept {
     absorption_color_ = absorption_color;
 
     absorption_coefficient_ = extinction_coefficient(absorption_color, distance);
@@ -80,16 +80,16 @@ void Glass_rough::set_attenuation(float3 const& absorption_color, float distance
     attenuation_distance_ = distance;
 }
 
-void Glass_rough::set_ior(float ior) {
+void Glass_rough::set_ior(float ior) noexcept {
     ior_ = ior;
 }
 
-void Glass_rough::set_roughness(float roughness) {
+void Glass_rough::set_roughness(float roughness) noexcept {
     roughness = ggx::clamp_roughness(roughness);
     alpha_    = roughness * roughness;
 }
 
-size_t Glass_rough::sample_size() {
+size_t Glass_rough::sample_size() noexcept {
     return sizeof(Sample_rough);
 }
 

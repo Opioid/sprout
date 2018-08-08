@@ -12,10 +12,10 @@ struct Transformation;
 namespace scene::entity {
 
 struct Composed_transformation {
-    void set(math::Transformation const& t);
+    void set(math::Transformation const& t) noexcept;
 
-    float3 world_to_object_point(float3 const& p) const;
-    float3 world_to_object_vector(float3 const& v) const;
+    float3 world_to_object_point(float3 const& p) const noexcept;
+    float3 world_to_object_vector(float3 const& v) const noexcept;
 
     float4x4 world_to_object;
     float4x4 object_to_world;

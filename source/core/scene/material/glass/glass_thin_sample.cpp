@@ -12,15 +12,15 @@
 
 namespace scene::material::glass {
 
-const material::Sample::Layer& Sample_thin::base_layer() const {
+const material::Sample::Layer& Sample_thin::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_thin::evaluate(float3 const& /*wi*/) const {
+bxdf::Result Sample_thin::evaluate(float3 const& /*wi*/) const noexcept {
     return {float3::identity(), 0.f};
 }
 
-void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     float const p = sampler.generate_sample_1D();
 
     if (p < 0.5f) {
@@ -32,12 +32,12 @@ void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const 
     }
 }
 
-bool Sample_thin::is_translucent() const {
+bool Sample_thin::is_translucent() const noexcept {
     return true;
 }
 
 void Sample_thin::Layer::set(float3 const& refraction_color, float3 const& absorption_coefficient,
-                             float ior, float ior_outside, float thickness) {
+                             float ior, float ior_outside, float thickness) noexcept {
     color_                  = refraction_color;
     absorption_coefficient_ = absorption_coefficient;
     ior_                    = ior;
@@ -46,7 +46,7 @@ void Sample_thin::Layer::set(float3 const& refraction_color, float3 const& absor
 }
 
 float Sample_thin::BSDF::reflect(const Sample_thin& sample, Layer const&      layer,
-                                 sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
+                                 sampler::Sampler& /*sampler*/, bxdf::Sample& result) noexcept {
     float3 n     = layer.n_;
     float  eta_i = 1.f / layer.ior_;
     float  eta_t = layer.ior_;
@@ -82,7 +82,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, Layer const&      la
 }
 
 float Sample_thin::BSDF::refract(const Sample_thin& sample, Layer const&      layer,
-                                 sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
+                                 sampler::Sampler& /*sampler*/, bxdf::Sample& result) noexcept {
     float3 n     = layer.n_;
     float  eta_i = 1.f / layer.ior_;
     float  eta_t = layer.ior_;

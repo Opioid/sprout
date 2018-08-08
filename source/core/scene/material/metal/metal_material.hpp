@@ -6,24 +6,23 @@ namespace scene::material::metal {
 
 class Material_isotropic : public Material {
   public:
-    Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual float ior() const override final;
+    float ior() const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
+    void set_normal_map(Texture_adapter const& normal_map) noexcept;
 
-    void set_ior(float3 const& ior);
-    void set_absorption(float3 const& absorption);
-    void set_roughness(float roughness);
+    void set_ior(float3 const& ior) noexcept;
+    void set_absorption(float3 const& absorption) noexcept;
+    void set_roughness(float roughness) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   protected:
     Texture_adapter normal_map_;
@@ -36,25 +35,25 @@ class Material_isotropic : public Material {
 
 class Material_anisotropic : public Material {
   public:
-    Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
     virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
                                            Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+                                           Worker const& worker, uint32_t depth) const
+        noexcept override final;
 
-    virtual float ior() const override final;
+    virtual float ior() const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    virtual size_t num_bytes() const noexcept override final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
-    void set_direction_map(Texture_adapter const& direction_map);
+    void set_normal_map(Texture_adapter const& normal_map) noexcept;
+    void set_direction_map(Texture_adapter const& direction_map) noexcept;
 
-    void set_ior(float3 const& ior);
-    void set_absorption(float3 const& absorption);
-    void set_roughness(float2 roughness);
+    void set_ior(float3 const& ior) noexcept;
+    void set_absorption(float3 const& absorption) noexcept;
+    void set_roughness(float2 roughness) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   protected:
     Texture_adapter normal_map_;

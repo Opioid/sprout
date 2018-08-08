@@ -7,9 +7,9 @@ namespace scene::material::substitute {
 
 class Sample : public Sample_base<disney::Isotropic> {
   public:
-    virtual bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 };
 
 }  // namespace scene::material::substitute

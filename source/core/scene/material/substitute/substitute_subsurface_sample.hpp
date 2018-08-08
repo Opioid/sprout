@@ -8,18 +8,18 @@ namespace scene::material::substitute {
 
 class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert> {
   public:
-    bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    void set(float anisotropy, float ior, float ior_outside);
+    void set(float anisotropy, float ior, float ior_outside) noexcept;
 
   private:
     void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-                 bxdf::Sample& result) const;
+                 bxdf::Sample& result) const noexcept;
 
     void reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-                            bxdf::Sample& result) const;
+                            bxdf::Sample& result) const noexcept;
 
     float anisotropy_;
 

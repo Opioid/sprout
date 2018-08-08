@@ -8,9 +8,9 @@
 
 namespace procedural::sky {
 
-Sky::~Sky() {}
+Sky::~Sky() noexcept {}
 
-void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) {
+void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
     sky_ = sky;
     sun_ = sun;
 
@@ -26,7 +26,7 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) {
     sky->set_transformation(transformation);
 }
 
-void Sky::set_parameters(json::Value const& parameters) {
+void Sky::set_parameters(json::Value const& parameters) noexcept {
     for (auto& n : parameters.GetObject()) {
         if ("sun" == n.name) {
             float3 const angles = json::read_float3(n.value, "rotation", float3::identity());
@@ -48,11 +48,11 @@ void Sky::set_parameters(json::Value const& parameters) {
     update();
 }
 
-Model& Sky::model() {
+Model& Sky::model() noexcept {
     return model_;
 }
 
-float3 Sky::sun_wi(float v) const {
+float3 Sky::sun_wi(float v) const noexcept {
     float const y = (2.f * v) - 1.f;
 
     float3 const ls = float3(0.5f, y, 0.f);
@@ -64,14 +64,14 @@ float3 Sky::sun_wi(float v) const {
     return math::normalize(ws - sun_rotation_.r[2]);
 }
 
-float Sky::sun_v(float3 const& wi) const {
+float Sky::sun_v(float3 const& wi) const noexcept {
     float3 const k  = wi - sun_rotation_.r[2];
     float3 const sk = k / math::degrees_to_radians(model_.degrees());
 
     return std::max((math::dot(sun_rotation_.r[1], sk) + 1.f) * 0.5f, 0.f);
 }
 
-bool Sky::sky_changed_since_last_check() {
+bool Sky::sky_changed_since_last_check() noexcept {
     bool const sky_changed = sky_changed_;
 
     sky_changed_ = false;
@@ -79,7 +79,7 @@ bool Sky::sky_changed_since_last_check() {
     return sky_changed;
 }
 
-bool Sky::sun_changed_since_last_check() {
+bool Sky::sun_changed_since_last_check() noexcept {
     bool const sun_changed = sun_changed_;
 
     sun_changed_ = false;
@@ -87,7 +87,7 @@ bool Sky::sun_changed_since_last_check() {
     return sun_changed;
 }
 
-void Sky::update() {
+void Sky::update() noexcept {
     model_.set_sun_direction(sun_rotation_.r[2]);
     model_.set_ground_albedo(ground_albedo_);
     model_.set_turbidity(turbidity_);
@@ -104,7 +104,7 @@ void Sky::update() {
     sun_changed_ = true;
 }
 
-void Sky::on_set_transformation() {
+void Sky::on_set_transformation() noexcept {
     if (implicit_rotation_) {
         sun_rotation_ = math::quaternion::create_matrix3x3(local_frame_a().rotation);
 

@@ -7,13 +7,15 @@
 
 namespace scene::material::substitute {
 
-Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided)
+Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings,
+                                       bool                    two_sided) noexcept
     : Material_coating<coating::Clearcoat_data>(sampler_settings, two_sided) {}
 
 material::Sample const& Material_clearcoat::sample(float3 const& wo, Renderstate const& rs,
                                                    Sampler_filter filter,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker, uint32_t depth) const {
+                                                   Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<Sample_clearcoat>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -28,7 +30,7 @@ material::Sample const& Material_clearcoat::sample(float3 const& wo, Renderstate
     return sample;
 }
 
-void Material_clearcoat::set_clearcoat(float ior, float roughness) {
+void Material_clearcoat::set_clearcoat(float ior, float roughness) noexcept {
     coating_.ior_ = ior;
 
     float const r     = ggx::clamp_roughness(roughness);
@@ -38,17 +40,19 @@ void Material_clearcoat::set_clearcoat(float ior, float roughness) {
     coating_.alpha2_ = alpha * alpha;
 }
 
-size_t Material_clearcoat::sample_size() {
+size_t Material_clearcoat::sample_size() noexcept {
     return sizeof(Sample_clearcoat);
 }
 
-Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided)
+Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings,
+                                     bool                    two_sided) noexcept
     : Material_coating<coating::Thinfilm>(sampler_settings, two_sided) {}
 
 material::Sample const& Material_thinfilm::sample(float3 const& wo, Renderstate const& rs,
                                                   Sampler_filter filter,
                                                   sampler::Sampler& /*sampler*/,
-                                                  Worker const& worker, uint32_t depth) const {
+                                                  Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<Sample_thinfilm>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -62,7 +66,7 @@ material::Sample const& Material_thinfilm::sample(float3 const& wo, Renderstate 
     return sample;
 }
 
-void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) {
+void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) noexcept {
     coating_.ior_ = ior;
 
     float const r     = ggx::clamp_roughness(roughness);
@@ -73,7 +77,7 @@ void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness
     coating_.thickness_ = thickness;
 }
 
-size_t Material_thinfilm::sample_size() {
+size_t Material_thinfilm::sample_size() noexcept {
     return sizeof(Sample_thinfilm);
 }
 

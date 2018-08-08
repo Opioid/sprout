@@ -6,7 +6,7 @@
 namespace scene::material {
 
 template <typename T>
-T& Sample_cache::get(uint32_t depth) {
+T& Sample_cache::get(uint32_t depth) noexcept {
     return *new (buffer_ + max_sample_size_ * depth) T;
 }
 

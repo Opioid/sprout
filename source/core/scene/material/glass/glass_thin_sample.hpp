@@ -6,17 +6,17 @@ namespace scene::material::glass {
 
 class Sample_thin : public material::Sample {
   public:
-    virtual Layer const& base_layer() const override final;
+    Layer const& base_layer() const noexcept override final;
 
-    virtual bxdf::Result evaluate(float3 const& wi) const override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    virtual bool is_translucent() const override final;
+    bool is_translucent() const noexcept override final;
 
     struct Layer : public material::Sample::Layer {
         void set(float3 const& refraction_color, float3 const& absorption_coefficient, float ior,
-                 float ior_outside, float thickess);
+                 float ior_outside, float thickess) noexcept;
 
         float3 color_;
         float3 absorption_coefficient_;
@@ -30,10 +30,10 @@ class Sample_thin : public material::Sample {
     class BSDF {
       public:
         static float reflect(const Sample_thin& sample, Layer const& layer,
-                             sampler::Sampler& sampler, bxdf::Sample& result);
+                             sampler::Sampler& sampler, bxdf::Sample& result) noexcept;
 
         static float refract(const Sample_thin& sample, Layer const& layer,
-                             sampler::Sampler& sampler, bxdf::Sample& result);
+                             sampler::Sampler& sampler, bxdf::Sample& result) noexcept;
     };
 };
 

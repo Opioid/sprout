@@ -15,8 +15,9 @@ class Manager;
 template <typename T>
 class Provider : public Identifiable<T> {
   public:
-    Provider(std::string const& name);
-    virtual ~Provider();
+    Provider(std::string const& name) noexcept;
+
+    virtual ~Provider() noexcept;
 
     virtual std::shared_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
                                     Manager& manager) = 0;

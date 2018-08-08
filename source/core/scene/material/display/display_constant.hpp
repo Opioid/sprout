@@ -6,28 +6,27 @@ namespace scene::material::display {
 
 class Constant : public Material {
   public:
-    Constant(Sampler_settings const& sampler_settings, bool two_sided);
+    Constant(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker,
-                                           uint32_t      depth) const override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
-                                     Sampler_filter filter,
-                                     Worker const&  worker) const override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+                             Sampler_filter filter, Worker const& worker) const
+        noexcept override final;
 
-    virtual float3 average_radiance(float area) const override final;
+    float3 average_radiance(float area) const noexcept override final;
 
-    virtual float ior() const override final;
+    float ior() const noexcept override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    void set_emission(float3 const& radiance);
-    void set_roughness(float roughness);
-    void set_ior(float ior);
+    void set_emission(float3 const& radiance) noexcept;
+    void set_roughness(float roughness) noexcept;
+    void set_ior(float ior) noexcept;
 
-    static size_t sample_size();
+    static size_t sample_size() noexcept;
 
   private:
     Texture_adapter emission_map_;

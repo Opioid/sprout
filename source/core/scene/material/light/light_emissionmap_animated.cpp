@@ -14,7 +14,7 @@ namespace scene::material::light {
 
 Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided,
                                            Texture_adapter const& emission_map,
-                                           float emission_factor, float animation_duration)
+                                           float emission_factor, float animation_duration) noexcept
     : Material(sampler_settings, two_sided),
       emission_map_(emission_map),
       average_emission_(float3(-1.f)),
@@ -22,9 +22,9 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
       frame_length_(animation_duration / static_cast<float>(emission_map.texture().num_elements())),
       element_(0) {}
 
-Emissionmap_animated::~Emissionmap_animated() {}
+Emissionmap_animated::~Emissionmap_animated() noexcept {}
 
-void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
+void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) noexcept {
     int32_t const element = static_cast<int32_t>(absolute_time / frame_length_) %
                             emission_map_.texture().num_elements();
 
@@ -37,7 +37,8 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 material::Sample const& Emissionmap_animated::sample(float3 const& wo, Renderstate const& rs,
                                                      Sampler_filter filter,
                                                      sampler::Sampler& /*sampler*/,
-                                                     Worker const& worker, uint32_t depth) const {
+                                                     Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -54,38 +55,38 @@ material::Sample const& Emissionmap_animated::sample(float3 const& wo, Rendersta
 
 float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
                                                float /*time*/, Sampler_filter filter,
-                                               Worker const& worker) const {
+                                               Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
 }
 
-float3 Emissionmap_animated::average_radiance(float /*area*/) const {
+float3 Emissionmap_animated::average_radiance(float /*area*/) const noexcept {
     return average_emission_;
 }
 
-float Emissionmap_animated::ior() const {
+float Emissionmap_animated::ior() const noexcept {
     return 1.5f;
 }
 
-bool Emissionmap_animated::has_emission_map() const {
+bool Emissionmap_animated::has_emission_map() const noexcept {
     return emission_map_.is_valid();
 }
 
-Material::Sample_2D Emissionmap_animated::radiance_sample(float2 r2) const {
+Material::Sample_2D Emissionmap_animated::radiance_sample(float2 r2) const noexcept {
     auto const result = distribution_.sample_continuous(r2);
 
     return {result.uv, result.pdf * total_weight_};
 }
 
 float Emissionmap_animated::emission_pdf(float2 uv, Sampler_filter filter,
-                                         Worker const& worker) const {
+                                         Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
 float Emissionmap_animated::opacity(float2 uv, float /*time*/, Sampler_filter filter,
-                                    Worker const& worker) const {
+                                    Worker const& worker) const noexcept {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);
         return mask_.sample_1(sampler, uv, element_);
@@ -97,7 +98,7 @@ float Emissionmap_animated::opacity(float2 uv, float /*time*/, Sampler_filter fi
 void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
                                             Transformation const& /*transformation*/,
                                             float /*area*/, bool importance_sampling,
-                                            thread::Pool& pool) {
+                                            thread::Pool& pool) noexcept {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
@@ -168,11 +169,11 @@ void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t 
     }
 }
 
-bool Emissionmap_animated::is_animated() const {
+bool Emissionmap_animated::is_animated() const noexcept {
     return true;
 }
 
-size_t Emissionmap_animated::num_bytes() const {
+size_t Emissionmap_animated::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

@@ -4,9 +4,9 @@
 namespace scene {
 namespace entity {
 
-void Dummy::set_parameters(json::Value const& /*parameters*/) {}
+void Dummy::set_parameters(json::Value const& /*parameters*/) noexcept {}
 
-void Dummy::on_set_transformation() {}
+void Dummy::on_set_transformation() noexcept {}
 
 }  // namespace entity
 }  // namespace scene

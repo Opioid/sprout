@@ -7,10 +7,10 @@ namespace scene::material::fresnel {
 
 class Schlick {
   public:
-    Schlick(float f0);
-    Schlick(float3 const& f0);
+    Schlick(float f0) noexcept;
+    Schlick(float3 const& f0) noexcept;
 
-    float3 operator()(float wo_dot_h) const;
+    float3 operator()(float wo_dot_h) const noexcept;
 
   private:
     float3 const f0_;
@@ -18,9 +18,9 @@ class Schlick {
 
 class Schlick_blending {
   public:
-    Schlick_blending(float3 const& a, float3 const& b, float f0);
+    Schlick_blending(float3 const& a, float3 const& b, float f0) noexcept;
 
-    float3 operator()(float wo_dot_h) const;
+    float3 operator()(float wo_dot_h) const noexcept;
 
   private:
     float3 const a_;
@@ -31,9 +31,9 @@ class Schlick_blending {
 
 class Thinfilm {
   public:
-    Thinfilm(float external_ior, float thinfilm_ior, float internal_ior, float thickness);
+    Thinfilm(float external_ior, float thinfilm_ior, float internal_ior, float thickness) noexcept;
 
-    float3 operator()(float wo_dot_h) const;
+    float3 operator()(float wo_dot_h) const noexcept;
 
   private:
     float const external_ior_;
@@ -44,9 +44,9 @@ class Thinfilm {
 
 class Conductor {
   public:
-    Conductor(float3 const& eta, float3 const& k);
+    Conductor(float3 const& eta, float3 const& k) noexcept;
 
-    float3 operator()(float wo_dot_h) const;
+    float3 operator()(float wo_dot_h) const noexcept;
 
   private:
     float3 const eta_;
@@ -55,10 +55,10 @@ class Conductor {
 
 class Constant {
   public:
-    Constant(float f);
-    Constant(float3 const& f);
+    Constant(float f) noexcept;
+    Constant(float3 const& f) noexcept;
 
-    float3 operator()(float wo_dot_h) const;
+    float3 operator()(float wo_dot_h) const noexcept;
 
   private:
     float3 const f_;
@@ -67,9 +67,9 @@ class Constant {
 template <typename T>
 class Weighted {
   public:
-    Weighted(T const& fresnel, float weight);
+    Weighted(T const& fresnel, float weight) noexcept;
 
-    float3 operator()(float wo_dot_h) const;
+    float3 operator()(float wo_dot_h) const noexcept;
 
   private:
     T const fresnel_;

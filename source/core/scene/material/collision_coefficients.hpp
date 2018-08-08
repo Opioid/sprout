@@ -11,9 +11,9 @@ struct CC {
 };
 
 struct alignas(16) CM {
-    CM() = default;
-    CM(float x);
-    CM(CC const& cc);
+    CM() noexcept = default;
+    CM(float x) noexcept;
+    CM(CC const& cc) noexcept;
 
     float minorant_mu_a;
     float minorant_mu_s;

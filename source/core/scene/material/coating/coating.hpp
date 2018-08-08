@@ -11,7 +11,7 @@ struct Result {
 };
 
 struct Coating_base {
-    void set_color_and_weight(float3 const& color, float weight);
+    void set_color_and_weight(float3 const& color, float weight) noexcept;
 
     float3 color_;
     float  weight_;
@@ -25,16 +25,16 @@ struct Clearcoat_data : public Coating_base {
 
 class Clearcoat : public Coating_base {
   public:
-    void set(float f0, float alpha, float alpha2);
+    void set(float f0, float alpha, float alpha2) noexcept;
 
   protected:
     template <typename Layer>
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    float internal_ior, Layer const& layer) const;
+                    float internal_ior, Layer const& layer) const noexcept;
 
     template <typename Layer>
     void sample(float3 const& wo, float internal_ior, Layer const& layer, sampler::Sampler& sampler,
-                float3& attenuation, bxdf::Sample& result) const;
+                float3& attenuation, bxdf::Sample& result) const noexcept;
 
   public:
     float f0_;
@@ -44,16 +44,16 @@ class Clearcoat : public Coating_base {
 
 class Thinfilm : public Coating_base {
   public:
-    void set(float ior, float alpha, float alpha2, float thickness);
+    void set(float ior, float alpha, float alpha2, float thickness) noexcept;
 
   protected:
     template <typename Layer>
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    float internal_ior, Layer const& layer) const;
+                    float internal_ior, Layer const& layer) const noexcept;
 
     template <typename Layer>
     void sample(float3 const& wo, float internal_ior, Layer const& layer, sampler::Sampler& sampler,
-                float3& attenuation, bxdf::Sample& result) const;
+                float3& attenuation, bxdf::Sample& result) const noexcept;
 
   public:
     float ior_;
@@ -66,10 +66,10 @@ template <typename Coating>
 class Coating_layer : public Sample::Layer, public Coating {
   public:
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    float internal_ior) const;
+                    float internal_ior) const noexcept;
 
     void sample(float3 const& wo, float internal_ior, sampler::Sampler& sampler,
-                float3& attenuation, bxdf::Sample& result) const;
+                float3& attenuation, bxdf::Sample& result) const noexcept;
 };
 
 using Clearcoat_layer = Coating_layer<Clearcoat>;

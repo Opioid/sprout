@@ -18,12 +18,12 @@ namespace procedural::sky {
 
 using namespace scene;
 
-Sun_material::Sun_material(Sky& sky) : Material(sky) {}
+Sun_material::Sun_material(Sky& sky) noexcept : Material(sky) {}
 
 const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const& rs,
                                              Sampler_filter /*filter*/,
                                              sampler::Sampler& /*sampler*/, Worker const& worker,
-                                             uint32_t depth) const {
+                                             uint32_t depth) const noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -37,28 +37,30 @@ const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const
 
 float3 Sun_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
                                        float /*time*/, Sampler_filter /*filter*/,
-                                       const Worker& /*worker*/) const {
+                                       const Worker& /*worker*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(wi);
 }
 
-float3 Sun_material::average_radiance(float /*area*/) const {
+float3 Sun_material::average_radiance(float /*area*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
 void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
+                                    bool /*importance_sampling*/, thread::Pool& /*pool*/) noexcept {
+}
 
-size_t Sun_material::num_bytes() const {
+size_t Sun_material::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
+Sun_baked_material::Sun_baked_material(Sky& sky) noexcept : Material(sky) {}
 
 const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate const& rs,
                                                    Sampler_filter /*filter*/,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker, uint32_t depth) const {
+                                                   Worker const& worker, uint32_t depth) const
+    noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -74,17 +76,18 @@ const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate
 
 float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
                                              float /*time*/, Sampler_filter /*filter*/,
-                                             const Worker& /*worker*/) const {
+                                             const Worker& /*worker*/) const noexcept {
     return emission_(sky_.sun_v(wi));
 }
 
-float3 Sun_baked_material::average_radiance(float /*area*/) const {
+float3 Sun_baked_material::average_radiance(float /*area*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
 void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                           Transformation const& /*transformation*/, float /*area*/,
-                                          bool /*importance_sampling*/, thread::Pool& /*pool*/) {
+                                          bool /*importance_sampling*/,
+                                          thread::Pool& /*pool*/) noexcept {
     using namespace image;
 
     if (!sky_.sun_changed_since_last_check()) {
@@ -105,7 +108,7 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
     emission_.from_array(0.f, 1.f, cache.size(), cache.data());
 }
 
-size_t Sun_baked_material::num_bytes() const {
+size_t Sun_baked_material::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

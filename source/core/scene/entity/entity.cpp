@@ -5,14 +5,15 @@
 
 namespace scene::entity {
 
-Entity::~Entity() {}
+Entity::~Entity() noexcept {}
 
-math::Transformation const& Entity::local_frame_a() const {
+math::Transformation const& Entity::local_frame_a() const noexcept {
     return local_frame_a_.transformation;
 }
 
 Composed_transformation const& Entity::transformation_at(float           tick_delta,
-                                                         Transformation& transformation) const {
+                                                         Transformation& transformation) const
+    noexcept {
     if (!properties_.test(Property::Animated)) {
         return world_transformation_;
     }
@@ -22,7 +23,7 @@ Composed_transformation const& Entity::transformation_at(float           tick_de
     return transformation;
 }
 
-void Entity::set_transformation(math::Transformation const& t) {
+void Entity::set_transformation(math::Transformation const& t) noexcept {
     world_transformation_.set(t);
 
     local_frame_a_.transformation = t;
@@ -38,7 +39,7 @@ void Entity::set_transformation(math::Transformation const& t) {
     on_set_transformation();
 }
 
-void Entity::tick(Keyframe const& frame) {
+void Entity::tick(Keyframe const& frame) noexcept {
     local_frame_a_ = local_frame_b_;
     local_frame_b_ = frame;
 
@@ -49,7 +50,7 @@ void Entity::tick(Keyframe const& frame) {
     properties_.set(Property::Animated, changed);
 }
 
-void Entity::calculate_world_transformation() {
+void Entity::calculate_world_transformation() noexcept {
     if (!parent_) {
         world_frame_a_ = local_frame_a_.transformation;
         world_frame_b_ = local_frame_b_.transformation;
@@ -60,23 +61,24 @@ void Entity::calculate_world_transformation() {
     }
 }
 
-bool Entity::visible_in_camera() const {
+bool Entity::visible_in_camera() const noexcept {
     return properties_.test(Property::Visible_in_camera);
 }
 
-bool Entity::visible_in_reflection() const {
+bool Entity::visible_in_reflection() const noexcept {
     return properties_.test(Property::Visible_in_reflection);
 }
 
-bool Entity::visible_in_shadow() const {
+bool Entity::visible_in_shadow() const noexcept {
     return properties_.test(Property::Visible_in_shadow);
 }
 
-void Entity::set_visible_in_shadow(bool value) {
+void Entity::set_visible_in_shadow(bool value) noexcept {
     properties_.set(Property::Visible_in_shadow, value);
 }
 
-void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow, bool propagate) {
+void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow,
+                            bool propagate) noexcept {
     properties_.set(Property::Visible_in_camera, in_camera);
     properties_.set(Property::Visible_in_reflection, in_reflection);
     properties_.set(Property::Visible_in_shadow, in_shadow);
@@ -90,11 +92,11 @@ void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow, 
     }
 }
 
-void Entity::set_propagate_visibility(bool enable) {
+void Entity::set_propagate_visibility(bool enable) noexcept {
     properties_.set(Property::Propagate_visibility, enable);
 }
 
-void Entity::attach(Entity* node) {
+void Entity::attach(Entity* node) noexcept {
     node->detach();
 
     node->parent_ = this;
@@ -106,17 +108,17 @@ void Entity::attach(Entity* node) {
     }
 }
 
-void Entity::detach() {
+void Entity::detach() noexcept {
     if (parent_) {
         parent_->detach(this);
     }
 }
 
-const Entity* Entity::parent() const {
+Entity const* Entity::parent() const noexcept {
     return parent_;
 }
 
-void Entity::propagate_transformation() const {
+void Entity::propagate_transformation() const noexcept {
     if (child_) {
         child_->inherit_transformation(world_frame_a_, world_frame_b_,
                                        properties_.test(Property::Animated));
@@ -124,7 +126,7 @@ void Entity::propagate_transformation() const {
 }
 
 void Entity::inherit_transformation(math::Transformation const& a, math::Transformation const& b,
-                                    bool animated) {
+                                    bool animated) noexcept {
     if (next_) {
         next_->inherit_transformation(a, b, animated);
     }
@@ -158,7 +160,7 @@ void Entity::inherit_transformation(math::Transformation const& a, math::Transfo
     propagate_transformation();
 }
 
-void Entity::add_sibling(Entity* node) {
+void Entity::add_sibling(Entity* node) noexcept {
     if (!next_) {
         next_ = node;
     } else {
@@ -166,7 +168,7 @@ void Entity::add_sibling(Entity* node) {
     }
 }
 
-void Entity::detach(Entity* node) {
+void Entity::detach(Entity* node) noexcept {
     // we can assume this to be true because of detach()
     // assert(node->parent_ == this);
 
@@ -180,7 +182,7 @@ void Entity::detach(Entity* node) {
     }
 }
 
-void Entity::remove_sibling(Entity* node) {
+void Entity::remove_sibling(Entity* node) noexcept {
     if (next_ == node) {
         next_       = node->next_;
         node->next_ = nullptr;

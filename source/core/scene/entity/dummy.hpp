@@ -1,17 +1,18 @@
-#pragma once
+#ifndef SU_CORE_SCENE_ENTITY_DUMMY_HPP
+#define SU_CORE_SCENE_ENTITY_DUMMY_HPP
 
 #include "entity.hpp"
 
-namespace scene {
-namespace entity {
+namespace scene::entity {
 
 class Dummy : public Entity {
   public:
-    virtual void set_parameters(json::Value const& parameters) override final;
+    void set_parameters(json::Value const& parameters) noexcept override final;
 
   private:
-    virtual void on_set_transformation() override final;
+    void on_set_transformation() noexcept override final;
 };
 
-}  // namespace entity
-}  // namespace scene
+}  // namespace scene::entity
+
+#endif

@@ -6,7 +6,7 @@
 
 namespace procedural::sky {
 
-Model::Model() {
+Model::Model() noexcept {
     for (uint32_t i = 0; i < Num_bands; ++i) {
         skymodel_states_[i] = nullptr;
     }
@@ -15,11 +15,11 @@ Model::Model() {
     //	Spectrum::init(410.f, 690.f);
 }
 
-Model::~Model() {
+Model::~Model() noexcept {
     release();
 }
 
-void Model::compile() {
+void Model::compile() noexcept {
     release();
 
     float const elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
@@ -30,23 +30,23 @@ void Model::compile() {
     }
 }
 
-float3 Model::sun_direction() const {
+float3 Model::sun_direction() const noexcept {
     return sun_direction_;
 }
 
-void Model::set_sun_direction(float3 const& direction) {
+void Model::set_sun_direction(float3 const& direction) noexcept {
     sun_direction_ = direction;
 }
 
-void Model::set_ground_albedo(float3 const& albedo) {
+void Model::set_ground_albedo(float3 const& albedo) noexcept {
     ground_albedo_ = albedo;
 }
 
-void Model::set_turbidity(float turbidity) {
+void Model::set_turbidity(float turbidity) noexcept {
     turbidity_ = turbidity;
 }
 
-float3 Model::evaluate_sky(float3 const& wi) const {
+float3 Model::evaluate_sky(float3 const& wi) const noexcept {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
     float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
@@ -74,7 +74,7 @@ float3 Model::evaluate_sky(float3 const& wi) const {
     return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
 }
 
-float3 Model::evaluate_sky_and_sun(float3 const& wi) const {
+float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
     float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
@@ -99,7 +99,7 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const {
     return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
 }
 
-void Model::release() {
+void Model::release() noexcept {
     for (uint32_t i = 0; i < Num_bands; ++i) {
         arhosekskymodelstate_free(skymodel_states_[i]);
     }
