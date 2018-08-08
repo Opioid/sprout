@@ -8,17 +8,18 @@ namespace rendering {
 
 class Tile_queue {
   public:
-    Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius);
-    ~Tile_queue();
+    Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius) noexcept;
 
-    uint32_t size() const;
+    ~Tile_queue() noexcept;
 
-    void restart();
+    uint32_t size() const noexcept;
 
-    bool pop(int4& tile);
+    void restart() noexcept;
+
+    bool pop(int4& tile) noexcept;
 
   private:
-    void push(int4 const& tile);
+    void push(int4 const& tile) noexcept;
 
     uint32_t num_tiles_;
     int4*    tiles_;

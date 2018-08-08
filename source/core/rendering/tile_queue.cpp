@@ -4,7 +4,7 @@
 
 namespace rendering {
 
-Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius)
+Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius) noexcept
     : num_tiles_(static_cast<uint32_t>(std::ceil(static_cast<float>(resolution[0]) /
                                                  static_cast<float>(tile_dimensions[0]))) *
                  static_cast<uint32_t>(std::ceil(static_cast<float>(resolution[1]) /
@@ -47,19 +47,19 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
     }
 }
 
-Tile_queue::~Tile_queue() {
+Tile_queue::~Tile_queue() noexcept {
     memory::free_aligned(tiles_);
 }
 
-uint32_t Tile_queue::size() const {
+uint32_t Tile_queue::size() const noexcept {
     return num_tiles_;
 }
 
-void Tile_queue::restart() {
+void Tile_queue::restart() noexcept {
     current_consume_ = 0;
 }
 
-bool Tile_queue::pop(int4& tile) {
+bool Tile_queue::pop(int4& tile) noexcept {
     // uint32_t const current = current_consume_++;
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
@@ -71,7 +71,7 @@ bool Tile_queue::pop(int4& tile) {
     return false;
 }
 
-void Tile_queue::push(int4 const& tile) {
+void Tile_queue::push(int4 const& tile) noexcept {
     uint32_t const current = num_tiles_ - current_consume_--;
 
     tiles_[current] = tile;
