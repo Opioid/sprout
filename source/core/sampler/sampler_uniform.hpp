@@ -24,11 +24,11 @@ class alignas(64) Uniform : public Sampler {
 
 class Uniform_factory : public Factory {
   public:
-    Uniform_factory(uint32_t num_samplers);
+    Uniform_factory(uint32_t num_samplers) noexcept;
 
-    ~Uniform_factory() override final;
+    ~Uniform_factory() noexcept override final;
 
-    Sampler* create(uint32_t id, rnd::Generator& rng) const override final;
+    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Uniform* samplers_;

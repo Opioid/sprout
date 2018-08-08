@@ -10,14 +10,15 @@ namespace rendering::integrator::surface {
 class alignas(64) Pathtracer_MIS final : public Integrator {
   public:
     struct Settings {
+        uint32_t num_samples;
         uint32_t min_bounces;
         uint32_t max_bounces;
-        float    path_continuation_probability;
+
+        float path_continuation_probability;
 
         Light_sampling light_sampling;
 
-        float num_light_samples_reciprocal;
-        bool  avoid_caustics;
+        bool avoid_caustics;
     };
 
     Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
@@ -34,6 +35,8 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
+    float3 integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept;
+
     float3 sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
                          const Material_sample& material_sample, bool do_mis, Sampler_filter filter,
                          Worker& worker) noexcept;
@@ -66,7 +69,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 class Pathtracer_MIS_factory final : public Factory {
   public:
     Pathtracer_MIS_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                           uint32_t min_bounces, uint32_t max_bounces,
+                           uint32_t num_samples, uint32_t min_bounces, uint32_t max_bounces,
                            float path_termination_probability, Light_sampling light_sampling,
                            bool enable_caustics) noexcept;
 

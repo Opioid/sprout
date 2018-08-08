@@ -26,11 +26,11 @@ class alignas(64) Hammersley : public Sampler {
 
 class Hammersley_factory : public Factory {
   public:
-    Hammersley_factory(uint32_t num_samplers);
+    Hammersley_factory(uint32_t num_samplers) noexcept;
 
-    ~Hammersley_factory() override final;
+    ~Hammersley_factory() noexcept override final;
 
-    Sampler* create(uint32_t id, rnd::Generator& rng) const override final;
+    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Hammersley* samplers_;

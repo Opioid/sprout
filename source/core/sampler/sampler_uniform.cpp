@@ -30,14 +30,14 @@ void Uniform::on_resize() noexcept {}
 
 void Uniform::on_resume_pixel(rnd::Generator& /*scramble*/) noexcept {}
 
-Uniform_factory::Uniform_factory(uint32_t num_samplers)
+Uniform_factory::Uniform_factory(uint32_t num_samplers) noexcept
     : Factory(num_samplers), samplers_(memory::allocate_aligned<Uniform>(num_samplers)) {}
 
-Uniform_factory::~Uniform_factory() {
+Uniform_factory::~Uniform_factory() noexcept {
     memory::free_aligned(samplers_);
 }
 
-Sampler* Uniform_factory::create(uint32_t id, rnd::Generator& rng) const {
+Sampler* Uniform_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&samplers_[id]) Uniform(rng);
 }
 

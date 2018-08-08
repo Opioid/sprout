@@ -24,11 +24,11 @@ class alignas(64) Random : public Sampler {
 
 class Random_factory : public Factory {
   public:
-    Random_factory(uint32_t num_samplers);
+    Random_factory(uint32_t num_samplers) noexcept;
 
-    ~Random_factory() override final;
+    ~Random_factory() noexcept override final;
 
-    Sampler* create(uint32_t id, rnd::Generator& rng) const override final;
+    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Random* samplers_;

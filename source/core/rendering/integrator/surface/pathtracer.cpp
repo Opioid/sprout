@@ -69,10 +69,10 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
     float3 throughput(1.f);
     float3 result(0.f);
 
-    for (uint32_t i = ray.depth;; ++i) {
+    for (;;) {
         float3 const wo = -ray.direction;
 
-        const bool avoid_caustics = settings_.avoid_caustics && !primary_ray &&
+        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
                                     worker.interface_stack().top_is_vacuum();
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,

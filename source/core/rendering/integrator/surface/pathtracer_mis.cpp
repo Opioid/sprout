@@ -37,13 +37,13 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 
     num_lights_reciprocal_ = num_lights > 0 ? 1.f / static_cast<float>(num_lights) : 0.f;
 
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+    sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
     for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, 1, 1, 1);
+        s.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
     }
 
-    uint32_t const num_light_samples = settings_.light_sampling.num_samples;
+    uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
 
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         for (auto& s : light_samplers_) {
@@ -69,6 +69,36 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) noe
 }
 
 float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+    float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
+
+    float3 result = float3::identity();
+
+    for (uint32_t i = settings_.num_samples; i > 0; --i) {
+        Ray split_ray = ray;
+
+        Intersection split_intersection = intersection;
+
+        result += num_samples_reciprocal * integrate(split_ray, split_intersection, worker);
+    }
+
+    return result;
+}
+
+size_t Pathtracer_MIS::num_bytes() const noexcept {
+    size_t sampler_bytes = 0;
+
+    for (auto const& s : material_samplers_) {
+        sampler_bytes += s.num_bytes();
+    }
+
+    for (auto const& s : light_samplers_) {
+        sampler_bytes += s.num_bytes();
+    }
+
+    return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
+}
+
+float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     uint32_t const max_bounces = settings_.max_bounces;
 
     Sampler_filter filter = Sampler_filter::Undefined;
@@ -91,7 +121,7 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
 
-        // Only check direct eye-light connections for check for the very first hit.
+        // Only check direct eye-light connections for the very first hit.
         // Subsequent hits are handled by the MIS scheme.
         if (0 == i && material_sample.same_hemisphere(wo)) {
             result += material_sample.radiance();
@@ -206,20 +236,6 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
     return result;
 }
 
-size_t Pathtracer_MIS::num_bytes() const noexcept {
-    size_t sampler_bytes = 0;
-
-    for (auto const& s : material_samplers_) {
-        sampler_bytes += s.num_bytes();
-    }
-
-    for (auto const& s : light_samplers_) {
-        sampler_bytes += s.num_bytes();
-    }
-
-    return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
-}
-
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
                                      const Material_sample& material_sample, bool do_mis,
                                      Sampler_filter filter, Worker& worker) noexcept {
@@ -231,17 +247,19 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
     uint32_t const num_samples = settings_.light_sampling.num_samples;
 
+    float const num_light_samples_reciprocal = 1.f / static_cast<float>(num_samples);
+
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         for (uint32_t i = num_samples; i > 0; --i) {
             float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
             auto const light = worker.scene().random_light(select);
 
-            result += evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis, intersection,
-                                     material_sample, filter, worker);
-        }
+            float3 const el = evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis,
+                                             intersection, material_sample, filter, worker);
 
-        result *= settings_.num_light_samples_reciprocal;
+            result += num_light_samples_reciprocal * el;
+        }
     } else {
         float const light_weight = num_lights_reciprocal_;
 
@@ -249,12 +267,12 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
         for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
             auto const& light = *lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {
-                result += evaluate_light(light, light_weight, ray, ray_offset, l, do_mis,
-                                         intersection, material_sample, filter, worker);
+                float3 const el = evaluate_light(light, light_weight, ray, ray_offset, l, do_mis,
+                                                 intersection, material_sample, filter, worker);
+
+                result += num_light_samples_reciprocal * el;
             }
         }
-
-        result *= settings_.num_light_samples_reciprocal * light_weight;
     }
 
     return result;
@@ -365,19 +383,15 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
 }
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(take::Settings const& take_settings,
-                                               uint32_t num_integrators, uint32_t min_bounces,
-                                               uint32_t       max_bounces,
+                                               uint32_t num_integrators, uint32_t num_samples,
+                                               uint32_t min_bounces, uint32_t max_bounces,
                                                float          path_termination_probability,
                                                Light_sampling light_sampling,
                                                bool           enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
-      settings_{min_bounces,
-                max_bounces,
-                1.f - path_termination_probability,
-                light_sampling,
-                1.f / static_cast<float>(light_sampling.num_samples),
-                !enable_caustics} {}
+      settings_{num_samples,    min_bounces,     max_bounces, 1.f - path_termination_probability,
+                light_sampling, !enable_caustics} {}
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() noexcept {
     memory::free_aligned(integrators_);

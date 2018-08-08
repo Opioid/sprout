@@ -69,14 +69,14 @@ void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) noexcept {
     }
 }
 
-Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samplers)
+Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samplers) noexcept
     : Factory(num_samplers), samplers_(memory::allocate_aligned<Golden_ratio>(num_samplers)) {}
 
-Golden_ratio_factory::~Golden_ratio_factory() {
+Golden_ratio_factory::~Golden_ratio_factory() noexcept {
     memory::free_aligned(samplers_);
 }
 
-Sampler* Golden_ratio_factory::create(uint32_t id, rnd::Generator& rng) const {
+Sampler* Golden_ratio_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&samplers_[id]) Golden_ratio(rng);
 }
 

@@ -127,6 +127,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
     if (!take->surface_integrator_factory) {
         Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
 
+        uint32_t const num_samples = 1;
         uint32_t const min_bounces = 4;
         uint32_t const max_bounces = 8;
 
@@ -135,8 +136,8 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
         bool const enable_caustics = false;
 
         take->surface_integrator_factory = std::make_shared<surface::Pathtracer_MIS_factory>(
-            take->settings, num_threads, min_bounces, max_bounces, path_termination_probability,
-            light_sampling, enable_caustics);
+            take->settings, num_threads, num_samples, min_bounces, max_bounces,
+            path_termination_probability, light_sampling, enable_caustics);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
@@ -456,6 +457,8 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
                 settings, num_workers, min_bounces, max_bounces, path_termination_probability,
                 num_light_samples, enable_caustics);
         } else if ("PTMIS" == n.name) {
+            uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
+
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
 
@@ -470,8 +473,8 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
             return std::make_shared<Pathtracer_MIS_factory>(
-                settings, num_workers, min_bounces, max_bounces, path_termination_probability,
-                light_sampling, enable_caustics);
+                settings, num_workers, num_samples, min_bounces, max_bounces,
+                path_termination_probability, light_sampling, enable_caustics);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 

@@ -29,14 +29,14 @@ void Random::on_resize() noexcept {}
 
 void Random::on_resume_pixel(rnd::Generator& /*scramble*/) noexcept {}
 
-Random_factory::Random_factory(uint32_t num_samplers)
+Random_factory::Random_factory(uint32_t num_samplers) noexcept
     : Factory(num_samplers), samplers_(memory::allocate_aligned<Random>(num_samplers)) {}
 
-Random_factory::~Random_factory() {
+Random_factory::~Random_factory() noexcept {
     memory::free_aligned(samplers_);
 }
 
-Sampler* Random_factory::create(uint32_t id, rnd::Generator& rng) const {
+Sampler* Random_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&samplers_[id]) Random(rng);
 }
 
