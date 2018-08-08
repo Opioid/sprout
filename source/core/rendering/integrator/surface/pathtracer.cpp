@@ -28,10 +28,10 @@ Pathtracer::Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
 Pathtracer::~Pathtracer() noexcept {}
 
 void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+    sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
     for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, 1, 1, 1);
+        s.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
     }
 }
 
@@ -44,6 +44,22 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcep
 }
 
 float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+    float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
+
+    float3 result = float3::identity();
+
+    for (uint32_t i = settings_.num_samples; i > 0; --i) {
+        Ray split_ray = ray;
+
+        Intersection split_intersection = intersection;
+
+        result += num_samples_reciprocal * integrate(split_ray, split_intersection, worker);
+    }
+
+    return result;
+}
+
+float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     Sampler_filter filter = Sampler_filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -154,12 +170,14 @@ size_t Pathtracer::num_bytes() const noexcept {
 }
 
 Pathtracer_factory::Pathtracer_factory(take::Settings const& take_settings,
-                                       uint32_t num_integrators, uint32_t min_bounces,
-                                       uint32_t max_bounces, float path_termination_probability,
-                                       bool enable_caustics) noexcept
+                                       uint32_t num_integrators, uint32_t num_samples,
+                                       uint32_t min_bounces, uint32_t max_bounces,
+                                       float path_termination_probability,
+                                       bool  enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, 1.f - path_termination_probability, !enable_caustics} {}
+      settings_{num_samples, min_bounces, max_bounces, 1.f - path_termination_probability,
+                !enable_caustics} {}
 
 Pathtracer_factory::~Pathtracer_factory() noexcept {
     memory::free_aligned(integrators_);

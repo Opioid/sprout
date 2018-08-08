@@ -15,7 +15,6 @@ class alignas(64) AO final : public Integrator {
   public:
     struct Settings {
         uint32_t num_samples;
-        float    num_samples_reciprocal;
         float    radius;
     };
 
