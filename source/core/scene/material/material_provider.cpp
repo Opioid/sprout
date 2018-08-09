@@ -605,19 +605,21 @@ Material_ptr Provider::load_metallic_paint(json::Value const& paint_value,
                                            resource::Manager& manager) {
     Sampler_settings sampler_settings;
 
-    Texture_adapter     mask;
-    Texture_adapter     flakes_normal_map;
-    Texture_adapter     flakes_mask;
-    bool                two_sided = false;
-    float3              color_a(1.f, 0.f, 0.f);
-    float3              color_b(0.f, 0.f, 1.f);
-    float               roughness      = 0.575f;
-    float               flakes_size    = 0.1f;
-    float               flakes_density = 0.2f;
-    float3              flakes_ior(1.f, 1.f, 1.f);
-    float3              flakes_absorption(0.75f, 0.75f, 0.75f);
-    float               flakes_roughness = 0.3f;
-    float2              flakes_scale(1.f, 1.f);
+    Texture_adapter mask;
+    Texture_adapter flakes_normal_map;
+    Texture_adapter flakes_mask;
+
+    bool   two_sided = false;
+    float3 color_a(1.f, 0.f, 0.f);
+    float3 color_b(0.f, 0.f, 1.f);
+    float  roughness      = 0.575f;
+    float  flakes_size    = 0.1f;
+    float  flakes_density = 0.2f;
+    float3 flakes_ior(1.f, 1.f, 1.f);
+    float3 flakes_absorption(0.75f, 0.75f, 0.75f);
+    float  flakes_roughness = 0.3f;
+    float2 flakes_scale(1.f, 1.f);
+
     Coating_description coating;
     coating.ior = 1.5f;
 
@@ -705,7 +707,8 @@ Material_ptr Provider::load_mix(json::Value const& mix_value, resource::Manager&
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
-    bool            two_sided = false;
+
+    bool two_sided = false;
 
     Materials materials;
 

@@ -66,8 +66,8 @@ class Thinfilm : public Coating_base {
 template <typename Coating>
 class Coating_layer : public Sample::Layer, public Coating {
   public:
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h, bool avoid_caustics) const
-        noexcept;
+    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                    bool avoid_caustics) const noexcept;
 
     void sample(float3 const& wo, sampler::Sampler& sampler, float3& attenuation,
                 bxdf::Sample& result) const noexcept;

@@ -72,7 +72,8 @@ void Sample_base<Diffuse>::diffuse_sample_and_coating(Coating const&    coating_
                                                       bxdf::Sample&     result) const noexcept {
     layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
 
-    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi, avoid_caustics_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                                avoid_caustics_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
@@ -85,7 +86,8 @@ void Sample_base<Diffuse>::gloss_sample_and_coating(Coating const&    coating_la
                                                     bxdf::Sample&     result) const noexcept {
     layer_.gloss_sample(wo_, sampler, result);
 
-    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi, avoid_caustics_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                                avoid_caustics_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
@@ -98,7 +100,8 @@ void Sample_base<Diffuse>::pure_gloss_sample_and_coating(Coating const&    coati
                                                          bxdf::Sample&     result) const noexcept {
     layer_.pure_gloss_sample(wo_, sampler, result);
 
-    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi, avoid_caustics_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                                avoid_caustics_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = 0.5f * (result.pdf + coating.pdf);

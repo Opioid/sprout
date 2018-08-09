@@ -26,11 +26,12 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
     uint32_t r_0 = rng.random_uint();
 
     for (uint32_t i = 0; i < props.num_flakes; ++i) {
-        float2 s_0 = math::thing(i, props.num_flakes, r_0);
+        float2 const s_0 = math::thing(i, props.num_flakes, r_0);
         //	float2 s = math::scrambled_hammersley(i, num_flakes, r_0);
         //	float2 s = math::ems(i, r_0, r_1);
 
-        float2 s_1    = float2(rng.random_float(), rng.random_float());
+        float2 const s_1 = float2(rng.random_float(), rng.random_float());
+
         float3 normal = math::sample_hemisphere_uniform(s_1);
 
         //		float3 normal(1.f, 1.f, 1.f);
@@ -39,7 +40,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
         renderer.set_brush(normal);
 
-        float r_f = rng.random_float();
+        float const r_f = rng.random_float();
         renderer.draw_circle(s_0, props.radius + r_f * props.variance);
     }
 
@@ -63,7 +64,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
 
     rnd::Generator rng;
 
-    uint32_t r_0 = rng.random_uint();
+    uint32_t const r_0 = rng.random_uint();
 
     renderer.set_brush(float3(1.f, 1.f, 1.f));
 
@@ -74,7 +75,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
         rng.random_float();
         rng.random_float();
 
-        float r_f = rng.random_float();
+        float const r_f = rng.random_float();
         renderer.draw_circle(s_0, props.radius + r_f * props.variance);
     }
 
@@ -85,15 +86,16 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
     return image;
 }
 
-Provider::Properties::Properties(memory::Variant_map const& options) : dimensions(512, 512) {
+Provider::Properties::Properties(memory::Variant_map const& options) : dimensions(1024, 1024) {
     float size    = 0.006f;
     float density = 0.5f;
     options.query("size", size);
     options.query("density", density);
 
-    float half_size = 0.5f * size;
-    variance        = half_size / 3.f;
-    radius          = half_size - variance;
+    float const half_size = 0.5f * size;
+
+    variance = half_size / 3.f;
+    radius   = half_size - variance;
 
     num_flakes = static_cast<uint32_t>(density / (size * size) + 0.5f);
 }

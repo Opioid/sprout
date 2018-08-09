@@ -51,8 +51,6 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
         flakes_weight = 1.f;
     }
 
-    //	sample.flakes_.weight = 0.f;// - math::dot(sample.base_.n, sample.flakes_.n);
-
     sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha_, flakes_alpha2_,
                        flakes_weight);
 
@@ -77,10 +75,11 @@ void Material::set_color(float3 const& a, float3 const& b) noexcept {
 }
 
 void Material::set_roughness(float roughness) noexcept {
-    roughness         = ggx::clamp_roughness(roughness);
-    float const alpha = roughness * roughness;
-    alpha_            = alpha;
-    alpha2_           = alpha * alpha;
+    float const r     = ggx::clamp_roughness(roughness);
+    float const alpha = r * r;
+
+    alpha_  = alpha;
+    alpha2_ = alpha * alpha;
 }
 
 void Material::set_flakes_mask(Texture_adapter const& mask) noexcept {
@@ -114,11 +113,14 @@ void Material::set_coating_color(float3 const& color) noexcept {
 }
 
 void Material::set_clearcoat(float ior, float roughness) noexcept {
-    ior_              = ior;
-    coating_.f0_      = fresnel::schlick_f0(1.f, ior);
-    float const alpha = roughness * roughness;
-    coating_.alpha_   = alpha;
-    coating_.alpha2_  = alpha * alpha;
+    ior_         = ior;
+    coating_.f0_ = fresnel::schlick_f0(1.f, ior);
+
+    float const r     = ggx::clamp_roughness(roughness);
+    float const alpha = r * r;
+
+    coating_.alpha_  = alpha;
+    coating_.alpha2_ = alpha * alpha;
 }
 
 size_t Material::sample_size() noexcept {

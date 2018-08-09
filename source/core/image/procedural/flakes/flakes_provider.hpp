@@ -27,8 +27,9 @@ class Provider {
         int2 dimensions;
 
         uint32_t num_flakes;
-        float    radius;
-        float    variance;
+
+        float radius;
+        float variance;
     };
 };
 
