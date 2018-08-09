@@ -126,14 +126,18 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
     if (!take->surface_integrator_factory) {
         Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
-        uint32_t const       min_bounces                  = 4;
-        uint32_t const       max_bounces                  = 8;
-        float const          path_termination_probability = 0.9f;
-        bool const           enable_caustics              = false;
+
+        uint32_t const num_samples = 1;
+        uint32_t const min_bounces = 4;
+        uint32_t const max_bounces = 8;
+
+        float const path_termination_probability = 0.9f;
+
+        bool const enable_caustics = false;
 
         take->surface_integrator_factory = std::make_shared<surface::Pathtracer_MIS_factory>(
-            take->settings, num_threads, min_bounces, max_bounces, path_termination_probability,
-            light_sampling, enable_caustics);
+            take->settings, num_threads, num_samples, min_bounces, max_bounces,
+            path_termination_probability, light_sampling, enable_caustics);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
@@ -386,11 +390,14 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
     using namespace rendering::integrator;
     using namespace rendering::integrator::surface;
 
-    uint32_t       default_min_bounces = 4;
-    uint32_t       default_max_bounces = 8;
+    uint32_t default_min_bounces = 4;
+    uint32_t default_max_bounces = 8;
+
     Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
-    float          default_path_termination_probability = 0.1f;
-    bool           default_caustics                     = true;
+
+    float default_path_termination_probability = 0.1f;
+
+    bool default_caustics = true;
 
     for (auto& n : integrator_value.GetObject()) {
         if ("AO" == n.name) {
@@ -415,6 +422,8 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             return std::make_shared<Lighttracer_factory>(settings, num_workers, min_bounces,
                                                          max_bounces, path_termination_probability);
         } else if ("PT" == n.name) {
+            uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
+
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
 
@@ -426,9 +435,9 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return std::make_shared<Pathtracer_factory>(settings, num_workers, min_bounces,
-                                                        max_bounces, path_termination_probability,
-                                                        enable_caustics);
+            return std::make_shared<Pathtracer_factory>(
+                settings, num_workers, num_samples, min_bounces, max_bounces,
+                path_termination_probability, enable_caustics);
         } else if ("PTDL" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -448,6 +457,8 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
                 settings, num_workers, min_bounces, max_bounces, path_termination_probability,
                 num_light_samples, enable_caustics);
         } else if ("PTMIS" == n.name) {
+            uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
+
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
 
@@ -462,8 +473,8 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
             return std::make_shared<Pathtracer_MIS_factory>(
-                settings, num_workers, min_bounces, max_bounces, path_termination_probability,
-                light_sampling, enable_caustics);
+                settings, num_workers, num_samples, min_bounces, max_bounces,
+                path_termination_probability, light_sampling, enable_caustics);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 

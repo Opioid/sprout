@@ -10,6 +10,7 @@ namespace rendering::integrator::surface {
 class alignas(64) Pathtracer final : public Integrator {
   public:
     struct Settings {
+        uint32_t num_samples;
         uint32_t min_bounces;
         uint32_t max_bounces;
         float    path_continuation_probability;
@@ -31,6 +32,8 @@ class alignas(64) Pathtracer final : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
+    float3 integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept;
+
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 
     const Settings settings_;
@@ -44,7 +47,7 @@ class alignas(64) Pathtracer final : public Integrator {
 class Pathtracer_factory final : public Factory {
   public:
     Pathtracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                       uint32_t min_bounces, uint32_t max_bounces,
+                       uint32_t num_samples, uint32_t min_bounces, uint32_t max_bounces,
                        float path_termination_probability, bool enable_caustics) noexcept;
 
     ~Pathtracer_factory() noexcept override final;

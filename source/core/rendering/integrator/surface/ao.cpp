@@ -23,6 +23,8 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
 }
 
 float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+    float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
+
     float result = 0.f;
 
     Ray occlusion_ray;
@@ -45,7 +47,7 @@ float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
         occlusion_ray.set_direction(ws);
 
         if (float mv; worker.masked_visibility(occlusion_ray, Sampler_filter::Undefined, mv)) {
-            result += settings_.num_samples_reciprocal;
+            result += num_samples_reciprocal;
         }
     }
 
@@ -59,9 +61,8 @@ size_t AO::num_bytes() const noexcept {
 AO_factory::AO_factory(take::Settings const& settings, uint32_t num_integrators,
                        uint32_t num_samples, float radius) noexcept
     : Factory(settings), integrators_(memory::allocate_aligned<AO>(num_integrators)) {
-    settings_.num_samples            = num_samples;
-    settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
-    settings_.radius                 = radius;
+    settings_.num_samples = num_samples;
+    settings_.radius      = radius;
 }
 
 AO_factory::~AO_factory() noexcept {

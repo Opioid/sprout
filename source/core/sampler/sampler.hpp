@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstddef>
-#include "base/math/vector2.hpp"
+#include "base/math/vector.hpp"
 
 namespace rnd {
 class Generator;
@@ -53,10 +53,11 @@ class Sampler {
 
 class Factory {
   public:
-    Factory(uint32_t num_samplers);
-    virtual ~Factory();
+    Factory(uint32_t num_samplers) noexcept;
 
-    virtual Sampler* create(uint32_t id, rnd::Generator& rng) const = 0;
+    virtual ~Factory() noexcept;
+
+    virtual Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept = 0;
 
   protected:
     uint32_t const num_samplers_;

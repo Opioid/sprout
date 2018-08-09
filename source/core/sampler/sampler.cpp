@@ -57,8 +57,8 @@ uint32_t Sampler::num_samples() const noexcept {
     return num_samples_;
 }
 
-Factory::Factory(uint32_t num_samplers) : num_samplers_(num_samplers) {}
+Factory::Factory(uint32_t num_samplers) noexcept : num_samplers_(num_samplers) {}
 
-Factory::~Factory() {}
+Factory::~Factory() noexcept {}
 
 }  // namespace sampler

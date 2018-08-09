@@ -33,14 +33,14 @@ void Hammersley::on_resume_pixel(rnd::Generator& scramble) noexcept {
     scramble_ = scramble.random_uint();
 }
 
-Hammersley_factory::Hammersley_factory(uint32_t num_samplers)
+Hammersley_factory::Hammersley_factory(uint32_t num_samplers) noexcept
     : Factory(num_samplers), samplers_(memory::allocate_aligned<Hammersley>(num_samplers)) {}
 
-Hammersley_factory::~Hammersley_factory() {
+Hammersley_factory::~Hammersley_factory() noexcept {
     memory::free_aligned(samplers_);
 }
 
-Sampler* Hammersley_factory::create(uint32_t id, rnd::Generator& rng) const {
+Sampler* Hammersley_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&samplers_[id]) Hammersley(rng);
 }
 

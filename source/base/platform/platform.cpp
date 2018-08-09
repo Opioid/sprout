@@ -14,7 +14,7 @@ std::string build() {
 #endif
 
     // Profile
-#ifdef _DEBUG
+#ifndef NDEBUG
     stream << "Debug ";
 #else
     stream << "Release ";

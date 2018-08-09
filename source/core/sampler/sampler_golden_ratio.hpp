@@ -29,11 +29,11 @@ class alignas(64) Golden_ratio final : public Sampler {
 
 class Golden_ratio_factory final : public Factory {
   public:
-    Golden_ratio_factory(uint32_t num_samplers);
+    Golden_ratio_factory(uint32_t num_samplers) noexcept;
 
-    ~Golden_ratio_factory() override final;
+    ~Golden_ratio_factory() noexcept override final;
 
-    Sampler* create(uint32_t id, rnd::Generator& rng) const override final;
+    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Golden_ratio* samplers_;
