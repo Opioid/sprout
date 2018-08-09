@@ -166,15 +166,6 @@ inline float3 Constant::operator()(float /*wo_dot_h*/) const noexcept {
     return f_;
 }
 
-template <typename T>
-Weighted<T>::Weighted(T const& fresnel, float weight) noexcept
-    : fresnel_(fresnel), weight_(weight) {}
-
-template <typename T>
-float3 Weighted<T>::operator()(float wo_dot_h) const noexcept {
-    return weight_ * fresnel_(wo_dot_h);
-}
-
 }  // namespace scene::material::fresnel
 
 #endif

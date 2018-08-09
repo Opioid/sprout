@@ -26,12 +26,12 @@ class Sample_base : public material::Sample {
                                     bxdf::Sample& result) const noexcept;
 
     template <typename Coating>
-    void specular_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
+    void gloss_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
                                      bxdf::Sample& result) const noexcept;
 
     template <typename Coating>
-    void pure_specular_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
-                                          bxdf::Sample& result) const noexcept;
+    void pure_gloss_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
+                                       bxdf::Sample& result) const noexcept;
 
   public:
     struct Layer : material::Sample::Layer {
@@ -41,14 +41,17 @@ class Sample_base : public material::Sample {
         bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                    float wo_dot_h, bool avoid_caustics) const noexcept;
 
+        bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
+                                         float wo_dot_h, bool avoid_caustics) const noexcept;
+
         void diffuse_sample(float3 const& wo, sampler::Sampler& sampler, bool avoid_caustics,
                             bxdf::Sample& result) const noexcept;
 
-        void specular_sample(float3 const& wo, sampler::Sampler& sampler,
+        void gloss_sample(float3 const& wo, sampler::Sampler& sampler,
                              bxdf::Sample& result) const noexcept;
 
-        void pure_specular_sample(float3 const& wo, sampler::Sampler& sampler,
-                                  bxdf::Sample& result) const noexcept;
+        void pure_gloss_sample(float3 const& wo, sampler::Sampler& sampler,
+                               bxdf::Sample& result) const noexcept;
 
         float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const noexcept;
 

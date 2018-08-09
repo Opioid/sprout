@@ -64,23 +64,6 @@ class Constant {
     float3 const f_;
 };
 
-template <typename T>
-class Weighted {
-  public:
-    Weighted(T const& fresnel, float weight) noexcept;
-
-    float3 operator()(float wo_dot_h) const noexcept;
-
-  private:
-    T const fresnel_;
-
-    float const weight_;
-};
-
-using Schlick_weighted   = Weighted<Schlick>;
-using Thinfilm_weighted  = Weighted<Thinfilm>;
-using Conductor_weighted = Weighted<Conductor>;
-
 }  // namespace scene::material::fresnel
 
 #endif

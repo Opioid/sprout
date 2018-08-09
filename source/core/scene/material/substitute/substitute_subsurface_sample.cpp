@@ -35,7 +35,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
             if (p < 0.75f) {
                 layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
             } else {
-                layer_.specular_sample(wo_, sampler, result);
+                layer_.gloss_sample(wo_, sampler, result);
             }
         }
     } else {

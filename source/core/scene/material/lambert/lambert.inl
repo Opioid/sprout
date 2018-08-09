@@ -13,7 +13,8 @@
 namespace scene::material::lambert {
 
 template <typename Layer>
-bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi, Layer const& layer) noexcept {
+bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
+                                   Layer const& layer) noexcept {
     float3 const reflection = math::Pi_inv * color;
     float const  pdf        = n_dot_wi * math::Pi_inv;
 

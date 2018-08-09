@@ -23,7 +23,8 @@ template <typename Layer>
 bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
                                    Layer const& layer) noexcept {
     float3 const reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
-    float const  pdf        = n_dot_wi * math::Pi_inv;
+
+    float const pdf = n_dot_wi * math::Pi_inv;
 
     SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
@@ -37,8 +38,9 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
     float3 const is  = math::sample_hemisphere_cosine(s2d);
     float3 const wi  = math::normalize(layer.tangent_to_world(is));
 
-    float3 const h        = math::normalize(wo + wi);
-    float const  h_dot_wi = clamp_dot(h, wi);
+    float3 const h = math::normalize(wo + wi);
+
+    float const h_dot_wi = clamp_dot(h, wi);
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
@@ -55,7 +57,8 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
 }
 
 template <typename Layer>
-float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, Layer const& layer) noexcept {
+float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+                           Layer const& layer) noexcept {
     //	float const f_D90 = 0.5f + (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
     //	float const fmo   = f_D90 - 1.f;
 
@@ -81,7 +84,8 @@ template <typename Layer>
 bxdf::Result Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
                                               Layer const& layer) noexcept {
     float3 const reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
-    float const  pdf        = n_dot_wi * math::Pi_inv;
+
+    float const pdf = n_dot_wi * math::Pi_inv;
 
     SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
@@ -95,8 +99,9 @@ float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Layer cons
     float3 const is  = math::sample_hemisphere_cosine(s2d);
     float3 const wi  = math::normalize(layer.tangent_to_world(is));
 
-    float3 const h        = math::normalize(wo + wi);
-    float const  h_dot_wi = clamp_dot(h, wi);
+    float3 const h = math::normalize(wo + wi);
+
+    float const h_dot_wi = clamp_dot(h, wi);
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 

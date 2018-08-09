@@ -143,21 +143,22 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
 
     float const n_dot_h = math::saturate(math::dot(n_, h));
 
-    const fresnel::Conductor_weighted conductor({ior_, absorption_}, weight_);
+    fresnel::Conductor const conductor(ior_, absorption_);
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
                                                 conductor, fresnel_result);
 
-    return {n_dot_wi * ggx.reflection, ggx.pdf};
+    return {n_dot_wi * weight_ * ggx.reflection, ggx.pdf};
 }
 
 void Sample::Flakes_layer::sample(float3 const& wo, sampler::Sampler& sampler,
                                   float3& fresnel_result, bxdf::Sample& result) const noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
-    const fresnel::Conductor_weighted conductor({ior_, absorption_}, weight_);
+    fresnel::Conductor const conductor(ior_, absorption_);
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,
                                                    fresnel_result, result);
-    result.reflection *= n_dot_wi;
+
+    result.reflection *= n_dot_wi * weight_;
 }
 
 }  // namespace scene::material::metallic_paint

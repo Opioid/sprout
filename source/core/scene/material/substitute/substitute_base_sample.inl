@@ -54,12 +54,12 @@ void Sample_base<Diffuse>::base_and_coating_sample(Coating const&    coating_lay
         result.pdf        = (result.pdf + 2.f * base.pdf) / 3.f;
     } else {
         if (1.f == layer_.metallic_) {
-            pure_specular_sample_and_coating(coating_layer, sampler, result);
+            pure_gloss_sample_and_coating(coating_layer, sampler, result);
         } else {
             if (p < 0.75f) {
                 diffuse_sample_and_coating(coating_layer, sampler, result);
             } else {
-                specular_sample_and_coating(coating_layer, sampler, result);
+                gloss_sample_and_coating(coating_layer, sampler, result);
             }
         }
     }
@@ -81,10 +81,10 @@ void Sample_base<Diffuse>::diffuse_sample_and_coating(Coating const&    coating_
 
 template <typename Diffuse>
 template <typename Coating>
-void Sample_base<Diffuse>::specular_sample_and_coating(Coating const&    coating_layer,
+void Sample_base<Diffuse>::gloss_sample_and_coating(Coating const&    coating_layer,
                                                        sampler::Sampler& sampler,
                                                        bxdf::Sample&     result) const noexcept {
-    layer_.specular_sample(wo_, sampler, result);
+    layer_.gloss_sample(wo_, sampler, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                                 layer_.ior_);
@@ -95,10 +95,10 @@ void Sample_base<Diffuse>::specular_sample_and_coating(Coating const&    coating
 
 template <typename Diffuse>
 template <typename Coating>
-void Sample_base<Diffuse>::pure_specular_sample_and_coating(Coating const&    coating_layer,
-                                                            sampler::Sampler& sampler,
-                                                            bxdf::Sample& result) const noexcept {
-    layer_.pure_specular_sample(wo_, sampler, result);
+void Sample_base<Diffuse>::pure_gloss_sample_and_coating(Coating const&    coating_layer,
+                                                         sampler::Sampler& sampler,
+                                                         bxdf::Sample&     result) const noexcept {
+    layer_.pure_gloss_sample(wo_, sampler, result);
 
     auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                                 layer_.ior_);
@@ -152,6 +152,30 @@ bxdf::Result Sample_base<Diffuse>::Layer::base_evaluate(float3 const& wi, float3
 }
 
 template <typename Diffuse>
+bxdf::Result Sample_base<Diffuse>::Layer::pure_gloss_evaluate(float3 const& wi, float3 const& wo,
+                                                              float3 const& h, float wo_dot_h,
+                                                              bool avoid_caustics) const noexcept {
+    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
+        return {float3(0.f), 0.f};
+    }
+
+    float const n_dot_wi = clamp_n_dot(wi);
+    float const n_dot_wo = clamp_abs_n_dot(wo);
+
+    float const n_dot_h = math::saturate(math::dot(n_, h));
+
+    fresnel::Schlick const schlick(f0_);
+
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
+                                                schlick);
+
+    // Apparently weight by (1 - fresnel) is not correct!
+    // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
+
+    return {n_dot_wi * ggx.reflection, ggx.pdf};
+}
+
+template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::diffuse_sample(float3 const& wo, sampler::Sampler& sampler,
                                                  bool avoid_caustics, bxdf::Sample& result) const
     noexcept {
@@ -175,7 +199,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(float3 const& wo, sampler::Samp
 }
 
 template <typename Diffuse>
-void Sample_base<Diffuse>::Layer::specular_sample(float3 const& wo, sampler::Sampler& sampler,
+void Sample_base<Diffuse>::Layer::gloss_sample(float3 const& wo, sampler::Sampler& sampler,
                                                   bxdf::Sample& result) const noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -190,8 +214,8 @@ void Sample_base<Diffuse>::Layer::specular_sample(float3 const& wo, sampler::Sam
 }
 
 template <typename Diffuse>
-void Sample_base<Diffuse>::Layer::pure_specular_sample(float3 const& wo, sampler::Sampler& sampler,
-                                                       bxdf::Sample& result) const noexcept {
+void Sample_base<Diffuse>::Layer::pure_gloss_sample(float3 const& wo, sampler::Sampler& sampler,
+                                                    bxdf::Sample& result) const noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);

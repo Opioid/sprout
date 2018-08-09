@@ -30,7 +30,8 @@ class Isotropic {
 
   private:
     template <typename Layer>
-    static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, Layer const& layer) noexcept;
+    static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+                           Layer const& layer) noexcept;
 };
 
 class Isotropic_no_lambert {
@@ -45,7 +46,8 @@ class Isotropic_no_lambert {
 
   private:
     template <typename Layer>
-    static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, Layer const& layer) noexcept;
+    static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+                           Layer const& layer) noexcept;
 };
 
 }  // namespace disney
