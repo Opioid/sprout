@@ -28,21 +28,21 @@ constexpr float Min_roughness = 0.01314f;
 constexpr float Min_alpha  = Min_roughness * Min_roughness;
 constexpr float Min_alpha2 = Min_roughness * Min_roughness * Min_roughness * Min_roughness;
 
-static inline float clamp_roughness(float roughness) {
+static inline float clamp_roughness(float roughness) noexcept {
     return std::max(roughness, Min_roughness);
 }
 
-static inline float map_roughness(float roughness) {
+static inline float map_roughness(float roughness) noexcept {
     return roughness * (1.f - Min_roughness) + Min_roughness;
 }
 
-static inline float distribution_isotropic(float n_dot_h, float alpha2) {
+static inline float distribution_isotropic(float n_dot_h, float alpha2) noexcept {
     float const d = (n_dot_h * n_dot_h) * (alpha2 - 1.f) + 1.f;
     return alpha2 / (math::Pi * d * d);
 }
 
 static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
-                                             float2 alpha2, float axy) {
+                                             float2 alpha2, float axy) noexcept {
     float const x = (x_dot_h * x_dot_h) / alpha2[0];
     float const y = (y_dot_h * y_dot_h) / alpha2[1];
     float const d = (x + y) + (n_dot_h * n_dot_h);
@@ -51,7 +51,7 @@ static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float
 }
 
 static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_dot_wo,
-                                                      float alpha2) {
+                                                      float alpha2) noexcept {
     // Un-correlated version
     // This is an optimized version that does the following in one step:
     //
@@ -79,22 +79,22 @@ static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_do
 }
 
 static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float n_dot_wo,
-                                                           float alpha2) {
+                                                           float alpha2) noexcept {
     float const t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
     float const t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
 
     return {0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi), t_wo + n_dot_wo};
 }
 
-static inline float3 microfacet(float d, float g, float3 const& f, float n_dot_wi, float n_dot_wo) {
+static inline float3 microfacet(float d, float g, float3 const& f, float n_dot_wi, float n_dot_wo) noexcept {
     return (d * g * f) / (4.f * n_dot_wi * n_dot_wo);
 }
 
-static inline float G_ggx(float n_dot_v, float alpha2) {
+static inline float G_ggx(float n_dot_v, float alpha2) noexcept {
     return (2.f * n_dot_v) / (n_dot_v + std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_v * n_dot_v)));
 }
 
-static inline float G_smith(float n_dot_wi, float n_dot_wo, float alpha2) {
+static inline float G_smith(float n_dot_wi, float n_dot_wo, float alpha2) noexcept {
     return G_ggx(n_dot_wi, alpha2) * G_ggx(n_dot_wo, alpha2);
 }
 
@@ -105,20 +105,20 @@ static inline float G_smith_correlated(float n_dot_wi, float n_dot_wo, float alp
     return (2.f * n_dot_wi * n_dot_wo) / (a + b);
 }
 
-static inline float pdf(float n_dot_h, float wo_dot_h, float d) {
+static inline float pdf(float n_dot_h, float wo_dot_h, float d) noexcept {
     return (d * n_dot_h) / (4.f * wo_dot_h);
 }
 
 // This PDF is for the distribution of visible normals
 // https://hal.archives-ouvertes.fr/hal-01509746/document
 // https://hal.inria.fr/hal-00996995v2/document
-static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float alpha2) {
+static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float alpha2) noexcept {
     float const g1 = G_ggx(n_dot_wo, alpha2);
 
     return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
 }
 
-static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d, float alpha2) {
+static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d, float alpha2) noexcept {
     float const g1 = G_ggx(n_dot_wo, alpha2);
 
     return (g1 * wo_dot_h * d / n_dot_wo);
@@ -130,7 +130,7 @@ static inline float pdf_visible(float d, float g1_wo) {
     return (0.5f * d) / g1_wo;
 }
 
-static inline float stellar_pdf(float3 wi, float3 wh, float3 n, float alpha) {
+static inline float stellar_pdf(float3 wi, float3 wh, float3 n, float alpha) noexcept {
     float  dot_wi_wh            = std::abs(math::dot(wi, wh));
     float3 wh_inv_scaled        = wh / alpha;
     float  dot_wh_wh_inv_scaled = math::dot(wh_inv_scaled, wh_inv_scaled);
@@ -140,7 +140,7 @@ static inline float stellar_pdf(float3 wi, float3 wh, float3 n, float alpha) {
                         (std::abs(math::dot(wi, n)) + std::sqrt(dot_wi_wi_scaled)));
 }
 
-static inline float G1(float3 const& lw, float alpha) {
+static inline float G1(float3 const& lw, float alpha) noexcept {
     //	return 1.f / (1.f + Lambda(w, n, alpha2));
 
     float3 const alpha1(alpha, alpha, 1.f);
@@ -187,7 +187,7 @@ math::length(alpha1 * llight) * abs_lvz);
 
 template <typename Layer, typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   Layer const& layer, Fresnel const& fresnel) {
+                                   Layer const& layer, Fresnel const& fresnel) noexcept {
     float3 fresnel_result;
     return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer, fresnel, fresnel_result);
 }
@@ -195,7 +195,7 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 template <typename Layer, typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
                                    Layer const& layer, Fresnel const& fresnel,
-                                   float3& fresnel_result) {
+                                   float3& fresnel_result) noexcept {
     // Roughness zero will always have zero specular term (or worse NaN)
     SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
@@ -220,7 +220,7 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 
 template <typename Layer, typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
+                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
     float3 fresnel_result;
     return reflect(wo, n_dot_wo, layer, fresnel, sampler, fresnel_result, result);
 }
@@ -282,7 +282,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
 template <typename Layer, typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
                          Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
-                         bxdf::Sample& result) {
+                         bxdf::Sample& result) noexcept {
     // Roughness zero will always have zero specular term (or worse NaN)
     // For reflections we could do a perfect mirror,
     // but the decision is to always use a minimum roughness instead
@@ -355,7 +355,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
 template <typename Layer, typename IOR, typename Fresnel>
 float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer const& layer,
                                     IOR const& ior, Fresnel const& fresnel,
-                                    sampler::Sampler& sampler, bxdf::Sample& result) {
+                                    sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
     // Roughness zero will always have zero specular term (or worse NaN)
     // For reflections we could do a perfect mirror,
     // but the decision is to always use a minimum roughness instead
@@ -429,7 +429,7 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
 
 template <typename Layer, typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer,
-                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
+                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
     return refract(wo, n_dot_wo, layer, layer, fresnel, sampler, result);
 }
 
@@ -438,7 +438,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer,
 
 template <typename Layer, typename IOR, typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, IOR const& ior,
-                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) {
+                         Fresnel const& fresnel, sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
     /*
             // Roughness zero will always have zero specular term (or worse NaN)
                     SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
@@ -692,7 +692,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
 template <typename Layer, typename Fresnel>
 bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_dot_wo,
-                                     float wo_dot_h, Layer const& layer, Fresnel const& fresnel) {
+                                     float wo_dot_h, Layer const& layer, Fresnel const& fresnel) noexcept {
     float const n_dot_h = math::saturate(math::dot(layer.n_, h));
 
     float const x_dot_h = math::dot(layer.t_, h);
@@ -713,7 +713,7 @@ bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_do
 template <typename Layer, typename Fresnel>
 float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
                            Fresnel const& fresnel, sampler::Sampler& sampler,
-                           bxdf::Sample& result) {
+                           bxdf::Sample& result) noexcept {
     float2 const xi = sampler.generate_sample_2D();
 
     float const phi     = (2.f * math::Pi) * xi[0];
