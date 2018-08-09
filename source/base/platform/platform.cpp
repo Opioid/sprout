@@ -26,8 +26,8 @@ std::string build() {
 
     // Compiler
 #ifdef _MSC_VER
-    int major = _MSC_VER / 100;
-    int minor = (_MSC_VER - major * 100) / 10;
+    int const major = _MSC_VER / 100;
+    int const minor = _MSC_VER - major * 100;
     stream << "MSVC++ " << major << "." << minor;
 #elif defined(__clang__)
     stream << "clang " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__;
