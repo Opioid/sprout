@@ -20,9 +20,17 @@ inline void Clearcoat::set(float f0, float alpha, float alpha2) noexcept {
 
 template <typename Layer>
 Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                           Layer const& layer) const noexcept {
+                           Layer const& layer, bool avoid_caustics) const noexcept {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
+
+    float const a = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
+
+    float3 const attenuation = (1.f - a) * math::lerp(float3(1.f), color_, weight_);
+
+    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
+        return {float3(0.f), attenuation, 0.f};
+    }
 
     float const n_dot_h = math::saturate(math::dot(layer.n_, h));
 
@@ -30,10 +38,6 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
                                                 schlick);
-
-    float const a = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
-
-    float3 const attenuation = (1.f - a) * math::lerp(float3(1.f), color_, weight_);
 
     return {n_dot_wi * weight_ * ggx.reflection, attenuation, ggx.pdf};
 }
@@ -65,7 +69,7 @@ inline void Thinfilm::set(float ior, float ior_internal, float alpha, float alph
 
 template <typename Layer>
 Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                          Layer const& layer) const noexcept {
+                          Layer const& layer, bool /*avoid_caustics*/) const noexcept {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -99,8 +103,8 @@ void Thinfilm::sample(float3 const& wo, Layer const& layer, sampler::Sampler& sa
 
 template <typename Coating>
 Result Coating_layer<Coating>::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                                        float wo_dot_h) const noexcept {
-    return Coating::evaluate(wi, wo, h, wo_dot_h, *this);
+                                        float wo_dot_h, bool avoid_caustics) const noexcept {
+    return Coating::evaluate(wi, wo, h, wo_dot_h, *this, avoid_caustics);
 }
 
 template <typename Coating>

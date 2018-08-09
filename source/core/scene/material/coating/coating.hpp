@@ -30,7 +30,7 @@ class Clearcoat : public Coating_base {
   protected:
     template <typename Layer>
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    Layer const& layer) const noexcept;
+                    Layer const& layer, bool avoid_caustics) const noexcept;
 
     template <typename Layer>
     void sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
@@ -49,7 +49,7 @@ class Thinfilm : public Coating_base {
   protected:
     template <typename Layer>
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    Layer const& layer) const noexcept;
+                    Layer const& layer, bool avoid_caustics) const noexcept;
 
     template <typename Layer>
     void sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
@@ -66,7 +66,7 @@ class Thinfilm : public Coating_base {
 template <typename Coating>
 class Coating_layer : public Sample::Layer, public Coating {
   public:
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h) const
+    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h, bool avoid_caustics) const
         noexcept;
 
     void sample(float3 const& wo, sampler::Sampler& sampler, float3& attenuation,

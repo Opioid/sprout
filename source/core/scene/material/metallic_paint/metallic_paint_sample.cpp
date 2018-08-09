@@ -22,7 +22,7 @@ bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate(wi, wo_, h, wo_dot_h);
+    auto const coating = coating_.evaluate(wi, wo_, h, wo_dot_h, false);
 
     float3     flakes_fresnel;
     auto const flakes = flakes_.evaluate(wi, wo_, h, wo_dot_h, flakes_fresnel);
@@ -42,7 +42,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         return;
     }
 
-    float p = sampler.generate_sample_1D();
+    float const p = sampler.generate_sample_1D();
 
     if (p < 0.4f) {
         float3 coating_attenuation;
@@ -61,7 +61,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     } else if (p < 0.7f) {
         base_.sample(wo_, sampler, result);
 
-        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
+        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, false);
 
         float3     flakes_fresnel;
         auto const flakes = flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -75,7 +75,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         float3 flakes_fresnel;
         flakes_.sample(wo_, sampler, flakes_fresnel, result);
 
-        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
+        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, false);
 
         auto const base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
@@ -108,6 +108,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
     float const n_dot_h = math::saturate(math::dot(n_, h));
 
     fresnel::Schlick const fresnel(color);
+
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
                                                 fresnel);
 
@@ -123,6 +124,7 @@ void Sample::Base_layer::sample(float3 const& wo, sampler::Sampler& sampler,
     float3 const color = math::lerp(color_b_, color_a_, f);
 
     fresnel::Schlick const fresnel(color);
+
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, fresnel, sampler, result);
     result.reflection *= n_dot_wi;
 }
@@ -144,6 +146,7 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
     float const n_dot_h = math::saturate(math::dot(n_, h));
 
     fresnel::Conductor const conductor(ior_, absorption_);
+
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
                                                 conductor, fresnel_result);
 
@@ -155,6 +158,7 @@ void Sample::Flakes_layer::sample(float3 const& wo, sampler::Sampler& sampler,
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Conductor const conductor(ior_, absorption_);
+
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,
                                                    fresnel_result, result);
 
