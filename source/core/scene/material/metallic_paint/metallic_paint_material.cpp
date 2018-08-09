@@ -58,6 +58,8 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
 
     sample.coating_.set(coating_.f0_, coating_.alpha_, coating_.alpha2_);
 
+    sample.avoid_caustics_ = rs.avoid_caustics;
+
     return sample;
 }
 

@@ -36,7 +36,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
         //		float3 normal(1.f, 1.f, 1.f);
 
-        normal = math::normalize(normal + float3(0.f, 0.f, 1.f));
+        normal = math::normalize(normal + float3(0.f, 0.f, 2.f));
 
         renderer.set_brush(normal);
 
@@ -68,6 +68,8 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
 
     renderer.set_brush(float3(1.f, 1.f, 1.f));
 
+    float const border = 0.f;  // 0.5f / static_cast<float>(props.dimensions[0]);
+
     for (uint32_t i = 0; i < props.num_flakes; ++i) {
         float2 s_0 = math::thing(i, props.num_flakes, r_0);
 
@@ -76,7 +78,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
         rng.random_float();
 
         float const r_f = rng.random_float();
-        renderer.draw_circle(s_0, props.radius + r_f * props.variance);
+        renderer.draw_circle(s_0, (props.radius + r_f * props.variance) - border);
     }
 
     renderer.resolve(*image);
@@ -94,7 +96,7 @@ Provider::Properties::Properties(memory::Variant_map const& options) : dimension
 
     float const half_size = 0.5f * size;
 
-    variance = half_size / 3.f;
+    variance = half_size / 5.f;
     radius   = half_size - variance;
 
     num_flakes = static_cast<uint32_t>(density / (size * size) + 0.5f);

@@ -52,6 +52,8 @@ class Sample : public material::Sample {
     Flakes_layer flakes_;
 
     coating::Clearcoat_layer coating_;
+
+    bool avoid_caustics_;
 };
 
 }  // namespace scene::material::metallic_paint

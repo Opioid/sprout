@@ -1124,7 +1124,7 @@ Sampler_settings::Address read_address(json::Value const& address_value) {
 void Provider::read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings) {
     for (auto& n : sampler_value.GetObject()) {
         if ("filter" == n.name) {
-            std::string filter = json::read_string(n.value);
+            std::string const filter = json::read_string(n.value);
 
             if ("Nearest" == filter) {
                 settings.filter = Sampler_settings::Filter::Nearest;
@@ -1133,13 +1133,13 @@ void Provider::read_sampler_settings(json::Value const& sampler_value, Sampler_s
             }
         } else if ("address" == n.name) {
             if (n.value.IsArray()) {
-                auto address_u = read_address(n.value[0]);
-                auto address_v = read_address(n.value[1]);
+                auto const address_u = read_address(n.value[0]);
+                auto const address_v = read_address(n.value[1]);
 
                 settings.address_u = address_u;
                 settings.address_v = address_v;
             } else {
-                auto address = read_address(n.value);
+                auto const address = read_address(n.value);
 
                 settings.address_u = address;
                 settings.address_v = address;

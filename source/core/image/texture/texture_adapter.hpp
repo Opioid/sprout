@@ -18,6 +18,7 @@ class Adapter {
     Adapter() noexcept;
     Adapter(std::shared_ptr<Texture> const& texture) noexcept;
     Adapter(std::shared_ptr<Texture> const& texture, float2 scale) noexcept;
+
     ~Adapter();
 
     bool operator==(const Adapter& other) const noexcept;
