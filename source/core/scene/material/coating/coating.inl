@@ -20,7 +20,7 @@ inline void Clearcoat::set(float f0, float alpha, float alpha2) noexcept {
 
 template <typename Layer>
 Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                           float /*internal_ior*/, Layer const& layer) const noexcept {
+                           Layer const& layer) const noexcept {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -39,9 +39,8 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
 }
 
 template <typename Layer>
-void Clearcoat::sample(float3 const& wo, float /*internal_ior*/, Layer const& layer,
-                       sampler::Sampler& sampler, float3& attenuation, bxdf::Sample& result) const
-    noexcept {
+void Clearcoat::sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
+                       float3& attenuation, bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -55,22 +54,24 @@ void Clearcoat::sample(float3 const& wo, float /*internal_ior*/, Layer const& la
     result.reflection *= n_dot_wi * weight_;
 }
 
-inline void Thinfilm::set(float ior, float alpha, float alpha2, float thickness) noexcept {
-    ior_       = ior;
-    alpha_     = alpha;
-    alpha2_    = alpha2;
-    thickness_ = thickness;
+inline void Thinfilm::set(float ior, float ior_internal, float alpha, float alpha2,
+                          float thickness) noexcept {
+    ior_          = ior;
+    ior_internal_ = ior_internal;
+    alpha_        = alpha;
+    alpha2_       = alpha2;
+    thickness_    = thickness;
 }
 
 template <typename Layer>
 Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                          float internal_ior, Layer const& layer) const noexcept {
+                          Layer const& layer) const noexcept {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float const n_dot_h = math::saturate(math::dot(layer.n_, h));
 
-    const fresnel::Thinfilm thinfilm(1.f, ior_, internal_ior, thickness_);
+    const fresnel::Thinfilm thinfilm(1.f, ior_, ior_internal_, thickness_);
 
     float3     fresnel;
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
@@ -82,12 +83,11 @@ Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, f
 }
 
 template <typename Layer>
-void Thinfilm::sample(float3 const& wo, float internal_ior, Layer const& layer,
-                      sampler::Sampler& sampler, float3& attenuation, bxdf::Sample& result) const
-    noexcept {
+void Thinfilm::sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
+                      float3& attenuation, bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    fresnel::Thinfilm const thinfilm(1.f, ior_, internal_ior, thickness_);
+    fresnel::Thinfilm const thinfilm(1.f, ior_, ior_internal_, thickness_);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, thinfilm, sampler,
                                                    attenuation, result);
@@ -99,14 +99,14 @@ void Thinfilm::sample(float3 const& wo, float internal_ior, Layer const& layer,
 
 template <typename Coating>
 Result Coating_layer<Coating>::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                                        float wo_dot_h, float internal_ior) const noexcept {
-    return Coating::evaluate(wi, wo, h, wo_dot_h, internal_ior, *this);
+                                        float wo_dot_h) const noexcept {
+    return Coating::evaluate(wi, wo, h, wo_dot_h, *this);
 }
 
 template <typename Coating>
-void Coating_layer<Coating>::sample(float3 const& wo, float internal_ior, sampler::Sampler& sampler,
+void Coating_layer<Coating>::sample(float3 const& wo, sampler::Sampler& sampler,
                                     float3& attenuation, bxdf::Sample& result) const noexcept {
-    Coating::sample(wo, internal_ior, *this, sampler, attenuation, result);
+    Coating::sample(wo, *this, sampler, attenuation, result);
 }
 
 }  // namespace scene::material::coating

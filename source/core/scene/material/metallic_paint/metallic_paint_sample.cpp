@@ -22,7 +22,7 @@ bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate(wi, wo_, h, wo_dot_h, 1.f);
+    auto const coating = coating_.evaluate(wi, wo_, h, wo_dot_h);
 
     float3     flakes_fresnel;
     auto const flakes = flakes_.evaluate(wi, wo_, h, wo_dot_h, flakes_fresnel);
@@ -46,7 +46,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
 
     if (p < 0.4f) {
         float3 coating_attenuation;
-        coating_.sample(wo_, 1.f, sampler, coating_attenuation, result);
+        coating_.sample(wo_, sampler, coating_attenuation, result);
 
         float3     flakes_fresnel;
         auto const flakes = flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -61,7 +61,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     } else if (p < 0.7f) {
         base_.sample(wo_, sampler, result);
 
-        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, 1.f);
+        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
         float3     flakes_fresnel;
         auto const flakes = flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -75,7 +75,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         float3 flakes_fresnel;
         flakes_.sample(wo_, sampler, flakes_fresnel, result);
 
-        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, 1.f);
+        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
         auto const base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 

@@ -61,7 +61,8 @@ material::Sample const& Material_thinfilm::sample(float3 const& wo, Renderstate 
 
     set_coating_basis(wo, rs, sampler, sample);
 
-    sample.coating_.set(coating_.ior_, coating_.alpha_, coating_.alpha2_, coating_.thickness_);
+    sample.coating_.set(coating_.ior_, ior_, coating_.alpha_, coating_.alpha2_,
+                        coating_.thickness_);
 
     return sample;
 }

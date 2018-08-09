@@ -27,7 +27,7 @@ class Sample_base : public material::Sample {
 
     template <typename Coating>
     void gloss_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
-                                     bxdf::Sample& result) const noexcept;
+                                  bxdf::Sample& result) const noexcept;
 
     template <typename Coating>
     void pure_gloss_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
@@ -47,8 +47,8 @@ class Sample_base : public material::Sample {
         void diffuse_sample(float3 const& wo, sampler::Sampler& sampler, bool avoid_caustics,
                             bxdf::Sample& result) const noexcept;
 
-        void gloss_sample(float3 const& wo, sampler::Sampler& sampler,
-                             bxdf::Sample& result) const noexcept;
+        void gloss_sample(float3 const& wo, sampler::Sampler& sampler, bxdf::Sample& result) const
+            noexcept;
 
         void pure_gloss_sample(float3 const& wo, sampler::Sampler& sampler,
                                bxdf::Sample& result) const noexcept;

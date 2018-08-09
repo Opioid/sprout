@@ -28,7 +28,7 @@ bxdf::Result Sample_base<Diffuse>::base_and_coating_evaluate(float3 const&  wi,
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_);
+    auto const coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h);
 
     auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
@@ -45,7 +45,7 @@ void Sample_base<Diffuse>::base_and_coating_sample(Coating const&    coating_lay
 
     if (p < 0.5f) {
         float3 coating_attenuation;
-        coating_layer.sample(wo_, layer_.ior_, sampler, coating_attenuation, result);
+        coating_layer.sample(wo_, sampler, coating_attenuation, result);
 
         auto const base = layer_.base_evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                                avoid_caustics_);
@@ -72,8 +72,7 @@ void Sample_base<Diffuse>::diffuse_sample_and_coating(Coating const&    coating_
                                                       bxdf::Sample&     result) const noexcept {
     layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
 
-    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                                layer_.ior_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
@@ -82,12 +81,11 @@ void Sample_base<Diffuse>::diffuse_sample_and_coating(Coating const&    coating_
 template <typename Diffuse>
 template <typename Coating>
 void Sample_base<Diffuse>::gloss_sample_and_coating(Coating const&    coating_layer,
-                                                       sampler::Sampler& sampler,
-                                                       bxdf::Sample&     result) const noexcept {
+                                                    sampler::Sampler& sampler,
+                                                    bxdf::Sample&     result) const noexcept {
     layer_.gloss_sample(wo_, sampler, result);
 
-    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                                layer_.ior_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = (2.f * result.pdf + coating.pdf) / 3.f;
@@ -100,8 +98,7 @@ void Sample_base<Diffuse>::pure_gloss_sample_and_coating(Coating const&    coati
                                                          bxdf::Sample&     result) const noexcept {
     layer_.pure_gloss_sample(wo_, sampler, result);
 
-    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                                layer_.ior_);
+    auto const coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = 0.5f * (result.pdf + coating.pdf);
@@ -200,7 +197,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(float3 const& wo, sampler::Samp
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::gloss_sample(float3 const& wo, sampler::Sampler& sampler,
-                                                  bxdf::Sample& result) const noexcept {
+                                               bxdf::Sample& result) const noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
