@@ -101,9 +101,9 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
-    float f = n_dot_wo;
+    float const f = n_dot_wo;
 
-    float3 color = math::lerp(color_b_, color_a_, f);
+    float3 const color = math::lerp(color_b_, color_a_, f);
 
     float const n_dot_h = math::saturate(math::dot(n_, h));
 
@@ -118,9 +118,9 @@ void Sample::Base_layer::sample(float3 const& wo, sampler::Sampler& sampler,
                                 bxdf::Sample& result) const noexcept {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
-    float f = n_dot_wo;
+    float const f = n_dot_wo;
 
-    float3 color = math::lerp(color_b_, color_a_, f);
+    float3 const color = math::lerp(color_b_, color_a_, f);
 
     fresnel::Schlick const fresnel(color);
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, fresnel, sampler, result);
