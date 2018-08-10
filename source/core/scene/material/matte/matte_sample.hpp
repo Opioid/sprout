@@ -16,9 +16,10 @@ class Sample : public material::Sample {
         void set(float3 const& color) noexcept;
 
         float3 diffuse_color_;
-        float  roughness_;
-        float  alpha_;
-        float  alpha2_;
+
+        float roughness_;
+        float alpha_;
+        float alpha2_;
     };
 
     Layer layer_;

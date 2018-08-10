@@ -17,7 +17,7 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
     }
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     float3 const h = math::normalize(wo_ + wi);
 
@@ -49,14 +49,10 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
 }
 
 void Sample_isotropic::Layer::set(float3 const& ior, float3 const& absorption,
-                                  float roughness) noexcept {
+                                  float alpha) noexcept {
     ior_        = ior;
     absorption_ = absorption;
-
-    float const alpha = roughness * roughness;
-
-    alpha_  = alpha;
-    alpha2_ = alpha * alpha;
+    alpha_      = alpha;
 }
 
 const material::Sample::Layer& Sample_anisotropic::base_layer() const noexcept {

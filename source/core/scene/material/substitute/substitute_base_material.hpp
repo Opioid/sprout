@@ -48,7 +48,7 @@ class Material_base : public material::Material {
     float3 color_;
 
     float ior_;
-    float roughness_;
+    float alpha_;
     float metallic_;
     float emission_factor_;
 };

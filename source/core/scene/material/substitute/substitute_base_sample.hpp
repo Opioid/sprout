@@ -35,7 +35,7 @@ class Sample_base : public material::Sample {
 
   public:
     struct Layer : material::Sample::Layer {
-        void set(float3 const& color, float3 const& radiance, float ior, float f0, float roughness,
+        void set(float3 const& color, float3 const& radiance, float ior, float f0, float alpha,
                  float metallic) noexcept;
 
         bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
@@ -60,9 +60,7 @@ class Sample_base : public material::Sample {
         float3 emission_;
 
         float ior_;
-        float roughness_;
         float alpha_;
-        float alpha2_;
         float metallic_;
     };
 

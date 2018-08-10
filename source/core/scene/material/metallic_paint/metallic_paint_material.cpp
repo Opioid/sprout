@@ -42,7 +42,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
         sample.flakes_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.base_.set(color_a_, color_b_, alpha_, alpha2_);
+    sample.base_.set(color_a_, color_b_, alpha_);
 
     float flakes_weight;
     if (flakes_mask_.is_valid()) {
@@ -51,8 +51,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
         flakes_weight = 1.f;
     }
 
-    sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha_, flakes_alpha2_,
-                       flakes_weight);
+    sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha_, flakes_weight);
 
     sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
 
@@ -77,11 +76,9 @@ void Material::set_color(float3 const& a, float3 const& b) noexcept {
 }
 
 void Material::set_roughness(float roughness) noexcept {
-    float const r     = ggx::clamp_roughness(roughness);
-    float const alpha = r * r;
+    float const r = ggx::clamp_roughness(roughness);
 
-    alpha_  = alpha;
-    alpha2_ = alpha * alpha;
+    alpha_ = r * r;
 }
 
 void Material::set_flakes_mask(Texture_adapter const& mask) noexcept {
@@ -101,9 +98,9 @@ void Material::set_flakes_absorption(float3 const& absorption) noexcept {
 }
 
 void Material::set_flakes_roughness(float roughness) noexcept {
-    float const alpha = roughness * roughness;
-    flakes_alpha_     = alpha;
-    flakes_alpha2_    = alpha * alpha;
+    float const r = ggx::clamp_roughness(roughness);
+
+    flakes_alpha_ = r * r;
 }
 
 void Material::set_coating_weight(float weight) noexcept {

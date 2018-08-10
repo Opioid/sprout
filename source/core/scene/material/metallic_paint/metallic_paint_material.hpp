@@ -44,10 +44,8 @@ class Material : public material::Material {
     float3 flakes_absorption_;
 
     float alpha_;
-    float alpha2_;
 
     float flakes_alpha_;
-    float flakes_alpha2_;
 
     float ior_;
 

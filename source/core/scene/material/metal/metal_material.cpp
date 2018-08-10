@@ -24,14 +24,16 @@ material::Sample const& Material_isotropic::sample(float3 const& wo, Renderstate
     sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
-        auto&        sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const n       = sample_normal(wo, rs, normal_map_, sampler);
+        auto const& sampler = worker.sampler_2D(sampler_key(), filter);
+
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler);
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.layer_.set(ior_, absorption_, roughness_);
+    sample.layer_.set(ior_, absorption_, alpha_);
+
     sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
@@ -58,7 +60,9 @@ void Material_isotropic::set_absorption(float3 const& absorption) noexcept {
 }
 
 void Material_isotropic::set_roughness(float roughness) noexcept {
-    roughness_ = ggx::clamp_roughness(roughness);
+    float const r = ggx::clamp_roughness(roughness);
+
+    alpha_ = r * r;
 }
 
 size_t Material_isotropic::sample_size() noexcept {

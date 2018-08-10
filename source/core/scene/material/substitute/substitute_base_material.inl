@@ -33,10 +33,13 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
 
     float2 surface;
     if (surface_map_.is_valid()) {
-        surface    = surface_map_.sample_2(sampler, rs.uv);
-        surface[0] = ggx::map_roughness(surface[0]);
+        surface = surface_map_.sample_2(sampler, rs.uv);
+
+        const float r = ggx::map_roughness(surface[0]);
+
+        surface[0] = r * r;
     } else {
-        surface[0] = roughness_;
+        surface[0] = alpha_;
         surface[1] = metallic_;
     }
 

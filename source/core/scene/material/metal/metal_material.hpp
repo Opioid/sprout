@@ -30,21 +30,20 @@ class Material_isotropic : public Material {
     float3 ior_;
     float3 absorption_;
 
-    float roughness_;
+    float alpha_;
 };
 
 class Material_anisotropic : public Material {
   public:
     Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker, uint32_t depth) const
-        noexcept override final;
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+                                   sampler::Sampler& sampler, Worker const& worker,
+                                   uint32_t depth) const noexcept override final;
 
-    virtual float ior() const noexcept override final;
+    float ior() const noexcept override final;
 
-    virtual size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept override final;
 
     void set_normal_map(Texture_adapter const& normal_map) noexcept;
     void set_direction_map(Texture_adapter const& direction_map) noexcept;

@@ -68,10 +68,12 @@ float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
     //	return (a * b) * (math::Pi_inv * layer.diffuse_color_);
 
     // More energy conserving variant
-    float const energy_bias   = math::lerp(0.f, 0.5f, layer.roughness_);
-    float const energy_factor = math::lerp(1.f, 1.f / 1.51f, layer.roughness_);
+    float const alpha = layer.alpha_;
 
-    float const f_D90 = energy_bias + (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
+    float const energy_bias   = math::lerp(0.f, 0.5f, alpha);
+    float const energy_factor = math::lerp(1.f, 1.f / 1.51f, alpha);
+
+    float const f_D90 = energy_bias + (2.f * alpha) * (h_dot_wi * h_dot_wi);
     float const fmo   = f_D90 - 1.f;
 
     float const a = 1.f + fmo * math::pow5(1.f - n_dot_wi);
@@ -120,11 +122,13 @@ float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Layer cons
 template <typename Layer>
 float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
                                       Layer const& layer) noexcept {
-    float const energy_factor = math::lerp(1.f, 1.f / 1.51f, layer.roughness_);
+    float const alpha = layer.alpha_;
+
+    float const energy_factor = math::lerp(1.f, 1.f / 1.51f, alpha);
 
     float const fl = math::pow5(1.f - n_dot_wi);
     float const fv = math::pow5(1.f - n_dot_wo);
-    float const rr = energy_factor * (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
+    float const rr = energy_factor * (2.f * alpha) * (h_dot_wi * h_dot_wi);
 
     // only the retro-reflection
     return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);

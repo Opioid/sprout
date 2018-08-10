@@ -88,12 +88,10 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     }
 }
 
-void Sample::Base_layer::set(float3 const& color_a, float3 const& color_b, float alpha,
-                             float alpha2) noexcept {
+void Sample::Base_layer::set(float3 const& color_a, float3 const& color_b, float alpha) noexcept {
     color_a_ = color_a;
     color_b_ = color_b;
     alpha_   = alpha;
-    alpha2_  = alpha2;
 }
 
 bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
@@ -130,11 +128,10 @@ void Sample::Base_layer::sample(float3 const& wo, sampler::Sampler& sampler,
 }
 
 void Sample::Flakes_layer::set(float3 const& ior, float3 const& absorption, float alpha,
-                               float alpha2, float weight) noexcept {
+                               float weight) noexcept {
     ior_        = ior;
     absorption_ = absorption;
     alpha_      = alpha;
-    alpha2_     = alpha2;
     weight_     = weight;
 }
 

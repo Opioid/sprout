@@ -45,7 +45,7 @@ void Material_base::set_ior(float ior) noexcept {
 }
 
 bool Material_base::is_caustic() const noexcept {
-    return !surface_map_.is_valid() && roughness_ <= ggx::Min_roughness;
+    return !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha;
 }
 
 void Material_base::set_color_map(Texture_adapter const& color_map) noexcept {
@@ -69,7 +69,9 @@ void Material_base::set_color(float3 const& color) noexcept {
 }
 
 void Material_base::set_roughness(float roughness) noexcept {
-    roughness_ = ggx::clamp_roughness(roughness);
+    const float r = ggx::clamp_roughness(roughness);
+
+    alpha_ = r * r;
 }
 
 void Material_base::set_metallic(float metallic) noexcept {

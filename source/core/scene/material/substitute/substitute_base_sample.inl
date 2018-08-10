@@ -109,18 +109,13 @@ void Sample_base<Diffuse>::pure_gloss_sample_and_coating(Coating const&    coati
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::Layer::set(float3 const& color, float3 const& radiance, float ior,
-                                      float f0, float roughness, float metallic) noexcept {
+                                      float f0, float alpha, float metallic) noexcept {
     diffuse_color_ = (1.f - metallic) * color;
     f0_            = math::lerp(float3(f0), color, metallic);
     emission_      = radiance;
     ior_           = ior;
-    roughness_     = roughness;
-
-    float const alpha = roughness * roughness;
-
-    alpha_    = alpha;
-    alpha2_   = alpha * alpha;
-    metallic_ = metallic;
+    alpha_         = alpha;
+    metallic_      = metallic;
 }
 
 template <typename Diffuse>

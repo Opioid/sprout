@@ -40,8 +40,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
         renderer.set_brush(normal);
 
-        float const r_f = rng.random_float();
-        renderer.draw_circle(s_0, props.radius + r_f * props.variance);
+        renderer.draw_circle(s_0, props.radius);
     }
 
     renderer.resolve(*image);
@@ -77,8 +76,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
         rng.random_float();
         rng.random_float();
 
-        float const r_f = rng.random_float();
-        renderer.draw_circle(s_0, (props.radius + r_f * props.variance) - border);
+        renderer.draw_circle(s_0, props.radius - border);
     }
 
     renderer.resolve(*image);
@@ -94,10 +92,7 @@ Provider::Properties::Properties(memory::Variant_map const& options) : dimension
     options.query("size", size);
     options.query("density", density);
 
-    float const half_size = 0.5f * size;
-
-    variance = half_size / 5.f;
-    radius   = half_size - variance;
+    radius = 0.5f * size;
 
     num_flakes = static_cast<uint32_t>(density / (size * size) + 0.5f);
 }

@@ -29,7 +29,6 @@ class Provider {
         uint32_t num_flakes;
 
         float radius;
-        float variance;
     };
 };
 

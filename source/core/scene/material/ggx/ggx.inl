@@ -23,8 +23,6 @@ namespace scene::material::ggx {
 
 constexpr float Min_roughness = 0.01314f;
 
-// constexpr float Min_alpha2 = 0.0000000299f;
-
 constexpr float Min_alpha  = Min_roughness * Min_roughness;
 constexpr float Min_alpha2 = Min_roughness * Min_roughness * Min_roughness * Min_roughness;
 
@@ -126,7 +124,7 @@ static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d,
     return (g1 * wo_dot_h * d / n_dot_wo);
 }
 
-static inline float pdf_visible(float d, float g1_wo) {
+static inline float pdf_visible(float d, float g1_wo) noexcept {
     //	return (0.25f * g1_wo * d) / n_dot_wo;
 
     return (0.5f * d) / g1_wo;
@@ -198,18 +196,13 @@ template <typename Layer, typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
                                    Layer const& layer, Fresnel const& fresnel,
                                    float3& fresnel_result) noexcept {
-    // Roughness zero will always have zero specular term (or worse NaN)
-    SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
+    float const alpha2 = layer.alpha_ * layer.alpha_;
 
-    float const  a2 = layer.alpha2_;
-    float const  d  = distribution_isotropic(n_dot_h, a2);
-    float2 const g  = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, a2);
-    float3 const f  = fresnel(wo_dot_h);
+    float const  d = distribution_isotropic(n_dot_h, alpha2);
+    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    float3 const f = fresnel(wo_dot_h);
 
     fresnel_result = f;
-
-    // Legacy GGX
-    // pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 
     float3 const reflection = d * g[0] * f;
 
@@ -228,73 +221,13 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
     return reflect(wo, n_dot_wo, layer, fresnel, sampler, fresnel_result, result);
 }
 
-// Legacy GGX
-/*
-
-template<typename Layer, typename Fresnel>
-float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                                                 Fresnel const& fresnel, sampler::Sampler& sampler,
-                                                 float3& fresnel_result, bxdf::Sample& result) {
-        // Roughness zero will always have zero specular term (or worse NaN)
-        // For reflections we could do a perfect mirror,
-        // but the decision is to always use a minimum roughness instead
-        SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
-
-        float2 const xi = sampler.generate_sample_2D();
-
-        float const alpha2 = layer.alpha2_;
-        float const n_dot_h_squared = (1.f - xi[1]) / ((alpha2 - 1.f) * xi[1] + 1.f);
-        float const sin_theta = std::sqrt(1.f - n_dot_h_squared);
-        float const n_dot_h   = std::sqrt(n_dot_h_squared);
-        float const phi = (2.f * math::Pi) * xi[0];
-//	float const sin_phi = std::sin(phi);
-//	float const cos_phi = std::cos(phi);
-        float sin_phi;
-        float cos_phi;
-        math::sincos(phi, sin_phi, cos_phi);
-
-        float3 const lh = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-        float3 const h = math::normalize(layer.tangent_to_world(lh));
-
-        float const wo_dot_h = clamp_dot(wo, h);
-
-        float3 const wi = math::normalize(2.f * wo_dot_h * h - wo);
-
-        float const n_dot_wi = layer.clamp_n_dot(wi);
-
-        float const d = distribution_isotropic(n_dot_h, alpha2);
-        float const g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, alpha2);
-        float3 const f = fresnel(wo_dot_h);
-
-        fresnel_result = f;
-
-        result.reflection = d * g * f;
-        result.wi = wi;
-        result.h = h;
-        result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-        result.h_dot_wi = wo_dot_h;
-        result.type.clear(bxdf::Type::Glossy_reflection);
-
-        SOFT_ASSERT(testing::check(result, wo, layer));
-
-        return n_dot_wi;
-}
-
-*/
-
 template <typename Layer, typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
                          Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
                          bxdf::Sample& result) noexcept {
-    // Roughness zero will always have zero specular term (or worse NaN)
-    // For reflections we could do a perfect mirror,
-    // but the decision is to always use a minimum roughness instead
-    SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
-
     float2 const xi = sampler.generate_sample_2D();
 
-    float const alpha  = layer.alpha_;
-    float const alpha2 = layer.alpha2_;
+    float const alpha = layer.alpha_;
 
     float3 const lwo = layer.world_to_tangent(wo);
 
@@ -335,6 +268,8 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
+    float const alpha2 = alpha * alpha;
+
     float const  d = distribution_isotropic(n_dot_h, alpha2);
     float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
     float3 const f = fresnel(wo_dot_h);
@@ -359,15 +294,9 @@ template <typename Layer, typename IOR, typename Fresnel>
 float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer const& layer,
                                     IOR const& ior, Fresnel const& fresnel,
                                     sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
-    // Roughness zero will always have zero specular term (or worse NaN)
-    // For reflections we could do a perfect mirror,
-    // but the decision is to always use a minimum roughness instead
-    SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
-
     float2 const xi = sampler.generate_sample_2D();
 
-    float const alpha  = layer.alpha_;
-    float const alpha2 = layer.alpha2_;
+    float const alpha = layer.alpha_;
 
     float3 const lwo = layer.world_to_tangent(wo);
 
@@ -412,10 +341,14 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
-    float const  d     = distribution_isotropic(n_dot_h, alpha2);
-    float2 const g     = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
-    float const  cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
-    float3 const f     = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
+    float const alpha2 = alpha * alpha;
+
+    float const  d = distribution_isotropic(n_dot_h, alpha2);
+    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+
+    float const cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
+
+    float3 const f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
 
     result.reflection = d * g[0] * f;
     result.wi         = wi;
@@ -600,8 +533,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float2 const xi = sampler.generate_sample_2D();
 
-    float const alpha  = layer.alpha_;
-    float const alpha2 = layer.alpha2_;
+    float const alpha = layer.alpha_;
 
     float3 const lwo = layer.world_to_tangent(wo);
 
@@ -650,6 +582,8 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     float3 const wi = math::normalize((ior.eta_i_ * wo_dot_h - wi_dot_h) * h - ior.eta_i_ * wo);
 
     float const n_dot_wi = layer.clamp_reverse_n_dot(wi);
+
+    float const alpha2 = alpha * alpha;
 
     float const d = distribution_isotropic(n_dot_h, alpha2);
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
