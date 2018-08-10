@@ -22,10 +22,11 @@ Disk::Disk() noexcept {
 bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                      Intersection& intersection) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
-    float         d      = math::dot(normal, transformation.position);
-    float         denom  = -math::dot(normal, ray.direction);
-    float         numer  = math::dot(normal, ray.origin) - d;
-    float         hit_t  = numer / denom;
+
+    float const        d      = math::dot(normal, transformation.position);
+    float const        denom  = -math::dot(normal, ray.direction);
+    float const        numer  = math::dot(normal, ray.origin) - d;
+    float const        hit_t  = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
@@ -64,6 +65,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 bool Disk::intersect_fast(Ray& ray, Transformation const&           transformation,
                           Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
+
     float         d      = math::dot(normal, transformation.position);
     float         denom  = -math::dot(normal, ray.direction);
     float         numer  = math::dot(normal, ray.origin) - d;
@@ -104,6 +106,7 @@ bool Disk::intersect_fast(Ray& ray, Transformation const&           transformati
 bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                      float& epsilon) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
+
     float         d      = math::dot(normal, transformation.position);
     float         denom  = -math::dot(normal, ray.direction);
     float         numer  = math::dot(normal, ray.origin) - d;
@@ -130,6 +133,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
                        Node_stack& /*node_stack*/) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
+
     float         d      = math::dot(normal, transformation.position);
     float         denom  = -math::dot(normal, ray.direction);
     float         numer  = math::dot(normal, ray.origin) - d;
@@ -154,6 +158,7 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation,
                     Materials const& materials, Sampler_filter filter, Worker const& worker) const
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
+
     float         d      = math::dot(normal, transformation.position);
     float         denom  = -math::dot(normal, ray.direction);
     float         numer  = math::dot(normal, ray.origin) - d;
@@ -183,6 +188,7 @@ float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformatio
                              Materials const& materials, Sampler_filter filter,
                              Worker const& worker) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
+
     float         d      = math::dot(normal, transformation.position);
     float         denom  = -math::dot(normal, ray.direction);
     float         numer  = math::dot(normal, ray.origin) - d;

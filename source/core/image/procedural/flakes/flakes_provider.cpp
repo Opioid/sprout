@@ -18,7 +18,8 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
     std::shared_ptr<Byte3> image = std::make_shared<Byte3>(
         Image::Description(Image::Type::Byte3, props.dimensions));
 
-    renderer.set_brush(float3(0.f, 0.f, 1.f));
+  //  renderer.set_brush(float3(0.f, 0.f, 1.f));
+    renderer.set_brush(float3(0.f));
     renderer.clear();
 
     rnd::Generator rng;
@@ -34,16 +35,14 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
         float3 normal = math::sample_hemisphere_uniform(s_1);
 
-        //		float3 normal(1.f, 1.f, 1.f);
-
-        normal = math::normalize(normal + float3(0.f, 0.f, 2.f));
+        normal = math::normalize(normal + float3(0.f, 0.f, 0.5f));
 
         renderer.set_brush(normal);
 
-        renderer.draw_circle(s_0, props.radius);
+        renderer.draw_disk(s_0, normal, props.radius);
     }
 
-    renderer.resolve(*image);
+    renderer.resolve_max_or(*image, float3(0.f, 0.f, 1.f));
 
     encoding::png::Writer::write("flakes_normal.png", *image);
 
@@ -72,11 +71,13 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
     for (uint32_t i = 0; i < props.num_flakes; ++i) {
         float2 s_0 = math::thing(i, props.num_flakes, r_0);
 
-        // We do this to keep the rng in the same state as was used for the normals
-        rng.random_float();
-        rng.random_float();
+        float2 const s_1 = float2(rng.random_float(), rng.random_float());
 
-        renderer.draw_circle(s_0, props.radius - border);
+        float3 normal = math::sample_hemisphere_uniform(s_1);
+
+        normal = math::normalize(normal + float3(0.f, 0.f, 0.5f));
+
+        renderer.draw_disk(s_0, normal, props.radius - border);
     }
 
     renderer.resolve(*image);

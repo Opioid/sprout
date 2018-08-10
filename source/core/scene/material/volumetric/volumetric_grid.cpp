@@ -86,7 +86,7 @@ Flow_vis_grid::Flow_vis_grid(Sampler_settings const& sampler_settings,
                              Texture_adapter const&  grid) noexcept
     : Material(sampler_settings), grid_(grid) {}
 
-Flow_vis_grid::~Flow_vis_grid() {}
+Flow_vis_grid::~Flow_vis_grid() noexcept {}
 
 float3 Flow_vis_grid::emission(math::Ray const& ray, Transformation const& transformation,
                                float step_size, rnd::Generator& rng, Sampler_filter filter,

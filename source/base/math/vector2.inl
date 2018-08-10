@@ -43,8 +43,18 @@ static constexpr Vector2<T> operator+(Vector2<T> a, Vector2<T> b) {
 }
 
 template <typename T>
+static constexpr Vector2<T> operator+(Vector2<T> v, T s) {
+    return Vector2<T>(v[0] + s, v[1] + s);
+}
+
+template <typename T>
 static constexpr Vector2<T> operator-(Vector2<T> a, Vector2<T> b) {
     return Vector2<T>(a[0] - b[0], a[1] - b[1]);
+}
+
+template <typename T>
+static constexpr Vector2<T> operator-(Vector2<T> v, T s) {
+    return Vector2<T>(v[0] - s, v[1] - s);
 }
 
 template <typename T>

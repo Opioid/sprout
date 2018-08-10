@@ -55,6 +55,20 @@ void Renderer::draw_circle(float2 pos, float radius) {
     }
 }
 
+void Renderer::draw_disk(float2 pos, float3 const& normal, float radius) {
+    int2 const start((pos - radius) * dimensions_f_);
+    int2 const end((pos + radius) * dimensions_f_);
+
+    for (int32_t y = start[1]; y < end[1]; ++y) {
+        for (int32_t x = start[0]; x < end[0]; ++x) {
+            float2 const sample(static_cast<float>(x) / dimensions_f_[0], static_cast<float>(y) / dimensions_f_[1]);
+            if (intersect_disk(pos, normal, radius, sample)) {
+                set_sample(x, y, brush_);
+            }
+        }
+    }
+}
+
 void Renderer::resolve_sRGB(Byte3& image) const {
     if (1 == sqrt_num_samples_) {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
@@ -127,6 +141,47 @@ void Renderer::resolve(Byte3& image) const {
     }
 }
 
+void Renderer::resolve_max_or(Byte3& image, float3 const& color) const {
+    if (1 == sqrt_num_samples_) {
+        for (int32_t i = 0, len = image.area(); i < len; ++i) {
+            auto const s      = samples_[i];
+
+            image.at(i) = encoding::float_to_snorm(s.xyz());
+        }
+    } else {
+        auto const i_d = image.description().dimensions;
+
+        for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
+            int32_t const b_y = sqrt_num_samples_ * i_y;
+            for (int32_t i_x = 0; i_x < i_d[0]; ++i_x) {
+                int32_t const b_x = sqrt_num_samples_ * i_x;
+
+                bool hit = false;
+
+                float3 result(0.f);
+
+                for (int32_t y = 0; y < sqrt_num_samples_ && !hit; ++y) {
+                    int32_t b_o = dimensions_[0] * (b_y + y) + b_x;
+                    for (int32_t x = 0; x < sqrt_num_samples_ && !hit; ++x) {
+                        int32_t const s = b_o + x;
+
+                        if (0.f != samples_[s][2]) {
+                            hit = true;
+                            result = samples_[s].xyz();
+                        }
+                    }
+                }
+
+                if (hit) {
+                    image.at(i_x, i_y) = encoding::float_to_snorm(result);
+                } else {
+                    image.at(i_x, i_y) = encoding::float_to_snorm(color);
+                }
+            }
+        }
+    }
+}
+
 void Renderer::resolve(Byte1& image) const {
     if (1 == sqrt_num_samples_) {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
@@ -173,6 +228,26 @@ void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, float4 const& 
     for (int32_t x = start_x; x < end_x; ++x) {
         set_sample(x, y, color);
     }
+}
+
+bool Renderer::intersect_disk(float2 pos, float3 const& normal, float radius, float2 sample) noexcept {
+    float2 const n2 = normal.xy();
+
+    float const        d      = math::dot(n2, pos);
+    float const        denom  = normal[2];
+    float const        numer  = math::dot(n2, sample) - d;
+    float const        hit_t  = numer / denom;
+
+        float3 const k = float3(sample - pos, hit_t);
+
+        float const l = math::dot(k, k);
+
+        if (l <= radius * radius) {
+            return true;
+        }
+
+
+    return false;
 }
 
 }  // namespace image::procedural

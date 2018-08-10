@@ -12,7 +12,7 @@ namespace scene::material::volumetric {
 Material::Material(Sampler_settings const& sampler_settings) noexcept
     : material::Material(sampler_settings, true) {}
 
-Material::~Material() {}
+Material::~Material() noexcept {}
 
 material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
                                          Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,

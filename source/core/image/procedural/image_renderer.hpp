@@ -51,9 +51,13 @@ class Renderer {
 
     void draw_circle(float2 pos, float radius);
 
+    void draw_disk(float2 pos, float3 const& normal, float radius);
+
     void resolve_sRGB(Byte3& target) const;
 
     void resolve(Byte3& target) const;
+
+    void resolve_max_or(Byte3& target, float3 const& color) const;
 
     void resolve(Byte1& target) const;
 
@@ -61,6 +65,8 @@ class Renderer {
     void set_sample(int32_t x, int32_t y, float4 const& color);
 
     void set_row(int32_t start_x, int32_t end_x, int32_t y, float4 const& color);
+
+    static bool intersect_disk(float2 pos, float3 const& normal, float radius, float2 sample) noexcept;
 
     int32_t sqrt_num_samples_;
 
