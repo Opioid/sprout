@@ -33,9 +33,9 @@ void Renderer::clear() {
 }
 
 void Renderer::draw_circle(float2 pos, float radius) {
-    int2 sample(pos * dimensions_f_);
+    int2 const sample(pos * dimensions_f_);
 
-    int32_t x   = static_cast<int>(radius * dimensions_f_[0]);
+    int32_t x   = static_cast<int32_t>(radius * dimensions_f_[0]);
     int32_t y   = 0;
     int32_t err = 0;
 
@@ -58,34 +58,34 @@ void Renderer::draw_circle(float2 pos, float radius) {
 void Renderer::resolve_sRGB(Byte3& image) const {
     if (1 == sqrt_num_samples_) {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
-            auto s = samples_[i];
+            auto const s = samples_[i];
 
-            byte3 srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz()));
+            byte3 const srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz()));
             image.store(i, srgb);
         }
     } else {
-        int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
+        int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
 
-        float n = 1.f / static_cast<float>(num_samples);
+        float const n = 1.f / static_cast<float>(num_samples);
 
-        auto i_d = image.description().dimensions;
+        auto const i_d = image.description().dimensions;
 
         for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
-            int32_t b_y = sqrt_num_samples_ * i_y;
+            int32_t const b_y = sqrt_num_samples_ * i_y;
             for (int32_t i_x = 0; i_x < i_d[0]; ++i_x) {
-                int32_t b_x = sqrt_num_samples_ * i_x;
+                int32_t const b_x = sqrt_num_samples_ * i_x;
 
                 float3 result(0.f);
 
                 for (int32_t y = 0; y < sqrt_num_samples_; ++y) {
-                    int32_t b_o = dimensions_[0] * (b_y + y) + b_x;
+                    int32_t const b_o = dimensions_[0] * (b_y + y) + b_x;
                     for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
-                        int32_t s = b_o + x;
+                        int32_t const s = b_o + x;
                         result += samples_[s].xyz();
                     }
                 }
 
-                byte3 srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(n * result));
+                byte3 const srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(n * result));
                 image.store(i_x, i_y, srgb);
             }
         }
@@ -95,27 +95,28 @@ void Renderer::resolve_sRGB(Byte3& image) const {
 void Renderer::resolve(Byte3& image) const {
     if (1 == sqrt_num_samples_) {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
-            auto s      = samples_[i];
+            auto const s      = samples_[i];
+
             image.at(i) = encoding::float_to_snorm(s.xyz());
         }
     } else {
-        int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
+        int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
 
-        float n = 1.f / static_cast<float>(num_samples);
+        float const n = 1.f / static_cast<float>(num_samples);
 
-        auto i_d = image.description().dimensions;
+        auto const i_d = image.description().dimensions;
 
         for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
-            int32_t b_y = sqrt_num_samples_ * i_y;
+            int32_t const b_y = sqrt_num_samples_ * i_y;
             for (int32_t i_x = 0; i_x < i_d[0]; ++i_x) {
-                int32_t b_x = sqrt_num_samples_ * i_x;
+                int32_t const b_x = sqrt_num_samples_ * i_x;
 
                 float3 result(0.f);
 
                 for (int32_t y = 0; y < sqrt_num_samples_; ++y) {
                     int32_t b_o = dimensions_[0] * (b_y + y) + b_x;
                     for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
-                        int32_t s = b_o + x;
+                        int32_t const s = b_o + x;
                         result += samples_[s].xyz();
                     }
                 }
@@ -129,16 +130,16 @@ void Renderer::resolve(Byte3& image) const {
 void Renderer::resolve(Byte1& image) const {
     if (1 == sqrt_num_samples_) {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
-            auto& s = samples_[i];
+            auto const s = samples_[i];
 
             image.at(i) = encoding::float_to_unorm(s[0]);
         }
     } else {
-        int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
+        int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
 
-        float n = 1.f / static_cast<float>(num_samples);
+        float const n = 1.f / static_cast<float>(num_samples);
 
-        auto i_d = image.description().dimensions;
+        auto const i_d = image.description().dimensions;
 
         for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
             int32_t b_y = sqrt_num_samples_ * i_y;

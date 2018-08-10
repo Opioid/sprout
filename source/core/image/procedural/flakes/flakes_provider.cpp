@@ -13,7 +13,7 @@ namespace image::procedural::flakes {
 std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& options) {
     Properties props(options);
 
-    Renderer renderer(props.dimensions, 4);
+    Renderer renderer(props.dimensions, 8);
 
     std::shared_ptr<Byte3> image = std::make_shared<Byte3>(
         Image::Description(Image::Type::Byte3, props.dimensions));
@@ -45,7 +45,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
     renderer.resolve(*image);
 
-    //	encoding::png::Writer::write("flakes_normal.png", *image);
+    encoding::png::Writer::write("flakes_normal.png", *image);
 
     return image;
 }
@@ -53,7 +53,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options) {
     Properties props(options);
 
-    Renderer renderer(props.dimensions, 4);
+    Renderer renderer(props.dimensions, 8);
 
     std::shared_ptr<Byte1> image = std::make_shared<Byte1>(
         Image::Description(Image::Type::Byte1, props.dimensions));
@@ -81,7 +81,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
 
     renderer.resolve(*image);
 
-    //	encoding::png::Writer::write("flakes_mask.png", *image);
+    encoding::png::Writer::write("flakes_mask.png", *image);
 
     return image;
 }
