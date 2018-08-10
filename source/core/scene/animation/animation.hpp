@@ -9,16 +9,16 @@ namespace scene::animation {
 
 class Animation {
   public:
-    void init(uint32_t count);
+    void init(uint32_t count) noexcept;
 
-    void push_back(const entity::Keyframe& keyframe);
+    void push_back(entity::Keyframe const& keyframe) noexcept;
 
-    void tick(float time_slice);
-    void seek(float time);
+    void tick(float time_slice) noexcept;
+    void seek(float time) noexcept;
 
-    const entity::Keyframe& beginning() const;
+    entity::Keyframe const& beginning() const noexcept;
 
-    const entity::Keyframe& interpolated_frame() const;
+    entity::Keyframe const& interpolated_frame() const noexcept;
 
   private:
     float current_time_;

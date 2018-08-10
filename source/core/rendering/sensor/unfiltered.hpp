@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_UNFILTERED_HPP
 #define SU_CORE_RENDERING_SENSOR_UNFILTERED_HPP
 
-#include "base/math/vector4.hpp"
+#include "base/math/vector.hpp"
 
 namespace sampler {
 struct Camera_sample;

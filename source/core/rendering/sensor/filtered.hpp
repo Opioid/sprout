@@ -2,7 +2,7 @@
 #define SU_CORE_RENDERING_SENSOR_FILTERED_HPP
 
 #include <memory>
-#include "base/math/vector4.hpp"
+#include "base/math/vector.hpp"
 
 namespace image::texture {
 class Texture;
