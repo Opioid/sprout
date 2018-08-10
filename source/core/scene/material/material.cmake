@@ -13,13 +13,12 @@ include("${CMAKE_CURRENT_LIST_DIR}/metal/metal.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/metallic_paint/metallic_paint.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/mix/mix.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/null/null.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/oren_nayar/oren_nayar.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/sky/sky.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/substitute/substitute.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/volumetric/volumetric.cmake")
 
 target_sources(core
-	PRIVATE
+    PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/bxdf.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/collision_coefficients.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/collision_coefficients.inl"
