@@ -59,7 +59,7 @@ void Sample_coating<Coating>::sample(sampler::Sampler& sampler, bxdf::Sample& re
                                                    avoid_caustics_);
 
             result.reflection = result.reflection + coating_attenuation * base.reflection;
-            result.pdf = (result.pdf + 2.f * base.pdf) * 0.5f;
+            result.pdf        = (result.pdf + 2.f * base.pdf) * 0.5f;
         }
     } else {
         if (1.f == layer_.metallic_) {
@@ -85,7 +85,7 @@ void Sample_coating<Coating>::diffuse_sample_and_coating(sampler::Sampler& sampl
                                            avoid_caustics_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
-    result.pdf = (2.f * result.pdf + coating.pdf) * 0.25f;
+    result.pdf        = (2.f * result.pdf + coating.pdf) * 0.25f;
 }
 
 template <typename Coating>
@@ -97,7 +97,7 @@ void Sample_coating<Coating>::gloss_sample_and_coating(sampler::Sampler& sampler
                                            avoid_caustics_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
-    result.pdf = (2.f * result.pdf + coating.pdf) * 0.25f;
+    result.pdf        = (2.f * result.pdf + coating.pdf) * 0.25f;
 }
 
 template <typename Coating>

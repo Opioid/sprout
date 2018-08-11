@@ -3,6 +3,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "metallic_paint_sample.hpp"
 #include "scene/material/coating/coating.inl"
+#include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
@@ -34,8 +35,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     if (flakes_normal_map_.is_valid()) {
-        float3 nm = flakes_normal_map_.sample_3(sampler, rs.uv);
-        float3 n  = math::normalize(rs.tangent_to_world(nm));
+        float3 const n = sample_normal(wo, rs, flakes_normal_map_, sampler);
 
         sample.flakes_.set_tangent_frame(n);
     } else {
@@ -51,7 +51,9 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
         flakes_weight = 1.f;
     }
 
-    sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha_, flakes_weight);
+    float const flakes_alpha = rs.avoid_caustics ? 1.f : flakes_alpha_;
+
+    sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha, flakes_weight);
 
     sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
 

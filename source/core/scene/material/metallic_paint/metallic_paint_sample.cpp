@@ -44,7 +44,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
 
     float const p = sampler.generate_sample_1D();
 
-    if (p < 0.2f) {
+    if (p < 0.4f) {
         float3 coating_attenuation;
         coating_.sample(wo_, sampler, coating_attenuation, result);
 
@@ -57,8 +57,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         float3 const bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
         result.reflection = result.reflection + coating_attenuation * bottom;
-        result.pdf        = (result.pdf + base.pdf + flakes.pdf) * 0.2f;
-    } else if (p < 0.6f) {
+        result.pdf        = (result.pdf + base.pdf + flakes.pdf) * 0.4f;
+    } else if (p < 0.8f) {
         base_.sample(wo_, sampler, result);
 
         auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
@@ -84,7 +84,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         float3 const bottom = (1.f - flakes_fresnel) * base.reflection + result.reflection;
 
         result.reflection = coating.reflection + coating.attenuation * bottom;
-        result.pdf        = (result.pdf + base.pdf + coating.pdf) * 0.4f;
+        result.pdf        = (result.pdf + base.pdf + coating.pdf) * 0.2f;
     }
 }
 
