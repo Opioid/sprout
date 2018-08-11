@@ -14,6 +14,15 @@ class Sample_coating : public Sample_base<disney::Isotropic> {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
+  private:
+    void diffuse_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+
+    void gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+
+    void pure_gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const
+        noexcept;
+
+  public:
     Coating_layer coating_;
 };
 

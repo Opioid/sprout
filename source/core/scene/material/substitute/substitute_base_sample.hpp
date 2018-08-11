@@ -12,28 +12,6 @@ class Sample_base : public material::Sample {
 
     float3 radiance() const noexcept override final;
 
-  protected:
-    template <typename Coating>
-    bxdf::Result base_and_coating_evaluate(float3 const& wi, Coating const& coating_layer) const
-        noexcept;
-
-    template <typename Coating>
-    void base_and_coating_sample(Coating const& coating_layer, sampler::Sampler& sampler,
-                                 bxdf::Sample& result) const noexcept;
-
-    template <typename Coating>
-    void diffuse_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
-                                    bxdf::Sample& result) const noexcept;
-
-    template <typename Coating>
-    void gloss_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
-                                  bxdf::Sample& result) const noexcept;
-
-    template <typename Coating>
-    void pure_gloss_sample_and_coating(Coating const& coating_layer, sampler::Sampler& sampler,
-                                       bxdf::Sample& result) const noexcept;
-
-  public:
     struct Layer : material::Sample::Layer {
         void set(float3 const& color, float3 const& radiance, float ior, float f0, float alpha,
                  float metallic) noexcept;
