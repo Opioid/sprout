@@ -16,19 +16,6 @@ class Schlick {
     float3 const f0_;
 };
 
-class Schlick_blending {
-  public:
-    Schlick_blending(float3 const& a, float3 const& b, float f0) noexcept;
-
-    float3 operator()(float wo_dot_h) const noexcept;
-
-  private:
-    float3 const a_;
-    float3 const b_;
-
-    float const f0_;
-};
-
 class Thinfilm {
   public:
     Thinfilm(float external_ior, float thinfilm_ior, float internal_ior, float thickness) noexcept;

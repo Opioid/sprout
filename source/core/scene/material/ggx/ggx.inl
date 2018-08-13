@@ -236,8 +236,8 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
 
     // orthonormal basis
     float3 const cross_v_z = float3(v[1], -v[0], 0.f);  // == cross(v, [0, 0, 1])
-    float3 const t1        = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-    // cross(t1, v);
+
+    float3 const t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
     float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
     // sample point with polar coordinates (r, phi)
@@ -305,8 +305,8 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
 
     // orthonormal basis
     float3 const cross_v_z = float3(v[1], -v[0], 0.f);  // == cross(v, [0, 0, 1])
-    float3 const t1        = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-    // cross(t1, v);
+
+    float3 const t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
     float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
     // sample point with polar coordinates (r, phi)
@@ -542,8 +542,8 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     // orthonormal basis
     float3 const cross_v_z = float3(v[1], -v[0], 0.f);  // == cross(v, [0, 0, 1])
-    float3 const t1        = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-    // cross(t1, v);
+
+    float3 const t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
     float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
     // sample point with polar coordinates (r, phi)
@@ -588,8 +588,9 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     float const d = distribution_isotropic(n_dot_h, alpha2);
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 
-    float const  cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
-    float3 const f     = float3(1.f) - fresnel(cos_x);
+    float const cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
+
+    float3 const f = float3(1.f) - fresnel(cos_x);
 
     float3 const refraction = d * g * f;
 

@@ -51,6 +51,26 @@ static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i
     return 0.5f * (r_p * r_p + r_o * r_o);
 }
 
+static inline float dielectric_reflect(float cos_theta_i, float eta_i, float eta_t) noexcept {
+    float const sin_theta_i = std::sqrt(std::max(0.f, 1.f - cos_theta_i * cos_theta_i));
+    float const sin_theta_t = eta_i / eta_t * sin_theta_i;
+    float const sint2       = sin_theta_t * sin_theta_t;
+
+    //    float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
+    float const n_dot_wo = cos_theta_i;
+    float const sint2ly  = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+
+    float const cos_theta_t = std::sqrt(1.f - sint2);
+
+    float const r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t) /
+                      (eta_t * cos_theta_i + eta_i * cos_theta_t);
+
+    float const r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t) /
+                      (eta_i * cos_theta_i + eta_t * cos_theta_t);
+
+    return 0.5f * (r_p * r_p + r_o * r_o);
+}
+
 // Amplitude reflection coefficient (s-polarized)
 static inline float rs(float n1, float n2, float cosI, float cosT) noexcept {
     return (n1 * cosI - n2 * cosT) / (n1 * cosI + n2 * cosT);
@@ -121,24 +141,12 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
     return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
-static inline float3 schlick_blending(float wo_dot_h, float3 const& a, float3 const& b,
-                                      float f0) noexcept {
-    return math::lerp(a, b, schlick(wo_dot_h, f0));
-}
-
 inline Schlick::Schlick(float f0) noexcept : f0_(f0) {}
 
 inline Schlick::Schlick(float3 const& f0) noexcept : f0_(f0) {}
 
 inline float3 Schlick::operator()(float wo_dot_h) const noexcept {
     return schlick(wo_dot_h, f0_);
-}
-
-inline Schlick_blending::Schlick_blending(float3 const& a, float3 const& b, float f0) noexcept
-    : a_(a), b_(b), f0_(f0) {}
-
-inline float3 Schlick_blending::operator()(float wo_dot_h) const noexcept {
-    return schlick_blending(wo_dot_h, a_, b_, f0_);
 }
 
 inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior, float internal_ior,
