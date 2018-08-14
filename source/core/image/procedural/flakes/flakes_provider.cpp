@@ -23,24 +23,18 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
     rnd::Generator rng;
 
-    uint32_t r_0 = rng.random_uint();
+    uint32_t const seed = rng.random_uint();
 
     for (uint32_t i = 0; i < props.num_flakes; ++i) {
-        float2 const s_0 = math::thing(i, props.num_flakes, r_0);
-        //	float2 s = math::scrambled_hammersley(i, num_flakes, r_0);
-        //	float2 s = math::ems(i, r_0, r_1);
+        Flake const flake = random_flake(i, seed, props, rng);
 
-        float2 const s_1 = float2(rng.random_float(), rng.random_float());
+        renderer.set_brush(flake.normal);
 
-        float3 normal = math::sample_hemisphere_uniform(s_1);
+     //   renderer.draw_circle(flake.pos, props.radius, 1);
 
-        normal = math::normalize(normal + float3(0.f, 0.f, 2.f));
+        renderer.draw_disk(flake.pos, flake.normal, props.radius, 1);
 
-        renderer.set_brush(normal);
-
-        //     renderer.draw_disk(s_0, normal, props.radius);
-
-        renderer.draw_bounding_square(s_0, props.radius);
+    //    renderer.draw_bounding_square(flake.pos, props.radius);
     }
 
     renderer.resolve(*image);
@@ -58,27 +52,19 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
     std::shared_ptr<Byte1> image = std::make_shared<Byte1>(
         Image::Description(Image::Type::Byte1, props.dimensions));
 
-    renderer.set_brush(float3(0.f, 0.f, 0.f));
+    renderer.set_brush(float3(0.f));
     renderer.clear();
 
     rnd::Generator rng;
 
-    uint32_t const r_0 = rng.random_uint();
+    uint32_t const seed = rng.random_uint();
 
-    renderer.set_brush(float3(1.f, 1.f, 1.f));
+    renderer.set_brush(float3(1.f));
 
     for (uint32_t i = 0; i < props.num_flakes; ++i) {
-        float2 s_0 = math::thing(i, props.num_flakes, r_0);
+        Flake const flake = random_flake(i, seed, props, rng);
 
-        float2 const s_1 = float2(rng.random_float(), rng.random_float());
-
-        float3 normal = math::sample_hemisphere_uniform(s_1);
-
-        normal = math::normalize(normal + float3(0.f, 0.f, 2.f));
-
-        //    renderer.draw_circle(s_0, props.radius);
-
-        renderer.draw_disk(s_0, normal, props.radius);
+        renderer.draw_disk(flake.pos, flake.normal, props.radius);
     }
 
     renderer.resolve(*image);
@@ -97,6 +83,18 @@ Provider::Properties::Properties(memory::Variant_map const& options) : dimension
     radius = 0.5f * size;
 
     num_flakes = static_cast<uint32_t>(density / (size * size) + 0.5f);
+}
+
+Provider::Flake Provider::random_flake(uint32_t index, uint32_t seed, Properties const& props,
+                                       rnd::Generator& rng) {
+    float2 const s0 = math::thing(index, props.num_flakes, seed);
+
+    float2 const s1 = float2(rng.random_float(), rng.random_float());
+
+    float3 const normal = math::normalize(math::sample_hemisphere_uniform(s1) +
+                                          float3(0.f, 0.f, 2.f));
+
+    return Flake{s0, normal};
 }
 
 }  // namespace image::procedural::flakes
