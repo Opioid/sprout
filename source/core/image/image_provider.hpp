@@ -11,21 +11,23 @@ class Image;
 
 class Provider final : public resource::Provider<Image> {
   public:
-    Provider();
-    virtual ~Provider() override final;
+    Provider()  noexcept;
 
-    virtual std::shared_ptr<Image> load(std::string const&         filename,
+    ~Provider() noexcept override final;
+
+    std::shared_ptr<Image> load(std::string const&         filename,
                                         memory::Variant_map const& options,
                                         resource::Manager&         manager) override final;
 
-    virtual std::shared_ptr<Image> load(void const* data, std::string_view mount_folder,
+    std::shared_ptr<Image> load(void const* data, std::string_view mount_folder,
                                         memory::Variant_map const& options,
                                         resource::Manager&         manager) override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const  noexcept override final;
 
   private:
     encoding::png::Reader        png_reader_;
+
     procedural::flakes::Provider flakes_provider_;
 };
 

@@ -21,13 +21,13 @@ namespace procedural::flakes {
 
 class Provider {
   public:
-    std::shared_ptr<Image> create_normal_map(memory::Variant_map const& options);
+    std::shared_ptr<Image> create_normal_map(memory::Variant_map const& options) noexcept;
 
-    std::shared_ptr<Image> create_mask(memory::Variant_map const& options);
+    std::shared_ptr<Image> create_mask(memory::Variant_map const& options) noexcept;
 
   private:
     struct Properties {
-        Properties(memory::Variant_map const& options);
+        Properties(memory::Variant_map const& options) noexcept;
 
         int2 dimensions;
 
@@ -42,7 +42,7 @@ class Provider {
     };
 
     static Flake random_flake(uint32_t index, uint32_t seed, Properties const& props,
-                              rnd::Generator& rng);
+                              rnd::Generator& rng) noexcept;
 };
 
 }  // namespace procedural::flakes

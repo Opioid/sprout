@@ -25,7 +25,7 @@ class Provider : public Identifiable<T> {
     virtual std::shared_ptr<T> load(void const* data, std::string_view mount_folder,
                                     memory::Variant_map const& options, Manager& manager) = 0;
 
-    virtual size_t num_bytes() const = 0;
+    virtual size_t num_bytes() const noexcept = 0;
 };
 
 }  // namespace resource

@@ -10,13 +10,10 @@
 
 namespace image::procedural::flakes {
 
-std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& options) {
+std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& options) noexcept {
     Properties props(options);
 
     Renderer renderer(props.dimensions, 1);
-
-    std::shared_ptr<Byte3> image = std::make_shared<Byte3>(
-        Image::Description(Image::Type::Byte3, props.dimensions));
 
     renderer.set_brush(float3(0.f, 0.f, 1.f));
     renderer.clear();
@@ -37,6 +34,9 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
         //   renderer.draw_bounding_square(flake.pos, props.radius);
     }
 
+    std::shared_ptr<Byte3> image = std::make_shared<Byte3>(
+        Image::Description(Image::Type::Byte3, props.dimensions));
+
     renderer.resolve(*image);
 
     encoding::png::Writer::write("flakes_normal.png", *image);
@@ -44,13 +44,10 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
     return image;
 }
 
-std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options) {
+std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options) noexcept {
     Properties props(options);
 
     Renderer renderer(props.dimensions, 8);
-
-    std::shared_ptr<Byte1> image = std::make_shared<Byte1>(
-        Image::Description(Image::Type::Byte1, props.dimensions));
 
     renderer.set_brush(float3(0.f));
     renderer.clear();
@@ -67,6 +64,9 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
         renderer.draw_disk(flake.pos, flake.normal, props.radius);
     }
 
+    std::shared_ptr<Byte1> image = std::make_shared<Byte1>(
+        Image::Description(Image::Type::Byte1, props.dimensions));
+
     renderer.resolve(*image);
 
     encoding::png::Writer::write("flakes_mask.png", *image);
@@ -74,7 +74,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
     return image;
 }
 
-Provider::Properties::Properties(memory::Variant_map const& options) : dimensions(1024, 1024) {
+Provider::Properties::Properties(memory::Variant_map const& options) noexcept : dimensions(1024, 1024) {
     float size    = 0.006f;
     float density = 0.5f;
     options.query("size", size);
@@ -86,7 +86,7 @@ Provider::Properties::Properties(memory::Variant_map const& options) : dimension
 }
 
 Provider::Flake Provider::random_flake(uint32_t index, uint32_t seed, Properties const& props,
-                                       rnd::Generator& rng) {
+                                       rnd::Generator& rng) noexcept {
     float2 const s0 = math::thing(index, props.num_flakes, seed);
 
     float2 const s1 = float2(rng.random_float(), rng.random_float());

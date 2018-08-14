@@ -20,19 +20,20 @@ struct Sampler_settings;
 
 class Provider final : public resource::Provider<Material> {
   public:
-    Provider();
-    virtual ~Provider() override final;
+    Provider() noexcept;
 
-    virtual Material_ptr load(std::string const& filename, memory::Variant_map const& options,
+     ~Provider() noexcept override final;
+
+    Material_ptr load(std::string const& filename, memory::Variant_map const& options,
                               resource::Manager& manager) override final;
 
-    virtual Material_ptr load(void const* data, std::string_view mount_folder,
+    Material_ptr load(void const* data, std::string_view mount_folder,
                               memory::Variant_map const& options,
                               resource::Manager&         manager) override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
-    Material_ptr fallback_material() const;
+    Material_ptr fallback_material() const noexcept;
 
   private:
     Material_ptr load(json::Value const& value, std::string_view mount_folder,

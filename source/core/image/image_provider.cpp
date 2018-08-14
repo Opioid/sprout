@@ -13,9 +13,9 @@
 
 namespace image {
 
-Provider::Provider() : resource::Provider<Image>("Image") {}
+Provider::Provider() noexcept : resource::Provider<Image>("Image") {}
 
-Provider::~Provider() {}
+Provider::~Provider() noexcept {}
 
 std::shared_ptr<Image> Provider::load(std::string const&         filename,
                                       memory::Variant_map const& options,
@@ -69,7 +69,7 @@ std::shared_ptr<Image> Provider::load(void const* /*data*/, std::string_view /*m
     return nullptr;
 }
 
-size_t Provider::num_bytes() const {
+size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

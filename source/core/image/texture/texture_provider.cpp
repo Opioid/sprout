@@ -21,7 +21,7 @@
 
 namespace image::texture {
 
-Provider::Provider() : resource::Provider<Texture>("Texture") {
+Provider::Provider() noexcept : resource::Provider<Texture>("Texture") {
     encoding::init();
 }
 
@@ -99,7 +99,7 @@ std::shared_ptr<Texture> Provider::load(void const* /*data*/, std::string_view /
     return nullptr;
 }
 
-size_t Provider::num_bytes() const {
+size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

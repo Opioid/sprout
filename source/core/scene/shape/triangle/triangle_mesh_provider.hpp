@@ -25,18 +25,19 @@ class Provider : public resource::Provider<Shape> {
     using Vertices  = std::vector<Vertex>;
     using Strings   = std::vector<std::string>;
 
-    Provider();
-    virtual ~Provider() override;
+    Provider() noexcept;
 
-    virtual std::shared_ptr<Shape> load(std::string const&         filename,
+    ~Provider()  noexcept override;
+
+    std::shared_ptr<Shape> load(std::string const&         filename,
                                         memory::Variant_map const& options,
                                         resource::Manager&         manager) override final;
 
-    virtual std::shared_ptr<Shape> load(void const* data, std::string_view mount_folder,
+    std::shared_ptr<Shape> load(void const* data, std::string_view mount_folder,
                                         memory::Variant_map const& options,
                                         resource::Manager&         manager) override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 
     static std::shared_ptr<Shape> create_mesh(Triangles const& triangles, Vertices const& vertices,
                                               uint32_t num_parts, thread::Pool& thread_pool);

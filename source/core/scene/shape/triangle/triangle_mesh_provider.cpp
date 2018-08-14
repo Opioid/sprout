@@ -34,9 +34,9 @@ bool check(const std::vector<Vertex>& vertices, std::string const& filename);
 bool check_and_fix(std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
-Provider::Provider() : resource::Provider<Shape>("Mesh") {}
+Provider::Provider() noexcept : resource::Provider<Shape>("Mesh") {}
 
-Provider::~Provider() {}
+Provider::~Provider() noexcept {}
 
 std::shared_ptr<Shape> Provider::load(std::string const& filename,
                                       memory::Variant_map const& /*options*/,
@@ -134,7 +134,7 @@ std::shared_ptr<Shape> Provider::load(void const* /*data*/, std::string_view /*m
     return nullptr;
 }
 
-size_t Provider::num_bytes() const {
+size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

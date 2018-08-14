@@ -40,14 +40,14 @@
 
 namespace scene::material {
 
-Provider::Provider()
+Provider::Provider() noexcept
     : resource::Provider<Material>("Material"),
       fallback_material_(
           std::make_shared<debug::Material>(Sampler_settings(Sampler_settings::Filter::Linear))) {
     Material::init_rainbow();
 }
 
-Provider::~Provider() {}
+Provider::~Provider() noexcept {}
 
 Material_ptr Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
                             resource::Manager& manager) {
@@ -66,11 +66,11 @@ Material_ptr Provider::load(void const* data, std::string_view                  
     return load(*value, mount_folder, manager);
 }
 
-size_t Provider::num_bytes() const {
+size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-Material_ptr Provider::fallback_material() const {
+Material_ptr Provider::fallback_material() const noexcept {
     return fallback_material_;
 }
 

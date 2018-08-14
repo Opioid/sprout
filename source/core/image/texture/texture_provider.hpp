@@ -13,7 +13,7 @@ class Texture;
 
 class Provider final : public resource::Provider<Texture> {
   public:
-    Provider();
+    Provider() noexcept;
 
     enum class Usage {
         Undefined,
@@ -26,15 +26,15 @@ class Provider final : public resource::Provider<Texture> {
         Mask
     };
 
-    virtual std::shared_ptr<Texture> load(std::string const&         filename,
+    std::shared_ptr<Texture> load(std::string const&         filename,
                                           memory::Variant_map const& options,
                                           resource::Manager&         manager) override final;
 
-    virtual std::shared_ptr<Texture> load(void const* data, std::string_view mount_folder,
+    std::shared_ptr<Texture> load(void const* data, std::string_view mount_folder,
                                           memory::Variant_map const& options,
                                           resource::Manager&         manager) override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const noexcept override final;
 };
 
 }  // namespace texture
