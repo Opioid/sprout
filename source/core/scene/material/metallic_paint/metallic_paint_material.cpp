@@ -19,23 +19,14 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
-    /*
-            if (normal_map_) {
-                    auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
-                    float3 nm = sampler.sample_3(*normal_map_, rs.uv);
-                    float3 n  = math::normalize(rs.tangent_to_world(nm));
-                    sample.layer_.set_tangent_frame(rs.t, rs.b, n);
-            } else {*/
     sample.base_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);
-    //	}
-
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     if (flakes_normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, flakes_normal_map_, sampler);
+        auto const&  sampler = worker.sampler_2D(sampler_key(), Sampler_filter::Nearest);
+        float3 const n       = sample_normal(wo, rs, flakes_normal_map_, sampler);
 
         sample.flakes_.set_tangent_frame(n);
     } else {
@@ -46,7 +37,8 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
 
     float flakes_weight;
     if (flakes_mask_.is_valid()) {
-        flakes_weight = flakes_mask_.sample_1(sampler, rs.uv);
+        auto const& sampler = worker.sampler_2D(sampler_key(), filter);
+        flakes_weight       = flakes_mask_.sample_1(sampler, rs.uv);
     } else {
         flakes_weight = 1.f;
     }
