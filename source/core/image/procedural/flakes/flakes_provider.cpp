@@ -30,7 +30,11 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
         renderer.set_brush(flake.normal);
 
-        renderer.draw_bounding_square(flake.pos, props.radius);
+     //   renderer.draw_circle(flake.pos, props.radius, 1);
+
+        renderer.draw_disk(flake.pos, flake.normal, props.radius, 1);
+
+    //    renderer.draw_bounding_square(flake.pos, props.radius);
     }
 
     renderer.resolve(*image);

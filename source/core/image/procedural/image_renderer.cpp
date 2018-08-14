@@ -55,6 +55,29 @@ void Renderer::draw_circle(float2 pos, float radius) {
     }
 }
 
+void Renderer::draw_circle(float2 pos, float radius, int32_t border) {
+    int2 const sample(pos * dimensions_f_);
+
+    int32_t x   = static_cast<int32_t>(radius * dimensions_f_[0] + 0.5f) + border;
+    int32_t y   = 0;
+    int32_t err = 0;
+
+    while (x >= y) {
+        set_row(sample[0] - x, sample[0] + x, sample[1] + y, brush_);
+        set_row(sample[0] - y, sample[0] + y, sample[1] + x, brush_);
+        set_row(sample[0] - x, sample[0] + x, sample[1] - y, brush_);
+        set_row(sample[0] - y, sample[0] + y, sample[1] - x, brush_);
+
+        y += 1;
+        err += 1 + 2 * y;
+
+        if (2 * (err - x) + 1 > 0) {
+            x -= 1;
+            err += 1 - 2 * x;
+        }
+    }
+}
+
 void Renderer::draw_bounding_square(float2 pos, float radius) {
     int2 const start = int2((pos - radius) * dimensions_f_ - 0.5f) - int2(1);
     int2 const end   = int2((pos + radius) * dimensions_f_ + 0.5f) + int2(1);
@@ -73,6 +96,23 @@ void Renderer::draw_disk(float2 pos, float3 const& normal, float radius) {
             float2 const sample(static_cast<float>(x) / dimensions_f_[0],
                                 static_cast<float>(y) / dimensions_f_[1]);
             if (intersect_disk(pos, normal, radius, sample)) {
+                set_sample(x, y, brush_);
+            }
+        }
+    }
+}
+
+void Renderer::draw_disk(float2 pos, float3 const& normal, float radius, int32_t border) {
+    int2 const start((pos - radius) * dimensions_f_ - 1.f);
+    int2 const end((pos + radius) * dimensions_f_ + 1.f);
+
+    float const padded_radius = radius + static_cast<float>(border) / dimensions_f_[0];
+
+    for (int32_t y = start[1]; y < end[1]; ++y) {
+        for (int32_t x = start[0]; x < end[0]; ++x) {
+            float2 const sample(static_cast<float>(x) / dimensions_f_[0],
+                                static_cast<float>(y) / dimensions_f_[1]);
+            if (intersect_disk(pos, normal, padded_radius, sample)) {
                 set_sample(x, y, brush_);
             }
         }

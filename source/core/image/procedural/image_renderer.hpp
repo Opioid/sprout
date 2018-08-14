@@ -51,9 +51,13 @@ class Renderer {
 
     void draw_circle(float2 pos, float radius);
 
+    void draw_circle(float2 pos, float radius, int32_t border);
+
     void draw_bounding_square(float2 pos, float radius);
 
     void draw_disk(float2 pos, float3 const& normal, float radius);
+
+    void draw_disk(float2 pos, float3 const& normal, float radius, int32_t border);
 
     void resolve_sRGB(Byte3& target) const;
 
