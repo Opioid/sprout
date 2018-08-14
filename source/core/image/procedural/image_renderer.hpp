@@ -59,6 +59,8 @@ class Renderer {
 
     void draw_disk(float2 pos, float3 const& normal, float radius, int32_t border);
 
+    void draw_n_gon(float2 pos, float angle, float radius, uint32_t num_vertices);
+
     void resolve_sRGB(Byte3& target) const;
 
     void resolve(Byte3& target) const;
@@ -73,7 +75,10 @@ class Renderer {
     static bool intersect_disk(float2 pos, float3 const& normal, float radius,
                                float2 sample) noexcept;
 
-    int32_t sqrt_num_samples_;
+    static bool intersect_n_gon(float2 pos, float angle, float radius, uint32_t num_vertices,
+                                float2 sample) noexcept;
+
+    int32_t const sqrt_num_samples_;
 
     int2 dimensions_;
 

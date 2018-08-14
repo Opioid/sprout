@@ -45,6 +45,12 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         n_dot_t = std::sqrt(1.f - sint2);
 
         f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+
+        float const fly = fresnel::dielectric_reflect(n_dot_wo, eta_i, eta_t);
+
+        float const schlickly = fresnel::schlick(n_dot_wo, fresnel::schlick_f0(ior_outside_, ior_));
+
+        float const diff = fly - f;
     }
 
     if (sampler.generate_sample_1D() < f) {

@@ -20,7 +20,8 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&           transfo
                                Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     float3 const n = transformation.rotation.r[2];
-    float const  b = math::dot(n, ray.direction);
+
+    float const b = math::dot(n, ray.direction);
 
     if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
@@ -59,7 +60,8 @@ bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           tr
                                     Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     float3 const n = transformation.rotation.r[2];
-    float const  b = math::dot(n, ray.direction);
+
+    float const b = math::dot(n, ray.direction);
 
     if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
@@ -94,7 +96,8 @@ bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           tr
 bool Celestial_disk::intersect(Ray& ray, Transformation const&    transformation,
                                Node_stack& /*node_stack*/, float& epsilon) const noexcept {
     float3 const n = transformation.rotation.r[2];
-    float const  b = math::dot(n, ray.direction);
+
+    float const b = math::dot(n, ray.direction);
 
     if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
@@ -115,7 +118,8 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&    transformation
 bool Celestial_disk::intersect_p(Ray const& ray, Transformation const& transformation,
                                  Node_stack& /*node_stack*/) const noexcept {
     float3 const n = transformation.rotation.r[2];
-    float const  b = math::dot(n, ray.direction);
+
+    float const b = math::dot(n, ray.direction);
 
     if (b > 0.f || ray.max_t < Ray_max_t) {
         return false;
@@ -157,13 +161,14 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
                             Transformation const& transformation, float area, bool /*two_sided*/,
                             sampler::Sampler& sampler, uint32_t    sampler_dimension,
                             Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
-    float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-    float2 xy = math::sample_disk_concentric(r2);
+    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+    float2 const xy = math::sample_disk_concentric(r2);
 
-    float3 ls     = float3(xy, 0.f);
-    float  radius = transformation.scale[0];
+    float3 const ls = float3(xy, 0.f);
 
-    float3 ws = radius * math::transform_vector(transformation.rotation, ls);
+    float const radius = transformation.scale[0];
+
+    float3 const ws = radius * math::transform_vector(transformation.rotation, ls);
 
     sample.wi = math::normalize(ws - transformation.rotation.r[2]);
 
@@ -178,13 +183,14 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
                             bool /*two_sided*/, sampler::Sampler& sampler,
                             uint32_t sampler_dimension, math::AABB const& bounds,
                             Node_stack& /*node_stack*/, Sample_from&      sample) const noexcept {
-    float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-    float2 xy = math::sample_disk_concentric(r2);
+    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+    float2 const xy = math::sample_disk_concentric(r2);
 
-    float3 ls     = float3(xy, 0.f);
-    float  radius = transformation.scale[0];
+    float3 const ls = float3(xy, 0.f);
 
-    float3 ws = radius * math::transform_vector(transformation.rotation, ls);
+    float const radius = transformation.scale[0];
+
+    float3 const ws = radius * math::transform_vector(transformation.rotation, ls);
 
     float3 const dir = -math::normalize(ws - transformation.rotation.r[2]);
 

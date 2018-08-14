@@ -30,11 +30,11 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
 
         renderer.set_brush(flake.normal);
 
-     //   renderer.draw_circle(flake.pos, props.radius, 1);
+        //   renderer.draw_circle(flake.pos, props.radius, 1);
 
         renderer.draw_disk(flake.pos, flake.normal, props.radius, 1);
 
-    //    renderer.draw_bounding_square(flake.pos, props.radius);
+        //   renderer.draw_bounding_square(flake.pos, props.radius);
     }
 
     renderer.resolve(*image);
@@ -92,7 +92,7 @@ Provider::Flake Provider::random_flake(uint32_t index, uint32_t seed, Properties
     float2 const s1 = float2(rng.random_float(), rng.random_float());
 
     float3 const normal = math::normalize(math::sample_hemisphere_uniform(s1) +
-                                          float3(0.f, 0.f, 2.f));
+                                          float3(0.f, 0.f, 1.75f));
 
     return Flake{s0, normal};
 }

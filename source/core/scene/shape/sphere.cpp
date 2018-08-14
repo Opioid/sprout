@@ -329,6 +329,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
                     uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
     noexcept {
     float3 const axis                = transformation.position - p;
+
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius              = transformation.scale[0];
     float const  radius_square       = radius * radius;
@@ -340,7 +341,8 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
     float const axis_length = std::sqrt(axis_squared_length);
 
     float3 const z = axis / axis_length;
-    float3       x, y;
+
+    float3 x, y;
     math::orthonormal_basis(z, x, y);
 
     float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
@@ -391,6 +393,7 @@ float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*inters
                   Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const noexcept {
     float3 const axis                = transformation.position - ray.origin;
+
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius_square       = transformation.scale[0] * transformation.scale[0];
     float const  sin_theta_max2      = radius_square / axis_squared_length;
