@@ -15,8 +15,7 @@ class Material_coating : public Material_base {
     void set_coating_weight_map(Texture_adapter const& weight_map) noexcept;
     void set_coating_normal_map(Texture_adapter const& normal_map) noexcept;
 
-    void set_coating_weight(float weight) noexcept;
-    void set_coating_color(float3 const& color) noexcept;
+    void set_coating_thickness(float thickness) noexcept;
 
   protected:
     template <typename Sample>
@@ -36,6 +35,8 @@ class Material_clearcoat : public Material_coating<coating::Clearcoat_data> {
     material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override final;
+
+    void set_coating_attenuation(float3 const& absorption_color, float distance) noexcept;
 
     void set_clearcoat(float ior, float roughness) noexcept;
 

@@ -1,6 +1,7 @@
 #include "substitute_coating_material.inl"
 #include "base/math/vector4.inl"
 #include "scene/material/coating/coating.inl"
+#include "scene/material/material_attenuation.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "substitute_coating_sample.inl"
@@ -24,10 +25,16 @@ material::Sample const& Material_clearcoat::sample(float3 const& wo, Renderstate
 
     set_coating_basis(wo, rs, sampler, sample);
 
-    sample.coating_.set(fresnel::schlick_f0(coating_.ior_, rs.ior), coating_.alpha_,
-                        coating_.alpha2_);
+    sample.coating_.set(coating_.absorption_coefficient_, 1.f,
+                        fresnel::schlick_f0(coating_.ior_, rs.ior), coating_.alpha_);
 
     return sample;
+}
+
+void Material_clearcoat::set_coating_attenuation(float3 const& absorption_color,
+                                                 float         distance) noexcept {
+    coating_.absorption_coefficient_ = scene::material::extinction_coefficient(absorption_color,
+                                                                               distance);
 }
 
 void Material_clearcoat::set_clearcoat(float ior, float roughness) noexcept {
@@ -36,8 +43,7 @@ void Material_clearcoat::set_clearcoat(float ior, float roughness) noexcept {
     float const r     = ggx::clamp_roughness(roughness);
     float const alpha = r * r;
 
-    coating_.alpha_  = alpha;
-    coating_.alpha2_ = alpha * alpha;
+    coating_.alpha_ = alpha;
 }
 
 size_t Material_clearcoat::sample_size() noexcept {
@@ -61,8 +67,7 @@ material::Sample const& Material_thinfilm::sample(float3 const& wo, Renderstate 
 
     set_coating_basis(wo, rs, sampler, sample);
 
-    sample.coating_.set(coating_.ior_, ior_, coating_.alpha_, coating_.alpha2_,
-                        coating_.thickness_);
+    sample.coating_.set(coating_.ior_, ior_, coating_.alpha_, coating_.thickness_);
 
     return sample;
 }
@@ -74,7 +79,6 @@ void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness
     float const alpha = r * r;
 
     coating_.alpha_     = alpha;
-    coating_.alpha2_    = alpha * alpha;
     coating_.thickness_ = thickness;
 }
 

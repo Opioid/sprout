@@ -29,13 +29,8 @@ void Material_coating<Coating>::set_coating_normal_map(Texture_adapter const& no
 }
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_weight(float weight) noexcept {
-    coating_.weight_ = weight;
-}
-
-template <typename Coating>
-void Material_coating<Coating>::set_coating_color(float3 const& color) noexcept {
-    coating_.color_ = color;
+void Material_coating<Coating>::set_coating_thickness(float thickness) noexcept {
+    coating_.thickness_ = thickness;
 }
 
 template <typename Coating>
@@ -50,13 +45,6 @@ void Material_coating<Coating>::set_coating_basis(float3 const& wo, Renderstate 
         sample.coating_.set_tangent_frame(n);
     } else {
         sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);
-    }
-
-    if (coating_weight_map_.is_valid()) {
-        float const weight = coating_weight_map_.sample_1(sampler, rs.uv);
-        sample.coating_.set_color_and_weight(coating_.color_, weight);
-    } else {
-        sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
     }
 }
 

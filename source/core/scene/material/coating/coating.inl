@@ -1,21 +1,22 @@
 #pragma once
 
 #include "coating.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 
 namespace scene::material::coating {
 
-inline void Coating_base::set_color_and_weight(float3 const& color, float weight) noexcept {
-    color_  = color;
-    weight_ = weight;
-}
+inline void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float f0,
+                           float alpha) noexcept {
+    absorption_coefficient_ = absorption_coefficient;
 
-inline void Clearcoat::set(float f0, float alpha, float alpha2) noexcept {
-    f0_     = f0;
-    alpha_  = alpha;
-    alpha2_ = alpha2;
+    thickness_ = thickness;
+
+    f0_ = f0;
+
+    alpha_ = alpha;
 }
 
 template <typename Layer>
@@ -24,9 +25,13 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    float const a = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
+    float const f = fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
-    float3 const attenuation = (1.f - a) * math::lerp(float3(1.f), color_, weight_);
+    float const d = 1.f * (1.f / n_dot_wi + 1.f / n_dot_wo);
+
+    float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
+
+    float3 const attenuation = (1.f - f) * absorption;
 
     if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
         return {float3(0.f), attenuation, 0.f};
@@ -39,7 +44,7 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
                                                 schlick);
 
-    return {n_dot_wi * weight_ * ggx.reflection, attenuation, ggx.pdf};
+    return {n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
 }
 
 template <typename Layer>
@@ -51,19 +56,21 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, sampler::Sampler& s
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, schlick, sampler, result);
 
-    float const a = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
+    float const f = fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
-    attenuation = (1.f - a) * math::lerp(float3(1.f), color_, weight_);
+    float const d = 1.f * (1.f / n_dot_wi + 1.f / n_dot_wo);
 
-    result.reflection *= n_dot_wi * weight_;
+    float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
+
+    attenuation = (1.f - f) * absorption;
+
+    result.reflection *= n_dot_wi;
 }
 
-inline void Thinfilm::set(float ior, float ior_internal, float alpha, float alpha2,
-                          float thickness) noexcept {
+inline void Thinfilm::set(float ior, float ior_internal, float alpha, float thickness) noexcept {
     ior_          = ior;
     ior_internal_ = ior_internal;
     alpha_        = alpha;
-    alpha2_       = alpha2;
     thickness_    = thickness;
 }
 
@@ -81,9 +88,9 @@ Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, f
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
                                                 thinfilm, fresnel);
 
-    float3 const attenuation = (1.f - fresnel) * math::lerp(float3(1.f), color_, weight_);
+    float3 const attenuation = (1.f - fresnel);
 
-    return {n_dot_wi * weight_ * ggx.reflection, attenuation, ggx.pdf};
+    return {n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
 }
 
 template <typename Layer>
@@ -96,9 +103,9 @@ void Thinfilm::sample(float3 const& wo, Layer const& layer, sampler::Sampler& sa
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, thinfilm, sampler,
                                                    attenuation, result);
 
-    attenuation = (1.f - attenuation) * math::lerp(float3(1.f), color_, weight_);
+    attenuation = (1.f - attenuation);
 
-    result.reflection *= n_dot_wi * weight_;
+    result.reflection *= n_dot_wi;
 }
 
 template <typename Coating>

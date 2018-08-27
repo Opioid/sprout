@@ -26,13 +26,12 @@ class Provider final : public resource::Provider<Texture> {
         Mask
     };
 
-    std::shared_ptr<Texture> load(std::string const&         filename,
-                                          memory::Variant_map const& options,
-                                          resource::Manager&         manager) override final;
+    std::shared_ptr<Texture> load(std::string const& filename, memory::Variant_map const& options,
+                                  resource::Manager& manager) override final;
 
     std::shared_ptr<Texture> load(void const* data, std::string_view mount_folder,
-                                          memory::Variant_map const& options,
-                                          resource::Manager&         manager) override final;
+                                  memory::Variant_map const& options,
+                                  resource::Manager&         manager) override final;
 
     size_t num_bytes() const noexcept override final;
 };

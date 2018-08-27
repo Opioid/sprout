@@ -3,6 +3,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "metallic_paint_sample.hpp"
 #include "scene/material/coating/coating.inl"
+#include "scene/material/material_attenuation.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
@@ -25,8 +26,9 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     if (flakes_normal_map_.is_valid()) {
-        auto const&  sampler = worker.sampler_2D(sampler_key(), Sampler_filter::Nearest);
-        float3 const n       = sample_normal(wo, rs, flakes_normal_map_, sampler);
+        auto const& sampler = worker.sampler_2D(sampler_key(), Sampler_filter::Nearest);
+
+        float3 const n = sample_normal(wo, rs, flakes_normal_map_, sampler);
 
         sample.flakes_.set_tangent_frame(n);
     } else {
@@ -38,7 +40,8 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     float flakes_weight;
     if (flakes_mask_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-        flakes_weight       = flakes_mask_.sample_1(sampler, rs.uv);
+
+        flakes_weight = flakes_mask_.sample_1(sampler, rs.uv);
     } else {
         flakes_weight = 1.f;
     }
@@ -47,9 +50,8 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
 
     sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha, flakes_weight);
 
-    sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
-
-    sample.coating_.set(coating_.f0_, coating_.alpha_, coating_.alpha2_);
+    sample.coating_.set(coating_.absorption_coefficient_, coating_.thickness_, coating_.f0_,
+                        coating_.alpha_);
 
     sample.avoid_caustics_ = rs.avoid_caustics;
 
@@ -97,12 +99,9 @@ void Material::set_flakes_roughness(float roughness) noexcept {
     flakes_alpha_ = r * r;
 }
 
-void Material::set_coating_weight(float weight) noexcept {
-    coating_.weight_ = weight;
-}
-
-void Material::set_coating_color(float3 const& color) noexcept {
-    coating_.color_ = color;
+void Material::set_coating_attenuation(float3 const& absorption_color, float distance) noexcept {
+    coating_.absorption_coefficient_ = scene::material::extinction_coefficient(absorption_color,
+                                                                               distance);
 }
 
 void Material::set_clearcoat(float ior, float roughness) noexcept {
@@ -112,8 +111,7 @@ void Material::set_clearcoat(float ior, float roughness) noexcept {
     float const r     = ggx::clamp_roughness(roughness);
     float const alpha = r * r;
 
-    coating_.alpha_  = alpha;
-    coating_.alpha2_ = alpha * alpha;
+    coating_.alpha_ = alpha;
 }
 
 size_t Material::sample_size() noexcept {

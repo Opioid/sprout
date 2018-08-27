@@ -696,8 +696,7 @@ Material_ptr Provider::load_metallic_paint(json::Value const& paint_value,
     material->set_flakes_absorption(flakes_absorption);
     material->set_flakes_roughness(flakes_roughness);
 
-    material->set_coating_weight(coating.weight);
-    material->set_coating_color(coating.color);
+    material->set_coating_attenuation(coating.color, coating.attenuation_distance);
     material->set_clearcoat(coating.ior, coating.roughness);
 
     return material;
@@ -819,13 +818,14 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
     float3 absorption_color(0.f);
     bool   use_scattering_color = false;
     float3 scattering_color(0.f);
-    float  roughness             = 0.9f;
-    float  metallic              = 0.f;
-    float  ior                   = 1.46f;
-    float  emission_factor       = 1.f;
-    float  thickness             = 0.f;
-    float  attenuation_distance  = 0.f;
-    float  volumetric_anisotropy = 0.f;
+
+    float roughness             = 0.9f;
+    float metallic              = 0.f;
+    float ior                   = 1.46f;
+    float emission_factor       = 1.f;
+    float thickness             = 0.f;
+    float attenuation_distance  = 0.f;
+    float volumetric_anisotropy = 0.f;
 
     Coating_description coating;
 
@@ -949,8 +949,6 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 
             material->set_coating_normal_map(coating_normal_map);
             material->set_coating_weight_map(coating_weight_map);
-            material->set_coating_weight(coating.weight);
-            material->set_coating_color(coating.color);
             material->set_thinfilm(coating.ior, coating.roughness, coating.thickness);
 
             return material;
@@ -972,8 +970,8 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 
             material->set_coating_normal_map(coating_normal_map);
             material->set_coating_weight_map(coating_weight_map);
-            material->set_coating_weight(coating.weight);
-            material->set_coating_color(coating.color);
+            //      material->set_coating_weight(coating.weight);
+            material->set_coating_attenuation(coating.color, coating.attenuation_distance);
             material->set_clearcoat(coating.ior, coating.roughness);
 
             return material;
@@ -1197,6 +1195,8 @@ void Provider::read_coating_description(json::Value const&   coating_value,
     for (auto& n : coating_value.GetObject()) {
         if ("color" == n.name) {
             description.color = json::read_float3(n.value);
+        } else if ("attenuation_distance" == n.name) {
+            description.attenuation_distance = json::read_float(n.value);
         } else if ("ior" == n.name) {
             description.ior = json::read_float(n.value);
         } else if ("roughness" == n.name) {

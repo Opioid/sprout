@@ -22,14 +22,14 @@ class Provider final : public resource::Provider<Material> {
   public:
     Provider() noexcept;
 
-     ~Provider() noexcept override final;
+    ~Provider() noexcept override final;
 
     Material_ptr load(std::string const& filename, memory::Variant_map const& options,
-                              resource::Manager& manager) override final;
+                      resource::Manager& manager) override final;
 
     Material_ptr load(void const* data, std::string_view mount_folder,
-                              memory::Variant_map const& options,
-                              resource::Manager&         manager) override final;
+                      memory::Variant_map const& options,
+                      resource::Manager&         manager) override final;
 
     size_t num_bytes() const noexcept override final;
 
@@ -64,11 +64,14 @@ class Provider final : public resource::Provider<Material> {
     Material_ptr load_volumetric(json::Value const& volumetric_value, resource::Manager& manager);
 
     struct Texture_description {
-        std::string    filename;
-        std::string    usage;
+        std::string filename;
+        std::string usage;
+
         image::Swizzle swizzle;
-        float2         scale;
-        int32_t        num_elements;
+
+        float2 scale;
+
+        int32_t num_elements;
     };
 
     static void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings);
@@ -80,11 +83,14 @@ class Provider final : public resource::Provider<Material> {
                                           memory::Variant_map& options, resource::Manager& manager);
 
     struct Coating_description {
-        float3              color     = float3(1.f);
-        float               ior       = 1.f;
-        float               roughness = 0.f;
-        float               thickness = 0.f;
-        float               weight    = 1.f;
+        float3 color = float3(1.f);
+
+        float attenuation_distance = 1.f;
+        float ior                  = 1.f;
+        float roughness            = 0.f;
+        float thickness            = 0.f;
+        float weight               = 1.f;
+
         Texture_description normal_map_description;
         Texture_description weight_map_description;
     };

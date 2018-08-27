@@ -26,8 +26,7 @@ class Material : public material::Material {
     void set_flakes_absorption(float3 const& absorption) noexcept;
     void set_flakes_roughness(float roughness) noexcept;
 
-    void set_coating_weight(float weight) noexcept;
-    void set_coating_color(float3 const& color) noexcept;
+    void set_coating_attenuation(float3 const& absorption_color, float distance) noexcept;
 
     void set_clearcoat(float ior, float roughness) noexcept;
 

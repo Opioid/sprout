@@ -74,7 +74,8 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
     return image;
 }
 
-Provider::Properties::Properties(memory::Variant_map const& options) noexcept : dimensions(1024, 1024) {
+Provider::Properties::Properties(memory::Variant_map const& options) noexcept
+    : dimensions(1024, 1024) {
     float size    = 0.006f;
     float density = 0.5f;
     options.query("size", size);

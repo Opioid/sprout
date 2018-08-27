@@ -10,22 +10,15 @@ struct Result {
     float  pdf;
 };
 
-struct Coating_base {
-    void set_color_and_weight(float3 const& color, float weight) noexcept;
-
-    float3 color_;
-    float  weight_;
+struct Clearcoat_data {
+    float3 absorption_coefficient_;
+    float  ior_;
+    float  alpha_;
 };
 
-struct Clearcoat_data : public Coating_base {
-    float ior_;
-    float alpha_;
-    float alpha2_;
-};
-
-class Clearcoat : public Coating_base {
+class Clearcoat {
   public:
-    void set(float f0, float alpha, float alpha2) noexcept;
+    void set(float3 const& absorption_coefficient, float thickness, float f0, float alpha) noexcept;
 
   protected:
     template <typename Layer>
@@ -37,14 +30,16 @@ class Clearcoat : public Coating_base {
                 float3& attenuation, bxdf::Sample& result) const noexcept;
 
   public:
+    float3 absorption_coefficient_;
+
+    float thickness_;
     float f0_;
     float alpha_;
-    float alpha2_;
 };
 
-class Thinfilm : public Coating_base {
+class Thinfilm {
   public:
-    void set(float ior, float ior_internal, float alpha, float alpha2, float thickness) noexcept;
+    void set(float ior, float ior_internal, float alpha, float thickness) noexcept;
 
   protected:
     template <typename Layer>
@@ -59,7 +54,6 @@ class Thinfilm : public Coating_base {
     float ior_;
     float ior_internal_;
     float alpha_;
-    float alpha2_;
     float thickness_;
 };
 

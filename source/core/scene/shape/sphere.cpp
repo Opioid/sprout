@@ -328,15 +328,15 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
                     float /*area*/, bool /*two_sided*/, sampler::Sampler&     sampler,
                     uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
     noexcept {
-    float3 const axis                = transformation.position - p;
+    float3 const axis = transformation.position - p;
 
-    float const  axis_squared_length = math::squared_length(axis);
-    float const  radius              = transformation.scale[0];
-    float const  radius_square       = radius * radius;
-    float const  sin_theta_max2      = radius_square / axis_squared_length;
-    float const  cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
+    float const axis_squared_length = math::squared_length(axis);
+    float const radius              = transformation.scale[0];
+    float const radius_square       = radius * radius;
+    float const sin_theta_max2      = radius_square / axis_squared_length;
+    float const cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
                                          0.99999995f);
-    float const  pdf                 = math::cone_pdf_uniform(cos_theta_max);
+    float const pdf                 = math::cone_pdf_uniform(cos_theta_max);
 
     float const axis_length = std::sqrt(axis_squared_length);
 
@@ -392,12 +392,12 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
 float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
                   Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const noexcept {
-    float3 const axis                = transformation.position - ray.origin;
+    float3 const axis = transformation.position - ray.origin;
 
-    float const  axis_squared_length = math::squared_length(axis);
-    float const  radius_square       = transformation.scale[0] * transformation.scale[0];
-    float const  sin_theta_max2      = radius_square / axis_squared_length;
-    float const  cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
+    float const axis_squared_length = math::squared_length(axis);
+    float const radius_square       = transformation.scale[0] * transformation.scale[0];
+    float const sin_theta_max2      = radius_square / axis_squared_length;
+    float const cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
                                          0.99999995f);
 
     return math::cone_pdf_uniform(cos_theta_max);
