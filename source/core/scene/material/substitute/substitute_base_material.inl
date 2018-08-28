@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_MATERIAL_INL
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_MATERIAL_INL
 
 #include "base/math/vector3.inl"
 #include "image/texture/texture_adapter.inl"
@@ -56,3 +57,5 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
 }
 
 }  // namespace scene::material::substitute
+
+#endif

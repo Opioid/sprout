@@ -51,7 +51,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha, flakes_weight);
 
     sample.coating_.set(coating_.absorption_coefficient, coating_.thickness,
-                        fresnel::schlick_f0(coating_.ior, rs.ior), coating_.alpha);
+                        fresnel::schlick_f0(coating_.ior, rs.ior), coating_.alpha, 1.f);
 
     sample.avoid_caustics_ = rs.avoid_caustics;
 

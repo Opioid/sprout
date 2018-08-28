@@ -21,19 +21,26 @@ material::Sample const& Material_clearcoat::sample(float3 const& wo, Renderstate
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, coating_.ior, sampler, sample);
+    float thickness;
+    float weight;
+    if (coating_thickness_map_.is_valid()) {
+        float const relative_thickness = coating_thickness_map_.sample_1(sampler, rs.uv);
+
+        thickness = coating_.thickness * relative_thickness;
+        weight    = relative_thickness > 0.1f ? 1.f : relative_thickness;
+    } else {
+        thickness = coating_.thickness;
+        weight    = 1.f;
+    }
+
+    float const coating_ior = math::lerp(rs.ior, coating_.ior, weight);
+
+    set_sample(wo, rs, coating_ior, sampler, sample);
 
     set_coating_basis(wo, rs, sampler, sample);
 
-    float thickness;
-    if (coating_thickness_map_.is_valid()) {
-        thickness = coating_.thickness * coating_thickness_map_.sample_1(sampler, rs.uv);
-    } else {
-        thickness = coating_.thickness;
-    }
-
     sample.coating_.set(coating_.absorption_coefficient, thickness,
-                        fresnel::schlick_f0(coating_.ior, rs.ior), coating_.alpha);
+                        fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
 
     return sample;
 }

@@ -10,16 +10,16 @@
 namespace scene::material::coating {
 
 inline void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float f0,
-                           float alpha) noexcept {
+                           float alpha, float weight) noexcept {
     absorption_coefficient_ = absorption_coefficient;
 
     thickness_ = thickness;
 
-    weight_ = thickness > 0.f ? 1.f : 0.f;
-
     f0_ = f0;
 
     alpha_ = alpha;
+
+    weight_ = weight;
 }
 
 template <typename Layer>
