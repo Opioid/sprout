@@ -931,7 +931,7 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
             coating_normal_map = create_texture(coating.normal_map_description, options, manager);
         }
 
-        if (coating.thickness > 0.f) {
+        if (coating.in_nm) {
             auto material = std::make_shared<substitute::Material_thinfilm>(sampler_settings,
                                                                             two_sided);
 
@@ -971,8 +971,11 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
             material->set_coating_normal_map(coating_normal_map);
             material->set_coating_weight_map(coating_weight_map);
             //      material->set_coating_weight(coating.weight);
+            //     material->set_coating_attenuation();
             material->set_coating_attenuation(coating.color, coating.attenuation_distance);
-            material->set_clearcoat(coating.ior, coating.roughness);
+            material->set_coating_ior(coating.ior);
+            material->set_coating_roughness(coating.roughness);
+            material->set_coating_thickness(coating.thickness);
 
             return material;
         }
@@ -1205,6 +1208,8 @@ void Provider::read_coating_description(json::Value const&   coating_value,
             description.thickness = json::read_float(n.value);
         } else if ("weight" == n.name) {
             description.weight = json::read_float(n.value);
+        } else if ("unit" == n.name) {
+            description.in_nm = ("nm" == json::read_string(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
                 Texture_description texture_description;

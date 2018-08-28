@@ -50,8 +50,8 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
 
     sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha, flakes_weight);
 
-    sample.coating_.set(coating_.absorption_coefficient_, coating_.thickness_, coating_.f0_,
-                        coating_.alpha_);
+    sample.coating_.set(coating_.absorption_coefficient, coating_.thickness,
+                        fresnel::schlick_f0(coating_.ior, rs.ior), coating_.alpha);
 
     sample.avoid_caustics_ = rs.avoid_caustics;
 
@@ -100,18 +100,16 @@ void Material::set_flakes_roughness(float roughness) noexcept {
 }
 
 void Material::set_coating_attenuation(float3 const& absorption_color, float distance) noexcept {
-    coating_.absorption_coefficient_ = scene::material::extinction_coefficient(absorption_color,
-                                                                               distance);
+    coating_.absorption_coefficient = extinction_coefficient(absorption_color, distance);
 }
 
 void Material::set_clearcoat(float ior, float roughness) noexcept {
-    ior_         = ior;
-    coating_.f0_ = fresnel::schlick_f0(1.f, ior);
+    ior_ = ior;
 
     float const r     = ggx::clamp_roughness(roughness);
     float const alpha = r * r;
 
-    coating_.alpha_ = alpha;
+    coating_.alpha = alpha;
 }
 
 size_t Material::sample_size() noexcept {

@@ -88,8 +88,10 @@ class Provider final : public resource::Provider<Material> {
         float attenuation_distance = 1.f;
         float ior                  = 1.f;
         float roughness            = 0.f;
-        float thickness            = 0.f;
+        float thickness            = 0.01f;
         float weight               = 1.f;
+
+        bool in_nm = false;
 
         Texture_description normal_map_description;
         Texture_description weight_map_description;

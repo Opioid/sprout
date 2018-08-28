@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_INL
+#define SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_INL
 
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/material_helper.hpp"
@@ -49,3 +50,5 @@ void Material_coating<Coating>::set_coating_basis(float3 const& wo, Renderstate 
 }
 
 }  // namespace scene::material::substitute
+
+#endif

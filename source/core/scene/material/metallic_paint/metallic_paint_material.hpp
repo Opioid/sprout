@@ -48,7 +48,15 @@ class Material : public material::Material {
 
     float ior_;
 
-    coating::Clearcoat coating_;
+    struct Clearcoat_data {
+        float3 absorption_coefficient;
+
+        float thickness;
+        float ior;
+        float alpha;
+    };
+
+    Clearcoat_data coating_;
 };
 
 }  // namespace scene::material::metallic_paint

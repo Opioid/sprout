@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_COATING_COATING_INL
+#define SU_CORE_SCENE_MATERIAL_COATING_COATING_INL
 
 #include "coating.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -27,7 +28,7 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
 
     float const f = fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
-    float const d = 1.f * (1.f / n_dot_wi + 1.f / n_dot_wo);
+    float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
 
     float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
 
@@ -58,7 +59,7 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, sampler::Sampler& s
 
     float const f = fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
-    float const d = 1.f * (1.f / n_dot_wi + 1.f / n_dot_wo);
+    float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
 
     float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
 
@@ -121,3 +122,5 @@ void Coating_layer<Coating>::sample(float3 const& wo, sampler::Sampler& sampler,
 }
 
 }  // namespace scene::material::coating
+
+#endif

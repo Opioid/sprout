@@ -1,6 +1,6 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_HPP
 
-#include "scene/material/coating/coating.hpp"
 #include "substitute_base_material.hpp"
 
 namespace scene::material::substitute {
@@ -28,7 +28,15 @@ class Material_coating : public Material_base {
     Coating coating_;
 };
 
-class Material_clearcoat : public Material_coating<coating::Clearcoat_data> {
+struct Clearcoat_data {
+    float3 absorption_coefficient;
+
+    float thickness;
+    float ior;
+    float alpha;
+};
+
+class Material_clearcoat : public Material_coating<Clearcoat_data> {
   public:
     Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
@@ -38,12 +46,22 @@ class Material_clearcoat : public Material_coating<coating::Clearcoat_data> {
 
     void set_coating_attenuation(float3 const& absorption_color, float distance) noexcept;
 
-    void set_clearcoat(float ior, float roughness) noexcept;
+    void set_coating_thickness(float thickness) noexcept;
+
+    void set_coating_ior(float ior) noexcept;
+
+    void set_coating_roughness(float roughness) noexcept;
 
     static size_t sample_size() noexcept;
 };
 
-class Material_thinfilm : public Material_coating<coating::Thinfilm> {
+struct Thinfilm_data {
+    float ior;
+    float alpha;
+    float thickness;
+};
+
+class Material_thinfilm : public Material_coating<Thinfilm_data> {
   public:
     Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
@@ -57,3 +75,5 @@ class Material_thinfilm : public Material_coating<coating::Thinfilm> {
 };
 
 }  // namespace scene::material::substitute
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_COATING_COATING_HPP
+#define SU_CORE_SCENE_MATERIAL_COATING_COATING_HPP
 
 #include "scene/material/material_sample.hpp"
 
@@ -8,12 +9,6 @@ struct Result {
     float3 reflection;
     float3 attenuation;
     float  pdf;
-};
-
-struct Clearcoat_data {
-    float3 absorption_coefficient_;
-    float  ior_;
-    float  alpha_;
 };
 
 class Clearcoat {
@@ -71,3 +66,5 @@ using Clearcoat_layer = Coating_layer<Clearcoat>;
 using Thinfilm_layer  = Coating_layer<Thinfilm>;
 
 }  // namespace scene::material::coating
+
+#endif
