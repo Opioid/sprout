@@ -28,6 +28,7 @@ class Clearcoat {
     float3 absorption_coefficient_;
 
     float thickness_;
+    float weight_;
     float f0_;
     float alpha_;
 };

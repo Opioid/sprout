@@ -12,7 +12,7 @@ class Material_coating : public Material_base {
 
     size_t num_bytes() const noexcept override final;
 
-    void set_coating_weight_map(Texture_adapter const& weight_map) noexcept;
+    void set_coating_thickness_map(Texture_adapter const& thickness_map) noexcept;
     void set_coating_normal_map(Texture_adapter const& normal_map) noexcept;
 
     void set_coating_thickness(float thickness) noexcept;
@@ -22,7 +22,7 @@ class Material_coating : public Material_base {
     void set_coating_basis(float3 const& wo, Renderstate const& rs,
                            Texture_sampler_2D const& sampler, Sample& sample) const noexcept;
 
-    Texture_adapter coating_weight_map_;
+    Texture_adapter coating_thickness_map_;
     Texture_adapter coating_normal_map_;
 
     Coating coating_;

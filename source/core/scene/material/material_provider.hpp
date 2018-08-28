@@ -94,7 +94,7 @@ class Provider final : public resource::Provider<Material> {
         bool in_nm = false;
 
         Texture_description normal_map_description;
-        Texture_description weight_map_description;
+        Texture_description thickness_map_description;
     };
 
     static void read_coating_description(json::Value const&   clearcoat_value,

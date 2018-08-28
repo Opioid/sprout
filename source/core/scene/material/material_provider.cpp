@@ -916,13 +916,14 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 
         return material;
     } else if (coating.ior > 1.f) {
-        Texture_adapter coating_weight_map;
+        Texture_adapter coating_thickness_map;
         Texture_adapter coating_normal_map;
 
-        if (!coating.weight_map_description.filename.empty()) {
+        if (!coating.thickness_map_description.filename.empty()) {
             memory::Variant_map options;
             options.set("usage", image::texture::Provider::Usage::Mask);
-            coating_weight_map = create_texture(coating.weight_map_description, options, manager);
+            coating_thickness_map = create_texture(coating.thickness_map_description, options,
+                                                   manager);
         }
 
         if (!coating.normal_map_description.filename.empty()) {
@@ -948,7 +949,7 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
             material->set_emission_factor(emission_factor);
 
             material->set_coating_normal_map(coating_normal_map);
-            material->set_coating_weight_map(coating_weight_map);
+            material->set_coating_thickness_map(coating_thickness_map);
             material->set_thinfilm(coating.ior, coating.roughness, coating.thickness);
 
             return material;
@@ -969,7 +970,7 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
             material->set_emission_factor(emission_factor);
 
             material->set_coating_normal_map(coating_normal_map);
-            material->set_coating_weight_map(coating_weight_map);
+            material->set_coating_thickness_map(coating_thickness_map);
             //      material->set_coating_weight(coating.weight);
             //     material->set_coating_attenuation();
             material->set_coating_attenuation(coating.color, coating.attenuation_distance);
@@ -1222,7 +1223,7 @@ void Provider::read_coating_description(json::Value const&   coating_value,
                 if ("Normal" == texture_description.usage) {
                     description.normal_map_description = texture_description;
                 } else if ("Mask" == texture_description.usage) {
-                    description.weight_map_description = texture_description;
+                    description.thickness_map_description = texture_description;
                 }
             }
         }

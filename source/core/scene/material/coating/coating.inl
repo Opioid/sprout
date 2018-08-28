@@ -15,6 +15,8 @@ inline void Clearcoat::set(float3 const& absorption_coefficient, float thickness
 
     thickness_ = thickness;
 
+    weight_ = thickness > 0.f ? 1.f : 0.f;
+
     f0_ = f0;
 
     alpha_ = alpha;
@@ -26,7 +28,7 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    float const f = fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
+    float const f = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
     float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
 
@@ -45,7 +47,7 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
                                                 schlick);
 
-    return {n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
+    return {weight_ * n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
 }
 
 template <typename Layer>
@@ -57,7 +59,7 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, sampler::Sampler& s
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, schlick, sampler, result);
 
-    float const f = fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
+    float const f = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
     float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
 
@@ -65,7 +67,7 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, sampler::Sampler& s
 
     attenuation = (1.f - f) * absorption;
 
-    result.reflection *= n_dot_wi;
+    result.reflection *= weight_ * n_dot_wi;
 }
 
 inline void Thinfilm::set(float ior, float ior_internal, float alpha, float thickness) noexcept {
