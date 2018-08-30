@@ -28,12 +28,12 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
         return {coating.reflection + coating.attenuation * base.reflection, pdf};
     }
 
- //   auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+//    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
 //    float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
 //    return {coating.reflection + coating.attenuation * base.reflection, pdf};
 
-    float3 n = layer_.n_;
+    float3 n = coating_.n_;
 
     float eta_i = coating_.ior_ / layer_.ior_;
     float eta_t = layer_.ior_ / coating_.ior_;
@@ -42,15 +42,13 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
     float3 wi1 = wi;
 
     {
-        std::swap(eta_i, eta_t);
-
         float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
         float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
         float n_dot_t;
         if (sint2 >= 1.f) {
             n_dot_t = 0.f;
-            return {float3(0.f), 0.f};
+            return {coating.reflection, coating.pdf / 3.f};
         } else {
             n_dot_t = std::sqrt(1.f - sint2);
         }
@@ -59,7 +57,8 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
     }
 
     {
-    //    std::swap(eta_i, eta_t);
+        std::swap(eta_i, eta_t);
+     //   n = -n;
 
         float const n_dot_wi = std::min(std::abs(math::dot(n, wi)), 1.f);
         float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wi * n_dot_wi);
@@ -67,7 +66,7 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
         float n_dot_t;
         if (sint2 >= 1.f) {
             n_dot_t = 0.f;
-            return {float3(0.f), 0.f};
+            return {coating.reflection, coating.pdf / 3.f};
         } else {
             n_dot_t = std::sqrt(1.f - sint2);
         }
@@ -81,8 +80,9 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
 
     auto const base = layer_.base_evaluate(wi1, wo1, h1, wo1_dot_h1, avoid_caustics_);
 
-    float const pdf = base.pdf;
-    return {base.reflection, pdf};
+    float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
+    return {coating.reflection + coating.attenuation * base.reflection, pdf};
+
 }
 
 template <typename Coating>
