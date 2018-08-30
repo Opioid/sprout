@@ -39,7 +39,7 @@ material::Sample const& Material_clearcoat::sample(float3 const& wo, Renderstate
 
     set_coating_basis(wo, rs, sampler, sample);
 
-    sample.coating_.set(coating_.absorption_coefficient, thickness,
+    sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
                         fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
 
     return sample;

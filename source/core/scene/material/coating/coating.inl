@@ -9,11 +9,13 @@
 
 namespace scene::material::coating {
 
-inline void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float f0,
+inline void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float ior, float f0,
                            float alpha, float weight) noexcept {
     absorption_coefficient_ = absorption_coefficient;
 
     thickness_ = thickness;
+
+    ior_ = ior;
 
     f0_ = f0;
 
