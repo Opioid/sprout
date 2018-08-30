@@ -13,8 +13,8 @@ struct Result {
 
 class Clearcoat {
   public:
-    void set(float3 const& absorption_coefficient, float thickness, float ior, float f0, float alpha,
-             float weight) noexcept;
+    void set(float3 const& absorption_coefficient, float thickness, float ior, float f0,
+             float alpha, float weight) noexcept;
 
   protected:
     template <typename Layer>

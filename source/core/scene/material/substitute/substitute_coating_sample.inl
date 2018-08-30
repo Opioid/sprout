@@ -28,10 +28,10 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
         return {coating.reflection + coating.attenuation * base.reflection, pdf};
     }
 
-//    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    //    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
-//    float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
-//    return {coating.reflection + coating.attenuation * base.reflection, pdf};
+    //    float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
+    //    return {coating.reflection + coating.attenuation * base.reflection, pdf};
 
     float3 n = coating_.n_;
 
@@ -41,37 +41,12 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
     float3 wo1 = wo_;
     float3 wi1 = wi;
 
-    {
-        float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
-        float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
-
-        float n_dot_t;
-        if (sint2 >= 1.f) {
-            n_dot_t = 0.f;
-            return {coating.reflection, coating.pdf / 3.f};
-        } else {
-            n_dot_t = std::sqrt(1.f - sint2);
-        }
-
-        wo1 = -math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * wo_);
+    if (!refract(n, wo_, eta_i, wo1)) {
+        return {coating.reflection, coating.pdf / 3.f};
     }
 
-    {
-        std::swap(eta_i, eta_t);
-     //   n = -n;
-
-        float const n_dot_wi = std::min(std::abs(math::dot(n, wi)), 1.f);
-        float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wi * n_dot_wi);
-
-        float n_dot_t;
-        if (sint2 >= 1.f) {
-            n_dot_t = 0.f;
-            return {coating.reflection, coating.pdf / 3.f};
-        } else {
-            n_dot_t = std::sqrt(1.f - sint2);
-        }
-
-        wi1 = -math::normalize((eta_i * n_dot_wi - n_dot_t) * n - eta_i * wi);
+    if (!refract(n, wi, eta_t, wi1)) {
+        return {coating.reflection, coating.pdf / 3.f};
     }
 
     float3 const h1 = math::normalize(wo1 + wi);
@@ -82,7 +57,6 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
 
     float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
-
 }
 
 template <typename Coating>

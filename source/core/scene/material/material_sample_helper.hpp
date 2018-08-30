@@ -27,6 +27,21 @@ static inline float clamp_abs_dot(float3 const& a, float3 const& b) noexcept {
     return std::clamp(std::abs(math::dot(a, b)), Dot_min, 1.f);
 }
 
+static inline bool refract(float3 const& n, float3 const& v, float eta, float3& vr) noexcept {
+    float const n_dot_wo = std::min(std::abs(math::dot(n, v)), 1.f);
+    float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
+
+    if (sint2 >= 1.f) {
+        return false;
+    }
+
+    float const n_dot_t = std::sqrt(1.f - sint2);
+
+    vr = -math::normalize((eta * n_dot_wo - n_dot_t) * n - eta * v);
+
+    return true;
+}
+
 }  // namespace scene::material
 
 #endif
