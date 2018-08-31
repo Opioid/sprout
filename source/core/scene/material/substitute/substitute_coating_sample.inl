@@ -19,16 +19,38 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
+    auto const coating = coating_.evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+
+    if (1.f == layer_.metallic_) {
+        auto const base = layer_.pure_gloss_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+
+        float const pdf = (coating.pdf + base.pdf) * 0.5f;
+        return {coating.reflection + coating.attenuation * base.reflection, pdf};
+    }
+
+    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+
+    float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
+    return {coating.reflection + coating.attenuation * base.reflection, pdf};
+
+    /*
+    float3 const h = math::normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
+
     float3 n = coating_.n_;
 
     float eta_i = coating_.ior_ / layer_.ior_;
     float eta_t = layer_.ior_ / coating_.ior_;
 
+ //   float const a = math::pow2(coating_.ior_) / math::pow2(layer_.ior_);
+
     float3 wo1 = wo_;
     float3 wi1 = wi;
 
-    bool const ro = true;  // refract(n, wo_, eta_i, wo1);
-    bool const ri = true;  // refract(n, wi, eta_t, wi1);
+    bool const ro = refract(n, wo_, eta_i, wo1);
+    bool const ri = refract(n, wi, eta_t, wi1);
+
 
     auto const coating = coating_.evaluate(wi, wo_, h, wi1, wo1, wo_dot_h, avoid_caustics_);
 
@@ -45,17 +67,13 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
         return {coating.reflection + coating.attenuation * base.reflection, pdf};
     }
 
-    //    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
-
-    //    float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
-    //    return {coating.reflection + coating.attenuation * base.reflection, pdf};
-
     float const wo1_dot_h1 = clamp_dot(wo1, h1);
 
     auto const base = layer_.base_evaluate(wi1, wo1, h1, wo1_dot_h1, avoid_caustics_);
 
     float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
+    */
 }
 
 template <typename Coating>
