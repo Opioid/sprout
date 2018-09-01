@@ -40,16 +40,16 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
 
     float3 n = coating_.n_;
 
-    float eta_i = coating_.ior_ / layer_.ior_;
-    float eta_t = layer_.ior_ / coating_.ior_;
+    float eta0 = coating_.ior_ / layer_.ior_;
+    float eta1 = layer_.ior_ / coating_.ior_;
 
  //   float const a = math::pow2(coating_.ior_) / math::pow2(layer_.ior_);
 
     float3 wo1 = wo_;
     float3 wi1 = wi;
 
-    bool const ro = refract(n, wo_, eta_i, wo1);
-    bool const ri = refract(n, wi, eta_t, wi1);
+    bool const ro = refract(n, wo_, eta0, wo1);
+    bool const ri = refract(n, wi, eta1, wi1);
 
 
     auto const coating = coating_.evaluate(wi, wo_, h, wi1, wo1, wo_dot_h, avoid_caustics_);
