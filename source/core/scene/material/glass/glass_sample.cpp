@@ -23,8 +23,8 @@ bxdf::Result Sample::evaluate(float3 const& /*wi*/) const noexcept {
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     float3 n = layer_.n_;
 
-    float eta_i = ior_outside_ / ior_;
-    float eta_t = ior_ / ior_outside_;
+    float eta_i = ior_outside_;
+    float eta_t = ior_;
 
     if (!same_hemisphere(wo_)) {
         n = -n;
@@ -33,7 +33,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     }
 
     float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
-    float const sint2    = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+    float const eta      = eta_i / eta_t;
+    float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
 
     float n_dot_t;
     float f;
@@ -45,18 +46,12 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         n_dot_t = std::sqrt(1.f - sint2);
 
         f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
-
-        float const fly = fresnel::dielectric_reflect(n_dot_wo, eta_i, eta_t);
-
-        float const schlickly = fresnel::schlick(n_dot_wo, fresnel::schlick_f0(ior_outside_, ior_));
-
-        float const diff = fly - f;
     }
 
     if (sampler.generate_sample_1D() < f) {
         BSDF::reflect(wo_, n, n_dot_wo, result);
     } else {
-        BSDF::refract(wo_, n, color_, n_dot_wo, n_dot_t, eta_i, result);
+        BSDF::refract(wo_, n, color_, n_dot_wo, n_dot_t, eta, result);
     }
 
     result.wavelength = 0.f;
@@ -81,9 +76,9 @@ float Sample::BSDF::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
 }
 
 float Sample::BSDF::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                            float n_dot_t, float eta_i, bxdf::Sample& result) noexcept {
+                            float n_dot_t, float eta, bxdf::Sample& result) noexcept {
     result.reflection = color;
-    result.wi         = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * wo);
+    result.wi         = math::normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_transmission);
 

@@ -29,6 +29,17 @@ class Thinfilm {
     float const thickness_;
 };
 
+class Dielectric {
+  public:
+    Dielectric(float eta_i, float eta_t) noexcept;
+
+    float3 operator()(float wo_dot_h) const noexcept;
+
+  private:
+    float const eta_i_;
+    float const eta_t_;
+};
+
 class Conductor {
   public:
     Conductor(float3 const& eta, float3 const& k) noexcept;

@@ -27,7 +27,7 @@ class Sample : public material::Sample {
                              bxdf::Sample& result) noexcept;
 
         static float refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                             float n_dot_t, float eta_i, bxdf::Sample& result) noexcept;
+                             float n_dot_t, float eta, bxdf::Sample& result) noexcept;
     };
 };
 

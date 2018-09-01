@@ -42,11 +42,15 @@ static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& 
 
 static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i,
                                float eta_t) noexcept {
-    float const r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t) /
-                      (eta_t * cos_theta_i + eta_i * cos_theta_t);
+    float const t0 = eta_t * cos_theta_i;
+    float const t1 = eta_i * cos_theta_t;
 
-    float const r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t) /
-                      (eta_i * cos_theta_i + eta_t * cos_theta_t);
+    float const r_p = (t0 - t1) / (t0 + t1);
+
+    float const t2 = eta_i * cos_theta_i;
+    float const t3 = eta_t * cos_theta_t;
+
+    float const r_o = (t2 - t3) / (t2 + t3);
 
     return 0.5f * (r_p * r_p + r_o * r_o);
 }
@@ -56,19 +60,9 @@ static inline float dielectric_reflect(float cos_theta_i, float eta_i, float eta
     float const sin_theta_t = eta_i / eta_t * sin_theta_i;
     float const sint2       = sin_theta_t * sin_theta_t;
 
-    //    float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
-    float const n_dot_wo = cos_theta_i;
-    float const sint2ly  = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
-
     float const cos_theta_t = std::sqrt(1.f - sint2);
 
-    float const r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t) /
-                      (eta_t * cos_theta_i + eta_i * cos_theta_t);
-
-    float const r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t) /
-                      (eta_i * cos_theta_i + eta_t * cos_theta_t);
-
-    return 0.5f * (r_p * r_p + r_o * r_o);
+    return dielectric(cos_theta_i, cos_theta_t, eta_i, eta_t);
 }
 
 // Amplitude reflection coefficient (s-polarized)
@@ -158,6 +152,12 @@ inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior, float internal
 
 inline float3 Thinfilm::operator()(float wo_dot_h) const noexcept {
     return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
+}
+
+inline Dielectric::Dielectric(float eta_i, float eta_t) noexcept : eta_i_(eta_i), eta_t_(eta_t) {}
+
+inline float3 Dielectric::operator()(float wo_dot_h) const noexcept {
+    return float3(dielectric_reflect(wo_dot_h, eta_i_, eta_t_));
 }
 
 inline Conductor::Conductor(float3 const& eta, float3 const& k) noexcept : eta_(eta), k_(k) {}
