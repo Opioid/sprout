@@ -88,14 +88,11 @@ void Sample_rough::set(float3 const& refraction_color, float3 const& absorption_
     layer_.absorption_coefficient_ = material::extinction_coefficient(absorption_color,
                                                                       attenuation_distance);
 
-    layer_.f0_     = fresnel::schlick_f0(ior, ior_outside);
-    layer_.alpha_  = alpha;
-    layer_.alpha2_ = alpha * alpha;
+    layer_.f0_    = fresnel::schlick_f0(ior, ior_outside);
+    layer_.alpha_ = alpha;
 
-    ior_.ior_i_ = ior;
-    ior_.ior_o_ = ior_outside;
-    ior_.eta_i_ = ior_outside / ior;
-    ior_.eta_t_ = ior / ior_outside;
+    ior_.eta_t_ = ior;
+    ior_.eta_i_ = ior_outside;
 }
 
 void Sample_rough::reflect(Layer const& layer, sampler::Sampler& sampler,
@@ -114,8 +111,7 @@ void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& samp
                                       bxdf::Sample& result) const noexcept {
     IOR tmp_ior;
 
-    tmp_ior.ior_i_ = ior_.ior_o_;
-    tmp_ior.ior_o_ = ior_.ior_i_;
+    tmp_ior.eta_t_ = ior_.eta_i_;
     tmp_ior.eta_i_ = ior_.eta_t_;
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
@@ -134,12 +130,10 @@ void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler&
     IOR tmp_ior;
 
     if (same_side) {
-        tmp_ior.ior_i_ = ior_.ior_i_;
-        tmp_ior.ior_o_ = ior_.ior_o_;
+        tmp_ior.eta_t_ = ior_.eta_t_;
         tmp_ior.eta_i_ = ior_.eta_i_;
     } else {
-        tmp_ior.ior_i_ = ior_.ior_o_;
-        tmp_ior.ior_o_ = ior_.ior_i_;
+        tmp_ior.eta_t_ = ior_.eta_i_;
         tmp_ior.eta_i_ = ior_.eta_t_;
     }
 

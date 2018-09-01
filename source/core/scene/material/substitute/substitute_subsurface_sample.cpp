@@ -56,10 +56,8 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 void Sample_subsurface::set(float anisotropy, float ior, float ior_outside) noexcept {
     anisotropy_ = anisotropy;
 
-    ior_.ior_i_ = ior;
-    ior_.ior_o_ = ior_outside;
-    ior_.eta_i_ = ior_outside / ior;
-    ior_.eta_t_ = ior / ior_outside;
+    ior_.eta_t_ = ior;
+    ior_.eta_i_ = ior_outside;
 }
 
 void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
@@ -67,12 +65,10 @@ void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sam
     IOR tmp_ior;
 
     if (same_side) {
-        tmp_ior.ior_i_ = ior_.ior_i_;
-        tmp_ior.ior_o_ = ior_.ior_o_;
+        tmp_ior.eta_t_ = ior_.eta_t_;
         tmp_ior.eta_i_ = ior_.eta_i_;
     } else {
-        tmp_ior.ior_i_ = ior_.ior_o_;
-        tmp_ior.ior_o_ = ior_.ior_i_;
+        tmp_ior.eta_t_ = ior_.eta_i_;
         tmp_ior.eta_i_ = ior_.eta_t_;
     }
 
@@ -89,8 +85,7 @@ void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler&
                                            bxdf::Sample& result) const noexcept {
     IOR tmp_ior;
 
-    tmp_ior.ior_i_ = ior_.ior_o_;
-    tmp_ior.ior_o_ = ior_.ior_i_;
+    tmp_ior.eta_t_ = ior_.eta_i_;
     tmp_ior.eta_i_ = ior_.eta_t_;
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);

@@ -19,18 +19,16 @@ class Sample_rough final : public material::Sample {
     struct Layer : public material::Sample::Layer {
         float3 color_;
         float3 absorption_coefficient_;
-        float  f0_;
-        float  alpha_;
-        float  alpha2_;
+
+        float f0_;
+        float alpha_;
     };
 
     Layer layer_;
 
     struct IOR {
-        float ior_i_;
-        float ior_o_;
-        float eta_i_;
         float eta_t_;
+        float eta_i_;
     };
 
     IOR ior_;

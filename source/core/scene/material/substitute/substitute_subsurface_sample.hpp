@@ -24,10 +24,8 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
     float anisotropy_;
 
     struct IOR {
-        float ior_i_;
-        float ior_o_;
-        float eta_i_;
         float eta_t_;
+        float eta_i_;
     };
 
     IOR ior_;

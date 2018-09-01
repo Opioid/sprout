@@ -333,7 +333,9 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
 
     float const wo_dot_h = clamp_dot(wo, h);
 
-    float const sint2 = (ior.eta_i_ * ior.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
+    float const eta = ior.eta_i_ / ior.eta_t_;
+
+    float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
     float const wi_dot_h = std::sqrt(1.f - sint2);
 
@@ -346,7 +348,7 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
     float const  d = distribution_isotropic(n_dot_h, alpha2);
     float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 
-    float const cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
+    float const cos_x = ior.eta_i_ > ior.eta_t_ ? wi_dot_h : wo_dot_h;
 
     float3 const f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
 
@@ -450,16 +452,16 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
             //	float const g = G(wo, wi, h, lwo, -layer.world_to_tangent(wi), layer.n_, alpha);
             //	float const glx = G(wo, -wi, h, layer.n_, alpha);
 
-                    float const cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
+                    float const cos_x = ior.eta_i_ > ior.eta_t_ ? wi_dot_h : wo_dot_h;
                     float3 const f = float3(1.f) - fresnel(cos_x);
 
                     float3 const refraction = d * g * f;
 
                     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo + 0.000001f);
 
-                    float const denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
+                    float const denom = math::pow2(ior.eta_i_ * wi_dot_h + ior.eta_t_ * wo_dot_h);
 
-                    float const sqr_ior_i = ior.ior_i_ * ior.ior_i_;
+                    float const sqr_ior_i = ior.eta_t_ * ior.eta_t_;
 
                     float const sqr_eta = ior.eta_i_ * ior.eta_i_;
 
@@ -467,7 +469,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
                     float const cosBeta = math::dot(h, wo);
                     float const cosAlpha = math::dot(h, wi);
 
-                    float const denomili = math::pow2(ior.ior_o_ * cosBeta + ior.ior_i_ * cosAlpha);
+                    float const denomili = math::pow2(ior.eta_i_ * cosBeta + ior.eta_t_ * cosAlpha);
 
                     float g1a = G_ggx(n_dot_wo, alpha2);
             //	float g1c = G1(-layer.world_to_tangent(wi), alpha);
@@ -520,7 +522,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     //			std::cout << "alpha2: " << alpha2 << std::endl;
     //			std::cout << "fresnel: " << f << std::endl;
     //			std::cout << "factor: " << factor << std::endl;
-    //			std::cout << "ior_i_2: " << sqr_ior_i << std::endl;
+    //			std::cout << "eta_t_2: " << sqr_ior_i << std::endl;
     //			std::cout << "refraction: " << refraction << std::endl;
     //			std::cout << "denomili: " << denomili << std::endl;
 
@@ -570,7 +572,9 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const wo_dot_h = clamp_dot(wo, h);
 
-    float const sint2 = (ior.eta_i_ * ior.eta_i_) * (1.f - wo_dot_h * wo_dot_h);
+    float const eta = ior.eta_i_ / ior.eta_t_;
+
+    float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
     if (sint2 >= 1.f) {
         result.pdf = 0.f;
@@ -579,7 +583,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const wi_dot_h = std::sqrt(1.f - sint2);
 
-    float3 const wi = math::normalize((ior.eta_i_ * wo_dot_h - wi_dot_h) * h - ior.eta_i_ * wo);
+    float3 const wi = math::normalize((eta * wo_dot_h - wi_dot_h) * h - eta * wo);
 
     float const n_dot_wi = layer.clamp_reverse_n_dot(wi);
 
@@ -588,7 +592,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     float const d = distribution_isotropic(n_dot_h, alpha2);
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 
-    float const cos_x = ior.ior_o_ > ior.ior_i_ ? wi_dot_h : wo_dot_h;
+    float const cos_x = ior.eta_i_ > ior.eta_t_ ? wi_dot_h : wo_dot_h;
 
     float3 const f = float3(1.f) - fresnel(cos_x);
 
@@ -596,11 +600,11 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.ior_o_ * wi_dot_h + ior.ior_i_ * wo_dot_h);
+    float const denom = math::pow2(ior.eta_i_ * wi_dot_h + ior.eta_t_ * wo_dot_h);
 
-    float const sqr_ior_i = ior.ior_i_ * ior.ior_i_;
+    float const sqr_ior_i = ior.eta_t_ * ior.eta_t_;
 
-    float const sqr_eta = ior.eta_i_ * ior.eta_i_;
+    float const sqr_eta = eta * eta;
 
     result.reflection = sqr_eta * (factor * sqr_ior_i / denom) * refraction;
     result.wi         = wi;
@@ -623,7 +627,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     //	std::cout << "alpha2: " << alpha2 << std::endl;
     //	std::cout << "fresnel: " << f << std::endl;
     //	std::cout << "factor: " << factor << std::endl;
-    //	std::cout << "ior_i_2: " << ior_i_2 << std::endl;
+    //	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
     //	std::cout << "refraction: " << refraction << std::endl;
     //	std::cout << "denom: " << denom << std::endl;
 
