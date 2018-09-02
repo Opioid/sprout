@@ -76,8 +76,6 @@ void Material_subsurface::set_density_map(Texture_adapter const& density_map) no
 
 void Material_subsurface::set_attenuation(float3 const& absorption_color,
                                           float3 const& scattering_color, float distance) noexcept {
-    absorption_color_ = absorption_color;
-
     attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
 
     cm_ = CM(cc_);

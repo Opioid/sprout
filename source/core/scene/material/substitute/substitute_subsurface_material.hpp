@@ -57,8 +57,6 @@ class Material_subsurface final : public Material_base {
 
     Texture_adapter density_map_;
 
-    float3 absorption_color_;
-
     CC cc_;
     CM cm_;
 
