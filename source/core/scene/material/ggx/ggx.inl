@@ -365,11 +365,46 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
     return n_dot_wi;
 }
 
-template <typename Layer, typename Fresnel>
-float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer,
-                         Fresnel const& fresnel, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept {
-    return refract(wo, n_dot_wo, layer, layer, fresnel, sampler, result);
+template <typename Layer, typename IOR, typename Fresnel>
+bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h, float n_dot_h,
+                                   Layer const& layer, IOR const& ior, Fresnel const& fresnel) noexcept {
+    float const alpha2 = layer.alpha_ * layer.alpha_;
+
+//    float const  d = distribution_isotropic(n_dot_h, alpha2);
+//    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+//    float3 const f = float3(1.f) - fresnel(wo_dot_h);
+
+
+
+
+
+
+
+    float const d = distribution_isotropic(n_dot_h, alpha2);
+    float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
+
+    float const cos_x = ior.eta_i_ > ior.eta_t_ ? wi_dot_h : wo_dot_h;
+
+    float3 const f = float3(1.f) - fresnel(cos_x);
+
+    float3 const refraction = d * g * f;
+
+    float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
+
+    float const denom = math::pow2(ior.eta_i_ * wi_dot_h + ior.eta_t_ * wo_dot_h);
+
+    float const sqr_eta_t = ior.eta_t_ * ior.eta_t_;
+
+    float const sqr_eta = 1.f;//eta * eta;
+
+    float3 const reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
+
+    //	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
+    float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_eta_t / denom);
+
+    SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
+
+    return {reflection, pdf};
 }
 
 // Refraction details according to
