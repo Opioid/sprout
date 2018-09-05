@@ -333,7 +333,7 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
 
     float const wo_dot_h = clamp_dot(wo, h);
 
-    float const eta = ior.eta_i_ / ior.eta_t_;
+    float const eta = ior.eta_i / ior.eta_t;
 
     float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
@@ -348,7 +348,7 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
     float const  d = distribution_isotropic(n_dot_h, alpha2);
     float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 
-    float const cos_x = ior.eta_i_ > ior.eta_t_ ? wi_dot_h : wo_dot_h;
+    float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
     float3 const f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
 
@@ -365,9 +365,9 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
     return n_dot_wi;
 }
 
-template <typename Layer, typename IOR, typename Fresnel>
+template <typename Layer, typename IoR, typename Fresnel>
 bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h, float n_dot_h,
-                                   Layer const& layer, IOR const& ior, Fresnel const& fresnel) noexcept {
+                                   Layer const& layer, IoR const& ior, Fresnel const& fresnel) noexcept {
     float const alpha2 = layer.alpha_ * layer.alpha_;
 
 //    float const  d = distribution_isotropic(n_dot_h, alpha2);
@@ -383,7 +383,7 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
     float const d = distribution_isotropic(n_dot_h, alpha2);
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 
-    float const cos_x = ior.eta_i_ > ior.eta_t_ ? wi_dot_h : wo_dot_h;
+    float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
     float3 const f = float3(1.f) - fresnel(cos_x);
 
@@ -391,9 +391,9 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.eta_i_ * wi_dot_h + ior.eta_t_ * wo_dot_h);
+    float const denom = math::pow2(ior.eta_i * wi_dot_h + ior.eta_t * wo_dot_h);
 
-    float const sqr_eta_t = ior.eta_t_ * ior.eta_t_;
+    float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
     float const sqr_eta = 1.f;//eta * eta;
 
@@ -410,8 +410,8 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 // Refraction details according to
 // https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 
-template <typename Layer, typename IOR, typename Fresnel>
-float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, IOR const& ior,
+template <typename Layer, typename IoR, typename Fresnel>
+float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, IoR const& ior,
                          Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept {
     /*
@@ -607,7 +607,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const wo_dot_h = clamp_dot(wo, h);
 
-    float const eta = ior.eta_i_ / ior.eta_t_;
+    float const eta = ior.eta_i / ior.eta_t;
 
     float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
@@ -627,7 +627,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     float const d = distribution_isotropic(n_dot_h, alpha2);
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 
-    float const cos_x = ior.eta_i_ > ior.eta_t_ ? wi_dot_h : wo_dot_h;
+    float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
     float3 const f = float3(1.f) - fresnel(cos_x);
 
@@ -635,9 +635,9 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.eta_i_ * wi_dot_h + ior.eta_t_ * wo_dot_h);
+    float const denom = math::pow2(ior.eta_i * wi_dot_h + ior.eta_t * wo_dot_h);
 
-    float const sqr_eta_t = ior.eta_t_ * ior.eta_t_;
+    float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
     float const sqr_eta = 1.f;//eta * eta;
 

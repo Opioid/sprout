@@ -23,12 +23,7 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
 
     float anisotropy_;
 
-    struct IOR {
-        float eta_t_;
-        float eta_i_;
-    };
-
-    IOR ior_;
+    IoR ior_;
 };
 
 }  // namespace scene::material::substitute

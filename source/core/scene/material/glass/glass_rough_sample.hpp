@@ -26,12 +26,7 @@ class Sample_rough final : public material::Sample {
 
     Layer layer_;
 
-    struct IOR {
-        float eta_t_;
-        float eta_i_;
-    };
-
-    IOR ior_;
+    IoR ior_;
 
     void reflect(Layer const& layer, sampler::Sampler& sampler, bxdf::Sample& result) const
         noexcept;

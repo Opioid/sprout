@@ -99,6 +99,18 @@ inline void Sample::set_basis(float3 const& geo_n, float3 const& wo) noexcept {
     wo_    = wo;
 }
 
+inline Sample::IoR Sample::IoR::swapped() const noexcept {
+    return IoR{eta_i, eta_t};
+}
+
+inline Sample::IoR Sample::IoR::swapped(bool same_side) const noexcept {
+    if (same_side) {
+        return *this;
+    }
+
+    return IoR{eta_i, eta_t};
+}
+
 }  // namespace scene::material
 
 #endif

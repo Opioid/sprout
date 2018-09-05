@@ -71,6 +71,14 @@ class Sample {
   protected:
     float3 geo_n_;
     float3 wo_;
+
+    struct IoR {
+        IoR swapped() const noexcept;
+        IoR swapped(bool same_side) const noexcept;
+
+        float eta_t;
+        float eta_i;
+    };
 };
 
 }  // namespace material
