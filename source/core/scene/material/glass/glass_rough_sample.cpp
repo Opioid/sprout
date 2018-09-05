@@ -21,7 +21,28 @@ const material::Sample::Layer& Sample_rough::base_layer() const noexcept {
 
 bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
-        return {float3::identity(), 0.f};
+        IOR tmp_ior;
+
+        tmp_ior.eta_t_ = ior_.eta_i_;
+        tmp_ior.eta_i_ = ior_.eta_t_;
+
+        float const eta = tmp_ior.eta_i_ / tmp_ior.eta_t_;
+
+        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+
+     //   float3 const h = math::normalize(eta * -wo_ + wi);
+        float3 const h = -math::normalize(tmp_ior.eta_t_ * wo_ + tmp_ior.eta_i_ * wi);
+
+        float const wi_dot_h = clamp_dot(-wi, h);
+        float const wo_dot_h = clamp_dot(wo_, h);
+        float const n_dot_h  = math::saturate(-math::dot(layer_.n_, h));
+
+        fresnel::Schlick const schlick(layer_.f0_);
+        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h, layer_,
+                                                    tmp_ior, schlick);
+
+        return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
     }
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
