@@ -30,7 +30,7 @@
 
 //#include "extension/procedural/starburst/starburst.hpp"
 //#include "core/scene/material/substitute/substitute_test.hpp"
-//#include "core/scene/material/glass/glass_test.hpp"
+#include "core/scene/material/glass/glass_test.hpp"
 //#include "core/testing/testing_cdf.hpp"
 //#include "core/testing/testing_simd.hpp"
 //#include "core/testing/testing_size.hpp"
@@ -48,7 +48,7 @@ static bool is_json(std::string const& text);
 int main(int argc, char const* argv[]) {
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
-    //	scene::material::glass::testing::rough_refraction();
+        scene::material::glass::testing::rough_refraction();
     //	testing::size();
     //	testing::simd::rsqrt();
     //	testing::simd::rcp();
@@ -61,7 +61,7 @@ int main(int argc, char const* argv[]) {
     //	testing::spectrum();
     //	testing::cdf::test_1D();
 
-    //	return 1;
+    //    return 1;
 
     logging::init(logging::Type::Std_out);
 

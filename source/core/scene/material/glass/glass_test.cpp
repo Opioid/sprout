@@ -68,46 +68,102 @@ void test() {
 
 void rough_refraction() {
     rnd::Generator  rng;
+
     sampler::Random sampler(rng);
     sampler.resize(0, 1, 1, 1);
 
-    bxdf::Sample result;
+    Sample sample;
 
-    Sample_rough sample;
+    Sample_rough sample_rough;
 
-    float3 t(1.f, 0.f, 0.f);
-    float3 b(0.f, 1.f, 0.f);
-    float3 n(0.f, 0.f, 1.f);
 
-    n = math::normalize(float3(0.5f, 0.5f, 0.5f));
-    math::orthonormal_basis(n, t, b);
 
-    float3 wo;
+    float3 const t(-1.f, 0.f, 0.f);
+    float3 const b(0.f, -1.f, 0.f);
+    float3 const n(0.f, 0.f, -1.f);
 
-    wo = math::normalize(float3(-0.25f, -0.1f, -0.5f));
+  //  float3 const geo_n(0.f, 0.f, 1.f);
+
+  //  n = math::normalize(float3(0.5f, 0.5f, 0.5f));
+  //  math::orthonormal_basis(n, t, b);
+
+    float3 wo = math::normalize(float3(0.2f, -0.2f, 0.9f));
+
     sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);
 
+
+    sample_rough.set_basis(n, wo);
+    sample_rough.layer_.set_tangent_frame(t, b, n);
+
     float3 refraction_color(1.f, 1.f, 1.f);
     float3 absorption_color(1.f, 1.f, 1.f);
+
     float  attenuation_distance = 1.f;
     float  ior                  = 1.5f;
-    float  roughness            = 0.03f;  // ggx::Min_roughness;
+    float  roughness            = 0.5f;//ggx::Min_roughness;
     float  alpha                = roughness * roughness;
 
-    sample.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f, alpha);
+    sample.set(refraction_color, ior, 1.f);
 
-    result.wi         = float3::identity();
-    result.reflection = float3::identity();
+    sample_rough.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f, alpha);
 
-    float n_dot_wi = 1.f;  //::refract(sample, sample.layer_, sampler, result);
-    result.reflection *= n_dot_wi;
-    //	result.pdf *= 0.5f;
-    print(result);
 
-    if (result.pdf > 0.f) {
-        bxdf::Result eval = sample.evaluate(result.wi);
-        print(eval);
+
+    bool const same_side = sample.same_hemisphere(wo);
+
+ //   sample.refract(same_side, sample.layer_, sampler, result);
+
+    std::cout << "wo: " << wo << std::endl;
+
+//    {
+//        std::cout << "perfect:" << std::endl;
+
+//        bxdf::Sample result;
+
+//        result.wi         = float3::identity();
+//        result.reflection = float3::identity();
+
+//        sample.sample(sampler, result);
+
+//        std::cout << "sample:" << std::endl;
+//        print(result);
+
+//        if (result.pdf > 0.f) {
+//            std::cout << "\nevaluate:" << std::endl;
+//            bxdf::Result eval = sample.evaluate(result.wi);
+//            print(eval);
+//        }
+//    }
+
+    std::cout << std::endl;
+
+    {
+        std::cout << "rough:" << std::endl;
+
+        bxdf::Sample result;
+
+        result.wi         = float3::identity();
+        result.reflection = float3::identity();
+
+        Sample_rough::Layer tmp_layer = sample_rough.layer_;
+        if (!same_side) {
+            tmp_layer.n_ = -tmp_layer.n_;
+        }
+
+        sample_rough.refract(same_side, tmp_layer, sampler, result);
+
+        std::cout <<  "h: " << result.h << std::endl;
+
+        std::cout << "sample:" << std::endl;
+        print(result);
+
+        if (result.pdf > 0.f) {
+            std::cout << "\nevaluate:" << std::endl;
+            bxdf::Result eval = sample_rough.evaluate(result.wi);
+            eval.pdf *= 2.f;
+            print(eval);
+        }
     }
 }
 

@@ -404,6 +404,23 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
 
+
+//  std::cout << "refraction:" << std::endl;
+//	std::cout << "h: " << h << std::endl;
+//	std::cout << "d: " << d << std::endl;
+//  std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
+//  std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
+//  std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+//  std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+//  std::cout << "n_dot_h: " << n_dot_h << std::endl;
+//	std::cout << "alpha2: " << alpha2 << std::endl;
+//	std::cout << "fresnel: " << f << std::endl;
+//	std::cout << "factor: " << factor << std::endl;
+//	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
+//	std::cout << "refraction: " << refraction << std::endl;
+//	std::cout << "denom: " << denom << std::endl;
+
+
     return {reflection, pdf};
 }
 
@@ -653,18 +670,20 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     SOFT_ASSERT(testing::check(result, wo, layer));
 
-    //	std::cout << "sample:" << std::endl;
-    //	std::cout << "h: " << h << std::endl;
-    //	std::cout << "d: " << d << std::endl;
-    //	std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-    //	std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
-    //	std::cout << "n_dot_h: " << n_dot_h << std::endl;
-    //	std::cout << "alpha2: " << alpha2 << std::endl;
-    //	std::cout << "fresnel: " << f << std::endl;
-    //	std::cout << "factor: " << factor << std::endl;
-    //	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
-    //	std::cout << "refraction: " << refraction << std::endl;
-    //	std::cout << "denom: " << denom << std::endl;
+//      std::cout << "refract:" << std::endl;
+//      std::cout << "h: " << h << std::endl;
+//      std::cout << "d: " << d << std::endl;
+//      std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
+//      std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
+//      std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+//      std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+//      std::cout << "n_dot_h: " << n_dot_h << std::endl;
+//    	std::cout << "alpha2: " << alpha2 << std::endl;
+//    	std::cout << "fresnel: " << f << std::endl;
+//    	std::cout << "factor: " << factor << std::endl;
+//    	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
+//    	std::cout << "refraction: " << refraction << std::endl;
+//    	std::cout << "denom: " << denom << std::endl;
 
     return n_dot_wi;
 }
