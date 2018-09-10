@@ -163,7 +163,7 @@ void Sample_rough::reflect(Layer const& layer, sampler::Sampler& sampler,
 
 void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& sampler,
                                       bxdf::Sample& result) const noexcept {
-    IoR ior = ior_.swapped();
+    IoR const ior = ior_.swapped();
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
@@ -178,7 +178,7 @@ void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& samp
 
 void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
                            bxdf::Sample& result) const noexcept {
-    IoR ior = ior_.swapped(same_side);
+    IoR const ior = ior_.swapped(same_side);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 

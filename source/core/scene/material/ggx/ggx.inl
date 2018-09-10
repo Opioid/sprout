@@ -119,6 +119,8 @@ static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float a
 
 static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d,
                                         float alpha2) noexcept {
+//    return (wo_dot_h * d);
+
     float const g1 = G_ggx(n_dot_wo, alpha2);
 
     return (g1 * wo_dot_h * d / n_dot_wo);
@@ -395,6 +397,8 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
+    float const eta = ior.eta_i / ior.eta_t;
+
     float const sqr_eta = 1.f;//eta * eta;
 
     float3 const reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
@@ -661,8 +665,15 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     result.reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
     result.wi         = wi;
     result.h          = h;
-    //	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
     float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
+
+
+//    cosBeta  = dot(wh, view);
+//    cosAlpha = dot(wh, light);
+//    return d.pdf(view, wh) * sqr(ior_o) * abs(cosAlpha) / sqr(ior_i * cosBeta + ior_o * cosAlpha);
+
+
+
     result.pdf      = pdf * (wi_dot_h * sqr_eta_t / denom);
     result.h_dot_wi = wi_dot_h;
     result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_transmission
