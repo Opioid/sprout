@@ -151,7 +151,7 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
             break;
         }
 
-        if (sample_result.type.test_any(Bxdf_type ::Specular, Bxdf_type::Transmission)) {
+        if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
             //     if (sample_result.type.test(Bxdf_type::Specular)) {
             if (material_sample.ior_greater_one()) {
                 if (avoid_caustics) {
