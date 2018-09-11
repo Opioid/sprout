@@ -43,8 +43,9 @@ void Lighttracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexce
     }
 }
 
-float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker, Interface_stack const& initial_stack) noexcept {
-    worker.initialize_interface_stack(initial_stack);
+float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
+                       Interface_stack const& initial_stack) noexcept {
+    worker.reset_interface_stack(initial_stack);
 
     Sampler_filter filter = Sampler_filter::Undefined;
 

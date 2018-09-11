@@ -119,7 +119,7 @@ static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float a
 
 static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d,
                                         float alpha2) noexcept {
-//    return (wo_dot_h * d);
+    //    return (wo_dot_h * d);
 
     float const g1 = G_ggx(n_dot_wo, alpha2);
 
@@ -368,19 +368,14 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
 }
 
 template <typename Layer, typename IoR, typename Fresnel>
-bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h, float n_dot_h,
-                                   Layer const& layer, IoR const& ior, Fresnel const& fresnel) noexcept {
+bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
+                                   float n_dot_h, Layer const& layer, IoR const& ior,
+                                   Fresnel const& fresnel) noexcept {
     float const alpha2 = layer.alpha_ * layer.alpha_;
 
-//    float const  d = distribution_isotropic(n_dot_h, alpha2);
-//    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
-//    float3 const f = float3(1.f) - fresnel(wo_dot_h);
-
-
-
-
-
-
+    //    float const  d = distribution_isotropic(n_dot_h, alpha2);
+    //    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    //    float3 const f = float3(1.f) - fresnel(wo_dot_h);
 
     float const d = distribution_isotropic(n_dot_h, alpha2);
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
@@ -399,31 +394,30 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     float const eta = ior.eta_i / ior.eta_t;
 
-    float const sqr_eta = 1.f;//eta * eta;
+    float const sqr_eta = 1.f;  // eta * eta;
 
     float3 const reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
 
     //	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
-    float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) * (wi_dot_h * sqr_eta_t / denom);
+    float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) *
+                      (wi_dot_h * sqr_eta_t / denom);
 
     SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
 
-
-//  std::cout << "refraction:" << std::endl;
-//	std::cout << "h: " << h << std::endl;
-//	std::cout << "d: " << d << std::endl;
-//  std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
-//  std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
-//  std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-//  std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
-//  std::cout << "n_dot_h: " << n_dot_h << std::endl;
-//	std::cout << "alpha2: " << alpha2 << std::endl;
-//	std::cout << "fresnel: " << f << std::endl;
-//	std::cout << "factor: " << factor << std::endl;
-//	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
-//	std::cout << "refraction: " << refraction << std::endl;
-//	std::cout << "denom: " << denom << std::endl;
-
+    //  std::cout << "refraction:" << std::endl;
+    //	std::cout << "h: " << h << std::endl;
+    //	std::cout << "d: " << d << std::endl;
+    //  std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
+    //  std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
+    //  std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+    //  std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+    //  std::cout << "n_dot_h: " << n_dot_h << std::endl;
+    //	std::cout << "alpha2: " << alpha2 << std::endl;
+    //	std::cout << "fresnel: " << f << std::endl;
+    //	std::cout << "factor: " << factor << std::endl;
+    //	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
+    //	std::cout << "refraction: " << refraction << std::endl;
+    //	std::cout << "denom: " << denom << std::endl;
 
     return {reflection, pdf};
 }
@@ -506,19 +500,17 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
-    float const sqr_eta = 1.f;//eta * eta;
+    float const sqr_eta = 1.f;  // eta * eta;
 
     result.reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
     result.wi         = wi;
     result.h          = h;
-    float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
+    float const pdf   = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
 
-
-//    cosBeta  = dot(wh, view);
-//    cosAlpha = dot(wh, light);
-//    return d.pdf(view, wh) * sqr(ior_o) * abs(cosAlpha) / sqr(ior_i * cosBeta + ior_o * cosAlpha);
-
-
+    //    cosBeta  = dot(wh, view);
+    //    cosAlpha = dot(wh, light);
+    //    return d.pdf(view, wh) * sqr(ior_o) * abs(cosAlpha) / sqr(ior_i * cosBeta + ior_o *
+    //    cosAlpha);
 
     result.pdf      = pdf * (wi_dot_h * sqr_eta_t / denom);
     result.h_dot_wi = wi_dot_h;
@@ -527,20 +519,20 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     SOFT_ASSERT(testing::check(result, wo, layer));
 
-//      std::cout << "refract:" << std::endl;
-//      std::cout << "h: " << h << std::endl;
-//      std::cout << "d: " << d << std::endl;
-//      std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
-//      std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
-//      std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-//      std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
-//      std::cout << "n_dot_h: " << n_dot_h << std::endl;
-//    	std::cout << "alpha2: " << alpha2 << std::endl;
-//    	std::cout << "fresnel: " << f << std::endl;
-//    	std::cout << "factor: " << factor << std::endl;
-//    	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
-//    	std::cout << "refraction: " << refraction << std::endl;
-//    	std::cout << "denom: " << denom << std::endl;
+    //      std::cout << "refract:" << std::endl;
+    //      std::cout << "h: " << h << std::endl;
+    //      std::cout << "d: " << d << std::endl;
+    //      std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
+    //      std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
+    //      std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
+    //      std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
+    //      std::cout << "n_dot_h: " << n_dot_h << std::endl;
+    //    	std::cout << "alpha2: " << alpha2 << std::endl;
+    //    	std::cout << "fresnel: " << f << std::endl;
+    //    	std::cout << "factor: " << factor << std::endl;
+    //    	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
+    //    	std::cout << "refraction: " << refraction << std::endl;
+    //    	std::cout << "denom: " << denom << std::endl;
 
     return n_dot_wi;
 }

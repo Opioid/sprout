@@ -22,8 +22,9 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
     sampler_.resume_pixel(sample, scramble);
 }
 
-float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker, Interface_stack const& initial_stack) noexcept {
-    worker.initialize_interface_stack(initial_stack);
+float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
+              Interface_stack const& initial_stack) noexcept {
+    worker.reset_interface_stack(initial_stack);
 
     float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 

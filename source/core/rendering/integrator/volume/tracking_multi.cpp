@@ -240,7 +240,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                 return true;
             }
 
-            float const c  = 1.f / mc;
+            float const c = 1.f / mc;
 
             float const ps = ms * c;
             float const pn = mn * c;

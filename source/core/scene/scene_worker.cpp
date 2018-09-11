@@ -117,7 +117,7 @@ prop::Interface_stack& Worker::interface_stack() noexcept {
     return interface_stack_;
 }
 
-void Worker::initialize_interface_stack(prop::Interface_stack const& stack) noexcept {
+void Worker::reset_interface_stack(Interface_stack const& stack) noexcept {
     interface_stack_ = stack;
 }
 

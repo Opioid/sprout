@@ -58,10 +58,10 @@ void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene cons
 }
 
 float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack) noexcept {
-    scene::prop::Intersection intersection;
+    Intersection intersection;
 
     if (!interface_stack.empty()) {
-        initialize_interface_stack(interface_stack);
+        reset_interface_stack(interface_stack);
 
         float3 vli, vtr;
         if (!volume_integrator_->integrate(ray, intersection, Sampler_filter::Undefined, *this, vli,
@@ -69,7 +69,7 @@ float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack)
             return float4(vli, spectrum::luminance(vli));
         }
 
-        scene::prop::Interface_stack temp_stack = interface_stack_;
+        Interface_stack temp_stack = interface_stack_;
 
         float3 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
 

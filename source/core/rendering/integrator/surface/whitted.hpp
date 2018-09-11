@@ -25,7 +25,8 @@ class alignas(64) Whitted final : public Integrator {
 
     void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
 
-    float3 li(Ray& ray, Intersection& intersection, Worker& worker, Interface_stack const& initial_stack) noexcept override final;
+    float3 li(Ray& ray, Intersection& intersection, Worker& worker,
+              Interface_stack const& initial_stack) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

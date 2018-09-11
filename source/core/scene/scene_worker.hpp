@@ -29,6 +29,7 @@ class Worker {
     using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
     using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
     using Intersection       = prop::Intersection;
+    using Interface_stack    = prop::Interface_stack;
 
     Worker() noexcept;
 
@@ -64,9 +65,9 @@ class Worker {
 
     Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const noexcept;
 
-    prop::Interface_stack& interface_stack() noexcept;
+    Interface_stack& interface_stack() noexcept;
 
-    void initialize_interface_stack(prop::Interface_stack const& stack) noexcept;
+    void reset_interface_stack(Interface_stack const& stack) noexcept;
 
     float ior_outside(float3 const& wo, Intersection const& intersection) const noexcept;
 
@@ -88,8 +89,8 @@ class Worker {
 
     material::Sampler_cache const sampler_cache_;
 
-    prop::Interface_stack interface_stack_;
-    prop::Interface_stack interface_stack_temp_;
+    Interface_stack interface_stack_;
+    Interface_stack interface_stack_temp_;
 };
 
 }  // namespace scene
