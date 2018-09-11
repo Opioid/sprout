@@ -100,7 +100,7 @@ void rough_refraction() {
     float3 absorption_color(1.f, 1.f, 1.f);
 
     float  attenuation_distance = 1.f;
-    float  ior                  = 1.5f;
+    float  ior                  = 1.02f;
     float  roughness            = 0.5f;//ggx::Min_roughness;
     float  alpha                = roughness * roughness;
 
