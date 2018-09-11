@@ -66,6 +66,8 @@ class Worker {
 
     prop::Interface_stack& interface_stack() noexcept;
 
+    void initialize_interface_stack(prop::Interface_stack const& stack) noexcept;
+
     float ior_outside(float3 const& wo, Intersection const& intersection) const noexcept;
 
     void interface_change(float3 const& dir, Intersection const& intersection) noexcept;

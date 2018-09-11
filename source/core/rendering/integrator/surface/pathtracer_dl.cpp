@@ -30,7 +30,9 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) noex
     sampler_.resume_pixel(sample, scramble);
 }
 
-float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker, Interface_stack const& initial_stack) noexcept {
+    worker.initialize_interface_stack(initial_stack);
+
     Sampler_filter filter = Sampler_filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -76,8 +78,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) n
             break;
         }
 
-     //   if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
-        if (sample_result.type.test(Bxdf_type::Specular)) {
+        if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
+     //   if (sample_result.type.test(Bxdf_type::Specular)) {
             if (material_sample.ior_greater_one()) {
                 if (avoid_caustics) {
                     break;

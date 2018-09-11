@@ -54,7 +54,7 @@ class Worker : public scene::Worker {
               sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
               take::Photon_settings const& photon_settings_) noexcept;
 
-    float4 li(Ray& ray, const scene::prop::Interface_stack& interface_stack) noexcept;
+    float4 li(Ray& ray, scene::prop::Interface_stack const& interface_stack) noexcept;
 
     bool volume(Ray& ray, Intersection& intersection, Sampler_filter filter, float3& li,
                 float3& transmittance) noexcept;

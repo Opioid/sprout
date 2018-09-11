@@ -435,9 +435,6 @@ template <typename Layer, typename IoR, typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, IoR const& ior,
                          Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept {
-    // Roughness zero will always have zero specular term (or worse NaN)
-    SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
-
     float2 const xi = sampler.generate_sample_2D();
 
     float const alpha = layer.alpha_;

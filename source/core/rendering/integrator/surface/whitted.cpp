@@ -29,7 +29,9 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
     sampler_.resume_pixel(sample, scramble);
 }
 
-float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker, Interface_stack const& initial_stack) noexcept {
+    worker.initialize_interface_stack(initial_stack);
+
     //	float3 result(0.f);
 
     //	float3 const wo = -ray.direction;

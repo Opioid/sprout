@@ -68,12 +68,14 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) noe
     }
 }
 
-float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker, Interface_stack const& initial_stack) noexcept {
     float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 
     float3 result = float3::identity();
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
+        worker.initialize_interface_stack(initial_stack);
+
         Ray split_ray = ray;
 
         Intersection split_intersection = intersection;
@@ -148,7 +150,8 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
             break;
         }
 
-        if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
+        if (sample_result.type.test_any(Bxdf_type
+                                        ::Specular, Bxdf_type::Transmission)) {
    //     if (sample_result.type.test(Bxdf_type::Specular)) {
             if (material_sample.ior_greater_one()) {
                 if (avoid_caustics) {

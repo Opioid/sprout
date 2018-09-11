@@ -232,7 +232,15 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
             float const ms = math::average(mu.s * w);
             float const mn = math::average(mu_n * w);
-            float const c  = 1.f / (ms + mn);
+
+            float const mc = ms + mn;
+            if (mc < 1e-10f) {
+                li            = float3(0.f);
+                transmittance = w;
+                return true;
+            }
+
+            float const c  = 1.f / mc;
 
             float const ps = ms * c;
             float const pn = mn * c;
