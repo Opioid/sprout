@@ -5,11 +5,11 @@
 
 namespace scene::material::volumetric {
 
-class Sample final : public material::Sample {
+class Sample : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
+    bxdf::Result evaluate(float3 const& wi) const noexcept override;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 

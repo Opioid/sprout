@@ -5,6 +5,16 @@
 
 namespace scene::material::fresnel {
 
+class Schlick1 {
+  public:
+    Schlick1(float f0) noexcept;
+
+    float operator()(float wo_dot_h) const noexcept;
+
+  private:
+    float const f0_;
+};
+
 class Schlick {
   public:
     Schlick(float f0) noexcept;

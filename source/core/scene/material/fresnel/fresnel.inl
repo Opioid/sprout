@@ -135,6 +135,12 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
     return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
+inline Schlick1::Schlick1(float f0) noexcept : f0_(f0) {}
+
+inline float Schlick1::operator()(float wo_dot_h) const noexcept {
+    return schlick(wo_dot_h, f0_);
+}
+
 inline Schlick::Schlick(float f0) noexcept : f0_(f0) {}
 
 inline Schlick::Schlick(float3 const& f0) noexcept : f0_(f0) {}
