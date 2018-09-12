@@ -43,6 +43,7 @@
 #include "sampler/sampler_hammersley.hpp"
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
+#include "sampler/sampler_rd.hpp"
 #include "sampler/sampler_uniform.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/camera_cubic.hpp"
@@ -358,6 +359,8 @@ std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(json::Value const
             return std::make_shared<sampler::Uniform_factory>(num_workers);
         } else if ("Random" == n.name) {
             return std::make_shared<sampler::Random_factory>(num_workers);
+        } else if ("RD" == n.name) {
+            return std::make_shared<sampler::RD_factory>(num_workers);
         } else if ("Hammersley" == n.name) {
             return std::make_shared<sampler::Hammersley_factory>(num_workers);
         } else if ("Golden_ratio" == n.name) {

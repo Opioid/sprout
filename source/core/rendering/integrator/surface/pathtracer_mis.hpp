@@ -1,9 +1,9 @@
 #ifndef SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_NG_HPP
 #define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_NG_HPP
 
-#include "rendering/integrator/surface/surface_integrator.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
+#include "surface_integrator.hpp"
 
 namespace rendering::integrator::surface {
 

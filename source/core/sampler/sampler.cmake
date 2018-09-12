@@ -9,6 +9,8 @@ target_sources(core
     "${CMAKE_CURRENT_LIST_DIR}/sampler_ld.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/sampler_random.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/sampler_random.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/sampler_rd.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/sampler_rd.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/sampler_test.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/sampler_test.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/sampler_uniform.cpp"
