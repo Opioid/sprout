@@ -44,11 +44,17 @@ material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstat
                                                     Worker const& worker, uint32_t depth) const
     noexcept {
     if (rs.subsurface) {
-        auto& sample = worker.sample<volumetric::Sample>(depth);
+//        auto& sample = worker.sample<volumetric::Sample>(depth);
+
+//        sample.set_basis(rs.geo_n, wo);
+
+//        sample.set(anisotropy_);
+
+        auto& sample = worker.sample<Sample_subsurface_volumetric>(depth);
 
         sample.set_basis(rs.geo_n, wo);
 
-        sample.set(anisotropy_);
+        sample.set(anisotropy_, fresnel::schlick_f0(ior_, rs.ior));
 
         return sample;
     }

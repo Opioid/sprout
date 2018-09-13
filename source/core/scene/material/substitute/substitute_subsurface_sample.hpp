@@ -27,6 +27,17 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
     IoR ior_;
 };
 
+class Sample_subsurface_volumetric final : public volumetric::Sample {
+  public:
+    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
+
+    void set(float anisotropy, float f0) noexcept;
+
+private:
+
+    float f0_;
+};
+
 }  // namespace scene::material::substitute
 
 #endif
