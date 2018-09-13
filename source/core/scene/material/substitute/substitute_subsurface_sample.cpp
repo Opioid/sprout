@@ -99,24 +99,4 @@ void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler&
     result.reflection *= n_dot_wi;
 }
 
-bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi) const noexcept {
-    float3 const h = math::normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_abs_dot(wo_, h);
-
-    float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
-
-    bxdf::Result result = volumetric::Sample::evaluate(wi);
-
-    result.reflection *= f;
-
-    return result;
-}
-
-void Sample_subsurface_volumetric::set(float anisotropy, float f0) noexcept {
-    volumetric::Sample::set(anisotropy);
-
-    f0_ = f0;
-}
-
 }  // namespace scene::material::substitute

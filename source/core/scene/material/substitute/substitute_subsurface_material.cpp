@@ -15,8 +15,6 @@
 
 #include "scene/material/null/null_sample.hpp"
 
-#include <iostream>
-
 namespace scene::material::substitute {
 
 Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings) noexcept
@@ -46,17 +44,11 @@ material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstat
                                                     Worker const& worker, uint32_t depth) const
     noexcept {
     if (rs.subsurface) {
-//        auto& sample = worker.sample<volumetric::Sample>(depth);
-
-//        sample.set_basis(rs.geo_n, wo);
-
-//        sample.set(anisotropy_);
-
-        auto& sample = worker.sample<Sample_subsurface_volumetric>(depth);
+        auto& sample = worker.sample<volumetric::Sample>(depth);
 
         sample.set_basis(rs.geo_n, wo);
 
-        sample.set(anisotropy_, fresnel::schlick_f0(ior_, rs.ior));
+        sample.set(anisotropy_);
 
         return sample;
     }
