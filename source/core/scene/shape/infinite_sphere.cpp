@@ -122,12 +122,14 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 
     sample.wi = dir;
 
-    float3 xyz   = math::transform_vector_transposed(transformation.rotation, dir);
-    xyz          = math::normalize(xyz);
+    float3 const xyz = math::normalize(
+        math::transform_vector_transposed(transformation.rotation, dir));
+
     sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
-    sample.pdf     = 1.f / (2.f * math::Pi);
+    sample.pdf = 1.f / (2.f * math::Pi);
+
     sample.t       = Ray_max_t;
     sample.epsilon = 5e-4f;
 
@@ -144,13 +146,16 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_sphere_uniform(uv);
 
+    sample.wi = dir;
+
     float3 const xyz = math::normalize(
         math::transform_vector_transposed(transformation.rotation, dir));
 
-    sample.wi      = dir;
-    sample.uv[0]   = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-    sample.uv[1]   = std::acos(xyz[1]) * math::Pi_inv;
-    sample.pdf     = 1.f / (4.f * math::Pi);
+    sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+    sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
+
+    sample.pdf = 1.f / (4.f * math::Pi);
+
     sample.t       = Ray_max_t;
     sample.epsilon = 5e-4f;
 
@@ -185,6 +190,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     float sin_phi;
     float cos_phi;
     math::sincos(phi, sin_phi, cos_phi);
+
     float sin_theta;
     float cos_theta;
     math::sincos(theta, sin_theta, cos_theta);
@@ -193,9 +199,10 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
 
     sample.wi = math::transform_vector(transformation.rotation, dir);
     sample.uv = uv;
-    sample.t  = Ray_max_t;
     // sin_theta because of the uv weight
-    sample.pdf     = 1.f / ((4.f * math::Pi) * sin_theta);
+    sample.pdf = 1.f / ((4.f * math::Pi) * sin_theta);
+
+    sample.t       = Ray_max_t;
     sample.epsilon = 5e-4f;
 
     SOFT_ASSERT(testing::check(sample, uv));
@@ -213,6 +220,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     float sin_phi;
     float cos_phi;
     math::sincos(phi, sin_phi, cos_phi);
+
     float sin_theta;
     float cos_theta;
     math::sincos(theta, sin_theta, cos_theta);

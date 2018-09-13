@@ -30,7 +30,8 @@ size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& res
     Camera camera(take.view.camera);
 
     Message_handler handler(driver, resource_manager, camera);
-    server::Server  server(take.view.camera->sensor_dimensions(), handler);
+
+    server::Server server(take.view.camera->sensor_dimensions(), handler);
 
     server.run();
 
