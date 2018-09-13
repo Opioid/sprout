@@ -38,6 +38,9 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
+
+
+
         float const eta = eta_i / eta_t;
 
         float3 const h = math::normalize(eta_t * wi + eta_i * wo_);
@@ -65,7 +68,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
             return {float3(0.f), 0.f};
         }
 
-        fresnel::Schlick const schlick(layer_.f0_);
+        fresnel::Schlick1 const schlick(layer_.f0_);
         auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
                                                     layer_, tmp_ior, schlick);
 
@@ -161,7 +164,7 @@ void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& samp
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick const schlick(layer.f0_);
+    fresnel::Schlick1 const schlick(layer.f0_);
     float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, ior, schlick,
                                                               sampler, result);
 
@@ -176,7 +179,7 @@ void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler&
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick const schlick(layer.f0_);
+    fresnel::Schlick1 const schlick(layer.f0_);
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, ior, schlick, sampler,
                                                    result);
 

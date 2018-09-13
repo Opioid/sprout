@@ -352,9 +352,9 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
 
     float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
-    float3 const f = (sint2 >= 1.f) ? float3(1.f) : fresnel(cos_x);
+    float const f = (sint2 >= 1.f) ? 1.f : fresnel(cos_x);
 
-    result.reflection = d * g[0] * f;
+    result.reflection = float3(d * g[0] * f);
     result.wi         = wi;
     result.h          = h;
     result.pdf        = pdf_visible(d, g[1]);
@@ -382,9 +382,9 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
-    float3 const f = float3(1.f) - fresnel(cos_x);
+    float const f = 1.f - fresnel(cos_x);
 
-    float3 const refraction = d * g * f;
+    float const refraction = d * g * f;
 
     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
@@ -396,7 +396,7 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     float const sqr_eta = 1.f;  // eta * eta;
 
-    float3 const reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
+    float const reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
 
     //	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);// * (wi_dot_h * sqr_ior_i / denom);
     float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2) *
@@ -419,7 +419,7 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
     //	std::cout << "refraction: " << refraction << std::endl;
     //	std::cout << "denom: " << denom << std::endl;
 
-    return {reflection, pdf};
+    return {float3(reflection), pdf};
 }
 
 // Refraction details according to
@@ -490,9 +490,9 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
-    float3 const f = float3(1.f) - fresnel(cos_x);
+    float const f = 1.f - fresnel(cos_x);
 
-    float3 const refraction = d * g * f;
+    float const refraction = d * g * f;
 
     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
@@ -502,7 +502,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
 
     float const sqr_eta = 1.f;  // eta * eta;
 
-    result.reflection = sqr_eta * (factor * sqr_eta_t / denom) * refraction;
+    result.reflection = float3(sqr_eta * (factor * sqr_eta_t / denom) * refraction);
     result.wi         = wi;
     result.h          = h;
     float const pdf   = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);

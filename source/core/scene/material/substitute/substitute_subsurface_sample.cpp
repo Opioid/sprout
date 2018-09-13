@@ -74,7 +74,7 @@ void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sam
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick const schlick(layer.f0_);
+    fresnel::Schlick1 const schlick(layer.f0_[0]);
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, tmp_ior, schlick, sampler,
                                                    result);
 
@@ -90,7 +90,7 @@ void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler&
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick const schlick(layer.f0_);
+    fresnel::Schlick1 const schlick(layer.f0_[0]);
     float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, tmp_ior,
                                                               schlick, sampler, result);
 
