@@ -44,7 +44,7 @@ static inline CC attenuation(float3 const& color, float distance) {
 
 // Supposedly this:
 // https://disney-animation.s3.amazonaws.com/uploads/production/publication_asset/153/asset/siggraph2016SSS.pdf
-// But looks wrong?!
+// But looks wrong (Well, the emily head looks better with the above)?!
 
 static inline CC disney_attenuation(float3 const& color, float distance) {
     float3 const a  = color;

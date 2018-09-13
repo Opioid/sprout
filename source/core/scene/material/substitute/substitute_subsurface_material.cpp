@@ -117,8 +117,9 @@ CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
                                                Worker const& worker) const noexcept {
     SOFT_ASSERT(color_map_.is_valid());
 
-    auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-    float3 const color   = color_map_.sample_3(sampler, uv);
+    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
+
+    float3 const color = color_map_.sample_3(sampler, uv);
 
     return attenuation(color, attenuation_distance_);
 }
