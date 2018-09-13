@@ -3,9 +3,9 @@
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
-#include "scene/material/material_attenuation.inl"
 #include "scene/material/material_sample.inl"
 
 #include "base/debug/assert.hpp"
@@ -37,9 +37,6 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         float const n_dot_wi = layer_.clamp_n_dot(wi);
 
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
-
-
-
 
         float const eta = eta_i / eta_t;
 

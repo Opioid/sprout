@@ -62,15 +62,7 @@ void Sample_subsurface::set(float anisotropy, float ior, float ior_outside) noex
 
 void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
                                 bxdf::Sample& result) const noexcept {
-    IoR tmp_ior;
-
-    if (same_side) {
-        tmp_ior.eta_t = ior_.eta_t;
-        tmp_ior.eta_i = ior_.eta_i;
-    } else {
-        tmp_ior.eta_t = ior_.eta_i;
-        tmp_ior.eta_i = ior_.eta_t;
-    }
+    IoR tmp_ior = ior_.swapped(same_side);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
@@ -83,10 +75,7 @@ void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sam
 
 void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler& sampler,
                                            bxdf::Sample& result) const noexcept {
-    IoR tmp_ior;
-
-    tmp_ior.eta_t = ior_.eta_i;
-    tmp_ior.eta_i = ior_.eta_t;
+    IoR tmp_ior = ior_.swapped();
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
@@ -100,13 +89,15 @@ void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler&
 }
 
 bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi) const noexcept {
+    bxdf::Result result = volumetric::Sample::evaluate(wi);
+
+    // Fresnel is only part of evaluate() because it tries to compensate for the fact,
+    // that direct light calculations for SSS in the integrators are ignoring one surface.
     float3 const h = math::normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_abs_dot(wo_, h);
 
     float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
-
-    bxdf::Result result = volumetric::Sample::evaluate(wi);
 
     result.reflection *= f;
 

@@ -27,8 +27,9 @@ class Material : public material::Material {
     static size_t sample_size() noexcept;
 
   protected:
-    CC    cc_;
-    CM    cm_;
+    CC cc_;
+    CM cm_;
+
     float anisotropy_;
 };
 

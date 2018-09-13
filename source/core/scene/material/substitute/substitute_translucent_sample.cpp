@@ -5,8 +5,8 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/lambert/lambert.inl"
-#include "scene/material/material_attenuation.inl"
 #include "scene/material/material_sample.inl"
 #include "substitute_base_sample.inl"
 

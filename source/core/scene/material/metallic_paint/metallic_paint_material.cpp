@@ -3,7 +3,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "metallic_paint_sample.hpp"
 #include "scene/material/coating/coating.inl"
-#include "scene/material/material_attenuation.inl"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"

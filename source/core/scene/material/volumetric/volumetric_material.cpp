@@ -1,6 +1,5 @@
 #include "volumetric_material.hpp"
 #include "scene/material/collision_coefficients.inl"
-#include "scene/material/material_attenuation.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/null/null_sample.hpp"
 #include "scene/scene_renderstate.hpp"
@@ -44,7 +43,7 @@ CM Material::control_medium() const noexcept {
 
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                                float distance) noexcept {
-    attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
+    cc_ = attenuation(absorption_color, scattering_color, distance);
 
     cm_ = CM(cc_);
 }

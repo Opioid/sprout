@@ -2,7 +2,7 @@
 #include "base/math/vector4.inl"
 #include "glass_sample.hpp"
 #include "image/texture/texture_adapter.inl"
-#include "scene/material/material_attenuation.inl"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"

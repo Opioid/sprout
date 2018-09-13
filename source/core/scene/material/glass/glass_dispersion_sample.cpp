@@ -5,9 +5,9 @@
 #include "base/spectrum/discrete.inl"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/material.hpp"
-#include "scene/material/material_attenuation.inl"
 #include "scene/material/material_sample.inl"
 
 #include "base/debug/assert.hpp"

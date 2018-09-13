@@ -33,8 +33,7 @@ class Sample_subsurface_volumetric final : public volumetric::Sample {
 
     void set(float anisotropy, float f0) noexcept;
 
-private:
-
+  private:
     float f0_;
 };
 

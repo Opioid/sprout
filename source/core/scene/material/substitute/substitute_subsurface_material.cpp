@@ -5,7 +5,6 @@
 #include "base/spectrum/heatmap.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/collision_coefficients.inl"
-#include "scene/material/material_attenuation.inl"
 #include "scene/material/volumetric/volumetric_octree_builder.hpp"
 #include "scene/material/volumetric/volumetric_sample.hpp"
 #include "scene/scene_renderstate.hpp"
@@ -44,11 +43,11 @@ material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstat
                                                     Worker const& worker, uint32_t depth) const
     noexcept {
     if (rs.subsurface) {
-//        auto& sample = worker.sample<volumetric::Sample>(depth);
+        //        auto& sample = worker.sample<volumetric::Sample>(depth);
 
-//        sample.set_basis(rs.geo_n, wo);
+        //        sample.set_basis(rs.geo_n, wo);
 
-//        sample.set(anisotropy_);
+        //        sample.set(anisotropy_);
 
         auto& sample = worker.sample<Sample_subsurface_volumetric>(depth);
 
@@ -80,7 +79,7 @@ void Material_subsurface::set_density_map(Texture_adapter const& density_map) no
 
 void Material_subsurface::set_attenuation(float3 const& absorption_color,
                                           float3 const& scattering_color, float distance) noexcept {
-    attenuation(absorption_color, scattering_color, distance, cc_.a, cc_.s);
+    cc_ = attenuation(absorption_color, scattering_color, distance);
 
     cm_ = CM(cc_);
 
@@ -121,10 +120,7 @@ CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
     auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
     float3 const color   = color_map_.sample_3(sampler, uv);
 
-    float3 mu_a, mu_s;
-    attenuation(color, attenuation_distance_, mu_a, mu_s);
-
-    return {mu_a, mu_s};
+    return attenuation(color, attenuation_distance_);
 }
 
 CC Material_subsurface::collision_coefficients(float3 const& p, Sampler_filter filter,
