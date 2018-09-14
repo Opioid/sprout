@@ -1,7 +1,7 @@
 #include "infinite_sphere.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/matrix3x3.inl"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/sincos.hpp"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"

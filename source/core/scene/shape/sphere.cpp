@@ -1,7 +1,7 @@
 #include "sphere.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/matrix3x3.inl"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"

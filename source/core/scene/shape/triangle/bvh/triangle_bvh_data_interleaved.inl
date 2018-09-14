@@ -1,6 +1,7 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INTERLEAVED_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INTERLEAVED_INL
 
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "triangle_bvh_data_interleaved.hpp"
 
@@ -121,3 +122,5 @@ size_t Data_interleaved<Triangle>::num_bytes() const {
 }
 
 }  // namespace scene::shape::triangle::bvh
+
+#endif

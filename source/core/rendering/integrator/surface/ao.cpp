@@ -1,5 +1,5 @@
 #include "ao.hpp"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"

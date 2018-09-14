@@ -1,5 +1,5 @@
 #include "sampler_golden_ratio.hpp"
-#include "base/math/sampling/sample_distribution.hpp"
+#include "base/math/sample_distribution.inl"
 #include "base/math/vector2.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"

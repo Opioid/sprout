@@ -15,6 +15,7 @@ template <typename Intersection_triangle, typename Shading_triangle>
 class Data {
   public:
     Data();
+
     ~Data();
 
     uint32_t num_triangles() const;
@@ -28,7 +29,8 @@ class Data {
 
     float2 interpolate_uv(uint32_t index, float2 uv) const;
 
-    float    bitangent_sign(uint32_t index) const;
+    float bitangent_sign(uint32_t index) const;
+
     uint32_t material_index(uint32_t index) const;
 
     float3 normal(uint32_t index) const;

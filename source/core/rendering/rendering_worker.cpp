@@ -1,5 +1,5 @@
 #include "rendering_worker.hpp"
-#include "base/math/sampling/sample_distribution.hpp"
+#include "base/math/sample_distribution.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"

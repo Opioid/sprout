@@ -2,7 +2,7 @@
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"
 #include "base/math/matrix4x4.inl"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"

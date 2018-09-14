@@ -1,8 +1,5 @@
 #include "cloth_sample.hpp"
 #include "base/math/math.hpp"
-#include "base/math/sampling/sampling.hpp"
-#include "base/math/vector4.inl"
-#include "rendering/integrator/integrator_helper.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/lambert/lambert.inl"
 #include "scene/material/material_sample.inl"

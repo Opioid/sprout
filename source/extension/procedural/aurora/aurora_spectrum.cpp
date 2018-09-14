@@ -1,5 +1,5 @@
 #include "aurora_spectrum.hpp"
-#include "base/math/function/interpolated_function.inl"
+#include "base/math/interpolated_function.inl"
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/xyz.hpp"
 

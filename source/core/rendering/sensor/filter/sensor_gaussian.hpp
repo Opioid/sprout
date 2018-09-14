@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_FILTER_GAUSSIAN_HPP
 #define SU_CORE_RENDERING_SENSOR_FILTER_GAUSSIAN_HPP
 
-#include "base/math/function/interpolated_function.hpp"
+#include "base/math/interpolated_function.hpp"
 #include "base/math/vector3.hpp"
 #include "sensor_filter.hpp"
 
@@ -11,11 +11,11 @@ class Gaussian : public Filter {
   public:
     Gaussian(float radius, float alpha);
 
-    virtual float radius() const override final;
+    float radius() const override final;
 
-    virtual float evaluate(float d) const override final;
+    float evaluate(float d) const override final;
 
-    virtual float evaluate(float2 p) const override final;
+    float evaluate(float2 p) const override final;
 
   private:
     float gaussian(float d) const;

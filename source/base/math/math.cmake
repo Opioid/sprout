@@ -1,14 +1,14 @@
 include("${CMAKE_CURRENT_LIST_DIR}/distribution/distribution.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/filter/filter.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/fourier/fourier.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/function/function.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/sampling/sampling.cmake")
 
 target_sources(base
 	PRIVATE
 	"${CMAKE_CURRENT_LIST_DIR}/aabb.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/aabb.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/exp.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/interpolated_function.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/interpolated_function.inl"	
 	"${CMAKE_CURRENT_LIST_DIR}/mapping.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/mapping.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/math.hpp"
@@ -24,6 +24,8 @@ target_sources(base
 	"${CMAKE_CURRENT_LIST_DIR}/quaternion.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/ray.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/ray.inl"
+    "${CMAKE_CURRENT_LIST_DIR}/sample_distribution.inl"
+    "${CMAKE_CURRENT_LIST_DIR}/sampling.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/simd_aabb.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/simd_aabb.inl"
 	"${CMAKE_CURRENT_LIST_DIR}/simd_matrix.hpp"

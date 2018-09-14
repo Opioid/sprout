@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INL
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INL
 
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/memory/align.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "triangle_bvh_data.hpp"

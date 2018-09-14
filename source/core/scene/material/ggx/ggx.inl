@@ -11,7 +11,7 @@
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/material_sample_helper.hpp"
 
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 
 #include "base/debug/assert.hpp"
 #include "scene/material/material_test.hpp"

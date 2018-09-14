@@ -1,7 +1,7 @@
 #ifndef SU_EXTENSION_PROCEDURAL_SKY_SUN_MATERIAL_HPP
 #define SU_EXTENSION_PROCEDURAL_SKY_SUN_MATERIAL_HPP
 
-#include "base/math/function/interpolated_function.hpp"
+#include "base/math/interpolated_function.hpp"
 #include "sky_material_base.hpp"
 
 namespace procedural::sky {

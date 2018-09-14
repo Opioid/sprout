@@ -2,7 +2,7 @@
 #include <vector>
 #include "base/math/exp.hpp"
 #include "base/math/filter/gaussian.hpp"
-#include "base/math/sampling/sample_distribution.hpp"
+#include "base/math/sample_distribution.inl"
 #include "base/math/simd_vector.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"

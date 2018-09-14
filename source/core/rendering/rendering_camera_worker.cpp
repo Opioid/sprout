@@ -1,5 +1,4 @@
 #include "rendering_camera_worker.hpp"
-#include "base/math/sampling/sample_distribution.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include "rendering/integrator/surface/surface_integrator.hpp"

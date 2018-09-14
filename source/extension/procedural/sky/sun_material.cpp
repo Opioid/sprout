@@ -1,5 +1,5 @@
 #include "sun_material.hpp"
-#include "base/math/function/interpolated_function.inl"
+#include "base/math/interpolated_function.inl"
 #include "base/math/vector4.inl"
 #include "core/image/texture/texture_adapter.inl"
 #include "core/image/texture/texture_float_3.hpp"

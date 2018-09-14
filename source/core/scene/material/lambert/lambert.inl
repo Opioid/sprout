@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/math/math.hpp"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "lambert.hpp"
 #include "sampler/sampler.hpp"

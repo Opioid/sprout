@@ -1,7 +1,7 @@
 #include "baking_driver.hpp"
 #include <fstream>
 #include "baking_worker.hpp"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include "image/encoding/png/png_writer.hpp"

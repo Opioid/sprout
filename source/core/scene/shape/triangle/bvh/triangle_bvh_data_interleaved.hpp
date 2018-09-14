@@ -1,6 +1,8 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INTERLEAVED_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INTERLEAVED_HPP
 
 #include <vector>
+#include "base/math/ray.hpp"
 #include "base/math/vector3.hpp"
 #include "base/simd/simd.hpp"
 
@@ -54,3 +56,5 @@ class Data_interleaved {
 
 }  // namespace triangle::bvh
 }  // namespace scene::shape
+
+#endif

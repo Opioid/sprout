@@ -1,6 +1,6 @@
 #include "flakes_provider.hpp"
-#include "base/math/sampling/sample_distribution.hpp"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sample_distribution.inl"
+#include "base/math/sampling.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
 #include "base/random/generator.inl"

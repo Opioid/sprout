@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_DISNEY_INL
 
 #include "base/math/math.hpp"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "disney.hpp"
 #include "sampler/sampler.hpp"

@@ -1,6 +1,5 @@
 #include "debug_sample.hpp"
-#include "base/math/sampling/sampling.hpp"
-#include "base/math/vector4.inl"
+#include "base/math/sampling.inl"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"

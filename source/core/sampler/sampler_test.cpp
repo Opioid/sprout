@@ -1,5 +1,5 @@
 #include "sampler_test.hpp"
-#include "base/math/sampling/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
