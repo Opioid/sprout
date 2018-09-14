@@ -52,12 +52,9 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         float3 const uvw = ray.point(t);
 
-        auto mu = material.collision_coefficients(uvw, filter, worker);
+        auto const mu = material.collision_coefficients(uvw, filter, worker);
 
-        mu.a -= data.minorant_mu_a;
-        mu.s -= data.minorant_mu_s;
-
-        float3 const mu_t = mu.a + mu.s;
+        float3 const mu_t = (mu.a + mu.s) - data.minorant_mu_t;
 
         float3 const mu_n = float3(mt) - mu_t;
 

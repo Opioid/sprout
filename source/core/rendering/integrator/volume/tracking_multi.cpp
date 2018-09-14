@@ -300,50 +300,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
         static bool constexpr decomposition = false;
 
         if (decomposition) {
-            /*
-            auto const cm = material.control_medium();
-
-            float const rc  = rng_.random_float();
-            float const t_c = ray.min_t - std::log(1.f - rc) / cm.minorant_mu_t;
-
-            if (t_c < d) {
-                intersection.prop           = interface->prop;
-                intersection.geo.p          = ray.point(t_c);
-                intersection.geo.uv         = interface->uv;
-                intersection.geo.part       = interface->part;
-                intersection.subsurface = true;
-
-                li            = float3(0.f);
-                transmittance = float3(cm.minorant_mu_s / cm.minorant_mu_t);
-                return true;
-            }
-
-            float const mt = cm.majorant_mu_t - cm.minorant_mu_t;
-
-            auto mu = material.collision_coefficients();
-            mu.a -= cm.minorant_mu_a;
-            mu.s -= cm.minorant_mu_s;
-
-            float const rr  = rng_.random_float();
-            float const t_r = ray.min_t - std::log(1.f - rr) / mt;
-
-            if (t_r < d) {
-                intersection.prop           = interface->prop;
-                intersection.geo.p          = ray.point(t_r);
-                intersection.geo.uv         = interface->uv;
-                intersection.geo.part       = interface->part;
-                intersection.subsurface = true;
-
-                li            = float3(0.f);
-                transmittance = float3(mu.s / mt);
-                return true;
-            }
-
-            li            = float3(0.f);
-            transmittance = float3(1.f);
-            return true;
-*/
-
             auto const cm = material.control_medium();
 
             float const rc  = rng_.random_float();
