@@ -128,7 +128,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        //	weight = float3(1.f);
         return false;
     }
 
@@ -138,7 +137,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
     if (range < Tracking::Ray_epsilon) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        //	weight = float3(1.f);
         return true;
     }
 
@@ -154,7 +152,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
         li            = float3(0.f);
         transmittance = attenuation(range, mu_a);
-        //	weight = float3(1.f);
         return true;
     }
 
@@ -219,9 +216,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
             if (t > d) {
                 li            = float3(0.f);
                 transmittance = w;
-
-                // transmittance = float3(1.f);
-                // weight = w;
                 return true;
             }
 
@@ -255,8 +249,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                 float3 const ws = mu.s / (mt * ps);
 
                 li = float3(0.f);
-                //	transmittance = w * ws;
-                //	weight = 1.f / transmittance;
                 transmittance = w * ws;
                 return true;
             } else {
@@ -434,9 +426,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                 if (t > d) {
                     li            = float3(0.f);
                     transmittance = w;
-
-                    // transmittance = float3(1.f);
-                    // weight = w;
                     return true;
                 }
 
@@ -462,8 +451,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     float3 const ws = mu.s / (mt * ps);
 
                     li = float3(0.f);
-                    //	transmittance = w * ws;
-                    //	weight = 1.f / transmittance;
                     transmittance = w * ws;
                     return true;
                 } else {
