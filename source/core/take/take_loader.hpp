@@ -72,26 +72,32 @@ class Loader {
         float interpupillary_distance = 0.f;
     };
 
+    using Sensor_filter       = rendering::sensor::filter::Filter;
+    using Sensor_ptr          = std::unique_ptr<rendering::sensor::Sensor>;
+    using Sampler_factory_ptr = std::shared_ptr<sampler::Factory>;
+    using Surface_factory_ptr = std::shared_ptr<rendering::integrator::surface::Factory>;
+    using Volume_factory_ptr  = std::shared_ptr<rendering::integrator::volume::Factory>;
+
     static void load_camera(json::Value const& camera_value, Take& take);
 
-    static std::unique_ptr<rendering::sensor::Sensor> load_sensor(json::Value const& sensor_value,
-                                                                  int2               dimensions);
+    static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions);
 
-    static const rendering::sensor::filter::Filter* load_filter(
-        rapidjson::Value const& filter_value);
+    static Sensor_filter const* load_filter(rapidjson::Value const& filter_value);
 
-    static std::shared_ptr<sampler::Factory> load_sampler_factory(json::Value const& sampler_value,
-                                                                  uint32_t           num_workers,
-                                                                  uint32_t& num_samples_per_pixel);
+    static Sampler_factory_ptr load_sampler_factory(json::Value const& sampler_value,
+                                                    uint32_t           num_workers,
+                                                    uint32_t&          num_samples_per_pixel);
 
     static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
                                           Take& take);
 
-    static std::shared_ptr<rendering::integrator::surface::Factory> load_surface_integrator_factory(
-        json::Value const& integrator_value, Settings const& settings, uint32_t num_workers);
+    static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
+                                                               Settings const&    settings,
+                                                               uint32_t           num_workers);
 
-    static std::shared_ptr<rendering::integrator::volume::Factory> load_volume_integrator_factory(
-        json::Value const& integrator_value, Settings const& settings, uint32_t num_workers);
+    static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
+                                                             Settings const&    settings,
+                                                             uint32_t           num_workers);
 
     static void load_photon_settings(json::Value const& value, Photon_settings& settings);
 

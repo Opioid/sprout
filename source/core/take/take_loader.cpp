@@ -183,7 +183,8 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
     json::Value const* sensor_value     = nullptr;
 
     std::string layout_type;
-    bool        stereo = false;
+
+    bool stereo = false;
 
     for (auto& n : type_value->GetObject()) {
         if ("parameters" == n.name) {
@@ -272,8 +273,10 @@ std::unique_ptr<rendering::sensor::Sensor> Loader::load_sensor(json::Value const
                                                                int2               dimensions) {
     using namespace rendering::sensor;
 
-    bool   alpha_transparency = false;
-    float  exposure           = 0.f;
+    bool alpha_transparency = false;
+
+    float exposure = 0.f;
+
     float3 clamp_max(-1.f);
 
     filter::Filter const* filter = nullptr;
@@ -331,7 +334,7 @@ std::unique_ptr<rendering::sensor::Sensor> Loader::load_sensor(json::Value const
                                                                  clamp::Identity());
 }
 
-const rendering::sensor::filter::Filter* Loader::load_filter(json::Value const& filter_value) {
+rendering::sensor::filter::Filter const* Loader::load_filter(json::Value const& filter_value) {
     for (auto& n : filter_value.GetObject()) {
         if ("Gaussian" == n.name) {
             float const radius = json::read_float(n.value, "radius", 1.f);
