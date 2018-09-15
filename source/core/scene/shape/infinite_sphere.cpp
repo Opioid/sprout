@@ -114,8 +114,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
                              bool /*two_sided*/, sampler::Sampler& sampler,
                              uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
                              Sample_to& sample) const noexcept {
-    float3 x, y;
-    math::orthonormal_basis(n, x, y);
+    auto const [x, y] = math::orthonormal_basis(n);
 
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
@@ -187,13 +186,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     float const phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
     float const theta = uv[1] * math::Pi;
 
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
-    float sin_theta;
-    float cos_theta;
-    math::sincos(theta, sin_theta, cos_theta);
+    auto const [sin_theta, cos_theta] = math::sincos(theta);
 
     float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
@@ -217,20 +212,15 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     float const phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
     float const theta = uv[1] * math::Pi;
 
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
-    float sin_theta;
-    float cos_theta;
-    math::sincos(theta, sin_theta, cos_theta);
+    auto const [sin_theta, cos_theta] = math::sincos(theta);
 
     float3 const ls(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
     float3 const ws = -math::transform_vector(transformation.rotation, ls);
 
-    float3 t, b;
-    math::orthonormal_basis(ws, t, b);
+    auto const [t, b] = math::orthonormal_basis(ws);
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 

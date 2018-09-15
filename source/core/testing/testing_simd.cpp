@@ -1052,7 +1052,10 @@ void basis() {
         float3 result(0.f);
 
         for (size_t i = 0; i < num_values; ++i) {
-            math::orthonormal_basis(vectors[i], bs[i], ts[i]);
+            auto const [t, b] = math::orthonormal_basis(vectors[i]);
+
+            ts[i] = t;
+            bs[i] = b;
 
             result += bs[i] + ts[i];
         }
@@ -1106,7 +1109,10 @@ void basis() {
         float3 result(0.f);
 
         for (size_t i = 0; i < num_values; ++i) {
-            math::orthonormal_basis(vectors[i], bs[i], ts[i]);
+            auto const [t, b] = math::orthonormal_basis(vectors[i]);
+
+            ts[i] = t;
+            bs[i] = b;
 
             result += bs[i] + ts[i];
         }

@@ -248,9 +248,8 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
     float const phi = (xi[1] < a) ? xi[1] / a * math::Pi
                                   : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
 
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
+
     float const p1 = r * cos_phi;
     float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
 
@@ -317,9 +316,8 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
     float const phi = (xi[1] < a) ? (xi[1] / a * math::Pi)
                                   : (math::Pi + (xi[1] - a) / (1.f - a) * math::Pi);
 
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
+
     float const p1 = r * cos_phi;
     float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
 
@@ -450,9 +448,8 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, I
     float const phi = (xi[1] < a) ? (xi[1] / a * math::Pi)
                                   : (math::Pi + (xi[1] - a) / (1.f - a) * math::Pi);
 
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
+
     float const p1 = r * cos_phi;
     float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
 

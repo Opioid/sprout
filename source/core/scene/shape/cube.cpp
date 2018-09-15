@@ -180,8 +180,8 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 
     float const  axis_length = std::sqrt(axis_squared_length);
     float3 const z           = axis / axis_length;
-    float3       x, y;
-    math::orthonormal_basis(z, x, y);
+
+    auto const [x, y] = math::orthonormal_basis(z);
 
     float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);

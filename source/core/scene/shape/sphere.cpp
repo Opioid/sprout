@@ -342,8 +342,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     float3 const z = axis / axis_length;
 
-    float3 x, y;
-    math::orthonormal_basis(z, x, y);
+    auto const [x, y] = math::orthonormal_basis(z);
 
     float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
@@ -375,8 +374,7 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
 
     float3 const ws = transformation.position + (transformation.scale[0] * ls);
 
-    float3 x, y;
-    math::orthonormal_basis(ls, x, y);
+    auto const [x, y] = math::orthonormal_basis(ls);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, ls);

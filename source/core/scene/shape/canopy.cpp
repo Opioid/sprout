@@ -207,8 +207,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const&   transf
 
     float3 const ws = -math::transform_vector(transformation.rotation, ls);
 
-    float3 t, b;
-    math::orthonormal_basis(ws, t, b);
+    auto const [t, b] = math::orthonormal_basis(ws);
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 

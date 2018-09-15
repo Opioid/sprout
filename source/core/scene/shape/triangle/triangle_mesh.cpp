@@ -354,8 +354,7 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     float3 const sn = tree_.triangle_normal(s.offset);
     float3 const wn = math::transform_vector(transformation.rotation, sn);
 
-    float3 x, y;
-    math::orthonormal_basis(wn, x, y);
+    auto const [x, y] = math::orthonormal_basis(wn);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, wn);

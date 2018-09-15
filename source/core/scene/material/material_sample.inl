@@ -19,7 +19,10 @@ inline void Sample::Layer::set_tangent_frame(float3 const& t, float3 const& b,
 }
 
 inline void Sample::Layer::set_tangent_frame(float3 const& n) noexcept {
-    math::orthonormal_basis(n, t_, b_);
+    auto const [t, b] = math::orthonormal_basis(n);
+
+    t_ = t;
+    b_ = b;
     n_ = n;
 }
 

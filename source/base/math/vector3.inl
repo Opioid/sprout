@@ -545,22 +545,12 @@ static inline constexpr Vector3f_a reflect(Vector3f_a const& normal, Vector3f_a 
     return 2.f * dot(v, normal) * normal - v;
 }
 
-static inline void orthonormal_basis(Vector3f_a const& n, Vector3f_a& t, Vector3f_a& b) noexcept {
-    // https://gist.github.com/roxlu/3082114
-    /*
-            // Handle the singularity
-            if (n[2] < -0.9999999f) {
-                    t = Vector3f_a( 0.f, -1.f, 0.f);
-                    b = Vector3f_a(-1.f,  0.f, 0.f);
-                    return;
-            }
+struct Vector3f_a_pair {
+    Vector3f_a a;
+    Vector3f_a b;
+};
 
-            float const c = 1.f / (1.f + n[2]);
-            float const d = -n[0] * n[1] * c;
-            t = Vector3f_a(1.f - n[0] * n[0] * c, d, -n[0]);
-            b = Vector3f_a(d, 1.f - n[1] * n[1] * c, -n[1]);
-            */
-
+static inline Vector3f_a_pair orthonormal_basis(Vector3f_a const& n) noexcept {
     // Building an Orthonormal Basis, Revisited
     // http://jcgt.org/published/0006/01/01/
 
@@ -568,8 +558,9 @@ static inline void orthonormal_basis(Vector3f_a const& n, Vector3f_a& t, Vector3
     float const sign = copysign1(n[2]);
     float const c    = -1.f / (sign + n[2]);
     float const d    = n[0] * n[1] * c;
-    t                = Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
-    b                = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
+
+    return {Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]),
+            Vector3f_a(d, sign + n[1] * n[1] * c, -n[1])};
 }
 
 // https://twitter.com/ian_mallett/status/846631289822232577

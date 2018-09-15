@@ -47,9 +47,7 @@ static inline float2 sample_disk_concentric(float2 uv) {
 
     theta *= Pi / 4.f;
 
-    float sin_theta;
-    float cos_theta;
-    math::sincos(theta, sin_theta, cos_theta);
+    auto const [sin_theta, cos_theta] = math::sincos(theta);
 
     return float2(cos_theta * r, sin_theta * r);
 }
@@ -93,9 +91,7 @@ static inline float3 sample_oriented_disk_concentric(float2 uv, float3 const& x,
 
     theta *= Pi / 4.f;
 
-    float sin_theta;
-    float cos_theta;
-    math::sincos(theta, sin_theta, cos_theta);
+    auto const [sin_theta, cos_theta] = math::sincos(theta);
 
     return (cos_theta * r) * x + (sin_theta * r) * y;
 }
@@ -110,11 +106,7 @@ static inline float3 sample_hemisphere_uniform(float2 uv) {
     float const r   = std::sqrt(1.f - z * z);
     float const phi = uv[1] * (2.f * Pi);
 
-    //	float const sin_phi = std::sin(phi);
-    //	float const cos_phi = std::cos(phi);
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
     return float3(cos_phi * r, sin_phi * r, z);
 }
@@ -125,11 +117,7 @@ static inline float3 sample_oriented_hemisphere_uniform(float2 uv, float3 const&
     float const r   = std::sqrt(1.f - za * za);
     float const phi = uv[1] * (2.f * Pi);
 
-    //	float const sin_phi = std::sin(phi);
-    //	float const cos_phi = std::cos(phi);
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
     return (cos_phi * r) * x + (sin_phi * r) * y + za * z;
 }
@@ -139,11 +127,7 @@ static inline float3 sample_oriented_hemisphere_uniform(float2 uv, float3x3 cons
     float const r   = std::sqrt(1.f - za * za);
     float const phi = uv[1] * (2.f * Pi);
 
-    //	float const sin_phi = std::sin(phi);
-    //	float const cos_phi = std::cos(phi);
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
     return (cos_phi * r) * m.r[0] + (sin_phi * r) * m.r[1] + za * m.r[2];
 }
@@ -175,20 +159,14 @@ static inline float3 sample_sphere_uniform(float2 uv) {
     float const r   = std::sqrt(std::max(0.f, 1.f - z * z));
     float const phi = uv[1] * (2.f * Pi);
 
-    //	float const sin_phi = std::sin(phi);
-    //	float const cos_phi = std::cos(phi);
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
     return float3(cos_phi * r, sin_phi * r, z);
 }
 
 static inline float3 sphere_direction(float sin_theta, float cos_theta, float phi, float3 const& x,
                                       float3 const& y, float3 const& z) {
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
     return sin_theta * cos_phi * x + sin_theta * sin_phi * y + cos_theta * z;
 }
@@ -199,11 +177,7 @@ static inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max
     float const sin_theta = std::sqrt(1.f - cos_theta * cos_theta);
     float const phi       = uv[1] * (2.f * Pi);
 
-    //	float sin_phi = std::sin(phi);
-    //	float cos_phi = std::cos(phi);
-    float sin_phi;
-    float cos_phi;
-    math::sincos(phi, sin_phi, cos_phi);
+    auto const [sin_phi, cos_phi] = math::sincos(phi);
 
     return (cos_phi * sin_theta) * x + (sin_phi * sin_theta) * y + cos_theta * z;
 }
