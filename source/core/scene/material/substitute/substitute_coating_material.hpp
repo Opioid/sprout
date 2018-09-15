@@ -46,8 +46,6 @@ class Material_clearcoat : public Material_coating<Clearcoat_data> {
 
     void set_coating_attenuation(float3 const& absorption_color, float distance) noexcept;
 
-    void set_coating_thickness(float thickness) noexcept;
-
     void set_coating_ior(float ior) noexcept;
 
     void set_coating_roughness(float roughness) noexcept;

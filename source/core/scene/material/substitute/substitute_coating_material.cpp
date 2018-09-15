@@ -50,19 +50,14 @@ void Material_clearcoat::set_coating_attenuation(float3 const& absorption_color,
     coating_.absorption_coefficient = extinction_coefficient(absorption_color, distance);
 }
 
-void Material_clearcoat::set_coating_thickness(float thickness) noexcept {
-    coating_.thickness = thickness;
-}
-
 void Material_clearcoat::set_coating_ior(float ior) noexcept {
     coating_.ior = ior;
 }
 
 void Material_clearcoat::set_coating_roughness(float roughness) noexcept {
-    float const r     = ggx::clamp_roughness(roughness);
-    float const alpha = r * r;
+    float const r = ggx::clamp_roughness(roughness);
 
-    coating_.alpha = alpha;
+    coating_.alpha = r * r;
 }
 
 size_t Material_clearcoat::sample_size() noexcept {

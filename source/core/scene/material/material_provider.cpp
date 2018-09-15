@@ -697,7 +697,9 @@ Material_ptr Provider::load_metallic_paint(json::Value const& paint_value,
     material->set_flakes_roughness(flakes_roughness);
 
     material->set_coating_attenuation(coating.color, coating.attenuation_distance);
-    material->set_clearcoat(coating.ior, coating.roughness);
+    material->set_coating_ior(coating.ior);
+    material->set_coating_roughness(coating.roughness);
+    material->set_coating_thickness(coating.thickness);
 
     return material;
 }
@@ -971,8 +973,6 @@ Material_ptr Provider::load_substitute(json::Value const& substitute_value,
 
             material->set_coating_normal_map(coating_normal_map);
             material->set_coating_thickness_map(coating_thickness_map);
-            //      material->set_coating_weight(coating.weight);
-            //     material->set_coating_attenuation();
             material->set_coating_attenuation(coating.color, coating.attenuation_distance);
             material->set_coating_ior(coating.ior);
             material->set_coating_roughness(coating.roughness);
@@ -1207,8 +1207,6 @@ void Provider::read_coating_description(json::Value const&   coating_value,
             description.roughness = json::read_float(n.value);
         } else if ("thickness" == n.name) {
             description.thickness = json::read_float(n.value);
-        } else if ("weight" == n.name) {
-            description.weight = json::read_float(n.value);
         } else if ("unit" == n.name) {
             description.in_nm = ("nm" == json::read_string(n.value));
         } else if ("textures" == n.name) {

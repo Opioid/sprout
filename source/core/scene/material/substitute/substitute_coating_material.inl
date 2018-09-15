@@ -32,7 +32,7 @@ void Material_coating<Coating>::set_coating_normal_map(Texture_adapter const& no
 
 template <typename Coating>
 void Material_coating<Coating>::set_coating_thickness(float thickness) noexcept {
-    coating_.thickness_ = thickness;
+    coating_.thickness = thickness;
 }
 
 template <typename Coating>

@@ -32,8 +32,9 @@ material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const&
 
     float alpha;
     if (roughness_map_.is_valid()) {
-        float const roughness = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
-        alpha                 = roughness * roughness;
+        float const r = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
+
+        alpha = r * r;
     } else {
         alpha = alpha_;
     }
@@ -85,8 +86,9 @@ void Glass_rough::set_ior(float ior) noexcept {
 }
 
 void Glass_rough::set_roughness(float roughness) noexcept {
-    roughness = ggx::clamp_roughness(roughness);
-    alpha_    = roughness * roughness;
+    const float r = ggx::clamp_roughness(roughness);
+
+    alpha_ = r * r;
 }
 
 size_t Glass_rough::sample_size() noexcept {

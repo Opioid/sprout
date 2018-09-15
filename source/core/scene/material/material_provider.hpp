@@ -89,7 +89,6 @@ class Provider final : public resource::Provider<Material> {
         float ior                  = 1.f;
         float roughness            = 0.f;
         float thickness            = 0.01f;
-        float weight               = 1.f;
 
         bool in_nm = false;
 
