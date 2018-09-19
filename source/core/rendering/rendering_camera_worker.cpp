@@ -27,8 +27,9 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 co
 
     // Actually, we just need a unique number (>= #workers) per tile here.
     // Maybe we can come up with a more elegant solution sometime...
-    uint64_t const sequence = 0xFFFFFFFFFFFFFFFF - ((static_cast<uint64_t>(tile[2]) << 32) +
-                                                    static_cast<uint64_t>(tile[3]));
+    uint64_t const sequence = 0xFFFFFFFFFFFFFFFF - ((static_cast<uint64_t>(tile[0]) << 32) +
+                                                    static_cast<uint64_t>(tile[1]));
+
     rnd::Generator rng(0, sequence);
 
     for (int32_t y = tile[1], y_len = tile[3] + 1; y < y_len; ++y) {

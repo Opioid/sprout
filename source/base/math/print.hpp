@@ -20,11 +20,20 @@ std::ostream& operator<<(std::ostream& stream, const math::Vector3<T>& v) {
     return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << "]";
 }
 
+template <typename T>
+std::ostream& operator<<(std::ostream& stream, const math::Vector4<T>& v) {
+    return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << "]";
+}
+
 inline std::ostream& operator<<(std::ostream& stream, const math::Vector3f_a& v) {
     return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << "]";
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const math::Vector4f_a& v) {
+    return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << "]";
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const math::Vector4i_a& v) {
     return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << "]";
 }
 
