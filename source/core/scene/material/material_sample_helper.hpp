@@ -15,6 +15,10 @@ static inline float clamp(float x) noexcept {
     return std::clamp(x, Dot_min, 1.f);
 }
 
+static inline float clamp_abs(float x) noexcept {
+    return std::clamp(std::abs(x), Dot_min, 1.f);
+}
+
 static inline float clamp_dot(float3 const& a, float3 const& b) noexcept {
     return std::clamp(math::dot(a, b), Dot_min, 1.f);
 }
