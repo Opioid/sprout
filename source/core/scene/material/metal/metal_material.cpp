@@ -32,7 +32,7 @@ material::Sample const& Material_isotropic::sample(float3 const& wo, Renderstate
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.layer_.set(ior_, absorption_, alpha_);
+    sample.set(ior_, absorption_, alpha_);
 
     sample.avoid_caustics_ = rs.avoid_caustics;
 

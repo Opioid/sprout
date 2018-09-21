@@ -30,7 +30,7 @@ const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.layer_.set(sky_.model().evaluate_sky_and_sun(-wo));
+    sample.set(sky_.model().evaluate_sky_and_sun(-wo));
 
     return sample;
 }
@@ -69,7 +69,7 @@ const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate
 
     float3 const radiance = emission_(sky_.sun_v(-wo));
 
-    sample.layer_.set(radiance);
+    sample.set(radiance);
 
     return sample;
 }

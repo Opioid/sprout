@@ -4,6 +4,8 @@
 #include "base/math/vector3.inl"
 #include "scene/material/coating/coating.inl"
 #include "scene/material/disney/disney.inl"
+#include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample_helper.hpp"
 #include "substitute_base_sample.hpp"
 

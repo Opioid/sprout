@@ -30,7 +30,8 @@ material::Sample const& Emissionmap::sample(float3 const& wo, Renderstate const&
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     float3 const radiance = emission_map_.sample_3(sampler, rs.uv);
-    sample.layer_.set(emission_factor_ * radiance);
+
+    sample.set(emission_factor_ * radiance);
 
     return sample;
 }
@@ -39,6 +40,7 @@ float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /
                                       float /*time*/, Sampler_filter filter,
                                       Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
+
     return emission_factor_ * emission_map_.sample_3(sampler, uv);
 }
 

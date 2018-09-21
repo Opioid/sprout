@@ -20,7 +20,7 @@ material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.layer_.set(emittance_.radiance(rs.area));
+    sample.set(emittance_.radiance(rs.area));
 
     return sample;
 }

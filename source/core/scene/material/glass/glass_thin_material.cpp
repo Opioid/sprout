@@ -22,14 +22,14 @@ material::Sample const& Glass_thin::sample(float3 const& wo, Renderstate const& 
     sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
-        auto&        sampler = worker.sampler_2D(sampler_key(), filter);
+        auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
         float3 const n       = sample_normal(wo, rs, normal_map_, sampler);
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.layer_.set(refraction_color_, absorption_coefficient_, ior_, rs.ior, thickness_);
+    sample.set(refraction_color_, absorption_coefficient_, ior_, rs.ior, thickness_);
 
     return sample;
 }

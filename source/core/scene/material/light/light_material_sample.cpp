@@ -15,7 +15,7 @@ bxdf::Result Sample::evaluate(float3 const& /*wi*/) const noexcept {
 }
 
 float3 Sample::radiance() const noexcept {
-    return layer_.radiance_;
+    return radiance_;
 }
 
 void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
@@ -27,7 +27,7 @@ bool Sample::is_pure_emissive() const noexcept {
     return true;
 }
 
-void Sample::Layer::set(float3 const& radiance) noexcept {
+void Sample::set(float3 const& radiance) noexcept {
     radiance_ = radiance;
 }
 

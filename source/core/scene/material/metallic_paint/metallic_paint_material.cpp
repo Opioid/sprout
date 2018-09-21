@@ -4,6 +4,8 @@
 #include "metallic_paint_sample.hpp"
 #include "scene/material/coating/coating.inl"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"

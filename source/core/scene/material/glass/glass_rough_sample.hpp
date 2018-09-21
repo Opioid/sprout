@@ -15,15 +15,12 @@ class Sample_rough final : public material::Sample {
 
     void set(float3 const& refraction_color, float ior, float ior_outside, float alpha) noexcept;
 
-    struct Layer : public material::Layer {
-        float alpha_;
-    };
-
     Layer layer_;
 
     float3 color_;
 
     float f0_;
+    float alpha_;
 
     IoR ior_;
 

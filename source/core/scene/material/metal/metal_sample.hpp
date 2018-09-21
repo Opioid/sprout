@@ -13,15 +13,14 @@ class Sample_isotropic : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : material::Layer {
-        void set(float3 const& ior, float3 const& absorption, float alpha) noexcept;
-
-        float3 ior_;
-        float3 absorption_;
-        float  alpha_;
-    };
+    void set(float3 const& ior, float3 const& absorption, float alpha) noexcept;
 
     Layer layer_;
+
+    float3 ior_;
+    float3 absorption_;
+
+    float alpha_;
 
     bool avoid_caustics_;
 };

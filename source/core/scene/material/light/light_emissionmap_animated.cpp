@@ -47,8 +47,9 @@ material::Sample const& Emissionmap_animated::sample(float3 const& wo, Rendersta
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    float3 radiance = emission_map_.sample_3(sampler, rs.uv, element_);
-    sample.layer_.set(emission_factor_ * radiance);
+    float3 const radiance = emission_map_.sample_3(sampler, rs.uv, element_);
+
+    sample.set(emission_factor_ * radiance);
 
     return sample;
 }

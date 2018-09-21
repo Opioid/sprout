@@ -71,8 +71,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         //        wo_dot_h, n_dot_h,
         //                                                    layer_, tmp_ior, schlick);
 
-        auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h, layer_, layer_.alpha_, tmp_ior,
-                                                     schlick);
+        auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h, layer_, alpha_, tmp_ior, schlick);
 
         return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
     } else {
@@ -85,8 +84,8 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         float const n_dot_h  = math::saturate(math::dot(layer_.n_, h));
 
         fresnel::Schlick const schlick(f0_);
-        auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-                                                    layer_.alpha_, schlick);
+        auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                                    schlick);
 
         return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
     }
@@ -135,11 +134,11 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
 void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outside,
                        float alpha) noexcept {
-    layer_.alpha_ = alpha;
-
     color_ = refraction_color;
 
     f0_ = fresnel::schlick_f0(ior, ior_outside);
+
+    alpha_ = alpha;
 
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
@@ -150,8 +149,9 @@ void Sample_rough::reflect(Layer const& layer, sampler::Sampler& sampler,
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
     fresnel::Schlick const schlick(f0_);
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer, layer.alpha_, schlick,
-                                                   sampler, result);
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer, alpha_, schlick, sampler,
+                                                   result);
 
     SOFT_ASSERT(testing::check(result, wo_, layer));
 
@@ -165,8 +165,9 @@ void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& samp
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
     fresnel::Schlick1 const schlick(f0_);
-    float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, layer.alpha_,
-                                                              ior, schlick, sampler, result);
+
+    float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, alpha_, ior,
+                                                              schlick, sampler, result);
 
     SOFT_ASSERT(testing::check(result, wo_, layer));
 
@@ -180,7 +181,8 @@ void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler&
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
     fresnel::Schlick1 const schlick(f0_);
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, layer.alpha_, ior, schlick,
+
+    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, alpha_, ior, schlick,
                                                    sampler, result);
 
     result.reflection *= n_dot_wi * color_;

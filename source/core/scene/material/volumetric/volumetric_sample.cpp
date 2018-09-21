@@ -18,7 +18,7 @@ const material::Layer& Sample::base_layer() const noexcept {
 }
 
 bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
-    float const phase = layer_.phase(wo_, wi);
+    float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
 }
@@ -27,7 +27,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     float2 const r2 = sampler.generate_sample_2D();
 
     float3      dir;
-    float const phase = layer_.sample(wo_, r2, dir);
+    float const phase = sample(wo_, r2, dir);
 
     result.reflection = float3(phase);
     result.wi         = dir;
@@ -41,18 +41,18 @@ bool Sample::is_translucent() const noexcept {
 }
 
 void Sample::set(float anisotropy) {
-    layer_.anisotropy = anisotropy;
+    anisotropy_ = anisotropy;
 }
 
-float Sample::Layer::phase(float3 const& wo, float3 const& wi) const noexcept {
-    float const g = anisotropy;
+float Sample::phase(float3 const& wo, float3 const& wi) const noexcept {
+    float const g = anisotropy_;
     return phase_hg(math::dot(wo, wi), g);
     //	float const k = 1.55f * g - (0.55f * g) * (g * g);
     //	return phase_schlick(math::dot(wo, wi), k);
 }
 
-float Sample::Layer::sample(float3 const& wo, float2 r2, float3& wi) const noexcept {
-    float const g = anisotropy;
+float Sample::sample(float3 const& wo, float2 r2, float3& wi) const noexcept {
+    float const g = anisotropy_;
 
     float cos_theta;
     if (std::abs(g) < 0.001f) {

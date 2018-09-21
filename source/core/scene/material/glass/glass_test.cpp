@@ -141,7 +141,7 @@ void rough_refraction() {
         result.wi         = float3::identity();
         result.reflection = float3::identity();
 
-        Sample_rough::Layer tmp_layer = sample_rough.layer_;
+        Layer tmp_layer = sample_rough.layer_;
         if (!same_side) {
             tmp_layer.n_ = -tmp_layer.n_;
         }

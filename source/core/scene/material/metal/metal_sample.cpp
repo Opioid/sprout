@@ -12,7 +12,7 @@ const material::Layer& Sample_isotropic::base_layer() const noexcept {
 }
 
 bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
-    if (!same_hemisphere(wo_) || (avoid_caustics_ && layer_.alpha_ <= ggx::Min_alpha)) {
+    if (!same_hemisphere(wo_) || (avoid_caustics_ && alpha_ <= ggx::Min_alpha)) {
         return {float3::identity(), 0.f};
     }
 
@@ -25,9 +25,10 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
 
     float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
-    const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    auto const               ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-                                                layer_.alpha_, conductor);
+    const fresnel::Conductor conductor(ior_, absorption_);
+
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                                conductor);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
@@ -38,18 +39,18 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
         return;
     }
 
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, layer_.alpha_, conductor,
+    const fresnel::Conductor conductor(ior_, absorption_);
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, conductor,
                                                    sampler, result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
 }
 
-void Sample_isotropic::Layer::set(float3 const& ior, float3 const& absorption,
-                                  float alpha) noexcept {
+void Sample_isotropic::set(float3 const& ior, float3 const& absorption, float alpha) noexcept {
     ior_        = ior;
     absorption_ = absorption;
     alpha_      = alpha;
@@ -65,7 +66,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const noexcept {
     }
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     float3 const h = math::normalize(wo_ + wi);
 

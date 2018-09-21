@@ -17,13 +17,11 @@ class Sample : public material::Sample {
 
     bool is_pure_emissive() const noexcept override final;
 
-    struct Layer : public material::Layer {
-        void set(float3 const& radiance) noexcept;
-
-        float3 radiance_;
-    };
+    void set(float3 const& radiance) noexcept;
 
     Layer layer_;
+
+    float3 radiance_;
 };
 
 }  // namespace scene::material::light

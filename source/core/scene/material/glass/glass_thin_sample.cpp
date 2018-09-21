@@ -24,10 +24,10 @@ void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const 
     float const p = sampler.generate_sample_1D();
 
     if (p < 0.5f) {
-        BSDF::reflect(*this, layer_, sampler, result);
+        reflect(sampler, result);
         result.pdf *= 0.5f;
     } else {
-        BSDF::refract(*this, layer_, sampler, result);
+        refract(sampler, result);
         result.pdf *= 0.5f;
     }
 }
@@ -36,8 +36,8 @@ bool Sample_thin::is_translucent() const noexcept {
     return true;
 }
 
-void Sample_thin::Layer::set(float3 const& refraction_color, float3 const& absorption_coefficient,
-                             float ior, float ior_outside, float thickness) noexcept {
+void Sample_thin::set(float3 const& refraction_color, float3 const& absorption_coefficient,
+                      float ior, float ior_outside, float thickness) noexcept {
     color_                  = refraction_color;
     absorption_coefficient_ = absorption_coefficient;
     ior_                    = ior;
@@ -45,19 +45,19 @@ void Sample_thin::Layer::set(float3 const& refraction_color, float3 const& absor
     thickness_              = thickness;
 }
 
-float Sample_thin::BSDF::reflect(const Sample_thin& sample, Layer const&      layer,
-                                 sampler::Sampler& /*sampler*/, bxdf::Sample& result) noexcept {
-    float3 n     = layer.n_;
-    float  eta_i = 1.f / layer.ior_;
-    float  eta_t = layer.ior_;
+float Sample_thin::reflect(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
+    float3 n = layer_.n_;
 
-    if (!sample.same_hemisphere(sample.wo_)) {
+    float eta_i = 1.f / ior_;
+    float eta_t = ior_;
+
+    if (!same_hemisphere(wo_)) {
         n *= -1.f;
         eta_t = eta_i;
-        eta_i = layer.ior_;
+        eta_i = ior_;
     }
 
-    float const n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+    float const n_dot_wo = math::saturate(math::dot(n, wo_));
 
     float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -72,7 +72,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, Layer const&      la
     }
 
     result.reflection = float3(f);
-    result.wi         = math::normalize(2.f * n_dot_wo * n - sample.wo_);
+    result.wi         = math::normalize(2.f * n_dot_wo * n - wo_);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_reflection);
 
@@ -81,19 +81,19 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, Layer const&      la
     return 1.f;
 }
 
-float Sample_thin::BSDF::refract(const Sample_thin& sample, Layer const&      layer,
-                                 sampler::Sampler& /*sampler*/, bxdf::Sample& result) noexcept {
-    float3 n     = layer.n_;
-    float  eta_i = 1.f / layer.ior_;
-    float  eta_t = layer.ior_;
+float Sample_thin::refract(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
+    float3 n = layer_.n_;
 
-    if (!sample.same_hemisphere(sample.wo_)) {
+    float eta_i = 1.f / ior_;
+    float eta_t = ior_;
+
+    if (!same_hemisphere(wo_)) {
         n *= -1.f;
         eta_t = eta_i;
-        eta_i = layer.ior_;
+        eta_i = ior_;
     }
 
-    float const n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+    float const n_dot_wo = math::saturate(math::dot(n, wo_));
 
     float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -107,14 +107,14 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, Layer const&      la
     // fresnel has to be the same value that would have been computed by BRDF
     float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
-    float const n_dot_wi              = layer.clamp_n_dot(sample.wo_);
-    float       approximated_distance = layer.thickness_ / n_dot_wi;
+    float const n_dot_wi = layer_.clamp_n_dot(wo_);
 
-    float3 attenuation = rendering::attenuation(approximated_distance,
-                                                layer.absorption_coefficient_);
+    float const approximated_distance = thickness_ / n_dot_wi;
 
-    result.reflection = (1.f - f) * layer.color_ * attenuation;
-    result.wi         = -sample.wo_;
+    float3 attenuation = rendering::attenuation(approximated_distance, absorption_coefficient_);
+
+    result.reflection = (1.f - f) * color_ * attenuation;
+    result.wi         = -wo_;
     result.pdf        = 1.f;
     // The integrator should not handle this like a proper transmission.
     result.type.clear(bxdf::Type::Specular_reflection);

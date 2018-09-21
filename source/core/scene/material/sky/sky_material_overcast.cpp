@@ -20,7 +20,7 @@ material::Sample const& Material_overcast::sample(float3 const& wo, Renderstate 
     sample.set_basis(rs.geo_n, wo);
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.layer_.set(overcast(-wo));
+    sample.set(overcast(-wo));
 
     return sample;
 }

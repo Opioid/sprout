@@ -22,7 +22,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.layer_.set(color_);
+    sample.set(color_);
 
     return sample;
 }

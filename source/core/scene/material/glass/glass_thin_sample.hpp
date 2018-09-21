@@ -14,27 +14,21 @@ class Sample_thin : public material::Sample {
 
     bool is_translucent() const noexcept override final;
 
-    struct Layer : public material::Layer {
-        void set(float3 const& refraction_color, float3 const& absorption_coefficient, float ior,
-                 float ior_outside, float thickess) noexcept;
-
-        float3 color_;
-        float3 absorption_coefficient_;
-        float  ior_;
-        float  ior_outside_;
-        float  thickness_;
-    };
+    void set(float3 const& refraction_color, float3 const& absorption_coefficient, float ior,
+             float ior_outside, float thickess) noexcept;
 
     Layer layer_;
 
-    class BSDF {
-      public:
-        static float reflect(const Sample_thin& sample, Layer const& layer,
-                             sampler::Sampler& sampler, bxdf::Sample& result) noexcept;
+    float3 color_;
+    float3 absorption_coefficient_;
 
-        static float refract(const Sample_thin& sample, Layer const& layer,
-                             sampler::Sampler& sampler, bxdf::Sample& result) noexcept;
-    };
+    float ior_;
+    float ior_outside_;
+    float thickness_;
+
+    float reflect(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+
+    float refract(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
 };
 
 }  // namespace scene::material::glass
