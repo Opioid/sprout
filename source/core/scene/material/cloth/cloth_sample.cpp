@@ -13,7 +13,7 @@ const material::Layer& Sample::base_layer() const noexcept {
 bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const pdf      = n_dot_wi * math::Pi_inv;
-    return {pdf * layer_.diffuse_color, pdf};
+    return {pdf * diffuse_color_, pdf};
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
@@ -22,13 +22,13 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         return;
     }
 
-    float const n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler,
+    float const n_dot_wi = lambert::Isotropic::reflect(diffuse_color_, layer_, sampler,
                                                        result);
     result.reflection *= n_dot_wi;
 }
 
-void Sample::Layer::set(float3 const& color) noexcept {
-    this->diffuse_color = color;
+void Sample::set(float3 const& color) noexcept {
+    diffuse_color_ = color;
 }
 
 }  // namespace scene::material::cloth

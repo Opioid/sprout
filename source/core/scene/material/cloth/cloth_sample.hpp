@@ -12,13 +12,11 @@ class Sample : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : public material::Layer {
-        void set(float3 const& color) noexcept;
-
-        float3 diffuse_color;
-    };
+    void set(float3 const& color) noexcept;
 
     Layer layer_;
+
+    float3 diffuse_color_;
 };
 
 }  // namespace scene::material::cloth

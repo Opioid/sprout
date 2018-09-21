@@ -35,7 +35,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
         color = color_;
     }
 
-    sample.layer_.set(color);
+    sample.set(color);
 
     return sample;
 }
