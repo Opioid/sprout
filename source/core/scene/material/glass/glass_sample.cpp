@@ -49,9 +49,9 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     }
 
     if (sampler.generate_sample_1D() < f) {
-        BSDF::reflect(wo_, n, n_dot_wo, result);
+        reflect(wo_, n, n_dot_wo, result);
     } else {
-        BSDF::refract(wo_, n, color_, n_dot_wo, n_dot_t, eta, result);
+        refract(wo_, n, color_, n_dot_wo, n_dot_t, eta, result);
     }
 
     result.wavelength = 0.f;
@@ -63,8 +63,8 @@ void Sample::set(float3 const& refraction_color, float ior, float ior_outside) n
     ior_outside_ = ior_outside;
 }
 
-float Sample::BSDF::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                            bxdf::Sample& result) noexcept {
+float Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
+                      bxdf::Sample& result) noexcept {
     result.reflection = float3(1.f);
     result.wi         = math::normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
@@ -75,8 +75,8 @@ float Sample::BSDF::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
     return 1.f;
 }
 
-float Sample::BSDF::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                            float n_dot_t, float eta, bxdf::Sample& result) noexcept {
+float Sample::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
+                      float n_dot_t, float eta, bxdf::Sample& result) noexcept {
     result.reflection = color;
     result.wi         = math::normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;

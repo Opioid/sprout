@@ -78,9 +78,9 @@ void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     float const p = sampler.generate_sample_1D();
 
     if (p < f) {
-        BSDF::reflect(wo_, n, n_dot_wo, result);
+        reflect(wo_, n, n_dot_wo, result);
     } else {
-        BSDF::refract(wo_, n, color_, n_dot_wo, n_dot_t, eta_i, result);
+        refract(wo_, n, color_, n_dot_wo, n_dot_t, eta_i, result);
     }
 
     result.reflection *= weight;

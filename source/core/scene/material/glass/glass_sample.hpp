@@ -22,14 +22,11 @@ class Sample : public material::Sample {
     float ior_;
     float ior_outside_;
 
-    class BSDF {
-      public:
-        static float reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                             bxdf::Sample& result) noexcept;
+    static float reflect(float3 const& wo, float3 const& n, float n_dot_wo,
+                         bxdf::Sample& result) noexcept;
 
-        static float refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                             float n_dot_t, float eta, bxdf::Sample& result) noexcept;
-    };
+    static float refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
+                         float n_dot_t, float eta, bxdf::Sample& result) noexcept;
 };
 
 }  // namespace scene::material::glass
