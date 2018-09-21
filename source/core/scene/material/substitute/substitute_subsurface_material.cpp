@@ -64,7 +64,7 @@ material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstat
 
     set_sample(wo, rs, rs.ior, sampler, sample);
 
-    sample.set(anisotropy_, ior_, rs.ior);
+    sample.set_volumetric(anisotropy_, ior_, rs.ior);
 
     return sample;
 }

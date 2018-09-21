@@ -16,11 +16,11 @@ bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    if (1.f == layer_.metallic_) {
-        return layer_.pure_gloss_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    if (1.f == metallic_) {
+        return pure_gloss_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
     }
 
-    return layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    return base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
@@ -29,15 +29,15 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         return;
     }
 
-    if (1.f == layer_.metallic_) {
-        layer_.pure_gloss_sample(wo_, sampler, result);
+    if (1.f == metallic_) {
+        pure_gloss_sample(wo_, sampler, result);
     } else {
         float const p = sampler.generate_sample_1D();
 
         if (p < 0.5f) {
-            layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
+            diffuse_sample(wo_, sampler, avoid_caustics_, result);
         } else {
-            layer_.gloss_sample(wo_, sampler, result);
+            gloss_sample(wo_, sampler, result);
         }
     }
 

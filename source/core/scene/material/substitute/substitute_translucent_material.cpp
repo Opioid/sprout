@@ -26,7 +26,7 @@ material::Sample const& Material_translucent::sample(float3 const& wo, Rendersta
     float thickness;
 
     thickness = thickness_;
-    sample.set(sample.layer_.diffuse_color_, thickness, attenuation_distance_);
+    sample.set_transluceny(sample.layer_.diffuse_color_, thickness, attenuation_distance_);
 
     return sample;
 }

@@ -21,7 +21,7 @@ const material::Sample::Layer& Sample_rough::base_layer() const noexcept {
 
 bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
-     //   return {float3(0.f), 0.f};
+        //   return {float3(0.f), 0.f};
         float3 n = layer_.n_;
 
         float eta_i = ior_.eta_i;
@@ -66,13 +66,12 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
             return {float3(0.f), 0.f};
         }
 
-        fresnel::Schlick1 const schlick(layer_.f0_);
-//        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
-//                                                    layer_, tmp_ior, schlick);
+        fresnel::Schlick1 const schlick(f0_);
+        //        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h,
+        //        wo_dot_h, n_dot_h,
+        //                                                    layer_, tmp_ior, schlick);
 
-
-        auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h,
-                                                    layer_, tmp_ior, schlick);
+        auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h, layer_, tmp_ior, schlick);
 
         return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
     } else {
@@ -84,7 +83,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         float const wo_dot_h = clamp_dot(wo_, h);
         float const n_dot_h  = math::saturate(math::dot(layer_.n_, h));
 
-        fresnel::Schlick const schlick(layer_.f0_);
+        fresnel::Schlick const schlick(f0_);
         auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
                                                     schlick);
 
@@ -133,16 +132,13 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
     result.wavelength = 0.f;
 }
 
-void Sample_rough::set(float3 const& refraction_color, float3 const& absorption_color,
-                       float attenuation_distance, float ior, float ior_outside,
+void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outside,
                        float alpha) noexcept {
-    layer_.color_ = refraction_color;
-
-    layer_.absorption_coefficient_ = material::extinction_coefficient(absorption_color,
-                                                                      attenuation_distance);
-
-    layer_.f0_    = fresnel::schlick_f0(ior, ior_outside);
     layer_.alpha_ = alpha;
+
+    color_ = refraction_color;
+
+    f0_ = fresnel::schlick_f0(ior, ior_outside);
 
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
@@ -152,7 +148,7 @@ void Sample_rough::reflect(Layer const& layer, sampler::Sampler& sampler,
                            bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick const schlick(layer.f0_);
+    fresnel::Schlick const schlick(f0_);
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer, schlick, sampler, result);
 
     SOFT_ASSERT(testing::check(result, wo_, layer));
@@ -166,7 +162,7 @@ void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& samp
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick1 const schlick(layer.f0_);
+    fresnel::Schlick1 const schlick(f0_);
     float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, ior, schlick,
                                                               sampler, result);
 
@@ -181,11 +177,11 @@ void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler&
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick1 const schlick(layer.f0_);
+    fresnel::Schlick1 const schlick(f0_);
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, ior, schlick, sampler,
                                                    result);
 
-    result.reflection *= n_dot_wi * layer.color_;
+    result.reflection *= n_dot_wi * color_;
 }
 
 }  // namespace scene::material::glass

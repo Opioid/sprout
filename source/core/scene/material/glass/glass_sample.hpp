@@ -18,8 +18,9 @@ class Sample : public material::Sample {
     Layer layer_;
 
     float3 color_;
-    float  ior_;
-    float  ior_outside_;
+
+    float ior_;
+    float ior_outside_;
 
     class BSDF {
       public:

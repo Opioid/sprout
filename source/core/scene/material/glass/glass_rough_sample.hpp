@@ -13,18 +13,17 @@ class Sample_rough final : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    void set(float3 const& refraction_color, float3 const& absorption_color,
-             float attenuation_distance, float ior, float ior_outside, float alpha) noexcept;
+    void set(float3 const& refraction_color, float ior, float ior_outside, float alpha) noexcept;
 
     struct Layer : public material::Sample::Layer {
-        float3 color_;
-        float3 absorption_coefficient_;
-
-        float f0_;
         float alpha_;
     };
 
     Layer layer_;
+
+    float3 color_;
+
+    float f0_;
 
     IoR ior_;
 

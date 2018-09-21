@@ -26,6 +26,10 @@ inline void Sample::Layer::set_tangent_frame(float3 const& n) noexcept {
     n_ = n;
 }
 
+inline float Sample::Layer::n_dot(float3 const& v) const noexcept {
+    return math::dot(n_, v);
+}
+
 inline float Sample::Layer::abs_n_dot(float3 const& v) const noexcept {
     return abs_dot(n_, v);
 }

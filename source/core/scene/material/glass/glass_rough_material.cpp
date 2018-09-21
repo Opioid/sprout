@@ -39,7 +39,7 @@ material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const&
         alpha = alpha_;
     }
 
-    sample.set(refraction_color_, absorption_color_, attenuation_distance_, ior_, rs.ior, alpha);
+    sample.set(refraction_color_, ior_, rs.ior, alpha);
 
     return sample;
 }

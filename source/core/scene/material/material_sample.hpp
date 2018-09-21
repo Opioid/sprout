@@ -26,6 +26,7 @@ class Sample {
         void set_tangent_frame(float3 const& t, float3 const& b, float3 const& n) noexcept;
         void set_tangent_frame(float3 const& n) noexcept;
 
+        float n_dot(float3 const& v) const noexcept;
         float abs_n_dot(float3 const& v) const noexcept;
 
         float clamp_n_dot(float3 const& v) const noexcept;

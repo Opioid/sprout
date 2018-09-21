@@ -21,14 +21,14 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
 
     auto const coating = coating_.evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
-    if (1.f == layer_.metallic_) {
-        auto const base = layer_.pure_gloss_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    if (1.f == metallic_) {
+        auto const base = pure_gloss_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
         float const pdf = (coating.pdf + base.pdf) * 0.5f;
         return {coating.reflection + coating.attenuation * base.reflection, pdf};
     }
 
-    auto const base = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto const base = base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
     float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
@@ -90,21 +90,21 @@ void Sample_coating<Coating>::sample(sampler::Sampler& sampler, bxdf::Sample& re
         float3 coating_attenuation;
         coating_.sample(wo_, sampler, coating_attenuation, result);
 
-        if (1.f == layer_.metallic_) {
-            auto const base = layer_.pure_gloss_evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                                         avoid_caustics_);
+        if (1.f == metallic_) {
+            auto const base = pure_gloss_evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                                  avoid_caustics_);
 
             result.reflection = result.reflection + coating_attenuation * base.reflection;
             result.pdf        = (result.pdf + base.pdf) * 0.5f;
         } else {
-            auto const base = layer_.base_evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                                   avoid_caustics_);
+            auto const base = base_evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+                                            avoid_caustics_);
 
             result.reflection = result.reflection + coating_attenuation * base.reflection;
             result.pdf        = (result.pdf + 2.f * base.pdf) * 0.5f;
         }
     } else {
-        if (1.f == layer_.metallic_) {
+        if (1.f == metallic_) {
             pure_gloss_sample_and_coating(sampler, result);
         } else {
             if (p < 0.75f) {
@@ -121,7 +121,7 @@ void Sample_coating<Coating>::sample(sampler::Sampler& sampler, bxdf::Sample& re
 template <typename Coating>
 void Sample_coating<Coating>::diffuse_sample_and_coating(sampler::Sampler& sampler,
                                                          bxdf::Sample&     result) const noexcept {
-    layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
+    diffuse_sample(wo_, sampler, avoid_caustics_, result);
 
     auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                            avoid_caustics_);
@@ -133,7 +133,7 @@ void Sample_coating<Coating>::diffuse_sample_and_coating(sampler::Sampler& sampl
 template <typename Coating>
 void Sample_coating<Coating>::gloss_sample_and_coating(sampler::Sampler& sampler,
                                                        bxdf::Sample&     result) const noexcept {
-    layer_.gloss_sample(wo_, sampler, result);
+    gloss_sample(wo_, sampler, result);
 
     auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                            avoid_caustics_);
@@ -145,7 +145,7 @@ void Sample_coating<Coating>::gloss_sample_and_coating(sampler::Sampler& sampler
 template <typename Coating>
 void Sample_coating<Coating>::pure_gloss_sample_and_coating(sampler::Sampler& sampler,
                                                             bxdf::Sample& result) const noexcept {
-    layer_.pure_gloss_sample(wo_, sampler, result);
+    pure_gloss_sample(wo_, sampler, result);
 
     auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
                                            avoid_caustics_);

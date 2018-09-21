@@ -16,7 +16,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto result = base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
     result.pdf *= 0.5f;
     return result;
 }
@@ -31,9 +31,9 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
             refract(same_side, layer_, sampler, result);
         } else {
             if (p < 0.75f) {
-                layer_.diffuse_sample(wo_, sampler, avoid_caustics_, result);
+                diffuse_sample(wo_, sampler, avoid_caustics_, result);
             } else {
-                layer_.gloss_sample(wo_, sampler, result);
+                gloss_sample(wo_, sampler, result);
             }
         }
     } else {
@@ -51,7 +51,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-void Sample_subsurface::set(float anisotropy, float ior, float ior_outside) noexcept {
+void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) noexcept {
     anisotropy_ = anisotropy;
 
     ior_.eta_t = ior;
@@ -64,7 +64,7 @@ void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sam
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick1 const schlick(layer.f0_[0]);
+    fresnel::Schlick1 const schlick(f0_[0]);
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, tmp_ior, schlick, sampler,
                                                    result);
 
@@ -77,7 +77,7 @@ void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler&
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick1 const schlick(layer.f0_[0]);
+    fresnel::Schlick1 const schlick(f0_[0]);
     float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, tmp_ior,
                                                               schlick, sampler, result);
 

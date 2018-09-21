@@ -50,8 +50,9 @@ class Isotropic {
                                    Fresnel const& fresnel) noexcept;
 
     template <typename Layer, typename IoR, typename Fresnel>
-    static bxdf::Result refraction2(float3 const& wi, float3 const& wo, float3 const& h, Layer const& layer, IoR const& ior,
-                                   Fresnel const& fresnel) noexcept;
+    static bxdf::Result refraction2(float3 const& wi, float3 const& wo, float3 const& h,
+                                    Layer const& layer, IoR const& ior,
+                                    Fresnel const& fresnel) noexcept;
 
     template <typename Layer, typename IoR, typename Fresnel>
     static float refract(float3 const& wo, float n_dot_wo, Layer const& layer, IoR const& ior,

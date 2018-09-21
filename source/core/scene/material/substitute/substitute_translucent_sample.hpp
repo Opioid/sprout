@@ -13,7 +13,8 @@ class Sample_translucent : public Sample_base<disney::Isotropic> {
 
     bool is_translucent() const noexcept override final;
 
-    void set(float3 const& diffuse_color, float thickness, float attenuation_distance) noexcept;
+    void set_transluceny(float3 const& diffuse_color, float thickness,
+                         float attenuation_distance) noexcept;
 
   private:
     float3 attenuation_;
