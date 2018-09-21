@@ -21,6 +21,7 @@ class Sample : public material::Sample {
 
     Layer layer_;
 
+  private:
     float3 radiance_;
 };
 

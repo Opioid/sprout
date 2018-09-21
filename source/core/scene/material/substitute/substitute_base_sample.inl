@@ -23,7 +23,7 @@ float3 Sample_base<Diffuse>::radiance() const noexcept {
 
 template <typename Diffuse>
 void Sample_base<Diffuse>::set(float3 const& color, float3 const& radiance, float f0, float alpha,
-                               float metallic) noexcept {
+                               float metallic, bool avoid_caustics) noexcept {
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = math::lerp(float3(f0), color, metallic);
@@ -33,6 +33,8 @@ void Sample_base<Diffuse>::set(float3 const& color, float3 const& radiance, floa
     metallic_ = metallic;
 
     alpha_ = alpha;
+
+    avoid_caustics_ = avoid_caustics;
 }
 
 template <typename Diffuse>

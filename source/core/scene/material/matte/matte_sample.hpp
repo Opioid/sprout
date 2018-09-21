@@ -16,6 +16,7 @@ class Sample : public material::Sample {
 
     Layer layer_;
 
+  private:
     float3 diffuse_color_;
 
     float alpha_;
