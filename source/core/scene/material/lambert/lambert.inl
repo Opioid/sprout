@@ -12,11 +12,11 @@
 
 namespace scene::material::lambert {
 
-template <typename Layer>
-bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
-                                   Layer const& layer) noexcept {
+inline bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
+                                          Layer const& layer) noexcept {
     float3 const reflection = math::Pi_inv * color;
-    float const  pdf        = n_dot_wi * math::Pi_inv;
+
+    float const pdf = n_dot_wi * math::Pi_inv;
 
     (void)layer;
     SOFT_ASSERT(testing::check(reflection, float3::identity(), float3::identity(), pdf, layer));
@@ -24,9 +24,8 @@ bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
     return {reflection, pdf};
 }
 
-template <typename Layer>
-float Isotropic::reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept {
+inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
+                                bxdf::Sample& result) noexcept {
     float2 const s2d = sampler.generate_sample_2D();
 
     float3 const is = math::sample_hemisphere_cosine(s2d);

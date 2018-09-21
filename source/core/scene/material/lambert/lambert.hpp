@@ -14,16 +14,15 @@ struct Sample;
 }  // namespace bxdf
 
 class Sample;
+struct Layer;
 
 namespace lambert {
 
 class Isotropic {
   public:
-    template <typename Layer>
     static bxdf::Result reflection(float3 const& color, float n_dot_wi,
                                    Layer const& layer) noexcept;
 
-    template <typename Layer>
     static float reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept;
 };

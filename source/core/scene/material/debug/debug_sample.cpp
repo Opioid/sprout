@@ -47,6 +47,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     result.reflection = n_dot_wi * math::Pi_inv * color;
     result.wi         = wi;
     result.pdf        = n_dot_wi * math::Pi_inv;
+    result.wavelength = 0.f;
     result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 

@@ -12,8 +12,6 @@ class Sample : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : public material::Layer {};
-
     Layer layer_;
 };
 
