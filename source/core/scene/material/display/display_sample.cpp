@@ -17,7 +17,7 @@ bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
     }
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     float3 const h = math::normalize(wo_ + wi);
 
@@ -25,15 +25,16 @@ bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
 
     float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
-    fresnel::Schlick const schlick(layer_.f0_);
-    auto const             ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-                                                layer_.alpha_, schlick);
+    fresnel::Schlick const schlick(f0_);
+
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                                schlick);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
 float3 Sample::radiance() const noexcept {
-    return layer_.emission_;
+    return emission_;
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
@@ -42,24 +43,24 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         return;
     }
 
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick const schlick(layer_.f0_);
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, schlick, sampler, result);
+    fresnel::Schlick const schlick(f0_);
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, schlick, sampler,
+                                                   result);
 
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
 }
 
-void Sample::Layer::set(float3 const& radiance, float f0, float roughness) noexcept {
+void Sample::set(float3 const& radiance, float f0, float alpha) noexcept {
     emission_ = radiance;
-    f0_       = float3(f0);
 
-    float const alpha = roughness * roughness;
+    f0_ = f0;
 
-    alpha_  = alpha;
-    alpha2_ = alpha * alpha;
+    alpha_ = alpha;
 }
 
 }  // namespace scene::material::display

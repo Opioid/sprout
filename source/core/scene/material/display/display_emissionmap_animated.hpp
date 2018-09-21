@@ -24,7 +24,7 @@ class Emissionmap_animated : public light::Emissionmap_animated {
     void set_ior(float ior) noexcept;
 
   private:
-    float roughness_;
+    float alpha_;
 
     float ior_;
 

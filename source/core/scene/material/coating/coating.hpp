@@ -17,16 +17,9 @@ class Clearcoat {
              float alpha, float weight) noexcept;
 
   protected:
-    template <typename Layer>
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     Layer const& layer, bool avoid_caustics) const noexcept;
 
-    template <typename Layer>
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float3 const& wi1,
-                    float3 const& wo1, float wo_dot_h, Layer const& layer,
-                    bool avoid_caustics) const noexcept;
-
-    template <typename Layer>
     void sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
                 float3& attenuation, bxdf::Sample& result) const noexcept;
 
@@ -45,16 +38,9 @@ class Thinfilm {
     void set(float ior, float ior_internal, float alpha, float thickness) noexcept;
 
   protected:
-    template <typename Layer>
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     Layer const& layer, bool avoid_caustics) const noexcept;
 
-    template <typename Layer>
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float3 const& wi1,
-                    float3 const& wo1, float wo_dot_h, Layer const& layer,
-                    bool avoid_caustics) const noexcept;
-
-    template <typename Layer>
     void sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
                 float3& attenuation, bxdf::Sample& result) const noexcept;
 
@@ -70,9 +56,6 @@ class Coating_layer : public Layer, public Coating {
   public:
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     bool avoid_caustics) const noexcept;
-
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float3 const& wi1,
-                    float3 const& wo1, float wo_dot_h, bool avoid_caustics) const noexcept;
 
     void sample(float3 const& wo, sampler::Sampler& sampler, float3& attenuation,
                 bxdf::Sample& result) const noexcept;

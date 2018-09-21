@@ -41,8 +41,8 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);  // layer_.clamp_n_dot(wo_);
 
     const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, conductor, sampler,
-                                                   result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, layer_.alpha_, conductor,
+                                                   sampler, result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;

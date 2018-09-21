@@ -14,16 +14,14 @@ class Sample : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : material::Layer {
-        void set(float3 const& radiance, float f0, float roughness) noexcept;
-
-        float3 emission_;
-        float3 f0_;
-        float  alpha_;
-        float  alpha2_;
-    };
+    void set(float3 const& radiance, float f0, float alpha) noexcept;
 
     Layer layer_;
+
+    float3 emission_;
+
+    float f0_;
+    float alpha_;
 };
 
 }  // namespace scene::material::display

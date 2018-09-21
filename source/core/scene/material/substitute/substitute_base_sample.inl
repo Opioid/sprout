@@ -22,8 +22,6 @@ float3 Sample_base<Diffuse>::radiance() const noexcept {
 template <typename Diffuse>
 void Sample_base<Diffuse>::set(float3 const& color, float3 const& radiance, float f0, float alpha,
                                float metallic) noexcept {
-    layer_.set(alpha);
-
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = math::lerp(float3(f0), color, metallic);
@@ -31,6 +29,8 @@ void Sample_base<Diffuse>::set(float3 const& color, float3 const& radiance, floa
     emission_ = radiance;
 
     metallic_ = metallic;
+
+    alpha_ = alpha;
 }
 
 template <typename Diffuse>
@@ -40,9 +40,9 @@ bxdf::Result Sample_base<Diffuse>::base_evaluate(float3 const& wi, float3 const&
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo);
 
-    auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, layer_.alpha_, diffuse_color_);
+    auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
 
-    if (avoid_caustics && layer_.alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
         return {n_dot_wi * d.reflection, d.pdf};
     }
 
@@ -50,8 +50,8 @@ bxdf::Result Sample_base<Diffuse>::base_evaluate(float3 const& wi, float3 const&
 
     fresnel::Schlick const schlick(f0_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-                                                layer_.alpha_, schlick);
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                                schlick);
 
     float const pdf = 0.5f * (d.pdf + ggx.pdf);
 
@@ -65,7 +65,7 @@ template <typename Diffuse>
 bxdf::Result Sample_base<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 const& wo,
                                                        float3 const& h, float wo_dot_h,
                                                        bool avoid_caustics) const noexcept {
-    if (avoid_caustics && layer_.alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
         return {float3(0.f), 0.f};
     }
 
@@ -76,8 +76,8 @@ bxdf::Result Sample_base<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 
 
     fresnel::Schlick const schlick(f0_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-                                                layer_.alpha_, schlick);
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                                schlick);
 
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
@@ -90,10 +90,10 @@ void Sample_base<Diffuse>::diffuse_sample(float3 const& wo, sampler::Sampler& sa
                                           bool avoid_caustics, bxdf::Sample& result) const
     noexcept {
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo);
-    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer_, layer_.alpha_, diffuse_color_,
-                                            sampler, result);
+    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer_, alpha_, diffuse_color_, sampler,
+                                            result);
 
-    if (avoid_caustics && layer_.alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
         result.reflection *= n_dot_wi;
         return;
     }
@@ -103,7 +103,7 @@ void Sample_base<Diffuse>::diffuse_sample(float3 const& wo, sampler::Sampler& sa
     fresnel::Schlick const schlick(f0_);
 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h,
-                                                layer_.alpha_, schlick);
+                                                alpha_, schlick);
 
     result.reflection = n_dot_wi * (result.reflection + ggx.reflection);
     result.pdf        = 0.5f * (result.pdf + ggx.pdf);
@@ -116,10 +116,10 @@ void Sample_base<Diffuse>::gloss_sample(float3 const& wo, sampler::Sampler& samp
 
     fresnel::Schlick const schlick(f0_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer_, schlick, sampler, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer_, alpha_, schlick, sampler,
+                                                   result);
 
-    auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, layer_.alpha_,
-                                       diffuse_color_);
+    auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
 
     result.reflection = n_dot_wi * (result.reflection + d.reflection);
     result.pdf        = 0.5f * (result.pdf + d.pdf);
@@ -132,7 +132,8 @@ void Sample_base<Diffuse>::pure_gloss_sample(float3 const& wo, sampler::Sampler&
 
     fresnel::Schlick const schlick(f0_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer_, schlick, sampler, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer_, alpha_, schlick, sampler,
+                                                   result);
     result.reflection *= n_dot_wi;
 }
 
@@ -149,11 +150,6 @@ float Sample_base<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_do
 
     // Same as above, but shorter
     return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
-}
-
-template <typename Diffuse>
-void Sample_base<Diffuse>::Layer::set(float alpha) noexcept {
-    alpha_ = alpha;
 }
 
 }  // namespace scene::material::substitute

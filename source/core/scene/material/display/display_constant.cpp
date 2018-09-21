@@ -6,6 +6,7 @@
 #include "display_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
@@ -25,7 +26,7 @@ material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.layer_.set(emission_, f0_, roughness_);
+    sample.set(emission_, f0_, alpha_);
 
     return sample;
 }
@@ -53,7 +54,9 @@ void Constant::set_emission(float3 const& radiance) noexcept {
 }
 
 void Constant::set_roughness(float roughness) noexcept {
-    roughness_ = roughness;
+    const float r = ggx::clamp_roughness(roughness);
+
+    alpha_ = r * r;
 }
 
 void Constant::set_ior(float ior) noexcept {

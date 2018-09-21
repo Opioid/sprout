@@ -21,7 +21,7 @@ class Emissionmap : public light::Emissionmap {
     void set_ior(float ior) noexcept;
 
   private:
-    float roughness_;
+    float alpha_;
 
     float ior_;
 

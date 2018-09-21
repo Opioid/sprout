@@ -33,10 +33,8 @@ class Constant : public Material {
 
     float3 emission_;
 
-    float roughness_;
-
     float ior_;
-
+    float alpha_;
     float f0_;
 };
 

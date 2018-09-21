@@ -215,21 +215,19 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
     return {reflection, pdf};
 }
 
-template <typename Layer, typename Fresnel>
-float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+template <typename Fresnel>
+float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept {
     float3 fresnel_result;
-    return reflect(wo, n_dot_wo, layer, fresnel, sampler, fresnel_result, result);
+    return reflect(wo, n_dot_wo, layer, alpha, fresnel, sampler, fresnel_result, result);
 }
 
-template <typename Layer, typename Fresnel>
-float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+template <typename Fresnel>
+float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
                          bxdf::Sample& result) noexcept {
     float2 const xi = sampler.generate_sample_2D();
-
-    float const alpha = layer.alpha_;
 
     float3 const lwo = layer.world_to_tangent(wo);
 
@@ -291,13 +289,11 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
     return n_dot_wi;
 }
 
-template <typename Layer, typename Fresnel>
+template <typename Fresnel>
 float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer const& layer,
-                                    IoR const& ior, Fresnel const& fresnel,
+                                    float alpha, IoR const& ior, Fresnel const& fresnel,
                                     sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
     float2 const xi = sampler.generate_sample_2D();
-
-    float const alpha = layer.alpha_;
 
     float3 const lwo = layer.world_to_tangent(wo);
 
@@ -365,11 +361,11 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
     return n_dot_wi;
 }
 
-template <typename Layer, typename Fresnel>
+template <typename Fresnel>
 bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
-                                   float n_dot_h, Layer const& layer, IoR const& ior,
+                                   float n_dot_h, Layer const& layer, float alpha, IoR const& ior,
                                    Fresnel const& fresnel) noexcept {
-    float const alpha2 = layer.alpha_ * layer.alpha_;
+    float const alpha2 = alpha * alpha;
 
     //    float const  d = distribution_isotropic(n_dot_h, alpha2);
     //    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
@@ -422,11 +418,11 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
 // https://schuttejoe.github.io/post/disneybsdf/
 
-template <typename Layer, typename Fresnel>
+template <typename Fresnel>
 bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 const& h,
-                                    Layer const& layer, IoR const& ior,
+                                    Layer const& layer, float alpha, IoR const& ior,
                                     Fresnel const& fresnel) noexcept {
-    float const alpha2 = layer.alpha_ * layer.alpha_;
+    float const alpha2 = alpha * alpha;
 
     float const n_dot_wi     = layer.clamp_abs_n_dot(wi);
     float const n_dot_wo     = layer.clamp_abs_n_dot(wo);
@@ -462,13 +458,11 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
 // Refraction details according to
 // https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 
-template <typename Layer, typename Fresnel>
-float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, IoR const& ior,
-                         Fresnel const& fresnel, sampler::Sampler& sampler,
+template <typename Fresnel>
+float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
+                         IoR const& ior, Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept {
     float2 const xi = sampler.generate_sample_2D();
-
-    float const alpha = layer.alpha_;
 
     float3 const lwo = layer.world_to_tangent(wo);
 

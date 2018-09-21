@@ -10,6 +10,7 @@ class Sampler;
 namespace scene::material {
 
 class Sample;
+struct Layer;
 struct IoR;
 
 namespace bxdf {
@@ -30,34 +31,34 @@ class Isotropic {
                                    float alpha, Fresnel const& fresnel,
                                    float3& fresnel_result) noexcept;
 
-    template <typename Layer, typename Fresnel>
-    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+    template <typename Fresnel>
+    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept;
 
-    template <typename Layer, typename Fresnel>
-    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+    template <typename Fresnel>
+    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
                          bxdf::Sample& result) noexcept;
 
-    template <typename Layer, typename Fresnel>
+    template <typename Fresnel>
     static float reflect_internally(float3 const& wo, float n_dot_wo, Layer const& layer,
-                                    IoR const& ior, Fresnel const& fresnel,
+                                    float alpha, IoR const& ior, Fresnel const& fresnel,
                                     sampler::Sampler& sampler, bxdf::Sample& result) noexcept;
 
-    template <typename Layer, typename Fresnel>
+    template <typename Fresnel>
     static bxdf::Result refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
-                                   float n_dot_h, Layer const& layer, IoR const& ior,
+                                   float n_dot_h, Layer const& layer, float alpha, IoR const& ior,
                                    Fresnel const& fresnel) noexcept;
 
-    template <typename Layer, typename Fresnel>
+    template <typename Fresnel>
     static bxdf::Result refraction2(float3 const& wi, float3 const& wo, float3 const& h,
-                                    Layer const& layer, IoR const& ior,
+                                    Layer const& layer, float alpha, IoR const& ior,
                                     Fresnel const& fresnel) noexcept;
 
-    template <typename Layer, typename Fresnel>
-    static float refract(float3 const& wo, float n_dot_wo, Layer const& layer, IoR const& ior,
-                         Fresnel const& fresnel, sampler::Sampler& sampler,
+    template <typename Fresnel>
+    static float refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
+                         IoR const& ior, Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept;
 };
 

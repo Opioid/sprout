@@ -123,7 +123,8 @@ void Sample::Base_layer::sample(float3 const& wo, sampler::Sampler& sampler,
 
     fresnel::Schlick const fresnel(color);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, fresnel, sampler, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, fresnel, sampler,
+                                                   result);
     result.reflection *= n_dot_wi;
 }
 
@@ -158,7 +159,7 @@ void Sample::Flakes_layer::sample(float3 const& wo, sampler::Sampler& sampler,
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, conductor, sampler,
                                                    fresnel_result, result);
 
     fresnel_result *= weight_;

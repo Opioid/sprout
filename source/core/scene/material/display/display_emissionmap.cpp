@@ -6,6 +6,7 @@
 #include "display_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
@@ -28,7 +29,8 @@ material::Sample const& Emissionmap::sample(float3 const& wo, Renderstate const&
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
     float3 const radiance = emission_map_.sample_3(sampler, rs.uv);
-    sample.layer_.set(emission_factor_ * radiance, f0_, roughness_);
+
+    sample.set(emission_factor_ * radiance, f0_, alpha_);
 
     return sample;
 }
@@ -42,7 +44,9 @@ size_t Emissionmap::num_bytes() const noexcept {
 }
 
 void Emissionmap::set_roughness(float roughness) noexcept {
-    roughness_ = roughness;
+    const float r = ggx::clamp_roughness(roughness);
+
+    alpha_ = r * r;
 }
 
 void Emissionmap::set_ior(float ior) noexcept {
