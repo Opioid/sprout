@@ -18,7 +18,7 @@ class Sample : public material::Sample {
     void set(float anisotropy);
 
   public:
-    struct Layer : public material::Sample::Layer {
+    struct Layer : public material::Layer {
         float phase(float3 const& wo, float3 const& wi) const noexcept;
 
         float sample(float3 const& wo, float2 r2, float3& wi) const noexcept;

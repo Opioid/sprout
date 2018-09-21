@@ -7,7 +7,7 @@
 
 namespace scene::material::metal {
 
-const material::Sample::Layer& Sample_isotropic::base_layer() const noexcept {
+const material::Layer& Sample_isotropic::base_layer() const noexcept {
     return layer_;
 }
 
@@ -26,8 +26,8 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
     float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
     const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
-                                                conductor);
+    auto const               ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+                                                layer_.alpha_, conductor);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
@@ -55,7 +55,7 @@ void Sample_isotropic::Layer::set(float3 const& ior, float3 const& absorption,
     alpha_      = alpha;
 }
 
-const material::Sample::Layer& Sample_anisotropic::base_layer() const noexcept {
+const material::Layer& Sample_anisotropic::base_layer() const noexcept {
     return layer_;
 }
 

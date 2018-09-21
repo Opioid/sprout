@@ -13,7 +13,7 @@ class Sample : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Base_layer : material::Sample::Layer {
+    struct Base_layer : material::Layer {
         void set(float3 const& color_a, float3 const& color_b, float alpha) noexcept;
 
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h,
@@ -28,7 +28,7 @@ class Sample : public material::Sample {
         float alpha_;
     };
 
-    struct Flakes_layer : material::Sample::Layer {
+    struct Flakes_layer : material::Layer {
         void set(float3 const& ior, float3 const& absorption, float alpha, float weight) noexcept;
 
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,

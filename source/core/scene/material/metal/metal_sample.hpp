@@ -13,7 +13,7 @@ class Sample_isotropic : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : material::Sample::Layer {
+    struct Layer : material::Layer {
         void set(float3 const& ior, float3 const& absorption, float alpha) noexcept;
 
         float3 ior_;
@@ -34,7 +34,7 @@ class Sample_anisotropic : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : material::Sample::Layer {
+    struct Layer : material::Layer {
         void set(float3 const& ior, float3 const& absorption, float2 roughness) noexcept;
 
         float3 ior_;

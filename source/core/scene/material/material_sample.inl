@@ -11,14 +11,13 @@ namespace scene::material {
 
 inline Sample::~Sample() {}
 
-inline void Sample::Layer::set_tangent_frame(float3 const& t, float3 const& b,
-                                             float3 const& n) noexcept {
+inline void Layer::set_tangent_frame(float3 const& t, float3 const& b, float3 const& n) noexcept {
     t_ = t;
     b_ = b;
     n_ = n;
 }
 
-inline void Sample::Layer::set_tangent_frame(float3 const& n) noexcept {
+inline void Layer::set_tangent_frame(float3 const& n) noexcept {
     auto const [t, b] = math::orthonormal_basis(n);
 
     t_ = t;
@@ -26,40 +25,40 @@ inline void Sample::Layer::set_tangent_frame(float3 const& n) noexcept {
     n_ = n;
 }
 
-inline float Sample::Layer::n_dot(float3 const& v) const noexcept {
+inline float Layer::n_dot(float3 const& v) const noexcept {
     return math::dot(n_, v);
 }
 
-inline float Sample::Layer::abs_n_dot(float3 const& v) const noexcept {
+inline float Layer::abs_n_dot(float3 const& v) const noexcept {
     return abs_dot(n_, v);
 }
 
-inline float Sample::Layer::clamp_n_dot(float3 const& v) const noexcept {
+inline float Layer::clamp_n_dot(float3 const& v) const noexcept {
     // return std::max(math::dot(n, v), Dot_min);
     return clamp_dot(n_, v);
 }
 
-inline float Sample::Layer::clamp_abs_n_dot(float3 const& v) const noexcept {
+inline float Layer::clamp_abs_n_dot(float3 const& v) const noexcept {
     // return std::max(math::dot(n, v), Dot_min);
     return clamp_abs_dot(n_, v);
 }
 
-inline float Sample::Layer::clamp_reverse_n_dot(float3 const& v) const noexcept {
+inline float Layer::clamp_reverse_n_dot(float3 const& v) const noexcept {
     // return std::max(-math::dot(n, v), Dot_min);
     return clamp_reverse_dot(n_, v);
 }
 
-inline float3 const& Sample::Layer::shading_normal() const noexcept {
+inline float3 const& Layer::shading_normal() const noexcept {
     return n_;
 }
 
-inline float3 Sample::Layer::tangent_to_world(float3 const& v) const noexcept {
+inline float3 Layer::tangent_to_world(float3 const& v) const noexcept {
     return float3(v[0] * t_[0] + v[1] * b_[0] + v[2] * n_[0],
                   v[0] * t_[1] + v[1] * b_[1] + v[2] * n_[1],
                   v[0] * t_[2] + v[1] * b_[2] + v[2] * n_[2]);
 }
 
-inline float3 Sample::Layer::world_to_tangent(float3 const& v) const noexcept {
+inline float3 Layer::world_to_tangent(float3 const& v) const noexcept {
     return float3(v[0] * t_[0] + v[1] * t_[1] + v[2] * t_[2],
                   v[0] * b_[0] + v[1] * b_[1] + v[2] * b_[2],
                   v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
@@ -106,11 +105,11 @@ inline void Sample::set_basis(float3 const& geo_n, float3 const& wo) noexcept {
     wo_    = wo;
 }
 
-inline Sample::IoR Sample::IoR::swapped() const noexcept {
+inline IoR IoR::swapped() const noexcept {
     return IoR{eta_i, eta_t};
 }
 
-inline Sample::IoR Sample::IoR::swapped(bool same_side) const noexcept {
+inline IoR IoR::swapped(bool same_side) const noexcept {
     if (same_side) {
         return *this;
     }

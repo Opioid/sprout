@@ -187,18 +187,18 @@ math::length(alpha1 * llight) * abs_lvz);
 }
 */
 
-template <typename Layer, typename Fresnel>
+template <typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   Layer const& layer, Fresnel const& fresnel) noexcept {
+                                   float alpha, Fresnel const& fresnel) noexcept {
     float3 fresnel_result;
-    return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer, fresnel, fresnel_result);
+    return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, fresnel, fresnel_result);
 }
 
-template <typename Layer, typename Fresnel>
+template <typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   Layer const& layer, Fresnel const& fresnel,
+                                   float alpha, Fresnel const& fresnel,
                                    float3& fresnel_result) noexcept {
-    float const alpha2 = layer.alpha_ * layer.alpha_;
+    float const alpha2 = alpha * alpha;
 
     float const  d = distribution_isotropic(n_dot_h, alpha2);
     float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
@@ -291,9 +291,9 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
     return n_dot_wi;
 }
 
-template <typename Layer, typename IOR, typename Fresnel>
+template <typename Layer, typename Fresnel>
 float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer const& layer,
-                                    IOR const& ior, Fresnel const& fresnel,
+                                    IoR const& ior, Fresnel const& fresnel,
                                     sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
     float2 const xi = sampler.generate_sample_2D();
 
@@ -365,7 +365,7 @@ float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer cons
     return n_dot_wi;
 }
 
-template <typename Layer, typename IoR, typename Fresnel>
+template <typename Layer, typename Fresnel>
 bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
                                    float n_dot_h, Layer const& layer, IoR const& ior,
                                    Fresnel const& fresnel) noexcept {
@@ -420,7 +420,9 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
     return {float3(reflection), pdf};
 }
 
-template <typename Layer, typename IoR, typename Fresnel>
+// https://schuttejoe.github.io/post/disneybsdf/
+
+template <typename Layer, typename Fresnel>
 bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 const& h,
                                     Layer const& layer, IoR const& ior,
                                     Fresnel const& fresnel) noexcept {
@@ -460,7 +462,7 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
 // Refraction details according to
 // https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 
-template <typename Layer, typename IoR, typename Fresnel>
+template <typename Layer, typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, IoR const& ior,
                          Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept {

@@ -12,7 +12,7 @@
 
 namespace scene::material::glass {
 
-const material::Sample::Layer& Sample_thin::base_layer() const noexcept {
+const material::Layer& Sample_thin::base_layer() const noexcept {
     return layer_;
 }
 

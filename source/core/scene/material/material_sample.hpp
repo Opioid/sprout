@@ -18,31 +18,31 @@ struct Result;
 struct Sample;
 }  // namespace bxdf
 
+struct Layer {
+    void set_tangent_frame(float3 const& t, float3 const& b, float3 const& n) noexcept;
+    void set_tangent_frame(float3 const& n) noexcept;
+
+    float n_dot(float3 const& v) const noexcept;
+    float abs_n_dot(float3 const& v) const noexcept;
+
+    float clamp_n_dot(float3 const& v) const noexcept;
+    float clamp_abs_n_dot(float3 const& v) const noexcept;
+    float clamp_reverse_n_dot(float3 const& v) const noexcept;
+
+    float3 const& shading_normal() const noexcept;
+
+    float3 tangent_to_world(float3 const& v) const noexcept;
+
+    float3 world_to_tangent(float3 const& v) const noexcept;
+
+    float3 t_;
+    float3 b_;
+    float3 n_;
+};
+
 class Sample {
   public:
     virtual ~Sample();
-
-    struct Layer {
-        void set_tangent_frame(float3 const& t, float3 const& b, float3 const& n) noexcept;
-        void set_tangent_frame(float3 const& n) noexcept;
-
-        float n_dot(float3 const& v) const noexcept;
-        float abs_n_dot(float3 const& v) const noexcept;
-
-        float clamp_n_dot(float3 const& v) const noexcept;
-        float clamp_abs_n_dot(float3 const& v) const noexcept;
-        float clamp_reverse_n_dot(float3 const& v) const noexcept;
-
-        float3 const& shading_normal() const noexcept;
-
-        float3 tangent_to_world(float3 const& v) const noexcept;
-
-        float3 world_to_tangent(float3 const& v) const noexcept;
-
-        float3 t_;
-        float3 b_;
-        float3 n_;
-    };
 
     virtual Layer const& base_layer() const noexcept = 0;
 
@@ -72,14 +72,14 @@ class Sample {
   protected:
     float3 geo_n_;
     float3 wo_;
+};
 
-    struct IoR {
-        IoR swapped() const noexcept;
-        IoR swapped(bool same_side) const noexcept;
+struct IoR {
+    IoR swapped() const noexcept;
+    IoR swapped(bool same_side) const noexcept;
 
-        float eta_t;
-        float eta_i;
-    };
+    float eta_t;
+    float eta_i;
 };
 
 }  // namespace material

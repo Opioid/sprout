@@ -14,7 +14,7 @@ class Sample : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : material::Sample::Layer {
+    struct Layer : material::Layer {
         void set(float3 const& radiance, float f0, float roughness) noexcept;
 
         float3 emission_;

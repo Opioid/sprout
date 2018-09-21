@@ -12,14 +12,12 @@ class Sample : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    struct Layer : public material::Sample::Layer {
+    struct Layer : public material::Layer {
         void set(float3 const& color) noexcept;
 
         float3 diffuse_color_;
 
-        float roughness_;
         float alpha_;
-        float alpha2_;
     };
 
     Layer layer_;

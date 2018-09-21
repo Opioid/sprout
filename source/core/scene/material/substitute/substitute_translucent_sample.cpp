@@ -35,7 +35,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const noexcept {
 
         float const pdf = n_dot_wi * (0.5f * math::Pi_inv);
 
-        return {(n_dot_wi * math::Pi_inv * (1.f - f)) * (attenuation * layer_.diffuse_color_), pdf};
+        return {(n_dot_wi * math::Pi_inv * (1.f - f)) * (attenuation * diffuse_color_), pdf};
     }
 
     float3 const h = math::normalize(wo_ + wi);
@@ -58,8 +58,8 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result)
 
     if (thickness_ > 0.f) {
         if (p < 0.5f) {
-            float const n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_, layer_,
-                                                               sampler, result);
+            float const n_dot_wi = lambert::Isotropic::reflect(diffuse_color_, layer_, sampler,
+                                                               result);
 
             // This is the least attempt we can do at energy conservation
             float const n_dot_wo = layer_.clamp_n_dot(wo_);

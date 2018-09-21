@@ -32,16 +32,15 @@ class Sample_base : public material::Sample {
 
     float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const noexcept;
 
-    struct Layer : material::Sample::Layer {
-        void set(float3 const& color, float alpha, float metallic) noexcept;
-
-        float3 diffuse_color_;
+    struct Layer : material::Layer {
+        void set(float alpha) noexcept;
 
         float alpha_;
     };
 
     Layer layer_;
 
+    float3 diffuse_color_;
     float3 f0_;
     float3 emission_;
 

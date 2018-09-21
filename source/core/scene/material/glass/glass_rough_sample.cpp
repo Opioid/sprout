@@ -15,7 +15,7 @@
 
 namespace scene::material::glass {
 
-const material::Sample::Layer& Sample_rough::base_layer() const noexcept {
+const material::Layer& Sample_rough::base_layer() const noexcept {
     return layer_;
 }
 
@@ -84,8 +84,8 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         float const n_dot_h  = math::saturate(math::dot(layer_.n_, h));
 
         fresnel::Schlick const schlick(f0_);
-        auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
-                                                    schlick);
+        auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+                                                    layer_.alpha_, schlick);
 
         return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
     }

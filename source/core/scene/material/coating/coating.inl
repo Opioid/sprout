@@ -46,7 +46,7 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
 
     fresnel::Schlick const schlick(f0_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer.alpha_,
                                                 schlick);
 
     return {weight_ * n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
@@ -121,7 +121,7 @@ Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, f
     const fresnel::Thinfilm thinfilm(1.f, ior_, ior_internal_, thickness_);
 
     float3     fresnel;
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer,
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer.alpha_,
                                                 thinfilm, fresnel);
 
     float3 const attenuation = (1.f - fresnel);

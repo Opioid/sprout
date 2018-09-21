@@ -16,7 +16,7 @@ class Sample final : public material::Sample {
     bool ior_greater_one() const noexcept override final;
 
   private:
-    material::Sample::Layer layer_;
+    material::Layer layer_;
 };
 
 }  // namespace scene::material::null

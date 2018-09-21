@@ -9,7 +9,7 @@ namespace scene::material::testing {
 void print_vector(float3 const& v);
 
 bool check(float3 const& result, float3 const& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-           float pdf, const Sample::Layer& layer) {
+           float pdf, const Layer& layer) {
     if (!std::isfinite(pdf) || !math::all_finite_and_positive(result)) {
         std::cout << "h: ";
         print_vector(h);
@@ -31,7 +31,7 @@ bool check(float3 const& result, float3 const& h, float n_dot_wi, float n_dot_wo
 }
 
 bool check(float3 const& result, float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-           float pdf, const Sample::Layer& layer) {
+           float pdf, const Layer& layer) {
     if (!std::isfinite(pdf) || !math::all_finite_and_positive(result)) {
         std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
         std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
@@ -51,7 +51,7 @@ bool check(float3 const& result, float n_dot_wi, float n_dot_wo, float wo_dot_h,
     return true;
 }
 
-bool check(const bxdf::Sample& result, float3 const& wo, const Sample::Layer& layer) {
+bool check(const bxdf::Sample& result, float3 const& wo, const Layer& layer) {
     if (!std::isfinite(result.pdf) || !math::all_finite(result.wi) ||
         !math::all_finite(result.reflection)) {
         std::cout << "wi: ";

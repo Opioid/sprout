@@ -14,7 +14,7 @@ class Sample_thin : public material::Sample {
 
     bool is_translucent() const noexcept override final;
 
-    struct Layer : public material::Sample::Layer {
+    struct Layer : public material::Layer {
         void set(float3 const& refraction_color, float3 const& absorption_coefficient, float ior,
                  float ior_outside, float thickess) noexcept;
 

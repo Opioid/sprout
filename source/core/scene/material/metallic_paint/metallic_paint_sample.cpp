@@ -9,7 +9,7 @@
 
 namespace scene::material::metallic_paint {
 
-const material::Sample::Layer& Sample::base_layer() const noexcept {
+const material::Layer& Sample::base_layer() const noexcept {
     return base_;
 }
 
@@ -107,7 +107,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
 
     fresnel::Schlick const fresnel(color);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 fresnel);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
@@ -144,7 +144,7 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, *this,
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 conductor, fresnel_result);
 
     fresnel_result *= weight_;

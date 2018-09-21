@@ -66,7 +66,7 @@ class Thinfilm {
 };
 
 template <typename Coating>
-class Coating_layer : public Sample::Layer, public Coating {
+class Coating_layer : public Layer, public Coating {
   public:
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     bool avoid_caustics) const noexcept;

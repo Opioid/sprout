@@ -7,7 +7,7 @@
 
 namespace scene::material::display {
 
-const material::Sample::Layer& Sample::base_layer() const noexcept {
+const material::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
@@ -26,8 +26,8 @@ bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
     float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
     fresnel::Schlick const schlick(layer_.f0_);
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer_,
-                                                schlick);
+    auto const             ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+                                                layer_.alpha_, schlick);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
