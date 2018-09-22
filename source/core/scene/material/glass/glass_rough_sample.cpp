@@ -21,7 +21,7 @@ const material::Layer& Sample_rough::base_layer() const noexcept {
 
 bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
-        //   return {float3(0.f), 0.f};
+           return {float3(0.f), 0.f};
         IoR ior = ior_.swapped();
 
         Layer tmp_layer = layer_;
@@ -60,7 +60,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                     schlick);
 
-        return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
+        return {n_dot_wi * ggx.reflection, ggx.pdf};
     }
 }
 
