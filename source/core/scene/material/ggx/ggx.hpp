@@ -54,12 +54,23 @@ class Isotropic {
     template <typename Fresnel>
     static bxdf::Result refraction2(float3 const& wi, float3 const& wo, float3 const& h,
                                     Layer const& layer, float alpha, IoR const& ior,
-                                    Fresnel const& fresnel) noexcept;
+                                    Fresnel const& fresnel, float other) noexcept;
 
     template <typename Fresnel>
     static float refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          IoR const& ior, Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept;
+
+    static float3 sample(float3 const& wo, Layer const& layer, float alpha,
+                         sampler::Sampler& sampler, float& n_dot_h) noexcept;
+
+    static float reflect(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
+                         float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,
+                         bxdf::Sample& result) noexcept;
+
+    static float refract(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
+                         float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,
+                         IoR const& ior, bxdf::Sample& result) noexcept;
 };
 
 class Anisotropic {

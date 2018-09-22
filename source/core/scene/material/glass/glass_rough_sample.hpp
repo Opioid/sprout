@@ -23,15 +23,6 @@ class Sample_rough final : public material::Sample {
     float alpha_;
 
     IoR ior_;
-
-    void reflect(Layer const& layer, sampler::Sampler& sampler, bxdf::Sample& result) const
-        noexcept;
-
-    void reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-                            bxdf::Sample& result) const noexcept;
-
-    void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-                 bxdf::Sample& result) const noexcept;
 };
 
 }  // namespace scene::material::glass

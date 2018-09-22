@@ -22,43 +22,18 @@ const material::Layer& Sample_rough::base_layer() const noexcept {
 bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
         //   return {float3(0.f), 0.f};
-        float3 n = layer_.n_;
+        IoR ior = ior_.swapped();
 
-        float eta_i = ior_.eta_i;
-        float eta_t = ior_.eta_t;
+        Layer tmp_layer = layer_;
+        tmp_layer.n_    = -layer_.n_;
 
-        if (!same_hemisphere(wo_)) {
-            n = -n;
+        float const n_dot_wi = tmp_layer.clamp_reverse_n_dot(wi);
 
-            std::swap(eta_i, eta_t);
-        }
+        float3 const h = math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
 
-        //    float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
+        float const eta = ior.eta_i / ior.eta_t;
 
-        float const n_dot_wi = layer_.clamp_n_dot(wi);
-
-        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
-
-        float const eta = eta_i / eta_t;
-
-        float3 const h = math::normalize(eta_t * wi + eta_i * wo_);
-
-        IoR tmp_ior;
-
-        tmp_ior.eta_t = ior_.eta_i;
-        tmp_ior.eta_i = ior_.eta_t;
-
-        //     float const eta = tmp_ior.eta_i_ / tmp_ior.eta_t_;
-
-        //  float3 const h = math::normalize(wo + wi);
-        //  float3 const h = math::normalize(tmp_ior.eta_t * wo + tmp_ior.eta_i * wi);
-
-        //     std::cout <<  "h: " << h << std::endl;
-
-        float const wi_dot_h = clamp_abs_dot(wi, h);
-        //   float const wo_dot_h = clamp_abs_dot(-wo_, h);
         float const wo_dot_h = clamp_abs_dot(wo_, h);
-        float const n_dot_h  = math::saturate(-math::dot(layer_.n_, h));
 
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
@@ -67,11 +42,9 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         }
 
         fresnel::Schlick1 const schlick(f0_);
-        //        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h,
-        //        wo_dot_h, n_dot_h,
-        //                                                    layer_, tmp_ior, schlick);
 
-        auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h, layer_, alpha_, tmp_ior, schlick);
+        auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h, tmp_layer, alpha_, ior, schlick,
+                                                     0.f);
 
         return {n_dot_wi * ggx.reflection, 0.5f * ggx.pdf};
     } else {
@@ -92,43 +65,54 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 }
 
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
-    //	float const p = sampler.generate_sample_1D();
-
-    //	if (p < 0.5f) {
-    //		float const n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
-    //		result.pdf *= 0.5f;
-    //		result.reflection *= n_dot_wi;
-
-    //	} else {
-    //		float const n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
-    //		result.pdf *= 0.5f;
-    //		result.reflection *= n_dot_wi;
-    //	}
-
-    //	result.wavelength = 0.f;
-
     bool const same_side = same_hemisphere(wo_);
 
-    float const p = sampler.generate_sample_1D();
+    Layer layer = layer_;
+    IoR   ior;
 
     if (same_side) {
-        if (p < 0.5f) {
-            refract(same_side, layer_, sampler, result);
-        } else {
-            reflect(layer_, sampler, result);
-        }
+        ior = ior_;
     } else {
-        Layer tmp_layer = layer_;
-        tmp_layer.n_    = -layer_.n_;
-
-        if (p < 0.5f) {
-            refract(same_side, tmp_layer, sampler, result);
-        } else {
-            reflect_internally(tmp_layer, sampler, result);
-        }
+        layer.n_ = -layer_.n_;
+        ior      = ior_.swapped();
     }
 
-    result.pdf *= 0.5f;
+    float        n_dot_h;
+    float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, sampler, n_dot_h);
+
+    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
+
+    float const eta = ior.eta_i / ior.eta_t;
+
+    float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
+
+    float f;
+    float wi_dot_h;
+
+    if (sint2 >= 1.f) {
+        f        = 1.f;
+        wi_dot_h = 0.f;
+    } else {
+        wi_dot_h = std::sqrt(1.f - sint2);
+
+        float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
+
+        fresnel::Schlick1 const schlick(f0_);
+        f = schlick(cos_x);
+    }
+
+    if (sampler.generate_sample_1D() < f) {
+        float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
+                                                       wo_dot_h, layer, alpha_, result);
+        result.reflection *= n_dot_wi;
+    } else {
+        float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
+                                                       wo_dot_h, layer, alpha_, ior, result);
+        result.reflection *= n_dot_wi * color_;
+    }
+
     result.wavelength = 0.f;
 }
 
@@ -142,50 +126,6 @@ void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outs
 
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
-}
-
-void Sample_rough::reflect(Layer const& layer, sampler::Sampler& sampler,
-                           bxdf::Sample& result) const noexcept {
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
-    fresnel::Schlick const schlick(f0_);
-
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer, alpha_, schlick, sampler,
-                                                   result);
-
-    SOFT_ASSERT(testing::check(result, wo_, layer));
-
-    result.reflection *= n_dot_wi;
-}
-
-void Sample_rough::reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-                                      bxdf::Sample& result) const noexcept {
-    IoR const ior = ior_.swapped();
-
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
-    fresnel::Schlick1 const schlick(f0_);
-
-    float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, alpha_, ior,
-                                                              schlick, sampler, result);
-
-    SOFT_ASSERT(testing::check(result, wo_, layer));
-
-    result.reflection *= n_dot_wi;
-}
-
-void Sample_rough::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-                           bxdf::Sample& result) const noexcept {
-    IoR const ior = ior_.swapped(same_side);
-
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
-    fresnel::Schlick1 const schlick(f0_);
-
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, alpha_, ior, schlick,
-                                                   sampler, result);
-
-    result.reflection *= n_dot_wi * color_;
 }
 
 }  // namespace scene::material::glass

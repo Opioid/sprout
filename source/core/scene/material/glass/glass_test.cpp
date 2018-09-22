@@ -130,36 +130,6 @@ void rough_refraction() {
     //            print(eval);
     //        }
     //    }
-
-    std::cout << std::endl;
-
-    {
-        std::cout << "rough:" << std::endl;
-
-        bxdf::Sample result;
-
-        result.wi         = float3::identity();
-        result.reflection = float3::identity();
-
-        Layer tmp_layer = sample_rough.layer_;
-        if (!same_side) {
-            tmp_layer.n_ = -tmp_layer.n_;
-        }
-
-        sample_rough.refract(same_side, tmp_layer, sampler, result);
-
-        std::cout << "h: " << result.h << std::endl;
-
-        std::cout << "sample:" << std::endl;
-        print(result);
-
-        if (result.pdf > 0.f) {
-            std::cout << "\nevaluate:" << std::endl;
-            bxdf::Result eval = sample_rough.evaluate(result.wi);
-            eval.pdf *= 2.f;
-            print(eval);
-        }
-    }
 }
 
 }  // namespace scene::material::glass::testing

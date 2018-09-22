@@ -1282,9 +1282,8 @@ float3 Provider::read_spectrum(json::Value const& spectrum_value) {
         } else if ("RGB" == n.name) {
             return read_color(n.value);
         } else if ("temperature" == n.name) {
-            float temperature = json::read_float(n.value);
-            temperature       = std::max(800.f, temperature);
-            return spectrum::blackbody(temperature);
+            float const temperature = json::read_float(n.value);
+            return spectrum::blackbody(std::max(800.f, temperature));
         }
     }
 
