@@ -21,7 +21,7 @@ const material::Layer& Sample_rough::base_layer() const noexcept {
 
 bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
-           return {float3(0.f), 0.f};
+        return {float3(0.f), 0.f};
         IoR ior = ior_.swapped();
 
         Layer tmp_layer = layer_;

@@ -36,18 +36,50 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
                 gloss_sample(wo_, sampler, result);
             }
         }
+        result.pdf *= 0.5f;
     } else {
-        Layer tmp_layer = layer_;
-        tmp_layer.n_    = -layer_.n_;
+        Layer layer = layer_;
+        layer.n_    = -layer_.n_;
 
-        if (p < 0.5f) {
-            refract(same_side, tmp_layer, sampler, result);
+        IoR ior = ior_.swapped();
+
+        float        n_dot_h;
+        float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, sampler, n_dot_h);
+
+        float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
+
+        float const wo_dot_h = clamp_dot(wo_, h);
+
+        float const eta = ior.eta_i / ior.eta_t;
+
+        float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
+
+        float f;
+        float wi_dot_h;
+
+        if (sint2 >= 1.f) {
+            f        = 1.f;
+            wi_dot_h = 0.f;
         } else {
-            reflect_internally(tmp_layer, sampler, result);
+            wi_dot_h = std::sqrt(1.f - sint2);
+
+            float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
+
+            fresnel::Schlick1 const schlick(f0_[0]);
+            f = schlick(cos_x);
+        }
+
+        if (p < f) {
+            float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
+                                                           wo_dot_h, layer, alpha_, result);
+            result.reflection *= n_dot_wi;
+        } else {
+            float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
+                                                           wo_dot_h, layer, alpha_, ior, result);
+            result.reflection *= n_dot_wi;
         }
     }
 
-    result.pdf *= 0.5f;
     result.wavelength = 0.f;
 }
 
