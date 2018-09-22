@@ -17,7 +17,7 @@ inline CM::CM(CC const& cc) noexcept {
 }
 
 static inline float3 extinction_coefficient(float3 const& color, float distance) {
-    float3 const ca = math::clamp(color, 0.001f, 0.99999f);
+    float3 const ca = math::clamp(color, 0.001f, 0.99f);
 
     float3 const a = math::log(ca);
 
