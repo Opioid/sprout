@@ -19,9 +19,6 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
     void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
                  bxdf::Sample& result) const noexcept;
 
-    void reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-                            bxdf::Sample& result) const noexcept;
-
     float anisotropy_;
 
     IoR ior_;

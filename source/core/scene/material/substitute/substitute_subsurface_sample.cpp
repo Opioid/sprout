@@ -104,22 +104,6 @@ void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sam
     result.reflection *= n_dot_wi;
 }
 
-void Sample_subsurface::reflect_internally(Layer const& layer, sampler::Sampler& sampler,
-                                           bxdf::Sample& result) const noexcept {
-    IoR tmp_ior = ior_.swapped();
-
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
-    fresnel::Schlick1 const schlick(f0_[0]);
-
-    float const n_dot_wi = ggx::Isotropic::reflect_internally(wo_, n_dot_wo, layer, alpha_, tmp_ior,
-                                                              schlick, sampler, result);
-
-    SOFT_ASSERT(testing::check(result, wo_, layer));
-
-    result.reflection *= n_dot_wi;
-}
-
 bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi) const noexcept {
     bxdf::Result result = volumetric::Sample::evaluate(wi);
 

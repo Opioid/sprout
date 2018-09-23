@@ -227,39 +227,8 @@ template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
                          bxdf::Sample& result) noexcept {
-    float2 const xi = sampler.generate_sample_2D();
-
-    float3 const lwo = layer.world_to_tangent(wo);
-
-    // stretch view
-    float3 const v = math::normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
-
-    // orthonormal basis
-    float3 const cross_v_z = float3(v[1], -v[0], 0.f);  // == cross(v, [0, 0, 1])
-
-    float3 const t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-    float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
-
-    // sample point with polar coordinates (r, phi)
-    float const a   = 1.f / (1.f + v[2]);
-    float const r   = std::sqrt(xi[0]);
-    float const phi = (xi[1] < a) ? xi[1] / a * math::Pi
-                                  : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
-
-    auto const [sin_phi, cos_phi] = math::sincos(phi);
-
-    float const p1 = r * cos_phi;
-    float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
-
-    // compute normal
-    float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
-
-    // unstretch
-    m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
-
-    float const n_dot_h = clamp(m[2]);
-
-    float3 const h = layer.tangent_to_world(m);
+    float        n_dot_h;
+    float3 const h = sample(wo, layer, alpha, sampler, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -281,78 +250,6 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, f
     result.pdf        = pdf_visible(d, g[1]);
     result.h_dot_wi   = wo_dot_h;
     //    result.type.clear(bxdf::Type::Glossy_reflection);
-    result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_reflection
-                                         : bxdf::Type::Glossy_reflection);
-
-    SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
-
-    return n_dot_wi;
-}
-
-template <typename Fresnel>
-float Isotropic::reflect_internally(float3 const& wo, float n_dot_wo, Layer const& layer,
-                                    float alpha, IoR const& ior, Fresnel const& fresnel,
-                                    sampler::Sampler& sampler, bxdf::Sample& result) noexcept {
-    float2 const xi = sampler.generate_sample_2D();
-
-    float3 const lwo = layer.world_to_tangent(wo);
-
-    // stretch view
-    float3 const v = math::normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
-
-    // orthonormal basis
-    float3 const cross_v_z = float3(v[1], -v[0], 0.f);  // == cross(v, [0, 0, 1])
-
-    float3 const t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-    float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
-
-    // sample point with polar coordinates (r, phi)
-    float const a   = 1.f / (1.f + v[2]);
-    float const r   = std::sqrt(xi[0]);
-    float const phi = (xi[1] < a) ? (xi[1] / a * math::Pi)
-                                  : (math::Pi + (xi[1] - a) / (1.f - a) * math::Pi);
-
-    auto const [sin_phi, cos_phi] = math::sincos(phi);
-
-    float const p1 = r * cos_phi;
-    float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
-
-    // compute normal
-    float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
-
-    // unstretch
-    m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
-
-    float const n_dot_h = clamp(m[2]);
-
-    float3 const h = layer.tangent_to_world(m);
-
-    float const wo_dot_h = clamp_dot(wo, h);
-
-    float const eta = ior.eta_i / ior.eta_t;
-
-    float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
-
-    float const wi_dot_h = std::sqrt(1.f - sint2);
-
-    float3 const wi = math::normalize(2.f * wo_dot_h * h - wo);
-
-    float const n_dot_wi = layer.clamp_n_dot(wi);
-
-    float const alpha2 = alpha * alpha;
-
-    float const  d = distribution_isotropic(n_dot_h, alpha2);
-    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
-
-    float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
-
-    float const f = (sint2 >= 1.f) ? 1.f : fresnel(cos_x);
-
-    result.reflection = float3(d * g[0] * f);
-    result.wi         = wi;
-    result.h          = h;
-    result.pdf        = pdf_visible(d, g[1]);
-    result.h_dot_wi   = wi_dot_h;
     result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_reflection
                                          : bxdf::Type::Glossy_reflection);
 
@@ -467,39 +364,8 @@ template <typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          IoR const& ior, Fresnel const& fresnel, sampler::Sampler& sampler,
                          bxdf::Sample& result) noexcept {
-    float2 const xi = sampler.generate_sample_2D();
-
-    float3 const lwo = layer.world_to_tangent(wo);
-
-    // stretch view
-    float3 const v = math::normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
-
-    // orthonormal basis
-    float3 const cross_v_z = float3(v[1], -v[0], 0.f);  // == cross(v, [0, 0, 1])
-
-    float3 const t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-    float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
-
-    // sample point with polar coordinates (r, phi)
-    float const a   = 1.f / (1.f + v[2]);
-    float const r   = std::sqrt(xi[0]);
-    float const phi = (xi[1] < a) ? (xi[1] / a * math::Pi)
-                                  : (math::Pi + (xi[1] - a) / (1.f - a) * math::Pi);
-
-    auto const [sin_phi, cos_phi] = math::sincos(phi);
-
-    float const p1 = r * cos_phi;
-    float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
-
-    // compute normal
-    float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
-
-    // unstretch
-    m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
-
-    float const n_dot_h = clamp(m[2]);
-
-    float3 const h = layer.tangent_to_world(m);
+    float        n_dot_h;
+    float3 const h = sample(wo, layer, alpha, sampler, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
