@@ -48,7 +48,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
     }
 
-    if (sampler.generate_sample_1D() < f) {
+    if (sampler.generate_sample_1D() <= f) {
         reflect(wo_, n, n_dot_wo, result);
     } else {
         refract(wo_, n, color_, n_dot_wo, n_dot_t, eta, result);

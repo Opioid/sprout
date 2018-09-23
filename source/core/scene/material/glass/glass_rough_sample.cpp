@@ -103,7 +103,7 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
         f = schlick(cos_x);
     }
 
-    if (sampler.generate_sample_1D() < f) {
+    if (sampler.generate_sample_1D() <= f) {
         float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                        wo_dot_h, layer, alpha_, result);
         result.reflection *= n_dot_wi;
