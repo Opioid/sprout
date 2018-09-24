@@ -15,6 +15,8 @@ class Sample : public material::Sample {
 
     void set(float3 const& refraction_color, float ior, float ior_outside) noexcept;
 
+    void sample(float ior, float p, bxdf::Sample& result) const noexcept;
+
     Layer layer_;
 
     float3 color_;

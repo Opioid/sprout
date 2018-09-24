@@ -19,11 +19,13 @@ void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     float3 weight;
     float  wavelength = wavelength_;
 
+    float2 const r = sampler.generate_sample_2D();
+
     if (0.f == wavelength) {
         float const start = Material::Spectrum::start_wavelength();
         float const end   = Material::Spectrum::end_wavelength();
 
-        wavelength = start + (end - start) * sampler.rng().random_float();
+        wavelength = start + (end - start) * r[1];
 
         weight = Material::spectrum_at_wavelength(wavelength);
         weight *= 3.f;
@@ -54,38 +56,7 @@ void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 
     float const ior = ior_ + ((ior_ - 1.f) / abbe_) * (523655.f / sqr_wl - 1.5168f);
 
-    float3 n = layer_.n_;
-
-    float eta_i = ior_outside_;
-    float eta_t = ior;
-
-    if (!same_hemisphere(wo_)) {
-        n = -n;
-
-        std::swap(eta_i, eta_t);
-    }
-
-    float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
-    float const eta      = eta_i / eta_t;
-    float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
-
-    float n_dot_t;
-    float f;
-    if (sint2 >= 1.f) {
-        n_dot_t = 0.f;
-
-        f = 1.f;
-    } else {
-        n_dot_t = std::sqrt(1.f - sint2);
-
-        f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
-    }
-
-    if (sampler.generate_sample_1D() <= f) {
-        reflect(wo_, n, n_dot_wo, result);
-    } else {
-        refract(wo_, n, color_, n_dot_wo, n_dot_t, eta, result);
-    }
+    Sample::sample(ior, r[0], result);
 
     result.reflection *= weight;
     result.wavelength = wavelength;

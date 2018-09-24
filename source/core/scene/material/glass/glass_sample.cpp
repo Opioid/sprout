@@ -21,10 +21,24 @@ bxdf::Result Sample::evaluate(float3 const& /*wi*/) const noexcept {
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+    float const p = sampler.generate_sample_1D();
+
+    sample(ior_, p, result);
+
+    result.wavelength = 0.f;
+}
+
+void Sample::set(float3 const& refraction_color, float ior, float ior_outside) noexcept {
+    color_       = refraction_color;
+    ior_         = ior;
+    ior_outside_ = ior_outside;
+}
+
+void Sample::sample(float ior, float p, bxdf::Sample& result) const noexcept {
     float3 n = layer_.n_;
 
     float eta_i = ior_outside_;
-    float eta_t = ior_;
+    float eta_t = ior;
 
     if (!same_hemisphere(wo_)) {
         n = -n;
@@ -48,19 +62,11 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
     }
 
-    if (sampler.generate_sample_1D() <= f) {
+    if (p <= f) {
         reflect(wo_, n, n_dot_wo, result);
     } else {
         refract(wo_, n, color_, n_dot_wo, n_dot_t, eta, result);
     }
-
-    result.wavelength = 0.f;
-}
-
-void Sample::set(float3 const& refraction_color, float ior, float ior_outside) noexcept {
-    color_       = refraction_color;
-    ior_         = ior;
-    ior_outside_ = ior_outside;
 }
 
 float Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,

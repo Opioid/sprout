@@ -117,6 +117,10 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             filter      = Sampler_filter::Nearest;
         }
 
+        if (0.f == ray.wavelength) {
+            ray.wavelength = sample_result.wavelength;
+        }
+
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
         if (material_sample.ior_greater_one()) {
