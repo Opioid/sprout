@@ -57,7 +57,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     bool const avoid_caustics = true;
 
-    for (uint32_t i = 4; i > 0; --i) {
+    for (uint32_t i = 16; i > 0; --i) {
         float3 const wo = -ray.direction;
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
@@ -85,6 +85,10 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+
+        if (0.f == ray.wavelength) {
+            ray.wavelength = sample_result.wavelength;
+        }
 
         if (material_sample.ior_greater_one()) {
             throughput *= sample_result.reflection / sample_result.pdf;

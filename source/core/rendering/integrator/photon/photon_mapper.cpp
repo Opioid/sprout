@@ -45,6 +45,7 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tic
     for (int32_t i = begin; i < end; ++i) {
         uint32_t const max_photons = std::min(settings_.max_bounces,
                                               static_cast<uint32_t>(end - i));
+
         uint32_t       num_photons;
         uint32_t const num_iterations = trace_photon(normalized_tick_offset, normalized_tick_slice,
                                                      bounds, infinite_world, worker, max_photons,
@@ -182,6 +183,10 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                 ++ray.depth;
             } else {
                 ray.min_t = ray.max_t + ray_offset;
+            }
+
+            if (0.f == ray.wavelength) {
+                ray.wavelength = sample_result.wavelength;
             }
 
             ray.max_t = scene::Ray_max_t;

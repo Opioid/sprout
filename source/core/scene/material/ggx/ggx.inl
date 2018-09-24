@@ -603,10 +603,10 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
     result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_transmission
                                          : bxdf::Type::Glossy_transmission);
 
-    {
-        bxdf::Result control = refraction2(wi, wo, layer, alpha, ior, result.reflection[0],
-                                           result.pdf);
-    }
+    //    {
+    //        bxdf::Result control = refraction2(wi, wo, layer, alpha, ior, result.reflection[0],
+    //                                           result.pdf);
+    //    }
 
     return n_dot_wi;
 }

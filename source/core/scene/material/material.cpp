@@ -170,8 +170,11 @@ void Material::init_rainbow() noexcept {
         temp.clear(0.f);
         //	temp.set_at_wavelength(wl, 1.f);
         temp.set_bin(i, 1.f);
-        float3 const rgb = spectrum::XYZ_to_linear_RGB(temp.normalized_XYZ());
-        rainbow_[i]      = math::saturate(rgb);
+
+        float3 const rgb = math::saturate(spectrum::XYZ_to_linear_RGB(temp.normalized_XYZ()));
+
+        rainbow_[i] = rgb;
+
         sum_rgb += rgb;
     }
 

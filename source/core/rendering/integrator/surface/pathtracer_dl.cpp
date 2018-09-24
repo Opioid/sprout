@@ -95,6 +95,10 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             treat_as_singular = false;
         }
 
+        if (0.f == ray.wavelength) {
+            ray.wavelength = sample_result.wavelength;
+        }
+
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
         if (material_sample.ior_greater_one()) {
