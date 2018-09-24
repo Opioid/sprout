@@ -362,7 +362,8 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
 }
 
 inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, Layer const& layer,
-                                           float alpha, IoR const& ior, float other) noexcept {
+                                           float alpha, IoR const& ior, float other,
+                                           float other_pdf) noexcept {
     float const alpha2 = alpha * alpha;
 
     float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo);
@@ -377,7 +378,8 @@ inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, L
     wi_dot_h = clamp_abs(wi_dot_h);
     wo_dot_h = clamp_abs(wo_dot_h);
 
-    float const d = distribution_isotropic(math::dot(layer.n_, h), alpha2);
+    float const n_dot_h = math::dot(layer.n_, h);
+    float const d       = distribution_isotropic(n_dot_h, alpha2);
 
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 
@@ -394,6 +396,15 @@ inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, L
     float const delta = std::abs(other - reflection);
     if (delta > 0.1f) {
         std::cout << "alarm" << std::endl;
+    }
+
+    float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
+
+    pdf *= (wi_dot_h * sqr_eta_t / denom);
+
+    float const delta_pdf = std::abs(other_pdf - pdf);
+    if (delta_pdf > 0.1f) {
+        std::cout << "pdf alarm " << other_pdf << " : " << pdf << std::endl;
     }
 
     return {float3(reflection), 1.f};
@@ -593,8 +604,8 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
                                          : bxdf::Type::Glossy_transmission);
 
     {
-        //        bxdf::Result control = refraction2(wi, wo, layer, alpha, ior,
-        //                                           result.reflection[0]);
+        bxdf::Result control = refraction2(wi, wo, layer, alpha, ior, result.reflection[0],
+                                           result.pdf);
     }
 
     return n_dot_wi;
