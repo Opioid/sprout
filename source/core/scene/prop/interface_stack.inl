@@ -21,6 +21,11 @@ inline bool Interface_stack::Interface::matches(Intersection const& intersection
 inline Interface_stack::Interface_stack() noexcept
     : stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
 
+inline Interface_stack::Interface_stack(Interface_stack const& other) noexcept
+    : stack_(memory::allocate_aligned<Interface>(Num_entries)) {
+    *this = other;
+}
+
 inline Interface_stack::~Interface_stack() noexcept {
     memory::free_aligned(stack_);
 }

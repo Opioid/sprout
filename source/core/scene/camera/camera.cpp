@@ -28,7 +28,7 @@ void Camera::update(Scene const& scene, Worker& worker) noexcept {
     if (scene.has_volumes()) {
         math::Transformation transformation = local_frame_a();
 
-        Ray ray(transformation.position, float3(0.f, 1.f, 0.f), 0.f, Ray_max_t);
+        Ray ray(transformation.position, math::normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t);
 
         prop::Intersection intersection;
 

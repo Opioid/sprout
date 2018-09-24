@@ -30,6 +30,8 @@ class Interface_stack {
 
     Interface_stack() noexcept;
 
+    Interface_stack(Interface_stack const& other) noexcept;
+
     ~Interface_stack() noexcept;
 
     void operator=(Interface_stack const& other) noexcept;
