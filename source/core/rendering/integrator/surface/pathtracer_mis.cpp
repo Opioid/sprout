@@ -70,9 +70,10 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) noe
 
 float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
                           Interface_stack const& initial_stack) noexcept {
-    float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
+    float3 li(0.f);
+    float3 photon_li(0.f);
 
-    float3 result = float3::identity();
+    bool split_photon = false;
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         worker.reset_interface_stack(initial_stack);
@@ -81,10 +82,24 @@ float3 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         Intersection split_intersection = intersection;
 
-        result += num_samples_reciprocal * integrate(split_ray, split_intersection, worker);
+        bool const integrate_photons = settings_.num_samples == i;
+
+        Result const result = integrate(split_ray, split_intersection, worker, integrate_photons);
+
+        li += result.li;
+
+        photon_li += result.photon_li;
+
+        split_photon |= result.split_photon;
     }
 
-    return result;
+    float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
+
+    if (split_photon) {
+        return num_samples_reciprocal * (li + photon_li);
+    }
+
+    return num_samples_reciprocal * li + photon_li;
 }
 
 size_t Pathtracer_MIS::num_bytes() const noexcept {
@@ -101,7 +116,8 @@ size_t Pathtracer_MIS::num_bytes() const noexcept {
     return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
 }
 
-float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection,
+                                                 Worker& worker, bool integrate_photons) noexcept {
     uint32_t const max_bounces = settings_.max_bounces;
 
     Sampler_filter filter = Sampler_filter::Undefined;
@@ -113,7 +129,8 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
     bool is_translucent    = false;
 
     float3 throughput(1.f);
-    float3 result(0.f);
+
+    Result result{float3(0.f), float3(0.f), false};
 
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
@@ -127,7 +144,7 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
         // Only check direct eye-light connections for the very first hit.
         // Subsequent hits are handled by the MIS scheme.
         if (0 == i && material_sample.same_hemisphere(wo)) {
-            result += material_sample.radiance();
+            result.li += material_sample.radiance();
         }
 
         if (material_sample.is_pure_emissive()) {
@@ -138,8 +155,8 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
 
         bool const do_mis = worker.interface_stack().top_is_vacuum();
 
-        result += throughput * sample_lights(ray, ray_offset, intersection, material_sample, do_mis,
-                                             filter, worker);
+        result.li += throughput * sample_lights(ray, ray_offset, intersection, material_sample,
+                                                do_mis, filter, worker);
 
         SOFT_ASSERT(math::all_finite(result));
 
@@ -166,7 +183,10 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
             filter            = Sampler_filter::Nearest;
             treat_as_singular = false;
 
-            result += worker.photon_li(intersection, material_sample);
+            if (integrate_photons || 0 != i) {
+                result.photon_li    = worker.photon_li(intersection, material_sample);
+                result.split_photon = 0 != i;
+            }
         }
 
         if (0.f == ray.wavelength) {
@@ -194,7 +214,7 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
             float3     vli, vtr;
             bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
-            result += throughput * vli;
+            result.li += throughput * vli;
             throughput *= vtr;
 
             if (!hit) {
@@ -218,7 +238,7 @@ float3 Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection, Worker& w
                                                    treat_as_singular, is_translucent, filter,
                                                    worker, pure_emissive);
 
-            result += throughput * radiance;
+            result.li += throughput * radiance;
 
             if (pure_emissive) {
                 break;

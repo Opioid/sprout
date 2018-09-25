@@ -1,6 +1,7 @@
 #ifndef SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_NG_HPP
 #define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_NG_HPP
 
+#include "base/math/vector3.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "surface_integrator.hpp"
@@ -36,7 +37,14 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    float3 integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept;
+    struct Result {
+        float3 li;
+        float3 photon_li;
+        bool   split_photon;
+    };
+
+    Result integrate(Ray& ray, Intersection& intersection, Worker& worker,
+                     bool integrate_photons) noexcept;
 
     float3 sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
                          const Material_sample& material_sample, bool do_mis, Sampler_filter filter,
