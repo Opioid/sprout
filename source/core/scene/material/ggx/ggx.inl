@@ -318,18 +318,15 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 template <typename Fresnel>
 bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 const& h,
                                     Layer const& layer, float alpha, IoR const& ior,
-                                    Fresnel const& fresnel, float other) noexcept {
+                                    Fresnel const& fresnel) noexcept {
     float const alpha2 = alpha * alpha;
 
     float const n_dot_wi     = layer.clamp_reverse_n_dot(wi);
     float const n_dot_wo     = layer.clamp_abs_n_dot(wo);
-    float       wi_dot_h     = math::dot(h, wi);
-    float       wo_dot_h     = math::dot(h, wo);
+    float const wi_dot_h     = math::dot(h, wi);
+    float const wo_dot_h     = math::dot(h, wo);
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
     float const abs_wo_dot_h = clamp_abs(wo_dot_h);
-
-    wi_dot_h = clamp_abs(wi_dot_h);
-    wo_dot_h = clamp_abs(wo_dot_h);
 
     float const d = distribution_isotropic(math::dot(layer.n_, h), alpha2);
 
@@ -343,22 +340,17 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
 
     float const factor = (abs_wi_dot_h * abs_wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.eta_i * wi_dot_h + ior.eta_t * wo_dot_h);
+    float const denom = math::pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
 
     float const refraction = d * g * f;
 
     float reflection = (factor * sqr_eta_t / denom) * refraction;
 
-    // pdf * (wi_dot_h * sqr_eta_t / denom);
+    float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
 
-    // reflection /= sqr_eta_t;// * sqr_eta_t / denom);
+    pdf *= 0.f;//(wi_dot_h * sqr_eta_t / denom);// / f;
 
-    //        float const delta = std::abs(other - reflection);
-    //        if (delta > 0.1f) {
-    //            std::cout << "alarm" << std::endl;
-    //        }
-
-    return {float3(reflection), 1.f};
+    return {float3(reflection), pdf};
 }
 
 inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, Layer const& layer,
@@ -366,46 +358,46 @@ inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, L
                                            float other_pdf) noexcept {
     float const alpha2 = alpha * alpha;
 
-    float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo);
+    float3 const h = math::normalize(ior.eta_t * wi + ior.eta_i * wo);
 
     float const n_dot_wi     = layer.clamp_reverse_n_dot(wi);
     float const n_dot_wo     = layer.clamp_abs_n_dot(wo);
-    float       wi_dot_h     = math::dot(h, wi);
-    float       wo_dot_h     = math::dot(h, wo);
+    float const wi_dot_h     = math::dot(h, wi);
+    float const wo_dot_h     = math::dot(h, wo);
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
     float const abs_wo_dot_h = clamp_abs(wo_dot_h);
 
-    wi_dot_h = clamp_abs(wi_dot_h);
-    wo_dot_h = clamp_abs(wo_dot_h);
-
-    float const n_dot_h = math::dot(layer.n_, h);
-    float const d       = distribution_isotropic(n_dot_h, alpha2);
+    float const d = distribution_isotropic(math::dot(layer.n_, h), alpha2);
 
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
+
+    float const cos_x = ior.eta_i > ior.eta_t ? abs_wi_dot_h : abs_wo_dot_h;
+
+    float const f = 1.f;// - fresnel::schlick(cos_x);
 
     float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
     float const factor = (abs_wi_dot_h * abs_wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.eta_i * wi_dot_h + ior.eta_t * wo_dot_h);
+    float const denom = math::pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
 
-    float const refraction = d * g;
+    float const refraction = d * g * f;
 
-    float const reflection = (factor * sqr_eta_t / denom) * refraction;
+    float reflection = (factor * sqr_eta_t / denom) * refraction;
 
-    float const delta = std::abs(other - reflection);
-    if (delta > 0.1f) {
-        std::cout << "alarm" << std::endl;
-    }
+//    float const delta = std::abs(other - reflection);
+//    if (delta > 0.1f) {
+//        std::cout << "alarm" << std::endl;
+//    }
 
-    float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
+//    float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
 
-    pdf *= (wi_dot_h * sqr_eta_t / denom);
+//    pdf *= (wi_dot_h * sqr_eta_t / denom);
 
-    float const delta_pdf = std::abs(other_pdf - pdf);
-    if (delta_pdf > 0.1f) {
-        std::cout << "pdf alarm " << other_pdf << " : " << pdf << std::endl;
-    }
+//    float const delta_pdf = std::abs(other_pdf - pdf);
+//    if (delta_pdf > 0.1f) {
+//        std::cout << "pdf alarm " << other_pdf << " : " << pdf << std::endl;
+//    }
 
     return {float3(reflection), 1.f};
 }
@@ -462,7 +454,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, f
 
     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.eta_i * wi_dot_h + ior.eta_t * wo_dot_h);
+    float const denom = math::pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
 
     float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
@@ -575,6 +567,8 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
 
     float3 const wi = math::normalize((eta * wo_dot_h - wi_dot_h) * h - eta * wo);
 
+ //   wi_dot_h = math::dot(wi, h);
+
     float const n_dot_wi = layer.clamp_reverse_n_dot(wi);
 
     float const alpha2 = alpha * alpha;
@@ -584,29 +578,36 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
 
     float const refraction = d * g;
 
-    float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
+    float const abs_wi_dot_h = clamp_abs(wi_dot_h);
+    float const abs_wo_dot_h = clamp_abs(wo_dot_h);
 
-    float const denom = math::pow2(ior.eta_i * wi_dot_h + ior.eta_t * wo_dot_h);
+    float const factor = (abs_wi_dot_h * abs_wo_dot_h) / (n_dot_wi * n_dot_wo);
+
+    float const denom = math::pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
 
     float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
-    float const sqr_eta = 1.f;  // eta * eta;
+    float const ior_relative = ior.eta_i / ior.eta_t;
+
+    float const sqr_eta = 1.f;//ior_relative * ior_relative;
 
     result.reflection = float3(sqr_eta * (factor * sqr_eta_t / denom) * refraction);
     result.wi         = wi;
     result.h          = h;
 
-    float const pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
+    float const pdf = pdf_visible_refract(n_dot_wo, std::abs(wo_dot_h), d, alpha2);
 
-    result.pdf      = pdf * (wi_dot_h * sqr_eta_t / denom);
+    result.pdf      = pdf * (std::abs(wi_dot_h) * sqr_eta_t / denom);
     result.h_dot_wi = wi_dot_h;
     result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_transmission
                                          : bxdf::Type::Glossy_transmission);
 
-    //    {
-    //        bxdf::Result control = refraction2(wi, wo, layer, alpha, ior, result.reflection[0],
-    //                                           result.pdf);
-    //    }
+//        {
+//            bxdf::Result control = refraction2(wi, wo, layer, alpha, ior, result.reflection[0],
+//                                               result.pdf);
+
+//            result.reflection = control.reflection;
+//        }
 
     return n_dot_wi;
 }
