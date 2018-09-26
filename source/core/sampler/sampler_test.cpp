@@ -66,7 +66,7 @@ void test() {
     //		render_set("hammersley", sampler, renderer, target);
     //	}
     {
-        rnd::Generator rng;
+        rnd::Generator rng(0, 0);
         Hammersley     sampler(rng);
         sampler.resize(num_samples, 1, 1, 1);
         float2 const center(0.2f, 0.5f);

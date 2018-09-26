@@ -15,7 +15,7 @@ using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 void spectrum() {
     std::cout << "testing::spectrum()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     Spectrum::init();
 

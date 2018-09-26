@@ -83,6 +83,8 @@ class Worker {
 
     Scene const* scene_;
 
+    //   Tile_queue const* tiles_;
+
     mutable shape::Node_stack node_stack_;
 
     mutable material::Sample_cache sample_cache_;

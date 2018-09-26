@@ -18,7 +18,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
     renderer.set_brush(float3(0.f, 0.f, 1.f));
     renderer.clear();
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     uint32_t const seed = rng.random_uint();
 
@@ -52,7 +52,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
     renderer.set_brush(float3(0.f));
     renderer.clear();
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     uint32_t const seed = rng.random_uint();
 

@@ -12,6 +12,24 @@ inline Generator::Generator(uint64_t state, uint64_t sequence) noexcept
     random_uint();
 }
 
+inline void Generator::start(uint64_t state, uint64_t sequence) noexcept {
+    state_ = 0;
+    inc_   = (sequence << 1u) | 1u;
+
+    random_uint();
+    state_ += state;
+    random_uint();
+}
+
+inline Generator::State Generator::state() const noexcept {
+    return {state_, inc_};
+}
+
+inline void Generator::set_state(State const& state) noexcept {
+    state_ = state.state;
+    inc_   = state.inc;
+}
+
 inline uint32_t Generator::random_uint() noexcept {
     return advance_pcg32();
 }

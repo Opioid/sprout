@@ -36,7 +36,7 @@ void init(T& distribution, const image::texture::Float3& texture);
 void test_1D() {
     std::cout << "testing::cdf::test_1D()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     //	size_t const num_values = 1024 * 10;
 
@@ -115,7 +115,7 @@ void test_2D() {
         return;
     }
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t const num_samples = 1024 * 1024 * 16;
 

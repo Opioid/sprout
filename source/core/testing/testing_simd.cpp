@@ -28,7 +28,7 @@ inline float SSE_rsqrt_1N(float x) {
 void rsqrt() {
     std::cout << "testing::simd::rsqrt()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * (128 + 32);
 
@@ -113,7 +113,7 @@ inline float SSE_rcp_1N(float x) {
 void rcp() {
     std::cout << "testing::simd::rcp()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * (128 + 8);
 
@@ -230,7 +230,7 @@ inline float3 simd_normalized_2(float3 const& v) {
 void normalize() {
     std::cout << "testing::simd::normalize()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * (128 + 0);
 
@@ -370,7 +370,7 @@ inline void simd_reciprocal(float3& result, float3 const& v) {
 void reciprocal() {
     std::cout << "testing::simd::reciprocal()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * (9);
 
@@ -493,7 +493,7 @@ inline float simd_dot_2(float3 const& a, float3 const& b) {
 void dot() {
     std::cout << "testing::simd::dot()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * (128 + 16);
 
@@ -626,7 +626,7 @@ inline void simd_min2(float3& a, float3 const& b) {
 void minmax() {
     std::cout << "testing::minmax()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * (128 + 64);
 
@@ -955,7 +955,7 @@ void test_array_vector_t(Array_vector_t<float, 3>* vecs, size_t num_values) {
 void unions() {
     std::cout << "testing::simd::unions()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * 128;  // * (128 + 32);
 
@@ -993,7 +993,7 @@ void unions() {
 void basis() {
     std::cout << "testing::simd::basis()" << std::endl;
 
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     size_t num_values = 1024 * 1024 * (64 + 0);
 

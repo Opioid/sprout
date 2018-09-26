@@ -2,7 +2,9 @@
 #define SU_CORE_RENDERING_TILE_QUEUE_HPP
 
 #include <atomic>
+#include "base/math/vector2.hpp"
 #include "base/math/vector4.hpp"
+#include "base/random/generator.hpp"
 
 namespace rendering {
 
@@ -18,11 +20,24 @@ class Tile_queue {
 
     bool pop(int4& tile) noexcept;
 
+    uint32_t index(int4 const& tile) const noexcept;
+
+    rnd::Generator::State const& random_state(uint32_t index) const noexcept;
+
+    void set_random_state(uint32_t index, rnd::Generator::State const& state) const noexcept;
+
   private:
     void push(int4 const& tile) noexcept;
 
-    uint32_t num_tiles_;
-    int4*    tiles_;
+    int2 const tile_dimensions_;
+
+    int32_t const tiles_per_row_;
+
+    uint32_t const num_tiles_;
+
+    int4* tiles_;
+
+    rnd::Generator::State* rng_states_;
 
     std::atomic<uint32_t> current_consume_;
 };

@@ -22,7 +22,7 @@ struct Setup {
 };
 
 void test() {
-    rnd::Generator  rng;
+    rnd::Generator  rng(0, 0);
     sampler::Random sampler(rng);
     sampler.resize(0, 1, 1, 1);
 

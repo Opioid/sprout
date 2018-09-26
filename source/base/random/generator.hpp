@@ -9,7 +9,20 @@ namespace rnd {
 
 class Generator {
   public:
-    Generator(uint64_t state = 0, uint64_t sequence = 0) noexcept;
+    Generator() noexcept = default;
+
+    Generator(uint64_t state, uint64_t sequence) noexcept;
+
+    void start(uint64_t state = 0, uint64_t sequence = 0) noexcept;
+
+    struct State {
+        uint64_t state;
+        uint64_t inc;
+    };
+
+    State state() const noexcept;
+
+    void set_state(State const& state) noexcept;
 
     uint32_t random_uint() noexcept;
 

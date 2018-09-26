@@ -88,7 +88,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 }
 
 void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
-    rnd::Generator rng;
+    rnd::Generator rng(0, 0);
 
     Volume_rasterizer renderer(target.description().dimensions);
 

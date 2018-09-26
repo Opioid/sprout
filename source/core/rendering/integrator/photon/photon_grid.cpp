@@ -245,7 +245,7 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
 
         float3 position = pa.p;
 
-        int32_t local_reduced = 0;
+        uint32_t local_reduced = 0;
 
         int2 cells[4];
         adjacent_cells(pa.p, cells);
@@ -272,14 +272,15 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
 
                     pb.alpha[0] = -1.f;
                     ++num_reduced;
-                    ++local_reduced;
                 }
             }
         }
 
         if (local_reduced > 0) {
-            pa.p = position / float(local_reduced + 1);
+            pa.p = position / static_cast<float>(local_reduced + 1);
         }
+
+        num_reduced += local_reduced;
     }
 
     return num_reduced;
@@ -454,8 +455,9 @@ float3 Grid::scattering_coefficient(Intersection const&  intersection,
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
 
-        auto const   shape = intersection.prop->shape();
-        float3 const uvw   = shape->object_to_texture_point(local_position);
+        auto const shape = intersection.prop->shape();
+
+        float3 const uvw = shape->object_to_texture_point(local_position);
 
         return material.collision_coefficients(uvw, Filter_settings::Undefined, worker).s;
     } else if (material.is_textured_volume()) {
