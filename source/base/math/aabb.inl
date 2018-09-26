@@ -7,8 +7,6 @@
 #include "simd_vector.inl"
 #include "vector3.inl"
 
-#include <limits>
-
 namespace math {
 
 inline constexpr AABB::AABB(float3 const& min, float3 const& max) noexcept : bounds{min, max} {}
@@ -257,30 +255,16 @@ inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const noexcept 
 }
 
 inline float3 AABB::normal(float3 const& p) const noexcept {
-    float3 normal;
-
     float3 const local_point = p - position();
 
     float3 const size = halfsize();
 
-    float min = std::numeric_limits<float>::max();
+    float3 const distance = math::abs(size - math::abs(local_point));
 
-    float distance = std::abs(size[0] - std::abs(local_point[0]));
-    if (distance < min) {
-        min    = distance;
-        normal = float3(math::copysign1(local_point[0]), 0.f, 0.f);
-    }
+    uint32_t const i = math::index_min_component(distance);
 
-    distance = std::abs(size[1] - std::abs(local_point[1]));
-    if (distance < min) {
-        min    = distance;
-        normal = float3(0.f, math::copysign1(local_point[1]), 0.f);
-    }
-
-    distance = std::abs(size[2] - std::abs(local_point[2]));
-    if (distance < min) {
-        normal = float3(0.f, 0.f, math::copysign1(local_point[2]));
-    }
+    float3 normal(0.f);
+    normal[i] = math::copysign1(local_point[i]);
 
     return normal;
 }

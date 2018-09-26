@@ -20,7 +20,7 @@ class Generator {
         uint64_t inc;
     };
 
-    State state() const noexcept;
+    State const& state() const noexcept;
 
     void set_state(State const& state) noexcept;
 
@@ -31,8 +31,7 @@ class Generator {
   private:
     uint32_t advance_pcg32() noexcept;
 
-    uint64_t state_;
-    uint64_t inc_;
+    State state_;
 };
 
 }  // namespace rnd

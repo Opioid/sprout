@@ -22,7 +22,11 @@ Cube::Cube() noexcept {
 
 bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                      Intersection& intersection) const noexcept {
-    return intersect_fast(ray, transformation, node_stack, intersection);
+    bool const hit = intersect_fast(ray, transformation, node_stack, intersection);
+
+    intersection.n = intersection.geo_n;
+
+    return hit;
 }
 
 bool Cube::intersect_fast(Ray& ray, Transformation const&           transformation,
@@ -48,7 +52,8 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
     intersection.p = ray.point(hit_t);
 
     float3 const local_p = local_ray.point(hit_t);
-    intersection.geo_n   = math::transform_vector(transformation.rotation, aabb.normal(local_p));
+    float3 const normal = aabb.normal(local_p);
+    intersection.geo_n   = math::transform_vector(transformation.rotation, normal);
 
     intersection.epsilon = 3e-3f * hit_t;
     intersection.part    = 0;
@@ -87,27 +92,23 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
 bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
                        Node_stack& /*node_stack*/) const noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = math::dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - math::dot(v, v) + (radius * radius);
+    float3 const local_origin = transformation.world_to_object_point(ray.origin);
+    float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
-        float t0   = b - dist;
+    math::Ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
-            return true;
-        }
+    math::AABB const aabb(float3(-1.f), float3(1.f));
 
-        float t1 = b + dist;
-
-        if (t1 > ray.min_t && t1 < ray.max_t) {
-            return true;
-        }
+    float hit_t;
+    if (!aabb.intersect_p(local_ray, hit_t)) {
+        return false;
     }
 
-    return false;
+    if (hit_t > ray.max_t) {
+        return false;
+    }
+
+    return true;
 }
 
 float Cube::opacity(Ray const& ray, Transformation const& transformation,

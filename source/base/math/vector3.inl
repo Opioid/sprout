@@ -627,6 +627,30 @@ static inline constexpr float max_component(Vector3f_a const& v) noexcept {
     return std::max(std::max(v[0], v[1]), v[2]);
 }
 
+static inline constexpr uint32_t index_min_component(Vector3f_a const& v) noexcept {
+    if (v[0] < v[1] && v[0] < v[2]) {
+        return 0;
+    }
+
+    if (v[1] < v[0] && v[1] < v[2]) {
+        return 1;
+    }
+
+    return 2;
+}
+
+static inline constexpr uint32_t index_max_component(Vector3f_a const& v) noexcept {
+    if (v[0] > v[1] && v[0] > v[2]) {
+        return 0;
+    }
+
+    if (v[1] > v[0] && v[1] > v[2]) {
+        return 1;
+    }
+
+    return 2;
+}
+
 static inline constexpr float average(Vector3f_a const& c) noexcept {
     return (c[0] + c[1] + c[2]) / 3.f;
 }

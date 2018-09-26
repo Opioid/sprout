@@ -5,29 +5,25 @@
 
 namespace rnd {
 
-inline Generator::Generator(uint64_t state, uint64_t sequence) noexcept
-    : state_(0), inc_((sequence << 1u) | 1u) {
-    random_uint();
-    state_ += state;
-    random_uint();
+inline Generator::Generator(uint64_t state, uint64_t sequence) noexcept {
+    start(state, sequence);
 }
 
 inline void Generator::start(uint64_t state, uint64_t sequence) noexcept {
-    state_ = 0;
-    inc_   = (sequence << 1u) | 1u;
+    state_.state = 0;
+    state_.inc   = (sequence << 1u) | 1u;
 
     random_uint();
-    state_ += state;
+    state_.state += state;
     random_uint();
 }
 
-inline Generator::State Generator::state() const noexcept {
-    return {state_, inc_};
+inline Generator::State const& Generator::state() const noexcept {
+    return state_;
 }
 
 inline void Generator::set_state(State const& state) noexcept {
-    state_ = state.state;
-    inc_   = state.inc;
+    state_ = state;
 }
 
 inline uint32_t Generator::random_uint() noexcept {
@@ -41,10 +37,10 @@ inline float Generator::random_float() noexcept {
 }
 
 inline uint32_t Generator::advance_pcg32() noexcept {
-    uint64_t const oldstate = state_;
+    uint64_t const oldstate = state_.state;
 
     // Advance internal state
-    state_ = oldstate * 6364136223846793005ull + (inc_ | 1);
+    state_.state = oldstate * 6364136223846793005ull + (state_.inc | 1);
 
     // Calculate output function (XSH RR), uses old state for max ILP
     uint32_t const xorshifted = static_cast<uint32_t>(((oldstate >> 18ull) ^ oldstate) >> 27ull);
