@@ -20,9 +20,9 @@ Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin, or H
 Consider adding support for separate samplers per different textures in a single material.
 E.g nearest neighbor filter for albedo color and bilinear for normal map.
 
-** Renderer [0/1]
+** Renderer [1/1]
 
-*** TODO Deterministic random numbers
+*** DONE Deterministic random numbers
 Currently (some) random numbers are seeded per worker.
 This leads to indeterministic behavior as the workers render varying parts of the frame per run.
 For a deterministic result the seed should always be the same per pixel/tile in any run.
