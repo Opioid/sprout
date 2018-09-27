@@ -20,14 +20,36 @@ namespace rendering::integrator::surface {
 
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
                              Settings const& settings) noexcept
-    : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
+    : Integrator(rng, take_settings),
+      settings_(settings),
+      sampler_(rng),
+      material_samplers_{rng, rng, rng},
+      light_samplers_{rng, rng, rng} {}
 
-void Pathtracer_DL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
+    uint32_t const num_lights = static_cast<uint32_t>(scene.lights().size());
+
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+
+    for (auto& s : material_samplers_) {
+        s.resize(num_samples_per_pixel, 1, 1, 1);
+    }
+
+    for (auto& s : light_samplers_) {
+        s.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
+    }
 }
 
 void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
     sampler_.resume_pixel(sample, scramble);
+
+    for (auto& s : material_samplers_) {
+        s.resume_pixel(sample, scramble);
+    }
+
+    for (auto& s : light_samplers_) {
+        s.resume_pixel(sample, scramble);
+    }
 }
 
 float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
@@ -74,7 +96,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             }
         }
 
-        material_sample.sample(sampler_, sample_result);
+        material_sample.sample(material_sampler(ray.depth), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -146,22 +168,24 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     }
 
     Ray shadow_ray;
-    shadow_ray.origin = intersection.geo.p;
-    shadow_ray.min_t  = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-    shadow_ray.depth  = ray.depth + 1;
-    shadow_ray.time   = ray.time;
+    shadow_ray.origin     = intersection.geo.p;
+    shadow_ray.min_t      = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+    shadow_ray.depth      = ray.depth;
+    shadow_ray.time       = ray.time;
+    shadow_ray.wavelength = ray.wavelength;
 
     for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
         auto const light = worker.scene().random_light(rng_.random_float());
 
         scene::shape::Sample_to light_sample;
         if (!light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-                              material_sample.is_translucent(), sampler_, 0, worker,
+                              material_sample.is_translucent(), light_sampler(ray.depth), 0, worker,
                               light_sample)) {
             continue;
         }
 
         shadow_ray.set_direction(light_sample.wi);
+
         float const offset = take_settings_.ray_offset_factor * light_sample.epsilon;
         shadow_ray.max_t   = light_sample.t - offset;
 
@@ -175,7 +199,23 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         }
     }
 
-    return settings_.num_light_samples_reciprocal * result;
+    return result / static_cast<float>(settings_.num_light_samples);
+}
+
+sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) noexcept {
+    if (Num_material_samplers > bounce) {
+        return material_samplers_[bounce];
+    }
+
+    return sampler_;
+}
+
+sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) noexcept {
+    if (Num_light_samplers > bounce) {
+        return light_samplers_[bounce];
+    }
+
+    return sampler_;
 }
 
 size_t Pathtracer_DL::num_bytes() const noexcept {
@@ -194,7 +234,6 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings
     settings_.max_bounces                   = max_bounces;
     settings_.path_continuation_probability = 1.f - path_termination_probability;
     settings_.num_light_samples             = num_light_samples;
-    settings_.num_light_samples_reciprocal  = 1.f / static_cast<float>(num_light_samples);
     settings_.avoid_caustics                = !enable_caustics;
 }
 

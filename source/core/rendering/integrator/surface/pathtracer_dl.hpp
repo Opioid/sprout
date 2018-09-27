@@ -1,6 +1,7 @@
 #ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
 #define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
 
+#include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/material/sampler_settings.hpp"
 #include "surface_integrator.hpp"
@@ -15,8 +16,8 @@ class alignas(64) Pathtracer_DL final : public Integrator {
         float    path_continuation_probability;
 
         uint32_t num_light_samples;
-        float    num_light_samples_reciprocal;
-        bool     avoid_caustics;
+
+        bool avoid_caustics;
     };
 
     Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
@@ -36,9 +37,18 @@ class alignas(64) Pathtracer_DL final : public Integrator {
                         const Material_sample& material_sample, Sampler_filter filter,
                         Worker& worker) noexcept;
 
+    sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
+    sampler::Sampler& light_sampler(uint32_t bounce) noexcept;
+
     const Settings settings_;
 
     sampler::Random sampler_;
+
+    static uint32_t constexpr Num_material_samplers = 3;
+    sampler::Golden_ratio material_samplers_[Num_material_samplers];
+
+    static uint32_t constexpr Num_light_samplers = 3;
+    sampler::Golden_ratio light_samplers_[Num_light_samplers];
 };
 
 class Pathtracer_DL_factory final : public Factory {
