@@ -76,7 +76,7 @@ float Sample_thin::reflect(sampler::Sampler& /*sampler*/, bxdf::Sample& result) 
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_reflection);
 
- //   SOFT_ASSERT(testing::check(result, sample.wo_, layer));
+    //   SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
     return 1.f;
 }
@@ -119,7 +119,7 @@ float Sample_thin::refract(sampler::Sampler& /*sampler*/, bxdf::Sample& result) 
     // The integrator should not handle this like a proper transmission.
     result.type.clear(bxdf::Type::Specular_reflection);
 
- //   SOFT_ASSERT(testing::check(result, sample.wo_, layer));
+    //   SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
     return 1.f;
 }
