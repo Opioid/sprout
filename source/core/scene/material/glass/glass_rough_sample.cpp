@@ -101,20 +101,23 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
         float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
-        fresnel::Schlick1 const schlick(f0_);
-        f = schlick(cos_x);
+        f = fresnel::schlick(cos_x, f0_);
     }
 
     if (sampler.generate_sample_1D() <= f) {
         float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                        wo_dot_h, layer, alpha_, result);
+
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
     } else {
         float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                        wo_dot_h, layer, alpha_, ior, result);
-        result.reflection *= (1.f - f) * n_dot_wi * color_;
-        result.pdf *= (1.f - f);
+
+        float const omf = 1.f - f;
+
+        result.reflection *= omf * n_dot_wi * color_;
+        result.pdf *= omf;
     }
 
     result.wavelength = 0.f;

@@ -69,28 +69,24 @@ void Sample::sample(float ior, float p, bxdf::Sample& result) const noexcept {
     }
 }
 
-float Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                      bxdf::Sample& result) noexcept {
+void Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
+                     bxdf::Sample& result) noexcept {
     result.reflection = float3(1.f);
     result.wi         = math::normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_reflection);
 
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
-
-    return 1.f;
 }
 
-float Sample::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                      float n_dot_t, float eta, bxdf::Sample& result) noexcept {
+void Sample::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
+                     float n_dot_t, float eta, bxdf::Sample& result) noexcept {
     result.reflection = color;
     result.wi         = math::normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_transmission);
 
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
-
-    return 1.f;
 }
 
 }  // namespace scene::material::glass
