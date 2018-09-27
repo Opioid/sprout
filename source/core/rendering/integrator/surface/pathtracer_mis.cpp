@@ -35,8 +35,6 @@ Pathtracer_MIS::~Pathtracer_MIS() {}
 void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
     uint32_t const num_lights = static_cast<uint32_t>(scene.lights().size());
 
-    num_lights_reciprocal_ = num_lights > 0 ? 1.f / static_cast<float>(num_lights) : 0.f;
-
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
     for (auto& s : material_samplers_) {
@@ -285,13 +283,11 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
             result += num_light_samples_reciprocal * el;
         }
     } else {
-        float const light_weight = num_lights_reciprocal_;
-
         auto const& lights = worker.scene().lights();
         for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
             auto const& light = *lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {
-                float3 const el = evaluate_light(light, light_weight, ray, ray_offset, l, do_mis,
+                float3 const el = evaluate_light(light, 1.f, ray, ray_offset, l, do_mis,
                                                  intersection, material_sample, filter, worker);
 
                 result += num_light_samples_reciprocal * el;
@@ -350,11 +346,9 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
     float light_pdf = 0.f;
 
     if (!treat_as_singular) {
-        auto light = worker.scene().light(light_id);
-
-        if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
-            light.pdf = num_lights_reciprocal_;
-        }
+        bool const calculate_pdf = Light_sampling::Strategy::Single ==
+                                   settings_.light_sampling.strategy;
+        auto const light = worker.scene().light(light_id, calculate_pdf);
 
         float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent,
                                            Sampler_filter::Nearest, worker);

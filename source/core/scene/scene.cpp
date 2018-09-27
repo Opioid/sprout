@@ -173,12 +173,12 @@ std::vector<light::Light*> const& Scene::lights() const noexcept {
     return lights_;
 }
 
-Scene::Light Scene::light(uint32_t id) const noexcept {
+Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
     // If the assert doesn't hold it would pose a problem,
     // but I think it is more efficient to handle those cases outside or implicitely.
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
-    float const pdf = light_distribution_.pdf(id);
+    float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
     return {*lights_[id], pdf};
 }
 

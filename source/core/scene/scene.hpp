@@ -107,7 +107,7 @@ class Scene {
         light::Light const& ref;
         float               pdf;
     };
-    Light light(uint32_t id) const noexcept;
+    Light light(uint32_t id, bool calculate_pdf = true) const noexcept;
 
     Light random_light(float random) const noexcept;
 

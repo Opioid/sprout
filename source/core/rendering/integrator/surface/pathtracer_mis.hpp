@@ -64,8 +64,6 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     const Settings settings_;
 
-    float num_lights_reciprocal_;
-
     sampler::Random sampler_;
 
     static uint32_t constexpr Num_material_samplers = 3;
