@@ -52,8 +52,15 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
     intersection.p = ray.point(hit_t);
 
     float3 const local_p = local_ray.point(hit_t);
-    float3 const normal  = aabb.normal(local_p);
-    intersection.geo_n   = math::transform_vector(transformation.rotation, normal);
+
+    float3 const distance = math::abs(1.f - math::abs(local_p));
+
+    uint32_t const i = math::index_min_component(distance);
+
+    float3 normal(0.f);
+    normal[i] = math::copysign1(local_p[i]);
+
+    intersection.geo_n = math::transform_vector(transformation.rotation, normal);
 
     intersection.epsilon = 3e-3f * hit_t;
     intersection.part    = 0;
