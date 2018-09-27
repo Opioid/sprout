@@ -26,9 +26,7 @@ Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_set
       material_samplers_{rng, rng, rng},
       light_samplers_{rng, rng, rng} {}
 
-void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
-    uint32_t const num_lights = static_cast<uint32_t>(scene.lights().size());
-
+void Pathtracer_DL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     for (auto& s : material_samplers_) {
@@ -36,7 +34,7 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
     }
 
     for (auto& s : light_samplers_) {
-        s.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
+        s.resize(num_samples_per_pixel, settings_.num_light_samples, 1, 2);
     }
 }
 
@@ -175,7 +173,9 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     shadow_ray.wavelength = ray.wavelength;
 
     for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
-        auto const light = worker.scene().random_light(rng_.random_float());
+        float const select = light_sampler(ray.depth).generate_sample_1D(1);
+
+        auto const light = worker.scene().random_light(select);
 
         scene::shape::Sample_to light_sample;
         if (!light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
@@ -195,7 +195,9 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             float3 const radiance = light.ref.evaluate(light_sample, ray.time,
                                                        Sampler_filter::Nearest, worker);
 
-            result += (light.pdf / light_sample.pdf) * (tv * radiance * bxdf.reflection);
+            float const weight = 1.f / (light.pdf * light_sample.pdf);
+
+            result += weight * (tv * radiance * bxdf.reflection);
         }
     }
 
