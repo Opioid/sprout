@@ -25,7 +25,7 @@ inline bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float 
 
     float const pdf = n_dot_wi * math::Pi_inv;
 
-    SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
+ //   SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
     return {reflection, pdf};
 }
@@ -84,7 +84,7 @@ inline bxdf::Result Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot
 
     float const pdf = n_dot_wi * math::Pi_inv;
 
-    SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
+ //   SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
     return {reflection, pdf};
 }
