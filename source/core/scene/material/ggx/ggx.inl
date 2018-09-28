@@ -328,7 +328,7 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
     float const abs_wo_dot_h = clamp_abs(wo_dot_h);
 
-    float const d = distribution_isotropic(math::dot(layer.n_, h), alpha2);
+    float const d = distribution_isotropic(math::saturate(math::dot(layer.n_, h)), alpha2);
 
     float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 
