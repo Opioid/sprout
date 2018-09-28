@@ -74,8 +74,6 @@ void Glass_rough::set_refraction_color(float3 const& color) noexcept {
 }
 
 void Glass_rough::set_attenuation(float3 const& absorption_color, float distance) noexcept {
-    absorption_color_ = absorption_color;
-
     absorption_coefficient_ = extinction_coefficient(absorption_color, distance);
 
     attenuation_distance_ = distance;

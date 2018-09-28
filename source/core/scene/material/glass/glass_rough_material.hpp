@@ -38,7 +38,6 @@ class Glass_rough : public Material {
 
     float3 refraction_color_;
     float3 absorption_coefficient_;
-    float3 absorption_color_;
 
     float attenuation_distance_;
     float ior_;

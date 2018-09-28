@@ -63,8 +63,6 @@ inline Interface_stack::Interface const* Interface_stack::top() const noexcept {
 }
 
 inline float Interface_stack::top_ior() const noexcept {
-    return 1.f;
-
     if (index_ > 0) {
         return stack_[index_ - 1].material()->ior();
     }
@@ -113,8 +111,6 @@ inline bool Interface_stack::remove(Intersection const& intersection) noexcept {
 }
 
 inline float Interface_stack::peek_ior(Intersection const& intersection) const noexcept {
-    return 1.f;
-
     if (index_ <= 1) {
         return 1.f;
     }
