@@ -348,9 +348,9 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
 
     float pdf = pdf_visible_refract(n_dot_wo, abs_wo_dot_h, d, alpha2);
 
-    pdf *= (abs_wi_dot_h * sqr_eta_t / denom);  // / f;
+    pdf *= (abs_wi_dot_h * sqr_eta_t / denom);
 
-    return {float3(reflection), pdf * (1.f - f)};
+    return {float3(reflection), pdf * f};
 }
 
 inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, Layer const& layer,
@@ -587,9 +587,7 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
 
     float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
-    float const ior_relative = ior.eta_i / ior.eta_t;
-
-    float const sqr_eta = 1.f;  // ior_relative * ior_relative;
+    float const sqr_eta = 1.f;  // eta * eta;
 
     result.reflection = float3(sqr_eta * (factor * sqr_eta_t / denom) * refraction);
     result.wi         = wi;
