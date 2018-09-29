@@ -38,11 +38,6 @@ struct Sample {
     Type_flag type;
 };
 
-struct IOR {
-    float eta_t;
-    float eta_i;
-};
-
 }  // namespace scene::material::bxdf
 
 #endif

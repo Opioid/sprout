@@ -137,4 +137,26 @@ void Worker::interface_change(float3 const& dir, Intersection const& intersectio
     }
 }
 
+material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const& intersection) noexcept {
+    bool const leave = intersection.same_hemisphere(dir);
+
+    material::IoR ior;
+
+    if (leave) {
+        ior.eta_t = interface_stack_.peek_ior(intersection);
+        ior.eta_i = intersection.material()->ior();
+
+        interface_stack_.remove(intersection);
+    } else {
+        ior.eta_t = intersection.material()->ior();
+        ior.eta_i = interface_stack_.top_ior();
+
+        if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
+                interface_stack_.push(intersection);
+            }
+    }
+
+    return ior;
+}
+
 }  // namespace scene

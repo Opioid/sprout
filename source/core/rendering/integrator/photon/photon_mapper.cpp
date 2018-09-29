@@ -189,11 +189,15 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                 ray.wavelength = sample_result.wavelength;
             }
 
-            ray.max_t = scene::Ray_max_t;
-
             if (sample_result.type.test(Bxdf_type::Transmission)) {
-                worker.interface_change(sample_result.wi, intersection);
+                auto ior = worker.interface_change_ior(sample_result.wi, intersection);
+
+                float const eta = ior.eta_i / ior.eta_t;
+
+                radiance *= eta * eta;
             }
+
+            ray.max_t = scene::Ray_max_t;
 
             if (!worker.interface_stack().empty()) {
                 float3     vli, vtr;

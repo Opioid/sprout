@@ -5,6 +5,7 @@
 #include "base/random/generator.hpp"
 #include "material/material_sample_cache.hpp"
 #include "material/sampler_cache.hpp"
+#include "material/material_sample.hpp"
 #include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
 #include "take/take_settings.hpp"
@@ -72,6 +73,8 @@ class Worker {
     float ior_outside(float3 const& wo, Intersection const& intersection) const noexcept;
 
     void interface_change(float3 const& dir, Intersection const& intersection) noexcept;
+
+    material::IoR interface_change_ior(float3 const& dir, Intersection const& intersection) noexcept;
 
   private:
     uint32_t id_;
