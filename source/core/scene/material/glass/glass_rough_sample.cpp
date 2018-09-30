@@ -21,20 +21,24 @@ const material::Layer& Sample_rough::base_layer() const noexcept {
 
 bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
-        return {float3(0.f), 0.f};
+        float const wi_dot_wo = math::dot(wi, wo_);
+        if (wi_dot_wo > 0.f) {
+            return {float3(0.f), 0.f};
+        }
+
         IoR ior = ior_.swapped();
 
         Layer tmp_layer = layer_;
-        tmp_layer.n_    = -layer_.n_;
+    //    tmp_layer.n_    = -layer_.n_;
 
-        float const n_dot_wi = tmp_layer.clamp_reverse_n_dot(wi);
+        float const n_dot_wi = tmp_layer.clamp_n_dot(wi);
 
-        float3 const h = math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
+        float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
 
         float const eta = ior.eta_i / ior.eta_t;
 
         //    float const wo_dot_h = clamp_abs_dot(wo_, h);
-        float const wo_dot_h = clamp_dot(wo_, h);
+        float const wo_dot_h = dot(wo_, h);
 
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
@@ -99,20 +103,22 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
     } else {
         wi_dot_h = std::sqrt(1.f - sint2);
 
-        float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
+        float const cos_x = ior.eta_i > ior.eta_t ? std::abs(wi_dot_h) : std::abs(wo_dot_h);
 
         f = fresnel::schlick(cos_x, f0_);
     }
 
     if (sampler.generate_sample_1D() <= f) {
         float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                       wo_dot_h, layer, alpha_, result);
+                                                       std::abs(wo_dot_h), layer, alpha_, result);
 
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
     } else {
+        float const my_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
+
         float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                       wo_dot_h, layer, alpha_, ior, result);
+                                                       my_wo_dot_h, layer, alpha_, ior, result);
 
         float const omf = 1.f - f;
 
