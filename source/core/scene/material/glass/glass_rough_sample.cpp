@@ -31,6 +31,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         Layer tmp_layer = layer_;
     //    tmp_layer.n_    = -layer_.n_;
 
+
         float const n_dot_wi = tmp_layer.clamp_n_dot(wi);
 
         float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
@@ -39,6 +40,11 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 
         //    float const wo_dot_h = clamp_abs_dot(wo_, h);
         float const wo_dot_h = dot(wo_, h);
+
+        float const wi_dot_h = dot(wi, h);
+        if (wi_dot_h < 0.f) {
+            return {float3(0.f), 0.f};
+        }
 
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
