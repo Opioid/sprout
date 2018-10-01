@@ -20,31 +20,26 @@ const material::Layer& Sample_rough::base_layer() const noexcept {
 }
 
 bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
-    if (!same_hemisphere(wo_)) {
-        float const wi_dot_wo = math::dot(wi, wo_);
-        if (wi_dot_wo > 0.f) {
-            return {float3(0.f), 0.f};
-        }
+    if (ior_.eta_i == ior_.eta_t) {
+        return {float3(0.f), 0.f};
+    }
 
+    if (!same_hemisphere(wo_)) {
         IoR ior = ior_.swapped();
 
         Layer tmp_layer = layer_;
     //    tmp_layer.n_    = -layer_.n_;
 
-
-        float const n_dot_wi = tmp_layer.clamp_n_dot(wi);
-
         float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
+
+        float const wi_dot_h = math::dot(wi, h);
+        if (wi_dot_h <= 0.f) {
+            return {float3(0.f), 0.f};
+        }
 
         float const eta = ior.eta_i / ior.eta_t;
 
-        //    float const wo_dot_h = clamp_abs_dot(wo_, h);
-        float const wo_dot_h = dot(wo_, h);
-
-        float const wi_dot_h = dot(wi, h);
-        if (wi_dot_h < 0.f) {
-            return {float3(0.f), 0.f};
-        }
+        float const wo_dot_h = math::dot(wo_, h);
 
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
@@ -55,6 +50,8 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         fresnel::Schlick1 const schlick(f0_);
 
         auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h, tmp_layer, alpha_, ior, schlick);
+
+        float const n_dot_wi = tmp_layer.clamp_n_dot(wi);
 
         return {n_dot_wi * ggx.reflection, ggx.pdf};
     } else {
@@ -77,6 +74,14 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 }
 
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+    if (ior_.eta_i == ior_.eta_t) {
+        result.reflection = color_;
+        result.wi = -wo_;
+        result.pdf = 1.f;
+        result.type.clear(bxdf::Type::Specular_transmission);
+        return;
+    }
+
     bool const same_side = same_hemisphere(wo_);
 
     Layer layer = layer_;

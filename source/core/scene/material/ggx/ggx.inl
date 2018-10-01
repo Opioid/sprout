@@ -328,7 +328,7 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
     float const abs_wo_dot_h = clamp_abs(wo_dot_h);
 
-    float const n_dot_h = math::saturate(math::dot(layer.n_, h));
+    float const n_dot_h = layer.clamp_n_dot(h);
 
     float const d = distribution_isotropic(n_dot_h, alpha2);
 
@@ -346,13 +346,13 @@ bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, float3 c
 
     float const refraction = d * g * f;
 
-    float reflection = (factor * sqr_eta_t / denom) * refraction;
+    float const reflection = (factor * sqr_eta_t / denom) * refraction;
 
     float pdf = pdf_visible_refract(n_dot_wo, abs_wo_dot_h, d, alpha2);
 
-    pdf *= (abs_wi_dot_h * sqr_eta_t / denom);
+    pdf *= f * (abs_wi_dot_h * sqr_eta_t / denom);
 
-    return {float3(reflection), pdf * f};
+    return {float3(reflection), pdf};
 }
 
 inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, Layer const& layer,
