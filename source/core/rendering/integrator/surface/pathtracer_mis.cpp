@@ -210,6 +210,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
+        } else if (!intersection.subsurface) {
+            do_mis = true;
         }
 
         if (!worker.interface_stack().empty()) {
