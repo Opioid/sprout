@@ -167,8 +167,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             break;
         }
 
-    //    if (sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission)) {
-                         if (sample_result.type.test(Bxdf_type::Specular)) {
+       if (sample_result.type.test(Bxdf_type::Caustic)) {
             if (material_sample.ior_greater_one()) {
                 if (avoid_caustics) {
                     break;
@@ -211,6 +210,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         } else if (!intersection.subsurface) {
+            // Check for subsurface because MIS should not be re-enabled by volumetric scattering/
+            // No problem if it never was disabled though.
             do_mis = true;
         }
 

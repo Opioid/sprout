@@ -86,6 +86,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
             float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                            wo_dot_h, layer, alpha_, ior, result);
             result.reflection *= n_dot_wi;
+            result.type.set(bxdf::Type::Caustic);
         }
     }
 
@@ -120,6 +121,7 @@ void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sam
                                                    sampler, result);
 
     result.reflection *= n_dot_wi;
+    result.type.set(bxdf::Type::Caustic);
 }
 
 bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi) const noexcept {

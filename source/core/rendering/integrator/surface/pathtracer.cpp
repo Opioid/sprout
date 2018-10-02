@@ -105,10 +105,7 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             break;
         }
 
-        bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
-                                                          Bxdf_type::Transmission);
-
-        if (singular) {
+        if (sample_result.type.test(Bxdf_type::Caustic)) {
             if (avoid_caustics && material_sample.ior_greater_one()) {
                 break;
             }
