@@ -13,12 +13,14 @@ enum class Type {
     Glossy                = 1 << 3,
     Specular              = 1 << 4,
     Caustic               = 1 << 5,
+    Disable_mis           = 1 << 6,
     Diffuse_reflection    = Reflection | Diffuse,
     Glossy_reflection     = Reflection | Glossy,
     Specular_reflection   = Reflection | Specular | Caustic,
     Diffuse_transmission  = Transmission | Diffuse,
     Glossy_transmission   = Transmission | Glossy,
-    Specular_transmission = Transmission | Specular | Caustic
+    Specular_transmission = Transmission | Specular | Caustic,
+    Disable_mis_caustic   = Caustic | Disable_mis
 };
 
 struct Result {

@@ -152,8 +152,6 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-        do_mis &= /*true;  //*/ worker.interface_stack().top_is_vacuum();
-
         result.li += throughput * sample_lights(ray, ray_offset, intersection, material_sample,
                                                 do_mis, filter, worker);
 
@@ -209,8 +207,12 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
-        } else if (!intersection.subsurface) {
-            // Check for subsurface because MIS should not be re-enabled by volumetric scattering/
+
+            if (sample_result.type.test(Bxdf_type::Disable_mis)) {
+                do_mis = false;
+            }
+        } else if (!intersection.subsurface && worker.interface_stack().top_is_vacuum()) {
+            // Check for subsurface, because MIS should not be re-enabled by volumetric scattering.
             // No problem if it never was disabled though.
             do_mis = true;
         }
