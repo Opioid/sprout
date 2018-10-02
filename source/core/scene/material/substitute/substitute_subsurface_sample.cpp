@@ -38,6 +38,15 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
         }
         result.pdf *= 0.5f;
     } else {
+        if (ior_.eta_i == ior_.eta_t) {
+            result.reflection = float3(1.f);
+            result.wi = -wo_;
+            result.pdf = 1.f;
+            result.wavelength = 0.f;
+            result.type.clear(bxdf::Type::Specular_transmission);
+            return;
+        }
+
         Layer layer = layer_;
         layer.n_    = -layer_.n_;
 
@@ -92,6 +101,15 @@ void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_ou
 
 void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
                                 bxdf::Sample& result) const noexcept {
+    if (ior_.eta_i == ior_.eta_t) {
+        result.reflection = float3(1.f);
+        result.wi = -wo_;
+        result.pdf = 1.f;
+        result.wavelength = 0.f;
+        result.type.clear(bxdf::Type::Specular_transmission);
+        return;
+    }
+
     IoR tmp_ior = ior_.swapped(same_side);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);

@@ -18,7 +18,7 @@ void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const n
     result.wi         = -wo_;
     result.pdf        = 1.f;
     result.wavelength = 0.f;
-    result.type.clear(bxdf::Type::Transmission);
+    result.type.clear(bxdf::Type::Specular_transmission);
 }
 
 bool Sample::ior_greater_one() const noexcept {

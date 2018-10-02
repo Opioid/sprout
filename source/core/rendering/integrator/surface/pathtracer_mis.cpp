@@ -125,6 +125,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
     bool primary_ray       = true;
     bool treat_as_singular = true;
     bool is_translucent    = false;
+    bool do_mis            = true;
 
     float3 throughput(1.f);
 
@@ -151,7 +152,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-        bool const do_mis = true;//worker.interface_stack().top_is_vacuum();
+        do_mis &= worker.interface_stack().top_is_vacuum();
 
         result.li += throughput * sample_lights(ray, ray_offset, intersection, material_sample,
                                                 do_mis, filter, worker);

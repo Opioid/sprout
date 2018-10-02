@@ -78,6 +78,7 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
         result.reflection = color_;
         result.wi = -wo_;
         result.pdf = 1.f;
+        result.wavelength = 0.f;
         result.type.clear(bxdf::Type::Specular_transmission);
         return;
     }
