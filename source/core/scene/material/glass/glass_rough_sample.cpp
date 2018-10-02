@@ -27,9 +27,6 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
         IoR ior = ior_.swapped();
 
-        Layer tmp_layer = layer_;
-    //    tmp_layer.n_    = -layer_.n_;
-
         float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
 
         float const wi_dot_h = math::dot(wi, h);
@@ -47,11 +44,14 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
             return {float3(0.f), 0.f};
         }
 
+        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+        float const n_dot_h  = math::saturate(math::dot(layer_.n_, h));
+
         fresnel::Schlick1 const schlick(f0_);
 
-        auto const ggx = ggx::Isotropic::refraction2(wi, wo_, h, tmp_layer, alpha_, ior, schlick);
-
-        float const n_dot_wi = tmp_layer.clamp_n_dot(wi);
+        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
+                                                    alpha_, ior, schlick);
 
         return {n_dot_wi * ggx.reflection, ggx.pdf};
     } else {
@@ -76,8 +76,8 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = color_;
-        result.wi = -wo_;
-        result.pdf = 1.f;
+        result.wi         = -wo_;
+        result.pdf        = 1.f;
         result.wavelength = 0.f;
         result.type.clear(bxdf::Type::Specular_transmission);
         return;
@@ -85,22 +85,16 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
     bool const same_side = same_hemisphere(wo_);
 
-    Layer layer = layer_;
-    IoR   ior;
+    Layer const layer = layer_.swapped(same_side);
 
-    if (same_side) {
-        ior = ior_;
-    } else {
-        layer.n_ = -layer_.n_;
-        ior      = ior_.swapped();
-    }
+    IoR const ior = ior_.swapped(same_side);
 
     float        n_dot_h;
     float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, sampler, n_dot_h);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    float const wo_dot_h = math::dot(wo_, h);
+    float const wo_dot_h = clamp_dot(wo_, h);
 
     float const eta = ior.eta_i / ior.eta_t;
 
@@ -115,22 +109,22 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
     } else {
         wi_dot_h = std::sqrt(1.f - sint2);
 
-        float const cos_x = ior.eta_i > ior.eta_t ? std::abs(wi_dot_h) : std::abs(wo_dot_h);
+        float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
         f = fresnel::schlick(cos_x, f0_);
     }
 
     if (sampler.generate_sample_1D() <= f) {
         float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                       std::abs(wo_dot_h), layer, alpha_, result);
+                                                       wo_dot_h, layer, alpha_, result);
 
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
     } else {
-        float const my_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
+        float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
-        float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                       my_wo_dot_h, layer, alpha_, ior, result);
+        float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
+                                                       r_wo_dot_h, layer, alpha_, ior, result);
 
         float const omf = 1.f - f;
 

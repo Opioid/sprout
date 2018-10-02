@@ -28,7 +28,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 
     if (same_side) {
         if (p < 0.5f) {
-            refract(same_side, layer_, sampler, result);
+            refract(sampler, result);
         } else {
             if (p < 0.75f) {
                 diffuse_sample(wo_, sampler, avoid_caustics_, result);
@@ -40,17 +40,16 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     } else {
         if (ior_.eta_i == ior_.eta_t) {
             result.reflection = float3(1.f);
-            result.wi = -wo_;
-            result.pdf = 1.f;
+            result.wi         = -wo_;
+            result.pdf        = 1.f;
             result.wavelength = 0.f;
             result.type.clear(bxdf::Type::Specular_transmission);
             return;
         }
 
-        Layer layer = layer_;
-        layer.n_    = -layer_.n_;
+        Layer const layer = layer_.swapped();
 
-        IoR ior = ior_.swapped();
+        IoR const ior = ior_.swapped();
 
         float        n_dot_h;
         float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, sampler, n_dot_h);
@@ -81,10 +80,14 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
         if (p < f) {
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                            wo_dot_h, layer, alpha_, result);
+
             result.reflection *= n_dot_wi;
         } else {
-            float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, layer, alpha_, ior, result);
+            float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
+
+            float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
+                                                           r_wo_dot_h, layer, alpha_, ior, result);
+
             result.reflection *= n_dot_wi;
             result.type.set(bxdf::Type::Caustic);
         }
@@ -100,24 +103,21 @@ void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_ou
     ior_.eta_i = ior_outside;
 }
 
-void Sample_subsurface::refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-                                bxdf::Sample& result) const noexcept {
+void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = float3(1.f);
-        result.wi = -wo_;
-        result.pdf = 1.f;
+        result.wi         = -wo_;
+        result.pdf        = 1.f;
         result.wavelength = 0.f;
         result.type.clear(bxdf::Type::Specular_transmission);
         return;
     }
 
-    IoR tmp_ior = ior_.swapped(same_side);
-
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     fresnel::Schlick1 const schlick(f0_[0]);
 
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer, alpha_, tmp_ior, schlick,
+    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, alpha_, ior_, schlick,
                                                    sampler, result);
 
     result.reflection *= n_dot_wi;

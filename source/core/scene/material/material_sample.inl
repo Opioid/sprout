@@ -9,7 +9,17 @@
 
 namespace scene::material {
 
-inline Sample::~Sample() {}
+inline Layer Layer::swapped() const noexcept {
+    return {t_, b_, -n_};
+}
+
+inline Layer Layer::swapped(bool same_side) const noexcept {
+    if (same_side) {
+        return *this;
+    }
+
+    return {t_, b_, -n_};
+}
 
 inline void Layer::set_tangent_frame(float3 const& t, float3 const& b, float3 const& n) noexcept {
     t_ = t;
@@ -63,6 +73,8 @@ inline float3 Layer::world_to_tangent(float3 const& v) const noexcept {
                   v[0] * b_[0] + v[1] * b_[1] + v[2] * b_[2],
                   v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
+
+inline Sample::~Sample() {}
 
 inline float3 Sample::radiance() const noexcept {
     return float3::identity();

@@ -19,6 +19,9 @@ struct Sample;
 }  // namespace bxdf
 
 struct Layer {
+    Layer swapped() const noexcept;
+    Layer swapped(bool same_side) const noexcept;
+
     void set_tangent_frame(float3 const& t, float3 const& b, float3 const& n) noexcept;
     void set_tangent_frame(float3 const& n) noexcept;
 

@@ -131,8 +131,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
             float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
             if (material_sample.ior_greater_one()) {
-                bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
-                                                                  Bxdf_type::Transmission);
+                bool const singular = sample_result.type.test(Bxdf_type::Caustic);
 
                 if (singular) {
                     specular_ray = true;

@@ -16,8 +16,7 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
     void set_volumetric(float anisotropy, float ior, float ior_outside) noexcept;
 
   private:
-    void refract(bool same_side, Layer const& layer, sampler::Sampler& sampler,
-                 bxdf::Sample& result) const noexcept;
+    void refract(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
 
     float anisotropy_;
 

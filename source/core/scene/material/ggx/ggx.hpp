@@ -43,13 +43,8 @@ class Isotropic {
 
     template <typename Fresnel>
     static bxdf::Result refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
-                                   float n_dot_h, Layer const& layer, float alpha, IoR const& ior,
+                                   float n_dot_h, float alpha, IoR const& ior,
                                    Fresnel const& fresnel) noexcept;
-
-    template <typename Fresnel>
-    static bxdf::Result refraction2(float3 const& wi, float3 const& wo, float3 const& h,
-                                    Layer const& layer, float alpha, IoR const& ior,
-                                    Fresnel const& fresnel) noexcept;
 
     static bxdf::Result refraction2(float3 const& wi, float3 const& wo, Layer const& layer,
                                     float alpha, IoR const& ior, float other,
