@@ -53,7 +53,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
                                                     alpha_, ior, schlick);
 
-        return {n_dot_wi * ggx.reflection, ggx.pdf};
+        return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf};
     } else {
         float const n_dot_wi = layer_.clamp_n_dot(wi);
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
