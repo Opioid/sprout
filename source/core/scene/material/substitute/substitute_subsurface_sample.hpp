@@ -13,6 +13,9 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
+    bool mis_after_transmission() const noexcept override final;
+    bool reenable_mis(bool do_mis, bool same_side) const noexcept override final;
+
     void set_volumetric(float anisotropy, float ior, float ior_outside) noexcept;
 
   private:

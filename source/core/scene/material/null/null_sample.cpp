@@ -25,4 +25,8 @@ bool Sample::ior_greater_one() const noexcept {
     return false;
 }
 
+bool Sample::reenable_mis(bool do_mis, bool /*same_side*/) const noexcept {
+    return do_mis;
+}
+
 }  // namespace scene::material::null

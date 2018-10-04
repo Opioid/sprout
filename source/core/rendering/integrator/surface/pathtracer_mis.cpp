@@ -140,15 +140,19 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
 
+        bool const same_side = material_sample.same_hemisphere(wo);
+
         // Only check direct eye-light connections for the very first hit.
         // Subsequent hits are handled by the MIS scheme.
-        if (0 == i && material_sample.same_hemisphere(wo)) {
+        if (0 == i && same_side) {
             result.li += material_sample.radiance();
         }
 
         if (material_sample.is_pure_emissive()) {
             return result;
         }
+
+        do_mis = material_sample.reenable_mis(do_mis, same_side);
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
@@ -208,13 +212,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
 
-            if (sample_result.type.test(Bxdf_type::Disable_mis)) {
-                do_mis = false;
-            }
-        } else if (!intersection.subsurface && worker.interface_stack().top_is_vacuum()) {
-            // Check for subsurface, because MIS should not be re-enabled by volumetric scattering.
-            // No problem if it never was disabled though.
-            do_mis = true;
+            do_mis &= material_sample.mis_after_transmission();
         }
 
         if (!worker.interface_stack().empty()) {

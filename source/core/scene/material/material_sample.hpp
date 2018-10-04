@@ -61,6 +61,9 @@ class Sample {
 
     virtual bool ior_greater_one() const noexcept;
 
+    virtual bool mis_after_transmission() const noexcept;
+    virtual bool reenable_mis(bool do_mis, bool same_side) const noexcept;
+
     float3 const& wo() const noexcept;
 
     float clamp_geo_n_dot(float3 const& v) const noexcept;

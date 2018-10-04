@@ -40,6 +40,10 @@ bool Sample::is_translucent() const noexcept {
     return true;
 }
 
+bool Sample::reenable_mis(bool do_mis, bool /*same_side*/) const noexcept {
+    return do_mis;
+}
+
 void Sample::set(float anisotropy) {
     anisotropy_ = anisotropy;
 }

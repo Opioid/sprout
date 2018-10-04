@@ -89,11 +89,19 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
                                                            r_wo_dot_h, layer, alpha_, ior, result);
 
             result.reflection *= n_dot_wi;
-            result.type.set(bxdf::Type::Disable_mis_caustic);
+            result.type.set(bxdf::Type::Caustic);
         }
     }
 
     result.wavelength = 0.f;
+}
+
+bool Sample_subsurface::mis_after_transmission() const noexcept {
+    return false;
+}
+
+bool Sample_subsurface::reenable_mis(bool /*do_mis*/, bool same_side) const noexcept {
+    return same_side;
 }
 
 void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) noexcept {
@@ -121,7 +129,7 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
                                                    sampler, result);
 
     result.reflection *= n_dot_wi;
-    result.type.set(bxdf::Type::Disable_mis_caustic);
+    result.type.set(bxdf::Type::Caustic);
 }
 
 bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi) const noexcept {

@@ -15,6 +15,8 @@ class Sample final : public material::Sample {
 
     bool ior_greater_one() const noexcept override final;
 
+    bool reenable_mis(bool do_mis, bool same_side) const noexcept override final;
+
   private:
     Layer layer_;
 };

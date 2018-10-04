@@ -15,6 +15,8 @@ class Sample : public material::Sample {
 
     bool is_translucent() const noexcept override final;
 
+    bool reenable_mis(bool do_mis, bool same_side) const noexcept override final;
+
     void set(float anisotropy);
 
   private:
