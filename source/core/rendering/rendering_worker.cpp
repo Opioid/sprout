@@ -46,9 +46,9 @@ void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene cons
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
     if (photon_settings.num_photons) {
-        integrator::photon::Mapper::Settings ps{photon_settings.max_bounces,
-                                                photon_settings.indirect_caustics,
-                                                photon_settings.full_light_path};
+        integrator::photon::Mapper::Settings const ps{photon_settings.max_bounces,
+                                                      photon_settings.indirect_caustics,
+                                                      photon_settings.full_light_path};
 
         photon_mapper_ = new integrator::photon::Mapper(rng_, settings, ps);
         photon_mapper_->prepare(scene, 0);

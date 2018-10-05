@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_GGX_INL
 
 #include "base/math/math.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/sincos.hpp"
 #include "base/math/vector3.inl"
 #include "ggx.hpp"
@@ -11,20 +12,15 @@
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/material_sample_helper.hpp"
 
-#include "base/math/sampling.inl"
-
 #include "base/debug/assert.hpp"
 #include "scene/material/material_test.hpp"
-
-#include <iostream>
-#include "base/math/print.hpp"
 
 namespace scene::material::ggx {
 
 constexpr float Min_roughness = 0.01314f;
 
 constexpr float Min_alpha  = Min_roughness * Min_roughness;
-constexpr float Min_alpha2 = Min_roughness * Min_roughness * Min_roughness * Min_roughness;
+constexpr float Min_alpha2 = Min_alpha * Min_alpha;
 
 static inline float clamp_roughness(float roughness) noexcept {
     return std::max(roughness, Min_roughness);
@@ -131,61 +127,6 @@ static inline float pdf_visible(float d, float g1_wo) noexcept {
 
     return (0.5f * d) / g1_wo;
 }
-
-static inline float stellar_pdf(float3 wi, float3 wh, float3 n, float alpha) noexcept {
-    float  dot_wi_wh            = std::abs(math::dot(wi, wh));
-    float3 wh_inv_scaled        = wh / alpha;
-    float  dot_wh_wh_inv_scaled = math::dot(wh_inv_scaled, wh_inv_scaled);
-    float3 wi_scaled            = alpha * wi;
-    float  dot_wi_wi_scaled     = math::dot(wi_scaled, wi_scaled);
-    return dot_wi_wh / ((0.5f * math::Pi) * alpha * dot_wh_wh_inv_scaled * dot_wh_wh_inv_scaled *
-                        (std::abs(math::dot(wi, n)) + std::sqrt(dot_wi_wi_scaled)));
-}
-
-static inline float G1(float3 const& lw, float alpha) noexcept {
-    //	return 1.f / (1.f + Lambda(w, n, alpha2));
-
-    float3 const alpha1(alpha, alpha, 1.f);
-
-    float const n_dot_w = std::abs(lw[2]);
-    return 2.f * n_dot_w / (math::length(alpha1 * lw) + n_dot_w);
-}
-
-/*
-static inline float G(float3 const& view, float3 const& light, float3 const& half,
-                                          float3 const& lview, float3 const& llight,
-                                          float3 const& n, float alpha) {
-        float const dotLH = math::dot(light, half);
-        float const dotVH = math::dot(view , half);
-
-
-        bool rstuff = true;
-        if (dotLH <= 0.f || dotVH <= 0.f) {
-                rstuff = false;
-        };
-
-
-
-        float const abs_lvz = std::abs(lview[2]);
-        float const abs_llz = std::abs(llight[2]);
-
-        float3 const alpha1(alpha, alpha, 1.f);
-
-        float const ra = (2.f * abs_lvz * abs_llz) / (math::length(alpha1 * lview) * abs_llz +
-math::length(alpha1 * llight) * abs_lvz);
-
-        float const abs_vz = std::abs(math::dot(view, n));
-        float const abs_lz = std::abs(math::dot(light, n));
-
-        float const alpha2 = alpha * alpha;
-        float const a = abs_vz * std::sqrt(alpha2 + (1.f - alpha2) * (abs_lz * abs_lz));
-        float const b = abs_lz * std::sqrt(alpha2 + (1.f - alpha2) * (abs_vz * abs_vz));
-
-        float const rb = (2.f * abs_vz * abs_lz) / (a + b);
-
-        return ra;
-}
-*/
 
 template <typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,

@@ -251,21 +251,21 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const&
                        float area, bool two_sided, sampler::Sampler& sampler,
                        uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
                        Sample_to& sample) const noexcept {
-    float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-    float2 xy = 2.f * r2 - float2(1.f);
+    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+    float2 const xy = 2.f * r2 - float2(1.f);
 
-    float3 scale(transformation.scale.xy(), 1.f);
+    float3 const scale(transformation.scale.xy(), 1.f);
 
-    float3 ls = float3(xy, 0.f);
-    float3 ws = transformation.position +
-                math::transform_vector(transformation.rotation, scale * ls);
+    float3 const ls = float3(xy, 0.f);
+    float3 const ws = transformation.position +
+                      math::transform_vector(transformation.rotation, scale * ls);
 
-    float3 axis = ws - p;
+    float3 const axis = ws - p;
 
-    float sl = math::squared_length(axis);
-    float t  = std::sqrt(sl);
+    float const sl = math::squared_length(axis);
+    float const t  = std::sqrt(sl);
 
-    float3 wi = axis / t;
+    float3 const wi = axis / t;
 
     float c = -math::dot(transformation.rotation.r[2], wi);
 
