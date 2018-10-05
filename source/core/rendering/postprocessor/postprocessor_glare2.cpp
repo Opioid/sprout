@@ -65,7 +65,7 @@ static inline float f3(float theta, float lambda) {
     return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }
 
-void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
+void Glare2::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     // This seems a bit arbitrary
     float const solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 

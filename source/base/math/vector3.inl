@@ -745,6 +745,7 @@ static inline bool all_finite_and_positive(Vector3f_a const& v) noexcept {
     return std::isfinite(v[0]) && v[0] >= 0.f && std::isfinite(v[1]) && v[1] >= 0.f &&
            std::isfinite(v[2]) && v[2] >= 0.f;
 }
+
 }  // namespace math
 
 #endif

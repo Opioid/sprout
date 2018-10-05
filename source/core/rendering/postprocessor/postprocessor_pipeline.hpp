@@ -30,11 +30,11 @@ class Pipeline {
 
     void add(std::unique_ptr<Postprocessor> pp);
 
-    void init(const scene::camera::Camera& camera, thread::Pool& pool);
+    void init(scene::camera::Camera const& camera, thread::Pool& pool);
 
     bool has_alpha_transparency(bool alpha_in) const;
 
-    void apply(const sensor::Sensor& sensor, image::Float4& target, thread::Pool& pool);
+    void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool);
 
     size_t num_bytes() const;
 

@@ -210,7 +210,7 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 
     float const pdf = pdf_visible(d, g[1]);
 
-    SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
+    SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf));
 
     return {reflection, pdf};
 }
@@ -253,7 +253,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, f
     result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_reflection
                                          : bxdf::Type::Glossy_reflection);
 
-    SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
+    SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer));
 
     return n_dot_wi;
 }
@@ -482,7 +482,7 @@ inline float Isotropic::reflect(float3 const& wo, float3 const& h, float n_dot_w
     result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_reflection
                                          : bxdf::Type::Glossy_reflection);
 
-    SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
+    SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer));
 
     return n_dot_wi;
 }

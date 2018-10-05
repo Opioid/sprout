@@ -11,7 +11,7 @@ namespace scene::material::ggx {
 
 template <typename Layer>
 bool check(const bxdf::Sample& result, float3 const& wo, float n_dot_wi, float n_dot_wo,
-           float wo_dot_h, Layer const& layer, float2 xi) {
+           float wo_dot_h, Layer const& layer) {
     using namespace testing;
 
     if (!std::isfinite(result.pdf) || !math::all_finite(result.wi) ||
@@ -33,8 +33,7 @@ bool check(const bxdf::Sample& result, float3 const& wo, float n_dot_wi, float n
         print_vector(layer.b_);
         std::cout << "n: ";
         print_vector(layer.n_);
-        std::cout << "alpha: " << layer.alpha_ << std::endl;
-        std::cout << "xi: " << xi << std::endl;
+        //        std::cout << "alpha: " << layer.alpha_ << std::endl;
         return false;
     }
 

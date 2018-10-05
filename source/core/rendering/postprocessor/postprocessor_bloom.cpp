@@ -14,7 +14,7 @@ Bloom::Bloom(float angle, float alpha, float threshold, float intensity)
       threshold_(threshold),
       intensity_(intensity) {}
 
-void Bloom::init(const scene::camera::Camera& camera, thread::Pool& /*pool*/) {
+void Bloom::init(scene::camera::Camera const& camera, thread::Pool& /*pool*/) {
     image::Image::Description description(image::Image::Type::Float4, camera.sensor_dimensions());
     scratch_.resize(description);
 

@@ -18,12 +18,12 @@ void Pipeline::add(std::unique_ptr<Postprocessor> pp) {
     }
 }
 
-void Pipeline::init(const scene::camera::Camera& camera, thread::Pool& pool) {
+void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     if (postprocessors_.empty()) {
         return;
     }
 
-    const image::Image::Description description(image::Image::Type::Float4,
+    image::Image::Description const description(image::Image::Type::Float4,
                                                 camera.sensor_dimensions());
     scratch_.resize(description);
 
@@ -40,7 +40,7 @@ bool Pipeline::has_alpha_transparency(bool alpha_in) const {
     return alpha_in;
 }
 
-void Pipeline::apply(const sensor::Sensor& sensor, image::Float4& target, thread::Pool& pool) {
+void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool) {
     if (postprocessors_.empty()) {
         sensor.resolve(pool, target);
     } else {

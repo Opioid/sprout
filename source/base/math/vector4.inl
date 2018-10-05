@@ -175,6 +175,15 @@ static inline constexpr float dot(Vector4f_a const& a, Vector4f_a const& b) noex
     return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 
+static inline bool all_finite(Vector4f_a const& v) noexcept {
+    return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]) && std::isfinite(v[3]);
+}
+
+static inline bool all_finite_and_positive(Vector4f_a const& v) noexcept {
+    return std::isfinite(v[0]) && v[0] >= 0.f && std::isfinite(v[1]) && v[1] >= 0.f &&
+           std::isfinite(v[2]) && v[2] >= 0.f && std::isfinite(v[2]) && v[3] >= 0.f;
+}
+
 //==============================================================================
 // Aligned 4D int vector
 //==============================================================================

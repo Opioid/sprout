@@ -52,7 +52,7 @@ static inline float f3(float theta, float lambda) {
     return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }
 
-void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
+void Glare3::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     auto const dim = camera.sensor_dimensions();
     dimensions_    = dim;
     high_pass_     = memory::allocate_aligned<float3>(dim[0] * dim[1]);

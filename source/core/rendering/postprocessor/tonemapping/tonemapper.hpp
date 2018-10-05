@@ -10,7 +10,7 @@ class Tonemapper : public Postprocessor {
   public:
     virtual ~Tonemapper();
 
-    virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) override final;
+    virtual void init(scene::camera::Camera const& camera, thread::Pool& pool) override final;
 
     virtual size_t num_bytes() const override final;
 

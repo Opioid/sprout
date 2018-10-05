@@ -6,7 +6,7 @@ namespace tonemapping {
 
 Tonemapper::~Tonemapper() {}
 
-void Tonemapper::init(const scene::camera::Camera& /*camera*/, thread::Pool& /*pool*/) {}
+void Tonemapper::init(scene::camera::Camera const& /*camera*/, thread::Pool& /*pool*/) {}
 
 size_t Tonemapper::num_bytes() const {
     return 0;

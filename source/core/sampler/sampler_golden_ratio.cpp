@@ -18,6 +18,8 @@ Golden_ratio::~Golden_ratio() noexcept {
 }
 
 Camera_sample Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
+    SOFT_ASSERT(index < num_samples_);
+
     return Camera_sample{pixel, samples_2D_[index], samples_2D_[num_samples_ + index],
                          samples_1D_[index]};
 }

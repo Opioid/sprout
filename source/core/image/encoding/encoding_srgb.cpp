@@ -60,7 +60,8 @@ void Srgb_alpha::to_sRGB(const image::Float3& image, int32_t begin, int32_t end)
     for (int32_t i = begin; i < end; ++i) {
         float4 color = float4(image.at(i), 1.f);
         color        = spectrum::linear_RGB_to_sRGB(color);
-        rgba_[i]     = ::encoding::float_to_unorm(color);
+
+        rgba_[i] = ::encoding::float_to_unorm(color);
     }
 }
 
@@ -68,21 +69,24 @@ void Srgb_alpha::to_sRGB(const image::Float4& image, int32_t begin, int32_t end)
     for (int32_t i = begin; i < end; ++i) {
         float4 color = image.at(i);
         color        = spectrum::linear_RGB_to_sRGB(color);
-        rgba_[i]     = ::encoding::float_to_unorm(color);
+
+        rgba_[i] = ::encoding::float_to_unorm(color);
     }
 }
 
 void Srgb_alpha::to_byte(const image::Float3& image, int32_t begin, int32_t end) {
     for (int32_t i = begin; i < end; ++i) {
-        float4 color = float4(image.at(i), 1.f);
-        rgba_[i]     = ::encoding::float_to_unorm(color);
+        float4 const color = float4(image.at(i), 1.f);
+
+        rgba_[i] = ::encoding::float_to_unorm(color);
     }
 }
 
 void Srgb_alpha::to_byte(const image::Float4& image, int32_t begin, int32_t end) {
     for (int32_t i = begin; i < end; ++i) {
-        float4 color = image.at(i);
-        rgba_[i]     = ::encoding::float_to_unorm(color);
+        float4 const color = image.at(i);
+
+        rgba_[i] = ::encoding::float_to_unorm(color);
     }
 }
 
