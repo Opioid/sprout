@@ -259,6 +259,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, f
 }
 
 // https://schuttejoe.github.io/post/disneybsdf/
+// https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 
 template <typename Fresnel>
 bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
@@ -291,60 +292,6 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     return {float3(reflection), pdf * f * (abs_wi_dot_h * sqr_eta_t / denom)};
 }
-
-inline bxdf::Result Isotropic::refraction2(float3 const& wi, float3 const& wo, Layer const& layer,
-                                           float alpha, IoR const& ior, float other,
-                                           float other_pdf) noexcept {
-    float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo);
-
-    float const alpha2 = alpha * alpha;
-
-    float const n_dot_wi     = layer.clamp_reverse_n_dot(wi);
-    float const n_dot_wo     = layer.clamp_abs_n_dot(wo);
-    float const wi_dot_h     = math::dot(h, wi);
-    float const wo_dot_h     = math::dot(h, wo);
-    float const abs_wi_dot_h = clamp_abs(wi_dot_h);
-    float const abs_wo_dot_h = clamp_abs(wo_dot_h);
-
-    float const n_dot_h = math::dot(layer.n_, h);
-
-    float const d = distribution_isotropic(n_dot_h, alpha2);
-
-    float const g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
-
-    float const sqr_eta_t = ior.eta_t * ior.eta_t;
-
-    float const factor = (abs_wi_dot_h * abs_wo_dot_h) / (n_dot_wi * n_dot_wo);
-
-    float const denom = math::pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
-
-    float const refraction = d * g;
-
-    float reflection = (factor * sqr_eta_t / denom) * refraction;
-
-    float pdf = pdf_visible_refract(n_dot_wo, abs_wo_dot_h, d, alpha2);
-
-    pdf *= (abs_wi_dot_h * sqr_eta_t / denom);
-
-    float const delta = std::abs(other - reflection);
-    if (delta > 0.1f) {
-        std::cout << "alarm" << std::endl;
-    }
-
-    //    float pdf = pdf_visible_refract(n_dot_wo, wo_dot_h, d, alpha2);
-
-    //    pdf *= (wi_dot_h * sqr_eta_t / denom);
-
-    //    float const delta_pdf = std::abs(other_pdf - pdf);
-    //    if (delta_pdf > 0.1f) {
-    //        std::cout << "pdf alarm " << other_pdf << " : " << pdf << std::endl;
-    //    }
-
-    return {float3(reflection), pdf};
-}
-
-// Refraction details according to
-// https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 
 template <typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,

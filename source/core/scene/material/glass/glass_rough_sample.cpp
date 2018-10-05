@@ -11,8 +11,6 @@
 #include "base/debug/assert.hpp"
 #include "scene/material/material_test.hpp"
 
-#include <iostream>
-
 namespace scene::material::glass {
 
 const material::Layer& Sample_rough::base_layer() const noexcept {
