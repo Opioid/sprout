@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_GOLDEN_RATIO_HPP
+#define SU_CORE_SAMPLER_GOLDEN_RATIO_HPP
+
 
 #include "sampler.hpp"
 
@@ -40,3 +42,5 @@ class Golden_ratio_factory final : public Factory {
 };
 
 }  // namespace sampler
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_RANDOM_HPP
+#define SU_CORE_SAMPLER_RANDOM_HPP
 
 #include "sampler.hpp"
 
@@ -35,3 +36,5 @@ class Random_factory : public Factory {
 };
 
 }  // namespace sampler
+
+#endif

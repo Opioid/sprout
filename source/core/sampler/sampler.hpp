@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_SAMPLER_HPP
+#define SU_CORE_SAMPLER_SAMPLER_HPP
 
 #include <cstddef>
 #include "base/math/vector.hpp"
@@ -64,3 +65,5 @@ class Factory {
 };
 
 }  // namespace sampler
+
+#endif

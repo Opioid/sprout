@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_RD_HPP
+#define SU_CORE_SAMPLER_RD_HPP
 
 #include "sampler.hpp"
 
@@ -40,3 +41,5 @@ class RD_factory : public Factory {
 };
 
 }  // namespace sampler
+
+#endif

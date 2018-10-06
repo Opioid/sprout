@@ -10,7 +10,7 @@
 namespace sampler {
 
 static inline float r1(float seed, float n) noexcept {
-    static float constexpr g = 1.6180339887498948482f;
+    static float constexpr g = 1.61803398874989484820458683436563f;
 
     static float constexpr a1 = 1.f / g;
 
@@ -18,7 +18,7 @@ static inline float r1(float seed, float n) noexcept {
 }
 
 static inline float2 r2(float seed, float n) noexcept {
-    static float constexpr g = 1.32471795724474602596f;
+    static float constexpr g = 1.32471795724474602596090885447809f;
 
     static float constexpr a1 = 1.f / g;
     static float constexpr a2 = 1.f / (g * g);
@@ -37,7 +37,7 @@ Camera_sample RD::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
     float const seed1 = seeds_2D_[1];
     float const seed2 = seeds_1D_[0];
 
-    float const n = static_cast<float>(index);
+    float const n = static_cast<float>(index + 1);
 
     return Camera_sample{pixel, r2(seed0, n), r2(seed1, n), r1(seed2, n)};
 }
@@ -45,7 +45,7 @@ Camera_sample RD::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
 float2 RD::generate_sample_2D(uint32_t dimension) noexcept {
     float const seed = seeds_2D_[dimension];
 
-    float const n = static_cast<float>(current_sample_2D_[dimension]++);
+    float const n = static_cast<float>(++current_sample_2D_[dimension]);
 
     return r2(seed, n);
 }
@@ -53,7 +53,7 @@ float2 RD::generate_sample_2D(uint32_t dimension) noexcept {
 float RD::generate_sample_1D(uint32_t dimension) noexcept {
     float const seed = seeds_1D_[dimension];
 
-    float const n = static_cast<float>(current_sample_1D_[dimension]++);
+    float const n = static_cast<float>(++current_sample_1D_[dimension]);
 
     return r1(seed, n);
 }
