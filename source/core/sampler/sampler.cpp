@@ -33,7 +33,7 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
                                                                 num_dimensions_1D);
 
         num_dimensions_1D_ = num_dimensions_1D;
-        current_sample_1D_ = &current_sample_2D_[num_dimensions_2D];
+        current_sample_1D_ = current_sample_2D_ + num_dimensions_2D;
 
         on_resize();
     }

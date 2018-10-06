@@ -24,8 +24,8 @@ class alignas(64) RD : public Sampler {
 
     void on_resume_pixel(rnd::Generator& scramble) noexcept override final;
 
-    float* seeds_2D_;
-    float* seeds_1D_;
+    float2* seeds_2D_;
+    float*  seeds_1D_;
 };
 
 class RD_factory : public Factory {

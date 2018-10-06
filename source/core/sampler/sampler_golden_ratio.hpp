@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SAMPLER_GOLDEN_RATIO_HPP
 #define SU_CORE_SAMPLER_GOLDEN_RATIO_HPP
 
-
 #include "sampler.hpp"
 
 namespace sampler {

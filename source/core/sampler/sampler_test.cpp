@@ -9,6 +9,7 @@
 #include "sampler_golden_ratio.hpp"
 #include "sampler_hammersley.hpp"
 #include "sampler_random.hpp"
+#include "sampler_rd.hpp"
 
 #include <iostream>
 #include <string>
@@ -35,43 +36,55 @@ void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scra
 void test() {
     std::cout << "sampler::testing::test()" << std::endl;
 
-    int2 const dimensions(512, 512);
-    Renderer   renderer(dimensions, 4);
-    Byte3      target(Image::Description(Image::Type::Byte3, dimensions));
+    int2 constexpr dimensions(512, 512);
 
-    uint32_t num_samples = 256;
+    Renderer renderer(dimensions, 4);
 
-    //	{
-    //		rnd::Generator rng;
-    //		EMS sampler(rng);
-    //		sampler.resize(num_samples, 1, 1, 1);
-    //		render_set("ems", sampler, renderer, target);
-    //	}
-    //	{
-    //		rnd::Generator rng;
-    //		Golden_ratio sampler(rng);
-    //		sampler.resize(num_samples, 1, 1, 1);
-    //		render_set("golden_ratio", sampler, renderer, target);
-    //	}
-    //	{
-    //		rnd::Generator rng;
-    //		Random sampler(rng);
-    //		sampler.resize(num_samples, 1, 1, 1);
-    //		render_set("random_disk", sampler, renderer, target);
-    //	}
-    //	{
-    //		rnd::Generator rng;
-    //		Hammersley sampler(rng);
-    //		sampler.resize(num_samples, 1, 1, 1);
-    //		render_set("hammersley", sampler, renderer, target);
-    //	}
+    Byte3 target(Image::Description(Image::Type::Byte3, dimensions));
+
+    uint32_t constexpr num_samples = 256;
+
     {
         rnd::Generator rng(0, 0);
-        Hammersley     sampler(rng);
+
+        Golden_ratio sampler(rng);
+
         sampler.resize(num_samples, 1, 1, 1);
-        float2 const center(0.2f, 0.5f);
-        render_quad("hammersley_quad_0.png", sampler, rng, center, renderer, target);
+        render_set("golden_ratio", sampler, renderer, target);
     }
+    {
+        rnd::Generator rng(0, 0);
+
+        RD sampler(rng);
+
+        sampler.resize(num_samples, 1, 1, 1);
+        render_set("rd", sampler, renderer, target);
+    }
+    {
+        rnd::Generator rng(0, 0);
+
+        Random sampler(rng);
+
+        sampler.resize(num_samples, 1, 1, 1);
+        render_set("random_disk", sampler, renderer, target);
+    }
+    //    {
+    //        rnd::Generator rng(0, 0);
+
+    //        Hammersley sampler(rng);
+
+    //        sampler.resize(num_samples, 1, 1, 1);
+    //        render_set("hammersley", sampler, renderer, target);
+    //    }
+    //    {
+    //        rnd::Generator rng(0, 0);
+
+    //        Hammersley sampler(rng);
+    //        sampler.resize(num_samples, 1, 1, 1);
+
+    //        float2 const center(0.2f, 0.5f);
+    //        render_quad("hammersley_quad_0.png", sampler, rng, center, renderer, target);
+    //    }
 }
 
 void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
