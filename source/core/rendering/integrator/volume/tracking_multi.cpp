@@ -25,100 +25,7 @@ Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_s
 void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
 
 void Tracking_multi::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
-/*
-static inline void max_probabilities(float mt,
-                                                                         float3 const& mu_a,
-                                                                         float3 const& mu_s,
-                                                                         float3 const& mu_n,
-                                                                         float& pa, float& ps,
-float& pn, float3& wa, float3& ws, float3& wn) { float const ma = math::max_component(mu_a); float
-const ms = math::max_component(mu_s); float const mn = math::max_component(mu_n); float const c
-= 1.f / (ma + ms + mn);
 
-        pa = ma * c;
-        ps = ms * c;
-        pn = mn * c;
-
-        wa = (mu_a / (mt * pa));
-        ws = (mu_s / (mt * ps));
-        wn = (mu_n / (mt * pn));
-}
-
-static inline void max_history_probabilities(float mt,
-                                                                                         float3
-const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pa, float& ps, float&
-pn, float3& wa, float3& ws, float3& wn) { float const ma = math::max_component(mu_a * w); float
-const ms = math::max_component(mu_s * w); float const mn = math::max_component(mu_n * w); float
-const c = 1.f / (ma + ms + mn);
-
-        pa = ma * c;
-        ps = ms * c;
-        pn = mn * c;
-
-        wa = (mu_a / (mt * pa));
-        ws = (mu_s / (mt * ps));
-        wn = (mu_n / (mt * pn));
-}
-
-static inline void max_history_probabilities(float mt,
-                                                                                         float3
-const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pn, float3& wn) { float
-const ma = math::max_component(mu_a * w); float const ms = math::max_component(mu_s * w); float
-const mn = math::max_component(mu_n * w); float const c = 1.f / (ma + ms + mn);
-
-        pn = mn * c;
-
-        wn = (mu_n / (mt * pn));
-}
-
-static inline void avg_probabilities(float mt,
-                                                                         float3 const& mu_a,
-                                                                         float3 const& mu_s,
-                                                                         float3 const& mu_n,
-                                                                         float& pa, float& ps,
-float& pn, float3& wa, float3& ws, float3& wn) { float const ma = math::average(mu_a); float const
-ms = math::average(mu_s); float const mn = math::average(mu_n); float const c = 1.f / (ma + ms +
-mn);
-
-        pa = ma * c;
-        ps = ms * c;
-        pn = mn * c;
-
-        wa = (mu_a / (mt * pa));
-        ws = (mu_s / (mt * ps));
-        wn = (mu_n / (mt * pn));
-}
-
-static inline void avg_history_probabilities(float mt,
-                                                                                         float3
-const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pa, float& ps, float&
-pn, float3& wa, float3& ws, float3& wn) { float const ma = 0.f;//math::average(mu_a * w); float
-const ms = math::average(mu_s * w); float const mn = math::average(mu_n * w); float const c = 1.f /
-(ma + ms + mn);
-
-        pa = ma * c;
-        ps = ms * c;
-        pn = mn * c;
-
-        wa = (mu_a / (mt * pa));
-        ws = (mu_s / (mt * ps));
-        wn = (mu_n / (mt * pn));
-}
-
-static inline void avg_history_probabilities(float mt,
-                                                                                         float3
-const& mu_s, float3 const& mu_n, float3 const& w, float& ps, float& pn, float3& ws, float3& wn) {
-        float const ms = math::average(mu_s * w);
-        float const mn = math::average(mu_n * w);
-        float const c = 1.f / (ms + mn);
-
-        ps = ms * c;
-        pn = mn * c;
-
-        ws = (mu_s / (mt * ps));
-        wn = (mu_n / (mt * pn));
-}
-*/
 bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& transmittance) noexcept {
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
@@ -201,102 +108,19 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
-        float3 const mu_t = mu.a + mu.s;
-
-        float const mt  = math::max_component(mu_t);
-        float const imt = 1.f / mt;
-
-        float3 const mu_n = float3(mt) - mu_t;
-
-        float3 w(1.f);
-
-        for (float t = ray.min_t;;) {
-            float const r0 = rng_.random_float();
-            t -= std::log(1.f - r0) * imt;
-            if (t > d) {
-                li            = float3(0.f);
-                transmittance = w;
-                return true;
-            }
-
-            //		float ps, pn;
-            //		float3 ws, wn;
-            //		avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
-
-            float const ms = math::average(mu.s * w);
-            float const mn = math::average(mu_n * w);
-
-            float const mc = ms + mn;
-            if (mc < 1e-10f) {
-                li            = float3(0.f);
-                transmittance = w;
-                return true;
-            }
-
-            float const c = 1.f / mc;
-
-            float const ps = ms * c;
-            float const pn = mn * c;
-
-            float const r1 = rng_.random_float();
-            if (r1 <= 1.f - pn && ps > 0.f) {
-                intersection.prop       = interface->prop;
-                intersection.geo.p      = ray.point(t);
-                intersection.geo.uv     = interface->uv;
-                intersection.geo.part   = interface->part;
-                intersection.subsurface = true;
-
-                float3 const ws = mu.s / (mt * ps);
-
-                li            = float3(0.f);
-                transmittance = w * ws;
-                return true;
-            } else {
-                float3 const wn = mu_n / (mt * pn);
-
-                SOFT_ASSERT(math::all_finite(wn));
-
-                w *= wn;
-            }
+        float3 w;
+        if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
+            intersection.prop       = interface->prop;
+            intersection.geo.p      = ray.point(t);
+            intersection.geo.uv     = interface->uv;
+            intersection.geo.part   = interface->part;
+            intersection.subsurface = true;
         }
+
+        li            = float3(0.f);
+        transmittance = w;
+        return true;
     } else {
-        /*
-        static bool constexpr achromtatic = true;
-
-        if (achromtatic) {
-            auto const mu = material.collision_coefficients(interface->uv, filter, worker);
-
-            const float3 sigma_a = mu.a;
-
-                const float3 sigma_s = mu.s;
-
-            const float3 extinction = sigma_a + sigma_s;
-
-            float const minorant_mu_t = math::average(extinction);
-
-                const float3 scattering_albedo = sigma_s / extinction;
-
-                const float r = rng_.random_float();
-                const float t = ray.min_t -std::log(1.f - r) / minorant_mu_t;
-
-                if (t < d) {
-                    intersection.prop           = interface->prop;
-                    intersection.geo.p          = ray.point(t);
-                    intersection.geo.uv         = interface->uv;
-                    intersection.geo.part       = interface->part;
-                    intersection.subsurface = true;
-
-                    li = float3(0.f);
-                    transmittance = scattering_albedo;
-                    return true;
-                }
-
-                li = float3(0.f);
-                transmittance = float3(1.f);
-                return true;
-        }
-    */
-
         static bool constexpr decomposition = false;
 
         if (decomposition) {
@@ -370,60 +194,21 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
                     w *= wn;
                 }
             }
-
         } else {
             auto const mu = material.collision_coefficients();
 
-            float3 const mu_t = mu.a + mu.s;
-
-            float const mt  = math::max_component(mu_t);
-            float const imt = 1.f / mt;
-
-            float3 const mu_n = float3(mt) - mu_t;
-
-            float3 w(1.f);
-
-            for (float t = ray.min_t;;) {
-                float const r0 = rng_.random_float();
-                t -= std::log(1.f - r0) * imt;
-                if (t > d) {
-                    li            = float3(0.f);
-                    transmittance = w;
-                    return true;
-                }
-
-                //		float ps, pn;
-                //		float3 ws, wn;
-                //		avg_history_probabilities(mt, mu_s, mu_n, w, ps, pn, ws, wn);
-
-                float const ms = math::average(mu.s * w);
-                float const mn = math::average(mu_n * w);
-                float const c  = 1.f / (ms + mn);
-
-                float const ps = ms * c;
-                float const pn = mn * c;
-
-                float const r1 = rng_.random_float();
-                if (r1 <= 1.f - pn && ps > 0.f) {
-                    intersection.prop       = interface->prop;
-                    intersection.geo.p      = ray.point(t);
-                    intersection.geo.uv     = interface->uv;
-                    intersection.geo.part   = interface->part;
-                    intersection.subsurface = true;
-
-                    float3 const ws = mu.s / (mt * ps);
-
-                    li            = float3(0.f);
-                    transmittance = w * ws;
-                    return true;
-                } else {
-                    float3 const wn = mu_n / (mt * pn);
-
-                    SOFT_ASSERT(math::all_finite(wn));
-
-                    w *= wn;
-                }
+            float3 w;
+            if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
+                intersection.prop       = interface->prop;
+                intersection.geo.p      = ray.point(t);
+                intersection.geo.uv     = interface->uv;
+                intersection.geo.part   = interface->part;
+                intersection.subsurface = true;
             }
+
+            li            = float3(0.f);
+            transmittance = w;
+            return true;
         }
     }
 }

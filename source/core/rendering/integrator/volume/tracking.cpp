@@ -19,18 +19,18 @@ namespace rendering::integrator::volume {
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
-                                                       Tracking::CM const&       data,
+                                                       Tracking::CM const&       cm,
                                                        Tracking::Material const& material,
                                                        Tracking::Sampler_filter  filter,
                                                        rnd::Generator& rng, Worker& worker) {
     // Transmittance of the control medium
-    transmitted *= attenuation(ray.max_t - ray.min_t, data.minorant_mu_t);
+    transmitted *= attenuation(ray.max_t - ray.min_t, cm.minorant_mu_t);
 
     if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
         return false;
     }
 
-    float const mt = data.majorant_mu_t - data.minorant_mu_t;
+    float const mt = cm.majorant_mu_t - cm.minorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
         return true;
@@ -41,9 +41,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
     SOFT_ASSERT(std::isfinite(imt));
 
-    float const d = ray.max_t;
-
-    for (float t = ray.min_t;;) {
+    for (float t = ray.min_t, d = ray.max_t;;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -54,7 +52,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         auto const mu = material.collision_coefficients(uvw, filter, worker);
 
-        float3 const mu_t = (mu.a + mu.s) - data.minorant_mu_t;
+        float3 const mu_t = (mu.a + mu.s) - cm.minorant_mu_t;
 
         float3 const mu_n = float3(mt) - mu_t;
 
@@ -69,18 +67,17 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 }
 
 static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ray,
-                                        Tracking::CM const&       data,
-                                        Tracking::Material const& material,
+                                        Tracking::CM const& cm, Tracking::Material const& material,
                                         Tracking::Sampler_filter filter, rnd::Generator& rng,
                                         Worker& worker) {
-    float const mt = data.majorant_mu_t;
+    float const mt = cm.majorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
         return true;
     }
 
-    if (data.minorant_mu_t > 0.f) {
-        return residual_ratio_tracking_transmitted(transmitted, ray, data, material, filter, rng,
+    if (cm.minorant_mu_t > 0.f) {
+        return residual_ratio_tracking_transmitted(transmitted, ray, cm, material, filter, rng,
                                                    worker);
     }
 
@@ -88,9 +85,7 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
 
     SOFT_ASSERT(std::isfinite(imt));
 
-    float const d = ray.max_t;
-
-    for (float t = ray.min_t;;) {
+    for (float t = ray.min_t, d = ray.max_t;;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -281,9 +276,7 @@ bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& ma
 
     float const imt = 1.f / mt;
 
-    float const d = ray.max_t;
-
-    for (float t = ray.min_t;;) {
+    for (float t = ray.min_t, d = ray.max_t;;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -311,6 +304,56 @@ bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& ma
             float3 const ws = mu.s / (mt * ps);
 
             SOFT_ASSERT(math::all_finite(ws));
+
+            t_out = t;
+            w     = lw * ws;
+            return true;
+        } else {
+            float3 const wn = mu_n / (mt * pn);
+
+            SOFT_ASSERT(math::all_finite(wn));
+
+            lw *= wn;
+        }
+    }
+}
+
+bool Tracking::tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
+                        float3& w) {
+    float3 const mu_t = mu.a + mu.s;
+
+    float const mt  = math::max_component(mu_t);
+    float const imt = 1.f / mt;
+
+    float3 const mu_n = float3(mt) - mu_t;
+
+    float3 lw(1.f);
+
+    for (float t = ray.min_t, d = ray.max_t;;) {
+        float const r0 = rng.random_float();
+        t -= std::log(1.f - r0) * imt;
+        if (t > d) {
+            w = lw;
+            return false;
+        }
+
+        float const ms = math::average(mu.s * lw);
+        float const mn = math::average(mu_n * lw);
+
+        float const mc = ms + mn;
+        if (mc < 1e-10f) {
+            w = lw;
+            return false;
+        }
+
+        float const c = 1.f / mc;
+
+        float const ps = ms * c;
+        float const pn = mn * c;
+
+        float const r1 = rng.random_float();
+        if (r1 <= 1.f - pn && ps > 0.f) {
+            float3 const ws = mu.s / (mt * ps);
 
             t_out = t;
             w     = lw * ws;
