@@ -15,6 +15,10 @@ float3 Density::emission(math::Ray const& /*ray*/, Transformation const& /*trans
     return float3::identity();
 }
 
+CC Density::collision_coefficients() const noexcept {
+    return cc_;
+}
+
 CC Density::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
                                    Worker const& /*worker*/) const noexcept {
     return cc_;

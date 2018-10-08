@@ -185,7 +185,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
                     li            = float3(0.f);
                     transmittance = w;
-                    return math::all_greater_equal(w, Tracking::Abort_epsilon);
+                    return math::any_greater_equal(w, Tracking::Abort_epsilon);
                 }
             }
 
@@ -197,7 +197,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
         li            = float3(0.f);
         transmittance = w;
-        return math::all_greater_equal(w, Tracking::Abort_epsilon);
+        return math::any_greater_equal(w, Tracking::Abort_epsilon);
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
@@ -306,8 +306,15 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
             float const t_c = ray.min_t - std::log(1.f - rc) / cm.minorant_mu_t;
 
             if (t_c > ray.max_t) {
+                intersection.prop       = interface->prop;
+                intersection.geo.p      = ray.point(t_c);
+                intersection.geo.uv     = interface->uv;
+                intersection.geo.part   = interface->part;
+                intersection.subsurface = true;
+
                 li            = float3(0.f);
-                transmittance = float3(1.f);
+                transmittance = float3(cm.minorant_mu_s / cm.minorant_mu_t);
+
                 return true;
             }
 
@@ -317,50 +324,51 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
             mu.a -= cm.minorant_mu_a;
             mu.s -= cm.minorant_mu_s;
 
-            float const mu_n = cm.majorant_mu_t - cm.minorant_mu_t - mt;
+            float3 const mu_t = mu.a + mu.s;
+
+            float3 const mu_n = float3(mt) - mu_t;
+
 
             float const imt = 1.f / mt;
+
+            float3 w(1.f);
 
             for (float t = ray.min_t;;) {
                 float const r0 = rng_.random_float();
                 t -= std::log(1.f - r0) * imt;
+                if (t > d) {
+                    li            = float3(0.f);
+                    transmittance = w;
+                    return true;
+                }
 
-                if (t > t_c) {
-                    float const r1 = rng_.random_float();
+                float const ms = math::average(mu.s * w);
+                float const mn = math::average(mu_n * w);
+                float const c  = 1.f / (ms + mn);
 
-                    if (r1 < cm.minorant_mu_a / cm.minorant_mu_t) {
-                        li            = float3(0.f);
-                        transmittance = float3(0.f);
-                        return true;
-                    } else {
-                        intersection.prop       = interface->prop;
-                        intersection.geo.p      = ray.point(t_c);
-                        intersection.geo.uv     = interface->uv;
-                        intersection.geo.part   = interface->part;
-                        intersection.subsurface = true;
+                float const ps = ms * c;
+                float const pn = mn * c;
 
-                        li            = float3(0.f);
-                        transmittance = float3(1.f);
-                        return true;
-                    }
+                float const r1 = rng_.random_float();
+                if (r1 <= 1.f - pn && ps > 0.f) {
+                    intersection.prop       = interface->prop;
+                    intersection.geo.p      = ray.point(t);
+                    intersection.geo.uv     = interface->uv;
+                    intersection.geo.part   = interface->part;
+                    intersection.subsurface = true;
+
+                    float3 const ws = mu.s / (mt * ps);
+
+                    li            = float3(0.f);
+                    transmittance = w * ws;
+
+                    return true;
                 } else {
-                    float const r1 = rng_.random_float();
+                    float3 const wn = mu_n / (mt * pn);
 
-                    if (r1 < mu.a[0] / mt) {
-                        li            = float3(0.f);
-                        transmittance = float3(0.f);
-                        return true;
-                    } else if (r1 < 1.f - mu_n / mt) {
-                        intersection.prop       = interface->prop;
-                        intersection.geo.p      = ray.point(t);
-                        intersection.geo.uv     = interface->uv;
-                        intersection.geo.part   = interface->part;
-                        intersection.subsurface = true;
+                    SOFT_ASSERT(math::all_finite(wn));
 
-                        li            = float3(0.f);
-                        transmittance = float3(1.f);
-                        return true;
-                    }
+                    w *= wn;
                 }
             }
 

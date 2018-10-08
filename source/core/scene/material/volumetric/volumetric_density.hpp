@@ -13,6 +13,8 @@ class Density : public Material {
                     rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 
+    CC collision_coefficients() const noexcept override final;
+
     CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 

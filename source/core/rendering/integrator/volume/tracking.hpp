@@ -55,7 +55,7 @@ class Tracking {
 
     static float constexpr Min_mt        = 1e-10f;
     static float constexpr Ray_epsilon   = 5e-4f;
-    static float constexpr Abort_epsilon = 1.f / 4096.f;
+    static float constexpr Abort_epsilon = 2.5e-4f;
 };
 
 }  // namespace integrator::volume

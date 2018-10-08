@@ -269,7 +269,9 @@ bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& ma
         return false;
     }
 
-    if (data.minorant_mu_t > 0.f) {
+    static bool constexpr decomposition = false;
+
+    if (decomposition && data.minorant_mu_t > 0.f) {
         return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
     }
 
