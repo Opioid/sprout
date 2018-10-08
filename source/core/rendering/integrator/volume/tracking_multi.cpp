@@ -328,7 +328,6 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_fil
 
             float3 const mu_n = float3(mt) - mu_t;
 
-
             float const imt = 1.f / mt;
 
             float3 w(1.f);

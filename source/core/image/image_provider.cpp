@@ -51,7 +51,7 @@ std::shared_ptr<Image> Provider::load(std::string const&         filename,
         encoding::rgbe::Reader reader;
         return reader.read(stream);
     } else if (file::Type::Undefined == type) {
-        if ("raw" == string::suffix(filename)) {
+        if ("raw" == string::suffix(filename) || "raw" == string::presuffix(filename)) {
             encoding::raw::Reader reader;
             return reader.read(stream);
         }

@@ -43,6 +43,12 @@ static inline std::string_view suffix(std::string_view filename) {
     return filename.substr(i + 1, std::string::npos);
 }
 
+static inline std::string_view presuffix(std::string_view filename) {
+    size_t const i = filename.find_last_of('.');
+    size_t const j = filename.substr(0, i).find_last_of('.') + 1;
+    return filename.substr(j, i - j);
+}
+
 static inline std::string print_bytes(size_t num_bytes) {
     std::ostringstream stream;
 
