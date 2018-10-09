@@ -191,11 +191,11 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::CM con
                                           Worker& worker, float& t_out, float3& w) {
     float const d = ray.max_t;
 
-    float const rc  = rng.random_float();
-    float const t_c = ray.min_t - std::log(1.f - rc) / data.minorant_mu_t;
+    float const rc = rng.random_float();
+    float const tc = ray.min_t - std::log(1.f - rc) / data.minorant_mu_t;
 
-    if (t_c < d) {
-        t_out = t_c;
+    if (tc < d) {
+        t_out = tc;
         w *= data.minorant_mu_s / data.minorant_mu_t;
         return true;
     }
