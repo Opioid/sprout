@@ -293,13 +293,14 @@ Material_ptr Provider::load_glass(json::Value const& glass_value, resource::Mana
     Texture_adapter normal_map;
     Texture_adapter roughness_map;
 
-    float3 refraction_color(1.f, 1.f, 1.f);
-    float3 absorption_color(1.f, 1.f, 1.f);
-    float  attenuation_distance = 1.f;
-    float  ior                  = 1.5f;
-    float  abbe                 = 0.f;
-    float  roughness            = 0.f;
-    float  thickness            = 0.f;
+    float3 refraction_color(1.f);
+    float3 absorption_color(1.f);
+
+    float attenuation_distance = 1.f;
+    float ior                  = 1.5f;
+    float abbe                 = 0.f;
+    float roughness            = 0.f;
+    float thickness            = 0.f;
 
     for (auto& n : glass_value.GetObject()) {
         if ("color" == n.name || "absorption_color" == n.name) {
