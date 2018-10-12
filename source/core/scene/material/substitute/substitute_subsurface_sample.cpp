@@ -89,8 +89,10 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
                                                            r_wo_dot_h, layer, alpha_, ior, result);
 
             result.reflection *= n_dot_wi;
-            result.type.set(bxdf::Type::Caustic);
+
         }
+
+        result.type.set(bxdf::Type::Caustic);
     }
 
     result.wavelength = 0.f;
