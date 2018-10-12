@@ -9,7 +9,7 @@ class Sample : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept override;
+    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 

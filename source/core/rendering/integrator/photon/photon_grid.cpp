@@ -176,7 +176,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                 }
 
                 if (math::squared_distance(photon.p, position) <= radius_2) {
-                    auto const bxdf = sample.evaluate(photon.wi);
+                    auto const bxdf = sample.evaluate(photon.wi, true);
 
                     result += float3(photon.alpha) * bxdf.reflection;
                 }
@@ -209,7 +209,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
                         float const k = kernel(distance_2, inv_radius_2);
 
-                        auto const bxdf = sample.evaluate(photon.wi);
+                        auto const bxdf = sample.evaluate(photon.wi, true);
 
                         result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
                     }

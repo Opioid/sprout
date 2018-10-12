@@ -125,7 +125,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
     bool primary_ray       = true;
     bool treat_as_singular = true;
     bool is_translucent    = false;
-    bool do_mis            = true;
+    bool evaluate_back     = true;
 
     float3 throughput(1.f);
 
@@ -152,12 +152,12 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             return result;
         }
 
-        do_mis = material_sample.do_evaluate_back(do_mis, same_side);
+        evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
         result.li += throughput * sample_lights(ray, ray_offset, intersection, material_sample,
-                                                do_mis, filter, worker);
+                                                evaluate_back, filter, worker);
 
         SOFT_ASSERT(math::all_finite(result.li));
 
@@ -175,8 +175,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                     break;
                 }
 
-                bool const scattering = intersection.material()->is_scattering_volume();
-                treat_as_singular     = scattering ? primary_ray : true;
+                treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
             }
         } else {
             treat_as_singular = false;
@@ -235,7 +234,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             is_translucent = material_sample.is_translucent();
         }
 
-        if (do_mis || treat_as_singular) {
+        if (evaluate_back || treat_as_singular) {
             bool         pure_emissive;
             float3 const radiance = evaluate_light(ray, intersection, sample_result,
                                                    treat_as_singular, is_translucent, filter,
@@ -264,7 +263,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 }
 
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
-                                     const Material_sample& material_sample, bool do_mis,
+                                     const Material_sample& material_sample, bool evaluate_back,
                                      Sampler_filter filter, Worker& worker) noexcept {
     float3 result(0.f);
 
@@ -282,8 +281,9 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 
             auto const light = worker.scene().random_light(select);
 
-            float3 const el = evaluate_light(light.ref, light.pdf, ray, ray_offset, 0, do_mis,
-                                             intersection, material_sample, filter, worker);
+            float3 const el = evaluate_light(light.ref, light.pdf, ray, ray_offset, 0,
+                                             evaluate_back, intersection, material_sample, filter,
+                                             worker);
 
             result += num_light_samples_reciprocal * el;
         }
@@ -292,7 +292,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
         for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
             auto const& light = *lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {
-                float3 const el = evaluate_light(light, 1.f, ray, ray_offset, l, do_mis,
+                float3 const el = evaluate_light(light, 1.f, ray, ray_offset, l, evaluate_back,
                                                  intersection, material_sample, filter, worker);
 
                 result += num_light_samples_reciprocal * el;
@@ -304,8 +304,8 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 }
 
 float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ray const& history,
-                                      float ray_offset, uint32_t sampler_dimension, bool do_mis,
-                                      Intersection const&    intersection,
+                                      float ray_offset, uint32_t sampler_dimension,
+                                      bool evaluate_back, Intersection const& intersection,
                                       const Material_sample& material_sample, Sampler_filter filter,
                                       Worker& worker) noexcept {
     // Light source importance sample
@@ -328,13 +328,13 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
     SOFT_ASSERT(math::all_finite(tv));
 
-    auto const bxdf = material_sample.evaluate(light_sample.wi, do_mis);
+    auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
 
     float3 const radiance = light.evaluate(light_sample, history.time, Sampler_filter::Nearest,
                                            worker);
 
     float const light_pdf = light_sample.pdf * light_weight;
-    float const weight    = do_mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
+    float const weight    = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
     return (weight / light_pdf) * (tv * radiance * bxdf.reflection);
 }

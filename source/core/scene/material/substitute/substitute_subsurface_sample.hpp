@@ -9,7 +9,7 @@ namespace scene::material::substitute {
 
 class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert> {
   public:
-    bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept override final;
+    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
@@ -27,7 +27,7 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
 
 class Sample_subsurface_volumetric final : public volumetric::Sample {
   public:
-    bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept override final;
+    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
 
     bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
 

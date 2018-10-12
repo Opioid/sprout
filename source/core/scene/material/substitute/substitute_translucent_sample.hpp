@@ -7,7 +7,7 @@ namespace scene::material::substitute {
 
 class Sample_translucent : public Sample_base<disney::Isotropic> {
   public:
-    bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept override final;
+    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 

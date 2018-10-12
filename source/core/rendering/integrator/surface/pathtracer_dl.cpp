@@ -60,7 +60,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     bool primary_ray       = true;
     bool treat_as_singular = true;
-    bool do_mis            = true;
+    bool evaluate_back     = true;
 
     float3 throughput(1.f);
     float3 result(0.f);
@@ -84,10 +84,10 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        do_mis = material_sample.do_evaluate_back(do_mis, same_side);
+        evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
 
         result += throughput *
-                  direct_light(ray, intersection, material_sample, do_mis, filter, worker);
+                  direct_light(ray, intersection, material_sample, evaluate_back, filter, worker);
 
         if (ray.depth >= settings_.max_bounces - 1) {
             break;
@@ -111,8 +111,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
                     break;
                 }
 
-                bool const scattering = intersection.material()->is_scattering_volume();
-                treat_as_singular     = scattering ? primary_ray : true;
+                treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
             }
         } else {
             primary_ray       = false;
@@ -162,7 +161,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 }
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
-                                   const Material_sample& material_sample, bool do_mis,
+                                   const Material_sample& material_sample, bool evaluate_back,
                                    Sampler_filter filter, Worker& worker) noexcept {
     float3 result(0.f);
 
@@ -195,7 +194,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         shadow_ray.max_t   = light_sample.t - offset;
 
         if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
-            auto const bxdf = material_sample.evaluate(light_sample.wi, do_mis);
+            auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
 
             float3 const radiance = light.ref.evaluate(light_sample, ray.time,
                                                        Sampler_filter::Nearest, worker);

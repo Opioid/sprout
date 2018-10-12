@@ -110,7 +110,7 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
 
                 if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection,
                                                              Sampler_filter::Undefined, tv)) {
-                    auto const bxdf = material_sample.evaluate(light_sample.wi);
+                    auto const bxdf = material_sample.evaluate(light_sample.wi, true);
 
                     float3 const radiance = light->evaluate(light_sample, ray.time,
                                                             Sampler_filter::Nearest, worker);

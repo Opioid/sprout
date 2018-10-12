@@ -129,7 +129,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
             result.reflection *= n_dot_wi;
         }
 
-        //    result.type.set(bxdf::Type::Caustic);
+        result.type.set(bxdf::Type::Caustic);
     }
 
     result.wavelength = 0.f;
@@ -164,11 +164,11 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
                                                    sampler, result);
 
     result.reflection *= n_dot_wi;
-    //   result.type.set(bxdf::Type::Caustic);
+    result.type.set(bxdf::Type::Caustic);
 }
 
 bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi, bool) const noexcept {
-    bxdf::Result result = volumetric::Sample::evaluate(wi);
+    bxdf::Result result = volumetric::Sample::evaluate(wi, true);
 
     // Fresnel is only part of evaluate() because it tries to compensate for the fact,
     // that direct light calculations for SSS in the integrators are ignoring one surface.
