@@ -17,7 +17,7 @@ const material::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
@@ -40,8 +40,8 @@ bool Sample::is_translucent() const noexcept {
     return true;
 }
 
-bool Sample::reenable_mis(bool do_mis, bool /*same_side*/) const noexcept {
-    return do_mis;
+bool Sample::do_evaluate_back(bool previously, bool /*same_side*/) const noexcept {
+    return previously;
 }
 
 void Sample::set(float anisotropy) {

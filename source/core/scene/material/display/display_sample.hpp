@@ -8,7 +8,7 @@ class Sample : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
+    bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept override final;
 
     float3 radiance() const noexcept override final;
 

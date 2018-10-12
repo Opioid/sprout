@@ -49,7 +49,7 @@ class Sample {
 
     virtual Layer const& base_layer() const noexcept = 0;
 
-    virtual bxdf::Result evaluate(float3 const& wi) const noexcept = 0;
+    virtual bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept = 0;
 
     virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept = 0;
 
@@ -61,8 +61,7 @@ class Sample {
 
     virtual bool ior_greater_one() const noexcept;
 
-    virtual bool mis_after_transmission() const noexcept;
-    virtual bool reenable_mis(bool do_mis, bool same_side) const noexcept;
+    virtual bool do_evaluate_back(bool previously, bool same_side) const noexcept;
 
     float3 const& wo() const noexcept;
 

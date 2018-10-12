@@ -152,7 +152,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             return result;
         }
 
-        do_mis = material_sample.reenable_mis(do_mis, same_side);
+        do_mis = material_sample.do_evaluate_back(do_mis, same_side);
 
         float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
@@ -211,8 +211,6 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
-
-            do_mis &= material_sample.mis_after_transmission();
         }
 
         if (!worker.interface_stack().empty()) {
@@ -330,7 +328,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
     SOFT_ASSERT(math::all_finite(tv));
 
-    auto const bxdf = material_sample.evaluate(light_sample.wi);
+    auto const bxdf = material_sample.evaluate(light_sample.wi, do_mis);
 
     float3 const radiance = light.evaluate(light_sample, history.time, Sampler_filter::Nearest,
                                            worker);

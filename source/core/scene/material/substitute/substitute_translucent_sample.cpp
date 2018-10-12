@@ -10,7 +10,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_translucent::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool) const noexcept {
     // No side check needed because the material is two-sided by definition.
 
     // This is a bit complicated to explain:

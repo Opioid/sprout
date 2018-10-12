@@ -17,7 +17,7 @@ const material::Layer& Sample_rough::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_rough::evaluate(float3 const& wi, bool) const noexcept {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }

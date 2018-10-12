@@ -11,7 +11,7 @@ const material::Layer& Sample_isotropic::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_isotropic::evaluate(float3 const& wi, bool) const noexcept {
     if (!same_hemisphere(wo_) || (avoid_caustics_ && alpha_ <= ggx::Min_alpha)) {
         return {float3::identity(), 0.f};
     }
@@ -62,7 +62,7 @@ const material::Layer& Sample_anisotropic::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_anisotropic::evaluate(float3 const& wi, bool) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3::identity(), 0.f};
     }

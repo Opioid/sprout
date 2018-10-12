@@ -2,14 +2,51 @@
 #include "base/math/math.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/material_sample.inl"
 #include "substitute_base_sample.inl"
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) const noexcept {
+    if (ior_.eta_i == ior_.eta_t) {
+        return {float3(0.f), 0.f};
+    }
+
     if (!same_hemisphere(wo_)) {
-        return {float3::identity(), 0.f};
+        if (!include_back) {
+            return {float3(0.f), 0.f};
+        }
+
+        IoR ior = ior_.swapped();
+
+        float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
+
+        float const wi_dot_h = math::dot(wi, h);
+        if (wi_dot_h <= 0.f) {
+            return {float3(0.f), 0.f};
+        }
+
+        float const eta = ior.eta_i / ior.eta_t;
+
+        float const wo_dot_h = math::dot(wo_, h);
+
+        float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
+
+        if (sint2 >= 1.f) {
+            return {float3(0.f), 0.f};
+        }
+
+        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+        float const n_dot_h  = math::saturate(math::dot(layer_.n_, h));
+
+        fresnel::Schlick1 const schlick(f0_[0]);
+
+        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
+                                                    alpha_, ior, schlick);
+
+        return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf};
     }
 
     float3 const h = math::normalize(wo_ + wi);
@@ -36,6 +73,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
                 gloss_sample(wo_, sampler, result);
             }
         }
+
         result.pdf *= 0.5f;
     } else {
         if (ior_.eta_i == ior_.eta_t) {
@@ -89,21 +127,16 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
                                                            r_wo_dot_h, layer, alpha_, ior, result);
 
             result.reflection *= n_dot_wi;
-
         }
 
-        result.type.set(bxdf::Type::Caustic);
+        //    result.type.set(bxdf::Type::Caustic);
     }
 
     result.wavelength = 0.f;
 }
 
-bool Sample_subsurface::mis_after_transmission() const noexcept {
-    return false;
-}
-
-bool Sample_subsurface::reenable_mis(bool /*do_mis*/, bool same_side) const noexcept {
-    return same_side;
+bool Sample_subsurface::do_evaluate_back(bool previously, bool same_side) const noexcept {
+    return previously || same_side;
 }
 
 void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) noexcept {
@@ -131,10 +164,10 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
                                                    sampler, result);
 
     result.reflection *= n_dot_wi;
-    result.type.set(bxdf::Type::Caustic);
+    //   result.type.set(bxdf::Type::Caustic);
 }
 
-bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi, bool) const noexcept {
     bxdf::Result result = volumetric::Sample::evaluate(wi);
 
     // Fresnel is only part of evaluate() because it tries to compensate for the fact,
@@ -148,6 +181,11 @@ bxdf::Result Sample_subsurface_volumetric::evaluate(float3 const& wi) const noex
     result.reflection *= f;
 
     return result;
+}
+
+bool Sample_subsurface_volumetric::do_evaluate_back(bool /*previously*/, bool /*same_side*/) const
+    noexcept {
+    return false;
 }
 
 void Sample_subsurface_volumetric::set(float anisotropy, float f0) noexcept {

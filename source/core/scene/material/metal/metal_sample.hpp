@@ -9,7 +9,7 @@ class Sample_isotropic : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
+    bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept override final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
@@ -31,7 +31,7 @@ class Sample_anisotropic : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi) const noexcept override final;
+    bxdf::Result evaluate(float3 const& wi, bool include_back = true) const noexcept override final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 

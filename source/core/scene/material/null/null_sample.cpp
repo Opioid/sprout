@@ -9,7 +9,7 @@ const material::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& /*wi*/) const noexcept {
+bxdf::Result Sample::evaluate(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
     return {float3::identity(), 0.f};
 }
 
@@ -25,8 +25,8 @@ bool Sample::ior_greater_one() const noexcept {
     return false;
 }
 
-bool Sample::reenable_mis(bool do_mis, bool /*same_side*/) const noexcept {
-    return do_mis;
+bool Sample::do_evaluate_back(bool previously, bool /*same_side*/) const noexcept {
+    return previously;
 }
 
 }  // namespace scene::material::null

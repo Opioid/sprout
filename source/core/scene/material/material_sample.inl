@@ -92,11 +92,7 @@ inline bool Sample::ior_greater_one() const noexcept {
     return true;
 }
 
-inline bool Sample::mis_after_transmission() const noexcept {
-    return true;
-}
-
-inline bool Sample::reenable_mis(bool /*do_mis*/, bool /*same_side*/) const noexcept {
+inline bool Sample::do_evaluate_back(bool /*previously*/, bool /*same_side*/) const noexcept {
     return true;
 }
 
