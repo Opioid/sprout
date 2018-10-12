@@ -162,6 +162,10 @@ bool Material_subsurface::is_textured_volume() const noexcept {
     return color_map_.is_valid();
 }
 
+bool Material_subsurface::is_scattering_volume() const noexcept {
+    return true;
+}
+
 size_t Material_subsurface::sample_size() noexcept {
     return sizeof(Sample_subsurface);
 }
