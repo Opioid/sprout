@@ -59,6 +59,15 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
 }
 
 void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+    if (ior_.eta_i == ior_.eta_t) {
+        result.reflection = float3(1.f);
+        result.wi         = -wo_;
+        result.pdf        = 1.f;
+        result.wavelength = 0.f;
+        result.type.clear(bxdf::Type::Specular_transmission);
+        return;
+    }
+
     bool const same_side = same_hemisphere(wo_);
 
     float const p = sampler.generate_sample_1D();
@@ -76,15 +85,6 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 
         result.pdf *= 0.5f;
     } else {
-        if (ior_.eta_i == ior_.eta_t) {
-            result.reflection = float3(1.f);
-            result.wi         = -wo_;
-            result.pdf        = 1.f;
-            result.wavelength = 0.f;
-            result.type.clear(bxdf::Type::Specular_transmission);
-            return;
-        }
-
         Layer const layer = layer_.swapped();
 
         IoR const ior = ior_.swapped();
