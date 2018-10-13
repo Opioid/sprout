@@ -18,7 +18,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
             return {float3(0.f), 0.f};
         }
 
-        IoR ior = ior_.swapped();
+        IoR const ior = ior_.swapped();
 
         float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
 

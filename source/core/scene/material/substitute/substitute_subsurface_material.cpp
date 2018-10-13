@@ -166,6 +166,10 @@ bool Material_subsurface::is_scattering_volume() const noexcept {
     return true;
 }
 
+bool Material_subsurface::is_caustic() const noexcept {
+    return true;
+}
+
 size_t Material_subsurface::sample_size() noexcept {
     return sizeof(Sample_subsurface);
 }
@@ -174,7 +178,7 @@ float Material_subsurface::density(float3 const& p, Sampler_filter filter,
                                    Worker const& worker) const noexcept {
     // p is in object space already
 
-    float3 p_g = 0.5f * (float3(1.f) + p);
+    float3 const p_g = 0.5f * (float3(1.f) + p);
 
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
@@ -183,7 +187,7 @@ float Material_subsurface::density(float3 const& p, Sampler_filter filter,
 
 float3 Material_subsurface::color(float3 const& p, Sampler_filter /*filter*/,
                                   Worker const& /*worker*/) const noexcept {
-    float3 p_g = 0.5f * (float3(1.f) + p);
+    float3 const p_g = 0.5f * (float3(1.f) + p);
 
     //	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 

@@ -49,6 +49,8 @@ class Material_subsurface final : public Material_base {
     bool is_textured_volume() const noexcept override final;
     bool is_scattering_volume() const noexcept override final;
 
+    bool is_caustic() const noexcept override final;
+
     static size_t sample_size() noexcept;
 
   private:
