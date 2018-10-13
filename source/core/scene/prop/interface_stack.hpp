@@ -47,7 +47,7 @@ class Interface_stack {
     float top_ior() const noexcept;
 
     bool top_is_vacuum() const noexcept;
-    bool top_is_vacuum_or_pure_specular() const noexcept;
+    bool top_is_vacuum_or_not_scattering() const noexcept;
 
     void push(Intersection const& intersection) noexcept;
 

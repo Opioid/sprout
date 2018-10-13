@@ -128,7 +128,6 @@ class Material {
 
     uint32_t sampler_key() const noexcept;
 
-    virtual bool is_pure_specular() const noexcept;
     virtual bool is_caustic() const noexcept;
     virtual bool is_masked() const noexcept;
 

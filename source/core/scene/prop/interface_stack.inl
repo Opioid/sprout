@@ -5,6 +5,7 @@
 #include "interface_stack.hpp"
 #include "prop.hpp"
 #include "prop_intersection.hpp"
+#include "scene/material/material.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -78,10 +79,10 @@ inline bool Interface_stack::top_is_vacuum() const noexcept {
     return true;
 }
 
-inline bool Interface_stack::top_is_vacuum_or_pure_specular() const noexcept {
+inline bool Interface_stack::top_is_vacuum_or_not_scattering() const noexcept {
     if (index_ > 0) {
         auto const material = stack_[index_ - 1].material();
-        return 1.f == material->ior() || material->is_pure_specular();
+        return 1.f == material->ior() || !material->is_scattering_volume();
     }
 
     return true;

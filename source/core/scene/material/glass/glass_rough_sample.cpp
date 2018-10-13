@@ -17,12 +17,16 @@ const material::Layer& Sample_rough::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_rough::evaluate(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample_rough::evaluate(float3 const& wi, bool /*include_back*/) const noexcept {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }
 
     if (!same_hemisphere(wo_)) {
+        if (avoid_caustics_) {
+            return {float3(0.f), 0.f};
+        }
+
         IoR ior = ior_.swapped();
 
         float3 const h = -math::normalize(ior.eta_t * wi + ior.eta_i * wo_);
@@ -118,6 +122,9 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
+        if (!same_side) {
+            result.type.set(bxdf::Type::Caustic);
+        }
     } else {
         float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
@@ -128,13 +135,14 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
         result.reflection *= omf * n_dot_wi * color_;
         result.pdf *= omf;
+        result.type.set(bxdf::Type::Caustic);
     }
 
     result.wavelength = 0.f;
 }
 
-void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outside,
-                       float alpha) noexcept {
+void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
+                       bool avoid_caustics) noexcept {
     color_ = refraction_color;
 
     f0_ = fresnel::schlick_f0(ior, ior_outside);
@@ -143,6 +151,8 @@ void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outs
 
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
+
+    avoid_caustics_ = avoid_caustics;
 }
 
 }  // namespace scene::material::glass

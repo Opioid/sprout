@@ -13,7 +13,8 @@ class Sample_rough final : public material::Sample {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    void set(float3 const& refraction_color, float ior, float ior_outside, float alpha) noexcept;
+    void set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
+             bool avoid_caustics) noexcept;
 
     Layer layer_;
 
@@ -23,6 +24,8 @@ class Sample_rough final : public material::Sample {
     float alpha_;
 
     IoR ior_;
+
+    bool avoid_caustics_;
 };
 
 }  // namespace scene::material::glass

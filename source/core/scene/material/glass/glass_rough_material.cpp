@@ -39,7 +39,7 @@ material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const&
         alpha = alpha_;
     }
 
-    sample.set(refraction_color_, ior_, rs.ior, alpha);
+    sample.set(refraction_color_, ior_, rs.ior, alpha, rs.avoid_caustics);
 
     return sample;
 }
@@ -87,6 +87,10 @@ void Glass_rough::set_roughness(float roughness) noexcept {
     const float r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
+}
+
+bool Glass_rough::is_caustic() const noexcept {
+    return true;
 }
 
 size_t Glass_rough::sample_size() noexcept {

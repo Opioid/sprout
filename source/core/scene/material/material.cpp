@@ -128,10 +128,6 @@ uint32_t Material::sampler_key() const noexcept {
     return sampler_key_;
 }
 
-bool Material::is_pure_specular() const noexcept {
-    return false;
-}
-
 bool Material::is_caustic() const noexcept {
     return false;
 }

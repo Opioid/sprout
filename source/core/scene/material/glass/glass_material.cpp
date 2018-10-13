@@ -71,10 +71,6 @@ void Glass::set_ior(float ior) noexcept {
     ior_ = ior;
 }
 
-bool Glass::is_pure_specular() const noexcept {
-    return true;
-}
-
 bool Glass::is_caustic() const noexcept {
     return true;
 }

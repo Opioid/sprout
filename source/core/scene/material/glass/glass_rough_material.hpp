@@ -30,6 +30,8 @@ class Glass_rough : public Material {
     void set_ior(float ior) noexcept;
     void set_roughness(float roughness) noexcept;
 
+    bool is_caustic() const noexcept override final;
+
     static size_t sample_size() noexcept;
 
   protected:

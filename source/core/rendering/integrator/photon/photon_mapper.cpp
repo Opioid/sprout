@@ -137,7 +137,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
                     specular_ray = true;
                 } else if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
                            ((specular_ray &&
-                             worker.interface_stack().top_is_vacuum_or_pure_specular()) ||
+                             worker.interface_stack().top_is_vacuum_or_not_scattering()) ||
                             settings_.full_light_path)) {
                     if (infinite_world && !unnatural_limit.intersect(intersection.geo.p)) {
                         break;

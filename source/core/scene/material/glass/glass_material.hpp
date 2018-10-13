@@ -28,7 +28,6 @@ class Glass : public Material {
     void set_attenuation(float3 const& absorption_color, float distance) noexcept;
     void set_ior(float ior) noexcept;
 
-    bool is_pure_specular() const noexcept override final;
     bool is_caustic() const noexcept override final;
 
     static size_t sample_size() noexcept;
