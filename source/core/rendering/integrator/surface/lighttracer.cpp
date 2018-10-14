@@ -76,10 +76,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        bool const singular = sample_result.type.test_any(Bxdf_type::Specular,
-                                                          Bxdf_type::Transmission);
-
-        if (!singular) {
+        if (!sample_result.type.test(Bxdf_type::Caustic)) {
             result += throughput * worker.photon_li(intersection, material_sample);
             break;
         }

@@ -96,7 +96,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
     for (uint32_t i = 0; i < Max_iterations; ++i) {
         worker.interface_stack().clear();
 
-        bool specular_ray = false;
+        bool caustic_ray = false;
 
         Ray                 ray;
         light::Light const* light;
@@ -131,39 +131,40 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
             float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
             if (material_sample.ior_greater_one()) {
-                bool const singular = sample_result.type.test(Bxdf_type::Caustic);
+                if (sample_result.type.test(Bxdf_type::Caustic)) {
+                    caustic_ray = true;
+                } else {
+                    if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
+                        ((caustic_ray &&
+                          worker.interface_stack().top_is_vacuum_or_not_scattering()) ||
+                         settings_.full_light_path)) {
+                        if (infinite_world && !unnatural_limit.intersect(intersection.geo.p)) {
+                            break;
+                        }
 
-                if (singular) {
-                    specular_ray = true;
-                } else if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
-                           ((specular_ray &&
-                             worker.interface_stack().top_is_vacuum_or_not_scattering()) ||
-                            settings_.full_light_path)) {
-                    if (infinite_world && !unnatural_limit.intersect(intersection.geo.p)) {
+                        auto& photon = photons[num_photons];
+
+                        photon.p        = intersection.geo.p;
+                        photon.wi       = wo;
+                        photon.alpha[0] = radiance[0];
+                        photon.alpha[1] = radiance[1];
+                        photon.alpha[2] = radiance[2];
+                        photon.properties.set(Photon::Property::First_hit, 0 == num_photons);
+                        photon.properties.set(Photon::Property::Volumetric,
+                                              intersection.subsurface);
+
+                        iteration = i + 1;
+
+                        ++num_photons;
+
+                        if (max_photons == num_photons) {
+                            return iteration;
+                        }
+                    }
+
+                    if (!settings_.indirect_caustics) {
                         break;
                     }
-
-                    auto& photon = photons[num_photons];
-
-                    photon.p        = intersection.geo.p;
-                    photon.wi       = wo;
-                    photon.alpha[0] = radiance[0];
-                    photon.alpha[1] = radiance[1];
-                    photon.alpha[2] = radiance[2];
-                    photon.properties.set(Photon::Property::First_hit, 0 == num_photons);
-                    photon.properties.set(Photon::Property::Volumetric, intersection.subsurface);
-
-                    iteration = i + 1;
-
-                    ++num_photons;
-
-                    if (max_photons == num_photons) {
-                        return iteration;
-                    }
-
-                    specular_ray = settings_.indirect_caustics;
-                } else if (!settings_.indirect_caustics) {
-                    break;
                 }
 
                 float3 const nr      = radiance * sample_result.reflection / sample_result.pdf;
@@ -189,7 +190,7 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
             }
 
             if (sample_result.type.test(Bxdf_type::Transmission)) {
-                auto ior = worker.interface_change_ior(sample_result.wi, intersection);
+                auto const ior = worker.interface_change_ior(sample_result.wi, intersection);
 
                 float const eta = ior.eta_i / ior.eta_t;
 
