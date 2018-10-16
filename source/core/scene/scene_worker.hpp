@@ -15,6 +15,10 @@ namespace scene {
 class Scene;
 struct Ray;
 
+namespace camera {
+class Camera;
+}
+
 namespace material {
 class Sample;
 }
@@ -36,7 +40,7 @@ class Worker {
 
     ~Worker() noexcept;
 
-    void init(uint32_t id, take::Settings const& settings, Scene const& scene,
+    void init(uint32_t id, take::Settings const& settings, Scene const& scene, camera::Camera const& camera,
               uint32_t max_material_sample_size, uint32_t max_material_sample_depth) noexcept;
 
     uint32_t id() const noexcept;
@@ -86,6 +90,8 @@ class Worker {
     take::Settings settings_;
 
     Scene const* scene_;
+
+    camera::Camera const* camera_;
 
     //   Tile_queue const* tiles_;
 

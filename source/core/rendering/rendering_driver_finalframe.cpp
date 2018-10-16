@@ -42,6 +42,8 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
         auto const render_start = std::chrono::high_resolution_clock::now();
 
+        camera.set_current_frame(current_frame);
+
         sensor.clear();
         current_sample_ = 0;
 
@@ -150,7 +152,7 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
             auto& worker = workers_[index];
 
             for (int4 tile; tiles_.pop(tile);) {
-                worker.render(*view_.camera, v, tile, sample_begin, sample_end,
+                worker.render(v, tile, sample_begin, sample_end,
                               normalized_tick_offset, normalized_tick_slice);
 
                 progressor.tick();

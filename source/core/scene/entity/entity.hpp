@@ -83,7 +83,11 @@ class Entity {
     Keyframe local_frame_a_;
     Keyframe local_frame_b_;
 
+    uint32_t num_world_frames_ = 0;
+
     math::Transformation* world_frames_ = nullptr;
+
+    uint32_t num_local_frames_ = 0;
 
     Keyframe* local_frames_ = nullptr;
 

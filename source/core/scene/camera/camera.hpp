@@ -7,6 +7,7 @@
 #include "base/math/vector2.hpp"
 #include "scene/entity/entity.hpp"
 #include "scene/prop/interface_stack.hpp"
+#include "scene/scene_constants.hpp"
 
 namespace sampler {
 struct Camera_sample;
@@ -57,8 +58,13 @@ class Camera : public entity::Entity {
     prop::Interface_stack const& interface_stack() const noexcept;
 
     float frame_duration() const noexcept;
+    uint64_t frame_duration_i() const noexcept;
 
     void set_frame_duration(float frame_duration) noexcept;
+
+    void set_current_frame(uint32_t current_frame) noexcept;
+
+    uint64_t absolute_time(float frame_delta) const noexcept;
 
     bool motion_blur() const noexcept;
 
@@ -83,6 +89,10 @@ class Camera : public entity::Entity {
     int32_t filter_radius_ = 0;
 
     float frame_duration_ = 1.f / 60.f;
+
+    uint64_t frame_duration_i_ = scene::Units_per_second / 60;
+
+    uint32_t current_frame_ = 0;
 
     bool motion_blur_ = true;
 };

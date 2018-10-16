@@ -79,7 +79,7 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
 
                 uint32_t const begin_sample = iteration_ * samples_per_iteration_;
                 uint32_t const end_sample   = begin_sample + samples_per_iteration_;
-                worker.render(*view_.camera, v, tile, begin_sample, end_sample, 0.f, 1.f);
+                worker.render(v, tile, begin_sample, end_sample, 0.f, 1.f);
             }
         });
     }

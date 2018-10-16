@@ -59,10 +59,13 @@ void Camera::set_parameters(json::Value const& parameters) noexcept {
             frame_duration_ = json::read_float(n.value);
         } else if ("frames_per_second" == n.name) {
             float const fps = json::read_float(n.value);
+            uint64_t const fpsi = json::read_uint(n.value);
             if (0.f == fps) {
                 frame_duration_ = 0.f;
             } else {
                 frame_duration_ = 1.f / fps;
+
+                frame_duration_i_ = scene::Units_per_second / fpsi;
             }
         } else if ("motion_blur" == n.name) {
             motion_blur_ = json::read_bool(n.value);
@@ -92,8 +95,25 @@ float Camera::frame_duration() const noexcept {
     return frame_duration_;
 }
 
+uint64_t Camera::frame_duration_i() const noexcept {
+    return frame_duration_i_;
+}
+
 void Camera::set_frame_duration(float frame_duration) noexcept {
     frame_duration_ = frame_duration;
+}
+
+void Camera::set_current_frame(uint32_t current_frame) noexcept {
+    current_frame_ = current_frame;
+}
+
+uint64_t Camera::absolute_time(float frame_delta) const noexcept {
+    double const delta = static_cast<double>(frame_delta);
+    double const duration = static_cast<double>(frame_duration_i_);
+
+    uint64_t const fdi = static_cast<uint64_t>(delta * duration + 0.5);
+
+    return static_cast<uint64_t>(current_frame_) * frame_duration_i_ + fdi;
 }
 
 bool Camera::motion_blur() const noexcept {

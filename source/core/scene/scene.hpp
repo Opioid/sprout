@@ -10,6 +10,7 @@
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
 #include "take/take_settings.hpp"
+#include "scene_constants.hpp"
 
 namespace thread {
 class Pool;
@@ -148,6 +149,9 @@ class Scene {
     double   tick_duration_   = 1.0 / 60.0;
     double   simulation_time_ = 0.0;
     uint64_t current_tick_    = 0;
+
+    uint64_t tick_duration_i_ = Units_per_second / 60;
+    uint64_t simulation_time_i  = 0;
 
     bvh::Builder<prop::Prop> bvh_builder_;
 

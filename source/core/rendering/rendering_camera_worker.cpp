@@ -14,9 +14,11 @@ namespace rendering {
 
 Camera_worker::Camera_worker(Tile_queue const& tiles) : tiles_(tiles) {}
 
-void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, int4 const& tile,
+void Camera_worker::render(uint32_t view, int4 const& tile,
                            uint32_t sample_begin, uint32_t sample_end, float normalized_tick_offset,
                            float normalized_tick_slice) noexcept {
+    scene::camera::Camera const& camera = *camera_;
+
     auto& sensor = camera.sensor();
 
     int4 bounds = camera.view_bounds(view);

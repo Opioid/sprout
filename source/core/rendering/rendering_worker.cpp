@@ -27,13 +27,13 @@ Worker::~Worker() noexcept {
     memory::destroy(surface_integrator_);
 }
 
-void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene const& scene,
+void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene const& scene, scene::camera::Camera const& camera,
                   uint32_t max_material_sample_size, uint32_t num_samples_per_pixel,
                   integrator::surface::Factory& surface_integrator_factory,
                   integrator::volume::Factory&  volume_integrator_factory,
                   sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
                   take::Photon_settings const& photon_settings) noexcept {
-    scene::Worker::init(id, settings, scene, max_material_sample_size,
+    scene::Worker::init(id, settings, scene, camera, max_material_sample_size,
                         surface_integrator_factory.max_sample_depth());
 
     surface_integrator_ = surface_integrator_factory.create(id, rng_);
