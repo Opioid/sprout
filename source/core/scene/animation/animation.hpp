@@ -14,6 +14,7 @@ class Animation {
     void push_back(entity::Keyframe const& keyframe) noexcept;
 
     void tick(float time_slice) noexcept;
+
     void seek(float time) noexcept;
 
     entity::Keyframe const& beginning() const noexcept;

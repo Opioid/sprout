@@ -1,5 +1,4 @@
 #include "entity.hpp"
-#include "base/math/matrix4x4.inl"
 #include "base/math/transformation.inl"
 #include "composed_transformation.inl"
 
@@ -14,7 +13,7 @@ math::Transformation const& Entity::local_frame_a() const noexcept {
 Composed_transformation const& Entity::transformation_at(float           tick_delta,
                                                          Transformation& transformation) const
     noexcept {
-    if (!properties_.test(Property::Animated)) {
+    if (properties_.test_not(Property::Animated)) {
         return world_transformation_;
     }
 
@@ -135,23 +134,11 @@ void Entity::inherit_transformation(math::Transformation const& a, math::Transfo
         properties_.set(Property::Animated);
     }
 
-    world_frame_a_.position = math::transform_point(float4x4(a),
-                                                    local_frame_a_.transformation.position);
+    local_frame_a_.transform(world_frame_a_, a);
 
-    world_frame_a_.rotation = math::quaternion::mul(local_frame_a_.transformation.rotation,
-                                                    a.rotation);
+    local_frame_b_.transform(world_frame_b_, b);
 
-    world_frame_a_.scale = local_frame_a_.transformation.scale;
-
-    world_frame_b_.position = math::transform_point(float4x4(b),
-                                                    local_frame_b_.transformation.position);
-
-    world_frame_b_.rotation = math::quaternion::mul(local_frame_b_.transformation.rotation,
-                                                    b.rotation);
-
-    world_frame_b_.scale = local_frame_b_.transformation.scale;
-
-    if (!properties_.test(Property::Animated)) {
+    if (properties_.test_not(Property::Animated)) {
         world_transformation_.set(world_frame_a_);
     }
 

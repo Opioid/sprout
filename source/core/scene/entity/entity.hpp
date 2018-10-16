@@ -40,8 +40,10 @@ class Entity {
     bool visible_in_shadow() const noexcept;
 
     void set_visible_in_shadow(bool value) noexcept;
+
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow,
                         bool propagate = false) noexcept;
+
     void set_propagate_visibility(bool enable) noexcept;
 
     void attach(Entity* node) noexcept;
@@ -80,6 +82,10 @@ class Entity {
 
     Keyframe local_frame_a_;
     Keyframe local_frame_b_;
+
+    math::Transformation* world_frames_ = nullptr;
+
+    Keyframe* local_frames_ = nullptr;
 
     Entity* parent_ = nullptr;
     Entity* next_   = nullptr;

@@ -39,11 +39,11 @@ void Animation::tick(float time_slice) noexcept {
     float const delta = current_time_ - current_frame.time;
 
     if (range <= 0.f) {
-        current_frame.interpolate(next_frame, delta, interpolated_frame_);
+        current_frame.interpolate(interpolated_frame_, next_frame, delta);
     } else {
-        float t = delta / range;
+        float const t = delta / range;
 
-        current_frame.interpolate(next_frame, t, interpolated_frame_);
+        current_frame.interpolate(interpolated_frame_, next_frame, t);
     }
 }
 
