@@ -110,6 +110,10 @@ float read_float(rapidjson::Value const& value, std::string_view name,
     return default_value;
 }
 
+double read_double(rapidjson::Value const& value) noexcept {
+    return value.GetDouble();
+}
+
 float2 read_float2(rapidjson::Value const& value) noexcept {
     return float2(value[0u].GetFloat(), value[1].GetFloat());
 }

@@ -19,6 +19,8 @@ struct alignas(16) Keyframe {
 
     Morphing morphing;
 
+    uint64_t time_i;
+
     float time;
 };
 

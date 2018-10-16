@@ -24,6 +24,8 @@ bool read_bool(json::Value const& value, std::string_view name, bool default_val
 float read_float(json::Value const& value) noexcept;
 float read_float(json::Value const& value, std::string_view name, float default_value) noexcept;
 
+double read_double(json::Value const& value) noexcept;
+
 float2 read_float2(json::Value const& value) noexcept;
 float2 read_float2(json::Value const& value, std::string_view name, float2 default_value) noexcept;
 

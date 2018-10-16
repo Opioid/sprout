@@ -3,6 +3,7 @@
 #include "base/json/json.hpp"
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
+#include "scene/scene_constants.hpp"
 
 namespace scene::animation {
 
@@ -30,6 +31,10 @@ std::shared_ptr<animation::Animation> load(json::Value const&          animation
     return nullptr;
 }
 
+uint64_t constexpr time(double dtime) {
+    return static_cast<uint64_t>(static_cast<double>(scene::Units_per_second) * dtime);
+}
+
 std::shared_ptr<animation::Animation> load_keyframes(
     json::Value const& keyframes_value, math::Transformation const& default_transformation) {
     if (!keyframes_value.IsArray()) {
@@ -52,6 +57,7 @@ std::shared_ptr<animation::Animation> load_keyframes(
             std::string const node_name = n.name.GetString();
 
             if ("time" == node_name) {
+                keyframe.time_i = time(json::read_double(n.value));
                 keyframe.time = json::read_float(n.value);
             } else if ("transformation" == node_name) {
                 json::read_transformation(n.value, keyframe.transformation);

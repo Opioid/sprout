@@ -17,9 +17,13 @@ class Animation {
 
     void seek(float time) noexcept;
 
-    entity::Keyframe const& beginning() const noexcept;
+    void simulate(uint64_t begin, uint64_t end) noexcept;
 
     entity::Keyframe const& interpolated_frame() const noexcept;
+
+    uint32_t num_interpolated_frames() const noexcept;
+
+    entity::Keyframe const* interpolated_frames() const noexcept;
 
   private:
     float current_time_;
@@ -29,6 +33,10 @@ class Animation {
     std::vector<entity::Keyframe> keyframes_;
 
     entity::Keyframe interpolated_frame_;
+
+    uint32_t num_frames_;
+
+    entity::Keyframe* interpolated_frames_;
 };
 
 }  // namespace scene::animation

@@ -65,8 +65,8 @@ void Animation::seek(float time) noexcept {
     tick(0.f);
 }
 
-entity::Keyframe const& Animation::beginning() const noexcept {
-    return keyframes_[0];
+void Animation::simulate(uint64_t begin, uint64_t end) noexcept {
+
 }
 
 entity::Keyframe const& Animation::interpolated_frame() const noexcept {
