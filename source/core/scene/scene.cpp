@@ -195,17 +195,20 @@ Scene::Light Scene::random_light(float random) const noexcept {
 }
 
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {
-    uint64_t const first_frame_start = start - (start % tick_duration_);
-    uint64_t const range             = (end - first_frame_start);
-
-    uint32_t const num_frames = count_frames(range);
+    uint64_t const frames_start = start - (start % tick_duration_);
+    uint64_t const frames_range = (end - frames_start);
+    uint32_t const num_frames   = count_frames(frames_range);
 
     for (auto a : animations_) {
-        a->resample(first_frame_start, tick_duration_, num_frames);
+        a->resample(frames_start, tick_duration_, num_frames);
     }
 
     for (auto& s : animation_stages_) {
         s.update();
+    }
+
+    for (auto p : finite_props_) {
+        p->morph(thread_pool);
     }
 
     compile(start, thread_pool);

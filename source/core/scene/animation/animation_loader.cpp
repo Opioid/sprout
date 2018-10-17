@@ -99,8 +99,8 @@ std::shared_ptr<animation::Animation> load_sequence(
 
     animation->init(num_frames);
 
-    float time           = 0.f;
-    float time_increment = 1.f / static_cast<float>(frames_per_second);
+    uint64_t time           = 0;
+    uint64_t time_increment = scene::Units_per_second / frames_per_second;
 
     for (uint32_t i = 0; i < num_frames; ++i) {
         entity::Keyframe keyframe;

@@ -37,12 +37,10 @@ void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& mate
 }
 
 void Prop::morph(thread::Pool& pool) noexcept {
-    //        if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
-    //            morphable->morph(local_frame_0_.morphing.targets[0],
-    //            local_frame_0_.morphing.targets[1],
-    //                             local_frame_0_.morphing.weight, pool);
-    //        }
-    //    }
+    if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
+        auto const& m = local_frames_[0].morphing;
+        morphable->morph(m.targets[0], m.targets[1], m.weight, pool);
+    }
 }
 
 bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const
