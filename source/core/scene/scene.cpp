@@ -154,18 +154,6 @@ bool Scene::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const&
     return visible;
 }
 
-float Scene::tick_duration() const noexcept {
-    return static_cast<float>(tick_duration_);
-}
-
-float Scene::simulation_time() const noexcept {
-    return static_cast<float>(simulation_time_);
-}
-
-uint64_t Scene::current_tick() const noexcept {
-    return current_tick_;
-}
-
 entity::Entity* Scene::entity(size_t index) const noexcept {
     if (index >= entities_.size()) {
         return nullptr;
@@ -206,87 +194,24 @@ Scene::Light Scene::random_light(float random) const noexcept {
     return {*lights_[l.offset], l.pdf};
 }
 
-void Scene::tick(thread::Pool& thread_pool) noexcept {
-    float const simulation_time = static_cast<float>(simulation_time_);
-    float const tick_duration   = static_cast<float>(tick_duration_);
-
-    for (auto m : materials_) {
-        m->tick(simulation_time, tick_duration);
-    }
-
-    for (auto a : animations_) {
-        a->tick(tick_duration);
-    }
-
-    for (auto& s : animation_stages_) {
-        s.update();
-    }
-
-    for (auto p : finite_props_) {
-        p->morph(thread_pool);
-    }
-
-    compile(thread_pool);
-
-    simulation_time_ += tick_duration_;
-
-    ++current_tick_;
-}
-
-float Scene::seek(float time, thread::Pool& thread_pool) noexcept {
-    // TODO: think about time precision
-    // Using double for tick_duration_ specifically solved a particular bug.
-    // But it did not particulary boost confidence in the entire timing thing.
-
-    //	float tick_offset = std::fmod(time, tick_duration_);
-
-    // see http://stackoverflow.com/questions/4218961/why-fmod1-0-0-1-1
-    // for explanation why std::floor() variant
-    // seems to give results more in line with my expectations
-
-    const double time_d = static_cast<double>(time);
-
-    const double tick_offset_d = time_d - std::floor(time_d / tick_duration_) * tick_duration_;
-
-    const double first_tick_d = time_d - tick_offset_d;
-
-    float const first_tick = static_cast<float>(first_tick_d);
-
-    for (auto a : animations_) {
-        a->seek(first_tick);
-    }
-
-    for (auto& s : animation_stages_) {
-        s.update();
-    }
-
-    simulation_time_ = first_tick_d;
-
-    current_tick_ = static_cast<uint64_t>(first_tick_d / tick_duration_);
-
-    tick(thread_pool);
-
-    return static_cast<float>(tick_offset_d);
-}
-
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {
-    uint64_t const first_frame_start = start - (start % tick_duration_i_);
-    uint64_t const range = (end - first_frame_start);
+    uint64_t const first_frame_start = start - (start % tick_duration_);
+    uint64_t const range             = (end - first_frame_start);
 
     uint32_t const num_frames = count_frames(range);
 
     for (auto a : animations_) {
-        a->resample(first_frame_start, tick_duration_i_, num_frames);
+        a->resample(first_frame_start, tick_duration_, num_frames);
     }
 
     for (auto& s : animation_stages_) {
-        s.update_i();
+        s.update();
     }
 
-    compile(thread_pool);
+    compile(start, thread_pool);
 }
 
-void Scene::compile(thread::Pool& pool) noexcept {
+void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
 
@@ -328,7 +253,7 @@ void Scene::compile(thread::Pool& pool) noexcept {
 
     for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
         auto l = lights_[i];
-        l->prepare_sampling(i, pool);
+        l->prepare_sampling(i, time, pool);
         light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(prop_bvh_.aabb()))));
     }
 
@@ -458,7 +383,7 @@ void Scene::add_named_entity(Entity* entity, std::string const& name) noexcept {
 }
 
 uint32_t Scene::count_frames(uint64_t range) const {
-    return static_cast<uint32_t>(range / tick_duration_i_) + (range % tick_duration_i_ ? 1 : 0);
+    return static_cast<uint32_t>(range / tick_duration_) + (range % tick_duration_ ? 1 : 0);
 }
 
 }  // namespace scene

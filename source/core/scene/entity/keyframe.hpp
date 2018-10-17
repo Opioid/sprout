@@ -10,6 +10,8 @@ struct alignas(16) Keyframe {
 
     void transform(math::Transformation& result, math::Transformation const& from) const noexcept;
 
+    void transform(Keyframe& result, Keyframe const& from) const noexcept;
+
     math::Transformation transformation;
 
     struct Morphing {
@@ -19,9 +21,7 @@ struct alignas(16) Keyframe {
 
     Morphing morphing;
 
-    uint64_t time_i;
-
-    float time;
+    uint64_t time;
 };
 
 }  // namespace scene::entity

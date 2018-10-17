@@ -12,7 +12,7 @@ namespace scene::material::substitute {
 Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : material::Material(sampler_settings, two_sided) {}
 
-float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
+float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2      uv, float /*area*/,
                                         uint64_t /*time*/, Sampler_filter filter,
                                         Worker const& worker) const noexcept {
     if (emission_map_.is_valid()) {

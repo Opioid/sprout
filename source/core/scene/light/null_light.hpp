@@ -39,7 +39,7 @@ class Null_light : public Light {
 
     float3 power(math::AABB const& scene_bb) const noexcept override final;
 
-    void prepare_sampling(uint32_t light_id, thread::Pool& pool) noexcept override;
+    void prepare_sampling(uint32_t light_id, uint64_t time, thread::Pool& pool) noexcept override;
 
     bool equals(Prop const* prop, uint32_t part) const noexcept override final;
 };

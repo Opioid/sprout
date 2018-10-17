@@ -179,7 +179,7 @@ int main(int argc, char const* argv[]) {
 
             rendering_num_bytes += driver.num_bytes();
 
-            driver.render_i(take->exporters, progressor);
+            driver.render(take->exporters, progressor);
         } else {
             //			baking::Driver
             // driver(take->surface_integrator_factory,

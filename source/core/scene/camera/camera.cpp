@@ -58,7 +58,7 @@ void Camera::set_parameters(json::Value const& parameters) noexcept {
         if ("frame_duration" == n.name) {
             frame_duration_ = json::read_float(n.value);
         } else if ("frames_per_second" == n.name) {
-            float const fps = json::read_float(n.value);
+            float const    fps  = json::read_float(n.value);
             uint64_t const fpsi = json::read_uint(n.value);
             if (0.f == fps) {
                 frame_duration_ = 0.f;
@@ -104,7 +104,7 @@ void Camera::set_frame_duration(float frame_duration) noexcept {
 }
 
 uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept {
-    double const delta = static_cast<double>(frame_delta);
+    double const delta    = static_cast<double>(frame_delta);
     double const duration = static_cast<double>(frame_duration_i_);
 
     uint64_t const fdi = static_cast<uint64_t>(delta * duration + 0.5);

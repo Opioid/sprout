@@ -25,9 +25,9 @@ material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs
     return sample;
 }
 
-float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float area, uint64_t /*time*/,
-                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const
-    noexcept {
+float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float area,
+                                   uint64_t /*time*/, Sampler_filter /*filter*/,
+                                   Worker const& /*worker*/) const noexcept {
     return emittance_.radiance(area);
 }
 

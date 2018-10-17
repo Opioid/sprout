@@ -53,7 +53,7 @@ class Light {
 
     virtual ~Light() noexcept;
 
-    virtual Transformation const& transformation_at(uint64_t           time,
+    virtual Transformation const& transformation_at(uint64_t        time,
                                                     Transformation& transformation) const
         noexcept = 0;
 
@@ -79,8 +79,8 @@ class Light {
                 sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                 Sample_to& result) const noexcept;
 
-    bool sample(float3 const& p, uint64_t time, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                Worker const& worker, Sample_to& result) const noexcept;
+    bool sample(float3 const& p, uint64_t time, sampler::Sampler& sampler,
+                uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const noexcept;
 
     bool sample(uint64_t time, sampler::Sampler& sampler, uint32_t sampler_dimension,
                 math::AABB const& bounds, Worker const& worker, Sample_from& result) const noexcept;
@@ -90,7 +90,8 @@ class Light {
 
     virtual float3 power(math::AABB const& scene_bb) const noexcept = 0;
 
-    virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) noexcept = 0;
+    virtual void prepare_sampling(uint32_t light_id, uint64_t time,
+                                  thread::Pool& pool) noexcept = 0;
 
     virtual bool equals(Prop const* prop, uint32_t part) const noexcept = 0;
 

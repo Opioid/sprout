@@ -60,8 +60,8 @@ class Prop : public entity::Entity {
 
     void set_parameters(json::Value const& parameters) noexcept override;
 
-    void prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
-                          thread::Pool& pool) noexcept;
+    void prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
+                          bool material_importance_sampling, thread::Pool& pool) noexcept;
 
     float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const noexcept;
 

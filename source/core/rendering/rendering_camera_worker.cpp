@@ -14,8 +14,8 @@ namespace rendering {
 
 Camera_worker::Camera_worker(Tile_queue const& tiles) : tiles_(tiles) {}
 
-void Camera_worker::render(uint32_t view, int4 const& tile,
-                           uint32_t sample_begin, uint32_t sample_end, float normalized_tick_offset,
+void Camera_worker::render(uint32_t view, int4 const& tile, uint32_t sample_begin,
+                           uint32_t sample_end, float normalized_tick_offset,
                            float normalized_tick_slice) noexcept {
     scene::camera::Camera const& camera = *camera_;
 
@@ -68,7 +68,7 @@ void Camera_worker::render(uint32_t view, int4 const& tile,
 }
 
 void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
-            uint32_t num_samples) noexcept {
+                           uint32_t num_samples) noexcept {
     scene::camera::Camera const& camera = *camera_;
 
     auto& sensor = camera.sensor();

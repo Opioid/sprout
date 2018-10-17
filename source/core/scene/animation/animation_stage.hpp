@@ -19,8 +19,6 @@ class Stage {
 
     void update() const noexcept;
 
-    void update_i() const noexcept;
-
   private:
     entity::Entity* entity_;
     Animation*      animation_;

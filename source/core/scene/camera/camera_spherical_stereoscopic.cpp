@@ -41,8 +41,8 @@ float Spherical_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
-                                          Ray& ray) const noexcept {
+bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t frame,
+                                          uint32_t view, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float const x = d_x_ * coordinates[0];

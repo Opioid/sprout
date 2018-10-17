@@ -56,7 +56,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
         rs.geo_n = geo.geo_n;
     }
 
-    rs.time           = ray.time;
+    rs.time = ray.time;
 
     rs.uv             = geo.uv;
     rs.area           = area();

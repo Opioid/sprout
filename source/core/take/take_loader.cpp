@@ -260,6 +260,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
 
     camera->allocate_local_frame();
     camera->set_transformation(transformation);
+    camera->propagate_frame_allocation();
 
     if (sensor_value) {
         auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions());

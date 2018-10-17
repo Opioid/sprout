@@ -16,7 +16,7 @@ void Prop_light::init(Prop* prop, uint32_t part) noexcept {
     part_ = part;
 }
 
-Light::Transformation const& Prop_light::transformation_at(uint64_t           time,
+Light::Transformation const& Prop_light::transformation_at(uint64_t        time,
                                                            Transformation& transformation) const
     noexcept {
     return prop_->transformation_at(time, transformation);
@@ -126,8 +126,8 @@ float3 Prop_light::power(math::AABB const& scene_bb) const noexcept {
     }
 }
 
-void Prop_light::prepare_sampling(uint32_t light_id, thread::Pool& pool) noexcept {
-    prop_->prepare_sampling(part_, light_id, false, pool);
+void Prop_light::prepare_sampling(uint32_t light_id, uint64_t time, thread::Pool& pool) noexcept {
+    prop_->prepare_sampling(part_, light_id, time, false, pool);
 }
 
 bool Prop_light::equals(Prop const* prop, uint32_t part) const noexcept {

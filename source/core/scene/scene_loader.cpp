@@ -7,13 +7,12 @@
 #include "base/memory/variant_map.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "camera/camera.hpp"
 #include "entity/dummy.hpp"
 #include "entity/entity_extension_provider.hpp"
 #include "image/texture/texture_provider.hpp"
 #include "light/prop_image_light.hpp"
 #include "light/prop_light.hpp"
-#include "camera/camera.hpp"
-#include "take/take.hpp"
 #include "logging/logging.hpp"
 #include "prop/prop.hpp"
 #include "resource/resource_manager.inl"
@@ -28,6 +27,7 @@
 #include "shape/sphere.hpp"
 #include "shape/triangle/triangle_mesh.hpp"
 #include "shape/triangle/triangle_mesh_generator.hpp"
+#include "take/take.hpp"
 
 namespace scene {
 
@@ -45,7 +45,8 @@ Loader::Loader(resource::Manager& manager, Material_ptr const& fallback_material
 
 Loader::~Loader() {}
 
-bool Loader::load(std::string const& filename, std::string const& take_name, take::Take const& take, Scene& scene) {
+bool Loader::load(std::string const& filename, std::string const& take_name, take::Take const& take,
+                  Scene& scene) {
     bool success = true;
 
     try {

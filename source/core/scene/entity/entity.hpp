@@ -35,8 +35,6 @@ class Entity {
 
     void set_transformation(math::Transformation const& t) noexcept;
 
-    void tick(Keyframe const& frame) noexcept;
-
     void set_frames(Keyframe const* frames, uint32_t num_frames) noexcept;
 
     void calculate_world_transformation() noexcept;
@@ -60,8 +58,7 @@ class Entity {
   protected:
     void propagate_transformation() const noexcept;
 
-    void inherit_transformation(math::Transformation const* frames, uint32_t num_frames,
-                                bool animated) noexcept;
+    void inherit_transformation(Keyframe const* frames, uint32_t num_frames) noexcept;
 
     void inherit_frame_allocation(uint32_t num_frames) noexcept;
 
@@ -72,13 +69,12 @@ class Entity {
     virtual void on_set_transformation() noexcept = 0;
 
     enum class Property {
-        Animated              = 1 << 0,
-        Visible_in_camera     = 1 << 1,
-        Visible_in_reflection = 1 << 2,
-        Visible_in_shadow     = 1 << 3,
-        Propagate_visibility  = 1 << 4,
-        Masked_material       = 1 << 5,
-        Tinted_shadow         = 1 << 6
+        Visible_in_camera     = 1 << 0,
+        Visible_in_reflection = 1 << 1,
+        Visible_in_shadow     = 1 << 2,
+        Propagate_visibility  = 1 << 3,
+        Masked_material       = 1 << 4,
+        Tinted_shadow         = 1 << 5
     };
 
     flags::Flags<Property> properties_;
@@ -87,7 +83,7 @@ class Entity {
 
     uint32_t num_world_frames_ = 0;
 
-    math::Transformation* world_frames_ = nullptr;
+    Keyframe* world_frames_ = nullptr;
 
     uint32_t num_local_frames_ = 0;
 

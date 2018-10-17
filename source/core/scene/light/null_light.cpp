@@ -22,8 +22,8 @@ bool Null_light::sample(float3 const& /*p*/, Transformation const& /*transformat
     return false;
 }
 
-float3 Null_light::evaluate(Sample_to const& /*sample*/, uint64_t /*time*/, Sampler_filter /*filter*/,
-                            Worker const& /*worker*/) const noexcept {
+float3 Null_light::evaluate(Sample_to const& /*sample*/, uint64_t /*time*/,
+                            Sampler_filter /*filter*/, Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }
 
@@ -48,7 +48,8 @@ float3 Null_light::power(math::AABB const& /*scene_bb*/) const noexcept {
     return float3::identity();
 }
 
-void Null_light::prepare_sampling(uint32_t /*light_id*/, thread::Pool& /*pool*/) noexcept {}
+void Null_light::prepare_sampling(uint32_t /*light_id*/, uint64_t /*time*/,
+                                  thread::Pool& /*pool*/) noexcept {}
 
 bool Null_light::equals(Prop const* /*prop*/, uint32_t /*part*/) const noexcept {
     return false;

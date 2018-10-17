@@ -67,7 +67,8 @@ class Loader {
 
     ~Loader();
 
-    bool load(std::string const& filename, std::string const& take_name, take::Take const& take, Scene& scene);
+    bool load(std::string const& filename, std::string const& take_name, take::Take const& take,
+              Scene& scene);
 
     void register_extension_provider(std::string const& name, entity::Extension_provider* provider);
     void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);

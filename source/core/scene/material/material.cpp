@@ -62,8 +62,9 @@ float Material::opacity(float2 uv, uint64_t /*time*/, Sampler_filter filter,
     }
 }
 
-float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, float2 uv, uint64_t time,
-                                 Sampler_filter filter, Worker const& worker) const noexcept {
+float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, float2 uv,
+                                 uint64_t time, Sampler_filter filter, Worker const& worker) const
+    noexcept {
     return float3(opacity(uv, time, filter, worker));
 }
 

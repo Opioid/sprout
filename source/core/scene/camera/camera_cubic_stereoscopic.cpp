@@ -73,8 +73,8 @@ float Cubic_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t frame, uint32_t view,
-                                      scene::Ray& ray) const noexcept {
+bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t frame,
+                                      uint32_t view, scene::Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -100,8 +100,7 @@ bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint
     auto const&    transformation = transformation_at(time, temp);
 
     ray = create_ray(math::transform_point(transformation.object_to_world, eye_offset),
-                     math::transform_vector(transformation.object_to_world, direction),
-                     time);
+                     math::transform_vector(transformation.object_to_world, direction), time);
 
     return true;
 }

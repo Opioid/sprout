@@ -37,11 +37,12 @@ void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& mate
 }
 
 void Prop::morph(thread::Pool& pool) noexcept {
-//        if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
-//            morphable->morph(local_frame_0_.morphing.targets[0], local_frame_0_.morphing.targets[1],
-//                             local_frame_0_.morphing.weight, pool);
-//        }
-//    }
+    //        if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
+    //            morphable->morph(local_frame_0_.morphing.targets[0],
+    //            local_frame_0_.morphing.targets[1],
+    //                             local_frame_0_.morphing.weight, pool);
+    //        }
+    //    }
 }
 
 bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const
@@ -164,16 +165,19 @@ bool Prop::visible(uint32_t ray_depth) const noexcept {
 }
 
 void Prop::on_set_transformation() noexcept {
-    if (properties_.test(Property::Animated)) {
+    if (1 == num_world_frames_) {
+        aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world,
+                                         world_frames_[0].transformation);
+    } else {
         static uint32_t constexpr num_steps = 3;
 
         static float constexpr interval = 1.f / static_cast<float>(num_steps + 1);
 
-        math::AABB aabb = shape_->transformed_aabb(world_frames_[0]);
+        math::AABB aabb = shape_->transformed_aabb(world_frames_[0].transformation);
 
         for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
-            auto const& a = world_frames_[i];
-            auto const& b = world_frames_[i + 1];
+            auto const& a = world_frames_[i].transformation;
+            auto const& b = world_frames_[i + 1].transformation;
 
             float t = interval;
             for (uint32_t j = num_steps; j > 0; --j, t += interval) {
@@ -183,20 +187,19 @@ void Prop::on_set_transformation() noexcept {
             }
         }
 
-        aabb_ = aabb.merge(shape_->transformed_aabb(world_frames_[num_world_frames_ - 1]));
-    } else {
-        aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world, world_frames_[0]);
+        aabb_ = aabb.merge(
+            shape_->transformed_aabb(world_frames_[num_world_frames_ - 1].transformation));
     }
 }
 
 void Prop::set_parameters(json::Value const& /*parameters*/) noexcept {}
 
-void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
-                            thread::Pool& pool) noexcept {
+void Prop::prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
+                            bool material_importance_sampling, thread::Pool& pool) noexcept {
     shape_->prepare_sampling(part);
 
     Transformation temp;
-    auto const&    transformation = transformation_at(0.f, temp);
+    auto const&    transformation = transformation_at(time, temp);
 
     float const area  = shape_->area(part, transformation.scale);
     parts_[part].area = area;

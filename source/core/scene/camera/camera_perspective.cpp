@@ -33,8 +33,8 @@ float Perspective::pixel_solid_angle() const noexcept {
     return fov_ / static_cast<float>(resolution_[0]);
 }
 
-bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/, Ray& ray) const
-    noexcept {
+bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/,
+                               Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;

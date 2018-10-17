@@ -85,7 +85,7 @@ material::Sample const& Sky_baked_material::sample(float3 const& wo, Renderstate
     return sample;
 }
 
-float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2   uv, float /*area*/,
+float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2      uv, float /*area*/,
                                              uint64_t /*time*/, Sampler_filter filter,
                                              Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);

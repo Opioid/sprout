@@ -33,8 +33,8 @@ float Hemispherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/, Ray& ray) const
-    noexcept {
+bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/,
+                                 Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];

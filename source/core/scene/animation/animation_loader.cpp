@@ -53,12 +53,13 @@ std::shared_ptr<animation::Animation> load_keyframes(
         keyframe.morphing.targets[1] = 0;
         keyframe.morphing.weight     = 0.f;
 
+        keyframe.time = 0;
+
         for (auto& n : k.GetObject()) {
             std::string const node_name = n.name.GetString();
 
             if ("time" == node_name) {
-                keyframe.time_i = time(json::read_double(n.value));
-                keyframe.time = json::read_float(n.value);
+                keyframe.time = time(json::read_double(n.value));
             } else if ("transformation" == node_name) {
                 json::read_transformation(n.value, keyframe.transformation);
             } else if ("morphing" == node_name) {

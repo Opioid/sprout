@@ -13,10 +13,6 @@ void Stage::allocate_enitity_frames() const noexcept {
 }
 
 void Stage::update() const noexcept {
-    entity_->tick(animation_->interpolated_frame());
-}
-
-void Stage::update_i() const noexcept {
     entity_->set_frames(animation_->interpolated_frames(), animation_->num_interpolated_frames());
 }
 

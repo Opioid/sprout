@@ -9,8 +9,8 @@
 #include "light/null_light.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
-#include "take/take_settings.hpp"
 #include "scene_constants.hpp"
+#include "take/take_settings.hpp"
 
 namespace thread {
 class Pool;
@@ -93,12 +93,6 @@ class Scene {
     bool thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
                          float3& ta) const noexcept;
 
-    float tick_duration() const noexcept;
-
-    float simulation_time() const noexcept;
-
-    uint64_t current_tick() const noexcept;
-
     Entity* entity(size_t index) const noexcept;
     Entity* entity(std::string_view name) const noexcept;
 
@@ -112,13 +106,9 @@ class Scene {
 
     Light random_light(float random) const noexcept;
 
-    void tick(thread::Pool& thread_pool) noexcept;
-
-    float seek(float time, thread::Pool& thread_pool) noexcept;
-
     void simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept;
 
-    void compile(thread::Pool& pool) noexcept;
+    void compile(uint64_t time, thread::Pool& pool) noexcept;
 
     entity::Dummy* create_dummy() noexcept;
     entity::Dummy* create_dummy(std::string const& name) noexcept;
@@ -150,12 +140,7 @@ class Scene {
 
     take::Settings const take_settings_;
 
-    double   tick_duration_   = 1.0 / 60.0;
-    double   simulation_time_ = 0.0;
-    uint64_t current_tick_    = 0;
-
-    uint64_t tick_duration_i_ = Units_per_second / 60;
-    uint64_t simulation_time_i  = 0;
+    uint64_t tick_duration_ = Units_per_second / 60;
 
     bvh::Builder<prop::Prop> bvh_builder_;
 

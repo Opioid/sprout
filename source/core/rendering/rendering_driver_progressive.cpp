@@ -26,7 +26,7 @@ void Driver_progressive::render(exporting::Sink& exporter) {
         return;
     }
 
-    scene_.tick(thread_pool_);
+    //    scene_.tick(thread_pool_);
 
     restart();
 
@@ -102,7 +102,7 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
 
 void Driver_progressive::restart() {
     if (schedule_.recompile) {
-        scene_.compile(thread_pool_);
+        scene_.compile(0, thread_pool_);
     }
 
     schedule_.restart = false;
