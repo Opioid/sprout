@@ -32,7 +32,7 @@ float Spherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Spherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray& ray) const
+bool Spherical::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/, Ray& ray) const
     noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -49,11 +49,13 @@ bool Spherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray
 
     float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
+    uint64_t const time = absolute_time(frame, sample.time);
+
     Transformation temp;
-    auto&          transformation = transformation_at(sample.time, temp);
+    auto&          transformation = transformation_at(time, temp);
 
     ray = create_ray(transformation.position, math::transform_vector(transformation.rotation, dir),
-                     sample.time);
+                     time);
 
     return true;
 }

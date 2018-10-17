@@ -6,11 +6,22 @@
 
 namespace scene::animation {
 
+Animation::~Animation() {
+    delete[] interpolated_frames_;
+}
+
 void Animation::init(uint32_t count) noexcept {
     current_time_  = 0.f;
     current_frame_ = 0;
+    last_frame_ = 0;
     keyframes_.clear();
     keyframes_.reserve(count);
+}
+
+void Animation::allocate_interpolated_frames(uint32_t num_frames) noexcept {
+    num_interpolated_frames_ = num_frames;
+
+    interpolated_frames_ = new entity::Keyframe[num_frames];
 }
 
 void Animation::push_back(entity::Keyframe const& keyframe) noexcept {
@@ -65,12 +76,41 @@ void Animation::seek(float time) noexcept {
     tick(0.f);
 }
 
-void Animation::simulate(uint64_t begin, uint64_t end) noexcept {
+void Animation::resample(uint64_t start, uint64_t frame_length, uint32_t num_frames) noexcept {
+    uint64_t time = start;
 
+    for (uint32_t i = 0; i <= num_frames; ++i, time += frame_length) {
+        for (uint32_t j = last_frame_, len = static_cast<uint32_t>(keyframes_.size()) - 1; j < len; ++j) {
+            auto const& a = keyframes_[j];
+            auto const& b = keyframes_[j + 1];
+
+            if (time >= a.time_i && time < b.time_i) {
+                uint64_t const range = b.time_i - a.time_i;
+                uint64_t const delta = time - a.time_i;
+
+                float const t = static_cast<float>(delta) / static_cast<float>(range);
+
+                a.interpolate(interpolated_frames_[i], b, t);
+                interpolated_frames_[i].time_i = time;
+
+                break;
+            }
+
+            ++last_frame_;
+        }
+    }
 }
 
 entity::Keyframe const& Animation::interpolated_frame() const noexcept {
     return interpolated_frame_;
+}
+
+uint32_t Animation::num_interpolated_frames() const noexcept {
+    return num_interpolated_frames_;
+}
+
+entity::Keyframe const* Animation::interpolated_frames() const noexcept {
+    return interpolated_frames_;
 }
 
 }  // namespace scene::animation

@@ -23,7 +23,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     }
 }
 
-float Material::opacity(float2 /*uv*/, float /*time*/, Sampler_filter /*filter*/,
+float Material::opacity(float2 /*uv*/, uint64_t /*time*/, Sampler_filter /*filter*/,
                         Worker const& /*worker*/) const noexcept {
     return 1.f;
 }

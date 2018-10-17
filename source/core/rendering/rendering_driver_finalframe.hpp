@@ -28,9 +28,13 @@ class Driver_finalframe : public Driver {
 
     void render(Exporters& exporters, progress::Sink& progressor) noexcept;
 
+    void render_i(Exporters& exporters, progress::Sink& progressor) noexcept;
+
   private:
     void render_subframe(float normalized_tick_offset, float normalized_tick_slice,
                          float normalized_frame_slice, progress::Sink& progressor) noexcept;
+
+    void render_frame(uint32_t frame, progress::Sink& progressor) noexcept;
 
     void bake_photons(float normalized_tick_offset, float normalized_tick_slice) noexcept;
 

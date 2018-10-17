@@ -17,7 +17,7 @@ class Hemispherical : public Camera {
 
     float pixel_solid_angle() const noexcept override final;
 
-    bool generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const
+    bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view, Ray& ray) const
         noexcept override final;
 
   private:

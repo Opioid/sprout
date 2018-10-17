@@ -33,7 +33,7 @@ float Perspective::pixel_solid_angle() const noexcept {
     return fov_ / static_cast<float>(resolution_[0]);
 }
 
-bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray& ray) const
+bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/, Ray& ray) const
     noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -54,15 +54,17 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t /*view*/, R
         origin = float3::identity();
     }
 
+    uint64_t const time = absolute_time(frame, sample.time);
+
     Transformation temp;
-    auto const&    transformation = transformation_at(sample.time, temp);
+    auto const&    transformation = transformation_at(time, temp);
 
     float3 const origin_w = math::transform_point(transformation.object_to_world, origin);
 
     direction                = math::normalize(direction);
     float3 const direction_w = math::transform_vector(transformation.object_to_world, direction);
 
-    ray = create_ray(origin_w, direction_w, sample.time);
+    ray = create_ray(origin_w, direction_w, time);
 
     return true;
 }

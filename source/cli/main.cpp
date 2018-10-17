@@ -154,12 +154,7 @@ int main(int argc, char const* argv[]) {
 
     scene::Scene scene(take->settings);
 
-    if (scene_loader.load(take->scene_filename, take_name, scene)) {
-        if (take->camera_animation && take->view.camera) {
-            scene.add_animation(take->camera_animation);
-            scene.create_animation_stage(take->view.camera.get(), take->camera_animation.get());
-        }
-    } else {
+    if (!scene_loader.load(take->scene_filename, take_name, *take, scene)) {
         return 1;
     }
 
@@ -184,7 +179,7 @@ int main(int argc, char const* argv[]) {
 
             rendering_num_bytes += driver.num_bytes();
 
-            driver.render(take->exporters, progressor);
+            driver.render_i(take->exporters, progressor);
         } else {
             //			baking::Driver
             // driver(take->surface_integrator_factory,

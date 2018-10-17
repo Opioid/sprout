@@ -3,7 +3,7 @@
 
 namespace scene::light {
 
-Light::Transformation const& Null_light::transformation_at(float /*time*/,
+Light::Transformation const& Null_light::transformation_at(uint64_t /*time*/,
                                                            Transformation& transformation) const
     noexcept {
     return transformation;
@@ -22,7 +22,7 @@ bool Null_light::sample(float3 const& /*p*/, Transformation const& /*transformat
     return false;
 }
 
-float3 Null_light::evaluate(Sample_to const& /*sample*/, float /*time*/, Sampler_filter /*filter*/,
+float3 Null_light::evaluate(Sample_to const& /*sample*/, uint64_t /*time*/, Sampler_filter /*filter*/,
                             Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }

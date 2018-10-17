@@ -52,7 +52,7 @@ float Material::emission_pdf(float2 /*uv*/, Sampler_filter /*filter*/,
     return 1.f;
 }
 
-float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter,
+float Material::opacity(float2 uv, uint64_t /*time*/, Sampler_filter filter,
                         Worker const& worker) const noexcept {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key_, filter);
@@ -62,7 +62,7 @@ float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter,
     }
 }
 
-float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, float2 uv, float time,
+float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, float2 uv, uint64_t time,
                                  Sampler_filter filter, Worker const& worker) const noexcept {
     return float3(opacity(uv, time, filter, worker));
 }

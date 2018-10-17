@@ -65,10 +65,21 @@ Scene::~Scene() noexcept {
     }
 }
 
-void Scene::finish() noexcept {
+void Scene::finish(uint64_t frame_length) noexcept {
     if (lights_.empty()) {
         lights_.push_back(&null_light_);
     }
+
+    uint32_t const num_frames = count_frames(frame_length) + 1;
+
+    for (auto a : animations_) {
+        a->allocate_interpolated_frames(num_frames);
+    }
+
+    for (auto& s : animation_stages_) {
+        s.allocate_enitity_frames();
+    }
+
 }
 
 math::AABB const& Scene::aabb() const noexcept {
@@ -255,6 +266,23 @@ float Scene::seek(float time, thread::Pool& thread_pool) noexcept {
     return static_cast<float>(tick_offset_d);
 }
 
+void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {
+    uint64_t const first_frame_start = start - (start % tick_duration_i_);
+    uint64_t const range = (end - first_frame_start);
+
+    uint32_t const num_frames = count_frames(range);
+
+    for (auto a : animations_) {
+        a->resample(first_frame_start, tick_duration_i_, num_frames);
+    }
+
+    for (auto& s : animation_stages_) {
+        s.update_i();
+    }
+
+    compile(thread_pool);
+}
+
 void Scene::compile(thread::Pool& pool) noexcept {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
@@ -424,6 +452,10 @@ void Scene::add_named_entity(Entity* entity, std::string const& name) noexcept {
     }
 
     named_entities_[name] = entity;
+}
+
+uint32_t Scene::count_frames(uint64_t range) const {
+    return static_cast<uint32_t>(range / tick_duration_i_) + (range % tick_duration_i_ ? 1 : 0);
 }
 
 }  // namespace scene

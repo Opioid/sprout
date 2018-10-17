@@ -27,12 +27,12 @@ inline float Intersection::area() const noexcept {
     return prop->area(geo.part);
 }
 
-inline float Intersection::opacity(float time, Sampler_filter filter, Worker const& worker) const
+inline float Intersection::opacity(uint64_t time, Sampler_filter filter, Worker const& worker) const
     noexcept {
     return material()->opacity(geo.uv, time, filter, worker);
 }
 
-inline float3 Intersection::thin_absorption(float3 const& wo, float time, Sampler_filter filter,
+inline float3 Intersection::thin_absorption(float3 const& wo, uint64_t time, Sampler_filter filter,
                                             Worker const& worker) const noexcept {
     return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
 }
@@ -56,9 +56,10 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
         rs.geo_n = geo.geo_n;
     }
 
+    rs.time           = ray.time;
+
     rs.uv             = geo.uv;
     rs.area           = area();
-    rs.time           = ray.time;
     rs.ior            = worker.ior_outside(wo, *this);
     rs.wavelength     = ray.wavelength;
     rs.subsurface     = subsurface;

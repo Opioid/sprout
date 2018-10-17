@@ -19,6 +19,8 @@ class Entity {
 
     virtual void set_parameters(json::Value const& parameters) noexcept = 0;
 
+    void allocate_frames(uint32_t num_frames);
+
     math::Transformation const& local_frame_a() const noexcept;
 
     // Only the returned reference is guaranteed to contain the actual transformation data.
@@ -26,12 +28,14 @@ class Entity {
     // depending on whether the entity is animated or not.
     // This can sometimes avoid a relatively costly copy,
     // while keeping the animated state out of the interface.
-    Transformation const& transformation_at(float tick_delta, Transformation& transformation) const
+    Transformation const& transformation_at(uint64_t time, Transformation& transformation) const
         noexcept;
 
     void set_transformation(math::Transformation const& t) noexcept;
 
     void tick(Keyframe const& frame) noexcept;
+
+    void set_frames(Keyframe const* frames, uint32_t num_frames) noexcept;
 
     void calculate_world_transformation() noexcept;
 

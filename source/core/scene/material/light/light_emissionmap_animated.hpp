@@ -35,7 +35,7 @@ class Emissionmap_animated : public Material {
     float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 
-    float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const
+    float opacity(float2 uv, uint64_t time, Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 
     void prepare_sampling(shape::Shape const& shape, uint32_t part,

@@ -53,7 +53,7 @@ class Light {
 
     virtual ~Light() noexcept;
 
-    virtual Transformation const& transformation_at(float           time,
+    virtual Transformation const& transformation_at(uint64_t           time,
                                                     Transformation& transformation) const
         noexcept = 0;
 
@@ -65,7 +65,7 @@ class Light {
                         sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const noexcept = 0;
 
-    virtual float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+    virtual float3 evaluate(Sample_to const& sample, uint64_t time, Sampler_filter filter,
                             Worker const& worker) const noexcept = 0;
 
     virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
@@ -75,14 +75,14 @@ class Light {
     virtual float3 evaluate(Sample_from const& sample, float time, Sampler_filter filter,
                             Worker const& worker) const noexcept = 0;
 
-    bool sample(float3 const& p, float3 const& n, float time, bool total_sphere,
+    bool sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
                 sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                 Sample_to& result) const noexcept;
 
-    bool sample(float3 const& p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(float3 const& p, uint64_t time, sampler::Sampler& sampler, uint32_t sampler_dimension,
                 Worker const& worker, Sample_to& result) const noexcept;
 
-    bool sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(uint64_t time, sampler::Sampler& sampler, uint32_t sampler_dimension,
                 math::AABB const& bounds, Worker const& worker, Sample_from& result) const noexcept;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,

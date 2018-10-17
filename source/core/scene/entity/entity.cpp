@@ -4,20 +4,53 @@
 
 namespace scene::entity {
 
-Entity::~Entity() noexcept {}
+Entity::~Entity() noexcept {
+    delete [] local_frames_;
+    delete [] world_frames_;
+}
+
+void Entity::allocate_frames(uint32_t num_frames) {
+    num_world_frames_ = num_frames;
+
+    world_frames_ = new math::Transformation[num_frames];
+
+    num_local_frames_ = num_frames;
+
+    local_frames_ = new Keyframe[num_frames];
+}
 
 math::Transformation const& Entity::local_frame_a() const noexcept {
     return local_frame_a_.transformation;
 }
 
-Composed_transformation const& Entity::transformation_at(float           tick_delta,
+Composed_transformation const& Entity::transformation_at(uint64_t           time,
                                                          Transformation& transformation) const
     noexcept {
     if (properties_.test_not(Property::Animated)) {
         return world_transformation_;
     }
 
-    transformation.set(math::lerp(world_frame_a_, world_frame_b_, tick_delta));
+ //   transformation.set(math::lerp(world_frame_a_, world_frame_b_, tick_delta));
+
+        for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
+            uint64_t const a_time = local_frames_[i].time_i;
+            uint64_t const b_time = local_frames_[i + 1].time_i;
+
+            if (time >= a_time && time < b_time) {
+                uint64_t const range = b_time - a_time;
+                uint64_t const delta = time - a_time;
+
+                float const t = static_cast<float>(delta) / static_cast<float>(range);
+
+                auto const& a = world_frames_[i];
+                auto const& b = world_frames_[i + 1];
+
+                transformation.set(math::lerp(a, b, t));
+
+                break;
+            }
+        }
+
 
     return transformation;
 }
@@ -49,10 +82,24 @@ void Entity::tick(Keyframe const& frame) noexcept {
     properties_.set(Property::Animated, changed);
 }
 
+void Entity::set_frames(Keyframe const* frames, uint32_t num_frames) noexcept {
+    // num_local_frames_ = num_frames;
+
+    for (uint32_t i = 0; i < num_frames; ++i) {
+        local_frames_[i] = frames[i];
+    }
+
+    properties_.set(Property::Animated, true);
+}
+
 void Entity::calculate_world_transformation() noexcept {
     if (!parent_) {
         world_frame_a_ = local_frame_a_.transformation;
         world_frame_b_ = local_frame_b_.transformation;
+
+        for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
+            world_frames_[i] = local_frames_[i].transformation;
+        }
 
         propagate_transformation();
 

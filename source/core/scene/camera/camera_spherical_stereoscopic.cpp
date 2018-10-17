@@ -41,7 +41,7 @@ float Spherical_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t view,
+bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
                                           Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -62,11 +62,13 @@ bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t 
     math::set_rotation_y(rotation, phi);
     float3 const eye_pos = math::transform_vector(rotation, eye_offsets_[view]);
 
+    uint64_t const time = absolute_time(frame, sample.time);
+
     Transformation temp;
-    auto const&    transformation = transformation_at(sample.time, temp);
+    auto const&    transformation = transformation_at(time, temp);
 
     ray = create_ray(math::transform_point(transformation.object_to_world, eye_pos),
-                     math::transform_vector(transformation.rotation, dir), sample.time);
+                     math::transform_vector(transformation.rotation, dir), time);
 
     return true;
 }

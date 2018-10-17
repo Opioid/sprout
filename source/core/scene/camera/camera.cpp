@@ -103,17 +103,13 @@ void Camera::set_frame_duration(float frame_duration) noexcept {
     frame_duration_ = frame_duration;
 }
 
-void Camera::set_current_frame(uint32_t current_frame) noexcept {
-    current_frame_ = current_frame;
-}
-
-uint64_t Camera::absolute_time(float frame_delta) const noexcept {
+uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept {
     double const delta = static_cast<double>(frame_delta);
     double const duration = static_cast<double>(frame_duration_i_);
 
     uint64_t const fdi = static_cast<uint64_t>(delta * duration + 0.5);
 
-    return static_cast<uint64_t>(current_frame_) * frame_duration_i_ + fdi;
+    return static_cast<uint64_t>(frame) * frame_duration_i_ + fdi;
 }
 
 bool Camera::motion_blur() const noexcept {
@@ -126,7 +122,7 @@ void Camera::set_motion_blur(bool motion_blur) noexcept {
 
 void Camera::on_set_transformation() noexcept {}
 
-Ray Camera::create_ray(float3 const& origin, float3 const& direction, float time) noexcept {
+Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept {
     return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);
 }
 

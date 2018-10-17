@@ -44,7 +44,7 @@ class Camera : public entity::Entity {
 
     void update(Scene const& scene, Worker& worker) noexcept;
 
-    virtual bool generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const
+    virtual bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view, Ray& ray) const
         noexcept = 0;
 
     void set_parameters(json::Value const& parameters) noexcept override final;
@@ -62,9 +62,7 @@ class Camera : public entity::Entity {
 
     void set_frame_duration(float frame_duration) noexcept;
 
-    void set_current_frame(uint32_t current_frame) noexcept;
-
-    uint64_t absolute_time(float frame_delta) const noexcept;
+    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
 
     bool motion_blur() const noexcept;
 
@@ -77,7 +75,7 @@ class Camera : public entity::Entity {
 
     void on_set_transformation() noexcept override final;
 
-    static Ray create_ray(float3 const& origin, float3 const& direction, float time) noexcept;
+    static Ray create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept;
 
     int2 resolution_;
 
@@ -91,8 +89,6 @@ class Camera : public entity::Entity {
     float frame_duration_ = 1.f / 60.f;
 
     uint64_t frame_duration_i_ = scene::Units_per_second / 60;
-
-    uint32_t current_frame_ = 0;
 
     bool motion_blur_ = true;
 };

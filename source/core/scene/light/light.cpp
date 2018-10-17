@@ -7,7 +7,7 @@ namespace scene::light {
 
 Light::~Light() noexcept {}
 
-bool Light::sample(float3 const& p, float3 const& n, float time, bool total_sphere,
+bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
                    sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                    Sample_to& result) const noexcept {
     Transformation temp;
@@ -16,7 +16,7 @@ bool Light::sample(float3 const& p, float3 const& n, float time, bool total_sphe
     return sample(p, n, transformation, total_sphere, sampler, sampler_dimension, worker, result);
 }
 
-bool Light::sample(float3 const& p, float time, sampler::Sampler& sampler,
+bool Light::sample(float3 const& p, uint64_t time, sampler::Sampler& sampler,
                    uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const
     noexcept {
     Transformation temp;
@@ -25,7 +25,7 @@ bool Light::sample(float3 const& p, float time, sampler::Sampler& sampler,
     return sample(p, transformation, sampler, sampler_dimension, worker, result);
 }
 
-bool Light::sample(float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
+bool Light::sample(uint64_t time, sampler::Sampler& sampler, uint32_t sampler_dimension,
                    math::AABB const& bounds, Worker const& worker, Sample_from& result) const
     noexcept {
     Transformation temp;

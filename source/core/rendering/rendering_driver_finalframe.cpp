@@ -42,8 +42,6 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
         auto const render_start = std::chrono::high_resolution_clock::now();
 
-        camera.set_current_frame(current_frame);
-
         sensor.clear();
         current_sample_ = 0;
 
@@ -126,6 +124,50 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
     }
 }
 
+void Driver_finalframe::render_i(Exporters& exporters, progress::Sink& progressor) noexcept {
+    photons_baked_ = false;
+
+    auto& camera = *view_.camera;
+    auto& sensor = camera.sensor();
+
+    uint32_t const progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
+                                                             view_.num_samples_per_pixel);
+
+    for (uint32_t f = 0; f < view_.num_frames; ++f) {
+        uint32_t const current_frame = view_.start_frame + f;
+        logging::info("Frame " + string::to_string(current_frame));
+
+        auto const render_start = std::chrono::high_resolution_clock::now();
+
+        sensor.clear();
+        current_sample_ = 0;
+
+        progressor.start(progress_range);
+
+        scene_.simulate(current_frame * camera.frame_duration_i(), (current_frame + 1) * camera.frame_duration_i(), thread_pool_);
+
+        camera.update(scene_, workers_[0]);
+
+        render_frame(current_frame, progressor);
+
+        progressor.end();
+
+        auto const render_duration = chrono::seconds_since(render_start);
+        logging::info("Render time " + string::to_string(render_duration) + " s");
+
+        auto const export_start = std::chrono::high_resolution_clock::now();
+
+        view_.pipeline.apply(sensor, target_, thread_pool_);
+
+        for (auto& e : exporters) {
+            e->write(target_, current_frame, thread_pool_);
+        }
+
+        auto const export_duration = chrono::seconds_since(export_start);
+        logging::info("Export time " + string::to_string(export_duration) + " s");
+    }
+}
+
 void Driver_finalframe::render_subframe(float normalized_tick_offset, float normalized_tick_slice,
                                         float           normalized_frame_slice,
                                         progress::Sink& progressor) noexcept {
@@ -161,6 +203,29 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset, float norm
     }
 
     current_sample_ = sample_end;
+}
+
+void Driver_finalframe::render_frame(uint32_t frame, progress::Sink& progressor) noexcept {
+    bake_photons(0.f, 1.f);
+
+    uint32_t const num_samples = view_.num_samples_per_pixel;
+
+    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+        tiles_.restart();
+
+        thread_pool_.run_parallel([
+            this, frame, v, num_samples,
+            &progressor
+        ](uint32_t index) noexcept {
+            auto& worker = workers_[index];
+
+            for (int4 tile; tiles_.pop(tile);) {
+                worker.render(frame, v, tile, num_samples);
+
+                progressor.tick();
+            }
+        });
+    }
 }
 
 void Driver_finalframe::bake_photons(float normalized_tick_offset,

@@ -87,10 +87,10 @@ class Material {
     virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
         noexcept;
 
-    virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const
+    virtual float opacity(float2 uv, uint64_t time, Sampler_filter filter, Worker const& worker) const
         noexcept;
 
-    virtual float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, float time,
+    virtual float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, uint64_t time,
                                    Sampler_filter filter, Worker const& worker) const noexcept;
 
     virtual float3 emission(math::Ray const& ray, Transformation const& transformation,

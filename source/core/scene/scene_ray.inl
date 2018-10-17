@@ -7,7 +7,7 @@
 namespace scene {
 
 inline Ray::Ray(float3 const& origin, float3 const& direction, float min_t, float max_t,
-                uint32_t depth, float time, float wavelength /*, Properties properties*/) noexcept
+                uint32_t depth, uint64_t time, float wavelength /*, Properties properties*/) noexcept
     : math::Ray(origin, direction, min_t, max_t, depth),
       time(time),
       wavelength(wavelength) /*, properties(properties)*/ {}

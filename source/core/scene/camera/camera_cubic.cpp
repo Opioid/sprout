@@ -75,19 +75,21 @@ float Cubic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic::generate_ray(Camera_sample const& sample, uint32_t view, Ray& ray) const noexcept {
+bool Cubic::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
     direction = math::normalize(math::transform_vector(view_rotations_[view], direction));
 
+    uint64_t const time = absolute_time(frame, sample.time);
+
     Transformation temp;
-    auto const&    transformation = transformation_at(0.f, temp);
+    auto const&    transformation = transformation_at(time, temp);
 
     ray = create_ray(math::transform_point(transformation.object_to_world, float3(0.f)),
                      math::transform_vector(transformation.object_to_world, direction),
-                     sample.time);
+                     time);
 
     return true;
 }

@@ -86,7 +86,7 @@ float Emissionmap_animated::emission_pdf(float2 uv, Sampler_filter filter,
     return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-float Emissionmap_animated::opacity(float2 uv, float /*time*/, Sampler_filter filter,
+float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Sampler_filter filter,
                                     Worker const& worker) const noexcept {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);

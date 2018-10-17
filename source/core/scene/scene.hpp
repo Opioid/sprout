@@ -67,7 +67,7 @@ class Scene {
 
     ~Scene() noexcept;
 
-    void finish() noexcept;
+    void finish(uint64_t frame_length) noexcept;
 
     math::AABB const& aabb() const noexcept;
 
@@ -116,6 +116,8 @@ class Scene {
 
     float seek(float time, thread::Pool& thread_pool) noexcept;
 
+    void simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept;
+
     void compile(thread::Pool& pool) noexcept;
 
     entity::Dummy* create_dummy() noexcept;
@@ -143,6 +145,8 @@ class Scene {
 
   private:
     void add_named_entity(Entity* entity, std::string const& name) noexcept;
+
+    uint32_t count_frames(uint64_t range) const;
 
     take::Settings const take_settings_;
 

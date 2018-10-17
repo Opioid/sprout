@@ -33,7 +33,7 @@ float Hemispherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/, Ray& ray) const
+bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/, Ray& ray) const
     noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -50,14 +50,16 @@ bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t /*view*/,
 
     float3 dir = math::disk_to_hemisphere_equidistant(float2(x, y));
 
+    uint64_t const time = absolute_time(frame, sample.time);
+
     Transformation temp;
-    auto&          transformation = transformation_at(sample.time, temp);
+    auto&          transformation = transformation_at(time, temp);
 
     ray.origin = transformation.position;
     ray.set_direction(math::transform_vector(transformation.rotation, dir));
     ray.min_t = 0.f;
     ray.max_t = Ray_max_t;
-    ray.time  = sample.time;
+    ray.time  = time;
     ray.depth = 0;
 
     return true;

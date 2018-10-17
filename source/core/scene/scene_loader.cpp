@@ -12,6 +12,8 @@
 #include "image/texture/texture_provider.hpp"
 #include "light/prop_image_light.hpp"
 #include "light/prop_light.hpp"
+#include "camera/camera.hpp"
+#include "take/take.hpp"
 #include "logging/logging.hpp"
 #include "prop/prop.hpp"
 #include "resource/resource_manager.inl"
@@ -43,7 +45,7 @@ Loader::Loader(resource::Manager& manager, Material_ptr const& fallback_material
 
 Loader::~Loader() {}
 
-bool Loader::load(std::string const& filename, std::string const& take_name, Scene& scene) {
+bool Loader::load(std::string const& filename, std::string const& take_name, take::Take const& take, Scene& scene) {
     bool success = true;
 
     try {
@@ -76,7 +78,12 @@ bool Loader::load(std::string const& filename, std::string const& take_name, Sce
 
         filesystem.pop_mount();
 
-        scene.finish();
+        if (take.camera_animation && take.view.camera) {
+            scene.add_animation(take.camera_animation);
+            scene.create_animation_stage(take.view.camera.get(), take.camera_animation.get());
+        }
+
+        scene.finish(take.view.camera ? take.view.camera->frame_duration_i() : 0);
     } catch (std::exception& e) {
         success = false;
         logging::error("Scene \"" + filename + "\" could not be loaded: " + e.what() + ".");
@@ -205,8 +212,10 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
                 scene.add_animation(animation);
                 scene.create_animation_stage(entity, animation.get());
             }
-        } /*else*/
-        { entity->set_transformation(transformation); }
+        } else {
+            entity->allocate_frames(1);
+            entity->set_transformation(transformation);
+        }
 
         if (visibility) {
             set_visibility(entity, *visibility);

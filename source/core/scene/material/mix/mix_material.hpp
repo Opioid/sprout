@@ -13,7 +13,7 @@ class Material : public material::Material {
                                            Worker const& worker, uint32_t depth) const
         noexcept override final;
 
-    virtual float opacity(float2 uv, float time, Sampler_filter filter, Worker const& worker) const
+    virtual float opacity(float2 uv, uint64_t time, Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 
     virtual bool is_masked() const noexcept override final;

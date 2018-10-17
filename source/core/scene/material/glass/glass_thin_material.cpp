@@ -34,7 +34,7 @@ material::Sample const& Glass_thin::sample(float3 const& wo, Renderstate const& 
     return sample;
 }
 
-float3 Glass_thin::thin_absorption(float3 const& wo, float3 const& n, float2 uv, float time,
+float3 Glass_thin::thin_absorption(float3 const& wo, float3 const& n, float2 uv, uint64_t time,
                                    Sampler_filter filter, Worker const& worker) const noexcept {
     float const n_dot_wi              = clamp_abs_dot(wo, n);
     float const approximated_distance = thickness_ / n_dot_wi;

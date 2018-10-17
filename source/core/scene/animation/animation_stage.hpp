@@ -13,9 +13,13 @@ class Animation;
 
 class Stage {
   public:
-    Stage(entity::Entity* entity, Animation* animation);
+    Stage(entity::Entity* entity, Animation* animation) noexcept;
 
-    void update();
+    void allocate_enitity_frames() const noexcept;
+
+    void update() const noexcept;
+
+    void update_i() const noexcept;
 
   private:
     entity::Entity* entity_;

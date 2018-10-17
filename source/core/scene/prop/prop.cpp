@@ -172,14 +172,19 @@ void Prop::on_set_transformation() noexcept {
 
         math::AABB aabb = shape_->transformed_aabb(world_frame_a_);
 
-        float t = interval;
-        for (uint32_t i = num_steps; i > 0; --i, t += interval) {
-            const math::Transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
+        for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
+            auto const& a = world_frames_[i];
+            auto const& b = world_frames_[i + 1];
 
-            aabb.merge_assign(shape_->transformed_aabb(interpolated));
+            float t = interval;
+            for (uint32_t j = num_steps; j > 0; --j, t += interval) {
+                math::Transformation const interpolated = math::lerp(a, b, t);
+
+                aabb.merge_assign(shape_->transformed_aabb(interpolated));
+            }
         }
 
-        aabb_ = aabb.merge(shape_->transformed_aabb(world_frame_b_));
+        aabb_ = aabb.merge(shape_->transformed_aabb(world_frames_[num_world_frames_ - 1]));
     } else {
         aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world, world_frame_a_);
     }

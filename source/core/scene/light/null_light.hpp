@@ -13,7 +13,7 @@ namespace light {
 
 class Null_light : public Light {
   public:
-    Transformation const& transformation_at(float time, Transformation& transformation) const
+    Transformation const& transformation_at(uint64_t time, Transformation& transformation) const
         noexcept override final;
 
     bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
@@ -24,7 +24,7 @@ class Null_light : public Light {
                 uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const
         noexcept override final;
 
-    float3 evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+    float3 evaluate(Sample_to const& sample, uint64_t time, Sampler_filter filter,
                     Worker const& worker) const noexcept override final;
 
     bool sample(Transformation const& transformation, sampler::Sampler& sampler,

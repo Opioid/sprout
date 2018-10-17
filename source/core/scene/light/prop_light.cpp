@@ -16,7 +16,7 @@ void Prop_light::init(Prop* prop, uint32_t part) noexcept {
     part_ = part;
 }
 
-Light::Transformation const& Prop_light::transformation_at(float           time,
+Light::Transformation const& Prop_light::transformation_at(uint64_t           time,
                                                            Transformation& transformation) const
     noexcept {
     return prop_->transformation_at(time, transformation);
@@ -67,7 +67,7 @@ bool Prop_light::sample(float3 const& p, Transformation const& transformation,
     return true;
 }
 
-float3 Prop_light::evaluate(Sample_to const& sample, float time, Sampler_filter filter,
+float3 Prop_light::evaluate(Sample_to const& sample, uint64_t time, Sampler_filter filter,
                             Worker const& worker) const noexcept {
     auto const material = prop_->material(part_);
 

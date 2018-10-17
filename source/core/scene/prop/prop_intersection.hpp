@@ -37,9 +37,9 @@ struct Intersection {
 
     float area() const noexcept;
 
-    float opacity(float time, Sampler_filter filter, Worker const& worker) const noexcept;
+    float opacity(uint64_t time, Sampler_filter filter, Worker const& worker) const noexcept;
 
-    float3 thin_absorption(float3 const& wo, float const time, Sampler_filter filter,
+    float3 thin_absorption(float3 const& wo, uint64_t time, Sampler_filter filter,
                            Worker const& worker) const noexcept;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Sampler_filter filter,
