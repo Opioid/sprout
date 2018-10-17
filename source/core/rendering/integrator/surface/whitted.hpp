@@ -23,7 +23,7 @@ class alignas(64) Whitted final : public Integrator {
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
-    void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
+    void start_pixel() noexcept override final;
 
     float3 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) noexcept override final;

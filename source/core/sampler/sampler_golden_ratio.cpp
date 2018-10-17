@@ -55,19 +55,19 @@ void Golden_ratio::on_resize() noexcept {
     samples_1D_ = buffer + num_samples_ * 2 * num_dimensions_2D_;
 }
 
-void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) noexcept {
+void Golden_ratio::on_start_pixel() noexcept {
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
-        float2 const r(scramble.random_float(), scramble.random_float());
+        float2 const r(rng_.random_float(), rng_.random_float());
 
         float2* begin = samples_2D_ + i * num_samples_;
         math::golden_ratio(begin, num_samples_, r);
-        rnd::biased_shuffle(begin, num_samples_, scramble);
+        rnd::biased_shuffle(begin, num_samples_, rng_);
     }
 
     for (uint32_t i = 0, len = num_dimensions_1D_; i < len; ++i) {
         float* begin = samples_1D_ + i * num_samples_;
-        math::golden_ratio(begin, num_samples_, scramble.random_float());
-        rnd::biased_shuffle(begin, num_samples_, scramble);
+        math::golden_ratio(begin, num_samples_, rng_.random_float());
+        rnd::biased_shuffle(begin, num_samples_, rng_);
     }
 }
 

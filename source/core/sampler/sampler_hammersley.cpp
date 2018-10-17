@@ -29,8 +29,8 @@ size_t Hammersley::num_bytes() const noexcept {
 
 void Hammersley::on_resize() noexcept {}
 
-void Hammersley::on_resume_pixel(rnd::Generator& scramble) noexcept {
-    scramble_ = scramble.random_uint();
+void Hammersley::on_start_pixel() noexcept {
+    scramble_ = rng_.random_uint();
 }
 
 Hammersley_factory::Hammersley_factory(uint32_t num_samplers) noexcept

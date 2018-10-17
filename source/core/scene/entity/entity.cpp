@@ -3,8 +3,6 @@
 #include "composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 
-#include <iostream>
-
 namespace scene::entity {
 
 Entity::~Entity() noexcept {

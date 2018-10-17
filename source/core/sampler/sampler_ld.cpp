@@ -33,8 +33,8 @@ size_t LD::num_bytes() const noexcept {
 
 void LD::on_resize() noexcept {}
 
-void LD::on_resume_pixel(rnd::Generator& scramble) noexcept {
-    scramble_ = uint2(scramble.random_uint(), scramble.random_uint());
+void LD::on_start_pixel() noexcept {
+    scramble_ = uint2(rng_.random_uint(), rng_.random_uint());
 }
 
 LD_factory::LD_factory(uint32_t num_samplers) noexcept

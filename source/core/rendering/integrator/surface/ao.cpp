@@ -18,8 +18,8 @@ void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcep
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 
-void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
-    sampler_.resume_pixel(sample, scramble);
+void AO::start_pixel() noexcept {
+    sampler_.start_pixel();
 }
 
 float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker,

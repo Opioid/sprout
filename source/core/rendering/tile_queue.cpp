@@ -13,7 +13,6 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
                  static_cast<uint32_t>(std::ceil(static_cast<float>(resolution[1]) /
                                                  static_cast<float>(tile_dimensions[1])))),
       tiles_(memory::allocate_aligned<int4>(num_tiles_)),
-      rng_states_(memory::allocate_aligned<rnd::Generator::State>(num_tiles_)),
       current_consume_(num_tiles_) {
     int2 current_pixel(0, 0);
     for (;;) {
@@ -52,7 +51,6 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
 }
 
 Tile_queue::~Tile_queue() noexcept {
-    memory::free_aligned(rng_states_);
     memory::free_aligned(tiles_);
 }
 
@@ -81,15 +79,6 @@ uint32_t Tile_queue::index(int4 const& tile) const noexcept {
     int32_t const y = std::max(tile[1], 0) / tile_dimensions_[1];
 
     return static_cast<uint32_t>(y * tiles_per_row_ + x);
-}
-
-rnd::Generator::State const& Tile_queue::random_state(uint32_t index) const noexcept {
-    return rng_states_[index];
-}
-
-void Tile_queue::set_random_state(uint32_t index, rnd::Generator::State const& state) const
-    noexcept {
-    rng_states_[index] = state;
 }
 
 void Tile_queue::push(int4 const& tile) noexcept {

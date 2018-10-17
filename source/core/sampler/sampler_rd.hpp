@@ -22,7 +22,7 @@ class alignas(64) RD : public Sampler {
   private:
     void on_resize() noexcept override final;
 
-    void on_resume_pixel(rnd::Generator& scramble) noexcept override final;
+    void on_start_pixel() noexcept override final;
 
     float2* seeds_2D_;
     float*  seeds_1D_;

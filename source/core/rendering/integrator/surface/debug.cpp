@@ -16,7 +16,7 @@ Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings,
 
 void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
 
-void Debug::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
+void Debug::start_pixel() noexcept {}
 
 float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
                  Interface_stack const& initial_stack) noexcept {

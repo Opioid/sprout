@@ -42,7 +42,7 @@ class Mapper : public Integrator {
 
     void prepare(Scene const& scene, uint32_t num_photons) noexcept override final;
 
-    void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
+    void start_pixel() noexcept override final;
 
     uint32_t bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
                   float normalized_tick_slice, Worker& worker) noexcept;

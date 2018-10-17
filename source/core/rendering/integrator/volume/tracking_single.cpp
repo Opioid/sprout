@@ -28,7 +28,7 @@ void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_p
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
-void Tracking_single::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
+void Tracking_single::start_pixel() noexcept {}
 /*
 static inline void max_probabilities(float mt,
                                                                          float3 const& mu_a,

@@ -80,13 +80,13 @@ void RD::on_resize() noexcept {
     seeds_1D_ = seeds + 2 * num_dimensions_2D_;
 }
 
-void RD::on_resume_pixel(rnd::Generator& scramble) noexcept {
+void RD::on_start_pixel() noexcept {
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
-        seeds_2D_[i] = float2(scramble.random_float(), scramble.random_float());
+        seeds_2D_[i] = float2(rng_.random_float(), rng_.random_float());
     }
 
     for (uint32_t i = 0, len = num_dimensions_1D_; i < len; ++i) {
-        seeds_1D_[i] = scramble.random_float();
+        seeds_1D_[i] = rng_.random_float();
     }
 }
 

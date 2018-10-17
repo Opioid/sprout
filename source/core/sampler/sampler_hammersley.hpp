@@ -19,7 +19,7 @@ class alignas(64) Hammersley : public Sampler {
   private:
     void on_resize() noexcept override final;
 
-    void on_resume_pixel(rnd::Generator& scramble) noexcept override final;
+    void on_start_pixel() noexcept override final;
 
     uint32_t scramble_;
 };

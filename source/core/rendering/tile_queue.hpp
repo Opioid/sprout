@@ -22,10 +22,6 @@ class Tile_queue {
 
     uint32_t index(int4 const& tile) const noexcept;
 
-    rnd::Generator::State const& random_state(uint32_t index) const noexcept;
-
-    void set_random_state(uint32_t index, rnd::Generator::State const& state) const noexcept;
-
   private:
     void push(int4 const& tile) noexcept;
 
@@ -36,8 +32,6 @@ class Tile_queue {
     uint32_t const num_tiles_;
 
     int4* tiles_;
-
-    rnd::Generator::State* rng_states_;
 
     std::atomic<uint32_t> current_consume_;
 };

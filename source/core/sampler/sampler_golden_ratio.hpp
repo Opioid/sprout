@@ -22,7 +22,7 @@ class alignas(64) Golden_ratio final : public Sampler {
   private:
     void on_resize() noexcept override final;
 
-    void on_resume_pixel(rnd::Generator& scramble) noexcept override final;
+    void on_start_pixel() noexcept override final;
 
     float2* samples_2D_;
     float*  samples_1D_;

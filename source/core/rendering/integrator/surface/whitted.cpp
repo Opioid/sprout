@@ -25,8 +25,8 @@ void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexce
     sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
 }
 
-void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
-    sampler_.resume_pixel(sample, scramble);
+void Whitted::start_pixel() noexcept {
+    sampler_.start_pixel();
 }
 
 float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,

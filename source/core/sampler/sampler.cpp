@@ -39,14 +39,12 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
     }
 }
 
-void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) noexcept {
-    uint32_t const sample = iteration * num_samples_per_iteration_;
-
+void Sampler::start_pixel() noexcept {
     for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
-        current_sample_2D_[i] = sample;
+        current_sample_2D_[i] = 0;
     }
 
-    on_resume_pixel(scramble);
+    on_start_pixel();
 }
 
 rnd::Generator& Sampler::rng() noexcept {

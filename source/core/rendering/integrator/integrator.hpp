@@ -71,7 +71,7 @@ class Integrator {
 
     virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept = 0;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept = 0;
+    virtual void start_pixel() noexcept = 0;
 
     virtual size_t num_bytes() const noexcept = 0;
 

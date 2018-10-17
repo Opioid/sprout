@@ -28,7 +28,7 @@ size_t Uniform::num_bytes() const noexcept {
 
 void Uniform::on_resize() noexcept {}
 
-void Uniform::on_resume_pixel(rnd::Generator& /*scramble*/) noexcept {}
+void Uniform::on_start_pixel() noexcept {}
 
 Uniform_factory::Uniform_factory(uint32_t num_samplers) noexcept
     : Factory(num_samplers), samplers_(memory::allocate_aligned<Uniform>(num_samplers)) {}

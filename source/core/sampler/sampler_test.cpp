@@ -97,8 +97,7 @@ void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, B
     render_quad(name + "_quad_1.png", sampler, rng, renderer, target);
 }
 
-void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
-                 Renderer& renderer, Byte3& target) {
+void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
     std::cout << name << ": ";
 
     float2 const center(0.5f, 0.5f);
@@ -112,7 +111,7 @@ void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& scra
 
     float const n = 1.f / static_cast<float>(segment_len);
 
-    sampler.resume_pixel(0, scramble);
+    sampler.start_pixel();
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
@@ -167,8 +166,7 @@ void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& scra
     encoding::png::Writer::write(name, target);
 }
 
-void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scramble,
-                 Renderer& renderer, Byte3& target) {
+void render_quad(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
     renderer.set_brush(float3(0.18f));
     renderer.clear();
 
@@ -176,7 +174,7 @@ void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scra
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.resume_pixel(0, scramble);
+    sampler.start_pixel();
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
@@ -207,14 +205,14 @@ void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scra
     encoding::png::Writer::write(name, target);
 }
 
-void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& scramble, float2 center,
-                 Renderer& renderer, Byte3& target) {
+void render_quad(std::string const& name, Sampler& sampler, float2 center, Renderer& renderer,
+                 Byte3& target) {
     renderer.set_brush(float3(0.18f));
     renderer.clear();
 
     uint32_t const num_samples = sampler.num_samples();
 
-    sampler.resume_pixel(0, scramble);
+    sampler.start_pixel();
 
     renderer.set_brush(float3(0.8f, 0.8f, 0.8f));
     for (uint32_t i = 0; i < num_samples; ++i) {

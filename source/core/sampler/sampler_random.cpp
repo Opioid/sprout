@@ -27,7 +27,7 @@ size_t Random::num_bytes() const noexcept {
 
 void Random::on_resize() noexcept {}
 
-void Random::on_resume_pixel(rnd::Generator& /*scramble*/) noexcept {}
+void Random::on_start_pixel() noexcept {}
 
 Random_factory::Random_factory(uint32_t num_samplers) noexcept
     : Factory(num_samplers), samplers_(memory::allocate_aligned<Random>(num_samplers)) {}

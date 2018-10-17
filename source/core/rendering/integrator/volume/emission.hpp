@@ -17,7 +17,7 @@ class alignas(64) Emission final : public Integrator {
     virtual void prepare(scene::Scene const& scene,
                          uint32_t            num_samples_per_pixel) noexcept override final;
 
-    virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept override final;
+    virtual void start_pixel() noexcept override final;
 
     virtual bool transmittance(Ray const& ray, Worker& worker,
                                float3& transmittance) noexcept override final;

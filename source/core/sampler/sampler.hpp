@@ -21,7 +21,7 @@ class Sampler {
     void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
                 uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) noexcept;
 
-    void resume_pixel(uint32_t iteration, rnd::Generator& scramble) noexcept;
+    void start_pixel() noexcept;
 
     rnd::Generator& rng() noexcept;
 
@@ -38,7 +38,7 @@ class Sampler {
   protected:
     virtual void on_resize() noexcept = 0;
 
-    virtual void on_resume_pixel(rnd::Generator& scramble) noexcept = 0;
+    virtual void on_start_pixel() noexcept = 0;
 
     rnd::Generator& rng_;
 

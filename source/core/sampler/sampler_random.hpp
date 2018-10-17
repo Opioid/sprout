@@ -20,7 +20,7 @@ class alignas(64) Random : public Sampler {
   private:
     void on_resize() noexcept override final;
 
-    void on_resume_pixel(rnd::Generator& scramble) noexcept override final;
+    void on_start_pixel() noexcept override final;
 };
 
 class Random_factory : public Factory {

@@ -18,7 +18,7 @@ Emission::Emission(rnd::Generator& rng, take::Settings const& take_settings,
 void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {
 }
 
-void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
+void Emission::start_pixel() noexcept {}
 
 bool Emission::transmittance(Ray const& ray, Worker& worker, float3& transmittance) noexcept {
     return Tracking::transmittance(ray, rng_, worker, transmittance);

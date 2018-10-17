@@ -49,7 +49,7 @@ void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
 
             for (int32_t y = 0; y < dimensions[1]; ++y) {
                     for (int32_t x = 0; x < dimensions[0]; ++x) {
-                    //	worker.sampler()->resume_pixel(0, rng);
+                    //	worker.sampler()->start_pixel(0, rng);
 
                             float3 offset((static_cast<float>(x) + 0.5f) *
                                                        (bake_quad_range[0] /

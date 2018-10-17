@@ -31,7 +31,7 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) noexcept 
     sampler_.resize(1, 1, 1, 1);
 }
 
-void Mapper::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) noexcept {}
+void Mapper::start_pixel() noexcept {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
                       float normalized_tick_slice, Worker& worker) noexcept {

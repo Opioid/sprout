@@ -54,15 +54,15 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
     }
 }
 
-void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) noexcept {
-    sampler_.resume_pixel(sample, scramble);
+void Pathtracer_MIS::start_pixel() noexcept {
+    sampler_.start_pixel();
 
     for (auto& s : material_samplers_) {
-        s.resume_pixel(sample, scramble);
+        s.start_pixel();
     }
 
     for (auto& s : light_samplers_) {
-        s.resume_pixel(sample, scramble);
+        s.start_pixel();
     }
 }
 
