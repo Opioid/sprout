@@ -57,11 +57,19 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
 
     Materials materials(1);
 
-    materials[0]         = sky_material;
+    materials[0] = sky_material;
+
     prop::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);
 
-    materials[0]         = sun_material;
+    sky_prop->allocate_local_frame();
+    sky_prop->propagate_frame_allocation();
+
+    materials[0] = sun_material;
+
     prop::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
+
+    sun_prop->allocate_local_frame();
+    sun_prop->propagate_frame_allocation();
 
     sky->init(sky_prop, sun_prop);
     sky->set_propagate_visibility(true);
