@@ -30,7 +30,7 @@ class alignas(64) Lighttracer final : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    bool generate_light_ray(float time, Worker& worker, Ray& ray, float3& radiance) noexcept;
+    bool generate_light_ray(uint64_t time, Worker& worker, Ray& ray, float3& radiance) noexcept;
 
     float3 direct_light(Ray const& ray, Intersection const& intersection,
                         const Material_sample& material_sample, Sampler_filter filter,

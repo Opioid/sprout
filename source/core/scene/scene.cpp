@@ -80,6 +80,9 @@ void Scene::finish(uint64_t frame_length) noexcept {
         s.allocate_enitity_frames();
     }
 
+    for (auto e : entities_) {
+        e->propagate_frame_allocation();
+    }
 }
 
 math::AABB const& Scene::aabb() const noexcept {

@@ -7,7 +7,7 @@ namespace controller {
 
 Camera::Camera(std::shared_ptr<scene::camera::Camera> camera) : camera_(camera) {
     scene::entity::Composed_transformation temp;
-    auto&                                  transformation = camera_->transformation_at(0.f, temp);
+    auto&                                  transformation = camera_->transformation_at(0, temp);
 
     position_ = transformation.position;
 }

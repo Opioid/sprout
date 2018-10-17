@@ -16,7 +16,7 @@ class Emissionmap : public Material {
                                            Worker const& worker, uint32_t depth) const
         noexcept override;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
                                      Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 

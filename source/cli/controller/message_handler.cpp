@@ -130,7 +130,7 @@ void Message_handler::handle_entity(scene::entity::Entity* entity, std::string c
         if ("parameters" == value) {
             entity->set_parameters(*root);
         } else if ("transformation" == value) {
-            math::Transformation t = entity->local_frame_a();
+            math::Transformation t = entity->local_frame_0();
             json::read_transformation(*root, t);
             entity->set_transformation(t);
         } else {

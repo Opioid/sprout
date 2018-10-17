@@ -15,7 +15,7 @@ class Sun_material : public Material {
                                           scene::Worker const& worker, uint32_t depth) const
         noexcept override final;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
                              Sampler_filter filter, const scene::Worker& worker) const
         noexcept override final;
 
@@ -37,7 +37,7 @@ class Sun_baked_material : public Material {
                                           scene::Worker const& worker, uint32_t depth) const
         noexcept override final;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
                              Sampler_filter filter, const scene::Worker& worker) const
         noexcept override final;
 

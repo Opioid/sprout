@@ -122,7 +122,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
     return result;
 }
 
-bool Lighttracer::generate_light_ray(float time, Worker& worker, Ray& ray,
+bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
                                      float3& radiance) noexcept {
     Scene const& scene = worker.scene();
 

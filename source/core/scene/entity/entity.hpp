@@ -19,9 +19,11 @@ class Entity {
 
     virtual void set_parameters(json::Value const& parameters) noexcept = 0;
 
-    void allocate_frames(uint32_t num_frames);
+    void allocate_frames(uint32_t num_frames) noexcept;
+    void allocate_local_frame() noexcept;
+    void propagate_frame_allocation() noexcept;
 
-    math::Transformation const& local_frame_a() const noexcept;
+    math::Transformation const& local_frame_0() const noexcept;
 
     // Only the returned reference is guaranteed to contain the actual transformation data.
     // This might or might not be the same reference which is passed as a parameter,
@@ -58,8 +60,10 @@ class Entity {
   protected:
     void propagate_transformation() const noexcept;
 
-    void inherit_transformation(math::Transformation const& a, math::Transformation const& b,
+    void inherit_transformation(math::Transformation const* frames, uint32_t num_frames,
                                 bool animated) noexcept;
+
+    void inherit_frame_allocation(uint32_t num_frames) noexcept;
 
     void add_sibling(Entity* node) noexcept;
     void detach(Entity* node) noexcept;
@@ -80,12 +84,6 @@ class Entity {
     flags::Flags<Property> properties_;
 
     Transformation world_transformation_;
-
-    math::Transformation world_frame_a_;
-    math::Transformation world_frame_b_;
-
-    Keyframe local_frame_a_;
-    Keyframe local_frame_b_;
 
     uint32_t num_world_frames_ = 0;
 

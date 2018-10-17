@@ -71,7 +71,7 @@ class Material {
                                  sampler::Sampler& sampler, Worker const& worker,
                                  uint32_t depth) const noexcept = 0;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, float time,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
                                      Sampler_filter filter, Worker const& worker) const noexcept;
 
     virtual float3 average_radiance(float area) const noexcept;

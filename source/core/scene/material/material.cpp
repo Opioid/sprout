@@ -30,7 +30,7 @@ void Material::compile() noexcept {}
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) noexcept {}
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
-                                   float /*time*/, Sampler_filter /*filter*/,
+                                   uint64_t /*time*/, Sampler_filter /*filter*/,
                                    Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }

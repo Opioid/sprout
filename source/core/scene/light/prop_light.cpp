@@ -93,7 +93,7 @@ bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& 
     return true;
 }
 
-float3 Prop_light::evaluate(Sample_from const& sample, float time, Sampler_filter filter,
+float3 Prop_light::evaluate(Sample_from const& sample, uint64_t time, Sampler_filter filter,
                             Worker const& worker) const noexcept {
     auto const material = prop_->material(part_);
 

@@ -258,6 +258,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
         camera->set_parameters(*parameters_value);
     }
 
+    camera->allocate_local_frame();
     camera->set_transformation(transformation);
 
     if (sensor_value) {

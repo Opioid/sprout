@@ -213,7 +213,7 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
                 scene.create_animation_stage(entity, animation.get());
             }
         } else {
-            entity->allocate_frames(1);
+            entity->allocate_local_frame();
             entity->set_transformation(transformation);
         }
 

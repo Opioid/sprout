@@ -26,7 +26,7 @@ void Camera::update(Scene const& scene, Worker& worker) noexcept {
     interfaces_.clear();
 
     if (scene.has_volumes()) {
-        math::Transformation const transformation = local_frame_a();
+        math::Transformation const transformation = local_frame_0();
 
         Ray ray(transformation.position, math::normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t);
 

@@ -451,7 +451,7 @@ float3 Grid::scattering_coefficient(Intersection const&  intersection,
 
     if (material.is_heterogeneous_volume()) {
         scene::entity::Composed_transformation temp;
-        auto const& transformation = intersection.prop->transformation_at(0.f, temp);
+        auto const& transformation = intersection.prop->transformation_at(0, temp);
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
 

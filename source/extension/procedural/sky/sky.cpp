@@ -106,7 +106,7 @@ void Sky::update() noexcept {
 
 void Sky::on_set_transformation() noexcept {
     if (implicit_rotation_) {
-        sun_rotation_ = math::quaternion::create_matrix3x3(local_frame_a().rotation);
+        sun_rotation_ = math::quaternion::create_matrix3x3(local_frame_0().rotation);
 
         update();
     }

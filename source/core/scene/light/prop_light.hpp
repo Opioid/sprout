@@ -33,7 +33,7 @@ class Prop_light : public Light {
                 uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                 Sample_from& result) const noexcept override;
 
-    float3 evaluate(Sample_from const& sample, float time, Sampler_filter filter,
+    float3 evaluate(Sample_from const& sample, uint64_t time, Sampler_filter filter,
                     Worker const& worker) const noexcept override final;
 
     float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,

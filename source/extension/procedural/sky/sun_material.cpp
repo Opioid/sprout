@@ -36,7 +36,7 @@ const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const
 }
 
 float3 Sun_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                       float /*time*/, Sampler_filter /*filter*/,
+                                       uint64_t /*time*/, Sampler_filter /*filter*/,
                                        const Worker& /*worker*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(wi);
 }
@@ -75,7 +75,7 @@ const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate
 }
 
 float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                             float /*time*/, Sampler_filter /*filter*/,
+                                             uint64_t /*time*/, Sampler_filter /*filter*/,
                                              const Worker& /*worker*/) const noexcept {
     return emission_(sky_.sun_v(wi));
 }

@@ -9,7 +9,7 @@ Entity::~Entity() noexcept {
     delete [] world_frames_;
 }
 
-void Entity::allocate_frames(uint32_t num_frames) {
+void Entity::allocate_frames(uint32_t num_frames) noexcept {
     num_world_frames_ = num_frames;
 
     world_frames_ = new math::Transformation[num_frames];
@@ -19,8 +19,29 @@ void Entity::allocate_frames(uint32_t num_frames) {
     local_frames_ = new Keyframe[num_frames];
 }
 
-math::Transformation const& Entity::local_frame_a() const noexcept {
-    return local_frame_a_.transformation;
+void Entity::allocate_local_frame() noexcept {
+    num_local_frames_ = 1;
+
+    local_frames_ = new Keyframe[1];
+}
+
+void Entity::propagate_frame_allocation() noexcept {
+    if (!parent_) {
+        if (0 == num_world_frames_) {
+            num_world_frames_ = num_local_frames_;
+
+            world_frames_ = new math::Transformation[num_world_frames_];
+        }
+    }
+
+        if (child_) {
+            child_->inherit_frame_allocation(num_local_frames_);
+        }
+
+}
+
+math::Transformation const& Entity::local_frame_0() const noexcept {
+    return local_frames_[0].transformation;
 }
 
 Composed_transformation const& Entity::transformation_at(uint64_t           time,
@@ -58,11 +79,7 @@ Composed_transformation const& Entity::transformation_at(uint64_t           time
 void Entity::set_transformation(math::Transformation const& t) noexcept {
     world_transformation_.set(t);
 
-    local_frame_a_.transformation = t;
-    local_frame_b_.transformation = t;
-
-    world_frame_a_ = t;
-    world_frame_b_ = t;
+    local_frames_[0].transformation = t;
 
     properties_.unset(Property::Animated);
 
@@ -72,14 +89,14 @@ void Entity::set_transformation(math::Transformation const& t) noexcept {
 }
 
 void Entity::tick(Keyframe const& frame) noexcept {
-    local_frame_a_ = local_frame_b_;
-    local_frame_b_ = frame;
+ //   local_frame_0_ = local_frame_b_;
+ //   local_frame_b_ = frame;
 
     // In the current implementation
     // "animation" means "transformation changes during simulation frame"
-    bool const changed = local_frame_a_.transformation != local_frame_b_.transformation;
+ //   bool const changed = local_frame_0_.transformation != local_frame_b_.transformation;
 
-    properties_.set(Property::Animated, changed);
+    properties_.set(Property::Animated, true);
 }
 
 void Entity::set_frames(Keyframe const* frames, uint32_t num_frames) noexcept {
@@ -94,9 +111,6 @@ void Entity::set_frames(Keyframe const* frames, uint32_t num_frames) noexcept {
 
 void Entity::calculate_world_transformation() noexcept {
     if (!parent_) {
-        world_frame_a_ = local_frame_a_.transformation;
-        world_frame_b_ = local_frame_b_.transformation;
-
         for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
             world_frames_[i] = local_frames_[i].transformation;
         }
@@ -166,32 +180,46 @@ Entity const* Entity::parent() const noexcept {
 
 void Entity::propagate_transformation() const noexcept {
     if (child_) {
-        child_->inherit_transformation(world_frame_a_, world_frame_b_,
+        child_->inherit_transformation(world_frames_, num_world_frames_,
                                        properties_.test(Property::Animated));
     }
 }
 
-void Entity::inherit_transformation(math::Transformation const& a, math::Transformation const& b,
+void Entity::inherit_transformation(math::Transformation const* frames, uint32_t num_frames,
                                     bool animated) noexcept {
     if (next_) {
-        next_->inherit_transformation(a, b, animated);
+        next_->inherit_transformation(frames, num_frames, animated);
     }
 
     if (animated) {
         properties_.set(Property::Animated);
     }
 
-    local_frame_a_.transform(world_frame_a_, a);
+//    local_frame_0_.transform(world_frame_a_, a);
 
-    local_frame_b_.transform(world_frame_b_, b);
+//    local_frame_b_.transform(world_frame_b_, b);
 
-    if (properties_.test_not(Property::Animated)) {
-        world_transformation_.set(world_frame_a_);
-    }
+//    if (properties_.test_not(Property::Animated)) {
+//        world_transformation_.set(world_frame_a_);
+//    }
 
     on_set_transformation();
 
     propagate_transformation();
+}
+
+void Entity::inherit_frame_allocation(uint32_t num_frames) noexcept {
+    if (next_) {
+        next_->inherit_frame_allocation(num_frames);
+    }
+
+    if (0 == num_world_frames_) {
+        num_world_frames_ = num_frames;
+
+        world_frames_ = new math::Transformation[num_world_frames_];
+    }
+
+    propagate_frame_allocation();
 }
 
 void Entity::add_sibling(Entity* node) noexcept {
