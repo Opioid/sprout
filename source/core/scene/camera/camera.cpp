@@ -102,8 +102,6 @@ uint64_t Camera::frame_duration() const noexcept {
     return frame_duration_;
 }
 
-void Camera::on_set_transformation() noexcept {}
-
 uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept {
     double const delta    = static_cast<double>(frame_delta);
     double const duration = static_cast<double>(frame_duration_);
@@ -112,6 +110,8 @@ uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept
 
     return static_cast<uint64_t>(frame) * frame_step_ + fdi;
 }
+
+void Camera::on_set_transformation() noexcept {}
 
 Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept {
     return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);

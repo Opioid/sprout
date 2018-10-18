@@ -60,6 +60,8 @@ class Worker {
 
     Scene const& scene() const noexcept;
 
+    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
+
     shape::Node_stack& node_stack() const noexcept;
 
     material::Sample_cache& sample_cache() const noexcept;

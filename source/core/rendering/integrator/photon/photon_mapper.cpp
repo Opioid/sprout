@@ -33,8 +33,8 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) noexcept 
 
 void Mapper::start_pixel() noexcept {}
 
-uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tick_offset,
-                      float normalized_tick_slice, Worker& worker) noexcept {
+uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
+                      Worker& worker) noexcept {
     math::AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
                                                          : worker.scene().caustic_aabb();
 
@@ -47,9 +47,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, float normalized_tic
                                               static_cast<uint32_t>(end - i));
 
         uint32_t       num_photons;
-        uint32_t const num_iterations = trace_photon(normalized_tick_offset, normalized_tick_slice,
-                                                     bounds, infinite_world, worker, max_photons,
-                                                     photons_, num_photons);
+        uint32_t const num_iterations = trace_photon(frame, bounds, infinite_world, worker,
+                                                     max_photons, photons_, num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -71,9 +70,8 @@ size_t Mapper::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tick_slice,
-                              math::AABB const& bounds, bool infinite_world, Worker& worker,
-                              uint32_t max_photons, Photon* photons,
+uint32_t Mapper::trace_photon(uint32_t frame, math::AABB const& bounds, bool infinite_world,
+                              Worker& worker, uint32_t max_photons, Photon* photons,
                               uint32_t& num_photons) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
@@ -98,11 +96,10 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
 
         bool caustic_ray = false;
 
-        Ray                 ray;
-        light::Light const* light;
-        shape::Sample_from  light_sample;
-        if (!generate_light_ray(normalized_tick_offset, normalized_tick_slice, bounds, worker, ray,
-                                &light, light_sample)) {
+        Ray                ray;
+        Light const*       light;
+        shape::Sample_from light_sample;
+        if (!generate_light_ray(frame, bounds, worker, ray, &light, light_sample)) {
             continue;
         }
 
@@ -222,25 +219,25 @@ uint32_t Mapper::trace_photon(float normalized_tick_offset, float normalized_tic
     return 0;
 }
 
-bool Mapper::generate_light_ray(float normalized_tick_offset, float normalized_tick_slice,
-                                math::AABB const& bounds, Worker& worker, Ray& ray,
-                                light::Light const** light_out,
-                                shape::Sample_from&  light_sample) noexcept {
+bool Mapper::generate_light_ray(uint32_t frame, math::AABB const& bounds, Worker& worker, Ray& ray,
+                                Light const**       light_out,
+                                shape::Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
 
-    if (!light.ref.sample(0.f, sampler_, 0, bounds, worker, light_sample)) {
+    uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
+
+    if (!light.ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
         return false;
     }
 
     ray.origin = light_sample.p;
     ray.set_direction(light_sample.dir);
-    ray.min_t = take_settings_.ray_offset_factor * light_sample.epsilon;
-    ray.max_t = scene::Ray_max_t;
-    ray.depth = 0;
-    ray.time  = 0.f;
-    ray.time  = normalized_tick_offset + sampler_.generate_sample_1D(2) * normalized_tick_slice;
+    ray.min_t      = take_settings_.ray_offset_factor * light_sample.epsilon;
+    ray.max_t      = scene::Ray_max_t;
+    ray.depth      = 0;
+    ray.time       = time;
     ray.wavelength = 0.f;
 
     *light_out = &light.ref;

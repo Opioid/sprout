@@ -63,8 +63,7 @@ class Worker : public scene::Worker {
     bool transmitted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
                                 float3& tv) noexcept;
 
-    uint32_t bake_photons(int32_t begin, int32_t end, float normalized_tick_offset,
-                          float normalized_tick_slice) noexcept;
+    uint32_t bake_photons(int32_t begin, int32_t end, uint32_t frame) noexcept;
 
     float3 photon_li(Intersection const& intersection, Material_sample const& sample) const
         noexcept;

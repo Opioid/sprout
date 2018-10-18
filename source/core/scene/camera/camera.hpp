@@ -60,14 +60,14 @@ class Camera : public entity::Entity {
     uint64_t frame_step() const noexcept;
     uint64_t frame_duration() const noexcept;
 
+    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
+
   protected:
     virtual void on_update(uint64_t time, Worker& worker) noexcept = 0;
 
     virtual void set_parameter(std::string_view name, json::Value const& value) noexcept = 0;
 
     void on_set_transformation() noexcept override final;
-
-    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
 
     static Ray create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept;
 

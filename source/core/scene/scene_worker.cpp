@@ -2,6 +2,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
+#include "camera/camera.hpp"
 #include "material/material_sample.hpp"
 #include "material/sampler_cache.hpp"
 #include "prop/interface_stack.inl"
@@ -96,6 +97,10 @@ bool Worker::masked_visibility(Ray const& ray, Sampler_filter filter, float& mv)
 
 Scene const& Worker::scene() const noexcept {
     return *scene_;
+}
+
+uint64_t Worker::absolute_time(uint32_t frame, float frame_delta) const noexcept {
+    return camera_->absolute_time(frame, frame_delta);
 }
 
 shape::Node_stack& Worker::node_stack() const noexcept {

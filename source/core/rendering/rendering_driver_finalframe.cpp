@@ -64,28 +64,26 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 }
 
 void Driver_finalframe::render_frame(uint32_t frame, progress::Sink& progressor) noexcept {
-    bake_photons(0.f, 1.f);
-
-    uint32_t const num_samples = view_.num_samples_per_pixel;
+    bake_photons(frame);
 
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         tiles_.restart();
 
-        thread_pool_.run_parallel(
-            [ this, frame, v, num_samples, &progressor ](uint32_t index) noexcept {
-                auto& worker = workers_[index];
+        thread_pool_.run_parallel([ this, frame, v, &progressor ](uint32_t index) noexcept {
+            auto& worker = workers_[index];
 
-                for (int4 tile; tiles_.pop(tile);) {
-                    worker.render(frame, v, tile, num_samples);
+            uint32_t const num_samples = view_.num_samples_per_pixel;
 
-                    progressor.tick();
-                }
-            });
+            for (int4 tile; tiles_.pop(tile);) {
+                worker.render(frame, v, tile, num_samples);
+
+                progressor.tick();
+            }
+        });
     }
 }
 
-void Driver_finalframe::bake_photons(float normalized_tick_offset,
-                                     float normalized_tick_slice) noexcept {
+void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     if (/*photons_baked_ || */ !photon_infos_) {
         return;
     }
@@ -98,12 +96,10 @@ void Driver_finalframe::bake_photons(float normalized_tick_offset,
     uint32_t begin     = 0;
 
     for (;;) {
-        thread_pool_.run_range([ this, normalized_tick_offset, normalized_tick_slice ](
-                                   uint32_t id, int32_t begin, int32_t end) noexcept {
+        thread_pool_.run_range([ this, frame ](uint32_t id, int32_t begin, int32_t end) noexcept {
             auto& worker = workers_[id];
 
-            photon_infos_[id].num_paths = worker.bake_photons(begin, end, normalized_tick_offset,
-                                                              normalized_tick_slice);
+            photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame);
         },
                                static_cast<int32_t>(begin),
                                static_cast<int32_t>(photon_settings_.num_photons));
