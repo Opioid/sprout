@@ -19,14 +19,15 @@ Camera::Camera(int2 resolution) noexcept : resolution_(resolution) {}
 
 Camera::~Camera() noexcept {}
 
-void Camera::update(Scene const& scene, Worker& worker) noexcept {
+void Camera::update(Scene const& scene, uint64_t time, Worker& worker) noexcept {
     calculate_world_transformation();
 
     interface_stack_.clear();
     interfaces_.clear();
 
     if (scene.has_volumes()) {
-        math::Transformation const transformation = local_frame_0();
+        Transformation temp;
+        auto const&    transformation = transformation_at(time, temp);
 
         Ray ray(transformation.position, math::normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t);
 
@@ -56,16 +57,14 @@ void Camera::update(Scene const& scene, Worker& worker) noexcept {
 void Camera::set_parameters(json::Value const& parameters) noexcept {
     for (auto& n : parameters.GetObject()) {
         if ("frame_duration" == n.name) {
-            frame_duration_ = json::read_float(n.value);
+            frame_duration_ = static_cast<uint64_t>(static_cast<float>(scene::Units_per_second) *
+                                                    json::read_float(n.value));
         } else if ("frames_per_second" == n.name) {
-            float const    fps  = json::read_float(n.value);
-            uint64_t const fpsi = json::read_uint(n.value);
+            float const fps = json::read_float(n.value);
             if (0.f == fps) {
-                frame_duration_ = 0.f;
+                frame_duration_ = 0;
             } else {
-                frame_duration_ = 1.f / fps;
-
-                frame_duration_i_ = scene::Units_per_second / fpsi;
+                frame_duration_ = scene::Units_per_second / static_cast<uint64_t>(fps);
             }
         } else if ("motion_blur" == n.name) {
             motion_blur_ = json::read_bool(n.value);
@@ -91,25 +90,17 @@ prop::Interface_stack const& Camera::interface_stack() const noexcept {
     return interface_stack_;
 }
 
-float Camera::frame_duration() const noexcept {
+uint64_t Camera::frame_duration() const noexcept {
     return frame_duration_;
-}
-
-uint64_t Camera::frame_duration_i() const noexcept {
-    return frame_duration_i_;
-}
-
-void Camera::set_frame_duration(float frame_duration) noexcept {
-    frame_duration_ = frame_duration;
 }
 
 uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept {
     double const delta    = static_cast<double>(frame_delta);
-    double const duration = static_cast<double>(frame_duration_i_);
+    double const duration = static_cast<double>(frame_duration_);
 
     uint64_t const fdi = static_cast<uint64_t>(delta * duration + 0.5);
 
-    return static_cast<uint64_t>(frame) * frame_duration_i_ + fdi;
+    return static_cast<uint64_t>(frame) * frame_duration_ + fdi;
 }
 
 bool Camera::motion_blur() const noexcept {

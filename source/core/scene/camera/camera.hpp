@@ -42,7 +42,7 @@ class Camera : public entity::Entity {
 
     virtual float pixel_solid_angle() const noexcept = 0;
 
-    void update(Scene const& scene, Worker& worker) noexcept;
+    void update(Scene const& scene, uint64_t time, Worker& worker) noexcept;
 
     virtual bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
                               Ray& ray) const noexcept = 0;
@@ -57,10 +57,7 @@ class Camera : public entity::Entity {
 
     prop::Interface_stack const& interface_stack() const noexcept;
 
-    float    frame_duration() const noexcept;
-    uint64_t frame_duration_i() const noexcept;
-
-    void set_frame_duration(float frame_duration) noexcept;
+    uint64_t frame_duration() const noexcept;
 
     uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
 
@@ -86,9 +83,7 @@ class Camera : public entity::Entity {
 
     int32_t filter_radius_ = 0;
 
-    float frame_duration_ = 1.f / 60.f;
-
-    uint64_t frame_duration_i_ = scene::Units_per_second / 60;
+    uint64_t frame_duration_ = scene::Units_per_second / 60;
 
     bool motion_blur_ = true;
 };

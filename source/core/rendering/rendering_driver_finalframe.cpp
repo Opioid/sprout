@@ -38,10 +38,10 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
         progressor.start(progress_range);
 
-        scene_.simulate(current_frame * camera.frame_duration_i(),
-                        (current_frame + 1) * camera.frame_duration_i(), thread_pool_);
+        uint64_t const start = current_frame * camera.frame_duration();
+        scene_.simulate(start, start + camera.frame_duration(), thread_pool_);
 
-        camera.update(scene_, workers_[0]);
+        camera.update(scene_, start, workers_[0]);
 
         render_frame(current_frame, progressor);
 
