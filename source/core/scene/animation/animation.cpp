@@ -31,7 +31,7 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) no
 
     uint32_t const keyframes_back = static_cast<uint32_t>(keyframes_.size()) - 1;
 
-    uint32_t last_frame = last_frame_ ? last_frame_ - 1 : 0;
+    uint32_t last_frame = last_frame_ > 2 ? last_frame_ - 2 : 0;
 
     for (uint32_t i = 0; time <= end; ++i, time += frame_length) {
         for (uint32_t j = last_frame; j < keyframes_back; ++j) {
