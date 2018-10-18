@@ -56,7 +56,7 @@ class Entity {
     Entity const* parent() const noexcept;
 
   protected:
-    void propagate_transformation() const noexcept;
+    void propagate_transformation() noexcept;
 
     void inherit_transformation(Keyframe const* frames, uint32_t num_frames) noexcept;
 

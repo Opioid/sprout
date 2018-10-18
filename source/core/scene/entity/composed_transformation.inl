@@ -29,6 +29,10 @@ inline float3 Composed_transformation::world_to_object_vector(float3 const& v) c
     return math::transform_vector(world_to_object, v);
 }
 
+inline float3 Composed_transformation::object_to_world_vector(float3 const& v) const noexcept {
+    return math::transform_vector(object_to_world, v);
+}
+
 }  // namespace scene::entity
 
 #endif

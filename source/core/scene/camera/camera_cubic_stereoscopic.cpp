@@ -24,7 +24,7 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) noexcept
     d_y_ = (left_bottom - left_top_) / f;
 
     if (Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz == layout) {
-        for (uint32_t i = 0; i < 12; ++i) {
+        for (int32_t i = 0; i < 12; ++i) {
             int2 offset = int2(resolution[0] * i, 0);
 
             view_bounds_[i] = int4(offset, offset + resolution_);
@@ -32,13 +32,13 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) noexcept
 
         sensor_dimensions_ = int2(resolution_[0] * 12, resolution_[0]);
     } else if (Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz == layout) {
-        for (uint32_t i = 0; i < 6; ++i) {
+        for (int32_t i = 0; i < 6; ++i) {
             int2 offset = int2(resolution[0] * (i + 6), 0);
 
             view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
         }
 
-        for (uint32_t i = 6; i < 12; ++i) {
+        for (int32_t i = 6; i < 12; ++i) {
             int2 offset = int2(resolution[0] * (i - 6), 0);
 
             view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
@@ -109,7 +109,7 @@ void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) 
     ipd_falloff_ = std::sqrt(ipd_falloff);
 }
 
-void Cubic_stereoscopic::on_update(Worker& /*worker*/) noexcept {}
+void Cubic_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("stereo" == name) {

@@ -21,7 +21,7 @@ class Spherical_stereoscopic : public Stereoscopic {
         noexcept override final;
 
   private:
-    void on_update(Worker& worker) noexcept override final;
+    void on_update(uint64_t time, Worker& worker) noexcept override final;
 
     void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
 

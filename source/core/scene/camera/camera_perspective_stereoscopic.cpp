@@ -68,7 +68,7 @@ void Perspective_stereoscopic::set_fov(float fov) noexcept {
     d_y_ = (left_bottom - left_top_) / fr[1];
 }
 
-void Perspective_stereoscopic::on_update(Worker& /*worker*/) noexcept {}
+void Perspective_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Perspective_stereoscopic::set_parameter(std::string_view   name,
                                              json::Value const& value) noexcept {

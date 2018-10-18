@@ -705,7 +705,7 @@ std::vector<std::unique_ptr<exporting::Sink>> Loader::load_exporters(
             uint32_t framerate = json::read_uint(n.value, "framerate");
 
             if (0 == framerate) {
-                framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
+                framerate = static_cast<uint32_t>(1.f / camera.frame_step() + 0.5f);
             }
 
             exporters.push_back(std::make_unique<exporting::Ffmpeg>(

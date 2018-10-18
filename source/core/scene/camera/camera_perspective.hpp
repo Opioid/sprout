@@ -41,9 +41,9 @@ class Perspective : public Camera {
     void set_focus(Focus const& focus) noexcept;
 
   private:
-    void on_update(Worker& worker) noexcept override final;
+    void on_update(uint64_t time, Worker& worker) noexcept override final;
 
-    void update_focus(Worker& worker) noexcept;
+    void update_focus(uint64_t time, Worker& worker) noexcept;
 
     void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
 

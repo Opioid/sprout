@@ -71,8 +71,6 @@ Composed_transformation const& Entity::transformation_at(uint64_t        time,
 }
 
 void Entity::set_transformation(math::Transformation const& t) noexcept {
-    world_transformation_.set(t);
-
     local_frames_[0].transformation = t;
     local_frames_[0].time           = scene::Static_time;
 }
@@ -90,8 +88,6 @@ void Entity::calculate_world_transformation() noexcept {
         }
 
         propagate_transformation();
-
-        on_set_transformation();
     }
 }
 
@@ -152,7 +148,13 @@ Entity const* Entity::parent() const noexcept {
     return parent_;
 }
 
-void Entity::propagate_transformation() const noexcept {
+void Entity::propagate_transformation() noexcept {
+    if (1 == num_world_frames_) {
+        world_transformation_.set(world_frames_[0].transformation);
+    }
+
+    on_set_transformation();
+
     if (child_) {
         child_->inherit_transformation(world_frames_, num_world_frames_);
     }
@@ -168,12 +170,6 @@ void Entity::inherit_transformation(Keyframe const* frames, uint32_t num_frames)
         uint32_t const of = num_frames > 1 ? i : 0;
         local_frames_[lf].transform(world_frames_[i], frames[of]);
     }
-
-    if (1 == num_world_frames_) {
-        world_transformation_.set(world_frames_[0].transformation);
-    }
-
-    on_set_transformation();
 
     propagate_transformation();
 }

@@ -7,6 +7,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -97,7 +98,7 @@ void Perspective::set_focus(Focus const& focus) noexcept {
     focus_distance_ = focus_.distance;
 }
 
-void Perspective::on_update(Worker& worker) noexcept {
+void Perspective::on_update(uint64_t time, Worker& worker) noexcept {
     float2 const fr(resolution_);
     float const  ratio = fr[0] / fr[1];
 
@@ -119,20 +120,19 @@ void Perspective::on_update(Worker& worker) noexcept {
     d_x_      = (right_top - left_top) / fr[0];
     d_y_      = (left_bottom - left_top) / fr[1];
 
-    update_focus(worker);
+    update_focus(time, worker);
 }
 
-void Perspective::update_focus(Worker& worker) noexcept {
+void Perspective::update_focus(uint64_t time, Worker& worker) noexcept {
     if (focus_.use_point && lens_radius_ > 0.f) {
         float3 direction = left_top_ + focus_.point[0] * d_x_ + focus_.point[1] * d_y_;
         direction        = math::normalize(direction);
 
         Transformation temp;
-        auto const&    transformation = transformation_at(0.f, temp);
+        auto const&    transformation = transformation_at(time, temp);
 
-        Ray ray(transformation.position,
-                math::transform_vector(transformation.object_to_world, direction), 0.f, Ray_max_t,
-                0, 0.f);
+        Ray ray(transformation.position, transformation.object_to_world_vector(direction), 0.f,
+                Ray_max_t, 0, time, 0.f);
 
         prop::Intersection intersection;
         if (worker.intersect(ray, intersection)) {

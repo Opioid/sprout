@@ -65,7 +65,7 @@ bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame, ui
     return true;
 }
 
-void Hemispherical::on_update(Worker& /*worker*/) noexcept {}
+void Hemispherical::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Hemispherical::set_parameter(std::string_view /*name*/,
                                   json::Value const& /*value*/) noexcept {}

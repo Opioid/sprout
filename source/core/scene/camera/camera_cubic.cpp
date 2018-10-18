@@ -94,7 +94,7 @@ bool Cubic::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t v
     return true;
 }
 
-void Cubic::on_update(Worker& /*worker*/) noexcept {}
+void Cubic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Cubic::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
 

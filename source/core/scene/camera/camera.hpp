@@ -57,20 +57,17 @@ class Camera : public entity::Entity {
 
     prop::Interface_stack const& interface_stack() const noexcept;
 
+    uint64_t frame_step() const noexcept;
     uint64_t frame_duration() const noexcept;
 
-    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
-
-    bool motion_blur() const noexcept;
-
-    void set_motion_blur(bool motion_blur) noexcept;
-
   protected:
-    virtual void on_update(Worker& worker) noexcept = 0;
+    virtual void on_update(uint64_t time, Worker& worker) noexcept = 0;
 
     virtual void set_parameter(std::string_view name, json::Value const& value) noexcept = 0;
 
     void on_set_transformation() noexcept override final;
+
+    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
 
     static Ray create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept;
 
@@ -83,9 +80,8 @@ class Camera : public entity::Entity {
 
     int32_t filter_radius_ = 0;
 
-    uint64_t frame_duration_ = scene::Units_per_second / 60;
-
-    bool motion_blur_ = true;
+    uint64_t frame_step_     = scene::Units_per_second / 60;
+    uint64_t frame_duration_ = frame_step_;
 };
 
 }  // namespace camera
