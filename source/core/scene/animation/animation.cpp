@@ -26,13 +26,15 @@ void Animation::push_back(entity::Keyframe const& keyframe) noexcept {
     keyframes_.push_back(keyframe);
 }
 
-void Animation::resample(uint64_t start, uint64_t frame_length, uint32_t num_frames) noexcept {
+void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) noexcept {
     uint64_t time = start;
 
     uint32_t const keyframes_back = static_cast<uint32_t>(keyframes_.size()) - 1;
 
-    for (uint32_t i = 0; i <= num_frames; ++i, time += frame_length) {
-        for (uint32_t j = last_frame_; j < keyframes_back; ++j) {
+    uint32_t last_frame = last_frame_ ? last_frame_ - 1 : 0;
+
+    for (uint32_t i = 0; time <= end; ++i, time += frame_length) {
+        for (uint32_t j = last_frame; j < keyframes_back; ++j) {
             auto const& a = keyframes_[j];
             auto const& b = keyframes_[j + 1];
 
@@ -51,11 +53,13 @@ void Animation::resample(uint64_t start, uint64_t frame_length, uint32_t num_fra
                 interpolated_frames_[i].time = time;
 
                 break;
+            } else {
+                ++last_frame;
             }
-
-            ++last_frame_;
         }
     }
+
+    last_frame_ = last_frame;
 }
 
 uint32_t Animation::num_interpolated_frames() const noexcept {

@@ -196,11 +196,12 @@ Scene::Light Scene::random_light(float random) const noexcept {
 
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {
     uint64_t const frames_start = start - (start % tick_duration_);
-    uint64_t const frames_range = (end - frames_start);
-    uint32_t const num_frames   = count_frames(frames_range);
+    uint64_t const end_rem = end % tick_duration_;
+    uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
+    uint64_t const frames_range = (frames_end - frames_start);
 
     for (auto a : animations_) {
-        a->resample(frames_start, tick_duration_, num_frames);
+        a->resample(frames_start, frames_end, tick_duration_);
     }
 
     for (auto& s : animation_stages_) {
@@ -386,7 +387,7 @@ void Scene::add_named_entity(Entity* entity, std::string const& name) noexcept {
 }
 
 uint32_t Scene::count_frames(uint64_t range) const {
-    return static_cast<uint32_t>(range / tick_duration_) + (range % tick_duration_ ? 1 : 0);
+    return static_cast<uint32_t>(range / tick_duration_) + (range % tick_duration_ ? 2 : 0);
 }
 
 }  // namespace scene

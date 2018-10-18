@@ -19,7 +19,7 @@ class Animation {
 
     void push_back(entity::Keyframe const& keyframe) noexcept;
 
-    void resample(uint64_t start, uint64_t frame_length, uint32_t num_frames) noexcept;
+    void resample(uint64_t start, uint64_t end, uint64_t frame_length) noexcept;
 
     entity::Keyframe const& interpolated_frame() const noexcept;
 
