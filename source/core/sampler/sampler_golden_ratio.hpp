@@ -24,6 +24,9 @@ class alignas(64) Golden_ratio final : public Sampler {
 
     void on_start_pixel() noexcept override final;
 
+    void generate_2D(uint32_t dimension) noexcept;
+    void generate_1D(uint32_t dimension) noexcept;
+
     float2* samples_2D_;
     float*  samples_1D_;
 };
