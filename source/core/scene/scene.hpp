@@ -67,7 +67,7 @@ class Scene {
 
     ~Scene() noexcept;
 
-    void finish(uint64_t frame_length) noexcept;
+    void finish(uint64_t frame_step, uint64_t frame_duration) noexcept;
 
     math::AABB const& aabb() const noexcept;
 
@@ -136,7 +136,7 @@ class Scene {
   private:
     void add_named_entity(Entity* entity, std::string const& name) noexcept;
 
-    uint32_t count_frames(uint64_t range) const;
+    uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
 
     take::Settings const take_settings_;
 

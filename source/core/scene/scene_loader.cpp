@@ -84,7 +84,8 @@ bool Loader::load(std::string const& filename, std::string const& take_name, tak
             scene.create_animation_stage(take.view.camera.get(), take.camera_animation.get());
         }
 
-        scene.finish(take.view.camera ? take.view.camera->frame_duration() : 0);
+        scene.finish(take.view.camera ? take.view.camera->frame_step() : 0,
+                     take.view.camera ? take.view.camera->frame_duration() : 0);
     } catch (std::exception& e) {
         success = false;
         logging::error("Scene \"" + filename + "\" could not be loaded: " + e.what() + ".");
