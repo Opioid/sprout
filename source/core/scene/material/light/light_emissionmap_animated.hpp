@@ -12,7 +12,7 @@ class Emissionmap_animated : public Material {
                          Texture_adapter const& emission_map, float emission_factor,
                          float animation_duration) noexcept;
 
-    ~Emissionmap_animated() noexcept;
+    ~Emissionmap_animated() noexcept override;
 
     void tick(float absolute_time, float time_slice) noexcept override final;
 

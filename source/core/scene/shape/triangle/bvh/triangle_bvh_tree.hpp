@@ -71,10 +71,10 @@ class Tree {
                      FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
                      Node_stack& node_stack) const noexcept;
 
-    float opacity(math::Ray& ray, float time, Materials const& materials,
+    float opacity(math::Ray& ray, uint64_t time, Materials const& materials,
                   material::Sampler_settings::Filter filter, Worker const& worker) const noexcept;
 
-    float3 absorption(math::Ray& ray, float time, Materials const& materials,
+    float3 absorption(math::Ray& ray, uint64_t time, Materials const& materials,
                       material::Sampler_settings::Filter filter, Worker const& worker) const
         noexcept;
 

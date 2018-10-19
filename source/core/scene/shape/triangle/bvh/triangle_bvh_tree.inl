@@ -333,7 +333,7 @@ bool Tree<Data>::intersect_p(FVector ray_origin, FVector ray_direction, FVector 
 }
 
 template <typename Data>
-float Tree<Data>::opacity(math::Ray& ray, float time, Materials const& materials,
+float Tree<Data>::opacity(math::Ray& ray, uint64_t time, Materials const& materials,
                           material::Sampler_settings::Filter filter, Worker const& worker) const
     noexcept {
     auto& node_stack = worker.node_stack();
@@ -397,7 +397,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, Materials const& materials
 }
 
 template <typename Data>
-float3 Tree<Data>::absorption(math::Ray& ray, float time, Materials const& materials,
+float3 Tree<Data>::absorption(math::Ray& ray, uint64_t time, Materials const& materials,
                               material::Sampler_settings::Filter filter, Worker const& worker) const
     noexcept {
     auto& node_stack = worker.node_stack();
