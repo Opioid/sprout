@@ -386,7 +386,7 @@ void Scene::add_named_entity(Entity* entity, std::string const& name) noexcept {
 }
 
 static inline bool matching(uint64_t a, uint64_t b) {
-    return 0 == (a > b ? a % b : b % a);
+    return 0 == (a > b ? a % b : (0 == a ? 0 : b % a));
 }
 
 uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const {
