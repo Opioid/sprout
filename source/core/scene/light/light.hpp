@@ -65,14 +65,14 @@ class Light {
                         sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const noexcept = 0;
 
-    virtual float3 evaluate(Sample_to const& sample, uint64_t time, Sampler_filter filter,
+    virtual float3 evaluate(Sample_to const& sample, Sampler_filter filter,
                             Worker const& worker) const noexcept = 0;
 
     virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                         Sample_from& result) const noexcept = 0;
 
-    virtual float3 evaluate(Sample_from const& sample, uint64_t time, Sampler_filter filter,
+    virtual float3 evaluate(Sample_from const& sample, Sampler_filter filter,
                             Worker const& worker) const noexcept = 0;
 
     bool sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,

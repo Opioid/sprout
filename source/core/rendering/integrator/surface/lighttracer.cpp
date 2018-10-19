@@ -139,8 +139,9 @@ bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
     ray.set_direction(light_sample.dir);
     ray.min_t = take_settings_.ray_offset_factor * light_sample.epsilon;
     ray.max_t = scene::Ray_max_t;
+    ray.time  = time;
 
-    radiance = light.ref.evaluate(light_sample, time, Sampler_filter::Nearest, worker) /
+    radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest, worker) /
                (light.pdf * light_sample.pdf);
 
     return true;
@@ -174,8 +175,8 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
             if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
                 auto const bxdf = material_sample.evaluate(light_sample.wi, true);
 
-                float3 const radiance = light.ref.evaluate(light_sample, ray.time,
-                                                           Sampler_filter::Nearest, worker);
+                float3 const radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest,
+                                                           worker);
 
                 result += (tv * radiance * bxdf.reflection) / (light.pdf * light_sample.pdf);
             }

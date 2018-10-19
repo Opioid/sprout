@@ -43,8 +43,8 @@ material::Sample const& Sky_material::sample(float3 const& wo, Renderstate const
 }
 
 float3 Sky_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                       uint64_t /*time*/, Sampler_filter /*filter*/,
-                                       Worker const& /*worker*/) const noexcept {
+                                       Sampler_filter /*filter*/, Worker const& /*worker*/) const
+    noexcept {
     return sky_.model().evaluate_sky(wi);
 }
 
@@ -52,7 +52,7 @@ float3 Sky_material::average_radiance(float /*area*/) const noexcept {
     return sky_.model().evaluate_sky(sky_.model().zenith());
 }
 
-void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
+void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
                                     bool /*importance_sampling*/, thread::Pool& /*pool*/) noexcept {
 }
@@ -85,9 +85,9 @@ material::Sample const& Sky_baked_material::sample(float3 const& wo, Renderstate
     return sample;
 }
 
-float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2      uv, float /*area*/,
-                                             uint64_t /*time*/, Sampler_filter filter,
-                                             Worker const& worker) const noexcept {
+float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
+                                             Sampler_filter filter, Worker const& worker) const
+    noexcept {
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_map_.sample_3(sampler, uv);
 }
@@ -113,7 +113,7 @@ float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter, Worker 
     return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t /*part*/,
+void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                           Transformation const& transformation, float /*area*/,
                                           bool                  importance_sampling,
                                           thread::Pool& /*pool*/) noexcept {
@@ -181,7 +181,7 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
 
                 total_weight += weight;
 
-                luminance[l] = weight * spectrum::luminance(radiance);
+                luminance[static_cast<uint32_t>(l)] = weight * spectrum::luminance(radiance);
             }
         }
 

@@ -330,8 +330,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
     auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
 
-    float3 const radiance = light.evaluate(light_sample, history.time, Sampler_filter::Nearest,
-                                           worker);
+    float3 const radiance = light.evaluate(light_sample, Sampler_filter::Nearest, worker);
 
     float const light_pdf = light_sample.pdf * light_weight;
     float const weight    = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;

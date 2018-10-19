@@ -30,8 +30,8 @@ void Material::compile() noexcept {}
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) noexcept {}
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
-                                   uint64_t /*time*/, Sampler_filter /*filter*/,
-                                   Worker const& /*worker*/) const noexcept {
+                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const
+    noexcept {
     return float3(0.f);
 }
 
@@ -113,7 +113,7 @@ bool Material::is_scattering_volume() const noexcept {
     return true;
 }
 
-void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
+void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                 Transformation const& /*transformation*/, float /*area*/,
                                 bool /*importance_sampling*/, thread::Pool& /*pool*/) noexcept {}
 

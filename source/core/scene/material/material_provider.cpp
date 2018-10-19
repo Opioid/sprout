@@ -29,6 +29,7 @@
 #include "mix/mix_material.hpp"
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
+#include "scene/scene_constants.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_coating_material.inl"
 #include "substitute/substitute_material.hpp"
@@ -217,11 +218,13 @@ Material_ptr Provider::load_display(json::Value const& display_value, resource::
     Texture_adapter emission_map;
     bool            two_sided = false;
 
-    float3 radiance(10.f, 10.f, 10.f);
-    float  emission_factor    = 1.f;
-    float  roughness          = 1.f;
-    float  ior                = 1.5;
-    float  animation_duration = 0.f;
+    float3 radiance(10.f);
+
+    float emission_factor = 1.f;
+    float roughness       = 1.f;
+    float ior             = 1.5;
+
+    uint64_t animation_duration = 0;
 
     for (auto& n : display_value.GetObject()) {
         if ("radiance" == n.name) {
@@ -235,7 +238,7 @@ Material_ptr Provider::load_display(json::Value const& display_value, resource::
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
         } else if ("animation_duration" == n.name) {
-            animation_duration = json::read_float(n.value);
+            animation_duration = scene::time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
                 Texture_description texture_description;
@@ -261,7 +264,7 @@ Material_ptr Provider::load_display(json::Value const& display_value, resource::
     }
 
     if (emission_map.is_valid()) {
-        if (animation_duration > 0.f) {
+        if (animation_duration > 0) {
             auto material = std::make_shared<display::Emissionmap_animated>(
                 sampler_settings, two_sided, emission_map, emission_factor, animation_duration);
             material->set_mask(mask);
@@ -381,12 +384,13 @@ Material_ptr Provider::load_light(json::Value const& light_value, resource::Mana
     Sampler_settings sampler_settings;
 
     std::string quantity;
-    float3      color(1.f, 1.f, 1.f);
+    float3      color(1.f);
     float       value = 1.f;
 
-    float3 radiance(10.f, 10.f, 10.f);
-    float  emission_factor    = 1.f;
-    float  animation_duration = 0.f;
+    float3 radiance(10.f);
+    float  emission_factor = 1.f;
+
+    uint64_t animation_duration = 0;
 
     Texture_adapter emission_map;
     Texture_adapter mask;
@@ -409,7 +413,7 @@ Material_ptr Provider::load_light(json::Value const& light_value, resource::Mana
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
         } else if ("animation_duration" == n.name) {
-            animation_duration = json::read_float(n.value);
+            animation_duration = time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
                 Texture_description texture_description;
@@ -435,7 +439,7 @@ Material_ptr Provider::load_light(json::Value const& light_value, resource::Mana
     }
 
     if (emission_map.is_valid()) {
-        if (animation_duration > 0.f) {
+        if (animation_duration > 0) {
             auto material = std::make_shared<light::Emissionmap_animated>(
                 sampler_settings, two_sided, emission_map, emission_factor, animation_duration);
             material->set_mask(mask);

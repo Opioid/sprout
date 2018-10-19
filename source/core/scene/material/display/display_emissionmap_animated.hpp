@@ -10,7 +10,7 @@ class Emissionmap_animated : public light::Emissionmap_animated {
   public:
     Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided,
                          Texture_adapter const& emission_map, float emission_factor,
-                         float animation_duration) noexcept;
+                         uint64_t animation_duration) noexcept;
 
     material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,

@@ -67,13 +67,13 @@ bool Prop_light::sample(float3 const& p, Transformation const& transformation,
     return true;
 }
 
-float3 Prop_light::evaluate(Sample_to const& sample, uint64_t time, Sampler_filter filter,
+float3 Prop_light::evaluate(Sample_to const& sample, Sampler_filter filter,
                             Worker const& worker) const noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 
-    return material->evaluate_radiance(sample.wi, sample.uv, area, time, filter, worker);
+    return material->evaluate_radiance(sample.wi, sample.uv, area, filter, worker);
 }
 
 bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
@@ -93,13 +93,13 @@ bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& 
     return true;
 }
 
-float3 Prop_light::evaluate(Sample_from const& sample, uint64_t time, Sampler_filter filter,
+float3 Prop_light::evaluate(Sample_from const& sample, Sampler_filter filter,
                             Worker const& worker) const noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
 
-    return material->evaluate_radiance(-sample.dir, sample.uv, area, time, filter, worker);
+    return material->evaluate_radiance(-sample.dir, sample.uv, area, filter, worker);
 }
 
 float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,

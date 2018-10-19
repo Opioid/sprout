@@ -112,8 +112,8 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                                                              Sampler_filter::Undefined, tv)) {
                     auto const bxdf = material_sample.evaluate(light_sample.wi, true);
 
-                    float3 const radiance = light->evaluate(light_sample, ray.time,
-                                                            Sampler_filter::Nearest, worker);
+                    float3 const radiance = light->evaluate(light_sample, Sampler_filter::Nearest,
+                                                            worker);
 
                     result += (tv * radiance * bxdf.reflection) / light_sample.pdf;
                 }

@@ -284,8 +284,8 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
             worker.transmitted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest, tv)) {
             float const phase = 1.f / (4.f * math::Pi);
 
-            float3 const radiance = light.ref.evaluate(light_sample, ray.time,
-                                                       Sampler_filter::Nearest, worker);
+            float3 const radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest,
+                                                       worker);
 
             result += (phase * tv * radiance) / (light.pdf * light_sample.pdf);
         }

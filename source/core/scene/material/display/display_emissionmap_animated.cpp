@@ -16,7 +16,8 @@ namespace scene::material::display {
 
 Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided,
                                            Texture_adapter const& emission_map,
-                                           float emission_factor, float animation_duration) noexcept
+                                           float                  emission_factor,
+                                           uint64_t               animation_duration) noexcept
     : light::Emissionmap_animated(sampler_settings, two_sided, emission_map, emission_factor,
                                   animation_duration) {}
 

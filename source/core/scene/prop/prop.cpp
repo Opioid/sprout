@@ -203,7 +203,7 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
 
     parts_[part].light_id = light_id;
 
-    materials_[part]->prepare_sampling(*shape_, part, transformation, area,
+    materials_[part]->prepare_sampling(*shape_, part, time, transformation, area,
                                        material_importance_sampling, pool);
 }
 

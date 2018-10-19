@@ -31,10 +31,6 @@ std::shared_ptr<animation::Animation> load(json::Value const&          animation
     return nullptr;
 }
 
-uint64_t constexpr time(double dtime) {
-    return static_cast<uint64_t>(static_cast<double>(scene::Units_per_second) * dtime);
-}
-
 std::shared_ptr<animation::Animation> load_keyframes(
     json::Value const& keyframes_value, math::Transformation const& default_transformation) {
     if (!keyframes_value.IsArray()) {

@@ -196,8 +196,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
             auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
 
-            float3 const radiance = light.ref.evaluate(light_sample, ray.time,
-                                                       Sampler_filter::Nearest, worker);
+            float3 const radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest,
+                                                       worker);
 
             float const weight = 1.f / (light.pdf * light_sample.pdf);
 

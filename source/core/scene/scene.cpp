@@ -198,7 +198,6 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;
     uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
-    uint64_t const frames_range = (frames_end - frames_start);
 
     for (auto a : animations_) {
         a->resample(frames_start, frames_end, tick_duration_);

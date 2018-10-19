@@ -16,9 +16,8 @@ class Emissionmap : public Material {
                                            Worker const& worker, uint32_t depth) const
         noexcept override;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
-                                     Sampler_filter filter, Worker const& worker) const
-        noexcept override final;
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+                                     Worker const& worker) const noexcept override final;
 
     virtual float3 average_radiance(float area) const noexcept override final;
 
@@ -31,7 +30,7 @@ class Emissionmap : public Material {
     virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 
-    virtual void prepare_sampling(shape::Shape const& shape, uint32_t part,
+    virtual void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
                                   Transformation const& transformation, float area,
                                   bool          importance_sampling,
                                   thread::Pool& pool) noexcept override final;

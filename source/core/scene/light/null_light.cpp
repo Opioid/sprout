@@ -22,8 +22,8 @@ bool Null_light::sample(float3 const& /*p*/, Transformation const& /*transformat
     return false;
 }
 
-float3 Null_light::evaluate(Sample_to const& /*sample*/, uint64_t /*time*/,
-                            Sampler_filter /*filter*/, Worker const& /*worker*/) const noexcept {
+float3 Null_light::evaluate(Sample_to const& /*sample*/, Sampler_filter /*filter*/,
+                            Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }
 
@@ -33,8 +33,8 @@ bool Null_light::sample(Transformation const& /*transformation*/, sampler::Sampl
     return false;
 }
 
-float3 Null_light::evaluate(Sample_from const& /*sample*/, uint64_t /*time*/,
-                            Sampler_filter /*filter*/, Worker const& /*worker*/) const noexcept {
+float3 Null_light::evaluate(Sample_from const& /*sample*/, Sampler_filter /*filter*/,
+                            Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }
 

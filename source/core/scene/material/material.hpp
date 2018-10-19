@@ -71,8 +71,8 @@ class Material {
                                  sampler::Sampler& sampler, Worker const& worker,
                                  uint32_t depth) const noexcept = 0;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
-                                     Sampler_filter filter, Worker const& worker) const noexcept;
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+                                     Worker const& worker) const noexcept;
 
     virtual float3 average_radiance(float area) const noexcept;
 
@@ -116,7 +116,7 @@ class Material {
     virtual bool is_textured_volume() const noexcept;
     virtual bool is_scattering_volume() const noexcept;
 
-    virtual void prepare_sampling(Shape const& shape, uint32_t part,
+    virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                                   Transformation const& transformation, float area,
                                   bool importance_sampling, thread::Pool& pool) noexcept;
 

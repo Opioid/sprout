@@ -10,7 +10,7 @@ class Emissionmap_animated : public Material {
   public:
     Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided,
                          Texture_adapter const& emission_map, float emission_factor,
-                         float animation_duration) noexcept;
+                         uint64_t animation_duration) noexcept;
 
     ~Emissionmap_animated() noexcept override;
 
@@ -20,9 +20,8 @@ class Emissionmap_animated : public Material {
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
-                             Sampler_filter filter, Worker const& worker) const
-        noexcept override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+                             Worker const& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
 
@@ -38,7 +37,7 @@ class Emissionmap_animated : public Material {
     float opacity(float2 uv, uint64_t time, Sampler_filter filter, Worker const& worker) const
         noexcept override final;
 
-    void prepare_sampling(shape::Shape const& shape, uint32_t part,
+    void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& pool) noexcept override final;
 
@@ -57,7 +56,7 @@ class Emissionmap_animated : public Material {
 
     float total_weight_;
 
-    float const frame_length_;
+    uint64_t const frame_length_;
 
     int32_t element_;
 };

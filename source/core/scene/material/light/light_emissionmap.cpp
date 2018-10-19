@@ -36,9 +36,8 @@ material::Sample const& Emissionmap::sample(float3 const& wo, Renderstate const&
     return sample;
 }
 
-float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float2      uv, float /*area*/,
-                                      uint64_t /*time*/, Sampler_filter filter,
-                                      Worker const& worker) const noexcept {
+float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
+                                      Sampler_filter filter, Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     return emission_factor_ * emission_map_.sample_3(sampler, uv);
@@ -69,7 +68,7 @@ float Emissionmap::emission_pdf(float2 uv, Sampler_filter filter, Worker const& 
     return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
+void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                    Transformation const& /*transformation*/, float /*area*/,
                                    bool importance_sampling, thread::Pool& pool) noexcept {
     if (average_emission_[0] >= 0.f) {

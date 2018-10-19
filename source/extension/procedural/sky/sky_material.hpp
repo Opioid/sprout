@@ -15,15 +15,14 @@ class Sky_material : public Material {
                                           const scene::Worker& worker, uint32_t depth) const
         noexcept override final;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
-                             Sampler_filter filter, const scene::Worker& worker) const
-        noexcept override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+                             const scene::Worker& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
 
-    void prepare_sampling(const Shape& shape, uint32_t part, Transformation const& transformation,
-                          float area, bool importance_sampling,
-                          thread::Pool& pool) noexcept override final;
+    void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
+                          Transformation const& transformation, float area,
+                          bool importance_sampling, thread::Pool& pool) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 };
@@ -39,9 +38,8 @@ class Sky_baked_material : public Material {
                                           const scene::Worker& worker, uint32_t depth) const
         noexcept override final;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, uint64_t time,
-                             Sampler_filter filter, const scene::Worker& worker) const
-        noexcept override final;
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+                             const scene::Worker& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
 
@@ -52,9 +50,9 @@ class Sky_baked_material : public Material {
     float emission_pdf(float2 uv, Sampler_filter filter, const scene::Worker& worker) const
         noexcept override final;
 
-    void prepare_sampling(const Shape& shape, uint32_t part, Transformation const& transformation,
-                          float area, bool importance_sampling,
-                          thread::Pool& pool) noexcept override final;
+    void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
+                          Transformation const& transformation, float area,
+                          bool importance_sampling, thread::Pool& pool) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
