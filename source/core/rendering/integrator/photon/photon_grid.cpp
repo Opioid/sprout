@@ -319,16 +319,12 @@ int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const noexcept {
     adjacent[1] = photon::adjacent(d[1]);
     adjacent[2] = photon::adjacent(d[2]);
 
-    if (math::any_less(c, 0)) {
-        return int3(0);
-    }
-
-    return c;
+    return math::min(math::max(c, 0), max_coords_);
 }
 
 void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
     int8_t     adjacent[3];
-    int3 const c = math::min(map3(v, adjacent), max_coords_);
+    int3 const c = map3(v, adjacent);
 
     int32_t const ic = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 

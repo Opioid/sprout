@@ -20,7 +20,8 @@ Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
       separate_caustics_(separate_caustics),
       num_reduced_(nullptr),
       caustic_grid_(radius, Merge_threshold),
-      indirect_grid_(indirect_radius_factor_ * radius_, Merge_threshold / indirect_radius_factor_)
+      indirect_grid_(indirect_radius_factor_ * radius_,
+                     Merge_threshold / (std::sqrt(indirect_radius_factor_)))
 
 {}
 
