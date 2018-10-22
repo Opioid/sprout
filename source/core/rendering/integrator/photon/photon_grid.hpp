@@ -3,6 +3,7 @@
 
 #include "base/flags/flags.hpp"
 #include "base/math/aabb.hpp"
+#include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
 
 namespace thread {
@@ -58,14 +59,19 @@ class Grid {
   private:
     uint32_t reduce(int32_t begin, int32_t end) noexcept;
 
-    static int8_t adjacent(float s) noexcept;
+    static uint8_t adjacent(float s) noexcept;
 
     int32_t map1(float3 const& v) const noexcept;
 
     int3 map3(float3 const& v) const noexcept;
-    int3 map3(float3 const& v, int8_t adjacent[3]) const noexcept;
+    int3 map3(float3 const& v, uint8_t& adjacent) const noexcept;
 
-    void adjacent_cells(float3 const& v, int2 cells[4]) const noexcept;
+    struct Adjacency {
+        int2 cells[4];
+        uint32_t num_cells;
+    };
+
+    void adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept;
 
     static float3 scattering_coefficient(Intersection const&  intersection,
                                          scene::Worker const& worker) noexcept;
@@ -87,40 +93,7 @@ class Grid {
 
     int2* grid_;
 
-    static int32_t constexpr o_m1__0__0_ = -1;
-    static int32_t constexpr o_p1__0__0_ = +1;
-
-    int32_t o__0_m1__0_;
-    int32_t o__0_p1__0_;
-
-    int32_t o__0__0_m1_;
-    int32_t o__0__0_p1_;
-
-    int32_t o_m1_m1__0_;
-    int32_t o_m1_p1__0_;
-
-    int32_t o_p1_m1__0_;
-    int32_t o_p1_p1__0_;
-
-    int32_t o_m1_m1_m1_;
-    int32_t o_m1_m1_p1_;
-    int32_t o_m1_p1_m1_;
-    int32_t o_m1_p1_p1_;
-
-    int32_t o_p1_m1_m1_;
-    int32_t o_p1_m1_p1_;
-    int32_t o_p1_p1_m1_;
-    int32_t o_p1_p1_p1_;
-
-    int32_t o_m1__0_m1_;
-    int32_t o_m1__0_p1_;
-    int32_t o_p1__0_m1_;
-    int32_t o_p1__0_p1_;
-
-    int32_t o__0_m1_m1_;
-    int32_t o__0_m1_p1_;
-    int32_t o__0_p1_m1_;
-    int32_t o__0_p1_p1_;
+    Adjacency adjacencies_[43];
 };
 
 }  // namespace rendering::integrator::photon

@@ -42,36 +42,136 @@ void Grid::resize(math::AABB const& aabb) noexcept {
 
         int32_t const area = dimensions[0] * dimensions[1];
 
-        o__0_m1__0_ = -dimensions[0];
-        o__0_p1__0_ = +dimensions[0];
+        static int32_t constexpr o_m1__0__0_ = -1;
+        static int32_t constexpr o_p1__0__0_ = +1;
 
-        o__0__0_m1_ = -area;
-        o__0__0_p1_ = +area;
+        int32_t const o__0_m1__0_ = -dimensions[0];
+        int32_t const o__0_p1__0_ = +dimensions[0];
 
-        o_m1_m1__0_ = -1 - dimensions[0];
-        o_m1_p1__0_ = -1 + dimensions[0];
-        o_p1_m1__0_ = +1 - dimensions[0];
-        o_p1_p1__0_ = +1 + dimensions[0];
+        int32_t const o__0__0_m1_ = -area;
+        int32_t const o__0__0_p1_ = +area;
 
-        o_m1_m1_m1_ = -1 - dimensions[0] - area;
-        o_m1_m1_p1_ = -1 - dimensions[0] + area;
-        o_m1_p1_m1_ = -1 + dimensions[0] - area;
-        o_m1_p1_p1_ = -1 + dimensions[0] + area;
+        int32_t const o_m1_m1__0_ = -1 - dimensions[0];
+        int32_t const o_m1_p1__0_ = -1 + dimensions[0];
+        int32_t const o_p1_m1__0_ = +1 - dimensions[0];
+        int32_t const o_p1_p1__0_ = +1 + dimensions[0];
 
-        o_p1_m1_m1_ = +1 - dimensions[0] - area;
-        o_p1_m1_p1_ = +1 - dimensions[0] + area;
-        o_p1_p1_m1_ = +1 + dimensions[0] - area;
-        o_p1_p1_p1_ = +1 + dimensions[0] + area;
+        int32_t const o_m1_m1_m1_ = -1 - dimensions[0] - area;
+        int32_t const o_m1_m1_p1_ = -1 - dimensions[0] + area;
+        int32_t const o_m1_p1_m1_ = -1 + dimensions[0] - area;
+        int32_t const o_m1_p1_p1_ = -1 + dimensions[0] + area;
 
-        o_m1__0_m1_ = -1 - area;
-        o_m1__0_p1_ = -1 + area;
-        o_p1__0_m1_ = +1 - area;
-        o_p1__0_p1_ = +1 + area;
+        int32_t const o_p1_m1_m1_ = +1 - dimensions[0] - area;
+        int32_t const o_p1_m1_p1_ = +1 - dimensions[0] + area;
+        int32_t const o_p1_p1_m1_ = +1 + dimensions[0] - area;
+        int32_t const o_p1_p1_p1_ = +1 + dimensions[0] + area;
 
-        o__0_m1_m1_ = -dimensions[0] - area;
-        o__0_m1_p1_ = -dimensions[0] + area;
-        o__0_p1_m1_ = +dimensions[0] - area;
-        o__0_p1_p1_ = +dimensions[0] + area;
+        int32_t const o_m1__0_m1_ = -1 - area;
+        int32_t const o_m1__0_p1_ = -1 + area;
+        int32_t const o_p1__0_m1_ = +1 - area;
+        int32_t const o_p1__0_p1_ = +1 + area;
+
+        int32_t const o__0_m1_m1_ = -dimensions[0] - area;
+        int32_t const o__0_m1_p1_ = -dimensions[0] + area;
+        int32_t const o__0_p1_m1_ = +dimensions[0] - area;
+        int32_t const o__0_p1_p1_ = +dimensions[0] + area;
+
+        // 00, 00, 00
+        adjacencies_[0] = {{int2(0), int2(0), int2(0), int2(0)}, 1 };
+
+        // 00, 00, 01
+        adjacencies_[1] = {{int2(0), int2(o__0__0_p1_), int2(0), int2(0)}, 2 };
+
+        // 00, 00, 10
+        adjacencies_[2] = {{int2(0), int2(o__0__0_m1_), int2(0), int2(0)}, 2 };
+        adjacencies_[3] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 00, 01, 00
+        adjacencies_[4] = {{int2(0), int2(o__0_p1__0_), int2(0), int2(0)}, 2 };
+
+        // 00, 01, 01
+        adjacencies_[5] = {{int2(0), int2(o__0_p1__0_), int2(o__0__0_p1_), int2(0)}, 3 };
+
+        // 00, 01, 10
+        adjacencies_[6] = {{int2(0), int2(o__0_p1__0_), int2(o__0__0_m1_), int2(0)}, 3 };
+        adjacencies_[7] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 00, 10, 00
+        adjacencies_[8] = {{int2(0), int2(o__0_m1__0_), int2(0), int2(0)}, 2 };
+
+        // 00, 10, 01
+        adjacencies_[9] = {{int2(0), int2(o__0_m1__0_), int2(o__0__0_p1_), int2(0)}, 3 };
+
+        // 00, 10, 10
+        adjacencies_[10] = {{int2(0), int2(o__0_m1__0_), int2(o__0__0_m1_), int2(0)}, 3 };
+        adjacencies_[11] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[12] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[13] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[14] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[15] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 01, 00, 00
+        adjacencies_[16] = {{int2(0, o_p1__0__0_), int2(0), int2(0), int2(0)}, 1 };
+
+        // 01, 00, 01
+        adjacencies_[17] = {{int2(0, o_p1__0__0_), int2(o__0__0_p1_, o_p1__0_p1_), int2(0), int2(0)}, 2 };
+
+        // 01, 00, 10
+        adjacencies_[18] = {{int2(0, o_p1__0__0_), int2(o__0__0_m1_, o_p1__0_m1_), int2(0), int2(0)}, 2 };
+        adjacencies_[19] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 01, 01, 00
+        adjacencies_[20] = {{int2(0, o_p1__0__0_), int2(o__0_p1__0_, o_p1_p1__0_), int2(0), int2(0)}, 2 };
+
+        // 01, 01, 01
+        adjacencies_[21] = {{int2(0, o_p1__0__0_), int2(o__0_p1__0_, o_p1_p1__0_), int2(o__0__0_p1_, o_p1__0_p1_), int2(o__0_p1_p1_, o_p1_p1_p1_)}, 4 };
+
+        // 01, 01, 10
+        adjacencies_[22] = {{int2(0, o_p1__0__0_), int2(o__0_p1__0_, o_p1_p1__0_), int2(o__0__0_m1_, o_p1__0_m1_), int2(o__0_p1_m1_, o_p1_p1_m1_)}, 4 };
+        adjacencies_[23] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 01, 10, 00
+        adjacencies_[24] = {{int2(0, o_p1__0__0_), int2(o__0_m1__0_, o_p1_m1__0_), int2(0), int2(0)}, 2 };
+
+        // 01, 10, 01
+        adjacencies_[25] = {{int2(0, o_p1__0__0_), int2(o__0_m1__0_, o_p1_m1__0_), int2(o__0__0_p1_, o_p1__0_p1_), int2(o__0_m1_p1_, o_p1_m1_p1_)}, 4 };
+
+        // 01, 10, 10
+        adjacencies_[26] = {{int2(0, o_p1__0__0_), int2(o__0_m1__0_, o_p1_m1__0_), int2(o__0__0_m1_, o_p1__0_m1_), int2(o__0_m1_m1_, o_p1_m1_m1_)}, 4 };
+        adjacencies_[27] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[28] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[29] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[30] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+        adjacencies_[31] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 10, 00, 00
+        adjacencies_[32] = {{int2(o_m1__0__0_, 0), int2(0), int2(0), int2(0)}, 1 };
+
+        // 10, 00, 01
+        adjacencies_[33] = {{int2(o_m1__0__0_, 0), int2(o_m1__0_p1_, o__0__0_p1_), int2(0), int2(0)}, 2 };
+
+        // 10, 00, 10
+        adjacencies_[34] = {{int2(o_m1__0__0_, 0), int2(o_m1__0_m1_, o__0__0_m1_), int2(0), int2(0)}, 2 };
+        adjacencies_[35] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 10, 01, 00
+        adjacencies_[36] = {{int2(o_m1__0__0_, 0), int2(o_m1_p1__0_, o__0_p1__0_), int2(0), int2(0)}, 2 };
+
+        // 10, 01, 01
+        adjacencies_[37] = {{int2(o_m1__0__0_, 0), int2(o_m1_p1__0_, o__0_p1__0_), int2(o_m1__0_p1_, o__0__0_p1_), int2(o_m1_p1_p1_, o__0_p1_p1_)}, 4 };
+
+        // 10, 01, 10
+        adjacencies_[38] = {{int2(o_m1__0__0_, 0), int2(o_m1_p1__0_, o__0_p1__0_), int2(o_m1__0_m1_, o__0__0_m1_), int2(o_m1_p1_m1_, o__0_p1_m1_)}, 4 };
+        adjacencies_[39] = {{int2(0), int2(0), int2(0), int2(0)}, 0 };
+
+        // 10, 10, 00
+        adjacencies_[40] = {{int2(o_m1__0__0_, 0), int2(o_m1_m1__0_, o__0_m1__0_), int2(0), int2(0)}, 2 };
+
+        // 10, 10, 01
+        adjacencies_[41] = {{int2(o_m1__0__0_, 0), int2(o_m1_m1__0_, o__0_m1__0_), int2(o_m1__0_p1_, o__0__0_p1_), int2(o_m1_m1_p1_, o__0_m1_p1_)}, 4 };
+
+        // 10, 10, 10
+        adjacencies_[42] = {{int2(o_m1__0__0_, 0), int2(o_m1_m1__0_, o__0_m1__0_), int2(o_m1__0_m1_, o__0__0_m1_), int2(o_m1_m1_m1_, o__0_m1_m1_)}, 4 };
     }
 }
 
@@ -157,15 +257,15 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
     float3 result = float3::identity();
 
-    int2 cells[4];
-    adjacent_cells(position, cells);
+    Adjacency adjacency;
+    adjacent_cells(position, adjacency);
 
     if (intersection.subsurface) {
         float const radius_2 = photon_radius_ * photon_radius_;
         float const radius_3 = photon_radius_ * radius_2;
 
-        for (uint32_t c = 0; c < 4; ++c) {
-            int2 const cell = cells[c];
+        for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
+            int2 const cell = adjacency.cells[c];
 
             for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
                 auto const& photon = photons_[i];
@@ -189,8 +289,8 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
         float const radius_2     = photon_radius_ * photon_radius_;
         float const inv_radius_2 = 1.f / radius_2;
 
-        for (uint32_t c = 0; c < 4; ++c) {
-            int2 const cell = cells[c];
+        for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
+            int2 const cell = adjacency.cells[c];
 
             for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
                 auto const& photon = photons_[i];
@@ -245,11 +345,11 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
 
         uint32_t local_reduced = 0;
 
-        int2 cells[4];
-        adjacent_cells(pa.p, cells);
+        Adjacency adjacency;
+        adjacent_cells(pa.p, adjacency);
 
-        for (uint32_t c = 0; c < 4; ++c) {
-            int2 const cell = cells[c];
+        for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
+            int2 const cell = adjacency.cells[c];
 
             for (int32_t j = std::max(cell[0], i + 1), jlen = std::min(cell[1], end); j < jlen;
                  ++j) {
@@ -284,16 +384,22 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
     return num_reduced;
 }
 
-int8_t Grid::adjacent(float s) noexcept {
+enum Adjacent {
+    None = 0,
+    Positive = 1,
+    Negative = 2
+};
+
+uint8_t Grid::adjacent(float s) noexcept {
     if (s <= Lower_cell_bound) {
-        return -1;
+        return Negative;
     }
 
     if (s >= Upper_cell_bound) {
-        return 1;
+        return Positive;
     }
 
-    return 0;
+    return None;
 }
 
 int32_t Grid::map1(float3 const& v) const noexcept {
@@ -306,98 +412,113 @@ int3 Grid::map3(float3 const& v) const noexcept {
     return static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 }
 
-int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const noexcept {
+int3 Grid::map3(float3 const& v, uint8_t& adjacent) const noexcept {
     float3 const r = inverse_cell_size_ * (v - aabb_.min());
 
     int3 const c = static_cast<int3>(r);
 
     float3 const d = r - static_cast<float3>(c);
 
-    adjacent[0] = Grid::adjacent(d[0]);
-    adjacent[1] = Grid::adjacent(d[1]);
-    adjacent[2] = Grid::adjacent(d[2]);
+    adjacent = static_cast<uint8_t>(Grid::adjacent(d[0]) << 4);
+    adjacent |= static_cast<uint8_t>(Grid::adjacent(d[1]) << 2);
+    adjacent |= Grid::adjacent(d[2]);
 
     return c + int3(1);
 }
 
-void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
-    int8_t     adjacent[3];
+void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept {
+    uint8_t     adjacent;
     int3 const c = map3(v, adjacent);
 
     int32_t const ic = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 
+    adjacency = adjacencies_[adjacent];
+
+    for (uint32_t i = 0; i < adjacency.num_cells; ++i) {
+        int2 const cells = adjacency.cells[i];
+        adjacency.cells[i][0] = grid_[cells[0] + ic][0];
+        adjacency.cells[i][1] = grid_[cells[1] + ic][1];
+    }
+
+//    if (0 == adjacency.num_cells) {
+//        std::cout << "alarm" << std::endl;
+//    }
+
+/*
     cells[0] = grid_[ic];
     cells[1] = int2(0);
     cells[2] = int2(0);
     cells[3] = int2(0);
 
-    if (-1 == adjacent[0]) {
+    num_cells = 4;
+
+    if (Negative == adjacent[0]) {
         cells[0][0] = grid_[ic + o_m1__0__0_][0];
 
-        if (-1 == adjacent[1]) {
+        if (Negative == adjacent[1]) {
             cells[1][0] = grid_[ic + o_m1_m1__0_][0];
             cells[1][1] = grid_[ic + o__0_m1__0_][1];
 
-            if (-1 == adjacent[2]) {
+            if (Negative == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_m1_m1_][0];
                 cells[3][1] = grid_[ic + o__0_m1_m1_][1];
-            } else if (1 == adjacent[2]) {
+            } else if (Positive == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_m1_p1_][0];
                 cells[3][1] = grid_[ic + o__0_m1_p1_][1];
             }
-        } else if (1 == adjacent[1]) {
+        } else if (Positive == adjacent[1]) {
             cells[1][0] = grid_[ic + o_m1_p1__0_][0];
             cells[1][1] = grid_[ic + o__0_p1__0_][1];
 
-            if (-1 == adjacent[2]) {
+            if (Negative == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_p1_m1_][0];
                 cells[3][1] = grid_[ic + o__0_p1_m1_][1];
-            } else if (1 == adjacent[2]) {
+            } else if (Positive == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_p1_p1_][0];
                 cells[3][1] = grid_[ic + o__0_p1_p1_][1];
             }
         }
 
-        if (-1 == adjacent[2]) {
+        if (Negative == adjacent[2]) {
             cells[2][0] = grid_[ic + o_m1__0_m1_][0];
             cells[2][1] = grid_[ic + o__0__0_m1_][1];
-        } else if (1 == adjacent[2]) {
+        } else if (Positive == adjacent[2]) {
             cells[2][0] = grid_[ic + o_m1__0_p1_][0];
             cells[2][1] = grid_[ic + o__0__0_p1_][1];
         }
 
         return;
-    } else if (1 == adjacent[0]) {
+    } else if (Positive == adjacent[0]) {
         cells[0][1] = grid_[ic + o_p1__0__0_][1];
 
-        if (-1 == adjacent[1]) {
+        if (Negative == adjacent[1]) {
             cells[1][0] = grid_[ic + o__0_m1__0_][0];
             cells[1][1] = grid_[ic + o_p1_m1__0_][1];
 
-            if (-1 == adjacent[2]) {
+            if (Negative == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_m1_m1_][0];
                 cells[3][1] = grid_[ic + o_p1_m1_m1_][1];
-            } else if (1 == adjacent[2]) {
+            } else if (Positive == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_m1_p1_][0];
                 cells[3][1] = grid_[ic + o_p1_m1_p1_][1];
             }
-        } else if (1 == adjacent[1] ) {
+        } else if (Positive == adjacent[1] ) {
             cells[1][0] = grid_[ic + o__0_p1__0_][0];
             cells[1][1] = grid_[ic + o_p1_p1__0_][1];
 
-            if (-1 == adjacent[2]) {
+            if (Negative == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_p1_m1_][0];
                 cells[3][1] = grid_[ic + o_p1_p1_m1_][1];
-            } else if (1 == adjacent[2]) {
+            } else if (Positive == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_p1_p1_][0];
                 cells[3][1] = grid_[ic + o_p1_p1_p1_][1];
             }
         }
 
-        if (-1 == adjacent[2]) {
+        if (Negative == adjacent[2]) {
             cells[2][0] = grid_[ic + o__0__0_m1_][0];
             cells[2][1] = grid_[ic + o_p1__0_m1_][1];
-        } else if (1 == adjacent[2]) {
+        } else if (Positive == adjacent[2]) {
             cells[2][0] = grid_[ic + o__0__0_p1_][0];
             cells[2][1] = grid_[ic + o_p1__0_p1_][1];
         }
@@ -405,9 +526,9 @@ void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
         return;
     }
 
-    if (-1 == adjacent[1]) {
+    if (Negative == adjacent[1]) {
         cells[1] = grid_[ic + o__0_m1__0_];
-        if (-1 == adjacent[2] && c[2] > 0) {
+        if (Negative == adjacent[2] && c[2] > 0) {
             cells[2] = grid_[ic + o__0__0_m1_];
             cells[3] = grid_[ic + o__0_m1_m1_];
         } else if (1 == adjacent[2]) {
@@ -416,13 +537,13 @@ void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
         }
 
         return;
-    } else if (1 == adjacent[1]) {
+    } else if (Positive == adjacent[1]) {
         cells[1] = grid_[ic + o__0_p1__0_];
 
-        if (-1 == adjacent[2]) {
+        if (Negative == adjacent[2]) {
             cells[2] = grid_[ic + o__0__0_m1_];
             cells[3] = grid_[ic + o__0_p1_m1_];
-        } else if (1 == adjacent[2]) {
+        } else if (Positive == adjacent[2]) {
             cells[2] = grid_[ic + o__0__0_p1_];
             cells[3] = grid_[ic + o__0_p1_p1_];
         }
@@ -430,11 +551,12 @@ void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
         return;
     }
 
-    if (-1 == adjacent[2]) {
+    if (Negative == adjacent[2]) {
         cells[2] = grid_[ic + o__0__0_m1_];
-    } else if (1 == adjacent[2]) {
+    } else if (Positive == adjacent[2]) {
         cells[2] = grid_[ic + o__0__0_p1_];
     }
+    */
 }
 
 float3 Grid::scattering_coefficient(Intersection const&  intersection,
