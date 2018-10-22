@@ -58,6 +58,8 @@ class Grid {
   private:
     uint32_t reduce(int32_t begin, int32_t end) noexcept;
 
+    static int8_t adjacent(float s) noexcept;
+
     int32_t map1(float3 const& v) const noexcept;
 
     int3 map3(float3 const& v) const noexcept;
@@ -73,12 +75,15 @@ class Grid {
 
     math::AABB aabb_;
 
+    static float constexpr Grid_radius_factor = 4.f;
+    static float constexpr Lower_cell_bound = 1.f / Grid_radius_factor;
+    static float constexpr Upper_cell_bound = 1.f - Lower_cell_bound;
+
     float photon_radius_;
     float inverse_cell_size_;
     float merge_radius_factor_;
 
     int3 dimensions_;
-    int3 max_coords_;
 
     int2* grid_;
 

@@ -18,7 +18,7 @@ Grid::Grid(float radius, float merge_radius_factor) noexcept
     : num_photons_(0),
       photons_(nullptr),
       photon_radius_(radius),
-      inverse_cell_size_(1.f / (2.f * radius)),
+      inverse_cell_size_(1.f / (Grid_radius_factor * radius)),
       merge_radius_factor_(merge_radius_factor),
       dimensions_(0),
       grid_(nullptr) {}
@@ -30,13 +30,12 @@ Grid::~Grid() noexcept {
 void Grid::resize(math::AABB const& aabb) noexcept {
     aabb_ = aabb;
 
-    int3 const dimensions = map3(aabb.max()) + int3(1);
+    int3 const dimensions = map3(aabb.max()) + int3(3);
 
     int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2];
 
     if (dimensions_ != dimensions) {
         dimensions_ = dimensions;
-        max_coords_ = math::max(dimensions - int3(1), 1);
 
         memory::free_aligned(grid_);
         grid_ = memory::allocate_aligned<int2>(static_cast<uint32_t>(num_cells));
@@ -186,7 +185,6 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
         float3 const mu_s = scattering_coefficient(intersection, worker);
 
         result /= (((4.f / 3.f) * math::Pi) * (radius_3 * static_cast<float>(num_paths))) * mu_s;
-
     } else {
         float const radius_2     = photon_radius_ * photon_radius_;
         float const inv_radius_2 = 1.f / radius_2;
@@ -286,26 +284,26 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
     return num_reduced;
 }
 
+int8_t Grid::adjacent(float s) noexcept {
+    if (s <= Lower_cell_bound) {
+        return -1;
+    }
+
+    if (s >= Upper_cell_bound) {
+        return 1;
+    }
+
+    return 0;
+}
+
 int32_t Grid::map1(float3 const& v) const noexcept {
-    int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
+    int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min())) + int3(1);
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
 int3 Grid::map3(float3 const& v) const noexcept {
     return static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
-}
-
-static inline int8_t adjacent(float s) {
-    if (s < 0.5f) {
-        return -1;
-    }
-
-    if (s > 0.5f) {
-        return 1;
-    }
-
-    return 0;
 }
 
 int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const noexcept {
@@ -315,11 +313,11 @@ int3 Grid::map3(float3 const& v, int8_t adjacent[3]) const noexcept {
 
     float3 const d = r - static_cast<float3>(c);
 
-    adjacent[0] = photon::adjacent(d[0]);
-    adjacent[1] = photon::adjacent(d[1]);
-    adjacent[2] = photon::adjacent(d[2]);
+    adjacent[0] = Grid::adjacent(d[0]);
+    adjacent[1] = Grid::adjacent(d[1]);
+    adjacent[2] = Grid::adjacent(d[2]);
 
-    return math::min(math::max(c, 0), max_coords_);
+    return c + int3(1);
 }
 
 void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
@@ -333,73 +331,73 @@ void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
     cells[2] = int2(0);
     cells[3] = int2(0);
 
-    if (-1 == adjacent[0] && c[0] > 0) {
+    if (-1 == adjacent[0]) {
         cells[0][0] = grid_[ic + o_m1__0__0_][0];
 
-        if (-1 == adjacent[1] && c[1] > 0) {
+        if (-1 == adjacent[1]) {
             cells[1][0] = grid_[ic + o_m1_m1__0_][0];
             cells[1][1] = grid_[ic + o__0_m1__0_][1];
 
-            if (-1 == adjacent[2] && c[2] > 0) {
+            if (-1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_m1_m1_][0];
                 cells[3][1] = grid_[ic + o__0_m1_m1_][1];
-            } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+            } else if (1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_m1_p1_][0];
                 cells[3][1] = grid_[ic + o__0_m1_p1_][1];
             }
-        } else if (1 == adjacent[1] && c[1] < dimensions_[1] - 1) {
+        } else if (1 == adjacent[1]) {
             cells[1][0] = grid_[ic + o_m1_p1__0_][0];
             cells[1][1] = grid_[ic + o__0_p1__0_][1];
 
-            if (-1 == adjacent[2] && c[2] > 0) {
+            if (-1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_p1_m1_][0];
                 cells[3][1] = grid_[ic + o__0_p1_m1_][1];
-            } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+            } else if (1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o_m1_p1_p1_][0];
                 cells[3][1] = grid_[ic + o__0_p1_p1_][1];
             }
         }
 
-        if (-1 == adjacent[2] && c[2] > 0) {
+        if (-1 == adjacent[2]) {
             cells[2][0] = grid_[ic + o_m1__0_m1_][0];
             cells[2][1] = grid_[ic + o__0__0_m1_][1];
-        } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+        } else if (1 == adjacent[2]) {
             cells[2][0] = grid_[ic + o_m1__0_p1_][0];
             cells[2][1] = grid_[ic + o__0__0_p1_][1];
         }
 
         return;
-    } else if (1 == adjacent[0] && c[0] < dimensions_[0] - 1) {
+    } else if (1 == adjacent[0]) {
         cells[0][1] = grid_[ic + o_p1__0__0_][1];
 
-        if (-1 == adjacent[1] && c[1] > 0) {
+        if (-1 == adjacent[1]) {
             cells[1][0] = grid_[ic + o__0_m1__0_][0];
             cells[1][1] = grid_[ic + o_p1_m1__0_][1];
 
-            if (-1 == adjacent[2] && c[2] > 0) {
+            if (-1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_m1_m1_][0];
                 cells[3][1] = grid_[ic + o_p1_m1_m1_][1];
-            } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+            } else if (1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_m1_p1_][0];
                 cells[3][1] = grid_[ic + o_p1_m1_p1_][1];
             }
-        } else if (1 == adjacent[1] && c[1] < dimensions_[1] - 1) {
+        } else if (1 == adjacent[1] ) {
             cells[1][0] = grid_[ic + o__0_p1__0_][0];
             cells[1][1] = grid_[ic + o_p1_p1__0_][1];
 
-            if (-1 == adjacent[2] && c[2] > 0) {
+            if (-1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_p1_m1_][0];
                 cells[3][1] = grid_[ic + o_p1_p1_m1_][1];
-            } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+            } else if (1 == adjacent[2]) {
                 cells[3][0] = grid_[ic + o__0_p1_p1_][0];
                 cells[3][1] = grid_[ic + o_p1_p1_p1_][1];
             }
         }
 
-        if (-1 == adjacent[2] && c[2] > 0) {
+        if (-1 == adjacent[2]) {
             cells[2][0] = grid_[ic + o__0__0_m1_][0];
             cells[2][1] = grid_[ic + o_p1__0_m1_][1];
-        } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+        } else if (1 == adjacent[2]) {
             cells[2][0] = grid_[ic + o__0__0_p1_][0];
             cells[2][1] = grid_[ic + o_p1__0_p1_][1];
         }
@@ -407,24 +405,24 @@ void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
         return;
     }
 
-    if (-1 == adjacent[1] && c[1] > 0) {
+    if (-1 == adjacent[1]) {
         cells[1] = grid_[ic + o__0_m1__0_];
         if (-1 == adjacent[2] && c[2] > 0) {
             cells[2] = grid_[ic + o__0__0_m1_];
             cells[3] = grid_[ic + o__0_m1_m1_];
-        } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+        } else if (1 == adjacent[2]) {
             cells[2] = grid_[ic + o__0__0_p1_];
             cells[3] = grid_[ic + o__0_m1_p1_];
         }
 
         return;
-    } else if (1 == adjacent[1] && c[1] < dimensions_[1] - 1) {
+    } else if (1 == adjacent[1]) {
         cells[1] = grid_[ic + o__0_p1__0_];
 
-        if (-1 == adjacent[2] && c[2] > 0) {
+        if (-1 == adjacent[2]) {
             cells[2] = grid_[ic + o__0__0_m1_];
             cells[3] = grid_[ic + o__0_p1_m1_];
-        } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+        } else if (1 == adjacent[2]) {
             cells[2] = grid_[ic + o__0__0_p1_];
             cells[3] = grid_[ic + o__0_p1_p1_];
         }
@@ -432,9 +430,9 @@ void Grid::adjacent_cells(float3 const& v, int2 cells[4]) const noexcept {
         return;
     }
 
-    if (-1 == adjacent[2] && c[2] > 0) {
+    if (-1 == adjacent[2]) {
         cells[2] = grid_[ic + o__0__0_m1_];
-    } else if (1 == adjacent[2] && c[2] < dimensions_[2] - 1) {
+    } else if (1 == adjacent[2]) {
         cells[2] = grid_[ic + o__0__0_p1_];
     }
 }
