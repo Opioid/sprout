@@ -67,7 +67,7 @@ class Grid {
     int3 map3(float3 const& v, uint8_t& adjacent) const noexcept;
 
     struct Adjacency {
-        int2 cells[4];
+        int2     cells[4];
         uint32_t num_cells;
     };
 
@@ -82,8 +82,8 @@ class Grid {
     math::AABB aabb_;
 
     static float constexpr Grid_radius_factor = 4.f;
-    static float constexpr Lower_cell_bound = 1.f / Grid_radius_factor;
-    static float constexpr Upper_cell_bound = 1.f - Lower_cell_bound;
+    static float constexpr Lower_cell_bound   = 1.f / Grid_radius_factor;
+    static float constexpr Upper_cell_bound   = 1.f - Lower_cell_bound;
 
     float photon_radius_;
     float inverse_cell_size_;
