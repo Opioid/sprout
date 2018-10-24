@@ -33,7 +33,7 @@ class Morphable_shape;
 class Shape {
   public:
     using Transformation = entity::Composed_transformation;
-    using Sampler_filter = material::Sampler_settings::Filter;
+    using Filter         = material::Sampler_settings::Filter;
 
     virtual ~Shape() noexcept;
 
@@ -67,11 +67,11 @@ class Shape {
     //							 Node_stack& node_stack) const;
 
     virtual float opacity(Ray const& ray, Transformation const& transformation,
-                          Materials const& materials, Sampler_filter filter,
-                          Worker const& worker) const noexcept = 0;
+                          Materials const& materials, Filter filter, Worker const& worker) const
+        noexcept = 0;
 
     virtual float3 thin_absorption(Ray const& ray, Transformation const& transformation,
-                                   Materials const& materials, Sampler_filter filter,
+                                   Materials const& materials, Filter filter,
                                    Worker const& worker) const noexcept = 0;
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,

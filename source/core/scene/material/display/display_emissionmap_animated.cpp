@@ -22,8 +22,7 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
                                   animation_duration) {}
 
 material::Sample const& Emissionmap_animated::sample(float3 const& wo, Renderstate const& rs,
-                                                     Sampler_filter filter,
-                                                     sampler::Sampler& /*sampler*/,
+                                                     Filter filter, sampler::Sampler& /*sampler*/,
                                                      Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<Sample>(depth);

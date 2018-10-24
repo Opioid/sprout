@@ -12,7 +12,7 @@ class Emissionmap_animated : public light::Emissionmap_animated {
                          Texture_adapter const& emission_map, float emission_factor,
                          uint64_t animation_duration) noexcept;
 
-    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override final;
 

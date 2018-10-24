@@ -9,11 +9,11 @@ class Glass_rough : public Material {
   public:
     Glass_rough(Sampler_settings const& sampler_settings) noexcept;
 
-    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override final;
 
-    float3 absorption_coefficient(float2 uv, Sampler_filter filter, Worker const& worker) const
+    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
     float ior() const noexcept override final;

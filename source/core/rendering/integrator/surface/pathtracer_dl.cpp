@@ -54,7 +54,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
                          Interface_stack const& initial_stack) noexcept {
     worker.reset_interface_stack(initial_stack);
 
-    Sampler_filter filter = Sampler_filter::Undefined;
+    Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
 
@@ -115,7 +115,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             }
         } else {
             primary_ray       = false;
-            filter            = Sampler_filter::Nearest;
+            filter            = Filter::Nearest;
             treat_as_singular = false;
         }
 
@@ -162,7 +162,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
                                    const Material_sample& material_sample, bool evaluate_back,
-                                   Sampler_filter filter, Worker& worker) noexcept {
+                                   Filter filter, Worker& worker) noexcept {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -196,8 +196,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
             auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
 
-            float3 const radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest,
-                                                       worker);
+            float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 
             float const weight = 1.f / (light.pdf * light_sample.pdf);
 

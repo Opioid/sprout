@@ -119,7 +119,7 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Cube::opacity(Ray const& ray, Transformation const& transformation,
-                    Materials const& materials, Sampler_filter filter, Worker const& worker) const
+                    Materials const& materials, Filter filter, Worker const& worker) const
     noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = math::dot(v, ray.direction);
@@ -161,7 +161,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation,
 }
 
 float3 Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                             Materials const& /*materials*/, Sampler_filter /*filter*/,
+                             Materials const& /*materials*/, Filter /*filter*/,
                              Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }

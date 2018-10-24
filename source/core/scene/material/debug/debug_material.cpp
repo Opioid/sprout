@@ -11,9 +11,9 @@ namespace scene::material::debug {
 Material::Material(Sampler_settings const& sampler_settings) noexcept
     : material::Material(sampler_settings, true) {}
 
-material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
-                                         Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const noexcept {
+material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs, Filter /*filter*/,
+                                         sampler::Sampler& /*sampler*/, Worker const& worker,
+                                         uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);

@@ -11,7 +11,7 @@ class Material : public material::Material {
 
     ~Material() noexcept override;
 
-    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override final;
 

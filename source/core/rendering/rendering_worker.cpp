@@ -65,8 +65,7 @@ float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack)
         reset_interface_stack(interface_stack);
 
         float3 vli, vtr;
-        if (!volume_integrator_->integrate(ray, intersection, Sampler_filter::Undefined, *this, vli,
-                                           vtr)) {
+        if (!volume_integrator_->integrate(ray, intersection, Filter::Undefined, *this, vli, vtr)) {
             return float4(vli, spectrum::luminance(vli));
         }
 
@@ -77,7 +76,7 @@ float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack)
         SOFT_ASSERT(math::all_finite_and_positive(li));
 
         return float4(vtr * li + vli, 1.f);
-    } else if (intersect_and_resolve_mask(ray, intersection, Sampler_filter::Undefined)) {
+    } else if (intersect_and_resolve_mask(ray, intersection, Filter::Undefined)) {
         float3 const li = surface_integrator_->li(ray, intersection, *this, interface_stack);
 
         SOFT_ASSERT(math::all_finite_and_positive(li));
@@ -88,13 +87,13 @@ float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack)
     }
 }
 
-bool Worker::volume(Ray& ray, Intersection& intersection, Sampler_filter filter, float3& li,
+bool Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
                     float3& transmittance) noexcept {
     return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
 }
 
-bool Worker::transmitted_visibility(Ray& ray, Intersection const& intersection,
-                                    Sampler_filter filter, float3& v) noexcept {
+bool Worker::transmitted_visibility(Ray& ray, Intersection const& intersection, Filter filter,
+                                    float3& v) noexcept {
     if (float3 tv; tinted_visibility(ray, intersection, filter, tv)) {
         if (float3 tr; transmittance(ray, tr)) {
             v = tv * tr;
@@ -134,7 +133,7 @@ size_t Worker::num_bytes() const noexcept {
     return num_bytes;
 }
 
-static inline bool tinted_visibility(scene::Ray const& ray, Worker::Sampler_filter filter,
+static inline bool tinted_visibility(scene::Ray const& ray, Worker::Filter filter,
                                      scene::Scene const* scene, Worker const& worker,
                                      float3& tv) noexcept {
     bool const visible = scene->thin_absorption(ray, filter, worker, tv);
@@ -200,7 +199,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
     return true;
 }
 
-bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Sampler_filter filter,
+bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Filter filter,
                                float3& tv) noexcept {
     if (intersection.subsurface && intersection.material()->ior() > 1.f) {
         float const ray_max_t = ray.max_t;

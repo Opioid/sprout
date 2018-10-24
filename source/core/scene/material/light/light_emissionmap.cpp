@@ -18,9 +18,9 @@ Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_side
 
 Emissionmap::~Emissionmap() noexcept {}
 
-material::Sample const& Emissionmap::sample(float3 const& wo, Renderstate const& rs,
-                                            Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                            Worker const& worker, uint32_t depth) const noexcept {
+material::Sample const& Emissionmap::sample(float3 const& wo, Renderstate const& rs, Filter filter,
+                                            sampler::Sampler& /*sampler*/, Worker const& worker,
+                                            uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -37,7 +37,7 @@ material::Sample const& Emissionmap::sample(float3 const& wo, Renderstate const&
 }
 
 float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                      Sampler_filter filter, Worker const& worker) const noexcept {
+                                      Filter filter, Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     return emission_factor_ * emission_map_.sample_3(sampler, uv);
@@ -61,8 +61,7 @@ Material::Sample_2D Emissionmap::radiance_sample(float2 r2) const noexcept {
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Emissionmap::emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
-    noexcept {
+float Emissionmap::emission_pdf(float2 uv, Filter filter, Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     return distribution_.pdf(sampler.address(uv)) * total_weight_;

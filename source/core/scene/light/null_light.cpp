@@ -22,7 +22,7 @@ bool Null_light::sample(float3 const& /*p*/, Transformation const& /*transformat
     return false;
 }
 
-float3 Null_light::evaluate(Sample_to const& /*sample*/, Sampler_filter /*filter*/,
+float3 Null_light::evaluate(Sample_to const& /*sample*/, Filter /*filter*/,
                             Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }
@@ -33,14 +33,14 @@ bool Null_light::sample(Transformation const& /*transformation*/, sampler::Sampl
     return false;
 }
 
-float3 Null_light::evaluate(Sample_from const& /*sample*/, Sampler_filter /*filter*/,
+float3 Null_light::evaluate(Sample_from const& /*sample*/, Filter /*filter*/,
                             Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }
 
 float Null_light::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
-                      bool /*total_sphere*/, Sampler_filter /*filter*/,
-                      Worker const& /*worker*/) const noexcept {
+                      bool /*total_sphere*/, Filter /*filter*/, Worker const& /*worker*/) const
+    noexcept {
     return 0.f;
 }
 

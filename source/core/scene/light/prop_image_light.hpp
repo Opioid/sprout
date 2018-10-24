@@ -19,8 +19,8 @@ class Prop_image_light : public Prop_light {
                 uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                 Sample_from& result) const noexcept override final;
 
-    float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-              Sampler_filter filter, Worker const& worker) const noexcept override final;
+    float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
+              Worker const& worker) const noexcept override final;
 
     void prepare_sampling(uint32_t light_id, uint64_t time,
                           thread::Pool& pool) noexcept override final;

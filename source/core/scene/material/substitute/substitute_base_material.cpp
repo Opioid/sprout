@@ -13,8 +13,7 @@ Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_
     : material::Material(sampler_settings, two_sided) {}
 
 float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                        Sampler_filter filter, Worker const& worker) const
-    noexcept {
+                                        Filter filter, Worker const& worker) const noexcept {
     if (emission_map_.is_valid()) {
         // For some reason Clang needs this to find inherited Material::sampler_key_
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);

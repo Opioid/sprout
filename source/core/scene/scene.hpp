@@ -57,11 +57,11 @@ struct Ray;
 
 class Scene {
   public:
-    using Node_stack     = shape::Node_stack;
-    using Sampler_filter = material::Sampler_settings::Filter;
-    using Shape_ptr      = std::shared_ptr<shape::Shape>;
-    using Entity         = entity::Entity;
-    using Prop           = prop::Prop;
+    using Node_stack = shape::Node_stack;
+    using Filter     = material::Sampler_settings::Filter;
+    using Shape_ptr  = std::shared_ptr<shape::Shape>;
+    using Entity     = entity::Entity;
+    using Prop       = prop::Prop;
 
     Scene(take::Settings const& settings) noexcept;
 
@@ -87,11 +87,10 @@ class Scene {
 
     bool intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept;
 
-    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const
-        noexcept;
+    bool opacity(Ray const& ray, Filter filter, Worker const& worker, float& o) const noexcept;
 
-    bool thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                         float3& ta) const noexcept;
+    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
+        noexcept;
 
     Entity* entity(size_t index) const noexcept;
     Entity* entity(std::string_view name) const noexcept;

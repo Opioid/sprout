@@ -14,7 +14,7 @@ Height::Height(Sampler_settings const& sampler_settings) : Density(sampler_setti
 
 float3 Height::optical_depth(Transformation const& transformation, math::AABB const& aabb,
                                                          math::Ray const& ray, float step_size,
-rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const { const math::Ray rn =
+rnd::Generator& rng, Filter filter, Worker const& worker) const { const math::Ray rn =
 ray.normalized();
 
         // This is an optimization of the generic stochastic method
@@ -74,7 +74,7 @@ size_t Height::num_bytes() const {
 }
 
 float Height::density(float3 const& p, Transformation const& transformation,
-                                          Sampler_filter filter, Worker const& worker) const {
+                                          Filter filter, Worker const& worker) const {
         // p is in object space already
 
         // calculate scaled height

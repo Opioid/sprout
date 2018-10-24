@@ -264,8 +264,8 @@ bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) con
     return false;
 }
 
-bool BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                          float& o) const noexcept {
+bool BVH_wrapper::opacity(Ray const& ray, Filter filter, Worker const& worker, float& o) const
+    noexcept {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -327,7 +327,7 @@ bool BVH_wrapper::opacity(Ray const& ray, Sampler_filter filter, Worker const& w
     return true;
 }
 
-bool BVH_wrapper::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
+bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
                                   float3& ta) const noexcept {
     auto& node_stack = worker.node_stack();
 

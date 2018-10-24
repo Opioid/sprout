@@ -13,8 +13,7 @@ Glass_dispersion::Glass_dispersion(Sampler_settings const& sampler_settings) noe
     : Glass(sampler_settings) {}
 
 material::Sample const& Glass_dispersion::sample(float3 const& wo, Renderstate const& rs,
-                                                 Sampler_filter filter,
-                                                 sampler::Sampler& /*sampler*/,
+                                                 Filter filter, sampler::Sampler& /*sampler*/,
                                                  Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<Sample_dispersion>(depth);

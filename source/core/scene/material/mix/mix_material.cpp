@@ -9,9 +9,9 @@ namespace scene::material::mix {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : material::Material(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
-                                         Sampler_filter filter, sampler::Sampler& sampler,
-                                         Worker const& worker, uint32_t depth) const noexcept {
+material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs, Filter filter,
+                                         sampler::Sampler& sampler, Worker const& worker,
+                                         uint32_t depth) const noexcept {
     auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);
 
     float const mask = mask_.sample_1(texture_sampler, rs.uv);
@@ -23,7 +23,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     }
 }
 
-float Material::opacity(float2 /*uv*/, uint64_t /*time*/, Sampler_filter /*filter*/,
+float Material::opacity(float2 /*uv*/, uint64_t /*time*/, Filter /*filter*/,
                         Worker const& /*worker*/) const noexcept {
     return 1.f;
 }

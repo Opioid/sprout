@@ -21,9 +21,8 @@ using namespace scene;
 Sun_material::Sun_material(Sky& sky) noexcept : Material(sky) {}
 
 const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const& rs,
-                                             Sampler_filter /*filter*/,
-                                             sampler::Sampler& /*sampler*/, Worker const& worker,
-                                             uint32_t depth) const noexcept {
+                                             Filter /*filter*/, sampler::Sampler& /*sampler*/,
+                                             Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -36,8 +35,7 @@ const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const
 }
 
 float3 Sun_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                       Sampler_filter /*filter*/, const Worker& /*worker*/) const
-    noexcept {
+                                       Filter /*filter*/, const Worker& /*worker*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(wi);
 }
 
@@ -57,8 +55,7 @@ size_t Sun_material::num_bytes() const noexcept {
 Sun_baked_material::Sun_baked_material(Sky& sky) noexcept : Material(sky) {}
 
 const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate const& rs,
-                                                   Sampler_filter /*filter*/,
-                                                   sampler::Sampler& /*sampler*/,
+                                                   Filter /*filter*/, sampler::Sampler& /*sampler*/,
                                                    Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);
@@ -75,8 +72,8 @@ const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate
 }
 
 float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                             Sampler_filter /*filter*/,
-                                             const Worker& /*worker*/) const noexcept {
+                                             Filter /*filter*/, const Worker& /*worker*/) const
+    noexcept {
     return emission_(sky_.sun_v(wi));
 }
 

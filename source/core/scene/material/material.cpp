@@ -30,8 +30,7 @@ void Material::compile() noexcept {}
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) noexcept {}
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
-                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const
-    noexcept {
+                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }
 
@@ -47,13 +46,13 @@ Material::Sample_2D Material::radiance_sample(float2 r2) const noexcept {
     return {r2, 1.f};
 }
 
-float Material::emission_pdf(float2 /*uv*/, Sampler_filter /*filter*/,
-                             Worker const& /*worker*/) const noexcept {
+float Material::emission_pdf(float2 /*uv*/, Filter /*filter*/, Worker const& /*worker*/) const
+    noexcept {
     return 1.f;
 }
 
-float Material::opacity(float2 uv, uint64_t /*time*/, Sampler_filter filter,
-                        Worker const& worker) const noexcept {
+float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker const& worker) const
+    noexcept {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key_, filter);
         return mask_.sample_1(sampler, uv);
@@ -63,18 +62,18 @@ float Material::opacity(float2 uv, uint64_t /*time*/, Sampler_filter filter,
 }
 
 float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, float2 uv,
-                                 uint64_t time, Sampler_filter filter, Worker const& worker) const
+                                 uint64_t time, Filter filter, Worker const& worker) const
     noexcept {
     return float3(opacity(uv, time, filter, worker));
 }
 
 float3 Material::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
-                          float /*step_size*/, rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
+                          float /*step_size*/, rnd::Generator& /*rng*/, Filter /*filter*/,
                           Worker const& /*worker*/) const noexcept {
     return float3::identity();
 }
 
-float3 Material::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
+float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
                                         Worker const& /*worker*/) const noexcept {
     return float3::identity();
 }
@@ -83,12 +82,12 @@ CC Material::collision_coefficients() const noexcept {
     return {float3::identity(), float3::identity()};
 }
 
-CC Material::collision_coefficients(float2 /*uv*/, Sampler_filter /*filter*/,
+CC Material::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const noexcept {
     return {float3::identity(), float3::identity()};
 }
 
-CC Material::collision_coefficients(float3 const& /*p*/, Sampler_filter /*filter*/,
+CC Material::collision_coefficients(float3 const& /*p*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const noexcept {
     return {float3::identity(), float3::identity()};
 }

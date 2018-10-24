@@ -22,7 +22,7 @@ class Grid final : public Density {
     size_t num_bytes() const noexcept override final;
 
   private:
-    float density(float3 const& uvw, Sampler_filter filter, Worker const& worker) const
+    float density(float3 const& uvw, Filter filter, Worker const& worker) const
         noexcept override final;
 
     Texture_adapter grid_;
@@ -37,13 +37,13 @@ class Emission_grid final : public Material {
     ~Emission_grid() noexcept override final;
 
     float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
-                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+                    rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
   private:
-    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
+    float3 emission(float3 const& p, Filter filter, Worker const& worker) const noexcept;
 
     Texture_adapter grid_;
 };
@@ -55,15 +55,15 @@ class Flow_vis_grid final : public Material {
     ~Flow_vis_grid() noexcept override final;
 
     float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
-                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+                    rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
   private:
-    float density(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
+    float density(float3 const& p, Filter filter, Worker const& worker) const noexcept;
 
-    float3 emission(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
+    float3 emission(float3 const& p, Filter filter, Worker const& worker) const noexcept;
 
     Texture_adapter grid_;
 };

@@ -30,8 +30,8 @@ bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& trans
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
-bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
-                               Worker& worker, float3& li, float3& transmittance) noexcept {
+bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
+                               float3& li, float3& transmittance) noexcept {
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li            = float3(0.f);
         transmittance = float3(1.f);

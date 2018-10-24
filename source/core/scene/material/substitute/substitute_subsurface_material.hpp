@@ -13,7 +13,7 @@ class Material_subsurface final : public Material_base {
 
     void compile() noexcept override final;
 
-    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override final;
 
@@ -27,18 +27,18 @@ class Material_subsurface final : public Material_base {
     void set_volumetric_anisotropy(float anisotropy) noexcept;
 
     float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
-                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+                    rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    float3 absorption_coefficient(float2 uv, Sampler_filter filter, Worker const& worker) const
+    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
     CC collision_coefficients() const noexcept override final;
 
-    CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    CC collision_coefficients(float3 const& p, Sampler_filter filter, Worker const& worker) const
+    CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const
         noexcept override final;
 
     CM control_medium() const noexcept override final;
@@ -54,9 +54,9 @@ class Material_subsurface final : public Material_base {
     static size_t sample_size() noexcept;
 
   private:
-    float density(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
+    float density(float3 const& p, Filter filter, Worker const& worker) const noexcept;
 
-    float3 color(float3 const& p, Sampler_filter filter, Worker const& worker) const noexcept;
+    float3 color(float3 const& p, Filter filter, Worker const& worker) const noexcept;
 
     Texture_adapter density_map_;
 

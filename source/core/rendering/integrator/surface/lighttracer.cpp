@@ -47,7 +47,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
                        Interface_stack const& initial_stack) noexcept {
     worker.reset_interface_stack(initial_stack);
 
-    Sampler_filter filter = Sampler_filter::Undefined;
+    Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
 
@@ -141,14 +141,14 @@ bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
     ray.max_t = scene::Ray_max_t;
     ray.time  = time;
 
-    radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest, worker) /
+    radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker) /
                (light.pdf * light_sample.pdf);
 
     return true;
 }
 
 float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersection,
-                                 const Material_sample& material_sample, Sampler_filter filter,
+                                 const Material_sample& material_sample, Filter filter,
                                  Worker& worker) noexcept {
     float3 result(0.f);
 
@@ -175,8 +175,7 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
             if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
                 auto const bxdf = material_sample.evaluate(light_sample.wi, true);
 
-                float3 const radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest,
-                                                           worker);
+                float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 
                 result += (tv * radiance * bxdf.reflection) / (light.pdf * light_sample.pdf);
             }

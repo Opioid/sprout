@@ -24,7 +24,7 @@ bool Emission::transmittance(Ray const& ray, Worker& worker, float3& transmittan
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
-bool Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Sampler_filter /*filter*/,
+bool Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /*filter*/,
                          Worker& /*worker*/, float3& /*li*/, float3& /*transmittance*/) noexcept {
     return false;
 }

@@ -28,9 +28,9 @@ namespace prop {
 
 class Prop : public entity::Entity {
   public:
-    using Node_stack     = shape::Node_stack;
-    using Sampler_filter = material::Sampler_settings::Filter;
-    using Shape_ptr      = std::shared_ptr<shape::Shape>;
+    using Node_stack = shape::Node_stack;
+    using Filter     = material::Sampler_settings::Filter;
+    using Shape_ptr  = std::shared_ptr<shape::Shape>;
 
     ~Prop() noexcept override;
 
@@ -63,10 +63,9 @@ class Prop : public entity::Entity {
     void prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
                           bool material_importance_sampling, thread::Pool& pool) noexcept;
 
-    float opacity(Ray const& ray, Sampler_filter filter, Worker const& worker) const noexcept;
+    float opacity(Ray const& ray, Filter filter, Worker const& worker) const noexcept;
 
-    float3 thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker) const
-        noexcept;
+    float3 thin_absorption(Ray const& ray, Filter filter, Worker const& worker) const noexcept;
 
     float area(uint32_t part) const noexcept;
 

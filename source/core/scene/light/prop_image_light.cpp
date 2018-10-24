@@ -98,7 +98,7 @@ bool Prop_image_light::sample(Transformation const& transformation, sampler::Sam
 }
 
 float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bool /*total_sphere*/,
-                            Sampler_filter filter, Worker const& worker) const noexcept {
+                            Filter filter, Worker const& worker) const noexcept {
     Transformation temp;
     auto const&    transformation = prop_->transformation_at(ray.time, temp);
 

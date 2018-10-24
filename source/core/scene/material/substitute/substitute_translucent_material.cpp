@@ -13,8 +13,7 @@ Material_translucent::Material_translucent(Sampler_settings const& sampler_setti
     : Material_base(sampler_settings, true) {}
 
 material::Sample const& Material_translucent::sample(float3 const& wo, Renderstate const& rs,
-                                                     Sampler_filter filter,
-                                                     sampler::Sampler& /*sampler*/,
+                                                     Filter filter, sampler::Sampler& /*sampler*/,
                                                      Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<Sample_translucent>(depth);

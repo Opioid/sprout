@@ -43,7 +43,7 @@ class Tracking {
     using Ray            = scene::Ray;
     using Transformation = scene::entity::Composed_transformation;
     using Material       = scene::material::Material;
-    using Sampler_filter = scene::material::Sampler_settings::Filter;
+    using Filter         = scene::material::Sampler_settings::Filter;
     using CC             = scene::material::CC;
     using CM             = scene::material::CM;
     using Intersection   = scene::prop::Intersection;
@@ -52,7 +52,7 @@ class Tracking {
                               float3& transmittance);
 
     static bool tracking(math::Ray const& ray, CM const& cm, Material const& material,
-                         Sampler_filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
+                         Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                          float3& w);
 
     static bool tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,

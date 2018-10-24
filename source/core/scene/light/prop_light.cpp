@@ -67,8 +67,8 @@ bool Prop_light::sample(float3 const& p, Transformation const& transformation,
     return true;
 }
 
-float3 Prop_light::evaluate(Sample_to const& sample, Sampler_filter filter,
-                            Worker const& worker) const noexcept {
+float3 Prop_light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
+    noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -93,8 +93,8 @@ bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& 
     return true;
 }
 
-float3 Prop_light::evaluate(Sample_from const& sample, Sampler_filter filter,
-                            Worker const& worker) const noexcept {
+float3 Prop_light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
+    noexcept {
     auto const material = prop_->material(part_);
 
     float const area = prop_->area(part_);
@@ -103,7 +103,7 @@ float3 Prop_light::evaluate(Sample_from const& sample, Sampler_filter filter,
 }
 
 float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-                      Sampler_filter /*filter*/, Worker const& /*worker*/) const noexcept {
+                      Filter /*filter*/, Worker const& /*worker*/) const noexcept {
     Transformation temp;
     auto const&    transformation = prop_->transformation_at(ray.time, temp);
 

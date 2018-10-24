@@ -30,7 +30,7 @@ struct Intersection;
 
 class Worker {
   public:
-    using Sampler_filter     = material::Sampler_settings::Filter;
+    using Filter             = material::Sampler_settings::Filter;
     using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
     using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
     using Intersection       = prop::Intersection;
@@ -49,14 +49,13 @@ class Worker {
     bool intersect(Ray& ray, Intersection& intersection) const noexcept;
     bool intersect(Ray& ray, float& epsilon) const noexcept;
 
-    bool resolve_mask(Ray& ray, Intersection& intersection, Sampler_filter filter) noexcept;
+    bool resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept;
 
-    bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
-                                    Sampler_filter filter) noexcept;
+    bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept;
 
     bool visibility(Ray const& ray) const noexcept;
 
-    bool masked_visibility(Ray const& ray, Sampler_filter filter, float& mv) const noexcept;
+    bool masked_visibility(Ray const& ray, Filter filter, float& mv) const noexcept;
 
     Scene const& scene() const noexcept;
 
@@ -69,9 +68,9 @@ class Worker {
     template <typename T>
     T& sample(uint32_t depth) const noexcept;
 
-    Texture_sampler_2D const& sampler_2D(uint32_t key, Sampler_filter filter) const noexcept;
+    Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const noexcept;
 
-    Texture_sampler_3D const& sampler_3D(uint32_t key, Sampler_filter filter) const noexcept;
+    Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const noexcept;
 
     Interface_stack& interface_stack() noexcept;
 

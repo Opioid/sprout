@@ -18,8 +18,8 @@ class Integrator : public integrator::Integrator {
 
     virtual bool transmittance(Ray const& ray, Worker& worker, float3& transmittance) noexcept = 0;
 
-    virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
-                           Worker& worker, float3& li, float3& transmittance) noexcept = 0;
+    virtual bool integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
+                           float3& li, float3& transmittance) noexcept = 0;
 };
 
 class Factory {

@@ -37,7 +37,7 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     //	float3 const wo = -ray.direction;
 
-    //	float3 opacity = intersection.thin_absorption(wo, ray.time, Sampler_filter::Undefined,
+    //	float3 opacity = intersection.thin_absorption(wo, ray.time, Filter::Undefined,
     // worker); 	float3 throughput = opacity;
 
     //	while (math::any_less_one(opacity)) {
@@ -52,7 +52,7 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
     //		}
 
     //		throughput = (1.f - opacity) * intersection.thin_absorption(wo, ray.time,
-    //																	Sampler_filter::Undefined,
+    //																	Filter::Undefined,
     //																	worker);
     //		opacity += throughput;
     //	}
@@ -69,7 +69,7 @@ float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& 
 
     float3 const wo = -ray.direction;
 
-    auto& material_sample = intersection.sample(wo, ray, Sampler_filter::Undefined, false, sampler_,
+    auto& material_sample = intersection.sample(wo, ray, Filter::Undefined, false, sampler_,
                                                 worker);
 
     if (material_sample.same_hemisphere(wo)) {
@@ -109,11 +109,10 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                 shadow_ray.max_t = light_sample.t - ray_offset;
 
                 if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection,
-                                                             Sampler_filter::Undefined, tv)) {
+                                                             Filter::Undefined, tv)) {
                     auto const bxdf = material_sample.evaluate(light_sample.wi, true);
 
-                    float3 const radiance = light->evaluate(light_sample, Sampler_filter::Nearest,
-                                                            worker);
+                    float3 const radiance = light->evaluate(light_sample, Filter::Nearest, worker);
 
                     result += (tv * radiance * bxdf.reflection) / light_sample.pdf;
                 }

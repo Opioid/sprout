@@ -14,9 +14,9 @@ namespace scene::material::glass {
 Glass_rough::Glass_rough(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings, false) {}
 
-material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const& rs,
-                                            Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                            Worker const& worker, uint32_t depth) const noexcept {
+material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const& rs, Filter filter,
+                                            sampler::Sampler& /*sampler*/, Worker const& worker,
+                                            uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample_rough>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -44,7 +44,7 @@ material::Sample const& Glass_rough::sample(float3 const& wo, Renderstate const&
     return sample;
 }
 
-float3 Glass_rough::absorption_coefficient(float2 /*uv*/, Sampler_filter /*filter*/,
+float3 Glass_rough::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
                                            Worker const& /*worker*/) const noexcept {
     return absorption_coefficient_;
 }

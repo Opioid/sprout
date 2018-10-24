@@ -38,8 +38,7 @@ void Material_subsurface::compile() noexcept {
 }
 
 material::Sample const& Material_subsurface::sample(float3 const& wo, Renderstate const& rs,
-                                                    Sampler_filter filter,
-                                                    sampler::Sampler& /*sampler*/,
+                                                    Filter filter, sampler::Sampler& /*sampler*/,
                                                     Worker const& worker, uint32_t depth) const
     noexcept {
     if (rs.subsurface) {
@@ -92,12 +91,12 @@ void Material_subsurface::set_volumetric_anisotropy(float anisotropy) noexcept {
 
 float3 Material_subsurface::emission(math::Ray const& /*ray*/,
                                      Transformation const& /*transformation*/, float /*step_size*/,
-                                     rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
+                                     rnd::Generator& /*rng*/, Filter /*filter*/,
                                      Worker const& /*worker*/) const noexcept {
     return float3::identity();
 }
 
-float3 Material_subsurface::absorption_coefficient(float2 uv, Sampler_filter filter,
+float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
                                                    Worker const& worker) const noexcept {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
@@ -113,8 +112,8 @@ CC Material_subsurface::collision_coefficients() const noexcept {
     return cc_;
 }
 
-CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
-                                               Worker const& worker) const noexcept {
+CC Material_subsurface::collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
+    noexcept {
     SOFT_ASSERT(color_map_.is_valid());
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -124,7 +123,7 @@ CC Material_subsurface::collision_coefficients(float2 uv, Sampler_filter filter,
     return attenuation(color, attenuation_distance_);
 }
 
-CC Material_subsurface::collision_coefficients(float3 const& p, Sampler_filter filter,
+CC Material_subsurface::collision_coefficients(float3 const& p, Filter filter,
                                                Worker const& worker) const noexcept {
     SOFT_ASSERT(density_map_.is_valid());
 
@@ -174,8 +173,8 @@ size_t Material_subsurface::sample_size() noexcept {
     return sizeof(Sample_subsurface);
 }
 
-float Material_subsurface::density(float3 const& p, Sampler_filter filter,
-                                   Worker const& worker) const noexcept {
+float Material_subsurface::density(float3 const& p, Filter filter, Worker const& worker) const
+    noexcept {
     // p is in object space already
 
     float3 const p_g = 0.5f * (float3(1.f) + p);
@@ -185,7 +184,7 @@ float Material_subsurface::density(float3 const& p, Sampler_filter filter,
     return density_map_.sample_1(sampler, p_g);
 }
 
-float3 Material_subsurface::color(float3 const& p, Sampler_filter /*filter*/,
+float3 Material_subsurface::color(float3 const& p, Filter /*filter*/,
                                   Worker const& /*worker*/) const noexcept {
     float3 const p_g = 0.5f * (float3(1.f) + p);
 

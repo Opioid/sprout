@@ -377,6 +377,10 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
 
             for (int32_t j = std::max(cell[0], i + 1), jlen = std::min(cell[1], end); j < jlen;
                  ++j) {
+                if (j == i) {
+                    continue;
+                }
+
                 auto& pb = photons_[j];
 
                 if (pb.alpha[0] < 0.f) {
@@ -384,6 +388,8 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
                 }
 
                 if (math::squared_distance(pa.p, pb.p) < merge_distance) {
+                    ++local_reduced;
+
                     position += pb.p;
 
                     float3 const sum = float3(pa.alpha) + float3(pb.alpha);
@@ -393,7 +399,6 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
                     pa.alpha[2] = sum[2];
 
                     pb.alpha[0] = -1.f;
-                    ++num_reduced;
                 }
             }
         }
@@ -463,7 +468,7 @@ void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept 
 
 float3 Grid::scattering_coefficient(Intersection const&  intersection,
                                     scene::Worker const& worker) noexcept {
-    using Filter_settings = scene::material::Sampler_settings::Filter;
+    using Filter = scene::material::Sampler_settings::Filter;
 
     auto const& material = *intersection.material();
 
@@ -477,11 +482,9 @@ float3 Grid::scattering_coefficient(Intersection const&  intersection,
 
         float3 const uvw = shape->object_to_texture_point(local_position);
 
-        return material.collision_coefficients(uvw, Filter_settings::Undefined, worker).s;
+        return material.collision_coefficients(uvw, Filter::Undefined, worker).s;
     } else if (material.is_textured_volume()) {
-        return material
-            .collision_coefficients(intersection.geo.uv, Filter_settings::Undefined, worker)
-            .s;
+        return material.collision_coefficients(intersection.geo.uv, Filter::Undefined, worker).s;
     } else {
         return material.collision_coefficients().s;
     }

@@ -16,8 +16,8 @@ class alignas(64) Tracking_multi final : public Integrator {
     bool transmittance(Ray const& ray, Worker& worker,
                        float3& transmittance) noexcept override final;
 
-    bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter, Worker& worker,
-                   float3& li, float3& transmittance) noexcept override final;
+    bool integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
+                   float3& transmittance) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 };

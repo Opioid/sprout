@@ -79,7 +79,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, math::AABB const& bounds, bool inf
     math::AABB unnatural_limit = bounds;
     unnatural_limit.scale(8.f);
 
-    Sampler_filter const filter = Sampler_filter::Undefined;
+    Filter const filter = Filter::Undefined;
 
     bool const avoid_caustics = false;
 
@@ -107,7 +107,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, math::AABB const& bounds, bool inf
             continue;
         }
 
-        float3 radiance = light->evaluate(light_sample, Sampler_filter::Nearest, worker) /
+        float3 radiance = light->evaluate(light_sample, Filter::Nearest, worker) /
                           (light_sample.pdf);
 
         for (; ray.depth < settings_.max_bounces;) {

@@ -22,9 +22,8 @@ class alignas(64) Emission final : public Integrator {
     virtual bool transmittance(Ray const& ray, Worker& worker,
                                float3& transmittance) noexcept override final;
 
-    virtual bool integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
-                           Worker& worker, float3& li,
-                           float3& transmittance) noexcept override final;
+    virtual bool integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
+                           float3& li, float3& transmittance) noexcept override final;
 
     virtual size_t num_bytes() const noexcept override final;
 

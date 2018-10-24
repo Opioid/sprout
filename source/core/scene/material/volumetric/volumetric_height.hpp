@@ -20,7 +20,7 @@ public:
 private:
 
         virtual float density(float3 const& p, Transformation const& transformation,
-                                                  Sampler_filter filter, Worker const& worker) const
+                                                  Filter filter, Worker const& worker) const
 override final;
 
         float a_ = 1.f;

@@ -127,8 +127,7 @@ bool Scene::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
     return prop_bvh_.intersect_p(ray, node_stack);
 }
 
-bool Scene::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const
-    noexcept {
+bool Scene::opacity(Ray const& ray, Filter filter, Worker const& worker, float& o) const noexcept {
     if (has_masked_material_) {
         return prop_bvh_.opacity(ray, filter, worker, o);
     }
@@ -140,8 +139,8 @@ bool Scene::opacity(Ray const& ray, Sampler_filter filter, Worker const& worker,
     return visible;
 }
 
-bool Scene::thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                            float3& ta) const noexcept {
+bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
+    noexcept {
     if (has_tinted_shadow_) {
         return prop_bvh_.thin_absorption(ray, filter, worker, ta);
     }

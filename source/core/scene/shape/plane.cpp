@@ -111,7 +111,7 @@ bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Plane::opacity(Ray const& ray, Transformation const& transformation,
-                     Materials const& materials, Sampler_filter filter, Worker const& worker) const
+                     Materials const& materials, Filter filter, Worker const& worker) const
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
@@ -132,8 +132,8 @@ float Plane::opacity(Ray const& ray, Transformation const& transformation,
 }
 
 float3 Plane::thin_absorption(Ray const& ray, Transformation const& transformation,
-                              Materials const& materials, Sampler_filter filter,
-                              Worker const& worker) const noexcept {
+                              Materials const& materials, Filter filter, Worker const& worker) const
+    noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = math::dot(normal, transformation.position);

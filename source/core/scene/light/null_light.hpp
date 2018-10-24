@@ -24,18 +24,18 @@ class Null_light : public Light {
                 uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const
         noexcept override final;
 
-    float3 evaluate(Sample_to const& sample, Sampler_filter filter, Worker const& worker) const
+    float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
         noexcept override final;
 
     bool sample(Transformation const& transformation, sampler::Sampler& sampler,
                 uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                 Sample_from& result) const noexcept override final;
 
-    float3 evaluate(Sample_from const& sample, Sampler_filter filter, Worker const& worker) const
+    float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-              Sampler_filter filter, Worker const& worker) const noexcept override final;
+    float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
+              Worker const& worker) const noexcept override final;
 
     float3 power(math::AABB const& scene_bb) const noexcept override final;
 

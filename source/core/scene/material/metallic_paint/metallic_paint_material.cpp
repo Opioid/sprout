@@ -16,9 +16,9 @@ namespace scene::material::metallic_paint {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : material::Material(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs,
-                                         Sampler_filter filter, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const noexcept {
+material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs, Filter filter,
+                                         sampler::Sampler& /*sampler*/, Worker const& worker,
+                                         uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -28,7 +28,7 @@ material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs
     sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     if (flakes_normal_map_.is_valid()) {
-        auto const& sampler = worker.sampler_2D(sampler_key(), Sampler_filter::Nearest);
+        auto const& sampler = worker.sampler_2D(sampler_key(), Filter::Nearest);
 
         float3 const n = sample_normal(wo, rs, flakes_normal_map_, sampler);
 

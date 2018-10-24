@@ -8,11 +8,11 @@ class Constant : public Material {
   public:
     Constant(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override final;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;

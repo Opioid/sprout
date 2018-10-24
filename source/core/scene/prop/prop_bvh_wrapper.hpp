@@ -20,7 +20,7 @@ struct Intersection;
 
 class BVH_wrapper {
   public:
-    using Sampler_filter = material::Sampler_settings::Filter;
+    using Filter = material::Sampler_settings::Filter;
 
     bvh::Tree<Prop>& tree() noexcept;
 
@@ -38,11 +38,10 @@ class BVH_wrapper {
 
     bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const noexcept;
 
-    bool opacity(Ray const& ray, Sampler_filter filter, Worker const& worker, float& o) const
-        noexcept;
+    bool opacity(Ray const& ray, Filter filter, Worker const& worker, float& o) const noexcept;
 
-    bool thin_absorption(Ray const& ray, Sampler_filter filter, Worker const& worker,
-                         float3& ta) const noexcept;
+    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
+        noexcept;
 
   private:
     bvh::Tree<Prop> tree_;

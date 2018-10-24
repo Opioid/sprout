@@ -11,12 +11,11 @@ class Emissionmap : public Material {
 
     ~Emissionmap() noexcept;
 
-    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs,
-                                           Sampler_filter filter, sampler::Sampler& sampler,
-                                           Worker const& worker, uint32_t depth) const
-        noexcept override;
+    virtual material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
+                                           sampler::Sampler& sampler, Worker const& worker,
+                                           uint32_t depth) const noexcept override;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                                      Worker const& worker) const noexcept override final;
 
     virtual float3 average_radiance(float area) const noexcept override final;
@@ -27,7 +26,7 @@ class Emissionmap : public Material {
 
     virtual Sample_2D radiance_sample(float2 r2) const noexcept override final;
 
-    virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
+    virtual float emission_pdf(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
     virtual void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,

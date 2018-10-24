@@ -8,13 +8,12 @@ class Glass_thin : public Material {
   public:
     Glass_thin(Sampler_settings const& sampler_settings) noexcept;
 
-    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override final;
 
     float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, uint64_t time,
-                           Sampler_filter filter, Worker const& worker) const
-        noexcept override final;
+                           Filter filter, Worker const& worker) const noexcept override final;
 
     float ior() const noexcept override final;
 

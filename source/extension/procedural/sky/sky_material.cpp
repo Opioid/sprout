@@ -28,9 +28,8 @@ using namespace scene;
 Sky_material::Sky_material(Sky& sky) noexcept : Material(sky) {}
 
 material::Sample const& Sky_material::sample(float3 const& wo, Renderstate const& rs,
-                                             Sampler_filter /*filter*/,
-                                             sampler::Sampler& /*sampler*/, Worker const& worker,
-                                             uint32_t depth) const noexcept {
+                                             Filter /*filter*/, sampler::Sampler& /*sampler*/,
+                                             Worker const& worker, uint32_t depth) const noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -43,8 +42,7 @@ material::Sample const& Sky_material::sample(float3 const& wo, Renderstate const
 }
 
 float3 Sky_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                       Sampler_filter /*filter*/, Worker const& /*worker*/) const
-    noexcept {
+                                       Filter /*filter*/, Worker const& /*worker*/) const noexcept {
     return sky_.model().evaluate_sky(wi);
 }
 
@@ -66,8 +64,7 @@ Sky_baked_material::Sky_baked_material(Sky& sky) noexcept : Material(sky) {}
 Sky_baked_material::~Sky_baked_material() noexcept {}
 
 material::Sample const& Sky_baked_material::sample(float3 const& wo, Renderstate const& rs,
-                                                   Sampler_filter filter,
-                                                   sampler::Sampler& /*sampler*/,
+                                                   Filter filter, sampler::Sampler& /*sampler*/,
                                                    Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);
@@ -86,8 +83,7 @@ material::Sample const& Sky_baked_material::sample(float3 const& wo, Renderstate
 }
 
 float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                             Sampler_filter filter, Worker const& worker) const
-    noexcept {
+                                             Filter filter, Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_map_.sample_3(sampler, uv);
 }
@@ -106,7 +102,7 @@ Material::Sample_2D Sky_baked_material::radiance_sample(float2 r2) const noexcep
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
+float Sky_baked_material::emission_pdf(float2 uv, Filter filter, Worker const& worker) const
     noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

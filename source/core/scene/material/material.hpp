@@ -51,7 +51,7 @@ class Sample;
 
 class Material {
   public:
-    using Sampler_filter = Sampler_settings::Filter;
+    using Filter         = Sampler_settings::Filter;
     using Shape          = shape::Shape;
     using Transformation = entity::Composed_transformation;
 
@@ -67,11 +67,11 @@ class Material {
 
     virtual void tick(float absolute_time, float time_slice) noexcept;
 
-    virtual const Sample& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    virtual const Sample& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                  sampler::Sampler& sampler, Worker const& worker,
                                  uint32_t depth) const noexcept = 0;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                                      Worker const& worker) const noexcept;
 
     virtual float3 average_radiance(float area) const noexcept;
@@ -84,29 +84,28 @@ class Material {
     };
     virtual Sample_2D radiance_sample(float2 r2) const noexcept;
 
-    virtual float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
+    virtual float emission_pdf(float2 uv, Filter filter, Worker const& worker) const noexcept;
+
+    virtual float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const
         noexcept;
 
-    virtual float opacity(float2 uv, uint64_t time, Sampler_filter filter,
-                          Worker const& worker) const noexcept;
-
     virtual float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, uint64_t time,
-                                   Sampler_filter filter, Worker const& worker) const noexcept;
+                                   Filter filter, Worker const& worker) const noexcept;
 
     virtual float3 emission(math::Ray const& ray, Transformation const& transformation,
-                            float step_size, rnd::Generator& rng, Sampler_filter filter,
+                            float step_size, rnd::Generator& rng, Filter filter,
                             Worker const& worker) const noexcept;
 
-    virtual float3 absorption_coefficient(float2 uv, Sampler_filter filter,
-                                          Worker const& worker) const noexcept;
+    virtual float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
+        noexcept;
 
     virtual CC collision_coefficients() const noexcept;
 
-    virtual CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const
+    virtual CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
         noexcept;
 
-    virtual CC collision_coefficients(float3 const& p, Sampler_filter filter,
-                                      Worker const& worker) const noexcept;
+    virtual CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const
+        noexcept;
 
     virtual CM control_medium() const noexcept;
 

@@ -138,8 +138,8 @@ bool Tracking_single::transmittance(Ray const& ray, Worker& worker,
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
-bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Sampler_filter filter,
-                                Worker& worker, float3& li, float3& transmittance) noexcept {
+bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
+                                float3& li, float3& transmittance) noexcept {
     bool const hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
     if (!hit) {
         li            = float3(0.f);
@@ -275,17 +275,16 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
         float const offset = take_settings_.ray_offset_factor * light_sample.epsilon;
         shadow_ray.max_t   = light_sample.t - offset;
 
-        //	float3 const tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+        //	float3 const tv = worker.tinted_visibility(shadow_ray, Filter::Nearest);
 
         Intersection tintersection = intersection;
         tintersection.subsurface   = true;
 
         if (float3 tv;
-            worker.transmitted_visibility(shadow_ray, tintersection, Sampler_filter::Nearest, tv)) {
+            worker.transmitted_visibility(shadow_ray, tintersection, Filter::Nearest, tv)) {
             float const phase = 1.f / (4.f * math::Pi);
 
-            float3 const radiance = light.ref.evaluate(light_sample, Sampler_filter::Nearest,
-                                                       worker);
+            float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 
             result += (phase * tv * radiance) / (light.pdf * light_sample.pdf);
         }

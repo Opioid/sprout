@@ -63,7 +63,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
 }
 
 float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
-    Sampler_filter filter = Sampler_filter::Undefined;
+    Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
 
@@ -111,7 +111,7 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             }
         } else {
             primary_ray = false;
-            filter      = Sampler_filter::Nearest;
+            filter      = Filter::Nearest;
         }
 
         if (0.f == ray.wavelength) {

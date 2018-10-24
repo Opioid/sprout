@@ -22,11 +22,11 @@ class Infinite_sphere final : public Shape {
                      Node_stack& node_stack) const noexcept override final;
 
     float opacity(Ray const& ray, Transformation const& transformation, Materials const& materials,
-                  Sampler_filter filter, Worker const& worker) const noexcept override final;
+                  Filter filter, Worker const& worker) const noexcept override final;
 
     float3 thin_absorption(Ray const& ray, Transformation const& transformation,
-                           Materials const& materials, Sampler_filter filter,
-                           Worker const& worker) const noexcept override final;
+                           Materials const& materials, Filter filter, Worker const& worker) const
+        noexcept override final;
 
     bool sample(uint32_t part, float3 const& p, float3 const& n,
                 Transformation const& transformation, float area, bool two_sided,

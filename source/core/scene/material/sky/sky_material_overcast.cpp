@@ -11,8 +11,7 @@ Material_overcast::Material_overcast(Sampler_settings const& sampler_settings,
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material_overcast::sample(float3 const& wo, Renderstate const& rs,
-                                                  Sampler_filter /*filter*/,
-                                                  sampler::Sampler& /*sampler*/,
+                                                  Filter /*filter*/, sampler::Sampler& /*sampler*/,
                                                   Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<light::Sample>(depth);
@@ -26,8 +25,8 @@ material::Sample const& Material_overcast::sample(float3 const& wo, Renderstate 
 }
 
 float3 Material_overcast::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                            Sampler_filter /*filter*/,
-                                            Worker const& /*worker*/) const noexcept {
+                                            Filter /*filter*/, Worker const& /*worker*/) const
+    noexcept {
     return overcast(wi);
 }
 

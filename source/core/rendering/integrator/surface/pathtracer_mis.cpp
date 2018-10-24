@@ -118,7 +118,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                                                  Worker& worker, bool integrate_photons) noexcept {
     uint32_t const max_bounces = settings_.max_bounces;
 
-    Sampler_filter filter = Sampler_filter::Undefined;
+    Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
 
@@ -182,7 +182,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
             if (primary_ray) {
                 primary_ray = false;
-                filter      = Sampler_filter::Nearest;
+                filter      = Filter::Nearest;
 
                 if (integrate_photons || 0 != ray.depth) {
                     result.photon_li    = worker.photon_li(intersection, material_sample);
@@ -264,7 +264,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
                                      const Material_sample& material_sample, bool evaluate_back,
-                                     Sampler_filter filter, Worker& worker) noexcept {
+                                     Filter filter, Worker& worker) noexcept {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -306,7 +306,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, float ray_offset, Intersect
 float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ray const& history,
                                       float ray_offset, uint32_t sampler_dimension,
                                       bool evaluate_back, Intersection const& intersection,
-                                      const Material_sample& material_sample, Sampler_filter filter,
+                                      const Material_sample& material_sample, Filter filter,
                                       Worker& worker) noexcept {
     // Light source importance sample
     shape::Sample_to light_sample;
@@ -330,7 +330,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
     auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
 
-    float3 const radiance = light.evaluate(light_sample, Sampler_filter::Nearest, worker);
+    float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
     float const light_pdf = light_sample.pdf * light_weight;
     float const weight    = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
@@ -340,7 +340,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
 float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& intersection,
                                       Bxdf_sample sample_result, bool treat_as_singular,
-                                      bool is_translucent, Sampler_filter filter, Worker& worker,
+                                      bool is_translucent, Filter filter, Worker& worker,
                                       bool& pure_emissive) noexcept {
     uint32_t const light_id = intersection.light_id();
     if (!Light::is_light(light_id)) {
@@ -356,8 +356,8 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
 
         auto const light = worker.scene().light(light_id, calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent,
-                                           Sampler_filter::Nearest, worker);
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent, Filter::Nearest,
+                                           worker);
 
         if (0.f == ls_pdf) {
             pure_emissive = true;

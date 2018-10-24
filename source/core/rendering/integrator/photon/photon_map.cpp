@@ -21,7 +21,8 @@ Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
       num_reduced_(nullptr),
       caustic_grid_(radius, Merge_threshold),
       indirect_grid_(indirect_radius_factor_ * radius_,
-                     Merge_threshold / (std::sqrt(indirect_radius_factor_)))
+                     Merge_threshold / (math::lerp(std::sqrt(indirect_radius_factor),
+                                                   indirect_radius_factor, 0.25f)))
 
 {}
 
@@ -62,6 +63,7 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
 
         uint32_t const red_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
                                                                         pool);
+
         uint32_t const red_num_indirect = indirect_grid_.reduce_and_move(
             photons_ + red_num_caustics, num_reduced_, pool);
 

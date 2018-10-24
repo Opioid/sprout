@@ -38,8 +38,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) noexc
 }
 
 material::Sample const& Emissionmap_animated::sample(float3 const& wo, Renderstate const& rs,
-                                                     Sampler_filter filter,
-                                                     sampler::Sampler& /*sampler*/,
+                                                     Filter filter, sampler::Sampler& /*sampler*/,
                                                      Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<Sample>(depth);
@@ -58,8 +57,7 @@ material::Sample const& Emissionmap_animated::sample(float3 const& wo, Rendersta
 }
 
 float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                               Sampler_filter filter, Worker const& worker) const
-    noexcept {
+                                               Filter filter, Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
 }
@@ -82,14 +80,14 @@ Material::Sample_2D Emissionmap_animated::radiance_sample(float2 r2) const noexc
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Emissionmap_animated::emission_pdf(float2 uv, Sampler_filter filter,
-                                         Worker const& worker) const noexcept {
+float Emissionmap_animated::emission_pdf(float2 uv, Filter filter, Worker const& worker) const
+    noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Sampler_filter filter,
+float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
                                     Worker const& worker) const noexcept {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);

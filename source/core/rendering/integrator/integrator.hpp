@@ -59,7 +59,7 @@ class Integrator {
     using Light           = scene::light::Light;
     using Material        = scene::material::Material;
     using Material_sample = scene::material::Sample;
-    using Sampler_filter  = scene::material::Sampler_settings::Filter;
+    using Filter          = scene::material::Sampler_settings::Filter;
     using Bxdf_sample     = scene::material::bxdf::Sample;
     using Bxdf_type       = scene::material::bxdf::Type;
     using Prop            = scene::prop::Prop;

@@ -11,9 +11,9 @@ namespace scene::material::light {
 Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : Material(sampler_settings, two_sided) {}
 
-material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs,
-                                         Sampler_filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t depth) const noexcept {
+material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs, Filter /*filter*/,
+                                         sampler::Sampler& /*sampler*/, Worker const& worker,
+                                         uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -26,8 +26,7 @@ material::Sample const& Constant::sample(float3 const& wo, Renderstate const& rs
 }
 
 float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float area,
-                                   Sampler_filter /*filter*/, Worker const& /*worker*/) const
-    noexcept {
+                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
     return emittance_.radiance(area);
 }
 

@@ -10,18 +10,18 @@ class Homogeneous final : public Material {
     Homogeneous(Sampler_settings const& sampler_settings) noexcept;
 
     float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
-                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+                    rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    float3 absorption_coefficient(float2 uv, Sampler_filter filter, Worker const& worker) const
+    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
     CC collision_coefficients() const noexcept override final;
 
-    CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    CC collision_coefficients(float3 const& p, Sampler_filter filter, Worker const& worker) const
+    CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const
         noexcept override final;
 
     size_t num_bytes() const noexcept override final;

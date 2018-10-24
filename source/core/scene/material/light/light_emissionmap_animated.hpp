@@ -16,11 +16,11 @@ class Emissionmap_animated : public Material {
 
     void tick(float absolute_time, float time_slice) noexcept override final;
 
-    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Sampler_filter filter,
+    material::Sample const& sample(float3 const& wo, Renderstate const& rs, Filter filter,
                                    sampler::Sampler& sampler, Worker const& worker,
                                    uint32_t depth) const noexcept override;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Sampler_filter filter,
+    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
@@ -31,10 +31,10 @@ class Emissionmap_animated : public Material {
 
     Sample_2D radiance_sample(float2 r2) const noexcept override final;
 
-    float emission_pdf(float2 uv, Sampler_filter filter, Worker const& worker) const
+    float emission_pdf(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    float opacity(float2 uv, uint64_t time, Sampler_filter filter, Worker const& worker) const
+    float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const
         noexcept override final;
 
     void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,

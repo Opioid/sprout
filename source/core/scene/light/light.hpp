@@ -46,7 +46,7 @@ class Light {
   public:
     using Prop           = prop::Prop;
     using Transformation = entity::Composed_transformation;
-    using Sampler_filter = material::Sampler_settings::Filter;
+    using Filter         = material::Sampler_settings::Filter;
     using Intersection   = shape::Intersection;
     using Sample_to      = shape::Sample_to;
     using Sample_from    = shape::Sample_from;
@@ -65,15 +65,15 @@ class Light {
                         sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                         Sample_to& result) const noexcept = 0;
 
-    virtual float3 evaluate(Sample_to const& sample, Sampler_filter filter,
-                            Worker const& worker) const noexcept = 0;
+    virtual float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
+        noexcept = 0;
 
     virtual bool sample(Transformation const& transformation, sampler::Sampler& sampler,
                         uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
                         Sample_from& result) const noexcept = 0;
 
-    virtual float3 evaluate(Sample_from const& sample, Sampler_filter filter,
-                            Worker const& worker) const noexcept = 0;
+    virtual float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
+        noexcept = 0;
 
     bool sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
                 sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
@@ -86,7 +86,7 @@ class Light {
                 math::AABB const& bounds, Worker const& worker, Sample_from& result) const noexcept;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-                      Sampler_filter filter, Worker const& worker) const noexcept = 0;
+                      Filter filter, Worker const& worker) const noexcept = 0;
 
     virtual float3 power(math::AABB const& scene_bb) const noexcept = 0;
 

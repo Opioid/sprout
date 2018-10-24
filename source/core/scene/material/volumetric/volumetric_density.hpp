@@ -10,21 +10,20 @@ class Density : public Material {
     Density(Sampler_settings const& sampler_settings) noexcept;
 
     float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
-                    rnd::Generator& rng, Sampler_filter filter, Worker const& worker) const
+                    rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 
     CC collision_coefficients() const noexcept override final;
 
-    CC collision_coefficients(float2 uv, Sampler_filter filter, Worker const& worker) const
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    CC collision_coefficients(float3 const& uvw, Sampler_filter filter, Worker const& worker) const
+    CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
         noexcept override final;
 
   private:
     // expects p in object space!
-    virtual float density(float3 const& p, Sampler_filter filter, Worker const& worker) const
-        noexcept = 0;
+    virtual float density(float3 const& p, Filter filter, Worker const& worker) const noexcept = 0;
 };
 
 }  // namespace scene::material::volumetric
