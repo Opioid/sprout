@@ -9,6 +9,9 @@ namespace rendering::integrator::photon {
 
 class Map {
   public:
+    using Intersection    = scene::prop::Intersection;
+    using Material_sample = scene::material::Sample;
+
     Map(uint32_t num_photons, float radius, float indirect_radius_factor,
         bool separate_caustics) noexcept;
 
@@ -20,7 +23,7 @@ class Map {
 
     uint32_t compile(uint32_t num_paths, thread::Pool& pool) noexcept;
 
-    float3 li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
+    float3 li(Intersection const& intersection, Material_sample const& sample,
               scene::Worker const& worker) const noexcept;
 
     size_t num_bytes() const noexcept;

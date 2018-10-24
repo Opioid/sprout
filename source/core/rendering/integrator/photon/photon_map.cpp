@@ -22,9 +22,7 @@ Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
       caustic_grid_(radius, Merge_threshold),
       indirect_grid_(indirect_radius_factor_ * radius_,
                      Merge_threshold / (math::lerp(std::sqrt(indirect_radius_factor),
-                                                   indirect_radius_factor, 0.25f)))
-
-{}
+                                                   indirect_radius_factor, 0.25f))) {}
 
 Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);
@@ -95,7 +93,7 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
     }
 }
 
-float3 Map::li(scene::prop::Intersection const& intersection, scene::material::Sample const& sample,
+float3 Map::li(Intersection const& intersection, Material_sample const& sample,
                scene::Worker const& worker) const noexcept {
     return caustic_grid_.li(intersection, sample, num_paths_, worker) +
            indirect_grid_.li(intersection, sample, num_paths_, worker);
