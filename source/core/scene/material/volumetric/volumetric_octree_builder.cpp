@@ -138,7 +138,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
     }
 
     {
-        Box const sub{{int3(center[0], box.bounds[0][1] + half[1], box.bounds[0][2]),
+        Box const sub{{int3(center[0], center[1], box.bounds[0][2]),
                        int3(box.bounds[1][0], box.bounds[1][1], center[2])}};
 
         node->children[3] = new Build_node;
