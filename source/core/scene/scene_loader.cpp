@@ -127,15 +127,15 @@ void Loader::read_materials(json::Value const& materials_value) {
         return;
     }
 
-    for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
-        json::Value::ConstMemberIterator const name_node = m->FindMember("name");
-        if (m->MemberEnd() == name_node) {
+    for (auto const& m : materials_value.GetArray()) {
+        auto const name_node = m.FindMember("name");
+        if (m.MemberEnd() == name_node) {
             continue;
         }
 
         std::string const name = name_node->value.GetString();
 
-        local_materials_[name] = m;
+        local_materials_[name] = &m;
     }
 }
 
