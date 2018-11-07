@@ -27,7 +27,6 @@ class Typed_image final : public Image {
     void store(int32_t index, T v) noexcept;
 
     T const& at(int32_t index) const noexcept;
-    T&       at(int32_t index) noexcept;
 
     T load(int32_t x, int32_t y) const noexcept;
 
@@ -36,18 +35,14 @@ class Typed_image final : public Image {
     T load_element(int32_t x, int32_t y, int32_t element) const noexcept;
 
     T const& at(int32_t x, int32_t y) const noexcept;
-    T&       at(int32_t x, int32_t y) noexcept;
 
     T const& at_element(int32_t x, int32_t y, int32_t element) const noexcept;
-    T&       at_element(int32_t x, int32_t y, int32_t element) noexcept;
 
     T load(int32_t x, int32_t y, int32_t z) const noexcept;
 
     T const& at(int32_t x, int32_t y, int32_t z) const noexcept;
-    T&       at(int32_t x, int32_t y, int32_t z) noexcept;
 
     T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const noexcept;
-    T&       at_element(int32_t x, int32_t y, int32_t z, int32_t element) noexcept;
 
     void gather(int4 const& xy_xy1, T c[4]) const noexcept;
 

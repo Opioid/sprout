@@ -142,7 +142,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
             {
                 float3 const radiance = sky_.model().evaluate_sky(/*sample.*/ wi);
 
-                cache->at(x, y) = packed_float3(radiance);
+                cache->store(x, y, packed_float3(radiance));
             }
         }
     }

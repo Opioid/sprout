@@ -55,7 +55,7 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const no
 
         float3 const color = value.xyz() / value[3];
 
-        target.at(i) = float4(exposure_factor * color, 1.f);
+        target.store(i, float4(exposure_factor * color, 1.f));
     }
 }
 

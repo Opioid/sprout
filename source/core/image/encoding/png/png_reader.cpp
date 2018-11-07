@@ -111,7 +111,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
                 color = 255 - color;
             }
 
-            image->at(i) = color;
+            image->store(i, color);
         }
 
         return image;
@@ -129,7 +129,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
                 color.v[c] = info.buffer[o + c];
             }
 
-            image->at(i) = color;
+            image->store(i, color);
         }
 
         return image;
@@ -151,7 +151,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
                 std::swap(color[0], color[1]);
             }
 
-            image->at(i) = color;
+            image->store(i, color);
         }
 
         return image;

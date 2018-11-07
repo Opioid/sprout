@@ -43,7 +43,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
         int32_t i = 0;
         for (auto const& v : data_node->value.GetArray()) {
-            volume->at(i++) = static_cast<uint8_t>(v.GetUint());
+            volume->store(i++, static_cast<uint8_t>(v.GetUint()));
         }
 
         return volume;
@@ -71,7 +71,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
         int32_t i = 0;
         for (auto const& v : data_node->value.GetArray()) {
-            volume->at(i++) = ::encoding::float_to_unorm(v.GetFloat());
+            volume->store(i++, ::encoding::float_to_unorm(v.GetFloat()));
 
             ostream << static_cast<uint32_t>(::encoding::float_to_unorm(v.GetFloat()));
 
@@ -96,7 +96,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
         int32_t i = 0;
         for (auto const& v : data_node->value.GetArray()) {
-            volume->at(i++) = v.GetFloat();
+            volume->store(i++, v.GetFloat());
         }
 
         return volume;

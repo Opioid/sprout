@@ -15,9 +15,9 @@ void Aces::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
     for (int32_t i = begin; i < end; ++i) {
         float4 const& color = source.at(i);
 
-        destination.at(i) = float4(norm * tonemap_function(color[0]),
-                                   norm * tonemap_function(color[1]),
-                                   norm * tonemap_function(color[2]), color[3]);
+        destination.store(
+            i, float4(norm * tonemap_function(color[0]), norm * tonemap_function(color[1]),
+                      norm * tonemap_function(color[2]), color[3]));
     }
 }
 

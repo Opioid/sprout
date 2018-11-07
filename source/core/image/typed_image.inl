@@ -59,11 +59,6 @@ T const& Typed_image<T>::at(int32_t index) const noexcept {
 }
 
 template <typename T>
-T& Typed_image<T>::at(int32_t index) noexcept {
-    return data_[index];
-}
-
-template <typename T>
 T Typed_image<T>::load(int32_t x, int32_t y) const noexcept {
     int32_t const i = y * description_.dimensions[0] + x;
     return data_[i];
@@ -88,19 +83,7 @@ T const& Typed_image<T>::at(int32_t x, int32_t y) const noexcept {
 }
 
 template <typename T>
-T& Typed_image<T>::at(int32_t x, int32_t y) noexcept {
-    int32_t const i = y * description_.dimensions[0] + x;
-    return data_[i];
-}
-
-template <typename T>
 T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const noexcept {
-    int32_t const i = (element * description_.dimensions[1] + y) * description_.dimensions[0] + x;
-    return data_[i];
-}
-
-template <typename T>
-T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) noexcept {
     int32_t const i = (element * description_.dimensions[1] + y) * description_.dimensions[0] + x;
     return data_[i];
 }
@@ -118,21 +101,8 @@ T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const noexcept {
 }
 
 template <typename T>
-T& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) noexcept {
-    int32_t const i = (z * description_.dimensions[1] + y) * description_.dimensions[0] + x;
-    return data_[i];
-}
-
-template <typename T>
 T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const
     noexcept {
-    int3 const    d = description_.dimensions;
-    int32_t const i = ((element * d[2] + z) * d[1] + y) * d[0] + x;
-    return data_[i];
-}
-
-template <typename T>
-T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) noexcept {
     int3 const    d = description_.dimensions;
     int32_t const i = ((element * d[2] + z) * d[1] + y) * d[0] + x;
     return data_[i];

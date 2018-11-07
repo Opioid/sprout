@@ -179,7 +179,7 @@ void Renderer::resolve(Byte3& image) const {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
             auto const s = samples_[i];
 
-            image.at(i) = encoding::float_to_snorm(s.xyz());
+            image.store(i, encoding::float_to_snorm(s.xyz()));
         }
     } else {
         int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
@@ -203,7 +203,7 @@ void Renderer::resolve(Byte3& image) const {
                     }
                 }
 
-                image.at(i_x, i_y) = encoding::float_to_snorm(n * result);
+                image.store(i_x, i_y, encoding::float_to_snorm(n * result));
             }
         }
     }
@@ -214,7 +214,7 @@ void Renderer::resolve(Byte1& image) const {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
             auto const s = samples_[i];
 
-            image.at(i) = encoding::float_to_unorm(s[0]);
+            image.store(i, encoding::float_to_unorm(s[0]));
         }
     } else {
         int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
@@ -238,7 +238,7 @@ void Renderer::resolve(Byte1& image) const {
                     }
                 }
 
-                image.at(i_x, i_y) = encoding::float_to_unorm(n * result);
+                image.store(i_x, i_y, encoding::float_to_unorm(n * result));
             }
         }
     }

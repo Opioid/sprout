@@ -287,7 +287,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
                 glare += k * high_pass_[si];
             }
 
-            destination.at(i) = float4(intensity * glare);
+            destination.store(i, float4(intensity * glare));
 
             //	float4 s = source.load(i);
 
@@ -359,7 +359,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 
             float4 s = source.load(i);
 
-            destination.at(i) = float4(s.xyz() + accum / weight_sum, s[3]);
+            destination.store(i, float4(s.xyz() + accum / weight_sum, s[3]));
         }
     }
 }

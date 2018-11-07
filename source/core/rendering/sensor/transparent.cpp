@@ -58,7 +58,7 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) con
 
         float4 const color = value.color / value.weight_sum;
 
-        target.at(i) = float4(exposure_factor * color.xyz(), std::min(color[3], 1.f));
+        target.store(i, float4(exposure_factor * color.xyz(), std::min(color[3], 1.f)));
     }
 }
 

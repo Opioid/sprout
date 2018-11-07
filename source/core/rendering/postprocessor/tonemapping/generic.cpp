@@ -27,8 +27,8 @@ void Generic::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t e
     for (int32_t i = begin; i < end; ++i) {
         float4 const& color = source.at(i);
 
-        destination.at(i) = float4(tonemap_function(color[0]), tonemap_function(color[1]),
-                                   tonemap_function(color[2]), color[3]);
+        destination.store(i, float4(tonemap_function(color[0]), tonemap_function(color[1]),
+                                    tonemap_function(color[2]), color[3]));
     }
 }
 
