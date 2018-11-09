@@ -2,6 +2,7 @@
 #define SU_CORE_IMAGE_ENCODING_JSON_HANDLER_HPP
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 #include "image/image.hpp"
