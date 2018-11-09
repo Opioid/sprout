@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_LOADER_HPP
 #define SU_CORE_SCENE_LOADER_HPP
 
-#include <istream>
 #include <map>
 #include <memory>
 #include <string>

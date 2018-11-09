@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <istream>
+#include <iosfwd>
 #include <streambuf>
 #include "miniz/miniz.hpp"
 

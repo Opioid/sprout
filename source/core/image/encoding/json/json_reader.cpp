@@ -5,12 +5,25 @@
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
 #include "image/typed_image.inl"
+#include "image_json_handler.hpp"
+#include "rapidjson/istreamwrapper.h"
 
 #include <fstream>
 
 namespace image::encoding::json {
 
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
+    Json_handler handler;
+
+    rapidjson::IStreamWrapper json_stream(stream);
+
+    rapidjson::Reader reader;
+
+    reader.Parse(json_stream, handler);
+
+    return handler.image();
+
+    /*
     auto root = ::json::parse(stream);
 
     auto const image_node = root->FindMember("image");
@@ -101,6 +114,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
         return volume;
     }
+    */
 }
 
 }  // namespace image::encoding::json

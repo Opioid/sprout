@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 #include <memory>
-#include "image/typed_image.hpp"
+#include "image/image.hpp"
 
 namespace image::encoding::json {
 

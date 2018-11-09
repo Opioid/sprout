@@ -85,7 +85,7 @@ class Json_handler {
         Ignore
     };
 
-    enum class String_type { Undefined, BVH_preset, Morph_target };
+    enum class String_type { Undefined, Morph_target };
 
     enum class Object { Undefined, Geometry, Morph_targets, Part, Vertices };
 

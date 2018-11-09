@@ -114,7 +114,7 @@ bool Json_handler::StartObject() {
 }
 
 bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
-    std::string name(str);
+    std::string_view const name(str);
 
     if (1 == object_level_) {
         if ("geometry" == name) {
@@ -123,9 +123,6 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
         } else if ("morph_targets" == name) {
             top_object_      = Object::Morph_targets;
             expected_string_ = String_type::Morph_target;
-            return true;
-        } else if ("bvh_preset" == name) {
-            expected_string_ = String_type::BVH_preset;
             return true;
         }
     }
@@ -143,7 +140,6 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
                 uint32_t const num_triangles = (p.start_index + p.num_indices) / 3;
                 vertices_.reserve(static_cast<size_t>(0.7f * static_cast<float>(num_triangles)));
             }
-
         } else if ("material_index" == name && Object::Part == expected_object_) {
             expected_number_ = Number::Material_index;
         } else if ("start_index" == name && Object::Part == expected_object_) {
