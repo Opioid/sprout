@@ -20,9 +20,10 @@ using namespace scene;
 
 Sun_material::Sun_material(Sky& sky) noexcept : Material(sky) {}
 
-const material::Sample& Sun_material::sample(float3 const& wo, Renderstate const& rs,
-                                             Filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                             Worker const& worker, uint32_t depth) const noexcept {
+const material::Sample& Sun_material::sample(float3 const&      wo, Ray const& /*ray*/,
+                                             Renderstate const& rs, Filter /*filter*/,
+                                             sampler::Sampler& /*sampler*/, Worker const& worker,
+                                             uint32_t depth) const noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);
 
     sample.set_basis(rs.geo_n, wo);
@@ -54,8 +55,9 @@ size_t Sun_material::num_bytes() const noexcept {
 
 Sun_baked_material::Sun_baked_material(Sky& sky) noexcept : Material(sky) {}
 
-const material::Sample& Sun_baked_material::sample(float3 const& wo, Renderstate const& rs,
-                                                   Filter /*filter*/, sampler::Sampler& /*sampler*/,
+const material::Sample& Sun_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
+                                                   Renderstate const& rs, Filter /*filter*/,
+                                                   sampler::Sampler& /*sampler*/,
                                                    Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<material::light::Sample>(depth);

@@ -11,7 +11,8 @@ namespace scene::material::matte {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : material::Material(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs, Filter /*filter*/,
+material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
+                                         Renderstate const& rs, Filter /*filter*/,
                                          sampler::Sampler& /*sampler*/, Worker const& worker,
                                          uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample>(depth);

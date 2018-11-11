@@ -77,9 +77,10 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
 
     float const minorant_mu_a = min_density * idata.minorant_mu_a;
     float const minorant_mu_s = min_density * idata.minorant_mu_s;
-    float const majorant_mu_t = max_density * idata.majorant_mu_t;
+    float const majorant_mu_a = max_density * idata.majorant_mu_a;
+    float const majorant_mu_s = max_density * idata.majorant_mu_s;
 
-    float const diff = majorant_mu_t - (minorant_mu_a + minorant_mu_s);
+    float const diff = (majorant_mu_a + majorant_mu_s) - (minorant_mu_a + minorant_mu_s);
 
     int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
 
@@ -91,8 +92,8 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         if (0.f == diff) {
             node->data.minorant_mu_a = minorant_mu_a;
             node->data.minorant_mu_s = minorant_mu_s;
-            node->data.minorant_mu_t = minorant_mu_a + minorant_mu_s;
-            node->data.majorant_mu_t = majorant_mu_t;
+            node->data.majorant_mu_a = majorant_mu_a;
+            node->data.majorant_mu_s = majorant_mu_s;
         } else {
             // Without an epsilon the sampled extinction coefficient can sometimes
             // be a tiny bit larger than the majorant computed here.
@@ -101,8 +102,8 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
 
             node->data.minorant_mu_a = std::max(minorant_mu_a - mt_epsilon, 0.f);
             node->data.minorant_mu_s = std::max(minorant_mu_s - mt_epsilon, 0.f);
-            node->data.minorant_mu_t = node->data.minorant_mu_a + node->data.minorant_mu_s;
-            node->data.majorant_mu_t = 0.f == majorant_mu_t ? 0.f : majorant_mu_t + mt_epsilon;
+            node->data.majorant_mu_a = 0.f == majorant_mu_a ? 0.f : majorant_mu_a + mt_epsilon;
+            node->data.majorant_mu_s = majorant_mu_s;
         }
 
         ++num_data_;

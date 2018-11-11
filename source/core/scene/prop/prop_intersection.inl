@@ -56,16 +56,14 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
         rs.geo_n = geo.geo_n;
     }
 
-    rs.time = ray.time;
+    rs.uv   = geo.uv;
+    rs.area = area();
+    rs.ior  = worker.ior_outside(wo, *this);
 
-    rs.uv             = geo.uv;
-    rs.area           = area();
-    rs.ior            = worker.ior_outside(wo, *this);
-    rs.wavelength     = ray.wavelength;
     rs.subsurface     = subsurface;
     rs.avoid_caustics = avoid_caustics;
 
-    return material->sample(wo, rs, filter, sampler, worker, depth);
+    return material->sample(wo, ray, rs, filter, sampler, worker, depth);
 }
 
 inline bool Intersection::same_hemisphere(float3 const& v) const noexcept {

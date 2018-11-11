@@ -79,11 +79,18 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
         auto const& tree = *material.volume_tree();
 
+        float const lerpy = ray.depth < 32 ? 0.f : 1.f;
+
+        float const vdhs = material.van_de_hulst_scale(lerpy);
+
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
-            if (Tracking::CM data; tree.intersect(local_ray, data)) {
+            if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
+                cm.minorant_mu_s *= vdhs;
+                cm.majorant_mu_s *= vdhs;
+
                 if (float t;
-                    Tracking::tracking(local_ray, data, material, filter, rng_, worker, t, w)) {
+                    Tracking::tracking(local_ray, cm, material, vdhs, filter, rng_, worker, t, w)) {
                     intersection.prop       = interface->prop;
                     intersection.geo.p      = ray.point(t);
                     intersection.geo.uv     = interface->uv;
@@ -126,8 +133,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
         if (decomposition) {
             auto const cm = material.control_medium();
 
+            float const minorant_mu_t = cm.minorant_mu_t();
+
             float const rc  = rng_.random_float();
-            float const t_c = ray.min_t - std::log(1.f - rc) / cm.minorant_mu_t;
+            float const t_c = ray.min_t - std::log(1.f - rc) / minorant_mu_t;
 
             if (t_c > ray.max_t) {
                 intersection.prop       = interface->prop;
@@ -137,12 +146,12 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                 intersection.subsurface = true;
 
                 li            = float3(0.f);
-                transmittance = float3(cm.minorant_mu_s / cm.minorant_mu_t);
+                transmittance = float3(cm.minorant_mu_s / minorant_mu_t);
 
                 return true;
             }
 
-            float const mt = cm.majorant_mu_t - cm.minorant_mu_t;
+            float const mt = cm.majorant_mu_t() - minorant_mu_t;
 
             auto mu = material.collision_coefficients();
             mu.a -= cm.minorant_mu_a;

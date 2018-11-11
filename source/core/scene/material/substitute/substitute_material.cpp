@@ -13,7 +13,8 @@ namespace scene::material::substitute {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : Material_base(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs, Filter filter,
+material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
+                                         Renderstate const& rs, Filter                filter,
                                          sampler::Sampler& /*sampler*/, Worker const& worker,
                                          uint32_t depth) const noexcept {
     SOFT_ASSERT(!rs.subsurface);

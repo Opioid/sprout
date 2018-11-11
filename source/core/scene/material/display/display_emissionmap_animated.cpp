@@ -21,8 +21,9 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
     : light::Emissionmap_animated(sampler_settings, two_sided, emission_map, emission_factor,
                                   animation_duration) {}
 
-material::Sample const& Emissionmap_animated::sample(float3 const& wo, Renderstate const& rs,
-                                                     Filter filter, sampler::Sampler& /*sampler*/,
+material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray const& /*ray*/,
+                                                     Renderstate const& rs, Filter filter,
+                                                     sampler::Sampler& /*sampler*/,
                                                      Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<Sample>(depth);

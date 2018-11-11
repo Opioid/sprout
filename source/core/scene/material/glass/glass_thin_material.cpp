@@ -14,7 +14,8 @@ namespace scene::material::glass {
 Glass_thin::Glass_thin(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings, true) {}
 
-material::Sample const& Glass_thin::sample(float3 const& wo, Renderstate const& rs, Filter filter,
+material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*ray*/,
+                                           Renderstate const& rs, Filter                filter,
                                            sampler::Sampler& /*sampler*/, Worker const& worker,
                                            uint32_t depth) const noexcept {
     auto& sample = worker.sample<Sample_thin>(depth);

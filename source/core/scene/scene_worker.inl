@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_WORKER_INL
+#define SU_CORE_SCENE_WORKER_INL
 
 #include "material/material_sample_cache.inl"
 #include "scene_worker.hpp"
@@ -11,3 +12,5 @@ T& Worker::sample(uint32_t depth) const noexcept {
 }
 
 }  // namespace scene
+
+#endif

@@ -2,6 +2,7 @@
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/null/null_sample.hpp"
+#include "scene/scene_ray.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "volumetric_sample.hpp"
@@ -13,15 +14,19 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
 
 Material::~Material() noexcept {}
 
-material::Sample const& Material::sample(float3 const& wo, Renderstate const& rs, Filter /*filter*/,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker,
-                                         uint32_t depth) const noexcept {
+material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+                                         Filter /*filter*/, sampler::Sampler& /*sampler*/,
+                                         Worker const& worker, uint32_t depth) const noexcept {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>(depth);
 
         sample.set_basis(rs.geo_n, wo);
 
-        sample.set(anisotropy_);
+        if (ray.depth < 32) {
+            sample.set(anisotropy_);
+        } else {
+            sample.set(0.f);
+        }
 
         return sample;
     }
@@ -39,6 +44,10 @@ float Material::ior() const noexcept {
 
 CM Material::control_medium() const noexcept {
     return cm_;
+}
+
+float Material::van_de_hulst_scale(float towards_zero) const noexcept {
+    return van_de_hulst(anisotropy_, math::lerp(anisotropy_, 0.f, towards_zero));
 }
 
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,

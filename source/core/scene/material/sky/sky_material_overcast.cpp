@@ -10,8 +10,9 @@ Material_overcast::Material_overcast(Sampler_settings const& sampler_settings,
                                      bool                    two_sided) noexcept
     : Material(sampler_settings, two_sided) {}
 
-material::Sample const& Material_overcast::sample(float3 const& wo, Renderstate const& rs,
-                                                  Filter /*filter*/, sampler::Sampler& /*sampler*/,
+material::Sample const& Material_overcast::sample(float3 const&      wo, Ray const& /*ray*/,
+                                                  Renderstate const& rs, Filter /*filter*/,
+                                                  sampler::Sampler& /*sampler*/,
                                                   Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<light::Sample>(depth);

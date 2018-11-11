@@ -87,7 +87,7 @@ CC Material::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
     return {float3::identity(), float3::identity()};
 }
 
-CC Material::collision_coefficients(float3 const& /*p*/, Filter /*filter*/,
+CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const noexcept {
     return {float3::identity(), float3::identity()};
 }
@@ -98,6 +98,10 @@ CM Material::control_medium() const noexcept {
 
 volumetric::Gridtree const* Material::volume_tree() const noexcept {
     return nullptr;
+}
+
+float Material::van_de_hulst_scale(float /*towards_zero*/) const noexcept {
+    return 1.f;
 }
 
 bool Material::is_heterogeneous_volume() const noexcept {

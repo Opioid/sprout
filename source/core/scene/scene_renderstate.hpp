@@ -22,13 +22,11 @@ struct Renderstate {
     float3 geo_n;    // geometry normal in world space
     float2 uv;       // texture coordinates
 
-    uint64_t time;
-
     float area;
     float ior;
-    float wavelength;
-    bool  subsurface;
-    bool  avoid_caustics;
+
+    bool subsurface;
+    bool avoid_caustics;
 };
 
 }  // namespace scene

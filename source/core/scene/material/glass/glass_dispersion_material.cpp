@@ -4,6 +4,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
+#include "scene/scene_ray.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 
@@ -12,8 +13,9 @@ namespace scene::material::glass {
 Glass_dispersion::Glass_dispersion(Sampler_settings const& sampler_settings) noexcept
     : Glass(sampler_settings) {}
 
-material::Sample const& Glass_dispersion::sample(float3 const& wo, Renderstate const& rs,
-                                                 Filter filter, sampler::Sampler& /*sampler*/,
+material::Sample const& Glass_dispersion::sample(float3 const& wo, Ray const& ray,
+                                                 Renderstate const& rs, Filter filter,
+                                                 sampler::Sampler& /*sampler*/,
                                                  Worker const& worker, uint32_t depth) const
     noexcept {
     auto& sample = worker.sample<Sample_dispersion>(depth);
@@ -30,7 +32,7 @@ material::Sample const& Glass_dispersion::sample(float3 const& wo, Renderstate c
     }
 
     sample.set(refraction_color_, ior_, rs.ior);
-    sample.set_dispersion(abbe_, rs.wavelength);
+    sample.set_dispersion(abbe_, ray.wavelength);
 
     return sample;
 }

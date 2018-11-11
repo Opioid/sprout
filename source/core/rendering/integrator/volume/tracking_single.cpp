@@ -192,8 +192,8 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
             if (Tracking::CM data; tree.intersect(local_ray, data)) {
-                if (float t;
-                    Tracking::tracking(local_ray, data, material, filter, rng_, worker, t, w)) {
+                if (float t; Tracking::tracking(local_ray, data, material, 1.f, filter, rng_,
+                                                worker, t, w)) {
                     li            = w * direct_light(ray, ray.point(t), intersection, worker);
                     transmittance = float3(0.f);
                     return true;

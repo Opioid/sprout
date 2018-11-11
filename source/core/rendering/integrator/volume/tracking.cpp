@@ -5,6 +5,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/entity/composed_transformation.inl"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
@@ -21,16 +22,18 @@ namespace rendering::integrator::volume {
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
                                                        Tracking::CM const&       cm,
                                                        Tracking::Material const& material,
-                                                       Tracking::Filter filter, rnd::Generator& rng,
-                                                       Worker& worker) {
+                                                       float vdhs, Tracking::Filter filter,
+                                                       rnd::Generator& rng, Worker& worker) {
+    float const minorant_mu_t = cm.minorant_mu_t();
+
     // Transmittance of the control medium
-    transmitted *= attenuation(ray.max_t - ray.min_t, cm.minorant_mu_t);
+    transmitted *= attenuation(ray.max_t - ray.min_t, minorant_mu_t);
 
     if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
         return false;
     }
 
-    float const mt = cm.majorant_mu_t - cm.minorant_mu_t;
+    float const mt = cm.majorant_mu_t() - minorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
         return true;
@@ -50,9 +53,11 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         float3 const uvw = ray.point(t);
 
-        auto const mu = material.collision_coefficients(uvw, filter, worker);
+        auto mu = material.collision_coefficients(uvw, filter, worker);
 
-        float3 const mu_t = (mu.a + mu.s) - cm.minorant_mu_t;
+        mu.s *= vdhs;
+
+        float3 const mu_t = (mu.a + mu.s) - minorant_mu_t;
 
         float3 const mu_n = float3(mt) - mu_t;
 
@@ -68,17 +73,17 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
 static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ray,
                                         Tracking::CM const& cm, Tracking::Material const& material,
-                                        Tracking::Filter filter, rnd::Generator& rng,
+                                        float vdhs, Tracking::Filter filter, rnd::Generator& rng,
                                         Worker& worker) {
-    float const mt = cm.majorant_mu_t;
+    float const mt = cm.majorant_mu_t();
 
     if (mt < Tracking::Min_mt) {
         return true;
     }
 
-    if (cm.minorant_mu_t > 0.f) {
-        return residual_ratio_tracking_transmitted(transmitted, ray, cm, material, filter, rng,
-                                                   worker);
+    if (cm.minorant_mu_t() > 0.f) {
+        return residual_ratio_tracking_transmitted(transmitted, ray, cm, material, vdhs, filter,
+                                                   rng, worker);
     }
 
     float const imt = 1.f / mt;
@@ -94,7 +99,9 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
 
         float3 const uvw = ray.point(t);
 
-        auto const mu = material.collision_coefficients(uvw, filter, worker);
+        auto mu = material.collision_coefficients(uvw, filter, worker);
+
+        mu.s *= vdhs;
 
         float3 const mu_t = mu.a + mu.s;
 
@@ -150,10 +157,17 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         auto const& tree = *material.volume_tree();
 
+        float const lerpy = ray.depth < 32 ? 0.f : 1.f;
+
+        float const vdhs = material.van_de_hulst_scale(lerpy);
+
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
-            if (CM data; tree.intersect(local_ray, data)) {
-                if (!tracking_transmitted(w, local_ray, data, material, Filter::Nearest, rng,
+            if (CM cm; tree.intersect(local_ray, cm)) {
+                cm.minorant_mu_s *= vdhs;
+                cm.majorant_mu_s *= vdhs;
+
+                if (!tracking_transmitted(w, local_ray, cm, material, vdhs, Filter::Nearest, rng,
                                           worker)) {
                     return false;
                 }
@@ -188,18 +202,20 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::CM con
                                           Tracking::Material const& material,
                                           Tracking::Filter filter, rnd::Generator& rng,
                                           Worker& worker, float& t_out, float3& w) {
+    float const minorant_mu_t = data.minorant_mu_t();
+
     float const d = ray.max_t;
 
     float const rc = rng.random_float();
-    float const tc = ray.min_t - std::log(1.f - rc) / data.minorant_mu_t;
+    float const tc = ray.min_t - std::log(1.f - rc) / minorant_mu_t;
 
     if (tc < d) {
         t_out = tc;
-        w *= data.minorant_mu_s / data.minorant_mu_t;
+        w *= data.minorant_mu_s / minorant_mu_t;
         return true;
     }
 
-    float const mt = data.majorant_mu_t - data.minorant_mu_t;
+    float const mt = data.majorant_mu_t() - minorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
         return false;
@@ -254,10 +270,10 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::CM con
     }
 }
 
-bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& material,
+bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& material, float vdhs,
                         Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                         float3& w) {
-    float const mt = data.majorant_mu_t;
+    float const mt = data.majorant_mu_t();
 
     if (mt < Min_mt) {
         return false;
@@ -265,7 +281,7 @@ bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& ma
 
     static bool constexpr decomposition = false;
 
-    if (decomposition && data.minorant_mu_t > 0.f) {
+    if (decomposition && data.minorant_mu_t() > 0.f) {
         return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
     }
 
@@ -285,7 +301,9 @@ bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& ma
 
         float3 const uvw = ray.point(t);
 
-        auto const mu = material.collision_coefficients(uvw, filter, worker);
+        auto mu = material.collision_coefficients(uvw, filter, worker);
+
+        mu.s *= vdhs;
 
         float3 const mu_t = mu.a + mu.s;
 

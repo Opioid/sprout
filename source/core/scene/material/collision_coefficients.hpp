@@ -15,10 +15,13 @@ struct alignas(16) CM {
     CM(float x) noexcept;
     CM(CC const& cc) noexcept;
 
+    float minorant_mu_t() const noexcept;
+    float majorant_mu_t() const noexcept;
+
     float minorant_mu_a;
     float minorant_mu_s;
-    float minorant_mu_t;
-    float majorant_mu_t;
+    float majorant_mu_a;
+    float majorant_mu_s;
 };
 
 }  // namespace scene::material

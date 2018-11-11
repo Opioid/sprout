@@ -30,6 +30,7 @@ class Pool;
 
 namespace scene {
 
+struct Ray;
 struct Renderstate;
 class Worker;
 
@@ -67,8 +68,8 @@ class Material {
 
     virtual void tick(float absolute_time, float time_slice) noexcept;
 
-    virtual const Sample& sample(float3 const& wo, Renderstate const& rs, Filter filter,
-                                 sampler::Sampler& sampler, Worker const& worker,
+    virtual const Sample& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+                                 Filter filter, sampler::Sampler& sampler, Worker const& worker,
                                  uint32_t depth) const noexcept = 0;
 
     virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
@@ -104,12 +105,14 @@ class Material {
     virtual CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
         noexcept;
 
-    virtual CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const
+    virtual CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
         noexcept;
 
     virtual CM control_medium() const noexcept;
 
     virtual volumetric::Gridtree const* volume_tree() const noexcept;
+
+    virtual float van_de_hulst_scale(float towards_zero) const noexcept;
 
     virtual bool is_heterogeneous_volume() const noexcept;
     virtual bool is_textured_volume() const noexcept;
