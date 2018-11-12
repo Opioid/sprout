@@ -16,7 +16,8 @@ Material::~Material() noexcept {}
 
 material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                          Filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t sample_level) const noexcept {
+                                         Worker const& worker, uint32_t sample_level) const
+    noexcept {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>(sample_level);
 

@@ -40,8 +40,8 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) noexc
 material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
                                                      sampler::Sampler& /*sampler*/,
-                                                     Worker const& worker, uint32_t sample_level) const
-    noexcept {
+                                                     Worker const& worker,
+                                                     uint32_t      sample_level) const noexcept {
     auto& sample = worker.sample<Sample>(sample_level);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);

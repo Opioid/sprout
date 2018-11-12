@@ -27,7 +27,7 @@ using namespace scene;
 
 Sky_material::Sky_material(Sky& sky) noexcept : Material(sky) {}
 
-material::Sample const& Sky_material::sample(float3 const& wo, Ray const& /*ray*/,
+material::Sample const& Sky_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
                                              sampler::Sampler& /*sampler*/, Worker const& worker,
                                              uint32_t sample_level) const noexcept {
@@ -67,8 +67,8 @@ Sky_baked_material::~Sky_baked_material() noexcept {}
 material::Sample const& Sky_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker, uint32_t sample_level) const
-    noexcept {
+                                                   Worker const& worker,
+                                                   uint32_t      sample_level) const noexcept {
     auto& sample = worker.sample<material::light::Sample>(sample_level);
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
