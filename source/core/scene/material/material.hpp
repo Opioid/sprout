@@ -70,7 +70,7 @@ class Material {
 
     virtual const Sample& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, sampler::Sampler& sampler, Worker const& worker,
-                                 uint32_t depth) const noexcept = 0;
+                                 uint32_t sample_level) const noexcept = 0;
 
     virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                                      Worker const& worker) const noexcept;
@@ -112,7 +112,7 @@ class Material {
 
     virtual volumetric::Gridtree const* volume_tree() const noexcept;
 
-    virtual float van_de_hulst_scale(float towards_zero) const noexcept;
+    virtual float van_de_hulst_scattering_scale(uint32_t depth) const noexcept;
 
     virtual bool is_heterogeneous_volume() const noexcept;
     virtual bool is_textured_volume() const noexcept;

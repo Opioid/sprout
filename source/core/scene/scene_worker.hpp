@@ -66,7 +66,7 @@ class Worker {
     material::Sample_cache& sample_cache() const noexcept;
 
     template <typename T>
-    T& sample(uint32_t depth) const noexcept;
+    T& sample(uint32_t sample_level) const noexcept;
 
     Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const noexcept;
 

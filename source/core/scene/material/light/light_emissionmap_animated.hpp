@@ -18,7 +18,7 @@ class Emissionmap_animated : public Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, sampler::Sampler& sampler, Worker const& worker,
-                                   uint32_t depth) const noexcept override;
+                                   uint32_t sample_level) const noexcept override;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override final;

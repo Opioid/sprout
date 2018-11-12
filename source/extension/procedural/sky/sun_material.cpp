@@ -23,8 +23,8 @@ Sun_material::Sun_material(Sky& sky) noexcept : Material(sky) {}
 const material::Sample& Sun_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
                                              sampler::Sampler& /*sampler*/, Worker const& worker,
-                                             uint32_t depth) const noexcept {
-    auto& sample = worker.sample<material::light::Sample>(depth);
+                                             uint32_t sample_level) const noexcept {
+    auto& sample = worker.sample<material::light::Sample>(sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 
@@ -58,9 +58,9 @@ Sun_baked_material::Sun_baked_material(Sky& sky) noexcept : Material(sky) {}
 const material::Sample& Sun_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter /*filter*/,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker, uint32_t depth) const
+                                                   Worker const& worker, uint32_t sample_level) const
     noexcept {
-    auto& sample = worker.sample<material::light::Sample>(depth);
+    auto& sample = worker.sample<material::light::Sample>(sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 

@@ -21,8 +21,8 @@ Emissionmap::~Emissionmap() noexcept {}
 material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*ray*/,
                                             Renderstate const& rs, Filter                filter,
                                             sampler::Sampler& /*sampler*/, Worker const& worker,
-                                            uint32_t depth) const noexcept {
-    auto& sample = worker.sample<Sample>(depth);
+                                            uint32_t sample_level) const noexcept {
+    auto& sample = worker.sample<Sample>(sample_level);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

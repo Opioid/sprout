@@ -43,7 +43,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
                                                     Worker const& worker, uint32_t depth) const
     noexcept {
     if (rs.subsurface) {
-        //        auto& sample = worker.sample<volumetric::Sample>(depth);
+        //        auto& sample = worker.sample<volumetric::Sample>(sample_level);
 
         //        sample.set_basis(rs.geo_n, wo);
 

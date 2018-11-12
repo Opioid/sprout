@@ -10,7 +10,7 @@ class Sample_cache {
   public:
     ~Sample_cache() noexcept;
 
-    void init(uint32_t max_sample_size, uint32_t max_depth) noexcept;
+    void init(uint32_t max_sample_size, uint32_t max_sample_level) noexcept;
 
     template <typename T>
     T& get(uint32_t depth) noexcept;

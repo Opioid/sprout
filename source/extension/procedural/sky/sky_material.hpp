@@ -13,7 +13,7 @@ class Sky_material : public Material {
     const scene::material::Sample& sample(float3 const& wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
                                           sampler::Sampler& sampler, const scene::Worker& worker,
-                                          uint32_t depth) const noexcept override final;
+                                          uint32_t sample_level) const noexcept override final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              const scene::Worker& worker) const noexcept override final;
@@ -36,7 +36,7 @@ class Sky_baked_material : public Material {
     const scene::material::Sample& sample(float3 const& wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
                                           sampler::Sampler& sampler, const scene::Worker& worker,
-                                          uint32_t depth) const noexcept override final;
+                                          uint32_t sample_level) const noexcept override final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              const scene::Worker& worker) const noexcept override final;

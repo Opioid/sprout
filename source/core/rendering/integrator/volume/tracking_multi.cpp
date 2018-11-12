@@ -79,9 +79,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
         auto const& tree = *material.volume_tree();
 
-        float const lerpy = ray.depth < 32 ? 0.f : 1.f;
-
-        float const vdhs = material.van_de_hulst_scale(lerpy);
+        float const vdhs = material.van_de_hulst_scattering_scale(ray.depth);
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
