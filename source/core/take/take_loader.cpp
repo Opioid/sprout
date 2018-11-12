@@ -53,6 +53,7 @@
 #include "scene/camera/camera_perspective_stereoscopic.hpp"
 #include "scene/camera/camera_spherical.hpp"
 #include "scene/camera/camera_spherical_stereoscopic.hpp"
+#include "scene/material/volumetric/volumetric_material.hpp"
 #include "take.hpp"
 
 namespace take {
@@ -520,6 +521,11 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
             return std::make_shared<Emission_factory>(settings, num_workers, step_size);
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
+
+            uint2 const vdh_range = json::read_uint2(n.value, "van_de_hulst_range", uint2(16, 48));
+
+            scene::material::volumetric::Material::set_van_de_hulst_range(vdh_range[0],
+                                                                          vdh_range[1]);
 
             if (multiple_scattering) {
                 return std::make_shared<Tracking_multi_factory>(settings, num_workers);

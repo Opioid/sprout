@@ -28,6 +28,8 @@ class Material : public material::Material {
 
     static size_t sample_size() noexcept;
 
+    static void set_van_de_hulst_range(uint32_t low, uint32_t high);
+
   protected:
     float van_de_hulst_anisotropy(uint32_t depth) const noexcept;
 
@@ -35,6 +37,11 @@ class Material : public material::Material {
     CM cm_;
 
     float anisotropy_;
+
+  private:
+    static uint32_t VdH_low;
+    static uint32_t VdH_high;
+    static float    VdH_inv_range;
 };
 
 }  // namespace scene::material::volumetric

@@ -66,14 +66,22 @@ size_t Material::sample_size() noexcept {
     return sizeof(Sample);
 }
 
-float Material::van_de_hulst_anisotropy(uint32_t depth) const noexcept {
-    static uint32_t constexpr low  = 16;
-    static uint32_t constexpr high = 32;
+void Material::set_van_de_hulst_range(uint32_t low, uint32_t high) {
+    VdH_low       = low;
+    VdH_high      = high;
+    VdH_inv_range = 1.f / static_cast<float>(high - low);
+}
 
-    if (depth < low) {
+uint32_t Material::VdH_low  = 16;
+uint32_t Material::VdH_high = 48;
+
+float Material::VdH_inv_range = 1.f / static_cast<float>(Material::VdH_high - Material::VdH_low);
+
+float Material::van_de_hulst_anisotropy(uint32_t depth) const noexcept {
+    if (depth < VdH_low) {
         return anisotropy_;
-    } else if (depth < high) {
-        float const towards_zero = static_cast<float>(depth - low) / static_cast<float>(high - low);
+    } else if (depth < VdH_high) {
+        float const towards_zero = VdH_inv_range * static_cast<float>(depth - VdH_low);
 
         return math::lerp(anisotropy_, 0.f, towards_zero);
     }
