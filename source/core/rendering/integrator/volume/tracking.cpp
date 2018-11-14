@@ -20,12 +20,10 @@ namespace rendering::integrator::volume {
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
-                                                       Tracking::CM const&       cm,
+                                                       float minorant_mu_t, float majorant_mu_t,
                                                        Tracking::Material const& material,
                                                        float srs, Tracking::Filter filter,
                                                        rnd::Generator& rng, Worker& worker) {
-    float const minorant_mu_t = cm.minorant_mu_t();
-
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t - ray.min_t, minorant_mu_t);
 
@@ -33,7 +31,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
         return false;
     }
 
-    float const mt = cm.majorant_mu_t() - minorant_mu_t;
+    float const mt = majorant_mu_t - minorant_mu_t;
 
     if (mt < Tracking::Min_mt) {
         return true;
@@ -81,9 +79,9 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
         return true;
     }
 
-    if (cm.minorant_mu_t() > 0.f) {
-        return residual_ratio_tracking_transmitted(transmitted, ray, cm, material, srs, filter, rng,
-                                                   worker);
+    if (float minorant_mu_t = cm.minorant_mu_t(); minorant_mu_t > 0.f) {
+        return residual_ratio_tracking_transmitted(transmitted, ray, minorant_mu_t, mt, material,
+                                                   srs, filter, rng, worker);
     }
 
     float const imt = 1.f / mt;

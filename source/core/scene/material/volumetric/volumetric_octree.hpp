@@ -36,17 +36,17 @@ struct Node {
     }
 
     void set_children(uint32_t index) noexcept {
-        has_children        = 1;
+        has_children     = 1;
         children_or_data = index;
     }
 
     void set_data(uint32_t index) noexcept {
-        has_children        = 0;
+        has_children     = 0;
         children_or_data = index;
     }
 
     void set_empty() noexcept {
-        has_children = 0;
+        has_children     = 0;
         children_or_data = 0x7FFFFFFF;
     }
 
