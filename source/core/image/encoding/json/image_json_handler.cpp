@@ -56,7 +56,7 @@ void Json_handler::clear() {
     expected_string_ = String_type::Undefined;
     expected_object_ = Object::Undefined;
 
-    type_ = Image::Type::Undefined;
+    type_ = Image::Type::Float1;
 
     dimensions_component_ = 0;
 
