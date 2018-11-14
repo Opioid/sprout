@@ -112,7 +112,7 @@ class Material {
 
     virtual volumetric::Gridtree const* volume_tree() const noexcept;
 
-    virtual float van_de_hulst_scattering_scale(uint32_t depth) const noexcept;
+    virtual float similarity_relation_scale(uint32_t depth) const noexcept;
 
     virtual bool is_heterogeneous_volume() const noexcept;
     virtual bool is_textured_volume() const noexcept;

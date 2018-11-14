@@ -100,7 +100,7 @@ volumetric::Gridtree const* Material::volume_tree() const noexcept {
     return nullptr;
 }
 
-float Material::van_de_hulst_scattering_scale(uint32_t /*depth*/) const noexcept {
+float Material::similarity_relation_scale(uint32_t /*depth*/) const noexcept {
     return 1.f;
 }
 

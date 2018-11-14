@@ -19,7 +19,7 @@ class Material : public material::Material {
 
     CM control_medium() const noexcept override final;
 
-    float van_de_hulst_scattering_scale(uint32_t depth) const noexcept override final;
+    float similarity_relation_scale(uint32_t depth) const noexcept override final;
 
     void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                          float distance) noexcept;
@@ -28,7 +28,7 @@ class Material : public material::Material {
 
     static size_t sample_size() noexcept;
 
-    static void set_van_de_hulst_range(uint32_t low, uint32_t high);
+    static void set_similarity_relation_range(uint32_t low, uint32_t high);
 
   protected:
     float van_de_hulst_anisotropy(uint32_t depth) const noexcept;
@@ -39,9 +39,9 @@ class Material : public material::Material {
     float anisotropy_;
 
   private:
-    static uint32_t VdH_low;
-    static uint32_t VdH_high;
-    static float    VdH_inv_range;
+    static uint32_t SR_low;
+    static uint32_t SR_high;
+    static float    SR_inv_range;
 };
 
 }  // namespace scene::material::volumetric

@@ -51,7 +51,7 @@ class Tracking {
     static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
                               float3& transmittance);
 
-    static bool tracking(math::Ray const& ray, CM const& cm, Material const& material, float vdhs,
+    static bool tracking(math::Ray const& ray, CM const& cm, Material const& material, float srs,
                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                          float3& w);
 

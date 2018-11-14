@@ -22,7 +22,7 @@ namespace rendering::integrator::volume {
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
                                                        Tracking::CM const&       cm,
                                                        Tracking::Material const& material,
-                                                       float vdhs, Tracking::Filter filter,
+                                                       float srs, Tracking::Filter filter,
                                                        rnd::Generator& rng, Worker& worker) {
     float const minorant_mu_t = cm.minorant_mu_t();
 
@@ -55,7 +55,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         auto mu = material.collision_coefficients(uvw, filter, worker);
 
-        mu.s *= vdhs;
+        mu.s *= srs;
 
         float3 const mu_t = (mu.a + mu.s) - minorant_mu_t;
 
@@ -73,7 +73,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
 static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ray,
                                         Tracking::CM const& cm, Tracking::Material const& material,
-                                        float vdhs, Tracking::Filter filter, rnd::Generator& rng,
+                                        float srs, Tracking::Filter filter, rnd::Generator& rng,
                                         Worker& worker) {
     float const mt = cm.majorant_mu_t();
 
@@ -82,8 +82,8 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
     }
 
     if (cm.minorant_mu_t() > 0.f) {
-        return residual_ratio_tracking_transmitted(transmitted, ray, cm, material, vdhs, filter,
-                                                   rng, worker);
+        return residual_ratio_tracking_transmitted(transmitted, ray, cm, material, srs, filter, rng,
+                                                   worker);
     }
 
     float const imt = 1.f / mt;
@@ -101,7 +101,7 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
 
         auto mu = material.collision_coefficients(uvw, filter, worker);
 
-        mu.s *= vdhs;
+        mu.s *= srs;
 
         float3 const mu_t = mu.a + mu.s;
 
@@ -157,15 +157,15 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         auto const& tree = *material.volume_tree();
 
-        float const vdhs = material.van_de_hulst_scattering_scale(ray.depth);
+        float const srs = material.similarity_relation_scale(ray.depth);
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
             if (CM cm; tree.intersect(local_ray, cm)) {
-                cm.minorant_mu_s *= vdhs;
-                cm.majorant_mu_s *= vdhs;
+                cm.minorant_mu_s *= srs;
+                cm.majorant_mu_s *= srs;
 
-                if (!tracking_transmitted(w, local_ray, cm, material, vdhs, Filter::Nearest, rng,
+                if (!tracking_transmitted(w, local_ray, cm, material, srs, Filter::Nearest, rng,
                                           worker)) {
                     return false;
                 }

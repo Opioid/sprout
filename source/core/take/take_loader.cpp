@@ -522,10 +522,11 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
-            uint2 const vdh_range = json::read_uint2(n.value, "van_de_hulst_range", uint2(16, 64));
+            uint2 const sr_range = json::read_uint2(n.value, "similarity_relation_range",
+                                                    uint2(16, 64));
 
-            scene::material::volumetric::Material::set_van_de_hulst_range(vdh_range[0],
-                                                                          vdh_range[1]);
+            using Volumetric_material = scene::material::volumetric::Material;
+            Volumetric_material::set_similarity_relation_range(sr_range[0], sr_range[1]);
 
             if (multiple_scattering) {
                 return std::make_shared<Tracking_multi_factory>(settings, num_workers);

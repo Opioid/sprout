@@ -79,16 +79,16 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
         auto const& tree = *material.volume_tree();
 
-        float const vdhs = material.van_de_hulst_scattering_scale(ray.depth);
+        float const srs = material.similarity_relation_scale(ray.depth);
 
         float3 w(1.f);
         for (; local_ray.min_t < d;) {
             if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
-                cm.minorant_mu_s *= vdhs;
-                cm.majorant_mu_s *= vdhs;
+                cm.minorant_mu_s *= srs;
+                cm.majorant_mu_s *= srs;
 
                 if (float t;
-                    Tracking::tracking(local_ray, cm, material, vdhs, filter, rng_, worker, t, w)) {
+                    Tracking::tracking(local_ray, cm, material, srs, filter, rng_, worker, t, w)) {
                     intersection.prop       = interface->prop;
                     intersection.geo.p      = ray.point(t);
                     intersection.geo.uv     = interface->uv;
