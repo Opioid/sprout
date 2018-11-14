@@ -55,14 +55,16 @@ class Gridtree {
 
     CM* allocate_data(uint32_t num_data) noexcept;
 
-    void set_dimensions(int3 const& dimensions, int3 const& cell_dimensions,
-                        int3 const& num_cells) noexcept;
+    void set_dimensions(int3 const& dimensions, int3 const& num_cells) noexcept;
 
     bool is_valid() const noexcept;
 
     bool intersect(math::Ray& ray, CM& data) const noexcept;
 
     size_t num_bytes() const noexcept;
+
+    static int32_t constexpr Log2_cell_dim = 5;
+    static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;
 
   private:
     uint32_t num_nodes_;
@@ -74,9 +76,7 @@ class Gridtree {
     int3 dimensions_;
     int3 num_cells_;
 
-    float3 cell_dimensions_;
-
-    float3 factor_;
+    float3 inv_dimensions_;
 };
 
 }  // namespace volumetric

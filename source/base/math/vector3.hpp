@@ -52,6 +52,10 @@ struct Vector3 {
 
     Vector3 operator/(Vector3 const& v) const noexcept;
 
+    constexpr Vector3 operator<<(uint32_t c) const noexcept;
+
+    constexpr Vector3 operator>>(uint32_t c) const noexcept;
+
     Vector3 operator-() const noexcept;
 
     Vector3& operator+=(Vector3 const& a) noexcept;

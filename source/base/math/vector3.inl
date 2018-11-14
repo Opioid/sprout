@@ -87,6 +87,16 @@ Vector3<T> Vector3<T>::operator/(Vector3 const& a) const noexcept {
 }
 
 template <typename T>
+constexpr Vector3<T> Vector3<T>::operator<<(uint32_t c) const noexcept {
+    return Vector3(v[0] << c, v[1] << c, v[2] << c);
+}
+
+template <typename T>
+constexpr Vector3<T> Vector3<T>::operator>>(uint32_t c) const noexcept {
+    return Vector3(v[0] >> c, v[1] >> c, v[2] >> c);
+}
+
+template <typename T>
 Vector3<T> Vector3<T>::operator-() const noexcept {
     return Vector3(-v[0], -v[1], -v[2]);
 }
@@ -292,6 +302,11 @@ static constexpr bool any_greater_equal(Vector3<T> const& a, Vector3<T> const& b
 template <typename T>
 static constexpr bool any_less(Vector3<T> const& a, T s) noexcept {
     return a[0] < s || a[1] < s || a[2] < s;
+}
+
+template <typename T>
+static constexpr bool all_less(Vector3<T> const& a, T s) noexcept {
+    return a[0] < s && a[1] < s && a[2] < s;
 }
 
 template <typename T>

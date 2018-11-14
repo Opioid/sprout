@@ -38,15 +38,12 @@ CM* Gridtree::allocate_data(uint32_t num_data) noexcept {
     return data_;
 }
 
-void Gridtree::set_dimensions(int3 const& dimensions, int3 const& cell_dimensions,
-                              int3 const& num_cells) noexcept {
+void Gridtree::set_dimensions(int3 const& dimensions, int3 const& num_cells) noexcept {
     dimensions_ = dimensions;
 
     num_cells_ = num_cells;
 
-    cell_dimensions_ = float3(cell_dimensions) / float3(dimensions);
-
-    factor_ = float3(dimensions) / float3(cell_dimensions * num_cells);
+    inv_dimensions_ = 1.f / float3(dimensions);
 }
 
 bool Gridtree::is_valid() const noexcept {
@@ -56,11 +53,9 @@ bool Gridtree::is_valid() const noexcept {
 bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
     float3 const p = ray.point(ray.min_t);
 
-    if (math::any_greater(p, 1.f)) {
-        return false;
-    }
+    int3 const c = int3(float3(dimensions_) * p);
 
-    int3 const v = int3(float3(num_cells_) * (factor_ * p));
+    int3 const v = c >> Log2_cell_dim;
 
     if (math::any_less(v, 0) || math::any_greater_equal(v, num_cells_)) {
         return false;
@@ -68,9 +63,9 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
 
     uint32_t index = static_cast<uint32_t>((v[2] * num_cells_[1] + v[1]) * num_cells_[0] + v[0]);
 
-    math::AABB box;
-    box.bounds[0] = float3(v) * cell_dimensions_;
-    box.bounds[1] = math::min(box.bounds[0] + cell_dimensions_, 1.f);
+    int3 const b0 = v << Log2_cell_dim;
+
+    Box box{{b0, b0 + Cell_dim}};
 
     for (;;) {
         auto const& node = nodes_[index];
@@ -81,25 +76,24 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
 
         index = node.index();
 
-        float3 const half = box.halfsize();
+        int3 const half   = (box.bounds[1] - box.bounds[0]) >> 1;
+        int3 const center = box.bounds[0] + half;
 
-        float3 const center = box.bounds[0] + half;
-
-        if (p[0] < center[0]) {
+        if (c[0] < center[0]) {
             box.bounds[1][0] = center[0];
         } else {
             box.bounds[0][0] = center[0];
             index += 1;
         }
 
-        if (p[1] < center[1]) {
+        if (c[1] < center[1]) {
             box.bounds[1][1] = center[1];
         } else {
             box.bounds[0][1] = center[1];
             index += 2;
         }
 
-        if (p[2] < center[2]) {
+        if (c[2] < center[2]) {
             box.bounds[1][2] = center[2];
         } else {
             box.bounds[0][2] = center[2];
@@ -107,8 +101,11 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
         }
     }
 
+    math::AABB const boxf(float3(box.bounds[0]) * inv_dimensions_,
+                          float3(box.bounds[1]) * inv_dimensions_);
+
     float hit_t;
-    if (box.intersect_inside(ray, hit_t)) {
+    if (boxf.intersect_inside(ray, hit_t)) {
         if (ray.max_t > hit_t) {
             ray.max_t = hit_t;
         }

@@ -11,12 +11,11 @@ Octree_builder::Build_node::~Build_node() {
 }
 
 void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& idata) {
-    static int32_t constexpr cell_max_dimension = 36;
+    int3 const d = texture.dimensions_3();
 
-    int3 const d    = texture.dimensions_3();
-    int3 const cell = math::min(d, cell_max_dimension);
+    int3 const cell = int3(Gridtree::Cell_dim);
 
-    int3 num_cells = d / cell;
+    int3 num_cells = d / Gridtree::Cell_dim;
 
     num_cells += math::min(d - num_cells * cell, 1);
 
@@ -32,7 +31,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
         for (int32_t y = 0; y < num_cells[1]; ++y) {
             for (int32_t x = 0; x < num_cells[0]; ++x, ++node) {
                 int3 const min = int3(x, y, z) * cell;
-                int3 const max = math::min(min + cell, d);
+                int3 const max = min + cell;
 
                 Box const box{{min, max}};
                 split(node, box, texture, idata, 0, 3);
@@ -40,7 +39,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
         }
     }
 
-    tree.set_dimensions(d, cell, num_cells);
+    tree.set_dimensions(d, num_cells);
 
     nodes_ = tree.allocate_nodes(num_nodes_);
 
@@ -58,9 +57,11 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
 
 void Octree_builder::split(Build_node* node, Box const& box, Texture const& texture,
                            CM const& idata, uint32_t depth, uint32_t max_depth) {
+    int3 const d = texture.dimensions_3();
+
     // Include 1 additional voxel on each border to account for filtering
     int3 const minb = math::max(box.bounds[0] - 1, 0);
-    int3 const maxb = math::min(box.bounds[1] + 1, texture.dimensions_3());
+    int3 const maxb = math::min(box.bounds[1] + 1, d);
 
     float min_density = 1.f;
     float max_density = 0.f;
@@ -75,6 +76,11 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         }
     }
 
+    if (min_density > max_density) {
+        min_density = 0.f;
+        max_density = 0.f;
+    }
+
     float const minorant_mu_a = min_density * idata.minorant_mu_a;
     float const minorant_mu_s = min_density * idata.minorant_mu_s;
     float const majorant_mu_a = max_density * idata.majorant_mu_a;
@@ -82,9 +88,11 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
 
     float const diff = (majorant_mu_a + majorant_mu_s) - (minorant_mu_a + minorant_mu_s);
 
-    int3 const half = (box.bounds[1] - box.bounds[0]) / 2;
+    int3 const half = (box.bounds[1] - box.bounds[0]) >> 1;
 
-    if (max_depth == depth || diff < 0.1f || math::any_less(half, 3)) {
+    static int32_t constexpr w = (Gridtree::Cell_dim >> (Gridtree::Log2_cell_dim - 2)) + 1;
+
+    if (Gridtree::Log2_cell_dim - 2 == depth || diff < 0.1f || math::any_less(maxb - minb, w)) {
         for (uint32_t i = 0; i < 8; ++i) {
             node->children[i] = nullptr;
         }

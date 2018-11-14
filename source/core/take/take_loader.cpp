@@ -522,7 +522,7 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
-            uint2 const vdh_range = json::read_uint2(n.value, "van_de_hulst_range", uint2(16, 48));
+            uint2 const vdh_range = json::read_uint2(n.value, "van_de_hulst_range", uint2(16, 64));
 
             scene::material::volumetric::Material::set_van_de_hulst_range(vdh_range[0],
                                                                           vdh_range[1]);

@@ -73,7 +73,7 @@ void Material::set_van_de_hulst_range(uint32_t low, uint32_t high) {
 }
 
 uint32_t Material::VdH_low  = 16;
-uint32_t Material::VdH_high = 48;
+uint32_t Material::VdH_high = 64;
 
 float Material::VdH_inv_range = 1.f / static_cast<float>(Material::VdH_high - Material::VdH_low);
 
