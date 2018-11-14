@@ -1,6 +1,7 @@
 #include "volumetric_octree_builder.hpp"
 #include "base/math/vector3.inl"
 #include "image/texture/texture.hpp"
+#include "scene/material/collision_coefficients.inl"
 
 namespace scene::material::volumetric {
 
@@ -34,7 +35,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
                 int3 const max = min + cell;
 
                 Box const box{{min, max}};
-                split(node, box, texture, idata, 0, 3);
+                split(node, box, texture, idata, 0);
             }
         }
     }
@@ -56,7 +57,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
 }
 
 void Octree_builder::split(Build_node* node, Box const& box, Texture const& texture,
-                           CM const& idata, uint32_t depth, uint32_t max_depth) {
+                           CM const& idata, uint32_t depth) {
     int3 const d = texture.dimensions_3();
 
     // Include 1 additional voxel on each border to account for filtering
@@ -114,7 +115,9 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
             node->data.majorant_mu_s = majorant_mu_s;
         }
 
-        ++num_data_;
+        if (!node->data.is_empty()) {
+            ++num_data_;
+        }
 
         return;
     }
@@ -127,7 +130,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         Box const sub{{box.bounds[0], center}};
 
         node->children[0] = new Build_node;
-        split(node->children[0], sub, texture, idata, depth, max_depth);
+        split(node->children[0], sub, texture, idata, depth);
     }
 
     {
@@ -135,7 +138,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(box.bounds[1][0], center[1], center[2])}};
 
         node->children[1] = new Build_node;
-        split(node->children[1], sub, texture, idata, depth, max_depth);
+        split(node->children[1], sub, texture, idata, depth);
     }
 
     {
@@ -143,7 +146,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(center[0], box.bounds[1][1], center[2])}};
 
         node->children[2] = new Build_node;
-        split(node->children[2], sub, texture, idata, depth, max_depth);
+        split(node->children[2], sub, texture, idata, depth);
     }
 
     {
@@ -151,7 +154,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(box.bounds[1][0], box.bounds[1][1], center[2])}};
 
         node->children[3] = new Build_node;
-        split(node->children[3], sub, texture, idata, depth, max_depth);
+        split(node->children[3], sub, texture, idata, depth);
     }
 
     {
@@ -159,7 +162,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(center[0], center[1], box.bounds[1][2])}};
 
         node->children[4] = new Build_node;
-        split(node->children[4], sub, texture, idata, depth, max_depth);
+        split(node->children[4], sub, texture, idata, depth);
     }
 
     {
@@ -167,7 +170,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(box.bounds[1][0], center[1], box.bounds[1][2])}};
 
         node->children[5] = new Build_node;
-        split(node->children[5], sub, texture, idata, depth, max_depth);
+        split(node->children[5], sub, texture, idata, depth);
     }
 
     {
@@ -175,14 +178,14 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
                        int3(center[0], box.bounds[1][1], box.bounds[1][2])}};
 
         node->children[6] = new Build_node;
-        split(node->children[6], sub, texture, idata, depth, max_depth);
+        split(node->children[6], sub, texture, idata, depth);
     }
 
     {
         Box const sub{{center, box.bounds[1]}};
 
         node->children[7] = new Build_node;
-        split(node->children[7], sub, texture, idata, depth, max_depth);
+        split(node->children[7], sub, texture, idata, depth);
     }
 
     num_nodes_ += 8;
@@ -200,12 +203,14 @@ void Octree_builder::serialize(Build_node* node, uint32_t current, uint32_t& nex
         for (uint32_t i = 0; i < 8; ++i) {
             serialize(node->children[i], current + i, next, data);
         }
-    } else {
+    } else if (!node->data.is_empty()) {
         n.set_data(data);
 
         data_[data] = node->data;
 
         ++data;
+    } else {
+        n.set_empty();
     }
 }
 

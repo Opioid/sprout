@@ -23,8 +23,12 @@ struct Box {
 };
 
 struct Node {
-    bool has_children() const noexcept {
-        return 0 != is_parent;
+    bool is_parent() const noexcept {
+        return 0 != has_children;
+    }
+
+    bool is_empty() const noexcept {
+        return 0x7FFFFFFF == children_or_data;
     }
 
     uint32_t index() const noexcept {
@@ -32,16 +36,21 @@ struct Node {
     }
 
     void set_children(uint32_t index) noexcept {
-        is_parent        = 1;
+        has_children        = 1;
         children_or_data = index;
     }
 
     void set_data(uint32_t index) noexcept {
-        is_parent        = 0;
+        has_children        = 0;
         children_or_data = index;
     }
 
-    uint32_t is_parent : 1;
+    void set_empty() noexcept {
+        has_children = 0;
+        children_or_data = 0x7FFFFFFF;
+    }
+
+    uint32_t has_children : 1;
     uint32_t children_or_data : 31;
 };
 

@@ -68,9 +68,9 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
     Box box{{b0, b0 + Cell_dim}};
 
     for (;;) {
-        auto const& node = nodes_[index];
+        Node const node = nodes_[index];
 
-        if (!node.has_children()) {
+        if (!node.is_parent()) {
             break;
         }
 
@@ -114,7 +114,13 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
         return false;
     }
 
-    data = data_[nodes_[index].index()];
+    Node const node = nodes_[index];
+
+    if (node.is_empty()) {
+        return false;
+    }
+
+    data = data_[node.index()];
 
     return true;
 }

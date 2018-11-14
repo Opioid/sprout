@@ -18,6 +18,8 @@ struct alignas(16) CM {
     float minorant_mu_t() const noexcept;
     float majorant_mu_t() const noexcept;
 
+    bool is_empty() const noexcept;
+
     float minorant_mu_a;
     float minorant_mu_s;
     float majorant_mu_a;

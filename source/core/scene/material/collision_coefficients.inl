@@ -28,6 +28,10 @@ inline float CM::majorant_mu_t() const noexcept {
     return majorant_mu_a + majorant_mu_s;
 }
 
+inline bool CM::is_empty() const noexcept {
+    return 0.f == majorant_mu_a && 0.f == majorant_mu_s;
+}
+
 static inline float3 extinction_coefficient(float3 const& color, float distance) noexcept {
     float3 const ca = math::clamp(color, 0.001f, 0.99f);
 

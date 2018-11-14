@@ -27,7 +27,7 @@ class Octree_builder {
     };
 
     void split(Build_node* node, Box const& box, Texture const& texture, CM const& idata,
-               uint32_t depth, uint32_t max_depth);
+               uint32_t depth);
 
     void serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data);
 
