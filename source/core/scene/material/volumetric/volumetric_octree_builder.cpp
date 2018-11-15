@@ -14,11 +14,9 @@ Octree_builder::Build_node::~Build_node() {
 void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& idata) {
     int3 const d = texture.dimensions_3();
 
-    int3 const cell = int3(Gridtree::Cell_dim);
-
     int3 num_cells = d / Gridtree::Cell_dim;
 
-    num_cells += math::min(d - num_cells * cell, 1);
+    num_cells += math::min(d - Gridtree::Cell_dim * num_cells, 1);
 
     uint32_t const cell_len = static_cast<uint32_t>(num_cells[0] * num_cells[1] * num_cells[2]);
 
@@ -31,8 +29,8 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
     for (int32_t z = 0; z < num_cells[2]; ++z) {
         for (int32_t y = 0; y < num_cells[1]; ++y) {
             for (int32_t x = 0; x < num_cells[0]; ++x, ++node) {
-                int3 const min = int3(x, y, z) * cell;
-                int3 const max = min + cell;
+                int3 const min = Gridtree::Cell_dim * int3(x, y, z);
+                int3 const max = min + Gridtree::Cell_dim;
 
                 Box const box{{min, max}};
                 split(node, box, texture, idata, 0);

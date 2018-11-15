@@ -41,7 +41,7 @@ CM* Gridtree::allocate_data(uint32_t num_data) noexcept {
 void Gridtree::set_dimensions(int3 const& dimensions, int3 const& num_cells) noexcept {
     dimensions_ = dimensions;
 
-    num_cells_ = num_cells;
+    num_cells_ = uint3(num_cells);
 
     inv_dimensions_ = 1.f / float3(dimensions);
 }
@@ -57,11 +57,13 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
 
     int3 const v = c >> Log2_cell_dim;
 
-    if (math::any_less(v, 0) || math::any_greater_equal(v, num_cells_)) {
+    uint3 const uv = uint3(v);
+
+    if (math::any_greater_equal(uv, num_cells_)) {
         return false;
     }
 
-    uint32_t index = static_cast<uint32_t>((v[2] * num_cells_[1] + v[1]) * num_cells_[0] + v[0]);
+    uint32_t index = (uv[2] * num_cells_[1] + uv[1]) * num_cells_[0] + uv[0];
 
     int3 const b0 = v << Log2_cell_dim;
 
@@ -104,8 +106,7 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
     math::AABB const boxf(float3(box.bounds[0]) * inv_dimensions_,
                           float3(box.bounds[1]) * inv_dimensions_);
 
-    float hit_t;
-    if (boxf.intersect_inside(ray, hit_t)) {
+    if (float hit_t; boxf.intersect_inside(ray, hit_t)) {
         if (ray.max_t > hit_t) {
             ray.max_t = hit_t;
         }

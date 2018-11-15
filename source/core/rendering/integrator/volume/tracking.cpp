@@ -266,7 +266,7 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::CM con
     }
 }
 
-bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& material, float vdhs,
+bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& material, float srs,
                         Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                         float3& w) {
     float const mt = data.majorant_mu_t();
@@ -299,7 +299,7 @@ bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& ma
 
         auto mu = material.collision_coefficients(uvw, filter, worker);
 
-        mu.s *= vdhs;
+        mu.s *= srs;
 
         float3 const mu_t = mu.a + mu.s;
 

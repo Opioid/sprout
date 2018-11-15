@@ -82,8 +82,8 @@ class Gridtree {
     uint32_t num_data_;
     CM*      data_;
 
-    int3 dimensions_;
-    int3 num_cells_;
+    int3  dimensions_;
+    uint3 num_cells_;
 
     float3 inv_dimensions_;
 };
