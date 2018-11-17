@@ -1,4 +1,3 @@
-#include "tracking.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
@@ -11,6 +10,7 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape.hpp"
+#include "tracking.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -57,6 +57,8 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         float3 const mu_t = (mu.a + mu.s) - minorant_mu_t;
 
+        SOFT_ASSERT(mt >= math::max_component(mu_t));
+
         float3 const mu_n = float3(mt) - mu_t;
 
         transmitted *= imt * mu_n;
@@ -102,6 +104,8 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
         mu.s *= srs;
 
         float3 const mu_t = mu.a + mu.s;
+
+        SOFT_ASSERT(mt >= math::max_component(mu_t));
 
         float3 const mu_n = float3(mt) - mu_t;
 
