@@ -102,19 +102,28 @@ static inline float filtered_density(int32_t x, int32_t y, int32_t z, Box const&
     } else if (8 == a) {
         return 0.5f * (texture.at_1(x, y + 1, z) + center);
     } else if (10 == a) {
-        float const d0 = 0.5f * (texture.at_1(x, y + 1, z) + center);
-        float const d1 = 0.5f * (texture.at_1(x, y, z + 1) + center);
-        return std::max(d0, d1);
+        float const t0 = texture.at_1(x, y + 1, z);
+        float const t1 = texture.at_1(x, y, z + 1);
+        float const d0 = 0.5f * (t0 + center);
+        float const d1 = 0.5f * (t1 + center);
+        float const d2 = 0.5f * (t0 + t1);
+        return std::max(d0, std::max(d1, d2));
     } else if (32 == a) {
         return 0.5f * (texture.at_1(x + 1, y, z) + center);
     } else if (34 == a) {
-        float const d0 = 0.5f * (texture.at_1(x + 1, y, z) + center);
-        float const d1 = 0.5f * (texture.at_1(x, y, z + 1) + center);
-        return std::max(d0, d1);
+        float const t0 = texture.at_1(x + 1, y, z);
+        float const t1 = texture.at_1(x, y, z + 1);
+        float const d0 = 0.5f * (t0 + center);
+        float const d1 = 0.5f * (t1 + center);
+        float const d2 = 0.5f * (t0 + t1);
+        return std::max(d0, std::max(d1, d2));
     } else if (40 == a) {
-        float const d0 = 0.5f * (texture.at_1(x + 1, y, z) + center);
-        float const d1 = 0.5f * (texture.at_1(x, y + 1, z) + center);
-        return std::max(d0, d1);
+        float const t0 = texture.at_1(x + 1, y, z);
+        float const t1 = texture.at_1(x, y + 1, z);
+        float const d0 = 0.5f * (t0 + center);
+        float const d1 = 0.5f * (t1 + center);
+        float const d2 = 0.5f * (t0 + t1);
+        return std::max(d0, std::max(d1, d2));
         /*   } else if (42 == a) {
                float const d0 = 0.5f * (texture.at_1(x + 1, y, z) + texture.at_1(x, y, z));
                float const d1 = 0.5f * (texture.at_1(x, y + 1, z) + texture.at_1(x, y, z));
