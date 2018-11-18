@@ -1,3 +1,4 @@
+#include "tracking.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
@@ -10,7 +11,6 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape.hpp"
-#include "tracking.hpp"
 
 #include "base/debug/assert.hpp"
 
