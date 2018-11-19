@@ -14,7 +14,15 @@
 
 #include "base/debug/assert.hpp"
 
+#ifdef SU_DEBUG
+#include "base/math/print.hpp"
+#endif
+
 namespace rendering::integrator::volume {
+
+#ifdef SU_DEBUG
+bool check(float3 const& majorant_mt, float mt);
+#endif
 
 // Code for hetereogeneous transmittance inspired by:
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
@@ -57,7 +65,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
 
         float3 const mu_t = (mu.a + mu.s) - minorant_mu_t;
 
-        SOFT_ASSERT(mt >= math::max_component(mu_t));
+        SOFT_ASSERT(check(mu_t, mt));
 
         float3 const mu_n = float3(mt) - mu_t;
 
@@ -105,7 +113,7 @@ static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ra
 
         float3 const mu_t = mu.a + mu.s;
 
-        SOFT_ASSERT(mt >= math::max_component(mu_t));
+        SOFT_ASSERT(check(mu_t, mt));
 
         float3 const mu_n = float3(mt) - mu_t;
 
@@ -384,5 +392,16 @@ bool Tracking::tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng,
         }
     }
 }
+
+#ifdef SU_DEBUG
+bool check(float3 const& majorant_mt, float mt) {
+    if (mt < math::max_component(majorant_mt)) {
+        std::cout << "mu_t: " << majorant_mt << " mt: " << mt << std::endl;
+        return false;
+    }
+
+    return true;
+}
+#endif
 
 }  // namespace rendering::integrator::volume

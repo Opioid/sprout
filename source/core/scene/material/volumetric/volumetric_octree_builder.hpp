@@ -36,8 +36,6 @@ class Octree_builder {
 
     uint32_t num_data_;
     CM*      data_;
-
-    uint32_t num_homogeneous_non_empty_;
 };
 
 }  // namespace scene::material::volumetric
