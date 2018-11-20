@@ -11,7 +11,7 @@ namespace image::encoding::rgbe {
 
 class Reader {
   public:
-    std::shared_ptr<Image> read(std::istream& stream) const;
+    static std::shared_ptr<Image> read(std::istream& stream);
 
   private:
     struct Header {

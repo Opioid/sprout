@@ -12,7 +12,7 @@ namespace image {
 namespace encoding {
 namespace rgbe {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream) const {
+std::shared_ptr<Image> Reader::read(std::istream& stream) {
     const Header header = read_header(stream);
 
     int2 const dimensions(header.width, header.height);

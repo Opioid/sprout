@@ -1,6 +1,7 @@
 #include "texture_provider.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
+#include "image/channels.hpp"
 #include "image/image.hpp"
 #include "image/image_provider.hpp"
 #include "logging/logging.hpp"

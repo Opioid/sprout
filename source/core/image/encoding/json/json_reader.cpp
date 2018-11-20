@@ -4,6 +4,7 @@
 #include "base/encoding/encoding.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
+#include "image/encoding/sub/sub_image_writer.hpp"
 #include "image/typed_image.inl"
 #include "image_json_handler.hpp"
 #include "rapidjson/istreamwrapper.h"
@@ -12,7 +13,7 @@
 
 namespace image::encoding::json {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream) const {
+std::shared_ptr<Image> Reader::read(std::istream& stream, std::string const& filename) {
     Json_handler handler;
 
     rapidjson::IStreamWrapper json_stream(stream);
@@ -20,6 +21,8 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
     rapidjson::Reader reader;
 
     reader.Parse(json_stream, handler);
+
+    sub::Writer::write(filename, *handler.image());
 
     return handler.image();
 

@@ -3,13 +3,14 @@
 
 #include <iosfwd>
 #include <memory>
+#include <string>
 #include "image/image.hpp"
 
 namespace image::encoding::json {
 
 class Reader {
   public:
-    std::shared_ptr<Image> read(std::istream& stream) const;
+    static std::shared_ptr<Image> read(std::istream& stream, std::string const& filename);
 
   private:
 };

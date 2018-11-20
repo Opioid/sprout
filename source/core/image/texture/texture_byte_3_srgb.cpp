@@ -6,7 +6,7 @@
 namespace image::texture {
 
 Byte3_sRGB::Byte3_sRGB(std::shared_ptr<Image> const& image) noexcept
-    : Texture(image), image_(*static_cast<const Byte3*>(image.get())) {}
+    : Texture(image), image_(*static_cast<Byte3 const*>(image.get())) {}
 
 float Byte3_sRGB::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);

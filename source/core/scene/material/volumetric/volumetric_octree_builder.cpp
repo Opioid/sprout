@@ -92,7 +92,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
 
     static int32_t constexpr w = (Gridtree::Cell_dim >> (Gridtree::Log2_cell_dim - 2)) + 1;
 
-    if (Gridtree::Log2_cell_dim - 2 == depth || diff < 0.1f || math::any_less(maxb - minb, w)) {
+    if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || math::any_less(maxb - minb, w)) {
         for (uint32_t i = 0; i < 8; ++i) {
             node->children[i] = nullptr;
         }

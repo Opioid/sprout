@@ -3,8 +3,10 @@
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
 #include "encoding/json/json_reader.hpp"
+#include "encoding/png/png_reader.hpp"
 #include "encoding/raw/raw_reader.hpp"
 #include "encoding/rgbe/rgbe_reader.hpp"
+#include "encoding/sub/sub_image_reader.hpp"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
 #include "resource/resource_manager.hpp"
@@ -17,9 +19,8 @@ Provider::Provider() noexcept : resource::Provider<Image>("Image") {}
 
 Provider::~Provider() noexcept {}
 
-std::shared_ptr<Image> Provider::load(std::string const&         filename,
-                                      memory::Variant_map const& options,
-                                      resource::Manager&         manager) {
+std::shared_ptr<Image> Provider::load(std::string const& filename, Variant_map const& options,
+                                      resource::Manager& manager) {
     if ("proc:flakes" == filename) {
         return flakes_provider_.create_normal_map(options);
     } else if ("proc:flakes_mask" == filename) {
@@ -46,25 +47,25 @@ std::shared_ptr<Image> Provider::load(std::string const&         filename,
         bool invert = false;
         options.query("invert", invert);
 
-        return png_reader_.read(stream, channels, num_elements, swap_xy, invert);
+        return encoding::png::Reader::read(stream, channels, num_elements, swap_xy, invert);
     } else if (file::Type::RGBE == type) {
-        encoding::rgbe::Reader reader;
-        return reader.read(stream);
+        return encoding::rgbe::Reader::read(stream);
+    } else if (file::Type::SUB == type) {
+        return encoding::sub::Reader::read(stream);
     } else if (file::Type::Undefined == type) {
         if ("raw" == string::suffix(filename) || "raw" == string::presuffix(filename)) {
             encoding::raw::Reader reader;
             return reader.read(stream);
+        } else if ("json" == string::suffix(filename) || "json" == string::presuffix(filename)) {
+            return encoding::json::Reader::read(stream, filename);
         }
-
-        encoding::json::Reader reader;
-        return reader.read(stream);
     }
 
     throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
 }
 
 std::shared_ptr<Image> Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                                      memory::Variant_map const& /*options*/,
+                                      Variant_map const& /*options*/,
                                       resource::Manager& /*manager*/) {
     return nullptr;
 }

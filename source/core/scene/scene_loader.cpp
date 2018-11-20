@@ -45,14 +45,14 @@ Loader::Loader(resource::Manager& manager, Material_ptr const& fallback_material
 
 Loader::~Loader() {}
 
-bool Loader::load(std::string const& filename, std::string const& take_name, take::Take const& take,
+bool Loader::load(std::string const& filename, std::string_view take_name, take::Take const& take,
                   Scene& scene) {
     bool success = true;
 
     try {
         auto& filesystem = resource_manager_.filesystem();
 
-        std::string const take_mount_folder = string::parent_directory(take_name);
+        std::string_view const take_mount_folder = string::parent_directory(take_name);
         filesystem.push_mount(take_mount_folder);
 
         std::string resolved_name;

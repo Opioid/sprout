@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "base/math/vector3.inl"
+#include "base/string/string.hpp"
 #include "triangle_json_handler.hpp"
 #include "vertex_encoding.inl"
 #include "vertex_layout_description.hpp"
@@ -10,11 +11,6 @@
 #include "base/math/print.hpp"
 
 namespace scene::shape::triangle {
-
-std::string extract_filename(std::string const& filename) {
-    size_t i = filename.find_last_of('/') + 1;
-    return filename.substr(i, filename.find_first_of('.') - i);
-}
 
 void newline(std::ostream& stream, uint32_t num_tabs) {
     stream << std::endl;
@@ -29,7 +25,7 @@ void binary_tag(std::ostream& stream, size_t offset, size_t size) {
 }
 
 void Exporter::write(std::string const& filename, const Json_handler& handler) {
-    std::string out_name = extract_filename(filename) + ".sub";
+    std::string const out_name = string::extract_filename(filename) + ".sub";
 
     std::cout << "Export " << out_name << std::endl;
 
@@ -167,8 +163,8 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
 
     newline(jstream, 0);
 
-    std::string json_string = jstream.str();
-    uint64_t    json_size   = json_string.size() - 1;
+    std::string const json_string = jstream.str();
+    uint64_t const    json_size   = json_string.size() - 1;
     stream.write(reinterpret_cast<char const*>(&json_size), sizeof(uint64_t));
     stream.write(reinterpret_cast<char const*>(json_string.data()), json_size * sizeof(char));
 
