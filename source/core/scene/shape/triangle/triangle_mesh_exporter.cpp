@@ -29,7 +29,7 @@ void binary_tag(std::ostream& stream, size_t offset, size_t size) {
 }
 
 void Exporter::write(std::string const& filename, const Json_handler& handler) {
-    std::string out_name = extract_filename(filename) + ".sum";
+    std::string out_name = extract_filename(filename) + ".sub";
 
     std::cout << "Export " << out_name << std::endl;
 
@@ -39,7 +39,7 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
         return;
     }
 
-    const char header[] = "SUM\005";
+    const char header[] = "SUB\000";
     stream.write(header, sizeof(char) * 4);
 
     std::stringstream jstream;
@@ -79,9 +79,12 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
     jstream << "\"vertices\":{";
 
     newline(jstream, 3);
-    auto const& vertices      = handler.vertices();
-    size_t      num_vertices  = static_cast<uint32_t>(vertices.size());
-    size_t      vertices_size = num_vertices * sizeof(Vertex);
+
+    auto const& vertices = handler.vertices();
+
+    size_t num_vertices  = static_cast<uint32_t>(vertices.size());
+    size_t vertices_size = num_vertices * sizeof(Vertex);
+
     binary_tag(jstream, 0, vertices_size);
     jstream << ",";
 

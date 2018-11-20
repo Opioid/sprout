@@ -16,8 +16,8 @@ Type query_type(std::istream& stream) {
         type = Type::PNG;
     } else if (!strncmp("#?", header, 2)) {
         type = Type::RGBE;
-    } else if (!strncmp("SUM\005", header, 4)) {
-        type = Type::SUM;
+    } else if (!strncmp("SUB\000", header, 4)) {
+        type = Type::SUB;
     }
 
     stream.seekg(0);

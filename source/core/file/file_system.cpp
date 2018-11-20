@@ -7,13 +7,12 @@
 
 namespace file {
 
-std::unique_ptr<std::istream> System::read_stream(std::string_view name) const {
+System::Stream_ptr System::read_stream(std::string_view name) const {
     std::string resolved_name;
     return read_stream(name, resolved_name);
 }
 
-std::unique_ptr<std::istream> System::read_stream(std::string_view name,
-                                                  std::string&     resolved_name) const {
+System::Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
         throw std::runtime_error("Stream \"" + std::string(name) + "\" could not be opened");

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CORE_IMAGE_WRITER_HPP
+#define CORE_IMAGE_WRITER_HPP
 
 #include <iosfwd>
 #include <string>
@@ -20,3 +21,5 @@ class Writer {
 };
 
 }  // namespace image
+
+#endif

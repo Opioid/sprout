@@ -10,12 +10,14 @@ namespace file {
 
 class System {
   public:
-    std::unique_ptr<std::istream> read_stream(std::string_view name) const;
+    using Stream_ptr = std::unique_ptr<std::istream>;
 
-    std::unique_ptr<std::istream> read_stream(std::string_view name,
-                                              std::string&     resolved_name) const;
+    Stream_ptr read_stream(std::string_view name) const;
+
+    Stream_ptr read_stream(std::string_view name, std::string& resolved_name) const;
 
     void push_mount(std::string_view folder);
+
     void pop_mount();
 
   private:

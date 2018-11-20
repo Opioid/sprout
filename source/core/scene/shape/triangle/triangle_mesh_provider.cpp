@@ -44,7 +44,7 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
     auto stream_pointer = manager.filesystem().read_stream(filename);
 
     file::Type type = file::query_type(*stream_pointer);
-    if (file::Type::SUM == type) {
+    if (file::Type::SUB == type) {
         return load_binary(*stream_pointer, manager.thread_pool());
     }
 
@@ -100,7 +100,7 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
 
     SOFT_ASSERT(check_and_fix(handler.vertices(), filename));
 
-    //	Exporter::write(filename, handler);
+    Exporter::write(filename, handler);
 
     auto mesh = std::make_shared<Mesh>();
 
@@ -112,8 +112,8 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
         logging::verbose("Started asynchronously building triangle mesh BVH.");
 
         for (auto& p : parts) {
-            uint32_t triangles_start = p.start_index / 3;
-            uint32_t triangles_end   = (p.start_index + p.num_indices) / 3;
+            uint32_t const triangles_start = p.start_index / 3;
+            uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
 
             for (uint32_t i = triangles_start; i < triangles_end; ++i) {
                 triangles[i].material_index = p.material_index;
