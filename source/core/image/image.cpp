@@ -9,8 +9,9 @@ Image::Description::Description(Type type, int2 dimensions, int32_t num_elements
 Image::Description::Description(Type type, int3 const& dimensions, int32_t num_elements) noexcept
     : type(type), dimensions(dimensions), num_elements(num_elements) {}
 
-size_t Image::Description::num_pixels() const noexcept {
-    return static_cast<size_t>(dimensions[0] * dimensions[1] * dimensions[2] * num_elements);
+uint64_t Image::Description::num_pixels() const noexcept {
+    return static_cast<uint64_t>(dimensions[0]) * static_cast<uint64_t>(dimensions[1]) *
+           static_cast<uint64_t>(dimensions[2]) * static_cast<uint64_t>(num_elements);
 }
 
 int32_t Image::Description::num_channels() const noexcept {

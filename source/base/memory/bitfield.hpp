@@ -19,6 +19,8 @@ class Bitfield {
 
     bool get(size_t index) const noexcept;
 
+    uint32_t* data() const noexcept;
+
     static size_t num_bytes(size_t num_bits) noexcept;
 
   private:

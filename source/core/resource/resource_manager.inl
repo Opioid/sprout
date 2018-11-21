@@ -21,7 +21,7 @@ void Manager::register_provider(Provider<T>& provider) noexcept {
 }
 
 template <typename T>
-std::shared_ptr<T> Manager::load(std::string const& filename, memory::Variant_map const& options) {
+Manager::Ptr<T> Manager::load(std::string const& filename, Variant_map const& options) {
     if (filename.empty()) {
         return nullptr;
     }
@@ -37,9 +37,8 @@ std::shared_ptr<T> Manager::load(std::string const& filename, memory::Variant_ma
 }
 
 template <typename T>
-std::shared_ptr<T> Manager::load(std::string const& name, void const* data,
-                                 std::string const&         mount_folder,
-                                 memory::Variant_map const& options) {
+Manager::Ptr<T> Manager::load(std::string const& name, void const* data,
+                              std::string const& mount_folder, Variant_map const& options) {
     if (name.empty()) {
         return nullptr;
     }
@@ -55,8 +54,7 @@ std::shared_ptr<T> Manager::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-std::shared_ptr<T> Manager::get(std::string const&         filename,
-                                memory::Variant_map const& options) noexcept {
+Manager::Ptr<T> Manager::get(std::string const& filename, Variant_map const& options) noexcept {
     if (filename.empty()) {
         return nullptr;
     }
@@ -72,8 +70,7 @@ std::shared_ptr<T> Manager::get(std::string const&         filename,
 }
 
 template <typename T>
-void Manager::store(std::string const& name, std::shared_ptr<T> resource,
-                    memory::Variant_map const& options) noexcept {
+void Manager::store(std::string const& name, Ptr<T> resource, Variant_map const& options) noexcept {
     if (name.empty() || !resource) {
         return;
     }

@@ -1,5 +1,7 @@
 #include "sub_image_reader.hpp"
 #include <fstream>
+#include <vector>
+#include "base/memory/bitfield.inl"
 #include "image/image.hpp"
 #include "image/typed_image.inl"
 #include "image/typed_image_fwd.hpp"
@@ -7,17 +9,29 @@
 
 namespace image::encoding::sub {
 
+static Image::Type read_image_type(json::Value const& value) {
+    if (auto const node = value.FindMember("type"); value.MemberEnd() != node) {
+        if ("Byte1" == node->value) {
+            return Image::Type::Byte1;
+        } else if ("Float1" == node->value) {
+            return Image::Type::Float1;
+        }
+    }
+
+    return Image::Type::Undefined;
+}
+
 std::shared_ptr<Image> Reader::read(std::istream& stream) {
     stream.seekg(4);
 
     uint64_t json_size = 0;
     stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
 
-    char* json_string = new char[json_size + 1];
-    stream.read(json_string, json_size * sizeof(char));
+    std::vector<char> json_string(json_size + 1);
+    stream.read(json_string.data(), static_cast<std::streamsize>(json_size * sizeof(char)));
     json_string[json_size] = 0;
 
-    auto const root = json::parse_insitu(json_string);
+    auto const root = json::parse_insitu(json_string.data());
 
     auto const image_node = root->FindMember("image");
     if (root->MemberEnd() == image_node) {
@@ -35,22 +49,21 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
         throw std::runtime_error("Invalid dimensions");
     }
 
-    Image::Description description(Image::Type::Float1, dimensions);
+    Image::Type const type = read_image_type(description_node->value);
 
-    auto image = std::make_shared<Float1>(description);
+    if (Image::Type::Undefined == type) {
+        throw std::runtime_error("Undefined image type");
+    }
 
-    //    auto const topology_node = image_node->value.FindMember("topology");
-    //    if (image_node->value.MemberEnd() == description_node) {
-    //        throw std::runtime_error("No image description");
-    //    }
+    auto const topology_node = image_node->value.FindMember("topology");
 
     auto const pixels_node = image_node->value.FindMember("pixels");
     if (image_node->value.MemberEnd() == pixels_node) {
         throw std::runtime_error("No pixels");
     }
 
-    size_t pixels_offset = 0;
-    size_t pixels_size   = 0;
+    uint64_t pixels_offset = 0;
+    uint64_t pixels_size   = 0;
 
     for (auto const& pn : pixels_node->value.GetObject()) {
         if ("binary" == pn.name) {
@@ -65,14 +78,101 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
         }
     }
 
-    delete[] json_string;
-
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 
-    stream.seekg(binary_start + pixels_offset);
-    stream.read(reinterpret_cast<char*>(image->data()), pixels_size);
+    if (topology_node->value.MemberEnd() != topology_node) {
+        uint64_t topology_offset = 0;
+        uint64_t topology_size   = 0;
 
-    return image;
+        for (auto const& tn : topology_node->value.GetObject()) {
+            if ("binary" == tn.name) {
+                topology_offset = json::read_uint(tn.value, "offset");
+                topology_size   = json::read_uint(tn.value, "size");
+                break;
+            }
+        }
+
+        if (0 == topology_size) {
+            throw std::runtime_error("Empty topology");
+        }
+
+        if (Image::Type::Byte1 == type) {
+            Image::Description description(Image::Type::Byte1, dimensions);
+
+            memory::Bitfield field(description.num_pixels());
+
+            stream.seekg(static_cast<std::streamoff>(binary_start + topology_offset));
+            stream.read(reinterpret_cast<char*>(field.data()),
+                        static_cast<std::streamsize>(field.num_bytes()));
+
+            stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
+
+            auto image = std::make_shared<Byte1>(description);
+
+            uint8_t* data = image->data();
+
+            for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
+                if (field.get(i)) {
+                    uint8_t density;
+                    stream.read(reinterpret_cast<char*>(&density), sizeof(uint8_t));
+                    data[i] = density;
+                } else {
+                    data[i] = 0;
+                }
+            }
+
+            return image;
+        } else /*if (Image::Type::Float1 == type)*/ {
+            Image::Description description(Image::Type::Float1, dimensions);
+
+            memory::Bitfield field(description.num_pixels());
+
+            stream.seekg(static_cast<std::streamoff>(binary_start + topology_offset));
+            stream.read(reinterpret_cast<char*>(field.data()),
+                        static_cast<std::streamsize>(field.num_bytes()));
+
+            stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
+
+            auto image = std::make_shared<Float1>(description);
+
+            float* data = image->data();
+
+            for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
+                if (field.get(i)) {
+                    float density;
+                    stream.read(reinterpret_cast<char*>(&density), sizeof(float));
+                    data[i] = density;
+                } else {
+                    data[i] = 0.f;
+                }
+            }
+
+            return image;
+        }
+
+    } else {
+        stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
+
+        if (Image::Type::Byte1 == type) {
+            Image::Description description(Image::Type::Byte1, dimensions);
+
+            auto image = std::make_shared<Byte1>(description);
+
+            stream.read(reinterpret_cast<char*>(image->data()),
+                        static_cast<std::streamsize>(pixels_size));
+
+            return image;
+        } else /*if (Image::Type::Float1 == type)*/ {
+            Image::Description description(Image::Type::Float1, dimensions);
+
+            auto image = std::make_shared<Float1>(description);
+
+            stream.read(reinterpret_cast<char*>(image->data()),
+                        static_cast<std::streamsize>(pixels_size));
+
+            return image;
+        }
+    }
 }
 
 }  // namespace image::encoding::sub

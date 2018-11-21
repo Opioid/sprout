@@ -26,9 +26,8 @@ Provider::Provider() noexcept : resource::Provider<Texture>("Texture") {
     encoding::init();
 }
 
-std::shared_ptr<Texture> Provider::load(std::string const&         filename,
-                                        memory::Variant_map const& options,
-                                        resource::Manager&         manager) {
+Provider::Texture_ptr Provider::load(std::string const& filename, Variant_map const& options,
+                                     resource::Manager& manager) {
     Channels channels = Channels::XYZ;
 
     Usage usage = Usage::Undefined;
@@ -94,9 +93,9 @@ std::shared_ptr<Texture> Provider::load(std::string const&         filename,
     return nullptr;
 }
 
-std::shared_ptr<Texture> Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                                        memory::Variant_map const& /*options*/,
-                                        resource::Manager& /*manager*/) {
+Provider::Texture_ptr Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
+                                     Variant_map const& /*options*/,
+                                     resource::Manager& /*manager*/) {
     return nullptr;
 }
 

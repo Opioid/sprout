@@ -15,7 +15,7 @@ class Image {
         Description(Type type, int2 dimensions, int32_t num_elements = 1) noexcept;
         Description(Type type, int3 const& dimensions, int32_t num_elements = 1) noexcept;
 
-        size_t num_pixels() const noexcept;
+        uint64_t num_pixels() const noexcept;
 
         int32_t num_channels() const noexcept;
 

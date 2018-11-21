@@ -1,8 +1,8 @@
 #ifndef SU_BASE_MEMORY_BITFIELD_INL
 #define SU_BASE_MEMORY_BITFIELD_INL
 
-#include "bitfield.hpp"
 #include <cstring>
+#include "bitfield.hpp"
 
 namespace memory {
 
@@ -36,6 +36,10 @@ inline bool Bitfield::get(size_t index) const noexcept {
     uint32_t const mask = Mask >> (index % Bits);
 
     return (buffer_[index >> Log2Bits] & mask) != 0;
+}
+
+inline uint32_t* Bitfield::data() const noexcept {
+    return buffer_;
 }
 
 inline size_t Bitfield::num_bytes(size_t num_bits) noexcept {
