@@ -110,9 +110,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
     float const majorant_mu_a = max_density * idata.majorant_mu_a;
     float const majorant_mu_s = max_density * idata.majorant_mu_s;
 
-    float const diff = (majorant_mu_a + majorant_mu_s) - (minorant_mu_a + minorant_mu_s);
-
-    int3 const half = (box.bounds[1] - box.bounds[0]) >> 1;
+    float const diff = max_density - min_density;
 
     static int32_t constexpr w = (Gridtree::Cell_dim >> (Gridtree::Log2_cell_dim - 2)) + 1;
 
@@ -146,6 +144,8 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
     }
 
     ++depth;
+
+    int3 const half = (box.bounds[1] - box.bounds[0]) >> 1;
 
     int3 const center = box.bounds[0] + half;
 

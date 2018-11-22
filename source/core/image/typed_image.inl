@@ -5,6 +5,7 @@
 #include "base/memory/align.hpp"
 #include "typed_image.hpp"
 #include "typed_image_fwd.hpp"
+#include <cstring>
 
 namespace image {
 
@@ -347,7 +348,7 @@ void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const noexcep
 
 template <typename T>
 size_t Typed_sparse_image<T>::num_bytes() const noexcept {
-    uint32_t cell_len = static_cast<uint32_t>(num_cells_[0] * num_cells_[1] * num_cells_[2]);
+    uint32_t const cell_len = static_cast<uint32_t>(num_cells_[0] * num_cells_[1] * num_cells_[2]);
 
     size_t num_bytes = cell_len * sizeof(T*);
 

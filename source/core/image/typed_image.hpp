@@ -91,7 +91,7 @@ class Typed_sparse_image final : public Image {
     size_t num_bytes() const noexcept override final;
 
   private:
-    static int32_t constexpr Log2_cell_dim = 5;
+    static int32_t constexpr Log2_cell_dim = 4;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;
 
     static T constexpr empty_ = T(0);
