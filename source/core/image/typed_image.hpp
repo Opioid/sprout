@@ -98,7 +98,12 @@ class Typed_sparse_image final : public Image {
 
     int3 num_cells_;
 
-    T** cells_ = nullptr;
+    struct Cell {
+        bool homogeneous;
+        T*   data;
+    };
+
+    Cell* cells_ = nullptr;
 };
 
 }  // namespace image
