@@ -2,10 +2,13 @@
 #include <fstream>
 #include <vector>
 #include "base/memory/bitfield.inl"
+#include "base/string/string.hpp"
 #include "image/image.hpp"
 #include "image/typed_image.inl"
 #include "image/typed_image_fwd.hpp"
 #include "json/json.hpp"
+
+#include <iostream>
 
 namespace image::encoding::sub {
 
@@ -123,7 +126,10 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
 
             return image;
         } else /*if (Image::Type::Float1 == type)*/ {
-            Image::Description description(Image::Type::Float1, dimensions);
+            static bool constexpr sparse = true;
+
+            Image::Description description(
+                sparse ? Image::Type::Float1_sparse : Image::Type::Float1, dimensions);
 
             memory::Bitfield field(description.num_pixels());
 
@@ -133,23 +139,41 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
 
             stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
-            auto image = std::make_shared<Float1>(description);
+            if (sparse) {
+                auto image = std::make_shared<Float1_sparse>(description);
 
-            float* data = image->data();
+                for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
+                    if (field.get(i)) {
+                        float density;
+                        stream.read(reinterpret_cast<char*>(&density), sizeof(float));
 
-            for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
-                if (field.get(i)) {
-                    float density;
-                    stream.read(reinterpret_cast<char*>(&density), sizeof(float));
-                    data[i] = density;
-                } else {
-                    data[i] = 0.f;
+                        image->store(static_cast<int64_t>(i), density);
+                    }
                 }
+
+                std::cout << string::print_bytes(image->num_bytes()) << std::endl;
+
+                return image;
+            } else {
+                auto image = std::make_shared<Float1>(description);
+
+                float* data = image->data();
+
+                for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
+                    if (field.get(i)) {
+                        float density;
+                        stream.read(reinterpret_cast<char*>(&density), sizeof(float));
+                        data[i] = density;
+                    } else {
+                        data[i] = 0.f;
+                    }
+                }
+
+                std::cout << string::print_bytes(image->num_bytes()) << std::endl;
+
+                return image;
             }
-
-            return image;
         }
-
     } else {
         stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 

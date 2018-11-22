@@ -6,9 +6,10 @@
 
 namespace image::texture {
 
-class Float1 final : public Texture {
+template <typename T>
+class Float1_t final : public Texture {
   public:
-    Float1(std::shared_ptr<Image> const& image) noexcept;
+    Float1_t(std::shared_ptr<Image> const& image) noexcept;
 
     float  at_1(int32_t i) const noexcept override final;
     float3 at_3(int32_t i) const noexcept override final;
@@ -30,8 +31,12 @@ class Float1 final : public Texture {
     float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept override final;
 
   private:
-    image::Float1 const& image_;
+    T const& image_;
 };
+
+using Float1 = Float1_t<image::Float1>;
+
+using Float1_sparse = Float1_t<image::Float1_sparse>;
 
 }  // namespace image::texture
 

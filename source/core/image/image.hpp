@@ -8,7 +8,17 @@ namespace image {
 
 class Image {
   public:
-    enum class Type { Undefined, Byte1, Byte2, Byte3, Float1, Float2, Float3, Float4 };
+    enum class Type {
+        Undefined,
+        Byte1,
+        Byte2,
+        Byte3,
+        Float1,
+        Float1_sparse,
+        Float2,
+        Float3,
+        Float4
+    };
 
     struct Description {
         Description() noexcept = default;
@@ -39,6 +49,8 @@ class Image {
     int32_t volume() const noexcept;
 
     int2 coordinates_2(int32_t index) const noexcept;
+
+    int3 coordinates_3(int64_t index) const noexcept;
 
     virtual size_t num_bytes() const noexcept = 0;
 

@@ -59,6 +59,19 @@ int2 Image::coordinates_2(int32_t index) const noexcept {
     return c;
 }
 
+int3 Image::coordinates_3(int64_t index) const noexcept {
+    int64_t const area = static_cast<int64_t>(description_.dimensions[0]) *
+                         static_cast<int64_t>(description_.dimensions[1]);
+
+    int64_t const c2 = index / area;
+
+    int64_t const t = c2 * area;
+
+    int64_t const c1 = (index - t) / static_cast<int64_t>(description_.dimensions[0]);
+
+    return int3(index - (t + c1 * static_cast<int64_t>(description_.dimensions[0])), c1, c2);
+}
+
 void Image::resize(Description const& description) noexcept {
     description_ = description;
 }

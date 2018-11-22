@@ -14,7 +14,7 @@
 #include "texture_byte_3_srgb.hpp"
 #include "texture_byte_3_unorm.hpp"
 #include "texture_encoding.hpp"
-#include "texture_float_1.hpp"
+#include "texture_float_1.inl"
 #include "texture_float_3.hpp"
 
 #include "base/debug/assert.hpp"
@@ -83,8 +83,12 @@ Provider::Texture_ptr Provider::load(std::string const& filename, Variant_map co
             }
         } else if (Image::Type::Float1 == image->description().type) {
             return std::make_shared<Float1>(image);
+        } else if (Image::Type::Float1_sparse == image->description().type) {
+            return std::make_shared<Float1_sparse>(image);
         } else if (Image::Type::Float3 == image->description().type) {
             return std::make_shared<Float3>(image);
+        } else {
+            logging::error("Loading texture \"" + filename + "\": Image is of unknown type.");
         }
     } catch (const std::exception& e) {
         logging::error("Loading texture \"" + filename + "\": " + e.what() + ".");

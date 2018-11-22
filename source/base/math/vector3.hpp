@@ -33,6 +33,9 @@ struct Vector3 {
     template <typename U>
     explicit constexpr Vector3(Vector3<U> const& a) noexcept;
 
+    template <typename U>
+    explicit constexpr Vector3(U x, U y, U z) noexcept : v{T(x), T(y), T(z)} {}
+
     constexpr Vector2<T> xy() const noexcept;
 
     constexpr T  operator[](uint32_t i) const noexcept;
