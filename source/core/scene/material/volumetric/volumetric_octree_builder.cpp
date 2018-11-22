@@ -1,5 +1,6 @@
 #include "volumetric_octree_builder.hpp"
 #include "base/math/vector3.inl"
+#include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.hpp"
 #include "scene/material/collision_coefficients.inl"
 
@@ -11,7 +12,10 @@ Octree_builder::Build_node::~Build_node() {
     }
 }
 
-void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& idata) {
+void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& idata,
+                           thread::Pool& pool) {
+    pool.wait_async();
+
     int3 const d = texture.dimensions_3();
 
     int3 num_cells = d / Gridtree::Cell_dim;
@@ -20,29 +24,49 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
 
     uint32_t const cell_len = static_cast<uint32_t>(num_cells[0] * num_cells[1] * num_cells[2]);
 
-    num_nodes_ = cell_len;
-    num_data_  = 0;
-
     Build_node* grid = new Build_node[cell_len];
 
-    Build_node* node = grid;
-    for (int32_t z = 0; z < num_cells[2]; ++z) {
-        for (int32_t y = 0; y < num_cells[1]; ++y) {
-            for (int32_t x = 0; x < num_cells[0]; ++x, ++node) {
-                int3 const min = Gridtree::Cell_dim * int3(x, y, z);
+    Splitter* splitters = new Splitter[pool.num_threads()];
+
+    pool.run_range(
+        [splitters, grid, &texture, &idata, &num_cells](uint32_t id, int32_t begin, int32_t end) {
+            Splitter& splitter = splitters[id];
+
+            int32_t const area = num_cells[0] * num_cells[1];
+
+            for (int32_t i = begin; i < end; ++i) {
+                int3 c;
+                c[2] = i / area;
+
+                int32_t const t = c[2] * area;
+
+                c[1] = (i - t) / num_cells[0];
+                c[0] = i - (t + c[1] * num_cells[0]);
+
+                int3 const min = Gridtree::Cell_dim * c;
                 int3 const max = min + Gridtree::Cell_dim;
 
                 Box const box{{min, max}};
-                split(node, box, texture, idata, 0);
+                splitter.split(&grid[i], box, texture, idata, 0);
             }
-        }
+        },
+        0, static_cast<int32_t>(cell_len));
+
+    uint32_t num_nodes = cell_len;
+    uint32_t num_data  = 0;
+
+    for (uint32_t i = 0, len = pool.num_threads(); i < len; ++i) {
+        num_nodes += splitters[i].num_nodes;
+        num_data += splitters[i].num_data;
     }
+
+    delete[] splitters;
 
     tree.set_dimensions(d, num_cells);
 
-    nodes_ = tree.allocate_nodes(num_nodes_);
+    nodes_ = tree.allocate_nodes(num_nodes);
 
-    data_ = tree.allocate_data(num_data_);
+    data_ = tree.allocate_data(num_data);
 
     uint32_t next = cell_len;
     uint32_t data = 0;
@@ -54,8 +78,8 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& ida
     delete[] grid;
 }
 
-void Octree_builder::split(Build_node* node, Box const& box, Texture const& texture,
-                           CM const& idata, uint32_t depth) {
+void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture const& texture,
+                                     CM const& idata, uint32_t depth) {
     int3 const d = texture.dimensions_3();
 
     float min_density = 1.f;
@@ -115,7 +139,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         }
 
         if (!node->data.is_empty()) {
-            ++num_data_;
+            ++num_data;
         }
 
         return;
@@ -187,7 +211,7 @@ void Octree_builder::split(Build_node* node, Box const& box, Texture const& text
         split(node->children[7], sub, texture, idata, depth);
     }
 
-    num_nodes_ += 8;
+    num_nodes += 8;
 }
 
 void Octree_builder::serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data) {

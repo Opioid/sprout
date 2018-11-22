@@ -9,13 +9,17 @@ namespace image::texture {
 class Texture;
 }
 
+namespace thread {
+class Pool;
+}
+
 namespace scene::material::volumetric {
 
 class Octree_builder {
   public:
     using Texture = image::texture::Texture;
 
-    void build(Gridtree& tree, Texture const& texture, CM const& idata);
+    void build(Gridtree& tree, Texture const& texture, CM const& idata, thread::Pool& pool);
 
   private:
     struct Build_node {
@@ -26,16 +30,19 @@ class Octree_builder {
         CM data;
     };
 
-    void split(Build_node* node, Box const& box, Texture const& texture, CM const& idata,
-               uint32_t depth);
+    struct Splitter {
+        void split(Build_node* node, Box const& box, Texture const& texture, CM const& idata,
+                   uint32_t depth);
+
+        uint32_t num_nodes = 0;
+        uint32_t num_data  = 0;
+    };
 
     void serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data);
 
-    uint32_t num_nodes_;
-    Node*    nodes_;
+    Node* nodes_;
 
-    uint32_t num_data_;
-    CM*      data_;
+    CM* data_;
 };
 
 }  // namespace scene::material::volumetric

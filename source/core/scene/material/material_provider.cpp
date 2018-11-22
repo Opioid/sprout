@@ -50,7 +50,7 @@ Provider::Provider() noexcept
 
 Provider::~Provider() noexcept {}
 
-Material_ptr Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
+Material_ptr Provider::load(std::string const& filename, Variant_map const& /*options*/,
                             resource::Manager& manager) {
     std::string resolved_name;
     auto        stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
@@ -60,8 +60,8 @@ Material_ptr Provider::load(std::string const& filename, memory::Variant_map con
     return load(*root, string::parent_directory(resolved_name), manager);
 }
 
-Material_ptr Provider::load(void const* data, std::string_view                         mount_folder,
-                            memory::Variant_map const& /*options*/, resource::Manager& manager) {
+Material_ptr Provider::load(void const* data, std::string_view                 mount_folder,
+                            Variant_map const& /*options*/, resource::Manager& manager) {
     json::Value const* value = reinterpret_cast<json::Value const*>(data);
 
     return load(*value, mount_folder, manager);
@@ -122,7 +122,7 @@ Material_ptr Provider::load(json::Value const& value, std::string_view mount_fol
         throw std::runtime_error("Material is of unknown type");
     }
 
-    material->compile();
+    material->compile(manager.thread_pool());
 
     return material;
 }
@@ -1182,7 +1182,7 @@ void Provider::read_texture_description(json::Value const&   texture_value,
 }
 
 Texture_adapter Provider::create_texture(const Texture_description& description,
-                                         memory::Variant_map& options, resource::Manager& manager) {
+                                         Variant_map& options, resource::Manager& manager) {
     if (description.num_elements > 1) {
         options.set("num_elements", description.num_elements);
     }

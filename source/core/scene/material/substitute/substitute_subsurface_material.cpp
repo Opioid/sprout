@@ -19,12 +19,12 @@ namespace scene::material::substitute {
 Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings) noexcept
     : Material_base(sampler_settings, false) {}
 
-void Material_subsurface::compile() noexcept {
+void Material_subsurface::compile(thread::Pool& pool) noexcept {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture();
 
         volumetric::Octree_builder builder;
-        builder.build(tree_, texture, cm_);
+        builder.build(tree_, texture, cm_, pool);
     }
 
     //	attenuation(float3(0.25f), attenuation_distance_,

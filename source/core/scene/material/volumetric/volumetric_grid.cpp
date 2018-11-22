@@ -15,11 +15,11 @@ Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid
 
 Grid::~Grid() noexcept {}
 
-void Grid::compile() noexcept {
+void Grid::compile(thread::Pool& pool) noexcept {
     auto const& texture = grid_.texture();
 
     Octree_builder builder;
-    builder.build(tree_, texture, cm_);
+    builder.build(tree_, texture, cm_, pool);
 }
 
 Gridtree const* Grid::volume_tree() const noexcept {

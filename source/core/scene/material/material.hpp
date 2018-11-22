@@ -64,7 +64,7 @@ class Material {
 
     void set_parameters(json::Value const& parameters) noexcept;
 
-    virtual void compile() noexcept;
+    virtual void compile(thread::Pool& pool) noexcept;
 
     virtual void tick(float absolute_time, float time_slice) noexcept;
 

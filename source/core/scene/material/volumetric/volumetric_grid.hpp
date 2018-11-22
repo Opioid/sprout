@@ -13,7 +13,7 @@ class Grid final : public Density {
 
     ~Grid() noexcept override final;
 
-    void compile() noexcept override final;
+    void compile(thread::Pool& pool) noexcept override final;
 
     Gridtree const* volume_tree() const noexcept override final;
 

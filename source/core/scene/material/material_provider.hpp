@@ -24,12 +24,11 @@ class Provider final : public resource::Provider<Material> {
 
     ~Provider() noexcept override final;
 
-    Material_ptr load(std::string const& filename, memory::Variant_map const& options,
+    Material_ptr load(std::string const& filename, Variant_map const& options,
                       resource::Manager& manager) override final;
 
-    Material_ptr load(void const* data, std::string_view mount_folder,
-                      memory::Variant_map const& options,
-                      resource::Manager&         manager) override final;
+    Material_ptr load(void const* data, std::string_view mount_folder, Variant_map const& options,
+                      resource::Manager& manager) override final;
 
     size_t num_bytes() const noexcept override final;
 
@@ -80,7 +79,7 @@ class Provider final : public resource::Provider<Material> {
                                          Texture_description& description);
 
     static Texture_adapter create_texture(const Texture_description& description,
-                                          memory::Variant_map& options, resource::Manager& manager);
+                                          Variant_map& options, resource::Manager& manager);
 
     struct Coating_description {
         float3 color = float3(1.f);

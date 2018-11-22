@@ -25,7 +25,7 @@ void Material::set_parameters(json::Value const& parameters) noexcept {
     }
 }
 
-void Material::compile() noexcept {}
+void Material::compile(thread::Pool& /*pool*/) noexcept {}
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) noexcept {}
 
