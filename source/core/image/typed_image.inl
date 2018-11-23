@@ -7,6 +7,8 @@
 #include "typed_image.hpp"
 #include "typed_image_fwd.hpp"
 
+#include <iostream>
+
 namespace image {
 
 template <typename T>
@@ -158,10 +160,10 @@ Typed_sparse_image<T>::Typed_sparse_image(const Image::Description& description)
 
     uint32_t cell_len = static_cast<uint32_t>(num_cells_[0] * num_cells_[1] * num_cells_[2]);
 
-    cells_ = memory::allocate_aligned<T*>(cell_len);
+    cells_ = memory::allocate_aligned<Cell>(cell_len);
 
     for (uint32_t i = 0; i < cell_len; ++i) {
-        cells_[i] = nullptr;
+        cells_[i].data = nullptr;
     }
 }
 
@@ -170,8 +172,10 @@ Typed_sparse_image<T>::~Typed_sparse_image() noexcept {
     uint32_t cell_len = static_cast<uint32_t>(num_cells_[0] * num_cells_[1] * num_cells_[2]);
 
     for (uint32_t i = 0; i < cell_len; ++i) {
-        memory::free_aligned(cells_[i]);
+        memory::free_aligned(cells_[i].data);
     }
+
+	memory::free_aligned(cells_);
 }
 
 template <typename T>
@@ -181,7 +185,7 @@ T Typed_sparse_image<T>::load(int64_t index) const noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index]) {
+    if (!cells_[cell_index].data) {
         return T(0);
     }
 
@@ -191,7 +195,7 @@ T Typed_sparse_image<T>::load(int64_t index) const noexcept {
 
     int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index][ci];
+    return cells_[cell_index].data[ci];
 }
 
 template <typename T>
@@ -201,11 +205,11 @@ void Typed_sparse_image<T>::store(int64_t index, T v) noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index]) {
+    if (!cells_[cell_index].data) {
         uint64_t const len = static_cast<uint64_t>(Cell_dim * Cell_dim * Cell_dim);
-        cells_[cell_index] = memory::allocate_aligned<T>(len);
+        cells_[cell_index].data = memory::allocate_aligned<T>(len);
 
-        std::memset(cells_[cell_index], 0, len * sizeof(T));
+        std::memset(cells_[cell_index].data, 0, len * sizeof(T));
     }
 
     int3 const cs = cc << Log2_cell_dim;
@@ -214,7 +218,7 @@ void Typed_sparse_image<T>::store(int64_t index, T v) noexcept {
 
     int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    cells_[cell_index][ci] = v;
+    cells_[cell_index].data[ci] = v;
 }
 
 template <typename T>
@@ -224,7 +228,7 @@ T const& Typed_sparse_image<T>::at(int64_t index) const noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index]) {
+    if (!cells_[cell_index].data) {
         return T(0);
     }
 
@@ -234,7 +238,7 @@ T const& Typed_sparse_image<T>::at(int64_t index) const noexcept {
 
     int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index][ci];
+    return cells_[cell_index].data[ci];
 }
 
 template <typename T>
@@ -283,7 +287,7 @@ T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index]) {
+    if (!cells_[cell_index].data) {
         return T(0);
     }
 
@@ -293,7 +297,7 @@ T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
 
     int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index][ci];
+    return cells_[cell_index].data[ci];
 }
 
 template <typename T>
@@ -313,7 +317,7 @@ T const& Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const noexce
 
     int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index][ci];
+    return cells_[cell_index].data[ci];
 }
 
 template <typename T>
@@ -350,13 +354,15 @@ template <typename T>
 size_t Typed_sparse_image<T>::num_bytes() const noexcept {
     uint32_t const cell_len = static_cast<uint32_t>(num_cells_[0] * num_cells_[1] * num_cells_[2]);
 
-    size_t num_bytes = cell_len * sizeof(T*);
+    size_t num_bytes = cell_len * sizeof(Cell);
 
     for (uint32_t i = 0; i < cell_len; ++i) {
-        if (cells_[i]) {
+        if (cells_[i].data) {
             num_bytes += Cell_dim * Cell_dim * Cell_dim * sizeof(T);
         }
     }
+
+	std::cout << sizeof(Cell) << std::endl;
 
     return num_bytes;
 }
