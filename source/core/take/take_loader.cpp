@@ -522,8 +522,8 @@ std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_inte
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
-            uint2 const sr_range = json::read_uint2(n.value, "similarity_relation_range",
-                                                    uint2(16, 64));
+            uint2 const sr_range = uint2(json::read_int2(n.value, "similarity_relation_range",
+                                                    int2(16, 64)));
 
             using Volumetric_material = scene::material::volumetric::Material;
             Volumetric_material::set_similarity_relation_range(sr_range[0], sr_range[1]);
