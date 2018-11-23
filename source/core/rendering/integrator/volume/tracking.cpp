@@ -278,10 +278,10 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::CM con
     }
 }
 
-bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& material, float srs,
+bool Tracking::tracking(math::Ray const& ray, CM const& cm, Material const& material, float srs,
                         Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                         float3& w) {
-    float const mt = data.majorant_mu_t();
+    float const mt = cm.majorant_mu_t();
 
     if (mt < Min_mt) {
         return false;
@@ -289,8 +289,8 @@ bool Tracking::tracking(math::Ray const& ray, CM const& data, Material const& ma
 
     static bool constexpr decomposition = false;
 
-    if (decomposition && data.minorant_mu_t() > 0.f) {
-        return decomposition_tracking(ray, data, material, filter, rng, worker, t_out, w);
+    if (decomposition && cm.minorant_mu_t() > 0.f) {
+        return decomposition_tracking(ray, cm, material, filter, rng, worker, t_out, w);
     }
 
     float3 lw = w;
