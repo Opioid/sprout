@@ -208,11 +208,11 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    uint32_t const len = Cell_dim * Cell_dim * Cell_dim;
+    int32_t const len = Cell_dim * Cell_dim * Cell_dim;
 
     Cell& cell = cells_[cell_index];
 
-    if (cell.homogeneous /* && !cell.data*/) {
+    if (cell.homogeneous) {
         cell.homogeneous = false;
         cell.data        = memory::allocate_aligned<T>(len);
 
@@ -240,7 +240,6 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
 
         if (homogeneous) {
             memory::free_aligned(cell.data);
-            //    cell.data = nullptr;
 
             cell.homogeneous = true;
             cell.value       = value;

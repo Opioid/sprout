@@ -76,6 +76,8 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
 
     if (auto const p = extension_value.FindMember("parameters"); extension_value.MemberEnd() != p) {
         sky->set_parameters(p->value);
+    } else {
+        sky->update();
     }
 
     bool const visible_in_camera     = true;

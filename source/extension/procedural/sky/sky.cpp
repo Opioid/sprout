@@ -5,6 +5,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 #include "core/scene/prop/prop.hpp"
+#include "core/scene/scene_constants.hpp"
 
 namespace procedural::sky {
 
@@ -14,10 +15,8 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
     sky_ = sky;
     sun_ = sun;
 
-//    attach(sky_);
-//    attach(sun_);
-
-    update();
+    attach(sky_);
+    attach(sun_);
 
     const math::Transformation transformation{
         float3::identity(), float3(1.f),
@@ -107,6 +106,14 @@ void Sky::update() noexcept {
 void Sky::on_set_transformation() noexcept {
     if (implicit_rotation_) {
         sun_rotation_ = math::quaternion::create_matrix3x3(local_frame_0().rotation);
+
+        const math::Transformation identity{float3::identity(), float3(1.f),
+                                            math::quaternion::identity()};
+
+        for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
+            world_frames_[i].transformation = identity;
+            world_frames_[i].time           = scene::Static_time;
+        }
 
         update();
     }

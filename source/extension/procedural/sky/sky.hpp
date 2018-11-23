@@ -30,9 +30,9 @@ class Sky : public scene::entity::Entity {
     bool sky_changed_since_last_check() noexcept;
     bool sun_changed_since_last_check() noexcept;
 
-  private:
     void update() noexcept;
 
+  private:
     void on_set_transformation() noexcept override final;
 
     Model model_;
