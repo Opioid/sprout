@@ -147,7 +147,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
                         float density;
                         stream.read(reinterpret_cast<char*>(&density), sizeof(float));
 
-                        image->store(static_cast<int64_t>(i), density);
+                        image->store_sequentially(static_cast<int64_t>(i), density);
                     }
                 }
 

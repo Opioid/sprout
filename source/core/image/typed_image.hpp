@@ -66,7 +66,7 @@ class Typed_sparse_image final : public Image {
 
     T load(int64_t index) const noexcept;
 
-    void store(int64_t index, T v) noexcept;
+    void store_sequentially(int64_t index, T v) noexcept;
 
     T const& at(int64_t index) const noexcept;
 
@@ -100,7 +100,11 @@ class Typed_sparse_image final : public Image {
 
     struct Cell {
         bool homogeneous;
-        T*   data;
+
+        union {
+            T  value;
+            T* data;
+        };
     };
 
     Cell* cells_ = nullptr;

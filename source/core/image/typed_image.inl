@@ -7,8 +7,6 @@
 #include "typed_image.hpp"
 #include "typed_image_fwd.hpp"
 
-#include <iostream>
-
 namespace image {
 
 template <typename T>
@@ -158,24 +156,27 @@ Typed_sparse_image<T>::Typed_sparse_image(const Image::Description& description)
 
     num_cells_ += math::min(d - (num_cells_ << Log2_cell_dim), 1);
 
-    uint32_t cell_len = static_cast<uint32_t>(num_cells_[0] * num_cells_[1] * num_cells_[2]);
+    int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
     cells_ = memory::allocate_aligned<Cell>(cell_len);
 
-    for (uint32_t i = 0; i < cell_len; ++i) {
-        cells_[i].data = nullptr;
+    for (int32_t i = 0; i < cell_len; ++i) {
+        cells_[i].homogeneous = true;
+        cells_[i].value       = T(0);
     }
 }
 
 template <typename T>
 Typed_sparse_image<T>::~Typed_sparse_image() noexcept {
-    uint32_t cell_len = static_cast<uint32_t>(num_cells_[0] * num_cells_[1] * num_cells_[2]);
+    int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
-    for (uint32_t i = 0; i < cell_len; ++i) {
-        memory::free_aligned(cells_[i].data);
+    for (int32_t i = 0; i < cell_len; ++i) {
+        if (!cells_[i].homogeneous) {
+            memory::free_aligned(cells_[i].data);
+        }
     }
 
-	memory::free_aligned(cells_);
+    memory::free_aligned(cells_);
 }
 
 template <typename T>
@@ -185,40 +186,66 @@ T Typed_sparse_image<T>::load(int64_t index) const noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index].data) {
-        return T(0);
+    Cell const& cell = cells_[cell_index];
+
+    if (cell.homogeneous) {
+        return cell.value;
     }
 
     int3 const cs = cc << Log2_cell_dim;
 
     int3 const cxyz = c - cs;
 
-    int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
+    int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index].data[ci];
+    return cell.data[ci];
 }
 
 template <typename T>
-void Typed_sparse_image<T>::store(int64_t index, T v) noexcept {
+void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
     int3 const c  = coordinates_3(index);
     int3 const cc = c >> Log2_cell_dim;
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index].data) {
-        uint64_t const len = static_cast<uint64_t>(Cell_dim * Cell_dim * Cell_dim);
-        cells_[cell_index].data = memory::allocate_aligned<T>(len);
+    uint32_t const len = Cell_dim * Cell_dim * Cell_dim;
 
-        std::memset(cells_[cell_index].data, 0, len * sizeof(T));
+    Cell& cell = cells_[cell_index];
+
+    if (cell.homogeneous /* && !cell.data*/) {
+        cell.homogeneous = false;
+        cell.data        = memory::allocate_aligned<T>(len);
+
+        std::memset(cell.data, 0, len * sizeof(T));
     }
 
     int3 const cs = cc << Log2_cell_dim;
 
     int3 const cxyz = c - cs;
 
-    int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
+    int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    cells_[cell_index].data[ci] = v;
+    cell.data[ci] = v;
+
+    if (ci == len - 1) {
+        bool homogeneous = true;
+        T    value       = cell.data[0];
+
+        for (int32_t i = 1; i < len; ++i) {
+            if (value != cell.data[i]) {
+                homogeneous = false;
+                break;
+            }
+        }
+
+        if (homogeneous) {
+            memory::free_aligned(cell.data);
+            //    cell.data = nullptr;
+
+            cell.homogeneous = true;
+            cell.value       = value;
+        }
+    }
 }
 
 template <typename T>
@@ -228,17 +255,19 @@ T const& Typed_sparse_image<T>::at(int64_t index) const noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index].data) {
-        return T(0);
+    Cell const& cell = cells_[cell_index];
+
+    if (cell.homogeneous) {
+        return cell.value;
     }
 
     int3 const cs = cc << Log2_cell_dim;
 
     int3 const cxyz = c - cs;
 
-    int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
+    int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index].data[ci];
+    return cell.data[ci];
 }
 
 template <typename T>
@@ -287,17 +316,19 @@ T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index].data) {
-        return T(0);
+    Cell const& cell = cells_[cell_index];
+
+    if (cell.homogeneous) {
+        return cell.value;
     }
 
     int3 const cs = cc << Log2_cell_dim;
 
     int3 const cxyz = c - cs;
 
-    int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
+    int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index].data[ci];
+    return cell.data[ci];
 }
 
 template <typename T>
@@ -307,17 +338,19 @@ T const& Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const noexce
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    if (!cells_[cell_index]) {
-        return empty_;
+    Cell const& cell = cells_[cell_index];
+
+    if (cell.homogeneous) {
+        return cell.value;
     }
 
     int3 const cs = cc << Log2_cell_dim;
 
     int3 const cxyz = c - cs;
 
-    int32_t ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
+    int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
 
-    return cells_[cell_index].data[ci];
+    return cell.data[ci];
 }
 
 template <typename T>
@@ -357,12 +390,10 @@ size_t Typed_sparse_image<T>::num_bytes() const noexcept {
     size_t num_bytes = cell_len * sizeof(Cell);
 
     for (uint32_t i = 0; i < cell_len; ++i) {
-        if (cells_[i].data) {
+        if (!cells_[i].homogeneous && cells_[i].data) {
             num_bytes += Cell_dim * Cell_dim * Cell_dim * sizeof(T);
         }
     }
-
-	std::cout << sizeof(Cell) << std::endl;
 
     return num_bytes;
 }
