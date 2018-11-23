@@ -16,6 +16,8 @@
 
 namespace scene::shape {
 
+static float constexpr Canopy_eps = -0.0005f;
+
 Canopy::Canopy() noexcept {
     aabb_.set_min_max(float3::identity(), float3::identity());
 }
@@ -23,7 +25,7 @@ Canopy::Canopy() noexcept {
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        Intersection& intersection) const noexcept {
     if (ray.max_t >= Ray_max_t) {
-        if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
+        if (math::dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
@@ -59,7 +61,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
 bool Canopy::intersect_fast(Ray& ray, Transformation const&           transformation,
                             Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     if (ray.max_t >= Ray_max_t) {
-        if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
+        if (math::dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
@@ -92,7 +94,7 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        float& epsilon) const noexcept {
     if (ray.max_t >= Ray_max_t) {
-        if (math::dot(ray.direction, transformation.rotation.r[2]) < 0.f) {
+        if (math::dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 

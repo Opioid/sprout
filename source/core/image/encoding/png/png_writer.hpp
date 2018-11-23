@@ -10,10 +10,11 @@ class Writer : public image::Writer, Srgb {
   public:
     Writer(int2 dimensions);
 
-    virtual std::string file_extension() const override final;
+    std::string file_extension() const override final;
 
-    virtual bool write(std::ostream& stream, Float4 const& image,
-                       thread::Pool& pool) override final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) override final;
+
+    bool write(std::ostream& stream, Float3 const& image, thread::Pool& pool);
 
     static bool write(std::string_view name, Byte3 const& image);
 
