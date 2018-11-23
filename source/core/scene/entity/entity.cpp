@@ -107,23 +107,10 @@ void Entity::set_visible_in_shadow(bool value) noexcept {
     properties_.set(Property::Visible_in_shadow, value);
 }
 
-void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow,
-                            bool propagate) noexcept {
+void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept {
     properties_.set(Property::Visible_in_camera, in_camera);
     properties_.set(Property::Visible_in_reflection, in_reflection);
     properties_.set(Property::Visible_in_shadow, in_shadow);
-
-    if (next_ && propagate) {
-        next_->set_visibility(in_camera, in_reflection, in_shadow, true);
-    }
-
-    if (child_ && properties_.test(Property::Propagate_visibility)) {
-        child_->set_visibility(in_camera, in_reflection, in_shadow, true);
-    }
-}
-
-void Entity::set_propagate_visibility(bool enable) noexcept {
-    properties_.set(Property::Propagate_visibility, enable);
 }
 
 void Entity::attach(Entity* node) noexcept {

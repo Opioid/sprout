@@ -45,10 +45,7 @@ class Entity {
 
     void set_visible_in_shadow(bool value) noexcept;
 
-    void set_visibility(bool in_camera, bool in_reflection, bool in_shadow,
-                        bool propagate = false) noexcept;
-
-    void set_propagate_visibility(bool enable) noexcept;
+    void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
     void attach(Entity* node) noexcept;
     void detach() noexcept;
@@ -72,9 +69,8 @@ class Entity {
         Visible_in_camera     = 1 << 0,
         Visible_in_reflection = 1 << 1,
         Visible_in_shadow     = 1 << 2,
-        Propagate_visibility  = 1 << 3,
-        Masked_material       = 1 << 4,
-        Tinted_shadow         = 1 << 5
+        Masked_material       = 1 << 3,
+        Tinted_shadow         = 1 << 4
     };
 
     flags::Flags<Property> properties_;

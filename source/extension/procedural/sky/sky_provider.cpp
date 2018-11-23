@@ -72,7 +72,6 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
     sun_prop->propagate_frame_allocation();
 
     sky->init(sky_prop, sun_prop);
-    sky->set_propagate_visibility(true);
 
     if (auto const p = extension_value.FindMember("parameters"); extension_value.MemberEnd() != p) {
         sky->set_parameters(p->value);
@@ -80,19 +79,11 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
         sky->update();
     }
 
-    bool const visible_in_camera     = true;
-    bool const visible_in_reflection = true;
-    bool const visible_in_shadow     = true;
-
-    sky_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
-
     if (bake) {
         scene.create_prop_image_light(sky_prop, 0);
     } else {
         scene.create_prop_light(sky_prop, 0);
     }
-
-    sun_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 
     scene.create_prop_light(sun_prop, 0);
 
