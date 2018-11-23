@@ -1,11 +1,11 @@
 #ifndef SU_CORE_IMAGE_TYPED_IMAGE_INL
 #define SU_CORE_IMAGE_TYPED_IMAGE_INL
 
+#include <cstring>
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "typed_image.hpp"
 #include "typed_image_fwd.hpp"
-#include <cstring>
 
 namespace image {
 
