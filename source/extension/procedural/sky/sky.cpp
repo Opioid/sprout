@@ -14,8 +14,8 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
     sky_ = sky;
     sun_ = sun;
 
-    attach(sky_);
-    attach(sun_);
+//    attach(sky_);
+//    attach(sun_);
 
     update();
 
