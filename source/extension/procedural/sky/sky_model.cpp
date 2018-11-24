@@ -71,7 +71,7 @@ float3 Model::evaluate_sky(float3 const& wi) const noexcept {
                                 /*theta,*/ wi_dot_z, sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
     }
 
-    return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
+    return spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ());
 }
 
 float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
@@ -96,7 +96,7 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
                                 wi_dot_s, wl_center)));
     }
 
-    return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
+    return spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ());
 }
 
 void Model::release() noexcept {
