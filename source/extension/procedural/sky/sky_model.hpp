@@ -45,7 +45,7 @@ class Model {
 
     float turbidity_;
 
-    static int32_t constexpr Num_bands = 6;
+    static int32_t constexpr Num_bands = 12;
 
     ArHosekSkyModelState* skymodel_states_[Num_bands];
 
