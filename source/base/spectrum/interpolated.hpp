@@ -2,6 +2,7 @@
 #define SU_BASE_SPECTRUM_INTERPOLATED_HPP
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace spectrum {

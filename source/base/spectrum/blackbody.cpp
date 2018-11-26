@@ -45,9 +45,10 @@ static float constexpr color_matching[][3] = {
     {0.0001f, 0.0000f, 0.0000f}, {0.0001f, 0.0000f, 0.0000f}, {0.0000f, 0.0000f, 0.0000f}};
 
 float3 blackbody(float temperature) {
-    static float constexpr wl_min       = 380.f;
-    static float constexpr wl_max       = 780.f;
-    static float constexpr wl_step      = 5.f;
+    static float constexpr wl_min  = 380.f;
+    static float constexpr wl_max  = 780.f;
+    static float constexpr wl_step = 5.f;
+
     static uint32_t constexpr num_steps = static_cast<uint32_t>((wl_max - wl_min) / wl_step) + 1;
 
     float3 xyz(0.f);
