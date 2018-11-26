@@ -41,6 +41,10 @@ uint32_t read_uint(json::Value const& value) noexcept;
 uint32_t read_uint(json::Value const& value, std::string_view name,
                    uint32_t default_value = 0) noexcept;
 
+uint64_t read_uint64(json::Value const& value) noexcept;
+uint64_t read_uint64(json::Value const& value, std::string_view name,
+                     uint64_t default_value = 0) noexcept;
+
 int2 read_int2(json::Value const& value) noexcept;
 int2 read_int2(json::Value const& value, std::string_view name, int2 default_value) noexcept;
 

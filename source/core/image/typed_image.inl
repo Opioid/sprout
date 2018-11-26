@@ -91,13 +91,19 @@ T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const
 
 template <typename T>
 T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
-    int32_t const i = (z * description_.dimensions[1] + y) * description_.dimensions[0] + x;
+    int64_t const i = (static_cast<int64_t>(z) * static_cast<int64_t>(description_.dimensions[1]) +
+                       static_cast<int64_t>(y)) *
+                          static_cast<int64_t>(description_.dimensions[0]) +
+                      static_cast<int64_t>(x);
     return data_[i];
 }
 
 template <typename T>
 T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const noexcept {
-    int32_t const i = (z * description_.dimensions[1] + y) * description_.dimensions[0] + x;
+    int64_t const i = (static_cast<int64_t>(z) * static_cast<int64_t>(description_.dimensions[1]) +
+                       static_cast<int64_t>(y)) *
+                          static_cast<int64_t>(description_.dimensions[0]) +
+                      static_cast<int64_t>(x);
     return data_[i];
 }
 
@@ -143,8 +149,9 @@ T* Typed_image<T>::data() const noexcept {
 
 template <typename T>
 size_t Typed_image<T>::num_bytes() const noexcept {
-    return sizeof(*this) + description_.dimensions[0] * description_.dimensions[1] *
-                               description_.dimensions[2] * description_.num_elements * sizeof(T);
+    return sizeof(*this) +
+           static_cast<size_t>(description_.dimensions[0]) * size_t(description_.dimensions[1]) *
+               size_t(description_.dimensions[2]) * size_t(description_.num_elements) * sizeof(T);
 }
 
 template <typename T>

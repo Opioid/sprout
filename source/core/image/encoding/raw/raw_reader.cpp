@@ -8,6 +8,7 @@
 namespace image::encoding::raw {
 
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
+    /*
     int3 const dimensions(512, 512, 32);
 
     Image::Description description(Image::Type::Byte1, dimensions);
@@ -20,12 +21,12 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
     sub::Writer::write("clouds.sub", *volume);
 
     return volume;
+    */
 
-    /*
     // eighth
-    int3 const dimensions(250, 170, 307);
+    // int3 const dimensions(250, 170, 307);
 
-    //    int3 const dimensions(1987, 1351, 2449);
+    int3 const dimensions(1987, 1351, 2449);
 
     Image::Description description(Image::Type::Float1, dimensions);
 
@@ -37,10 +38,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
     stream.read(reinterpret_cast<char*>(volume->data()), num_voxels * sizeof(float));
 
-    sub::Writer::write("disney_cloud_eighth.sub", *volume);
+    //    sub::Writer::write("disney_cloud.sub", *volume);
 
     return volume;
-    */
 
     //            const int3 dimensions(2, 2, 2);
 

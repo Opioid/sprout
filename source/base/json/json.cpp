@@ -162,6 +162,19 @@ uint32_t read_uint(rapidjson::Value const& value, std::string_view name,
     return default_value;
 }
 
+uint64_t read_uint64(rapidjson::Value const& value) noexcept {
+    return value.GetUint64();
+}
+
+uint64_t read_uint64(rapidjson::Value const& value, std::string_view name,
+                     uint64_t default_value) noexcept {
+    if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
+        return node->value.GetUint64();
+    }
+
+    return default_value;
+}
+
 int2 read_int2(rapidjson::Value const& value) noexcept {
     return int2(value[0].GetInt(), value[1].GetInt());
 }

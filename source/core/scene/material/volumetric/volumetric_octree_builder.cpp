@@ -112,7 +112,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
 
     float const diff = max_density - min_density;
 
-    static int32_t constexpr w = (Gridtree::Cell_dim >> (Gridtree::Log2_cell_dim - 2)) + 1;
+    static int32_t constexpr w = (Gridtree::Cell_dim >> (Gridtree::Log2_cell_dim - 3)) + 1;
 
     if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || math::any_less(maxb - minb, w)) {
         for (uint32_t i = 0; i < 8; ++i) {

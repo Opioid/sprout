@@ -70,8 +70,8 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
 
     for (auto const& pn : pixels_node->value.GetObject()) {
         if ("binary" == pn.name) {
-            pixels_offset = json::read_uint(pn.value, "offset");
-            pixels_size   = json::read_uint(pn.value, "size");
+            pixels_offset = json::read_uint64(pn.value, "offset");
+            pixels_size   = json::read_uint64(pn.value, "size");
         } else if ("encoding" == pn.name) {
             //            if ("UInt16" == json::read_string(in.value)) {
             //                index_bytes = 2;
@@ -89,8 +89,8 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
 
         for (auto const& tn : topology_node->value.GetObject()) {
             if ("binary" == tn.name) {
-                topology_offset = json::read_uint(tn.value, "offset");
-                topology_size   = json::read_uint(tn.value, "size");
+                topology_offset = json::read_uint64(tn.value, "offset");
+                topology_size   = json::read_uint64(tn.value, "size");
                 break;
             }
         }
