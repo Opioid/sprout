@@ -39,17 +39,17 @@ class Model {
   private:
     void release() noexcept;
 
+    static int32_t constexpr Num_bands = 12;
+
+    using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
+
     float3 sun_direction_;
 
-    float3 ground_albedo_;
+    Spectrum ground_albedo_;
 
     float turbidity_;
 
-    static int32_t constexpr Num_bands = 12;
-
     ArHosekSkyModelState* skymodel_states_[Num_bands];
-
-    using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 };
 
 }  // namespace procedural::sky

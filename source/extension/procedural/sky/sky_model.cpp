@@ -24,9 +24,10 @@ void Model::compile() noexcept {
 
     float const elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
 
-    for (uint32_t i = 0; i < Num_bands; ++i) {
-        skymodel_states_[i] = arhosekskymodelstate_alloc_init(elevation, turbidity_,
-                                                              ground_albedo_[0]);
+    for (int32_t i = 0; i < Num_bands; ++i) {
+        float const ga = ground_albedo_.value(i);
+
+        skymodel_states_[i] = arhosekskymodelstate_alloc_init(elevation, turbidity_, ga);
     }
 }
 
@@ -39,7 +40,7 @@ void Model::set_sun_direction(float3 const& direction) noexcept {
 }
 
 void Model::set_ground_albedo(float3 const& albedo) noexcept {
-    ground_albedo_ = albedo;
+    ground_albedo_ = Spectrum(albedo);
 }
 
 void Model::set_turbidity(float turbidity) noexcept {

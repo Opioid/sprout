@@ -8,6 +8,13 @@
 namespace spectrum {
 
 template <int32_t N>
+Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float v) noexcept {
+    for (int32_t i = 0; i < N; ++i) {
+        values_[i] = v;
+    }
+}
+
+template <int32_t N>
 Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
     Interpolated const& interpolated) noexcept {
     for (int32_t i = 0; i < N; ++i) {
@@ -15,6 +22,46 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
         float const b = wavelengths_[i + 1];
         values_[i]    = interpolated.integrate(a, b) / (b - a);
     }
+}
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
+    float3 const& rgb) noexcept
+    : Discrete_spectral_power_distribution(0.f) {
+    float const r = rgb[0];
+    float const g = rgb[1];
+    float const b = rgb[2];
+
+    if (r <= g && r <= b) {
+        *this += r * rgb_reflector_to_spectrum_white_;
+        if (g <= b) {
+            *this += (g - r) * rgb_reflector_to_spectrum_cyan_;
+            *this += (b - g) * rgb_reflector_to_spectrum_blue_;
+        } else {
+            *this += (b - r) * rgb_reflector_to_spectrum_cyan_;
+            *this += (g - b) * rgb_reflector_to_spectrum_green_;
+        }
+    } else if (g <= r && g <= b) {
+        *this += g * rgb_reflector_to_spectrum_white_;
+        if (r <= b) {
+            *this += (r - g) * rgb_reflector_to_spectrum_magenta_;
+            *this += (b - r) * rgb_reflector_to_spectrum_blue_;
+        } else {
+            *this += (b - g) * rgb_reflector_to_spectrum_magenta_;
+            *this += (r - b) * rgb_reflector_to_spectrum_red_;
+        }
+    } else {
+        *this += b * rgb_reflector_to_spectrum_white_;
+        if (r <= g) {
+            *this += (r - b) * rgb_reflector_to_spectrum_yellow_;
+            *this += (g - r) * rgb_reflector_to_spectrum_green_;
+        } else {
+            *this += (g - b) * rgb_reflector_to_spectrum_yellow_;
+            *this += (r - g) * rgb_reflector_to_spectrum_red_;
+        }
+    }
+
+    *this *= .94f;
 }
 
 template <int32_t N>
@@ -89,6 +136,21 @@ void Discrete_spectral_power_distribution<N>::init(float start_wavelength,
         cie_[i][1] = cie_y.values_[i];
         cie_[i][2] = cie_z.values_[i];
     }
+
+    rgb_reflector_to_spectrum_white_ = Interpolated(
+        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_white, RGB_to_spectrum_num);
+    rgb_reflector_to_spectrum_cyan_ = Interpolated(
+        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_cyan, RGB_to_spectrum_num);
+    rgb_reflector_to_spectrum_magenta_ = Interpolated(
+        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_magenta, RGB_to_spectrum_num);
+    rgb_reflector_to_spectrum_yellow_ = Interpolated(
+        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_yellow, RGB_to_spectrum_num);
+    rgb_reflector_to_spectrum_red_ = Interpolated(
+        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_red, RGB_to_spectrum_num);
+    rgb_reflector_to_spectrum_green_ = Interpolated(
+        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_green, RGB_to_spectrum_num);
+    rgb_reflector_to_spectrum_blue_ = Interpolated(
+        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_blue, RGB_to_spectrum_num);
 }
 
 template <int32_t N>
@@ -119,6 +181,67 @@ float Discrete_spectral_power_distribution<N>::wavelengths_[N + 1];
 
 template <int32_t N>
 float Discrete_spectral_power_distribution<N>::step_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>
+    Discrete_spectral_power_distribution<N>::rgb_reflector_to_spectrum_white_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>
+    Discrete_spectral_power_distribution<N>::rgb_reflector_to_spectrum_cyan_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>
+    Discrete_spectral_power_distribution<N>::rgb_reflector_to_spectrum_magenta_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>
+    Discrete_spectral_power_distribution<N>::rgb_reflector_to_spectrum_yellow_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>
+    Discrete_spectral_power_distribution<N>::rgb_reflector_to_spectrum_red_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>
+    Discrete_spectral_power_distribution<N>::rgb_reflector_to_spectrum_green_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>
+    Discrete_spectral_power_distribution<N>::rgb_reflector_to_spectrum_blue_;
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>& operator+=(
+    Discrete_spectral_power_distribution<N>&       a,
+    Discrete_spectral_power_distribution<N> const& b) noexcept {
+    for (int32_t i = 0; i < N; ++i) {
+        a.values_[i] += b.values_[i];
+    }
+
+    return a;
+}
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N>& operator*=(Discrete_spectral_power_distribution<N>& a,
+                                                    float s) noexcept {
+    for (int32_t i = 0; i < N; ++i) {
+        a.values_[i] *= s;
+    }
+
+    return a;
+}
+
+template <int32_t N>
+Discrete_spectral_power_distribution<N> operator*(
+    float s, Discrete_spectral_power_distribution<N> const& v) noexcept {
+    Discrete_spectral_power_distribution<N> r;
+
+    for (int32_t i = 0; i < N; ++i) {
+        r.values_[i] = s * v.values_[i];
+    }
+
+    return r;
+}
 
 }  // namespace spectrum
 

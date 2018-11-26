@@ -11,7 +11,11 @@ class Discrete_spectral_power_distribution {
   public:
     Discrete_spectral_power_distribution() noexcept = default;
 
+    Discrete_spectral_power_distribution(float v) noexcept;
+
     Discrete_spectral_power_distribution(Interpolated const& interpolated) noexcept;
+
+    Discrete_spectral_power_distribution(float3 const& rgb) noexcept;
 
     float constexpr value(int32_t bin) const noexcept;
 
@@ -42,6 +46,27 @@ class Discrete_spectral_power_distribution {
     static float wavelengths_[N + 1];
 
     static float step_;
+
+    static Discrete_spectral_power_distribution rgb_reflector_to_spectrum_white_;
+    static Discrete_spectral_power_distribution rgb_reflector_to_spectrum_cyan_;
+    static Discrete_spectral_power_distribution rgb_reflector_to_spectrum_magenta_;
+    static Discrete_spectral_power_distribution rgb_reflector_to_spectrum_yellow_;
+    static Discrete_spectral_power_distribution rgb_reflector_to_spectrum_red_;
+    static Discrete_spectral_power_distribution rgb_reflector_to_spectrum_green_;
+    static Discrete_spectral_power_distribution rgb_reflector_to_spectrum_blue_;
+
+    template <int32_t J>
+    friend Discrete_spectral_power_distribution<J>& operator+=(
+        Discrete_spectral_power_distribution<J>&       a,
+        Discrete_spectral_power_distribution<J> const& b) noexcept;
+
+    template <int32_t J>
+    friend Discrete_spectral_power_distribution<J>& operator*=(
+        Discrete_spectral_power_distribution<J>& a, float s) noexcept;
+
+    template <int32_t J>
+    friend Discrete_spectral_power_distribution<J> operator*(
+        float s, Discrete_spectral_power_distribution<J> const& v) noexcept;
 };
 
 }  // namespace spectrum
