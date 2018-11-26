@@ -8,8 +8,6 @@
 #include "image/typed_image_fwd.hpp"
 #include "json/json.hpp"
 
-#include <iostream>
-
 namespace image::encoding::sub {
 
 static Image::Type read_image_type(json::Value const& value) {
@@ -151,8 +149,6 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
                     }
                 }
 
-                std::cout << string::print_bytes(image->num_bytes()) << std::endl;
-
                 return image;
             } else {
                 auto image = std::make_shared<Float1>(description);
@@ -168,8 +164,6 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
                         data[i] = 0.f;
                     }
                 }
-
-                std::cout << string::print_bytes(image->num_bytes()) << std::endl;
 
                 return image;
             }
