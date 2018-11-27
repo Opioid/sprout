@@ -262,7 +262,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
     stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
 
     char* json_string = new char[json_size + 1];
-    stream.read(json_string, json_size * sizeof(char));
+    stream.read(json_string, static_cast<std::streamsize>(json_size * sizeof(char)));
     json_string[json_size] = 0;
 
     auto const root = json::parse_insitu(json_string);
@@ -277,12 +277,12 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
     std::vector<Part> parts;
 
-    size_t vertices_offset = 0;
-    size_t vertices_size   = 0;
+    uint64_t vertices_offset = 0;
+    uint64_t vertices_size   = 0;
 
-    size_t indices_offset = 0;
-    size_t indices_size   = 0;
-    size_t index_bytes    = 0;
+    uint64_t indices_offset = 0;
+    uint64_t indices_size   = 0;
+    uint64_t index_bytes    = 0;
 
     for (auto& n : geometry_value.GetObject()) {
         if ("parts" == n.name) {
@@ -320,14 +320,15 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
     std::vector<Vertex> vertices(vertices_size / sizeof(Vertex));
 
-    stream.seekg(binary_start + vertices_offset);
-    stream.read(reinterpret_cast<char*>(vertices.data()), vertices_size);
+    stream.seekg(static_cast<std::streamoff>(binary_start + vertices_offset));
+    stream.read(reinterpret_cast<char*>(vertices.data()), static_cast<std::streamsize>(vertices_size));
 
-    size_t num_indices = indices_size / index_bytes;
+    uint64_t const num_indices = indices_size / index_bytes;
+
     char*  indices     = new char[indices_size];
 
-    stream.seekg(binary_start + indices_offset);
-    stream.read(indices, indices_size);
+    stream.seekg(static_cast<std::streamoff>(binary_start + indices_offset));
+    stream.read(indices, static_cast<std::streamsize>(indices_size));
 
     auto mesh = std::make_shared<Mesh>();
 
