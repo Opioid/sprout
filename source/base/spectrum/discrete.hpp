@@ -11,7 +11,7 @@ class Discrete_spectral_power_distribution {
   public:
     Discrete_spectral_power_distribution() noexcept = default;
 
-    Discrete_spectral_power_distribution(float v) noexcept;
+    Discrete_spectral_power_distribution(float s) noexcept;
 
     Discrete_spectral_power_distribution(Interpolated const& interpolated) noexcept;
 
@@ -22,8 +22,6 @@ class Discrete_spectral_power_distribution {
     void set_bin(int32_t bin, float value) noexcept;
 
     void set_at_wavelength(float lambda, float value) noexcept;
-
-    void clear(float s) noexcept;
 
     float3 constexpr XYZ() const noexcept;
 

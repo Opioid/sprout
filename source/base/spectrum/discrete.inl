@@ -8,9 +8,9 @@
 namespace spectrum {
 
 template <int32_t N>
-Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float v) noexcept {
+Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float s) noexcept {
     for (int32_t i = 0; i < N; ++i) {
-        values_[i] = v;
+        values_[i] = s;
     }
 }
 
@@ -86,13 +86,6 @@ void Discrete_spectral_power_distribution<N>::set_at_wavelength(float lambda,
     }
 
     values_[idx] = value;
-}
-
-template <int32_t N>
-void Discrete_spectral_power_distribution<N>::clear(float s) noexcept {
-    for (uint32_t i = 0; i < N; ++i) {
-        values_[i] = s;
-    }
 }
 
 template <int32_t N>

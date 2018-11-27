@@ -159,7 +159,7 @@ class Material {
     using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
   private:
-    static float3 rainbow_[Num_bands];
+    static float3 rainbow_[Num_bands + 1];
 };
 
 }  // namespace material

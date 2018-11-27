@@ -8,6 +8,14 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 
+//#include "image/typed_image.inl"
+//#include "image/encoding/png/png_writer.hpp"
+//#include "base/spectrum/rgb.hpp"
+//#include "base/encoding/encoding.inl"
+//#include <fstream>
+//#include "base/math/print.hpp"
+//#include <iostream>
+
 namespace scene::material {
 
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
@@ -155,37 +163,53 @@ bool Material::is_two_sided() const noexcept {
 
 void Material::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
 
-float3 Material::rainbow_[Num_bands];
+float3 Material::rainbow_[Num_bands + 1];
 
 void Material::init_rainbow() noexcept {
     Spectrum::init(380.f, 720.f);
 
-    //	float const start = Spectrum::start_wavelength();
-    //	float const end   = Spectrum::end_wavelength();
-
     float3 sum_rgb(0.f);
     for (int32_t i = 0; i < Num_bands; ++i) {
-        //	float const wl = start + (end - start) * ((static_cast<float>(i) + 0.5f) / nb);
-        Spectrum temp;
-        temp.clear(0.f);
-        //	temp.set_at_wavelength(wl, 1.f);
+        Spectrum temp(0.f);
+
         temp.set_bin(i, 1.f);
 
-        float3 const rgb = math::saturate(spectrum::XYZ_to_linear_RGB(temp.normalized_XYZ()));
+        float3 const rgb = math::saturate(spectrum::XYZ_to_linear_sRGB_D65(temp.normalized_XYZ()));
 
         rainbow_[i] = rgb;
 
         sum_rgb += rgb;
     }
 
-    constexpr float nb = static_cast<float>(Num_bands);
+    float3 const n = ((1.f / 3.f) * static_cast<float>(Num_bands)) / sum_rgb;
 
     // now we hack-normalize it
     for (uint32_t i = 0; i < Num_bands; ++i) {
-        rainbow_[i][0] *= nb / sum_rgb[0];
-        rainbow_[i][1] *= nb / sum_rgb[1];
-        rainbow_[i][2] *= nb / sum_rgb[2];
+        rainbow_[i] = n * rainbow_[i];
     }
+
+    rainbow_[Num_bands] = rainbow_[Num_bands - 1];
+
+    /*
+    int2 const d(1024, 256);
+
+    image::Image::Description const description(image::Image::Type::Byte3, d);
+
+    image::Byte3 image(description);
+
+    float const wl_range = (Spectrum::end_wavelength() - Spectrum::start_wavelength()) / d[0];
+
+    for (int32_t x = 0; x < d[0]; ++x) {
+        float const wl = Spectrum::start_wavelength() + (static_cast<float>(x) + 0.5f) * wl_range;
+        byte3 const color = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(spectrum_at_wavelength(wl, 1.f)));
+
+        for (int32_t y = 0; y < d[1]; ++y) {
+            image.store(x, y, color);
+        }
+    }
+
+    image::encoding::png::Writer::write("rainbow.png", image);
+    */
 }
 
 float3 Material::spectrum_at_wavelength(float lambda, float value) noexcept {
@@ -193,12 +217,16 @@ float3 Material::spectrum_at_wavelength(float lambda, float value) noexcept {
     float const end   = Spectrum::end_wavelength();
     float const nb    = static_cast<float>(Num_bands);
 
-    uint32_t const idx = static_cast<uint32_t>(((lambda - start) / (end - start)) * nb);
-    if (idx >= Num_bands) {
-        return float3::identity();
+    float const u = ((lambda - start) / (end - start)) * nb;
+
+    uint32_t const id = static_cast<uint32_t>(u);
+
+    float const frac = u - static_cast<float>(id);
+
+    if (id >= Num_bands) {
+        return rainbow_[Num_bands];
     } else {
-        float const weight = value * (1.f / 3.f);
-        return weight * rainbow_[idx];
+        return value * math::lerp(rainbow_[id], rainbow_[id + 1], frac);
     }
 }
 

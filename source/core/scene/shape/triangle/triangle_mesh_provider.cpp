@@ -100,7 +100,7 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
 
     SOFT_ASSERT(check_and_fix(handler.vertices(), filename));
 
-    //    Exporter::write(filename, handler);
+    // Exporter::write(filename, handler);
 
     auto mesh = std::make_shared<Mesh>();
 

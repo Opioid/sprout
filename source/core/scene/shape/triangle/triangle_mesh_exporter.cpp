@@ -136,7 +136,7 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
     }
 
     newline(jstream, 3);
-    size_t num_indices = handler.triangles().size() * 3;
+    size_t const num_indices = handler.triangles().size() * 3;
     binary_tag(jstream, vertices_size, num_indices * index_bytes);
     jstream << ",";
 
