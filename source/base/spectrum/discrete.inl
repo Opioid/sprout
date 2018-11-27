@@ -100,7 +100,7 @@ float3 constexpr Discrete_spectral_power_distribution<N>::XYZ() const noexcept {
 
 template <int32_t N>
 float3 constexpr Discrete_spectral_power_distribution<N>::normalized_XYZ() const noexcept {
-    constexpr float normalization = 1.f / 106.856895f;
+    float constexpr normalization = 1.f / 106.856895f;
     return normalization * XYZ();
 }
 

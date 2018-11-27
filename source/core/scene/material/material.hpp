@@ -154,7 +154,7 @@ class Material {
 
     static float3 spectrum_at_wavelength(float lambda, float value = 1.f) noexcept;
 
-    static int32_t constexpr Num_bands = 16;
+    static int32_t constexpr Num_bands = 36;
 
     using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
