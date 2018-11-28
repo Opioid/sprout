@@ -17,10 +17,10 @@
 
 namespace scene::material::ggx {
 
-constexpr float Min_roughness = 0.01314f;
+float constexpr Min_roughness = 0.01314f;
 
-constexpr float Min_alpha  = Min_roughness * Min_roughness;
-constexpr float Min_alpha2 = Min_alpha * Min_alpha;
+float constexpr Min_alpha  = Min_roughness * Min_roughness;
+float constexpr Min_alpha2 = Min_alpha * Min_alpha;
 
 static inline float clamp_roughness(float roughness) noexcept {
     return std::max(roughness, Min_roughness);

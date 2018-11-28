@@ -66,8 +66,8 @@ struct alignas(16) Vector4f_a {
 
     constexpr Vector3f_a xyz() const noexcept;
 
-    constexpr float  operator[](uint32_t i) const noexcept;
-    constexpr float& operator[](uint32_t i) noexcept;
+    float constexpr  operator[](uint32_t i) const noexcept;
+    float constexpr& operator[](uint32_t i) noexcept;
 
     static constexpr Vector4f_a identity() noexcept;
 };

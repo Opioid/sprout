@@ -72,13 +72,13 @@ static inline float3 gamma_to_linear(float3 const& c, float gamma) {
     return float3(std::pow(c[0], gamma), std::pow(c[1], gamma), std::pow(c[2], gamma));
 }
 
-static inline constexpr float luminance(float3 const& c) {
+static inline float constexpr luminance(float3 const& c) {
     return 0.212671f * c[0] + 0.715160f * c[1] + 0.072169f * c[2];
 }
 
-constexpr float CIE_constant = 683.002f;
+float constexpr CIE_constant = 683.002f;
 
-static inline constexpr float watt_to_lumen(float3 const& c) {
+static inline float constexpr watt_to_lumen(float3 const& c) {
     return CIE_constant * luminance(c);
 }
 

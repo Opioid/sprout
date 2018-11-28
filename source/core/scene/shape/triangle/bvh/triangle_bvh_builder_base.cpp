@@ -69,7 +69,7 @@ math::AABB Builder_base::submesh_aabb(index begin, index end,
         max = triangle_max(a, b, c, max);
     }
 
-    //	constexpr float epsilon = 0.000000001f;
+    //	float constexpr epsilon = 0.000000001f;
 
     //	max.x += epsilon;
     //	max.y += epsilon;

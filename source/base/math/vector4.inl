@@ -118,11 +118,11 @@ inline constexpr Vector3f_a Vector4f_a::xyz() const noexcept {
     return Vector3f_a(v);
 }
 
-inline constexpr float Vector4f_a::operator[](uint32_t i) const noexcept {
+inline float constexpr Vector4f_a::operator[](uint32_t i) const noexcept {
     return v[i];
 }
 
-inline constexpr float& Vector4f_a::operator[](uint32_t i) noexcept {
+inline float constexpr& Vector4f_a::operator[](uint32_t i) noexcept {
     return v[i];
 }
 
@@ -171,7 +171,7 @@ static inline constexpr Vector4f_a operator*(float s, Vector4f_a const& a) noexc
     return Vector4f_a(s * a[0], s * a[1], s * a[2], s * a[3]);
 }
 
-static inline constexpr float dot(Vector4f_a const& a, Vector4f_a const& b) noexcept {
+static inline float constexpr dot(Vector4f_a const& a, Vector4f_a const& b) noexcept {
     return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 

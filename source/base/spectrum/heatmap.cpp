@@ -6,7 +6,7 @@ namespace spectrum {
 
 float3 heatmap(float x) {
     // The last color is intentionally present twice, as a convenient way to catch (1.f == x) cases.
-    static constexpr float3 colors[] = {{0.f, 0.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f},
+    static float3 constexpr colors[] = {{0.f, 0.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f},
                                         {1.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {1.f, 0.f, 0.f}};
 
     static int32_t constexpr max_color = static_cast<int32_t>(std::size(colors) - 2);

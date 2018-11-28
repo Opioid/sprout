@@ -201,7 +201,8 @@ void Material::init_rainbow() noexcept {
 
     for (int32_t x = 0; x < d[0]; ++x) {
         float const wl = Spectrum::start_wavelength() + static_cast<float>(x) * wl_range;
-        byte3 const color = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(spectrum_at_wavelength(wl, 1.f)));
+        byte3 const color =
+    encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(spectrum_at_wavelength(wl, 1.f)));
 
         for (int32_t y = 0; y < d[1]; ++y) {
             image.store(x, y, color);

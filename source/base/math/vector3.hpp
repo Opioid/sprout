@@ -105,8 +105,8 @@ struct alignas(16) Vector3f_a {
 
     constexpr Vector2<float> xy() const noexcept;
 
-    constexpr float  operator[](uint32_t i) const noexcept;
-    constexpr float& operator[](uint32_t i) noexcept;
+    float constexpr  operator[](uint32_t i) const noexcept;
+    float constexpr& operator[](uint32_t i) noexcept;
 
     float absolute_max(uint32_t& i) const noexcept;
 

@@ -337,12 +337,12 @@ inline bool AABB::operator==(AABB const& other) const noexcept {
 }
 
 inline constexpr AABB AABB::empty() noexcept {
-    constexpr float max = std::numeric_limits<float>::max();
+    float constexpr max = std::numeric_limits<float>::max();
     return AABB(float3(max), float3(-max));
 }
 
 inline constexpr AABB AABB::infinite() noexcept {
-    constexpr float max = std::numeric_limits<float>::max();
+    float constexpr max = std::numeric_limits<float>::max();
     return AABB(float3(-max), float3(max));
 }
 

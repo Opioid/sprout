@@ -17,16 +17,16 @@ void init() {
     Interpolated const CIE_Y(CIE_Wavelengths_360_830_1nm, CIE_Y_360_830_1nm, CIE_XYZ_Num);
     Interpolated const CIE_Z(CIE_Wavelengths_360_830_1nm, CIE_Z_360_830_1nm, CIE_XYZ_Num);
 
-    constexpr float wl_427 = 427.8f;
-    float3 const    cie_427(CIE_X.evaluate(wl_427), CIE_Y.evaluate(wl_427), CIE_Z.evaluate(wl_427));
+    float constexpr wl_427 = 427.8f;
+    float3 const cie_427(CIE_X.evaluate(wl_427), CIE_Y.evaluate(wl_427), CIE_Z.evaluate(wl_427));
 
-    constexpr float wl_557 = 557.7f;
-    float3 const    cie_557(CIE_X.evaluate(wl_557), CIE_Y.evaluate(wl_557), CIE_Z.evaluate(wl_557));
+    float constexpr wl_557 = 557.7f;
+    float3 const cie_557(CIE_X.evaluate(wl_557), CIE_Y.evaluate(wl_557), CIE_Z.evaluate(wl_557));
 
-    constexpr float wl_630 = 630.f;
-    float3 const    cie_630(CIE_X.evaluate(wl_630), CIE_Y.evaluate(wl_630), CIE_Z.evaluate(wl_630));
+    float constexpr wl_630 = 630.f;
+    float3 const cie_630(CIE_X.evaluate(wl_630), CIE_Y.evaluate(wl_630), CIE_Z.evaluate(wl_630));
 
-    constexpr float intensities_427[] = {0.f, 0.21f, 0.39f, 0.49f, 0.505f, 0.47f,
+    float constexpr intensities_427[] = {0.f, 0.21f, 0.39f, 0.49f, 0.505f, 0.47f,
                                          // 160
                                          0.4f, 0.33f, 0.28f, 0.21f, 0.19f, 0.12f,
                                          // 220
@@ -36,7 +36,7 @@ void init() {
 
                                          0.f};
 
-    /*	constexpr float intensities_427[] = {
+    /*	float constexpr intensities_427[] = {
                     0.f,
                     0.1f,
                     0.15f,
@@ -64,7 +64,7 @@ void init() {
                     0.01f
             };*/
 
-    constexpr float intensities_557[] = {0.f, 0.42f, 0.79f, 0.95f, 1.f, 0.91f,
+    float constexpr intensities_557[] = {0.f, 0.42f, 0.79f, 0.95f, 1.f, 0.91f,
                                          // 160,
                                          0.815f, 0.7f, 0.6f, 0.48f, 0.38f, 0.29f,
                                          // 220
@@ -74,7 +74,7 @@ void init() {
 
                                          0.f};
 
-    constexpr float intensities_630[] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+    float constexpr intensities_630[] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
                                          // 160
                                          0.f, 0.0125f, 0.05f, 0.08f, 0.099f, 0.1f,
                                          // 220
@@ -86,9 +86,9 @@ void init() {
 
     constexpr size_t num_elements = sizeof(intensities_427) / sizeof(float);
 
-    constexpr float step = (630.f - 427.8f) / static_cast<float>(3);
+    float constexpr step = (630.f - 427.8f) / static_cast<float>(3);
 
-    constexpr float normalization = 1.f / 106.856895f;
+    float constexpr normalization = 1.f / 106.856895f;
 
     float3 colors[num_elements];
 

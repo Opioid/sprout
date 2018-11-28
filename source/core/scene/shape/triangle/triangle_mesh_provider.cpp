@@ -321,11 +321,12 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
     std::vector<Vertex> vertices(vertices_size / sizeof(Vertex));
 
     stream.seekg(static_cast<std::streamoff>(binary_start + vertices_offset));
-    stream.read(reinterpret_cast<char*>(vertices.data()), static_cast<std::streamsize>(vertices_size));
+    stream.read(reinterpret_cast<char*>(vertices.data()),
+                static_cast<std::streamsize>(vertices_size));
 
     uint64_t const num_indices = indices_size / index_bytes;
 
-    char*  indices     = new char[indices_size];
+    char* indices = new char[indices_size];
 
     stream.seekg(static_cast<std::streamoff>(binary_start + indices_offset));
     stream.read(indices, static_cast<std::streamsize>(indices_size));

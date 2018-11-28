@@ -343,11 +343,11 @@ inline constexpr Vector2<float> Vector3f_a::xy() const noexcept {
     return Vector2<float>(v[0], v[1]);
 }
 
-inline constexpr float Vector3f_a::operator[](uint32_t i) const noexcept {
+inline float constexpr Vector3f_a::operator[](uint32_t i) const noexcept {
     return v[i];
 }
 
-inline constexpr float& Vector3f_a::operator[](uint32_t i) noexcept {
+inline float constexpr& Vector3f_a::operator[](uint32_t i) noexcept {
     return v[i];
 }
 
@@ -480,7 +480,7 @@ static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, float s) noexcept 
     return a;
 }
 
-static inline constexpr float dot(Vector3f_a const& a, Vector3f_a const& b) noexcept {
+static inline float constexpr dot(Vector3f_a const& a, Vector3f_a const& b) noexcept {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
@@ -488,7 +488,7 @@ static inline float length(Vector3f_a const& v) {
     return std::sqrt(dot(v, v));
 }
 
-static inline constexpr float squared_length(Vector3f_a const& v) noexcept {
+static inline float constexpr squared_length(Vector3f_a const& v) noexcept {
     return dot(v, v);
 }
 
@@ -527,7 +527,7 @@ static inline float distance(Vector3f_a const& a, Vector3f_a const& b) noexcept 
     return length(a - b);
 }
 
-static inline constexpr float squared_distance(Vector3f_a const& a, Vector3f_a const& b) noexcept {
+static inline float constexpr squared_distance(Vector3f_a const& a, Vector3f_a const& b) noexcept {
     return squared_length(a - b);
 }
 
@@ -634,11 +634,11 @@ static inline constexpr Vector3f_a max(Vector3f_a const& a, Vector3f_a const& b)
     return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
-static inline constexpr float min_component(Vector3f_a const& v) noexcept {
+static inline float constexpr min_component(Vector3f_a const& v) noexcept {
     return std::min(std::min(v[0], v[1]), v[2]);
 }
 
-static inline constexpr float max_component(Vector3f_a const& v) noexcept {
+static inline float constexpr max_component(Vector3f_a const& v) noexcept {
     return std::max(std::max(v[0], v[1]), v[2]);
 }
 
@@ -658,11 +658,11 @@ static inline constexpr uint32_t index_max_component(Vector3f_a const& v) noexce
     return v[1] > v[2] ? 1 : 2;
 }
 
-static inline constexpr float average(Vector3f_a const& c) noexcept {
+static inline float constexpr average(Vector3f_a const& c) noexcept {
     return (c[0] + c[1] + c[2]) / 3.f;
 }
 
-static inline constexpr float checksum(Vector3f_a const& v) noexcept {
+static inline float constexpr checksum(Vector3f_a const& v) noexcept {
     return v[0] + v[1] + v[2];
 }
 
