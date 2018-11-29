@@ -49,7 +49,7 @@ Emission_grid::~Emission_grid() noexcept {}
 float3 Emission_grid::emission(math::Ray const& ray, Transformation const& transformation,
                                float step_size, rnd::Generator& rng, Filter filter,
                                Worker const& worker) const noexcept {
-    const math::Ray rn = ray.normalized();
+    math::Ray const rn = ray.normalized();
 
     float min_t = rn.min_t + rng.random_float() * step_size;
 
@@ -91,7 +91,7 @@ Flow_vis_grid::~Flow_vis_grid() noexcept {}
 float3 Flow_vis_grid::emission(math::Ray const& ray, Transformation const& transformation,
                                float step_size, rnd::Generator& rng, Filter filter,
                                Worker const& worker) const noexcept {
-    const math::Ray rn = ray.normalized();
+    math::Ray const rn = ray.normalized();
 
     float min_t = rn.min_t + rng.random_float() * step_size;
 

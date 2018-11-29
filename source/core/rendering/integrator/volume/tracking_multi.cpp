@@ -89,11 +89,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
                 if (float t;
                     Tracking::tracking(local_ray, cm, material, srs, filter, rng_, worker, t, w)) {
-                    intersection.prop       = interface->prop;
-                    intersection.geo.p      = ray.point(t);
-                    intersection.geo.uv     = interface->uv;
-                    intersection.geo.part   = interface->part;
-                    intersection.subsurface = true;
+                    set_scattering(intersection, interface, ray.point(t));
 
                     li            = float3(0.f);
                     transmittance = w;
@@ -115,11 +111,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
         float3 w;
         if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-            intersection.prop       = interface->prop;
-            intersection.geo.p      = ray.point(t);
-            intersection.geo.uv     = interface->uv;
-            intersection.geo.part   = interface->part;
-            intersection.subsurface = true;
+            set_scattering(intersection, interface, ray.point(t));
         }
 
         li            = float3(0.f);
@@ -137,11 +129,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
             float const t_c = ray.min_t - std::log(1.f - rc) / minorant_mu_t;
 
             if (t_c > ray.max_t) {
-                intersection.prop       = interface->prop;
-                intersection.geo.p      = ray.point(t_c);
-                intersection.geo.uv     = interface->uv;
-                intersection.geo.part   = interface->part;
-                intersection.subsurface = true;
+                set_scattering(intersection, interface, ray.point(t_c));
 
                 li            = float3(0.f);
                 transmittance = float3(cm.minorant_mu_s / minorant_mu_t);
@@ -181,11 +169,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
                 float const r1 = rng_.random_float();
                 if (r1 <= 1.f - pn && ps > 0.f) {
-                    intersection.prop       = interface->prop;
-                    intersection.geo.p      = ray.point(t);
-                    intersection.geo.uv     = interface->uv;
-                    intersection.geo.part   = interface->part;
-                    intersection.subsurface = true;
+                    set_scattering(intersection, interface, ray.point(t));
 
                     float3 const ws = mu.s / (mt * ps);
 
@@ -206,11 +190,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
             float3 w;
             if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-                intersection.prop       = interface->prop;
-                intersection.geo.p      = ray.point(t);
-                intersection.geo.uv     = interface->uv;
-                intersection.geo.part   = interface->part;
-                intersection.subsurface = true;
+                set_scattering(intersection, interface, ray.point(t));
             }
 
             li            = float3(0.f);
@@ -218,6 +198,15 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
             return true;
         }
     }
+}
+
+void Tracking_multi::set_scattering(Intersection& intersection, Interface const* interface,
+                                    float3 const& p) noexcept {
+    intersection.prop       = interface->prop;
+    intersection.geo.p      = p;
+    intersection.geo.uv     = interface->uv;
+    intersection.geo.part   = interface->part;
+    intersection.subsurface = true;
 }
 
 size_t Tracking_multi::num_bytes() const noexcept {

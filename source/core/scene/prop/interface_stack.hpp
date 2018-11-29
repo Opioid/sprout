@@ -16,18 +16,18 @@ namespace prop {
 struct Intersection;
 class Prop;
 
+struct Interface {
+    material::Material const* material() const noexcept;
+
+    bool matches(Intersection const& intersection) const noexcept;
+
+    Prop const* prop;
+    float2      uv;
+    uint32_t    part;
+};
+
 class Interface_stack {
   public:
-    struct Interface {
-        material::Material const* material() const noexcept;
-
-        bool matches(Intersection const& intersection) const noexcept;
-
-        Prop const* prop;
-        float2      uv;
-        uint32_t    part;
-    };
-
     Interface_stack() noexcept;
 
     Interface_stack(Interface_stack const& other) noexcept;

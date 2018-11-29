@@ -11,11 +11,11 @@
 
 namespace scene::prop {
 
-inline material::Material const* Interface_stack::Interface::material() const noexcept {
+inline material::Material const* Interface::material() const noexcept {
     return prop->material(part);
 }
 
-inline bool Interface_stack::Interface::matches(Intersection const& intersection) const noexcept {
+inline bool Interface::matches(Intersection const& intersection) const noexcept {
     return prop == intersection.prop && part == intersection.geo.part;
 }
 
@@ -55,7 +55,7 @@ inline void Interface_stack::clear() noexcept {
     index_ = 0;
 }
 
-inline Interface_stack::Interface const* Interface_stack::top() const noexcept {
+inline Interface const* Interface_stack::top() const noexcept {
     if (index_ > 0) {
         return &stack_[index_ - 1];
     }
