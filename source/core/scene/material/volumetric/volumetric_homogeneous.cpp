@@ -32,6 +32,10 @@ CC Homogeneous::collision_coefficients(float3 const& /*p*/, Filter /*filter*/,
     return cc_;
 }
 
+CCE Homogeneous::collision_coefficients_emission() const noexcept {
+    return {cc_, emission_};
+}
+
 size_t Homogeneous::num_bytes() const noexcept {
     return sizeof(*this);
 }

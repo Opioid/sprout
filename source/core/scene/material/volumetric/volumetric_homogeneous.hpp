@@ -5,7 +5,7 @@
 
 namespace scene::material::volumetric {
 
-class Homogeneous final : public Material {
+class Homogeneous : public Material {
   public:
     Homogeneous(Sampler_settings const& sampler_settings) noexcept;
 
@@ -24,7 +24,9 @@ class Homogeneous final : public Material {
     CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
+    CCE collision_coefficients_emission() const noexcept override final;
+
+    size_t num_bytes() const noexcept override;
 };
 
 }  // namespace scene::material::volumetric

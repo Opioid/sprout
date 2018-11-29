@@ -186,16 +186,30 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                 }
             }
         } else {
-            auto const mu = material.collision_coefficients();
-
             float3 w;
-            if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-                set_scattering(intersection, interface, ray.point(t));
+
+            if (material.is_emissive()) {
+                auto const cce = material.collision_coefficients_emission();
+
+
+                if (float t; Tracking::tracking(ray, cce, rng_, t, w, li)) {
+                    set_scattering(intersection, interface, ray.point(t));
+                }
+
+
+            } else {
+                auto const mu = material.collision_coefficients();
+
+
+                if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
+                    set_scattering(intersection, interface, ray.point(t));
+                }
+
+                li            = float3(0.f);
             }
 
-            li            = float3(0.f);
             transmittance = w;
-            return true;
+            return math::any_greater_equal(w, Tracking::Abort_epsilon);
         }
     }
 }

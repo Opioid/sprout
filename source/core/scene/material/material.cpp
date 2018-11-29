@@ -100,6 +100,10 @@ CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
     return {float3::identity(), float3::identity()};
 }
 
+CCE Material::collision_coefficients_emission() const noexcept {
+    return {{float3::identity(), float3::identity()}, float3::identity()};
+}
+
 CM Material::control_medium() const noexcept {
     return CM(0.f);
 }

@@ -1040,6 +1040,8 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
     bool   use_scattering_color = false;
     float3 scattering_color(0.f);
 
+    float3 emission(0.f);
+
     float attenuation_distance = 1.f;
     float anisotropy           = 0.f;
     float a                    = 0.f;
@@ -1056,6 +1058,8 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
             scattering_color     = read_color(n.value);
         } else if ("attenuation_distance" == n.name) {
             attenuation_distance = json::read_float(n.value);
+        } else if ("emission" == n.name) {
+            emission     = read_color(n.value);
         } else if ("anisotropy" == n.name) {
             anisotropy = json::read_float(n.value);
         } else if ("a" == n.name) {
@@ -1091,6 +1095,7 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
     if (density_map.is_valid()) {
         auto material = std::make_shared<volumetric::Grid>(sampler_settings, density_map);
         material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+        material->set_emission(emission);
         material->set_anisotropy(anisotropy);
         return material;
 
@@ -1100,6 +1105,7 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
     } else if (emission_map.is_valid()) {
         auto material = std::make_shared<volumetric::Emission_grid>(sampler_settings, emission_map);
         material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+        material->set_emission(emission);
         material->set_anisotropy(anisotropy);
         return material;
     } /*else if (a > 0.f && b > 0.f) {
@@ -1112,6 +1118,7 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
 
     auto material = std::make_shared<volumetric::Homogeneous>(sampler_settings);
     material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+    material->set_emission(emission);
     material->set_anisotropy(anisotropy);
     return material;
 }

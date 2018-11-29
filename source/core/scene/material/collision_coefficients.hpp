@@ -10,6 +10,11 @@ struct CC {
     float3 s;
 };
 
+struct CCE {
+    CC cc;
+    float3 e;
+};
+
 struct alignas(16) CM {
     CM() noexcept = default;
     CM(float x) noexcept;

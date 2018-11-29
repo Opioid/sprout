@@ -51,11 +51,19 @@ float Material::similarity_relation_scale(uint32_t depth) const noexcept {
     return van_de_hulst(anisotropy_, gs);
 }
 
+float3 Material::average_radiance(float /*area*/) const noexcept {
+    return emission_;
+}
+
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                                float distance) noexcept {
     cc_ = attenuation(absorption_color, scattering_color, distance);
 
     cm_ = CM(cc_);
+}
+
+void Material::set_emission(float3 const& emission) noexcept {
+    emission_ = emission;
 }
 
 void Material::set_anisotropy(float anisotropy) noexcept {

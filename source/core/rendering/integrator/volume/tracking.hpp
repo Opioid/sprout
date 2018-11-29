@@ -21,6 +21,7 @@ struct Composed_transformation;
 namespace material {
 class Material;
 struct CC;
+struct CCE;
 struct CM;
 }  // namespace material
 
@@ -45,6 +46,7 @@ class Tracking {
     using Material       = scene::material::Material;
     using Filter         = scene::material::Sampler_settings::Filter;
     using CC             = scene::material::CC;
+    using CCE            = scene::material::CCE;
     using CM             = scene::material::CM;
     using Intersection   = scene::prop::Intersection;
 
@@ -57,6 +59,9 @@ class Tracking {
 
     static bool tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
                          float3& w);
+
+    static bool tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
+                         float3& w, float3& li);
 
     static float constexpr Min_mt        = 1e-10f;
     static float constexpr Ray_epsilon   = 5e-4f;
