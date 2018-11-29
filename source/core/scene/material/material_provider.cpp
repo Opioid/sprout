@@ -1059,7 +1059,7 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
         } else if ("attenuation_distance" == n.name) {
             attenuation_distance = json::read_float(n.value);
         } else if ("emission" == n.name) {
-            emission     = read_color(n.value);
+            emission = read_color(n.value);
         } else if ("anisotropy" == n.name) {
             anisotropy = json::read_float(n.value);
         } else if ("a" == n.name) {

@@ -27,12 +27,17 @@ CC Homogeneous::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
     return cc_;
 }
 
-CC Homogeneous::collision_coefficients(float3 const& /*p*/, Filter /*filter*/,
+CC Homogeneous::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
                                        Worker const& /*worker*/) const noexcept {
     return cc_;
 }
 
 CCE Homogeneous::collision_coefficients_emission() const noexcept {
+    return {cc_, emission_};
+}
+
+CCE Homogeneous::collision_coefficients_emission(float3 const& /*uvw*/, Filter /*filter*/,
+                                                 Worker const& /*worker*/) const noexcept {
     return {cc_, emission_};
 }
 

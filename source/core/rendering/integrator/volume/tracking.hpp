@@ -50,12 +50,18 @@ class Tracking {
     using CM             = scene::material::CM;
     using Intersection   = scene::prop::Intersection;
 
+    enum class Result { Absorb, Scatter, Pass };
+
     static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
                               float3& transmittance);
 
     static bool tracking(math::Ray const& ray, CM const& cm, Material const& material, float srs,
                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                          float3& w);
+
+    static Result tracking(math::Ray const& ray, CM const& cm, Material const& material, float srs,
+                           Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
+                           float3& w, float3& li);
 
     static bool tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
                          float3& w);

@@ -21,10 +21,13 @@ class Homogeneous : public Material {
     CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const
+    CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
         noexcept override final;
 
     CCE collision_coefficients_emission() const noexcept override final;
+
+    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                        Worker const& worker) const noexcept override final;
 
     size_t num_bytes() const noexcept override;
 };

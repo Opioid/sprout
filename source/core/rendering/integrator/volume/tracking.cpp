@@ -343,6 +343,76 @@ bool Tracking::tracking(math::Ray const& ray, CM const& cm, Material const& mate
     }
 }
 
+Tracking::Result Tracking::tracking(math::Ray const& ray, CM const& cm, Material const& material,
+                                    float srs, Filter filter, rnd::Generator& rng, Worker& worker,
+                                    float& t_out, float3& w, float3& li) {
+    float const mt = cm.majorant_mu_t();
+
+    if (mt < Min_mt) {
+        return Result::Pass;
+    }
+
+    float3 lw = w;
+
+    SOFT_ASSERT(math::all_finite(lw));
+
+    float const imt = 1.f / mt;
+
+    for (float t = ray.min_t, d = ray.max_t;;) {
+        float const r0 = rng.random_float();
+        t -= std::log(1.f - r0) * imt;
+        if (t > d) {
+            w  = lw;
+            li = float3(0.);
+            return Result::Pass;
+        }
+
+        float3 const uvw = ray.point(t);
+
+        auto cce = material.collision_coefficients_emission(uvw, filter, worker);
+
+        CC& mu = cce.cc;
+        mu.s *= srs;
+
+        float3 const mu_t = mu.a + mu.s;
+
+        float3 const mu_n = float3(mt) - mu_t;
+
+        float const ma = math::average(mu.a * lw);
+        float const ms = math::average(mu.s * lw);
+        float const mn = math::average(mu_n * lw);
+        float const c  = 1.f / (ma + ms + mn);
+
+        float const pa = ma * c;
+        float const ps = ms * c;
+        float const pn = mn * c;
+
+        float const r1 = rng.random_float();
+        if (r1 < pa) {
+            float3 const wa = mu.a / (mt * pa);
+
+            w  = float3(0.f);
+            li = lw * wa * cce.e;
+            return Result::Absorb;
+        } else if (r1 <= 1.f - pn && ps > 0.f) {
+            float3 const ws = mu.s / (mt * ps);
+
+            SOFT_ASSERT(math::all_finite(ws));
+
+            t_out = t;
+            w     = lw * ws;
+            li    = float3(0.);
+            return Result::Scatter;
+        } else {
+            float3 const wn = mu_n / (mt * pn);
+
+            SOFT_ASSERT(math::all_finite(wn));
+
+            lw *= wn;
+        }
+    }
+}
+
 bool Tracking::tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
                         float3& w) {
     float3 const mu_t = mu.a + mu.s;
@@ -395,7 +465,7 @@ bool Tracking::tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng,
 
 bool Tracking::tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
                         float3& w, float3& li) {
-    CC const mu = cce.cc;
+    CC const& mu = cce.cc;
 
     float3 const mu_t = mu.a + mu.s;
 
@@ -410,7 +480,7 @@ bool Tracking::tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rn
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
-            w = lw;
+            w  = lw;
             li = float3(0.f);
             return false;
         }
@@ -421,7 +491,7 @@ bool Tracking::tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rn
 
         float const mc = ma + ms + mn;
         if (mc < 1e-10f) {
-            w = lw;
+            w  = lw;
             li = float3(0.);
             return false;
         }
@@ -436,7 +506,7 @@ bool Tracking::tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rn
         if (r1 < pa) {
             float3 const wa = mu.a / (mt * pa);
 
-            w = float3(0.f);
+            w  = float3(0.f);
             li = lw * wa * cce.e;
             return false;
         } else if (r1 <= 1.f - pn && ps > 0.f) {
@@ -444,7 +514,7 @@ bool Tracking::tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rn
 
             t_out = t;
             w     = lw * ws;
-            li = float3(0.f);
+            li    = float3(0.f);
             return true;
         } else {
             float3 const wn = mu_n / (mt * pn);

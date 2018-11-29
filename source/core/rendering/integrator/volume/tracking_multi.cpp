@@ -82,28 +82,52 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
         float const srs = material.similarity_relation_scale(ray.depth);
 
         float3 w(1.f);
-        for (; local_ray.min_t < d;) {
-            if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
-                cm.minorant_mu_s *= srs;
-                cm.majorant_mu_s *= srs;
 
-                if (float t;
-                    Tracking::tracking(local_ray, cm, material, srs, filter, rng_, worker, t, w)) {
-                    set_scattering(intersection, interface, ray.point(t));
+        li = float3(0.f);
 
-                    li            = float3(0.f);
-                    transmittance = w;
-                    return math::any_greater_equal(w, Tracking::Abort_epsilon);
+        if (material.is_emissive()) {
+            for (; local_ray.min_t < d;) {
+                if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
+                    cm.minorant_mu_s *= srs;
+                    cm.majorant_mu_s *= srs;
+
+                    float      t;
+                    auto const result = Tracking::tracking(local_ray, cm, material, srs, filter,
+                                                           rng_, worker, t, w, li);
+
+                    if (Tracking::Result::Scatter == result) {
+                        set_scattering(intersection, interface, ray.point(t));
+                        break;
+                    } else if (Tracking::Result::Absorb == result) {
+                        break;
+                    }
                 }
+
+                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
+
+                local_ray.min_t = local_ray.max_t + ray_offset;
+                local_ray.max_t = d;
             }
+        } else {
+            for (; local_ray.min_t < d;) {
+                if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
+                    cm.minorant_mu_s *= srs;
+                    cm.majorant_mu_s *= srs;
 
-            SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
+                    if (float t; Tracking::tracking(local_ray, cm, material, srs, filter, rng_,
+                                                    worker, t, w)) {
+                        set_scattering(intersection, interface, ray.point(t));
+                        break;
+                    }
+                }
 
-            local_ray.min_t = local_ray.max_t + ray_offset;
-            local_ray.max_t = d;
+                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
+
+                local_ray.min_t = local_ray.max_t + ray_offset;
+                local_ray.max_t = d;
+            }
         }
 
-        li            = float3(0.f);
         transmittance = w;
         return math::any_greater_equal(w, Tracking::Abort_epsilon);
     } else if (material.is_textured_volume()) {
@@ -191,21 +215,18 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
             if (material.is_emissive()) {
                 auto const cce = material.collision_coefficients_emission();
 
-
                 if (float t; Tracking::tracking(ray, cce, rng_, t, w, li)) {
                     set_scattering(intersection, interface, ray.point(t));
                 }
 
-
             } else {
                 auto const mu = material.collision_coefficients();
-
 
                 if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
                     set_scattering(intersection, interface, ray.point(t));
                 }
 
-                li            = float3(0.f);
+                li = float3(0.f);
             }
 
             transmittance = w;

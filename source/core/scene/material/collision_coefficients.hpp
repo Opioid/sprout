@@ -11,7 +11,7 @@ struct CC {
 };
 
 struct CCE {
-    CC cc;
+    CC     cc;
     float3 e;
 };
 

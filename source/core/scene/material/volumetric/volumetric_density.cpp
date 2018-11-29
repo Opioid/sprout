@@ -31,4 +31,11 @@ CC Density::collision_coefficients(float3 const& uvw, Filter filter, Worker cons
     return {d * cc_.a, d * cc_.s};
 }
 
+CCE Density::collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                             Worker const& worker) const noexcept {
+    float const d = density(uvw, filter, worker);
+
+    return {{d * cc_.a, d * cc_.s}, d * emission_};
+}
+
 }  // namespace scene::material::volumetric

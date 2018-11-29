@@ -21,6 +21,9 @@ class Density : public Material {
     CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
         noexcept override final;
 
+    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                        Worker const& worker) const noexcept override final;
+
   private:
     // expects p in object space!
     virtual float density(float3 const& p, Filter filter, Worker const& worker) const noexcept = 0;
