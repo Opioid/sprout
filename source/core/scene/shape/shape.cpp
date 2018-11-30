@@ -31,12 +31,13 @@ uint32_t Shape::num_parts() const noexcept {
     return 1;
 }
 
-// bool Shape::intersect_p(FVector ray_origin, FVector ray_direction,
-//						FVector ray_min_t, FVector ray_max_t,
-//						Transformation const& transformation,
-//						Node_stack& node_stack) const {
-//	return false;
-//}
+bool Shape::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
+                   Transformation const& transformation, float area, bool two_sided,
+                   Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                   Sample_to& sample) const noexcept {
+    return this->sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
+                        node_stack, sample);
+}
 
 bool Shape::is_complex() const noexcept {
     return false;

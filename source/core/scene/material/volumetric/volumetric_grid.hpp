@@ -30,44 +30,6 @@ class Grid final : public Density {
     Gridtree tree_;
 };
 
-class Emission_grid final : public Material {
-  public:
-    Emission_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
-
-    ~Emission_grid() noexcept override final;
-
-    float3 emission(ray const& ray, Transformation const& transformation, float step_size,
-                    rnd::Generator& rng, Filter filter, Worker const& worker) const
-        noexcept override final;
-
-    size_t num_bytes() const noexcept override final;
-
-  private:
-    float3 emission(float3 const& p, Filter filter, Worker const& worker) const noexcept;
-
-    Texture_adapter grid_;
-};
-
-class Flow_vis_grid final : public Material {
-  public:
-    Flow_vis_grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
-
-    ~Flow_vis_grid() noexcept override final;
-
-    float3 emission(ray const& ray, Transformation const& transformation, float step_size,
-                    rnd::Generator& rng, Filter filter, Worker const& worker) const
-        noexcept override final;
-
-    size_t num_bytes() const noexcept override final;
-
-  private:
-    float density(float3 const& p, Filter filter, Worker const& worker) const noexcept;
-
-    float3 emission(float3 const& p, Filter filter, Worker const& worker) const noexcept;
-
-    Texture_adapter grid_;
-};
-
 }  // namespace scene::material::volumetric
 
 #endif

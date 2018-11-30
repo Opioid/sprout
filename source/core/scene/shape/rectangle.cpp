@@ -211,10 +211,11 @@ float3 Rectangle::thin_absorption(Ray const& ray, Transformation const& transfor
                                   Materials const& materials, Filter filter,
                                   Worker const& worker) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
-    float         d      = dot(normal, transformation.position);
-    float         denom  = -dot(normal, ray.direction);
-    float         numer  = dot(normal, ray.origin) - d;
-    float         hit_t  = numer / denom;
+
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
+    float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
@@ -241,14 +242,6 @@ float3 Rectangle::thin_absorption(Ray const& ray, Transformation const& transfor
     return float3(0.f);
 }
 
-bool Rectangle::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
-                       Transformation const& transformation, float area, bool two_sided,
-                       Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                       Sample_to& sample) const noexcept {
-    return Rectangle::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
-                             node_stack, sample);
-}
-
 bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
                        float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                        Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
@@ -263,7 +256,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const&
 
     float3 const axis = ws - p;
 
-    float const sl = math::squared_length(axis);
+    float const sl = squared_length(axis);
     float const t  = std::sqrt(sl);
 
     float3 const wi = axis / t;
@@ -332,7 +325,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv,
     float3 ws = transform_point(transformation.object_to_world, ls);
 
     float3 axis = ws - p;
-    float  sl   = math::squared_length(axis);
+    float  sl   = squared_length(axis);
     float  d    = std::sqrt(sl);
 
     float3 dir = axis / d;

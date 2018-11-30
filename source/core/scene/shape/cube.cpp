@@ -166,19 +166,11 @@ float3 Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transfo
     return float3(0.f);
 }
 
-bool Cube::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
-                  Transformation const& transformation, float area, bool two_sided,
-                  Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                  Sample_to& sample) const noexcept {
-    return Cube::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
-                        node_stack, sample);
-}
-
 bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
                   float /*area*/, bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
                   Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float3 const axis                = transformation.position - p;
-    float const  axis_squared_length = math::squared_length(axis);
+    float const  axis_squared_length = squared_length(axis);
     float const  radius              = transformation.scale[0];
     float const  radius_square       = radius * radius;
     float const  sin_theta_max2      = radius_square / axis_squared_length;
@@ -214,7 +206,7 @@ float Cube::pdf(Ray const&            ray, const shape::Intersection& /*intersec
                 Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                 bool /*total_sphere*/) const noexcept {
     float3 const axis                = transformation.position - ray.origin;
-    float const  axis_squared_length = math::squared_length(axis);
+    float const  axis_squared_length = squared_length(axis);
     float const  radius_square       = transformation.scale[0] * transformation.scale[0];
     float const  sin_theta_max2      = radius_square / axis_squared_length;
     float        cos_theta_max       = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));

@@ -329,7 +329,7 @@ void centered_squared_magnitude(float* result, float2 const* source, int32_t wid
         /*
                         for (size_t x = 0, len = row_size - 1; x < len; ++x) {
                                 size_t o = y * row_size + x;
-                                float mag = math::squared_length(normalization * source[o]);
+                                float mag = squared_length(normalization * source[o]);
 
         //			size_t a = ro * width + x + len;
         //			std::cout << a << std::endl;
@@ -339,7 +339,7 @@ void centered_squared_magnitude(float* result, float2 const* source, int32_t wid
 
                         for (size_t x = 0, len = row_size - 1; x < len; ++x) {
                                 size_t o = y * row_size + x;
-                                float mag = math::squared_length(normalization * source[o]);
+                                float mag = squared_length(normalization * source[o]);
 
         //			size_t a = ro * width - x + len - 1;
         //			std::cout << a << std::endl;
@@ -354,7 +354,7 @@ void centered_squared_magnitude(float* result, float2 const* source, int32_t wid
             //	float2 normalization = (0 == x || len - 1 == x) ? float2(1.f / fr, 2.f / fr) :
             // float2(2.f / fr);
 
-            float mag = math::squared_length(normalization * source[o]);
+            float mag = squared_length(normalization * source[o]);
 
             //			size_t a = ro * width + x + len - 1;
             //			std::cout << o << ": " << a << std::endl;
@@ -370,7 +370,7 @@ void centered_squared_magnitude(float* result, float2 const* source, int32_t wid
             //	float2 normalization = (len - 1 == x) ? float2(1.f / fr, 2.f / fr) : float2(2.f /
             // fr);
 
-            float mag = math::squared_length(normalization * source[o]);
+            float mag = squared_length(normalization * source[o]);
 
             //			size_t a = ro * width - x + len - 1;
             //			std::cout << o << ": " << a << std::endl;
@@ -384,7 +384,7 @@ void centered_squared_magnitude(float* result, float2 const* source, int32_t wid
 
 void squared_magnitude(float* result, float2 const* source, int32_t width, int32_t height) {
     for (int32_t i = 0, len = width * height; i < len; ++i) {
-        float mag = math::squared_length(source[i]);
+        float mag = squared_length(source[i]);
         result[i] = mag;
     }
 }
@@ -392,7 +392,7 @@ void squared_magnitude(float* result, float2 const* source, int32_t width, int32
 void squared_magnitude_transposed(float* result, float2 const* source, int32_t dimension) {
     for (int32_t y = 0, i = 0; y < dimension; ++y) {
         for (int32_t x = 0; x < dimension; ++x, ++i) {
-            float   mag = math::squared_length(source[i]);
+            float   mag = squared_length(source[i]);
             int32_t o   = x * dimension + y;
             result[o]   = mag;
         }

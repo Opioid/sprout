@@ -315,21 +315,13 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
     return float3(0.f);
 }
 
-bool Sphere::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
-                    Transformation const& transformation, float area, bool two_sided,
-                    Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                    Sample_to& sample) const noexcept {
-    return Sphere::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
-                          node_stack, sample);
-}
-
 bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
                     float /*area*/, bool /*two_sided*/, Sampler&              sampler,
                     uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
     noexcept {
     float3 const axis = transformation.position - p;
 
-    float const axis_squared_length = math::squared_length(axis);
+    float const axis_squared_length = squared_length(axis);
 
     float const radius         = transformation.scale[0];
     float const radius_square  = radius * radius;
@@ -393,7 +385,7 @@ float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*inters
                   bool /*total_sphere*/) const noexcept {
     float3 const axis = transformation.position - ray.origin;
 
-    float const axis_squared_length = math::squared_length(axis);
+    float const axis_squared_length = squared_length(axis);
     float const radius_square       = transformation.scale[0] * transformation.scale[0];
     float const sin_theta_max2      = radius_square / axis_squared_length;
     float const cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
@@ -417,7 +409,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
     float3 ws = transform_point(transformation.object_to_world, ls);
 
     float3 axis = ws - p;
-    float  sl   = math::squared_length(axis);
+    float  sl   = squared_length(axis);
     float  d    = std::sqrt(sl);
 
     float3 dir = axis / d;

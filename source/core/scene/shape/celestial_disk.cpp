@@ -149,14 +149,6 @@ float3 Celestial_disk::thin_absorption(Ray const& /*ray*/, Transformation const&
     return float3(0.f);
 }
 
-bool Celestial_disk::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
-                            Transformation const& transformation, float area, bool two_sided,
-                            Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                            Sample_to& sample) const noexcept {
-    return Celestial_disk::sample(part, p, transformation, area, two_sided, sampler,
-                                  sampler_dimension, node_stack, sample);
-}
-
 bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
                             Transformation const& transformation, float area, bool /*two_sided*/,
                             Sampler& sampler, uint32_t             sampler_dimension,

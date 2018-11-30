@@ -105,7 +105,7 @@ float3 Prop_light::power(AABB const& scene_bb) const noexcept {
     if (prop_->shape()->is_finite()) {
         return area * radiance;
     } else {
-        return math::squared_length(scene_bb.halfsize()) * area * radiance;
+        return squared_length(scene_bb.halfsize()) * area * radiance;
     }
 }
 

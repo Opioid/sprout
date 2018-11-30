@@ -62,27 +62,27 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
     render(*target, manager.thread_pool());
 
     auto texture = std::make_shared<texture::Byte3_sRGB>(target);
+    /*
+        std::shared_ptr<Material> material = std::make_shared<volumetric::Emission_grid>(
+            Sampler_settings(), Texture_adapter(texture));
 
-    std::shared_ptr<Material> material = std::make_shared<volumetric::Emission_grid>(
-        Sampler_settings(), Texture_adapter(texture));
+        Materials materials(1);
+        materials[0] = material;
 
-    Materials materials(1);
-    materials[0] = material;
+        prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
+        // volume::Volume* volume = scene.create_height_volume();
 
-    prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
-    // volume::Volume* volume = scene.create_height_volume();
+        math::Transformation transformation{float3::identity(),
+                                            //	float3(1000000.f, 100000.f, 50000.f),
+                                            float3(1250000.f, 100000.f, 80000.f),
+                                            //	float3(10.f, 1.f, 1.f),
+                                            math::quaternion::identity()};
 
-    math::Transformation transformation{float3::identity(),
-                                        //	float3(1000000.f, 100000.f, 50000.f),
-                                        float3(1250000.f, 100000.f, 80000.f),
-                                        //	float3(10.f, 1.f, 1.f),
-                                        math::quaternion::identity()};
-
-    volume->set_transformation(transformation);
-
+        volume->set_transformation(transformation);
+    */
     Aurora* aurora = new Aurora();
 
-    aurora->attach(volume);
+    //   aurora->attach(volume);
 
     return aurora;
 }

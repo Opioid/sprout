@@ -90,12 +90,6 @@ void Material_subsurface::set_volumetric_anisotropy(float anisotropy) noexcept {
     anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
-float3 Material_subsurface::emission(ray const& /*ray*/, Transformation const& /*transformation*/,
-                                     float /*step_size*/, rnd::Generator& /*rng*/,
-                                     Filter /*filter*/, Worker const& /*worker*/) const noexcept {
-    return float3::identity();
-}
-
 float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
                                                    Worker const& worker) const noexcept {
     if (color_map_.is_valid()) {

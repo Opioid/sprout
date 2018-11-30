@@ -43,13 +43,6 @@ class Mesh : public Shape {
     bool intersect_p(Ray const& ray, Transformation const& transformation,
                      Node_stack& node_stack) const noexcept override final;
 
-    //	virtual bool intersect_p(FVector ray_origin, FVector ray_direction,
-    //							 FVector ray_min_t, FVector ray_max_t,
-    //							 Transformation const& transformation,
-    //							 Node_stack& node_stack) const noexcept
-    // override
-    // final;
-
     float opacity(Ray const& ray, Transformation const& transformation, Materials const& materials,
                   Filter filter, Worker const& worker) const noexcept override final;
 
@@ -57,17 +50,12 @@ class Mesh : public Shape {
                            Materials const& materials, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    bool sample(uint32_t part, float3 const& p, float3 const& n,
-                Transformation const& transformation, float area, bool two_sided,
-                sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                Sample_to& sample) const noexcept override final;
-
     bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                 Node_stack& node_stack, Sample_to& sample) const noexcept override final;
 
     bool sample(uint32_t part, Transformation const& transformation, float area, bool two_sided,
-                sampler::Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
+                Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                 Node_stack& node_stack, Sample_from& sample) const noexcept override final;
 
     float pdf(Ray const& ray, const shape::Intersection& intersection,
@@ -78,8 +66,8 @@ class Mesh : public Shape {
                 float area, bool two_sided, Sample_to& sample) const noexcept override final;
 
     bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                AABB const& bounds, Sample_from& sample) const noexcept override final;
+                bool two_sided, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
+                Sample_from& sample) const noexcept override final;
 
     float pdf_uv(Ray const& ray, const shape::Intersection& intersection,
                  Transformation const& transformation, float area, bool two_sided) const

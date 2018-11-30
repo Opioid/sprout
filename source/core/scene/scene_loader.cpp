@@ -183,12 +183,14 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
         }
 
         math::Transformation transformation{float3::identity(), float3(1.f),
-                                            math::quaternion::identity()};
+                                            quaternion::identity()};
 
         json::Value const* animation_value = nullptr;
         json::Value const* children        = nullptr;
         json::Value const* visibility      = nullptr;
 
+        // Setting the following properties on the entity is deferred,
+        // until after potential children are attached.
         for (auto& n : e.GetObject()) {
             if ("transformation" == n.name) {
                 json::read_transformation(n.value, transformation);
@@ -229,7 +231,6 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
     bool in_camera     = true;
     bool in_reflection = true;
     bool in_shadow     = true;
-    //	bool propagate	   = false;
 
     for (auto& n : visibility_value.GetObject()) {
         if ("in_camera" == n.name) {
@@ -238,19 +239,17 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
             in_reflection = json::read_bool(n.value);
         } else if ("in_shadow" == n.name) {
             in_shadow = json::read_bool(n.value);
-        } /*else if ("propagate" == n.name) {
-                        propagate = json::read_bool(n.value);
-        }*/
+        }
     }
 
     entity->set_visibility(in_camera, in_reflection, in_shadow);
-    //	entity->set_propagate_visibility(propagate);
 }
 
 prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& name,
                               Scene& scene) {
-    Shape_ptr          shape;
-    Materials          materials;
+    Shape_ptr shape;
+    Materials materials;
+
     json::Value const* visibility = nullptr;
 
     for (auto& n : prop_value.GetObject()) {
@@ -276,7 +275,7 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
 
     prop::Prop* prop = scene.create_prop(shape, materials, name);
 
-    // Bit annoying that this is done again in load_entities(),
+    // It is a annoying that this is done again in load_entities(),
     // but visibility information is already used when creating lights.
     // Should be improved at some point.
     if (visibility) {

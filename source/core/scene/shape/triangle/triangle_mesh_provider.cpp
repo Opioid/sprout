@@ -360,7 +360,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 bool check(const std::vector<Vertex>& vertices, std::string const& filename) {
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {
         auto const& v = vertices[i];
-        if (math::squared_length(v.n) < 0.1f || math::squared_length(v.t) < 0.1f) {
+        if (squared_length(v.n) < 0.1f || squared_length(v.t) < 0.1f) {
             std::cout << filename << " vertex " << i << std::endl;
 
             std::cout << "n: " << v.n << std::endl;
@@ -379,7 +379,7 @@ bool check_and_fix(std::vector<Vertex>& vertices, std::string const& /*filename*
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {
         auto& v = vertices[i];
 
-        if (math::squared_length(v.n) < 0.1f) {
+        if (squared_length(v.n) < 0.1f) {
             //		std::cout << filename << " vertex " << i << std::endl;
 
             std::cout << "n: " << v.n << " converted to ";
@@ -389,7 +389,7 @@ bool check_and_fix(std::vector<Vertex>& vertices, std::string const& /*filename*
             success = false;
         }
 
-        if (math::squared_length(v.t) < 0.1f) {
+        if (squared_length(v.t) < 0.1f) {
             //	std::cout << filename << " vertex " << i << std::endl;
 
             std::cout << "t: " << v.t << " converted to ";

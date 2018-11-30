@@ -1079,10 +1079,10 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
                 if ("Density" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Mask);
                     density_map = create_texture(texture_description, options, manager);
-                } else if ("Emission" == texture_description.usage) {
+                } /*else if ("Emission" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Color);
                     emission_map = create_texture(texture_description, options, manager);
-                }
+                }*/
             }
         } else if ("sampler" == n.name) {
             read_sampler_settings(n.value, sampler_settings);
@@ -1099,15 +1099,12 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
         material->set_anisotropy(anisotropy);
         return material;
 
-        //		auto material =
-        // std::make_shared<volumetric::Flow_vis_grid>(sampler_settings, density_map); return
-        // material;
-    } else if (emission_map.is_valid()) {
-        auto material = std::make_shared<volumetric::Emission_grid>(sampler_settings, emission_map);
-        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
-        material->set_emission(emission);
-        material->set_anisotropy(anisotropy);
-        return material;
+        //    } else if (emission_map.is_valid()) {
+        //        auto material = std::make_shared<volumetric::Emission_grid>(sampler_settings,
+        //        emission_map); material->set_attenuation(absorption_color, scattering_color,
+        //        attenuation_distance); material->set_emission(emission);
+        //        material->set_anisotropy(anisotropy);
+        //        return material;
     } /*else if (a > 0.f && b > 0.f) {
             auto material = std::make_shared<volumetric::Height>(sampler_settings);
             material->set_attenuation(absorption_color, scattering_color, attenuation_distance);

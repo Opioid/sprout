@@ -28,11 +28,6 @@ class Rectangle final : public Shape {
                            Materials const& materials, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    bool sample(uint32_t part, float3 const& p, float3 const& n,
-                Transformation const& transformation, float area, bool two_sided, Sampler& sampler,
-                uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const
-        noexcept override final;
-
     bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
                 bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                 Node_stack& node_stack, Sample_to& sample) const noexcept override final;

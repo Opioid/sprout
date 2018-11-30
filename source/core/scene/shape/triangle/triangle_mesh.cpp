@@ -290,16 +290,8 @@ float3 Mesh::thin_absorption(Ray const& ray, Transformation const& transformatio
     return tree_.absorption(tray, ray.time, materials, filter, worker);
 }
 
-bool Mesh::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
-                  Transformation const& transformation, float area, bool two_sided,
-                  sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                  Sample_to& sample) const noexcept {
-    return Mesh::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
-                        node_stack, sample);
-}
-
 bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                  bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                  bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                   Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float const  r  = sampler.generate_sample_1D(sampler_dimension);
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
@@ -314,7 +306,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
     float3 const wn = transform_vector(transformation.rotation, sn);
 
     float3 const axis = v - p;
-    float const  sl   = math::squared_length(axis);
+    float const  sl   = squared_length(axis);
     float const  d    = std::sqrt(sl);
     float3 const dir  = axis / d;
 
@@ -338,7 +330,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
 }
 
 bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
-                  bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                  bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
                   AABB const& /*bounds*/, Node_stack& /*node_stack*/, Sample_from& sample) const
     noexcept {
     float const r = sampler.generate_sample_1D(sampler_dimension);

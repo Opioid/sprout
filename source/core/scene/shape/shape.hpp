@@ -61,11 +61,6 @@ class Shape {
     virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
                              Node_stack& node_stack) const noexcept = 0;
 
-    //	virtual bool intersect_p(FVector ray_origin, FVector ray_direction,
-    //							 FVector ray_min_t, FVector ray_max_t,
-    //							 Transformation const& transformation,
-    //							 Node_stack& node_stack) const;
-
     virtual float opacity(Ray const& ray, Transformation const& transformation,
                           Materials const& materials, Filter filter, Worker const& worker) const
         noexcept = 0;
@@ -77,7 +72,7 @@ class Shape {
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
                         Transformation const& transformation, float area, bool two_sided,
                         Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                        Sample_to& sample) const noexcept = 0;
+                        Sample_to& sample) const noexcept;
 
     virtual bool sample(uint32_t part, float3 const& p, Transformation const& transformation,
                         float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
