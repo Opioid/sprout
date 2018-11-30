@@ -31,7 +31,7 @@ struct Build_node {
 
     void num_sub_nodes(uint32_t& count);
 
-    math::AABB aabb;
+    AABB aabb;
 
     uint32_t start_index;
     uint32_t end_index;
@@ -57,9 +57,8 @@ class Builder_base {
                        const std::vector<Index_triangle>& triangles,
                        const std::vector<Vertex>& vertices, Tree<Data>& tree);
 
-    static math::AABB submesh_aabb(index begin, index end,
-                                   const std::vector<Index_triangle>& triangles,
-                                   const std::vector<Vertex>&         vertices);
+    static AABB submesh_aabb(index begin, index end, const std::vector<Index_triangle>& triangles,
+                             const std::vector<Vertex>& vertices);
 
     uint32_t num_nodes_;
     uint32_t current_node_;

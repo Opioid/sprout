@@ -23,7 +23,7 @@ Light::Transformation const& Prop_light::transformation_at(uint64_t        time,
 }
 
 bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
-                        bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                        bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                         Worker const& worker, Sample_to& result) const noexcept {
     auto const material = prop_->material(part_);
 
@@ -42,26 +42,9 @@ bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& 
             return false;
         }
 
-        if (math::dot(result.wi, n) <= 0.f) {
+        if (dot(result.wi, n) <= 0.f) {
             return false;
         }
-    }
-
-    return true;
-}
-
-bool Prop_light::sample(float3 const& p, Transformation const& transformation,
-                        sampler::Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                        Sample_to& result) const noexcept {
-    auto const material = prop_->material(part_);
-
-    float const area = prop_->area(part_);
-
-    bool const two_sided = material->is_two_sided();
-
-    if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
-                                sampler_dimension, worker.node_stack(), result)) {
-        return false;
     }
 
     return true;
@@ -76,8 +59,8 @@ float3 Prop_light::evaluate(Sample_to const& sample, Filter filter, Worker const
     return material->evaluate_radiance(sample.wi, sample.uv, area, filter, worker);
 }
 
-bool Prop_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
+bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
+                        uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
                         Sample_from& result) const noexcept {
     auto const material = prop_->material(part_);
 
@@ -114,7 +97,7 @@ float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool tot
     return prop_->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
 }
 
-float3 Prop_light::power(math::AABB const& scene_bb) const noexcept {
+float3 Prop_light::power(AABB const& scene_bb) const noexcept {
     float const area = prop_->area(part_);
 
     float3 const radiance = prop_->material(part_)->average_radiance(area);

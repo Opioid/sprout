@@ -46,7 +46,7 @@ void Sample::sample(float ior, float p, bxdf::Sample& result) const noexcept {
         std::swap(eta_i, eta_t);
     }
 
-    float const n_dot_wo = std::min(std::abs(math::dot(n, wo_)), 1.f);
+    float const n_dot_wo = std::min(std::abs(dot(n, wo_)), 1.f);
     float const eta      = eta_i / eta_t;
     float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -72,7 +72,7 @@ void Sample::sample(float ior, float p, bxdf::Sample& result) const noexcept {
 void Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
                      bxdf::Sample& result) noexcept {
     result.reflection = float3(1.f);
-    result.wi         = math::normalize(2.f * n_dot_wo * n - wo);
+    result.wi         = normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_reflection);
 
@@ -82,7 +82,7 @@ void Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
 void Sample::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
                      float n_dot_t, float eta, bxdf::Sample& result) noexcept {
     result.reflection = color;
-    result.wi         = math::normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
+    result.wi         = normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_transmission);
 

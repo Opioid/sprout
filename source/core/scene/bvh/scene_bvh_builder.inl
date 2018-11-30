@@ -61,7 +61,7 @@ void Builder<T>::Build_node::clear() noexcept {
 
     // This size will be used even if there are only infinite props in the scene.
     // It is an arbitrary size that will be used to calculate the power of some lights.
-    aabb = math::AABB(float3(-1.f), float3(1.f));
+    aabb = AABB(float3(-1.f), float3(1.f));
 }
 
 template <typename T>
@@ -97,7 +97,7 @@ void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_sh
 }
 
 template <typename T>
-Split_candidate<T> Builder<T>::splitting_plane(math::AABB const& /*aabb*/, index begin,
+Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin,
                                                index end) noexcept {
     split_candidates_.clear();
 
@@ -162,8 +162,8 @@ void Builder<T>::assign(Build_node* node, index begin, index end,
 }
 
 template <typename T>
-math::AABB Builder<T>::aabb(index begin, index end) noexcept {
-    math::AABB aabb = math::AABB::empty();
+AABB Builder<T>::aabb(index begin, index end) noexcept {
+    AABB aabb = AABB::empty();
 
     for (index i = begin; i != end; ++i) {
         aabb.merge_assign((*i)->aabb());

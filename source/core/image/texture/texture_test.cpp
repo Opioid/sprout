@@ -40,7 +40,7 @@ bool is_valid_normal_map(const Image& image, std::string const& filename) {
             }
 
             /*
-            float l = math::length(n);
+            float l = length(n);
 
             if (std::abs(l - 1.f) > 0.01f) {
                     std::cout << "\"" << filename << "\" [" << x << ", "

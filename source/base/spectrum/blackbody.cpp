@@ -69,7 +69,7 @@ float3 blackbody(float temperature) {
 
     float3 const rgb = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));
 
-    return math::normalize(rgb);
+    return normalize(rgb);
 }
 
 float3 blackbody_fast(float temperature) {
@@ -100,7 +100,7 @@ float3 blackbody_fast(float temperature) {
 
     xyz /= std::max(xyz[0], std::max(xyz[1], xyz[2]));
 
-    return /*math::normalize*/ (spectrum::XYZ_to_linear_RGB(xyz));
+    return /*normalize*/ (spectrum::XYZ_to_linear_RGB(xyz));
 }
 
 }  // namespace spectrum

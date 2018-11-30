@@ -22,15 +22,15 @@ inline void Composed_transformation::set(math::Transformation const& t) noexcept
 }
 
 inline float3 Composed_transformation::world_to_object_point(float3 const& p) const noexcept {
-    return math::transform_point(world_to_object, p);
+    return transform_point(world_to_object, p);
 }
 
 inline float3 Composed_transformation::world_to_object_vector(float3 const& v) const noexcept {
-    return math::transform_vector(world_to_object, v);
+    return transform_vector(world_to_object, v);
 }
 
 inline float3 Composed_transformation::object_to_world_vector(float3 const& v) const noexcept {
-    return math::transform_vector(object_to_world, v);
+    return transform_vector(object_to_world, v);
 }
 
 }  // namespace scene::entity

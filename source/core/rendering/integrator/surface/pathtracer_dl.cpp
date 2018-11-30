@@ -18,6 +18,8 @@
 
 namespace rendering::integrator::surface {
 
+using namespace scene;
+
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
                              Settings const& settings) noexcept
     : Integrator(rng, take_settings),
@@ -136,7 +138,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             ray.min_t = ray.max_t + ray_offset;
         }
 
-        ray.max_t = scene::Ray_max_t;
+        ray.max_t = Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
@@ -181,7 +183,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
         auto const light = worker.scene().random_light(select);
 
-        scene::shape::Sample_to light_sample;
+        shape::Sample_to light_sample;
         if (!light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
                               material_sample.is_translucent(), light_sampler(ray.depth), 0, worker,
                               light_sample)) {

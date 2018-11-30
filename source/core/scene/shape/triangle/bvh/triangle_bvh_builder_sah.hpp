@@ -78,15 +78,15 @@ class Builder_SAH /*: private Builder_base*/ {
         uint8_t axis() const;
         bool    spatial() const;
 
-        math::AABB const& aabb_0() const;
-        math::AABB const& aabb_1() const;
+        AABB const& aabb_0() const;
+        AABB const& aabb_1() const;
 
         uint32_t num_side_0() const;
         uint32_t num_side_1() const;
 
       private:
-        math::AABB aabb_0_;
-        math::AABB aabb_1_;
+        AABB aabb_0_;
+        AABB aabb_1_;
 
         uint32_t num_side_0_;
         uint32_t num_side_1_;
@@ -104,7 +104,7 @@ class Builder_SAH /*: private Builder_base*/ {
         Build_node();
         ~Build_node();
 
-        math::AABB aabb;
+        AABB aabb;
 
         std::vector<uint32_t> primitives;
 
@@ -116,11 +116,11 @@ class Builder_SAH /*: private Builder_base*/ {
         Build_node* children[2];
     };
 
-    void split(Build_node* node, References& references, math::AABB const& aabb,
-               uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool);
+    void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
+               uint32_t depth, thread::Pool& thread_pool);
 
-    Split_candidate splitting_plane(const References& references, math::AABB const& aabb,
-                                    uint32_t depth, bool& exhausted, thread::Pool& thread_pool);
+    Split_candidate splitting_plane(const References& references, AABB const& aabb, uint32_t depth,
+                                    bool& exhausted, thread::Pool& thread_pool);
 
     template <typename Data>
     void serialize(Build_node* node, Triangles const& triangles, Vertices const& vertices,

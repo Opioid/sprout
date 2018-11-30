@@ -26,7 +26,7 @@ float3 reference_normal(float2 p, float2 range) {
     float vy = -1.f + p[1] * range[1];
 
     float2 xy(vx, vy);
-    float  l = math::length(xy);
+    float  l = length(xy);
 
     float3 v;
 
@@ -37,9 +37,9 @@ float3 reference_normal(float2 p, float2 range) {
         v = float3(0.f, 0.f, 1.f);
     }
 
-    //	return math::normalize(v);
+    //	return normalize(v);
 
-    v = math::normalize(v);
+    v = normalize(v);
 
     return 0.5f * float3(v[0] + 1.f, v[1] + 1.f, v[2] + 1.f);
 }
@@ -72,7 +72,7 @@ void create_reference_normal_map(int2 dimensions) {
                 }
             }
 
-            //			v = math::normalize(v / static_cast<float>(aa.x * aa.y));
+            //			v = normalize(v / static_cast<float>(aa.x * aa.y));
 
             //			pixel.x = spectrum::float_to_snorm(v.x);
             //			pixel.y = spectrum::float_to_snorm(v.y);

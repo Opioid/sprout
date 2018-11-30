@@ -5,17 +5,17 @@
 
 namespace math {
 
-struct Ray {
-    Ray() noexcept = default;
+struct ray {
+    ray() noexcept = default;
 
-    Ray(float3 const& origin, float3 const& direction, float min_t = 0.f,
+    ray(float3 const& origin, float3 const& direction, float min_t = 0.f,
         float max_t = 1.f) noexcept;
 
-    Ray(float3 const& origin, float3 const& direction, float min_t, float max_t,
+    ray(float3 const& origin, float3 const& direction, float min_t, float max_t,
         uint32_t depth) noexcept;
 
   private:
-    Ray(float3 const& origin, float3 const& direction, float3 const& inv_direction, float min_t,
+    ray(float3 const& origin, float3 const& direction, float3 const& inv_direction, float min_t,
         float max_t, uint8_t sign_x, uint8_t sign_y, uint8_t sign_z) noexcept;
 
   public:
@@ -25,7 +25,7 @@ struct Ray {
 
     float length() const noexcept;
 
-    Ray normalized() const noexcept;
+    ray normalized() const noexcept;
 
     float3 origin;
     float3 direction;

@@ -39,7 +39,7 @@ void Map::insert(Photon const& photon, uint32_t index) noexcept {
 }
 
 uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
-    math::AABB const aabb = calculate_aabb(pool);
+    AABB const aabb = calculate_aabb(pool);
 
     caustic_grid_.resize(aabb);
 
@@ -107,8 +107,8 @@ size_t Map::num_bytes() const noexcept {
     return num_bytes;
 }
 
-math::AABB Map::calculate_aabb(thread::Pool& /*pool*/) const noexcept {
-    math::AABB aabb = math::AABB::empty();
+AABB Map::calculate_aabb(thread::Pool& /*pool*/) const noexcept {
+    AABB aabb = AABB::empty();
 
     for (uint32_t i = 0, len = num_photons_; i < len; ++i) {
         aabb.insert(photons_[i].p);

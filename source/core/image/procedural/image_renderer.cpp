@@ -261,14 +261,14 @@ bool Renderer::intersect_disk(float2 pos, float3 const& normal, float radius,
                               float2 sample) noexcept {
     float2 const n2 = normal.xy();
 
-    float const d     = math::dot(n2, pos);
+    float const d     = dot(n2, pos);
     float const denom = normal[2];
-    float const numer = math::dot(n2, sample) - d;
+    float const numer = dot(n2, sample) - d;
     float const hit_t = numer / denom;
 
     float3 const k = float3(sample - pos, hit_t);
 
-    float const l = math::dot(k, k);
+    float const l = dot(k, k);
 
     if (l <= radius * radius) {
         return true;
@@ -295,9 +295,9 @@ bool Renderer::intersect_n_gon(float2 pos, float angle, float radius, uint32_t n
 
         float2 cb = c - b;
 
-        float2 const n = math::normalize(float2(cb[1], -cb[0]));
+        float2 const n = normalize(float2(cb[1], -cb[0]));
 
-        float const id = 1.f / math::dot(n, b);
+        float const id = 1.f / dot(n, b);
 
         float2 const v = id * n;
 

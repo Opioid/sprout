@@ -12,7 +12,7 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
         return {float3::identity(), 0.f};
     }
 
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 

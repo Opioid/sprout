@@ -178,8 +178,9 @@ void create(thread::Pool& pool) {
         pool.run_range(
             [spectral_data, &float_image_a](uint32_t /*id*/, int32_t begin, int32_t end) {
                 for (int32_t i = begin; i < end; ++i) {
-                    auto&  s          = spectral_data[i];
-                    float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
+                    auto const& s = spectral_data[i];
+
+                    float3 const linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
                     float_image_a.store(i, packed_float3(linear_rgb));
                 }
             },
@@ -193,7 +194,7 @@ void create(thread::Pool& pool) {
     //	write_signal("signal_after.png", signal);
 
     float radius = static_cast<float>(resolution) * 0.0029296875f;  // 0.00390625f;
-    filter::Gaussian<packed_float3> gaussian(radius, radius * 0.0005f);
+    image::filter::Gaussian<packed_float3> gaussian(radius, radius * 0.0005f);
     gaussian.apply(float_image_a, pool);
 
     Byte3 byte_image(Image::Description(Image::Type::Byte3, dimensions));
@@ -321,7 +322,7 @@ void centered_squared_magnitude(float* result, float2 const* source, int32_t wid
         }
 
         //		size_t o = y * row_size;
-        //		float mag = /*0.001f **/ math::length(source[o]);
+        //		float mag = /*0.001f **/ length(source[o]);
 
         //		result[ro * width + row_size - 1] = mag;
 
@@ -428,7 +429,7 @@ void diffraction(Spectrum* result, float const* squared_magnitude, int32_t bin,
             if (q[0] < 0.f || q[0] >= 1.f || q[1] < 0.f || q[1] >= 1.f) {
                 r = 0.f;
             } else {
-                float dp = math::dot(p, p);
+                float dp = dot(p, p);
                 float v  = std::max(1.f - dp * dp, 0.f);
 
                 int32_t sx = static_cast<int32_t>(q[0] * fr);

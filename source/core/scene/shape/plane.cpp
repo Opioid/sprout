@@ -17,9 +17,9 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
                       Intersection& intersection) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
@@ -34,8 +34,8 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
         intersection.b     = b;
         intersection.n     = normal;
         intersection.geo_n = normal;
-        intersection.uv[0] = math::dot(t, p) * transformation.scale[0];
-        intersection.uv[1] = math::dot(b, p) * transformation.scale[1];
+        intersection.uv[0] = dot(t, p) * transformation.scale[0];
+        intersection.uv[1] = dot(b, p) * transformation.scale[1];
 
         intersection.part = 0;
 
@@ -50,9 +50,9 @@ bool Plane::intersect_fast(Ray& ray, Transformation const&           transformat
                            Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
@@ -64,8 +64,8 @@ bool Plane::intersect_fast(Ray& ray, Transformation const&           transformat
 
         intersection.p     = p;
         intersection.geo_n = normal;
-        intersection.uv[0] = math::dot(t, p) * transformation.scale[0];
-        intersection.uv[1] = math::dot(b, p) * transformation.scale[1];
+        intersection.uv[0] = dot(t, p) * transformation.scale[0];
+        intersection.uv[1] = dot(b, p) * transformation.scale[1];
 
         intersection.part = 0;
 
@@ -80,9 +80,9 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
                       float& epsilon) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
@@ -98,9 +98,9 @@ bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
                         Node_stack& /*node_stack*/) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
@@ -115,15 +115,14 @@ float Plane::opacity(Ray const& ray, Transformation const& transformation,
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
-        float2 uv(math::dot(transformation.rotation.r[0], p),
-                  math::dot(transformation.rotation.r[1], p));
+        float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 
         return materials[0]->opacity(uv, ray.time, filter, worker);
     }
@@ -136,15 +135,14 @@ float3 Plane::thin_absorption(Ray const& ray, Transformation const& transformati
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
-        float2 uv(math::dot(transformation.rotation.r[0], p),
-                  math::dot(transformation.rotation.r[1], p));
+        float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 
         return materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter, worker);
     }
@@ -154,22 +152,22 @@ float3 Plane::thin_absorption(Ray const& ray, Transformation const& transformati
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*n*/,
                    Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                   Node_stack& /*node_stack*/, Sample_to& /*sample*/) const noexcept {
+                   Sampler& /*sampler*/, uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
+                   Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*transformation*/,
-                   float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+                   float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
                    uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
                    Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
-                   bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                   uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
-                   Node_stack& /*node_stack*/, Sample_from& /*sample*/) const noexcept {
+                   bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                   AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                   Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
@@ -186,8 +184,8 @@ bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
 }
 
 bool Plane::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                   float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                   uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                   float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
+                   uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
                    Sample_from& /*sample*/) const noexcept {
     return false;
 }

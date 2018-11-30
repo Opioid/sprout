@@ -75,7 +75,7 @@ float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, floa
     return float3(opacity(uv, time, filter, worker));
 }
 
-float3 Material::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
+float3 Material::emission(ray const& /*ray*/, Transformation const& /*transformation*/,
                           float /*step_size*/, rnd::Generator& /*rng*/, Filter /*filter*/,
                           Worker const& /*worker*/) const noexcept {
     return float3::identity();

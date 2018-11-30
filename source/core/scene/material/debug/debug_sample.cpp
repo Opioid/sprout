@@ -14,9 +14,9 @@ const material::Layer& Sample::base_layer() const noexcept {
 }
 
 bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
-    float3 const n = math::cross(layer_.t_, layer_.b_);
+    float3 const n = cross(layer_.t_, layer_.b_);
 
-    bool const same_side = math::dot(n, layer_.n_) > 0.f;
+    bool const same_side = dot(n, layer_.n_) > 0.f;
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
 
@@ -30,15 +30,15 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
-    float3 const n = math::cross(layer_.t_, layer_.b_);
+    float3 const n = cross(layer_.t_, layer_.b_);
 
-    bool const same_side = math::dot(n, layer_.n_) > 0.f;
+    bool const same_side = dot(n, layer_.n_) > 0.f;
 
     float2 const s2d = sampler.generate_sample_2D();
 
     float3 const is = math::sample_hemisphere_cosine(s2d);
 
-    float3 const wi = math::normalize(layer_.tangent_to_world(is));
+    float3 const wi = normalize(layer_.tangent_to_world(is));
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
 

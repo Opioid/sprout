@@ -73,9 +73,9 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
         float3 const origin = shape->object_to_texture_point(local_origin);
         float3 const dir    = shape->object_to_texture_vector(local_dir);
 
-        math::Ray local_ray(origin, dir, ray.min_t, d);
+        math::ray local_ray(origin, dir, ray.min_t, d);
 
-        const float ray_offset = Tracking::Ray_epsilon / math::length(dir);
+        const float ray_offset = Tracking::Ray_epsilon / length(dir);
 
         auto const& tree = *material.volume_tree();
 

@@ -55,16 +55,16 @@ float3 Sky::sun_wi(float v) const noexcept {
 
     float const radius = math::degrees_to_radians(model_.degrees());
 
-    float3 const ws = radius * math::transform_vector(sun_rotation_, ls);
+    float3 const ws = radius * transform_vector(sun_rotation_, ls);
 
-    return math::normalize(ws - sun_rotation_.r[2]);
+    return normalize(ws - sun_rotation_.r[2]);
 }
 
 float Sky::sun_v(float3 const& wi) const noexcept {
     float3 const k  = wi - sun_rotation_.r[2];
     float3 const sk = k / math::degrees_to_radians(model_.degrees());
 
-    return std::max((math::dot(sun_rotation_.r[1], sk) + 1.f) * 0.5f, 0.f);
+    return std::max((dot(sun_rotation_.r[1], sk) + 1.f) * 0.5f, 0.f);
 }
 
 bool Sky::sky_changed_since_last_check() noexcept {

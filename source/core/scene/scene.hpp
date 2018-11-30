@@ -69,9 +69,9 @@ class Scene {
 
     void finish(uint64_t frame_step, uint64_t frame_duration) noexcept;
 
-    math::AABB const& aabb() const noexcept;
+    AABB const& aabb() const noexcept;
 
-    math::AABB caustic_aabb() const noexcept;
+    AABB caustic_aabb() const noexcept;
 
     bool is_infinite() const noexcept;
 

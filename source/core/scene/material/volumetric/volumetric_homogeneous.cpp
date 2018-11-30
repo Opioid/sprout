@@ -7,7 +7,7 @@ namespace scene::material::volumetric {
 Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings) {}
 
-float3 Homogeneous::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
+float3 Homogeneous::emission(ray const& /*ray*/, Transformation const& /*transformation*/,
                              float /*step_size*/, rnd::Generator& /*rng*/, Filter /*filter*/,
                              Worker const& /*worker*/) const noexcept {
     return float3::identity();

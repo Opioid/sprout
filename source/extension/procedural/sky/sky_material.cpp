@@ -206,7 +206,7 @@ float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& transf
 
     float3 const dir = math::disk_to_hemisphere_equidistant(disk);
 
-    return math::transform_vector(transformation.rotation, dir);
+    return transform_vector(transformation.rotation, dir);
 }
 
 }  // namespace procedural::sky

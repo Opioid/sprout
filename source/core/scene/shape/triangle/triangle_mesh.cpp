@@ -38,9 +38,9 @@ uint32_t Mesh::num_parts() const noexcept {
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                      shape::Intersection& intersection) const noexcept {
-    /*	math::Ray tray;
-            tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-            tray.set_direction(math::transform_vector(ray.direction,
+    /*	ray tray;
+            tray.origin = transform_point(ray.origin, transformation.world_to_object);
+            tray.set_direction(transform_vector(ray.direction,
        transformation.world_to_object)); tray.min_t = ray.min_t; tray.max_t = ray.max_t;
 
             Intersection pi;
@@ -63,10 +63,10 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
                     Matrix3 rotation = math::load_float3x3(transformation.rotation);
 
-                    Vector geo_n_w = math::transform_vector(rotation, geo_n);
-                    Vector n_w	   = math::transform_vector(rotation, n);
-                    Vector t_w	   = math::transform_vector(rotation, t);
-                    Vector b_w	   = math::mul(bitangent_sign, math::cross3(n_w, t_w));
+                    Vector geo_n_w = transform_vector(rotation, geo_n);
+                    Vector n_w	   = transform_vector(rotation, n);
+                    Vector t_w	   = transform_vector(rotation, t);
+                    Vector b_w	   = math::mul(bitangent_sign, cross3(n_w, t_w));
 
                     intersection.p = p_w;
                     simd::store_float4(intersection.t.v, t_w);
@@ -85,10 +85,10 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
     Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = math::transform_point(world_to_object, ray_origin);
+    ray_origin        = transform_point(world_to_object, ray_origin);
 
     Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+    ray_direction        = transform_vector(world_to_object, ray_direction);
 
     Vector ray_inv_direction = math::reciprocal3(ray_direction);
 
@@ -121,10 +121,10 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Matrix3 rotation = math::load_float3x3(transformation.rotation);
 
-        Vector geo_n_w = math::transform_vector(rotation, geo_n);
-        Vector n_w     = math::transform_vector(rotation, n);
-        Vector t_w     = math::transform_vector(rotation, t);
-        Vector b_w     = math::mul(bitangent_sign, math::cross3(n_w, t_w));
+        Vector geo_n_w = transform_vector(rotation, geo_n);
+        Vector n_w     = transform_vector(rotation, n);
+        Vector t_w     = transform_vector(rotation, t);
+        Vector b_w     = math::mul(bitangent_sign, cross3(n_w, t_w));
 
         intersection.p = p_w;
         simd::store_float4(intersection.t.v, t_w);
@@ -146,10 +146,10 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
     Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = math::transform_point(world_to_object, ray_origin);
+    ray_origin        = transform_point(world_to_object, ray_origin);
 
     Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+    ray_direction        = transform_vector(world_to_object, ray_direction);
 
     Vector ray_inv_direction = math::reciprocal3(ray_direction);
 
@@ -176,7 +176,7 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
         Matrix3 rotation = math::load_float3x3(transformation.rotation);
-        Vector  geo_n_w  = math::transform_vector(rotation, geo_n);
+        Vector  geo_n_w  = transform_vector(rotation, geo_n);
 
         intersection.p = p_w;
         simd::store_float4(intersection.geo_n.v, geo_n_w);
@@ -195,10 +195,10 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
     Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = math::transform_point(world_to_object, ray_origin);
+    ray_origin        = transform_point(world_to_object, ray_origin);
 
     Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+    ray_direction        = transform_vector(world_to_object, ray_direction);
 
     Vector const ray_inv_direction = math::reciprocal3(ray_direction);
 
@@ -221,9 +221,9 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
 bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
                        Node_stack& node_stack) const noexcept {
-    //	math::Ray tray;
-    //	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
-    //	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+    //	ray tray;
+    //	tray.origin = transform_point(ray.origin, transformation.world_to_object);
+    //	tray.set_direction(transform_vector(ray.direction, transformation.world_to_object));
     //	tray.min_t = ray.min_t;
     //	tray.max_t = ray.max_t;
 
@@ -232,10 +232,10 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
     Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = math::transform_point(world_to_object, ray_origin);
+    ray_origin        = transform_point(world_to_object, ray_origin);
 
     Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = math::transform_vector(world_to_object, ray_direction);
+    ray_direction        = transform_vector(world_to_object, ray_direction);
 
     Vector ray_inv_direction = math::reciprocal3(ray_direction);
 
@@ -254,8 +254,8 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 //					   Transformation const& transformation,
 //					   Node_stack& node_stack) const noexcept {
 //	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-//	Vector tray_origin = math::transform_point(world_to_object, ray_origin);
-//	Vector tray_direction = math::transform_vector(world_to_object, ray_direction);
+//	Vector tray_origin = transform_point(world_to_object, ray_origin);
+//	Vector tray_direction = transform_vector(world_to_object, ray_direction);
 
 //	Vector tray_inv_direction = math::reciprocal3(tray_direction);
 //	alignas(16) uint32_t ray_signs[4];
@@ -269,9 +269,9 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 float Mesh::opacity(Ray const& ray, Transformation const& transformation,
                     Materials const& materials, Filter filter, Worker const& worker) const
     noexcept {
-    math::Ray tray;
-    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+    math::ray tray;
+    tray.origin = transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -281,9 +281,9 @@ float Mesh::opacity(Ray const& ray, Transformation const& transformation,
 float3 Mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
                              Materials const& materials, Filter filter, Worker const& worker) const
     noexcept {
-    math::Ray tray;
-    tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+    math::ray tray;
+    tray.origin = transform_point(transformation.world_to_object, ray.origin);
+    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -308,17 +308,17 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r2, sv, tc);
-    float3 const v = math::transform_point(transformation.object_to_world, sv);
+    float3 const v = transform_point(transformation.object_to_world, sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = math::transform_vector(transformation.rotation, sn);
+    float3 const wn = transform_vector(transformation.rotation, sn);
 
     float3 const axis = v - p;
     float const  sl   = math::squared_length(axis);
     float const  d    = std::sqrt(sl);
     float3 const dir  = axis / d;
 
-    float c = -math::dot(wn, dir);
+    float c = -dot(wn, dir);
 
     if (two_sided) {
         c = std::abs(c);
@@ -339,8 +339,8 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
 
 bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
                   bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                  math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                  Sample_from& sample) const noexcept {
+                  AABB const& /*bounds*/, Node_stack& /*node_stack*/, Sample_from& sample) const
+    noexcept {
     float const r = sampler.generate_sample_1D(sampler_dimension);
     auto const  s = distributions_[part].sample(r);
 
@@ -349,10 +349,10 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r0, sv, tc);
-    float3 const ws = math::transform_point(transformation.object_to_world, sv);
+    float3 const ws = transform_point(transformation.object_to_world, sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = math::transform_vector(transformation.rotation, sn);
+    float3 const wn = transform_vector(transformation.rotation, sn);
 
     auto const [x, y] = math::orthonormal_basis(wn);
 
@@ -370,7 +370,7 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
 float Mesh::pdf(Ray const& ray, const shape::Intersection&      intersection,
                 Transformation const& /*transformation*/, float area, bool two_sided,
                 bool /*total_sphere*/) const noexcept {
-    float c = -math::dot(intersection.geo_n, ray.direction);
+    float c = -dot(intersection.geo_n, ray.direction);
 
     if (two_sided) {
         c = std::abs(c);
@@ -388,7 +388,7 @@ bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
 
 bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                   float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                  uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
                   Sample_from& /*sample*/) const noexcept {
     return false;
 }

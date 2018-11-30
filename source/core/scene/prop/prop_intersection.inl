@@ -67,7 +67,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
 }
 
 inline bool Intersection::same_hemisphere(float3 const& v) const noexcept {
-    return math::dot(geo.geo_n, v) > 0.f;
+    return dot(geo.geo_n, v) > 0.f;
 }
 
 }  // namespace scene::prop

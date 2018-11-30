@@ -173,7 +173,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, f
 
     float const wo_dot_h = clamp_dot(wo, h);
 
-    float3 const wi = math::normalize(2.f * wo_dot_h * h - wo);
+    float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
@@ -254,7 +254,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, f
 
     float const wi_dot_h = std::sqrt(1.f - sint2);
 
-    float3 const wi = math::normalize((eta * wo_dot_h - wi_dot_h) * h - eta * wo);
+    float3 const wi = normalize((eta * wo_dot_h - wi_dot_h) * h - eta * wo);
 
     float const n_dot_wi = layer.clamp_reverse_n_dot(wi);
 
@@ -318,12 +318,12 @@ inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alph
     float3 const lwo = layer.world_to_tangent(wo);
 
     // stretch view
-    float3 const v = math::normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
+    float3 const v = normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
 
     // orthonormal basis
     float3 const cross_v_z = float3(v[1], -v[0], 0.f);  // == cross(v, [0, 0, 1])
 
-    float3 const t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
+    float3 const t1 = (v[2] < 0.9999f) ? normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
     float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
     // sample point with polar coordinates (r, phi)
@@ -341,7 +341,7 @@ inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alph
     float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
 
     // unstretch
-    m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
+    m = normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
 
     n_dot_h = clamp(m[2]);
 
@@ -353,7 +353,7 @@ inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alph
 inline float Isotropic::reflect(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
                                 float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,
                                 bxdf::Sample& result) noexcept {
-    float3 const wi = math::normalize(2.f * wo_dot_h * h - wo);
+    float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
@@ -383,7 +383,7 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
     float const abs_wo_dot_h = clamp_abs(wo_dot_h);
 
-    float3 const wi = math::normalize((eta * abs_wo_dot_h - abs_wi_dot_h) * h - eta * wo);
+    float3 const wi = normalize((eta * abs_wo_dot_h - abs_wi_dot_h) * h - eta * wo);
 
     float const n_dot_wi = layer.clamp_reverse_n_dot(wi);
 
@@ -425,10 +425,10 @@ template <typename Layer, typename Fresnel>
 bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_dot_wo,
                                      float wo_dot_h, Layer const& layer,
                                      Fresnel const& fresnel) noexcept {
-    float const n_dot_h = math::saturate(math::dot(layer.n_, h));
+    float const n_dot_h = math::saturate(dot(layer.n_, h));
 
-    float const x_dot_h = math::dot(layer.t_, h);
-    float const y_dot_h = math::dot(layer.b_, h);
+    float const x_dot_h = dot(layer.t_, h);
+    float const y_dot_h = dot(layer.b_, h);
 
     float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.alpha2_, layer.axy_);
     float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
@@ -455,15 +455,15 @@ float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
     float const  t0 = std::sqrt(xi[1] / (1.f - xi[1]));
     float3 const t1 = layer.a_[0] * cos_phi * layer.t_ + layer.a_[1] * sin_phi * layer.b_;
 
-    float3 const h = math::normalize(t0 * t1 + layer.n_);
+    float3 const h = normalize(t0 * t1 + layer.n_);
 
-    float const x_dot_h = math::dot(layer.t_, h);
-    float const y_dot_h = math::dot(layer.b_, h);
-    float const n_dot_h = math::dot(layer.n_, h);
+    float const x_dot_h = dot(layer.t_, h);
+    float const y_dot_h = dot(layer.b_, h);
+    float const n_dot_h = dot(layer.n_, h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
-    float3 const wi = math::normalize(2.f * wo_dot_h * h - wo);
+    float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 

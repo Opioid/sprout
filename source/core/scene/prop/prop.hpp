@@ -54,7 +54,7 @@ class Prop : public entity::Entity {
     shape::Shape const* shape() const noexcept;
     shape::Shape*       shape() noexcept;
 
-    math::AABB const& aabb() const noexcept;
+    AABB const& aabb() const noexcept;
 
     void set_shape_and_materials(Shape_ptr const& shape, Materials const& materials) noexcept;
 
@@ -89,7 +89,7 @@ class Prop : public entity::Entity {
 
     // Pre-transformed AABB in world space.
     // For moving objects it must cover the entire area occupied by the object during the tick.
-    math::AABB aabb_;
+    AABB aabb_;
 
     Shape_ptr shape_;
 

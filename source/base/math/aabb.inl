@@ -56,9 +56,9 @@ inline bool AABB::intersect(float3 const& p) const noexcept {
 }
 
 // This test is presented in the paper
-// "An Efficient and Robust Ray–Box Intersection Algorithm"
+// "An Efficient and Robust ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
-inline bool AABB::intersect_p(Ray const& ray) const noexcept {
+inline bool AABB::intersect_p(ray const& ray) const noexcept {
     /*	int8_t sign_0 = ray.signs[0];
             float min_t = (bounds[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
             float max_t = (bounds[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
@@ -164,7 +164,7 @@ inline bool AABB::intersect_p(FVector ray_origin, FVector ray_inv_direction, FVe
                  _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_p(Ray const& ray, float& hit_t) const noexcept {
+inline bool AABB::intersect_p(ray const& ray, float& hit_t) const noexcept {
     Vector ray_origin        = simd::load_float4(ray.origin.v);
     Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
     Vector ray_min_t         = simd::load_float(&ray.min_t);
@@ -209,7 +209,7 @@ inline bool AABB::intersect_p(Ray const& ray, float& hit_t) const noexcept {
                  _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_inside(Ray const& ray, float& hit_t) const noexcept {
+inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const noexcept {
     Vector const ray_origin        = simd::load_float4(ray.origin.v);
     Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
     Vector const ray_min_t         = simd::load_float(&ray.min_t);

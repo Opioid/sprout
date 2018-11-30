@@ -46,17 +46,17 @@ Emission_grid::Emission_grid(Sampler_settings const& sampler_settings,
 
 Emission_grid::~Emission_grid() noexcept {}
 
-float3 Emission_grid::emission(math::Ray const& ray, Transformation const& transformation,
+float3 Emission_grid::emission(ray const& ray, Transformation const& transformation,
                                float step_size, rnd::Generator& rng, Filter filter,
                                Worker const& worker) const noexcept {
-    math::Ray const rn = ray.normalized();
+    math::ray const rn = ray.normalized();
 
     float min_t = rn.min_t + rng.random_float() * step_size;
 
     float3 emission(0.f);
 
-    float3 const rp_o = math::transform_point(transformation.world_to_object, rn.origin);
-    float3 const rd_o = math::transform_vector(transformation.world_to_object, rn.direction);
+    float3 const rp_o = transform_point(transformation.world_to_object, rn.origin);
+    float3 const rd_o = transform_vector(transformation.world_to_object, rn.direction);
 
     for (; min_t < rn.max_t; min_t += step_size) {
         float3 const p_o = rp_o + min_t * rd_o;  // r_o.point(min_t);
@@ -88,17 +88,17 @@ Flow_vis_grid::Flow_vis_grid(Sampler_settings const& sampler_settings,
 
 Flow_vis_grid::~Flow_vis_grid() noexcept {}
 
-float3 Flow_vis_grid::emission(math::Ray const& ray, Transformation const& transformation,
+float3 Flow_vis_grid::emission(ray const& ray, Transformation const& transformation,
                                float step_size, rnd::Generator& rng, Filter filter,
                                Worker const& worker) const noexcept {
-    math::Ray const rn = ray.normalized();
+    math::ray const rn = ray.normalized();
 
     float min_t = rn.min_t + rng.random_float() * step_size;
 
     float3 emission(0.f);
 
-    float3 const rp_o = math::transform_point(transformation.world_to_object, rn.origin);
-    float3 const rd_o = math::transform_vector(transformation.world_to_object, rn.direction);
+    float3 const rp_o = transform_point(transformation.world_to_object, rn.origin);
+    float3 const rd_o = transform_vector(transformation.world_to_object, rn.direction);
 
     for (; min_t < rn.max_t; min_t += step_size) {
         float3 const p_o = rp_o + min_t * rd_o;  // r_o.point(min_t);
@@ -110,8 +110,8 @@ float3 Flow_vis_grid::emission(math::Ray const& ray, Transformation const& trans
     /*
             float density = 0.f;
 
-            float3 const rp_o = math::transform_point(rn.origin, transformation.world_to_object);
-            float3 const rd_o = math::transform_vector(rn.direction,
+            float3 const rp_o = transform_point(rn.origin, transformation.world_to_object);
+            float3 const rd_o = transform_vector(rn.direction,
        transformation.world_to_object);
 
             for (; min_t < rn.max_t; min_t += step_size) {

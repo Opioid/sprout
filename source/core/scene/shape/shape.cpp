@@ -7,7 +7,7 @@ namespace scene::shape {
 
 Shape::~Shape() noexcept {}
 
-math::AABB const& Shape::aabb() const noexcept {
+AABB const& Shape::aabb() const noexcept {
     return aabb_;
 }
 
@@ -19,12 +19,11 @@ float3 Shape::object_to_texture_vector(float3 const& v) const noexcept {
     return v * inv_extent_;
 }
 
-math::AABB Shape::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const
-    noexcept {
+AABB Shape::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const noexcept {
     return aabb_.transform(m);
 }
 
-math::AABB Shape::transformed_aabb(math::Transformation const& t) const noexcept {
+AABB Shape::transformed_aabb(math::Transformation const& t) const noexcept {
     return transformed_aabb(float4x4(t), t);
 }
 

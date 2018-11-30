@@ -34,9 +34,9 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    math::Ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+    math::ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
-    math::AABB const aabb(float3(-1.f), float3(1.f));
+    AABB const aabb(float3(-1.f), float3(1.f));
 
     float hit_t;
     if (!aabb.intersect_p(local_ray, hit_t)) {
@@ -60,7 +60,7 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
     float3 normal(0.f);
     normal[i] = math::copysign1(local_p[i]);
 
-    intersection.geo_n = math::transform_vector(transformation.rotation, normal);
+    intersection.geo_n = transform_vector(transformation.rotation, normal);
 
     intersection.epsilon = 3e-3f * hit_t;
     intersection.part    = 0;
@@ -71,9 +71,9 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
 bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                      float& epsilon) const noexcept {
     float3 v      = transformation.position - ray.origin;
-    float  b      = math::dot(v, ray.direction);
+    float  b      = dot(v, ray.direction);
     float  radius = transformation.scale[0];
-    float  det    = (b * b) - math::dot(v, v) + (radius * radius);
+    float  det    = (b * b) - dot(v, v) + (radius * radius);
 
     if (det > 0.f) {
         float dist = std::sqrt(det);
@@ -102,9 +102,9 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    math::Ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+    math::ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
-    math::AABB const aabb(float3(-1.f), float3(1.f));
+    AABB const aabb(float3(-1.f), float3(1.f));
 
     float hit_t;
     if (!aabb.intersect_p(local_ray, hit_t)) {
@@ -122,19 +122,19 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation,
                     Materials const& materials, Filter filter, Worker const& worker) const
     noexcept {
     float3 v      = transformation.position - ray.origin;
-    float  b      = math::dot(v, ray.direction);
+    float  b      = dot(v, ray.direction);
     float  radius = transformation.scale[0];
-    float  det    = (b * b) - math::dot(v, v) + (radius * radius);
+    float  det    = (b * b) - dot(v, v) + (radius * radius);
 
     if (det > 0.f) {
         float dist = std::sqrt(det);
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            float3 n = math::normalize(ray.point(t0) - transformation.position);
+            float3 n = normalize(ray.point(t0) - transformation.position);
 
-            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
-            xyz        = math::normalize(xyz);
+            float3 xyz = transform_vector_transposed(transformation.rotation, n);
+            xyz        = normalize(xyz);
 
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
@@ -145,10 +145,10 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation,
         float t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            float3 n = math::normalize(ray.point(t1) - transformation.position);
+            float3 n = normalize(ray.point(t1) - transformation.position);
 
-            float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
-            xyz        = math::normalize(xyz);
+            float3 xyz = transform_vector_transposed(transformation.rotation, n);
+            xyz        = normalize(xyz);
 
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * math::Pi_inv);
@@ -168,16 +168,15 @@ float3 Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transfo
 
 bool Cube::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
                   Transformation const& transformation, float area, bool two_sided,
-                  sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                  Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
                   Sample_to& sample) const noexcept {
     return Cube::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                         node_stack, sample);
 }
 
 bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
-                  float /*area*/, bool /*two_sided*/, sampler::Sampler&     sampler,
-                  uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
-    noexcept {
+                  float /*area*/, bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
+                  Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = math::squared_length(axis);
     float const  radius              = transformation.scale[0];
@@ -205,9 +204,9 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 }
 
 bool Cube::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
-                  bool /*two_sided*/, sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                  math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                  Sample_from& /*sample*/) const noexcept {
+                  bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                  AABB const& /*bounds*/, Node_stack& /*node_stack*/, Sample_from& /*sample*/) const
+    noexcept {
     return false;
 }
 
@@ -231,8 +230,8 @@ bool Cube::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
 }
 
 bool Cube::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                  float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
+                  uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
                   Sample_from& /*sample*/) const noexcept {
     return false;
 }
@@ -240,7 +239,7 @@ bool Cube::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tran
 float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
                    Transformation const& /*transformation*/, float area, bool /*two_sided*/) const
     noexcept {
-    //	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
+    //	float3 xyz = transform_vector_transposed(wn, transformation.rotation);
     //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     //	uv[1] =  std::acos(xyz[1]) * math::Pi_inv;
 
@@ -250,7 +249,7 @@ float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
     float const sin_theta = std::sin(intersection.uv[1] * math::Pi);
 
     float const sl = ray.max_t * ray.max_t;
-    float const c  = -math::dot(intersection.geo_n, ray.direction);
+    float const c  = -dot(intersection.geo_n, ray.direction);
     return sl / (c * area * sin_theta);
 }
 

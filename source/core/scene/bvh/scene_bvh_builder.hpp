@@ -30,7 +30,7 @@ class Builder {
 
         void clear() noexcept;
 
-        math::AABB aabb;
+        AABB aabb;
 
         uint8_t axis;
 
@@ -45,7 +45,7 @@ class Builder {
     void split(Build_node* node, index begin, index end, uint32_t max_shapes,
                std::vector<T*>& out_props) noexcept;
 
-    Split_candidate<T> splitting_plane(math::AABB const& aabb, index begin, index end) noexcept;
+    Split_candidate<T> splitting_plane(AABB const& aabb, index begin, index end) noexcept;
 
     void serialize(Build_node* node) noexcept;
 
@@ -56,7 +56,7 @@ class Builder {
     static void assign(Build_node* node, index begin, index end,
                        std::vector<T*>& out_data) noexcept;
 
-    static math::AABB aabb(index begin, index end) noexcept;
+    static AABB aabb(index begin, index end) noexcept;
 
     std::vector<Split_candidate<T>> split_candidates_;
 

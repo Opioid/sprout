@@ -51,9 +51,9 @@ uint32_t Builder_base::current_node_index() const {
     return current_node_;
 }
 
-math::AABB Builder_base::submesh_aabb(index begin, index end,
-                                      const std::vector<Index_triangle>& triangles,
-                                      const std::vector<Vertex>&         vertices) {
+AABB Builder_base::submesh_aabb(index begin, index end,
+                                const std::vector<Index_triangle>& triangles,
+                                const std::vector<Vertex>&         vertices) {
     float  max_float = std::numeric_limits<float>::max();
     float3 min(max_float, max_float, max_float);
     float3 max(-max_float, -max_float, -max_float);
@@ -75,7 +75,7 @@ math::AABB Builder_base::submesh_aabb(index begin, index end,
     //	max.y += epsilon;
     //	max.z += epsilon;
 
-    return math::AABB(min, max);
+    return AABB(min, max);
 }
 
 }  // namespace scene::shape::triangle::bvh

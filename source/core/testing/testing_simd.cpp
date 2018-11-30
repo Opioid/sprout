@@ -183,7 +183,7 @@ void rcp() {
 }
 
 inline float3 simd_normalized_0(float3 const& v) {
-    float il = math::rsqrt(math::dot(v, v));
+    float il = math::rsqrt(dot(v, v));
     return il * v;
 }
 
@@ -209,7 +209,7 @@ inline float simd_dotlly(float3 const& a, float3 const& b) {
     //	float x;
     //	_mm_store_ss(&x, d);
     //	return x;
-    return math::dot(a, b);
+    return dot(a, b);
 }
 
 inline float3 simd_normalized_2(float3 const& v) {
@@ -224,7 +224,7 @@ inline float3 simd_normalized_2(float3 const& v) {
 
     //	return result;
 
-    return math::normalize(v);
+    return normalize(v);
 }
 
 void normalize() {
@@ -242,8 +242,8 @@ void normalize() {
     }
 
     {
-        std::cout << "math::normalize()" << std::endl;
-        std::cout << vectors[0] << " : " << math::normalize(vectors[0]) << std::endl;
+        std::cout << "normalize()" << std::endl;
+        std::cout << vectors[0] << " : " << normalize(vectors[0]) << std::endl;
 
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -251,8 +251,8 @@ void normalize() {
 
         for (size_t i = 0; i < num_values; ++i) {
             float3 x = vectors[i];
-            float3 r = math::normalize(x);
-            result   = math::normalize(r + result);
+            float3 r = normalize(x);
+            result   = normalize(r + result);
         }
 
         auto const duration = chrono::seconds_since(start);
@@ -318,8 +318,8 @@ void normalize() {
     }
 
     {
-        std::cout << "math::normalize()" << std::endl;
-        std::cout << vectors[0] << " : " << math::normalize(vectors[0]) << std::endl;
+        std::cout << "normalize()" << std::endl;
+        std::cout << vectors[0] << " : " << normalize(vectors[0]) << std::endl;
 
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -327,8 +327,8 @@ void normalize() {
 
         for (size_t i = 0; i < num_values; ++i) {
             float3 x = vectors[i];
-            float3 r = math::normalize(x);
-            result   = math::normalize(r + result);
+            float3 r = normalize(x);
+            result   = normalize(r + result);
         }
 
         auto const duration = chrono::seconds_since(start);
@@ -434,7 +434,7 @@ void reciprocal() {
     }
 
     {
-        std::cout << vectors[0] << " : " << math::normalize(vectors[0]) << std::endl;
+        std::cout << vectors[0] << " : " << normalize(vectors[0]) << std::endl;
 
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -505,8 +505,8 @@ void dot() {
     }
 
     {
-        std::cout << "math::dot()" << std::endl;
-        std::cout << vectors[0] << " : " << math::dot(vectors[0], vectors[1]) << std::endl;
+        std::cout << "dot()" << std::endl;
+        std::cout << vectors[0] << " : " << dot(vectors[0], vectors[1]) << std::endl;
 
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -515,7 +515,7 @@ void dot() {
         for (size_t i = 0, len = num_values - 1; i < len; ++i) {
             float3 a = vectors[i];
             float3 b = vectors[i + 1];
-            float  r = math::dot(a, b);
+            float  r = dot(a, b);
             result += r;
         }
 
@@ -1000,9 +1000,9 @@ void basis() {
     float3* vectors = new float3[num_values];
 
     for (size_t i = 0; i < num_values; ++i) {
-        vectors[i] = math::normalize(float3(1.f - (2.f * rng.random_float()),
-                                            1.f - (2.f * rng.random_float()),
-                                            1.f - (2.f * rng.random_float())));
+        vectors[i] = normalize(float3(1.f - (2.f * rng.random_float()),
+                                      1.f - (2.f * rng.random_float()),
+                                      1.f - (2.f * rng.random_float())));
     }
 
     float3* ts = new float3[num_values];

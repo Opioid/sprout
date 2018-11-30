@@ -31,7 +31,7 @@ inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler
 
     float3 const is = math::sample_hemisphere_cosine(s2d);
 
-    float3 const wi = math::normalize(layer.tangent_to_world(is));
+    float3 const wi = normalize(layer.tangent_to_world(is));
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 

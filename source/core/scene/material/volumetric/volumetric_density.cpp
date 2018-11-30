@@ -9,7 +9,7 @@ namespace scene::material::volumetric {
 
 Density::Density(Sampler_settings const& sampler_settings) noexcept : Material(sampler_settings) {}
 
-float3 Density::emission(math::Ray const& /*ray*/, Transformation const& /*transformation*/,
+float3 Density::emission(ray const& /*ray*/, Transformation const& /*transformation*/,
                          float /*step_size*/, rnd::Generator& /*rng*/, Filter /*filter*/,
                          Worker const& /*worker*/) const noexcept {
     return float3::identity();

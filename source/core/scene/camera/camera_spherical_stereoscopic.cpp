@@ -60,15 +60,15 @@ bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t 
 
     float3x3 rotation;
     math::set_rotation_y(rotation, phi);
-    float3 const eye_pos = math::transform_vector(rotation, eye_offsets_[view]);
+    float3 const eye_pos = transform_vector(rotation, eye_offsets_[view]);
 
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
-    ray = create_ray(math::transform_point(transformation.object_to_world, eye_pos),
-                     math::transform_vector(transformation.rotation, dir), time);
+    ray = create_ray(transform_point(transformation.object_to_world, eye_pos),
+                     transform_vector(transformation.rotation, dir), time);
 
     return true;
 }

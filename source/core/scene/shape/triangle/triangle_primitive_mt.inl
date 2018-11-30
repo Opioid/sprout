@@ -16,30 +16,30 @@ inline Triangle_MT::Triangle_MT(const shape::Vertex& a, const shape::Vertex& b,
 inline Triangle_MT::Vertex::Vertex(const shape::Vertex& v) noexcept
     : p(v.p), n(v.n), t(v.t), uv(v.uv) {}
 
-inline bool Triangle_MT::intersect(math::Ray& ray, float2& uv) const noexcept {
+inline bool Triangle_MT::intersect(ray& ray, float2& uv) const noexcept {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
-    float3 pvec = math::cross(ray.direction, e2);
+    float3 pvec = cross(ray.direction, e2);
 
-    float det     = math::dot(e1, pvec);
+    float det     = dot(e1, pvec);
     float inv_det = 1.f / det;
 
     float3 tvec = ray.origin - a.p;
-    float  u    = math::dot(tvec, pvec) * inv_det;
+    float  u    = dot(tvec, pvec) * inv_det;
 
     if (u < 0.f || u > 1.f) {
         return false;
     }
 
-    float3 qvec = math::cross(tvec, e1);
-    float  v    = math::dot(ray.direction, qvec) * inv_det;
+    float3 qvec = cross(tvec, e1);
+    float  v    = dot(ray.direction, qvec) * inv_det;
 
     if (v < 0.f || u + v > 1.f) {
         return false;
     }
 
-    float hit_t = math::dot(e2, qvec) * inv_det;
+    float hit_t = dot(e2, qvec) * inv_det;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         ray.max_t = hit_t;
@@ -51,30 +51,30 @@ inline bool Triangle_MT::intersect(math::Ray& ray, float2& uv) const noexcept {
     return false;
 }
 
-inline bool Triangle_MT::intersect_p(math::Ray const& ray) const noexcept {
+inline bool Triangle_MT::intersect_p(ray const& ray) const noexcept {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
-    float3 pvec = math::cross(ray.direction, e2);
+    float3 pvec = cross(ray.direction, e2);
 
-    float det     = math::dot(e1, pvec);
+    float det     = dot(e1, pvec);
     float inv_det = 1.f / det;
 
     float3 tvec = ray.origin - a.p;
-    float  u    = math::dot(tvec, pvec) * inv_det;
+    float  u    = dot(tvec, pvec) * inv_det;
 
     if (u < 0.f || u > 1.f) {
         return false;
     }
 
-    float3 qvec = math::cross(tvec, e1);
-    float  v    = math::dot(ray.direction, qvec) * inv_det;
+    float3 qvec = cross(tvec, e1);
+    float  v    = dot(ray.direction, qvec) * inv_det;
 
     if (v < 0.f || u + v > 1.f) {
         return false;
     }
 
-    float hit_t = math::dot(e2, qvec) * inv_det;
+    float hit_t = dot(e2, qvec) * inv_det;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         return true;
@@ -87,7 +87,7 @@ inline void Triangle_MT::interpolate(float2 uv, float3& p, float3& n, float2& tc
     float w = 1.f - uv[0] - uv[1];
 
     p  = w * a.p + uv[0] * b.p + uv[1] * c.p;
-    n  = math::normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
+    n  = normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
@@ -108,8 +108,8 @@ inline void Triangle_MT::interpolate_data(float2 uv, float3& n, float3& t, float
     noexcept {
     float w = 1.f - uv[0] - uv[1];
 
-    n  = math::normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
-    t  = math::normalize(w * a.t + uv[0] * b.t + uv[1] * c.t);
+    n  = normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
+    t  = normalize(w * a.t + uv[0] * b.t + uv[1] * c.t);
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
@@ -123,45 +123,45 @@ inline float3 Triangle_MT::normal() const noexcept {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
-    return math::normalize(math::cross(e1, e2));
+    return normalize(cross(e1, e2));
 }
 
 inline float Triangle_MT::area() const noexcept {
-    return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
+    return 0.5f * length(cross(b.p - a.p, c.p - a.p));
 }
 
 inline float Triangle_MT::area(float3 const& scale) const noexcept {
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;
-    return 0.5f * math::length(math::cross(sb - sa, sc - sa));
+    return 0.5f * length(cross(sb - sa, sc - sa));
 }
 
-static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, math::Ray& ray,
+static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, ray& ray,
                              float2& uv) noexcept {
     float3 e1 = b - a;
     float3 e2 = c - a;
 
-    float3 pvec = math::cross(ray.direction, e2);
+    float3 pvec = cross(ray.direction, e2);
 
-    float det     = math::dot(e1, pvec);
+    float det     = dot(e1, pvec);
     float inv_det = 1.f / det;
 
     float3 tvec = ray.origin - a;
-    float  u    = math::dot(tvec, pvec) * inv_det;
+    float  u    = dot(tvec, pvec) * inv_det;
 
     //	if (u < 0.f || u > 1.f) {
     //		return false;
     //	}
 
-    float3 qvec = math::cross(tvec, e1);
-    float  v    = math::dot(ray.direction, qvec) * inv_det;
+    float3 qvec = cross(tvec, e1);
+    float  v    = dot(ray.direction, qvec) * inv_det;
 
     //	if (v < 0.f || u + v > 1.f) {
     //		return false;
     //	}
 
-    float hit_t = math::dot(e2, qvec) * inv_det;
+    float hit_t = dot(e2, qvec) * inv_det;
 
     //	if (hit_t > ray.min_t && hit_t < ray.max_t) {
     //		ray.max_t = hit_t;
@@ -269,31 +269,31 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 }
 
 static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c,
-                               math::Ray const& ray) noexcept {
+                               ray const& ray) noexcept {
     // Implementation A
     /*	float3 e1 = b.p - a.p;
             float3 e2 = c.p - a.p;
 
-            float3 pvec = math::cross(ray.direction, e2);
+            float3 pvec = cross(ray.direction, e2);
 
-            float det = math::dot(e1, pvec);
+            float det = dot(e1, pvec);
             float inv_det = 1.f / det;
 
             float3 tvec = ray.origin - a.p;
-            float u = math::dot(tvec, pvec) * inv_det;
+            float u = dot(tvec, pvec) * inv_det;
 
             if (u < 0.f || u > 1.f) {
                     return false;
             }
 
-            float3 qvec = math::cross(tvec, e1);
-            float v = math::dot(ray.direction, qvec) * inv_det;
+            float3 qvec = cross(tvec, e1);
+            float v = dot(ray.direction, qvec) * inv_det;
 
             if (v < 0.f || u + v > 1.f) {
                     return false;
             }
 
-            float hit_t = math::dot(e2, qvec) * inv_det;
+            float hit_t = dot(e2, qvec) * inv_det;
 
             if (hit_t > ray.min_t && hit_t < ray.max_t) {
                     return true;
@@ -306,18 +306,18 @@ static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c
     float3 e1 = b - a;
     float3 e2 = c - a;
 
-    float3 pvec = math::cross(ray.direction, e2);
+    float3 pvec = cross(ray.direction, e2);
 
-    float det     = math::dot(e1, pvec);
+    float det     = dot(e1, pvec);
     float inv_det = 1.f / det;
 
     float3 tvec = ray.origin - a;
-    float  u    = math::dot(tvec, pvec) * inv_det;
+    float  u    = dot(tvec, pvec) * inv_det;
 
-    float3 qvec = math::cross(tvec, e1);
-    float  v    = math::dot(ray.direction, qvec) * inv_det;
+    float3 qvec = cross(tvec, e1);
+    float  v    = dot(ray.direction, qvec) * inv_det;
 
-    float hit_t = math::dot(e2, qvec) * inv_det;
+    float hit_t = dot(e2, qvec) * inv_det;
 
     uint8_t ca = static_cast<uint8_t>(u > 0.f);
     uint8_t cb = static_cast<uint8_t>(u < 1.f);
@@ -371,7 +371,7 @@ static inline void interpolate_p(float3 const& a, float3 const& b, float3 const&
 }
 
 static inline float area(float3 const& a, float3 const& b, float3 const& c) noexcept {
-    return 0.5f * math::length(math::cross(b - a, c - a));
+    return 0.5f * length(cross(b - a, c - a));
 }
 
 static inline float area(float3 const& a, float3 const& b, float3 const& c,
@@ -379,7 +379,7 @@ static inline float area(float3 const& a, float3 const& b, float3 const& c,
     float3 const sa = scale * a;
     float3 const sb = scale * b;
     float3 const sc = scale * c;
-    return 0.5f * math::length(math::cross(sb - sa, sc - sa));
+    return 0.5f * length(cross(sb - sa, sc - sa));
 }
 
 static inline float2 interpolate_uv(const Shading_vertex_MT& a, const Shading_vertex_MT& b,
@@ -394,8 +394,8 @@ static inline void interpolate_data(const Shading_vertex_MT& a, const Shading_ve
                                     float2& tc) noexcept {
     float const w = 1.f - uv[0] - uv[1];
 
-    n  = math::normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
-    t  = math::normalize(w * a.t + uv[0] * b.t + uv[1] * c.t);
+    n  = normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
+    t  = normalize(w * a.t + uv[0] * b.t + uv[1] * c.t);
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
@@ -450,8 +450,8 @@ static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_v
     float4 const n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
     float4 const t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
 
-    n = math::normalize(n_u.xyz());
-    t = math::normalize(t_v.xyz());
+    n = normalize(n_u.xyz());
+    t = normalize(t_v.xyz());
 
     tc = float2(n_u[3], t_v[3]);
 }
@@ -546,31 +546,31 @@ inline Vertex_MTC::Vertex_MTC(packed_float3 const& p, packed_float3 const& n,
     }
 }
 
-inline bool intersect(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c, math::Ray& ray,
+inline bool intersect(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c, ray& ray,
                       float2& uv) noexcept {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
-    float3 pvec = math::cross(ray.direction, e2);
+    float3 pvec = cross(ray.direction, e2);
 
-    float det     = math::dot(e1, pvec);
+    float det     = dot(e1, pvec);
     float inv_det = 1.f / det;
 
     float3 tvec = ray.origin - a.p;
-    float  u    = math::dot(tvec, pvec) * inv_det;
+    float  u    = dot(tvec, pvec) * inv_det;
 
     if (u < 0.f || u > 1.f) {
         return false;
     }
 
-    float3 qvec = math::cross(tvec, e1);
-    float  v    = math::dot(ray.direction, qvec) * inv_det;
+    float3 qvec = cross(tvec, e1);
+    float  v    = dot(ray.direction, qvec) * inv_det;
 
     if (v < 0.f || u + v > 1.f) {
         return false;
     }
 
-    float hit_t = math::dot(e2, qvec) * inv_det;
+    float hit_t = dot(e2, qvec) * inv_det;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         ray.max_t = hit_t;
@@ -583,30 +583,30 @@ inline bool intersect(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC
 }
 
 inline bool intersect_p(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                        math::Ray const& ray) noexcept {
+                        ray const& ray) noexcept {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
-    float3 pvec = math::cross(ray.direction, e2);
+    float3 pvec = cross(ray.direction, e2);
 
-    float det     = math::dot(e1, pvec);
+    float det     = dot(e1, pvec);
     float inv_det = 1.f / det;
 
     float3 tvec = ray.origin - a.p;
-    float  u    = math::dot(tvec, pvec) * inv_det;
+    float  u    = dot(tvec, pvec) * inv_det;
 
     if (u < 0.f || u > 1.f) {
         return false;
     }
 
-    float3 qvec = math::cross(tvec, e1);
-    float  v    = math::dot(ray.direction, qvec) * inv_det;
+    float3 qvec = cross(tvec, e1);
+    float  v    = dot(ray.direction, qvec) * inv_det;
 
     if (v < 0.f || u + v > 1.f) {
         return false;
     }
 
-    float hit_t = math::dot(e2, qvec) * inv_det;
+    float hit_t = dot(e2, qvec) * inv_det;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         return true;
@@ -640,14 +640,14 @@ inline void interpolate_data(const Vertex_MTC& a, const Vertex_MTC& b, const Ver
     float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
     float4 t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
 
-    n = math::normalize(n_u.xyz());
-    t = math::normalize(t_v.xyz());
+    n = normalize(n_u.xyz());
+    t = normalize(t_v.xyz());
 
     tc = float2(n_u[3], t_v[3]);
 }
 
 inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c) noexcept {
-    return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
+    return 0.5f * length(cross(b.p - a.p, c.p - a.p));
 }
 
 inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
@@ -655,7 +655,7 @@ inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;
-    return 0.5f * math::length(math::cross(sb - sa, sc - sa));
+    return 0.5f * length(cross(sb - sa, sc - sa));
 }
 
 }  // namespace scene::shape::triangle

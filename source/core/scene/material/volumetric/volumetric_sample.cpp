@@ -50,9 +50,9 @@ void Sample::set(float anisotropy) {
 
 float Sample::phase(float3 const& wo, float3 const& wi) const noexcept {
     float const g = anisotropy_;
-    return phase_hg(math::dot(wo, wi), g);
+    return phase_hg(dot(wo, wi), g);
     //	float const k = 1.55f * g - (0.55f * g) * (g * g);
-    //	return phase_schlick(math::dot(wo, wi), k);
+    //	return phase_schlick(dot(wo, wi), k);
 }
 
 float Sample::sample(float3 const& wo, float2 r2, float3& wi) const noexcept {

@@ -27,7 +27,7 @@ bool check(float3 const& majorant_mt, float mt);
 // Code for hetereogeneous transmittance inspired by:
 // https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
 
-static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math::Ray const& ray,
+static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray const& ray,
                                                        float minorant_mu_t, float majorant_mu_t,
                                                        Tracking::Material const& material,
                                                        float srs, Tracking::Filter filter,
@@ -79,9 +79,9 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, math
     }
 }
 
-static inline bool tracking_transmitted(float3& transmitted, math::Ray const& ray,
-                                        Tracking::CM const& cm, Tracking::Material const& material,
-                                        float srs, Tracking::Filter filter, rnd::Generator& rng,
+static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tracking::CM const& cm,
+                                        Tracking::Material const& material, float srs,
+                                        Tracking::Filter filter, rnd::Generator& rng,
                                         Worker& worker) {
     float const mt = cm.majorant_mu_t();
 
@@ -161,9 +161,9 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
         float3 const origin = shape->object_to_texture_point(local_origin);
         float3 const dir    = shape->object_to_texture_vector(local_dir);
 
-        math::Ray local_ray(origin, dir, ray.min_t, ray.max_t);
+        math::ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
-        const float ray_offset = Ray_epsilon / math::length(dir);
+        const float ray_offset = Ray_epsilon / length(dir);
 
         auto const& tree = *material.volume_tree();
 
@@ -206,7 +206,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
     }
 }
 
-static inline bool decomposition_tracking(math::Ray const& ray, Tracking::CM const& data,
+static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& data,
                                           Tracking::Material const& material,
                                           Tracking::Filter filter, rnd::Generator& rng,
                                           Worker& worker, float& t_out, float3& w) {
@@ -278,7 +278,7 @@ static inline bool decomposition_tracking(math::Ray const& ray, Tracking::CM con
     }
 }
 
-bool Tracking::tracking(math::Ray const& ray, CM const& cm, Material const& material, float srs,
+bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                         Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                         float3& w) {
     float const mt = cm.majorant_mu_t();
@@ -343,7 +343,7 @@ bool Tracking::tracking(math::Ray const& ray, CM const& cm, Material const& mate
     }
 }
 
-Tracking::Result Tracking::tracking(math::Ray const& ray, CM const& cm, Material const& material,
+Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
                                     float srs, Filter filter, rnd::Generator& rng, Worker& worker,
                                     float& t_out, float3& w, float3& li) {
     float const mt = cm.majorant_mu_t();
@@ -413,7 +413,7 @@ Tracking::Result Tracking::tracking(math::Ray const& ray, CM const& cm, Material
     }
 }
 
-bool Tracking::tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
+bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
                         float3& w) {
     float3 const mu_t = mu.a + mu.s;
 
@@ -463,7 +463,7 @@ bool Tracking::tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng,
     }
 }
 
-bool Tracking::tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
+bool Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
                         float3& w, float3& li) {
     CC const& mu = cce.cc;
 

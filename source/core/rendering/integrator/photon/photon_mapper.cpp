@@ -35,8 +35,8 @@ void Mapper::start_pixel() noexcept {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
                       Worker& worker) noexcept {
-    math::AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
-                                                         : worker.scene().caustic_aabb();
+    AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
+                                                   : worker.scene().caustic_aabb();
 
     bool const infinite_world = worker.scene().is_infinite();
 
@@ -70,13 +70,13 @@ size_t Mapper::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-uint32_t Mapper::trace_photon(uint32_t frame, math::AABB const& bounds, bool infinite_world,
+uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
                               Worker& worker, uint32_t max_photons, Photon* photons,
                               uint32_t& num_photons) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
-    math::AABB unnatural_limit = bounds;
+    AABB unnatural_limit = bounds;
     unnatural_limit.scale(8.f);
 
     Filter const filter = Filter::Undefined;
@@ -219,7 +219,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, math::AABB const& bounds, bool inf
     return 0;
 }
 
-bool Mapper::generate_light_ray(uint32_t frame, math::AABB const& bounds, Worker& worker, Ray& ray,
+bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                                 Light const**       light_out,
                                 shape::Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);

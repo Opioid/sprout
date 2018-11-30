@@ -22,7 +22,7 @@ Model::~Model() noexcept {
 void Model::compile() noexcept {
     release();
 
-    float const elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
+    float const elevation = std::max(dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
 
     for (int32_t i = 0; i < Num_bands; ++i) {
         float const ga = ground_albedo_.value(i);
@@ -49,7 +49,7 @@ void Model::set_turbidity(float turbidity) noexcept {
 
 float3 Model::evaluate_sky(float3 const& wi) const noexcept {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
-    float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
+    float const wi_dot_s = std::min(-dot(wi, sun_direction_), 0.99999f);
 
     //	float const theta = std::acos(wi_dot_z);
     float const gamma = std::acos(wi_dot_s);
@@ -77,7 +77,7 @@ float3 Model::evaluate_sky(float3 const& wi) const noexcept {
 
 float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
-    float const wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
+    float const wi_dot_s = std::min(-dot(wi, sun_direction_), 0.99999f);
 
     float const theta = std::acos(wi_dot_z);
     float const gamma = std::acos(wi_dot_s);

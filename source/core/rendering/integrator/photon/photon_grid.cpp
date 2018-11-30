@@ -27,7 +27,7 @@ Grid::~Grid() noexcept {
     memory::free_aligned(grid_);
 }
 
-void Grid::resize(math::AABB const& aabb) noexcept {
+void Grid::resize(AABB const& aabb) noexcept {
     aabb_ = aabb;
 
     int3 const dimensions = map3(aabb.max()) + int3(3);

@@ -18,7 +18,7 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
         return {float3::identity(), 0.f};
     }
 
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
@@ -103,7 +103,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
 
     float3 const color = math::lerp(color_b_, color_a_, f);
 
-    float const n_dot_h = math::saturate(math::dot(n_, h));
+    float const n_dot_h = math::saturate(dot(n_, h));
 
     fresnel::Schlick const fresnel(color);
 
@@ -141,7 +141,7 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
-    float const n_dot_h = math::saturate(math::dot(n_, h));
+    float const n_dot_h = math::saturate(dot(n_, h));
 
     fresnel::Conductor const conductor(ior_, absorption_);
 

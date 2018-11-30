@@ -29,16 +29,16 @@ class Infinite_sphere final : public Shape {
         noexcept override final;
 
     bool sample(uint32_t part, float3 const& p, float3 const& n,
-                Transformation const& transformation, float area, bool two_sided,
-                sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                Sample_to& sample) const noexcept override final;
+                Transformation const& transformation, float area, bool two_sided, Sampler& sampler,
+                uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const
+        noexcept override final;
 
     bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                 Node_stack& node_stack, Sample_to& sample) const noexcept override final;
 
     bool sample(uint32_t part, Transformation const& transformation, float area, bool two_sided,
-                sampler::Sampler& sampler, uint32_t sampler_dimension, math::AABB const& bounds,
+                Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                 Node_stack& node_stack, Sample_from& sample) const noexcept override final;
 
     float pdf(Ray const& ray, Intersection const& intersection,
@@ -49,8 +49,8 @@ class Infinite_sphere final : public Shape {
                 float area, bool two_sided, Sample_to& sample) const noexcept override final;
 
     bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                math::AABB const& bounds, Sample_from& sample) const noexcept override final;
+                bool two_sided, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
+                Sample_from& sample) const noexcept override final;
 
     float pdf_uv(Ray const& ray, Intersection const& intersection,
                  Transformation const& transformation, float area, bool two_sided) const

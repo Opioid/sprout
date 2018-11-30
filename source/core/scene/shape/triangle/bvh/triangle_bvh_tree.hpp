@@ -43,7 +43,7 @@ class Tree {
 
     Node* allocate_nodes(uint32_t num_nodes) noexcept;
 
-    math::AABB aabb() const noexcept;
+    AABB aabb() const noexcept;
 
     uint32_t num_parts() const noexcept;
 
@@ -52,10 +52,9 @@ class Tree {
 
     uint32_t current_triangle() const noexcept;
 
-    bool intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const
-        noexcept;
+    bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const noexcept;
 
-    bool intersect(math::Ray& ray, Node_stack& node_stack) const noexcept;
+    bool intersect(ray& ray, Node_stack& node_stack) const noexcept;
 
     bool intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
                    FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
@@ -65,16 +64,16 @@ class Tree {
                    FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
                    Node_stack& node_stack) const noexcept;
 
-    bool intersect_p(math::Ray const& ray, Node_stack& node_stack) const noexcept;
+    bool intersect_p(ray const& ray, Node_stack& node_stack) const noexcept;
 
     bool intersect_p(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
                      FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
                      Node_stack& node_stack) const noexcept;
 
-    float opacity(math::Ray& ray, uint64_t time, Materials const& materials,
+    float opacity(ray& ray, uint64_t time, Materials const& materials,
                   material::Sampler_settings::Filter filter, Worker const& worker) const noexcept;
 
-    float3 absorption(math::Ray& ray, uint64_t time, Materials const& materials,
+    float3 absorption(ray& ray, uint64_t time, Materials const& materials,
                       material::Sampler_settings::Filter filter, Worker const& worker) const
         noexcept;
 

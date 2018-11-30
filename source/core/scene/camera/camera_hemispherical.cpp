@@ -56,7 +56,7 @@ bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame, ui
     auto&          transformation = transformation_at(time, temp);
 
     ray.origin = transformation.position;
-    ray.set_direction(math::transform_vector(transformation.rotation, dir));
+    ray.set_direction(transform_vector(transformation.rotation, dir));
     ray.min_t = 0.f;
     ray.max_t = Ray_max_t;
     ray.time  = time;

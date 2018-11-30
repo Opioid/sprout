@@ -26,7 +26,7 @@ void test() {
 
     float3 wo;
 
-    wo = math::normalize(float3(0.25f, 0.25f, -0.5f));
+    wo = normalize(float3(0.25f, 0.25f, -0.5f));
     ;
     sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);
@@ -82,10 +82,10 @@ void rough_refraction() {
 
     //  float3 const geo_n(0.f, 0.f, 1.f);
 
-    //  n = math::normalize(float3(0.5f, 0.5f, 0.5f));
+    //  n = normalize(float3(0.5f, 0.5f, 0.5f));
     //  math::orthonormal_basis(n, t, b);
 
-    float3 wo = math::normalize(float3(0.2f, -0.2f, 0.9f));
+    float3 wo = normalize(float3(0.2f, -0.2f, 0.9f));
 
     sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);

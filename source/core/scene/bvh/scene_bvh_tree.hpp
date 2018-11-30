@@ -25,7 +25,7 @@ struct Tree {
 
     std::vector<T*> data_;
 
-    math::AABB aabb_;
+    AABB aabb_;
 };
 
 }  // namespace scene::bvh

@@ -51,7 +51,7 @@ void size() {
 
     print_size<scene::entity::Composed_transformation>("Composed_transformation", 208);
 
-    print_size<math::Ray>("math::Ray", 64);
+    print_size<ray>("ray", 64);
     print_size<scene::Ray>("scene::Ray", 80);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);

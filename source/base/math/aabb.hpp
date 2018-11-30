@@ -7,7 +7,7 @@
 
 namespace math {
 
-struct Ray;
+struct ray;
 
 struct AABB {
     AABB() noexcept = default;
@@ -29,14 +29,14 @@ struct AABB {
 
     bool intersect(float3 const& p) const noexcept;
 
-    bool intersect_p(Ray const& ray) const noexcept;
+    bool intersect_p(ray const& ray) const noexcept;
 
     bool intersect_p(FVector ray_origin, FVector ray_inv_direction, FVector ray_min_t,
                      FVector ray_max_t) const noexcept;
 
-    bool intersect_p(Ray const& ray, float& hit_t) const noexcept;
+    bool intersect_p(ray const& ray, float& hit_t) const noexcept;
 
-    bool intersect_inside(Ray const& ray, float& hit_t) const noexcept;
+    bool intersect_inside(ray const& ray, float& hit_t) const noexcept;
 
     float3 normal(float3 const& p) const noexcept;
 
@@ -68,5 +68,7 @@ struct AABB {
 };
 
 }  // namespace math
+
+using AABB = math::AABB;
 
 #endif

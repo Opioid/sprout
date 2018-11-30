@@ -20,9 +20,9 @@ class Data_interleaved {
     uint32_t num_triangles() const;
     uint32_t current_triangle() const;
 
-    bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
+    bool intersect(uint32_t index, ray& ray, float2& uv) const;
 
-    bool intersect_p(uint32_t index, math::Ray const& ray) const;
+    bool intersect_p(uint32_t index, ray const& ray) const;
 
     bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
                      uint32_t index) const;

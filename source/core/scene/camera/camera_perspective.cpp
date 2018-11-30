@@ -60,10 +60,10 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp);
 
-    float3 const origin_w = math::transform_point(transformation.object_to_world, origin);
+    float3 const origin_w = transform_point(transformation.object_to_world, origin);
 
-    direction                = math::normalize(direction);
-    float3 const direction_w = math::transform_vector(transformation.object_to_world, direction);
+    direction                = normalize(direction);
+    float3 const direction_w = transform_vector(transformation.object_to_world, direction);
 
     ray = create_ray(origin_w, direction_w, time);
 
@@ -108,9 +108,9 @@ void Perspective::on_update(uint64_t time, Worker& worker) noexcept {
     //	float3 right_top  ( ratio,  1.f, z);
     //	float3 left_bottom(-ratio, -1.f, z);
 
-    float3 left_top    = math::transform_vector(lens_tilt_, float3(-ratio, 1.f, 0.f));
-    float3 right_top   = math::transform_vector(lens_tilt_, float3(ratio, 1.f, 0.f));
-    float3 left_bottom = math::transform_vector(lens_tilt_, float3(-ratio, -1.f, 0.f));
+    float3 left_top    = transform_vector(lens_tilt_, float3(-ratio, 1.f, 0.f));
+    float3 right_top   = transform_vector(lens_tilt_, float3(ratio, 1.f, 0.f));
+    float3 left_bottom = transform_vector(lens_tilt_, float3(-ratio, -1.f, 0.f));
 
     left_top[2] += z;
     right_top[2] += z;
@@ -126,7 +126,7 @@ void Perspective::on_update(uint64_t time, Worker& worker) noexcept {
 void Perspective::update_focus(uint64_t time, Worker& worker) noexcept {
     if (focus_.use_point && lens_radius_ > 0.f) {
         float3 direction = left_top_ + focus_.point[0] * d_x_ + focus_.point[1] * d_y_;
-        direction        = math::normalize(direction);
+        direction        = normalize(direction);
 
         Transformation temp;
         auto const&    transformation = transformation_at(time, temp);

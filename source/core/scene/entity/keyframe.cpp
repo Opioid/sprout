@@ -26,14 +26,14 @@ void Keyframe::interpolate(Keyframe& result, Keyframe const& other, float t) con
 
 void Keyframe::transform(math::Transformation& result, math::Transformation const& from) const
     noexcept {
-    result.position = math::transform_point(float4x4(from), transformation.position);
+    result.position = transform_point(float4x4(from), transformation.position);
     result.rotation = math::quaternion::mul(transformation.rotation, from.rotation);
     result.scale    = transformation.scale;
 }
 
 void Keyframe::transform(Keyframe& result, Keyframe const& from) const noexcept {
-    result.transformation.position = math::transform_point(float4x4(from.transformation),
-                                                           transformation.position);
+    result.transformation.position = transform_point(float4x4(from.transformation),
+                                                     transformation.position);
     result.transformation.rotation = math::quaternion::mul(from.transformation.rotation,
                                                            transformation.rotation);
     result.transformation.scale    = transformation.scale;

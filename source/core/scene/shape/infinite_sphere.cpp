@@ -30,8 +30,8 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
         intersection.t = transformation.rotation.r[0];
         intersection.b = transformation.rotation.r[1];
 
-        float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
-        xyz        = math::normalize(xyz);
+        float3 xyz         = transform_vector_transposed(transformation.rotation, ray.direction);
+        xyz                = normalize(xyz);
         intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
         intersection.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
@@ -57,8 +57,8 @@ bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           t
     if (ray.max_t >= Ray_max_t) {
         intersection.epsilon = 5e-4f;
 
-        float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
-        xyz        = math::normalize(xyz);
+        float3 xyz         = transform_vector_transposed(transformation.rotation, ray.direction);
+        xyz                = normalize(xyz);
         intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
         intersection.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
@@ -111,9 +111,8 @@ float3 Infinite_sphere::thin_absorption(Ray const& /*ray*/,
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& n,
                              Transformation const& transformation, float /*area*/,
-                             bool /*two_sided*/, sampler::Sampler& sampler,
-                             uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
-                             Sample_to& sample) const noexcept {
+                             bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
+                             Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     auto const [x, y] = math::orthonormal_basis(n);
 
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
@@ -121,8 +120,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 
     sample.wi = dir;
 
-    float3 const xyz = math::normalize(
-        math::transform_vector_transposed(transformation.rotation, dir));
+    float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, dir));
 
     sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
@@ -139,16 +137,14 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
                              Transformation const& transformation, float /*area*/,
-                             bool /*two_sided*/, sampler::Sampler& sampler,
-                             uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
-                             Sample_to& sample) const noexcept {
+                             bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
+                             Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_sphere_uniform(uv);
 
     sample.wi = dir;
 
-    float3 const xyz = math::normalize(
-        math::transform_vector_transposed(transformation.rotation, dir));
+    float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, dir));
 
     sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
@@ -164,8 +160,8 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
 }
 
 bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
-                             float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                             uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                             float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
+                             uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
                              Node_stack& /*node_stack*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
@@ -192,7 +188,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
 
     float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    sample.wi = math::transform_vector(transformation.rotation, dir);
+    sample.wi = transform_vector(transformation.rotation, dir);
     sample.uv = uv;
     // sin_theta because of the uv weight
     sample.pdf = 1.f / ((4.f * math::Pi) * sin_theta);
@@ -205,9 +201,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     return true;
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&   transformation,
-                             float /*area*/, bool /*two_sided*/, sampler::Sampler& sampler,
-                             uint32_t sampler_dimension, math::AABB const& bounds,
+bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
+                             float /*area*/, bool /*two_sided*/, Sampler&        sampler,
+                             uint32_t sampler_dimension, AABB const& bounds,
                              Sample_from& sample) const noexcept {
     float const phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
     float const theta = uv[1] * math::Pi;
@@ -218,13 +214,13 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     float3 const ls(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    float3 const ws = -math::transform_vector(transformation.rotation, ls);
+    float3 const ws = -transform_vector(transformation.rotation, ls);
 
     auto const [t, b] = math::orthonormal_basis(ws);
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const radius = math::length(bounds.halfsize());
+    float const radius = length(bounds.halfsize());
 
     float3 const disk = math::sample_oriented_disk_concentric(r0, t, b);
 
@@ -243,8 +239,8 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 float Infinite_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& intersection,
                               Transformation const& /*transformation*/, float /*area*/,
                               bool /*two_sided*/) const noexcept {
-    //	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
-    //	xyz = math::normalize(xyz);
+    //	float3 xyz = transform_vector_transposed(wi, transformation.rotation);
+    //	xyz = normalize(xyz);
     //	uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
     //	uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 

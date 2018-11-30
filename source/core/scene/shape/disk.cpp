@@ -23,15 +23,15 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
                      Intersection& intersection) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float const d     = math::dot(normal, transformation.position);
-    float const denom = -math::dot(normal, ray.direction);
-    float const numer = math::dot(normal, ray.origin) - d;
+    float const d     = dot(normal, transformation.position);
+    float const denom = -dot(normal, ray.direction);
+    float const numer = dot(normal, ray.origin) - d;
     float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
-        float  l = math::dot(k, k);
+        float  l = dot(k, k);
 
         float radius = transformation.scale[0];
 
@@ -46,8 +46,8 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
             float3 sk          = k / radius;
             float  uv_scale    = 0.5f * transformation.scale[2];
-            intersection.uv[0] = (math::dot(t, sk) + 1.f) * uv_scale;
-            intersection.uv[1] = (math::dot(b, sk) + 1.f) * uv_scale;
+            intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
+            intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
 
             intersection.epsilon = 5e-4f * hit_t;
             intersection.part    = 0;
@@ -66,15 +66,15 @@ bool Disk::intersect_fast(Ray& ray, Transformation const&           transformati
                           Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
-        float  l = math::dot(k, k);
+        float  l = dot(k, k);
 
         float radius = transformation.scale[0];
 
@@ -87,8 +87,8 @@ bool Disk::intersect_fast(Ray& ray, Transformation const&           transformati
 
             float3 sk          = k / radius;
             float  uv_scale    = 0.5f * transformation.scale[2];
-            intersection.uv[0] = (math::dot(t, sk) + 1.f) * uv_scale;
-            intersection.uv[1] = (math::dot(b, sk) + 1.f) * uv_scale;
+            intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
+            intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
 
             intersection.epsilon = 5e-4f * hit_t;
             intersection.part    = 0;
@@ -107,15 +107,15 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
                      float& epsilon) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
-        float  l = math::dot(k, k);
+        float  l = dot(k, k);
 
         float radius = transformation.scale[0];
 
@@ -134,15 +134,15 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
                        Node_stack& /*node_stack*/) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
-        float  l = math::dot(k, k);
+        float  l = dot(k, k);
 
         float radius = transformation.scale[0];
 
@@ -159,23 +159,23 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation,
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
-        float  l = math::dot(k, k);
+        float  l = dot(k, k);
 
         float radius = transformation.scale[0];
 
         if (l <= radius * radius) {
             float3 sk       = k / radius;
             float  uv_scale = 0.5f * transformation.scale[2];
-            float2 uv((-math::dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
-                      (-math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
+            float2 uv((-dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
+                      (-dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
         }
@@ -189,23 +189,23 @@ float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformatio
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = math::dot(normal, transformation.position);
-    float denom = -math::dot(normal, ray.direction);
-    float numer = math::dot(normal, ray.origin) - d;
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
-        float  l = math::dot(k, k);
+        float  l = dot(k, k);
 
         float radius = transformation.scale[0];
 
         if (l <= radius * radius) {
             float3 sk       = k / radius;
             float  uv_scale = 0.5f * transformation.scale[2];
-            float2 uv((math::dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
-                      (math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
+            float2 uv((dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
+                      (dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
             return materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter,
                                                  worker);
@@ -217,21 +217,21 @@ float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformatio
 
 bool Disk::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
                   Transformation const& transformation, float area, bool two_sided,
-                  sampler::Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                  Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
                   Sample_to& sample) const noexcept {
     return Disk::sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
                         node_stack, sample);
 }
 
 bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
-                  float area, bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                  float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                   Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = math::sample_disk_concentric(r2);
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +
-                      transformation.scale[0] * math::transform_vector(transformation.rotation, ls);
+                      transformation.scale[0] * transform_vector(transformation.rotation, ls);
 
     float3 const axis = ws - p;
 
@@ -240,7 +240,7 @@ bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 
     float3 const wi = axis / t;
 
-    float c = -math::dot(transformation.rotation.r[2], wi);
+    float c = -dot(transformation.rotation.r[2], wi);
 
     if (two_sided) {
         c = std::abs(c);
@@ -265,15 +265,15 @@ bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 }
 
 bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
-                  bool /*two_sided*/, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                  math::AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                  Sample_from& sample) const noexcept {
+                  bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
+                  AABB const& /*bounds*/, Node_stack& /*node_stack*/, Sample_from& sample) const
+    noexcept {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = math::sample_disk_concentric(r0);
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +
-                      math::transform_vector(transformation.rotation, transformation.scale[0] * ls);
+                      transform_vector(transformation.rotation, transformation.scale[0] * ls);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, transformation.rotation);
@@ -291,7 +291,7 @@ float Disk::pdf(Ray const&            ray, const shape::Intersection& /*intersec
                 bool /*total_sphere*/) const noexcept {
     float3 const normal = transformation.rotation.r[2];
 
-    float c = -math::dot(normal, ray.direction);
+    float c = -dot(normal, ray.direction);
 
     if (two_sided) {
         c = std::abs(c);
@@ -308,8 +308,8 @@ bool Disk::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
 }
 
 bool Disk::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+                  float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
+                  uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
                   Sample_from& /*sample*/) const noexcept {
     return false;
 }

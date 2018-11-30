@@ -36,7 +36,7 @@ inline void Layer::set_tangent_frame(float3 const& n) noexcept {
 }
 
 inline float Layer::n_dot(float3 const& v) const noexcept {
-    return math::dot(n_, v);
+    return dot(n_, v);
 }
 
 inline float Layer::abs_n_dot(float3 const& v) const noexcept {
@@ -44,17 +44,17 @@ inline float Layer::abs_n_dot(float3 const& v) const noexcept {
 }
 
 inline float Layer::clamp_n_dot(float3 const& v) const noexcept {
-    // return std::max(math::dot(n, v), Dot_min);
+    // return std::max(dot(n, v), Dot_min);
     return clamp_dot(n_, v);
 }
 
 inline float Layer::clamp_abs_n_dot(float3 const& v) const noexcept {
-    // return std::max(math::dot(n, v), Dot_min);
+    // return std::max(dot(n, v), Dot_min);
     return clamp_abs_dot(n_, v);
 }
 
 inline float Layer::clamp_reverse_n_dot(float3 const& v) const noexcept {
-    // return std::max(-math::dot(n, v), Dot_min);
+    // return std::max(-dot(n, v), Dot_min);
     return clamp_reverse_dot(n_, v);
 }
 
@@ -113,7 +113,7 @@ inline float3 const& Sample::geometric_normal() const noexcept {
 }
 
 inline bool Sample::same_hemisphere(float3 const& v) const noexcept {
-    return math::dot(geo_n_, v) > 0.f;
+    return dot(geo_n_, v) > 0.f;
 }
 
 inline void Sample::set_basis(float3 const& geo_n, float3 const& wo) noexcept {

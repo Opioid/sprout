@@ -41,15 +41,15 @@ bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
-    direction        = math::normalize(direction);
+    direction        = normalize(direction);
 
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
     auto&          transformation = transformation_at(time, temp);
 
-    ray = create_ray(math::transform_point(transformation.object_to_world, eye_offsets_[view]),
-                     math::transform_vector(transformation.object_to_world, direction), time);
+    ray = create_ray(transform_point(transformation.object_to_world, eye_offsets_[view]),
+                     transform_vector(transformation.object_to_world, direction), time);
 
     return true;
 }

@@ -9,7 +9,7 @@ namespace procedural {
 namespace starburst {
 
 static inline float2 sqrtc(float2 c) {
-    float l = math::length(c);
+    float l = length(c);
     return 0.7071067f * float2(std::sqrt(l + c[0]), std::sqrt(l - c[0]) * std::copysign(1.f, c[1]));
 }
 

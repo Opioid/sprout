@@ -133,7 +133,7 @@ bool check_normal_map(float3 const& n, float3 const& tangent_space_n, float2 uv)
 }
 
 void print_vector(float3 const& v) {
-    std::cout << v << " |" << math::length(v) << "|" << std::endl;
+    std::cout << v << " |" << length(v) << "|" << std::endl;
 }
 
 }  // namespace scene::material::testing

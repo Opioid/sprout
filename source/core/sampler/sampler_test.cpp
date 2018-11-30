@@ -221,7 +221,7 @@ void render_quad(std::string const& name, Sampler& sampler, float2 center, Rende
         float2 const d = s - center;
         //		float const scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
 
-        float const scale = math::length(d);
+        float const scale = length(d);
 
         float2 const p = scale * d + center;
 

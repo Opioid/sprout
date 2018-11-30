@@ -38,7 +38,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool) const noexcept
         return {(n_dot_wi * math::Pi_inv * (1.f - f)) * (attenuation * diffuse_color_), pdf};
     }
 
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 

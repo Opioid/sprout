@@ -25,9 +25,9 @@ struct Triangle_MT {
     float    bitangent_sign;
     uint32_t material_index;
 
-    bool intersect(math::Ray& ray, float2& uv) const noexcept;
+    bool intersect(ray& ray, float2& uv) const noexcept;
 
-    bool intersect_p(math::Ray const& ray) const noexcept;
+    bool intersect_p(ray const& ray) const noexcept;
 
     void interpolate(float2 uv, float3& p, float3& n, float2& tc) const noexcept;
 

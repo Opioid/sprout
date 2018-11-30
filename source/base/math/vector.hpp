@@ -42,4 +42,6 @@ using float4 = math::Vector4f_a;
 
 using int4 = math::Vector4i_a;
 
+using namespace math;
+
 #endif

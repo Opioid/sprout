@@ -8,16 +8,12 @@ namespace scene::light {
 class Prop_image_light : public Prop_light {
   public:
     bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
-                bool total_sphere, sampler::Sampler& sampler, uint32_t sampler_dimension,
+                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                 Worker const& worker, Sample_to& result) const noexcept override final;
 
-    bool sample(float3 const& p, Transformation const& transformation, sampler::Sampler& sampler,
-                uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const
+    bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
+                AABB const& bounds, Worker const& worker, Sample_from& result) const
         noexcept override final;
-
-    bool sample(Transformation const& transformation, sampler::Sampler& sampler,
-                uint32_t sampler_dimension, math::AABB const& bounds, Worker const& worker,
-                Sample_from& result) const noexcept override final;
 
     float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
               Worker const& worker) const noexcept override final;

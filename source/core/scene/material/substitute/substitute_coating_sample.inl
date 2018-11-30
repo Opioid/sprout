@@ -15,7 +15,7 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi, bool) const noe
         return {float3::identity(), 0.f};
     }
 
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
@@ -34,7 +34,7 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi, bool) const noe
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
 
     /*
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
@@ -58,7 +58,7 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi, bool) const noe
         return {coating.reflection, coating.pdf / 3.f};
     }
 
-    float3 const h1 = math::normalize(wo1 + wi1);
+    float3 const h1 = normalize(wo1 + wi1);
 
     if (1.f == layer_.metallic_) {
         auto const base = layer_.pure_gloss_evaluate(wi1, wo1, h1, wo_dot_h, avoid_caustics_);

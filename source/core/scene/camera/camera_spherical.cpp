@@ -54,8 +54,7 @@ bool Spherical::generate_ray(Camera_sample const& sample, uint32_t frame, uint32
     Transformation temp;
     auto&          transformation = transformation_at(time, temp);
 
-    ray = create_ray(transformation.position, math::transform_vector(transformation.rotation, dir),
-                     time);
+    ray = create_ray(transformation.position, transform_vector(transformation.rotation, dir), time);
 
     return true;
 }

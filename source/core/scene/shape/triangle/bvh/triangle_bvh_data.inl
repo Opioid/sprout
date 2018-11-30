@@ -32,14 +32,14 @@ uint32_t Data<Intersection_triangle, Shading_triangle>::current_triangle() const
 }
 
 template <typename Intersection_triangle, typename Shading_triangle>
-bool Data<Intersection_triangle, Shading_triangle>::intersect(uint32_t index, math::Ray& ray,
+bool Data<Intersection_triangle, Shading_triangle>::intersect(uint32_t index, ray& ray,
                                                               float2& uv) const {
     return intersection_triangles_[index].intersect(ray, uv);
 }
 
 template <typename Intersection_triangle, typename Shading_triangle>
-bool Data<Intersection_triangle, Shading_triangle>::intersect_p(uint32_t         index,
-                                                                math::Ray const& ray) const {
+bool Data<Intersection_triangle, Shading_triangle>::intersect_p(uint32_t   index,
+                                                                ray const& ray) const {
     return intersection_triangles_[index].intersect_p(ray);
 }
 

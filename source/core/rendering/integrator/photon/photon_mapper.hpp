@@ -28,6 +28,8 @@ class Map;
 
 class Mapper : public Integrator {
   public:
+    using AABB = math::AABB;
+
     struct Settings {
         uint32_t max_bounces;
 
@@ -49,11 +51,10 @@ class Mapper : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    uint32_t trace_photon(uint32_t frame, math::AABB const& bounds, bool infinite_world,
-                          Worker& worker, uint32_t max_photons, Photon* photons,
-                          uint32_t& num_photons) noexcept;
+    uint32_t trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world, Worker& worker,
+                          uint32_t max_photons, Photon* photons, uint32_t& num_photons) noexcept;
 
-    bool generate_light_ray(uint32_t frame, math::AABB const& bounds, Worker& worker, Ray& ray,
+    bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                             Light const** light, scene::shape::Sample_from& light_sample) noexcept;
 
     const Settings settings_;

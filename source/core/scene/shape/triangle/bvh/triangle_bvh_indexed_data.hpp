@@ -31,9 +31,9 @@ class Indexed_data {
 
     uint32_t current_triangle() const noexcept;
 
-    bool intersect(uint32_t index, math::Ray& ray, float2& uv) const noexcept;
+    bool intersect(uint32_t index, ray& ray, float2& uv) const noexcept;
 
-    bool intersect_p(uint32_t index, math::Ray const& ray) const noexcept;
+    bool intersect_p(uint32_t index, ray const& ray) const noexcept;
 
     bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t, uint32_t index,
                    Vector& u, Vector& v) const noexcept;
@@ -111,9 +111,9 @@ class Indexed_data_interleaved {
     uint32_t num_triangles() const;
     uint32_t current_triangle() const;
 
-    bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
+    bool intersect(uint32_t index, ray& ray, float2& uv) const;
 
-    bool intersect_p(uint32_t index, math::Ray const& ray) const;
+    bool intersect_p(uint32_t index, ray const& ray) const;
 
     void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
 
@@ -168,9 +168,9 @@ class Hybrid_data {
     uint32_t num_triangles() const;
     uint32_t current_triangle() const;
 
-    bool intersect(uint32_t index, math::Ray& ray, float2& uv) const;
+    bool intersect(uint32_t index, ray& ray, float2& uv) const;
 
-    bool intersect_p(uint32_t index, math::Ray const& ray) const;
+    bool intersect_p(uint32_t index, ray const& ray) const;
 
     bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t, uint32_t index,
                    Vector& u, Vector& v) const;

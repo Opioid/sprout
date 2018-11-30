@@ -159,57 +159,54 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
 
     float3x3 rx;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[0].a = math::transform_vector(rx, segment_controls[0]);
-    segments[0].b = math::transform_vector(
-        rx, float3(0.f, segment_controls[0][1], -segment_controls[0][2]));
+    segments[0].a = transform_vector(rx, segment_controls[0]);
+    segments[0].b = transform_vector(rx,
+                                     float3(0.f, segment_controls[0][1], -segment_controls[0][2]));
 
     ax += -0.1f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[1].a = segments[0].a + math::transform_vector(rx, segment_controls[1]);
-    segments[1].b = segments[0].b + math::transform_vector(rx, float3(0.f, segment_controls[1][1],
-                                                                      -segment_controls[1][2]));
+    segments[1].a = segments[0].a + transform_vector(rx, segment_controls[1]);
+    segments[1].b = segments[0].b + transform_vector(rx, float3(0.f, segment_controls[1][1],
+                                                                -segment_controls[1][2]));
 
     ax += -0.5f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[2].a = segments[1].a + math::transform_vector(rx, segment_controls[2]);
-    segments[2].b = segments[1].b + math::transform_vector(rx, float3(0.f, segment_controls[2][1],
-                                                                      -segment_controls[2][2]));
+    segments[2].a = segments[1].a + transform_vector(rx, segment_controls[2]);
+    segments[2].b = segments[1].b + transform_vector(rx, float3(0.f, segment_controls[2][1],
+                                                                -segment_controls[2][2]));
 
     ax += -0.6f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[3].a = segments[2].a + math::transform_vector(rx, segment_controls[3]);
-    segments[3].b = segments[2].b + math::transform_vector(rx, float3(0.f, segment_controls[3][1],
-                                                                      -segment_controls[3][2]));
+    segments[3].a = segments[2].a + transform_vector(rx, segment_controls[3]);
+    segments[3].b = segments[2].b + transform_vector(rx, float3(0.f, segment_controls[3][1],
+                                                                -segment_controls[3][2]));
 
     ax += -0.8f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[4].a = segments[3].a + math::transform_vector(rx, segment_controls[4]);
-    segments[4].b = segments[3].b + math::transform_vector(rx, float3(0.f, segment_controls[4][1],
-                                                                      -segment_controls[4][2]));
+    segments[4].a = segments[3].a + transform_vector(rx, segment_controls[4]);
+    segments[4].b = segments[3].b + transform_vector(rx, float3(0.f, segment_controls[4][1],
+                                                                -segment_controls[4][2]));
 
     ax += -0.4f;
     math::set_rotation_x(rx, lean_factor * ax);
-    segments[5].a = segments[4].a + math::transform_vector(rx, segment_controls[5]);
+    segments[5].a = segments[4].a + transform_vector(rx, segment_controls[5]);
 
     for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
-        v.p = packed_float3(
-            math::transform_vector(rotation,
-                                   float3(-segments[i].a[0], segments[i].a[1], segments[i].a[2])) +
-            offset);
+        v.p = packed_float3(transform_vector(rotation, float3(-segments[i].a[0], segments[i].a[1],
+                                                              segments[i].a[2])) +
+                            offset);
 
         v.uv = float2(1.f - segment_uvs[i][0], segment_uvs[i][1]);
         vertices.push_back(v);
 
         v.p = packed_float3(
-            math::transform_vector(rotation, float3(0.f, segments[i].b[1], segments[i].b[2])) +
-            offset);
+            transform_vector(rotation, float3(0.f, segments[i].b[1], segments[i].b[2])) + offset);
         v.uv = float2(0.5f, segment_uvs[i][1]);
         vertices.push_back(v);
 
-        v.p = packed_float3(
-            math::transform_vector(rotation,
-                                   float3(segments[i].a[0], segments[i].a[1], segments[i].a[2])) +
-            offset);
+        v.p  = packed_float3(transform_vector(rotation, float3(segments[i].a[0], segments[i].a[1],
+                                                              segments[i].a[2])) +
+                            offset);
         v.uv = segment_uvs[i];
         vertices.push_back(v);
     }
@@ -217,7 +214,7 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
     uint32_t i = num_segments + 1;
 
     v.p = packed_float3(
-        math::transform_vector(rotation, float3(0.f, segments[i].a[1], segments[i].a[2])) + offset);
+        transform_vector(rotation, float3(0.f, segments[i].a[1], segments[i].a[2])) + offset);
     v.uv = float2(0.5f, segment_uvs[i][1]);
 
     vertices.push_back(v);
@@ -237,7 +234,7 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
         auto const e1 = b - a;
         auto const e2 = c - a;
 
-        triangle_normals[i] = math::normalize(math::cross(e1, e2));
+        triangle_normals[i] = normalize(cross(e1, e2));
     }
 
     struct Shading_normal {
@@ -263,7 +260,7 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
     }
 
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {
-        vertices[i].n = math::normalize(normals[i].sum / static_cast<float>(normals[i].num));
+        vertices[i].n = normalize(normals[i].sum / static_cast<float>(normals[i].num));
     }
 }
 

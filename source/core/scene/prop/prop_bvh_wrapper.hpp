@@ -26,7 +26,7 @@ class BVH_wrapper {
 
     void set_infinite_props(std::vector<Prop*> const& infite_props) noexcept;
 
-    math::AABB const& aabb() const noexcept;
+    AABB const& aabb() const noexcept;
 
     bool intersect(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const
         noexcept;

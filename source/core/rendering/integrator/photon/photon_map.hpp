@@ -29,7 +29,7 @@ class Map {
     size_t num_bytes() const noexcept;
 
   private:
-    math::AABB calculate_aabb(thread::Pool& pool) const noexcept;
+    AABB calculate_aabb(thread::Pool& pool) const noexcept;
 
     uint32_t num_paths_;
 

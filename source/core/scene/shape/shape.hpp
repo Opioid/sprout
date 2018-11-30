@@ -32,19 +32,19 @@ class Morphable_shape;
 
 class Shape {
   public:
-    using Transformation = entity::Composed_transformation;
     using Filter         = material::Sampler_settings::Filter;
+    using Sampler        = sampler::Sampler;
+    using Transformation = entity::Composed_transformation;
 
     virtual ~Shape() noexcept;
 
-    math::AABB const& aabb() const noexcept;
+    AABB const& aabb() const noexcept;
 
     float3 object_to_texture_point(float3 const& p) const noexcept;
     float3 object_to_texture_vector(float3 const& v) const noexcept;
 
-    virtual math::AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
-        noexcept;
-    virtual math::AABB transformed_aabb(math::Transformation const& t) const noexcept;
+    virtual AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const noexcept;
+    virtual AABB transformed_aabb(math::Transformation const& t) const noexcept;
 
     virtual uint32_t num_parts() const noexcept;
 
@@ -76,17 +76,16 @@ class Shape {
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
                         Transformation const& transformation, float area, bool two_sided,
-                        sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample_to& sample) const noexcept = 0;
+                        Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
+                        Sample_to& sample) const noexcept = 0;
 
     virtual bool sample(uint32_t part, float3 const& p, Transformation const& transformation,
-                        float area, bool two_sided, sampler::Sampler& sampler,
-                        uint32_t sampler_dimension, Node_stack& node_stack, Sample_to& sample) const
-        noexcept = 0;
+                        float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
+                        Node_stack& node_stack, Sample_to& sample) const noexcept = 0;
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
-                        bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        math::AABB const& bounds, Node_stack& node_stack, Sample_from& sample) const
+                        bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
+                        AABB const& bounds, Node_stack& node_stack, Sample_from& sample) const
         noexcept = 0;
 
     // Both pdf functions implicitely assume that the passed
@@ -102,8 +101,8 @@ class Shape {
                         Sample_to& sample) const noexcept = 0;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                        bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                        math::AABB const& bounds, Sample_from& sample) const noexcept = 0;
+                        bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
+                        AABB const& bounds, Sample_from& sample) const noexcept = 0;
 
     virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
                          Transformation const& transformation, float area, bool two_sided) const
@@ -124,7 +123,7 @@ class Shape {
     virtual size_t num_bytes() const noexcept = 0;
 
   protected:
-    math::AABB aabb_;
+    AABB aabb_;
 
     float3 inv_extent_;
 };

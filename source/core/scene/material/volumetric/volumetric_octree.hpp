@@ -68,7 +68,7 @@ class Gridtree {
 
     bool is_valid() const noexcept;
 
-    bool intersect(math::Ray& ray, CM& data) const noexcept;
+    bool intersect(ray& ray, CM& data) const noexcept;
 
     size_t num_bytes() const noexcept;
 

@@ -42,10 +42,10 @@ void test() {
     //	float3 b(-0.979966f, -0.172462f, 0.0996202f);
     //	float3 n(0.199167f, -0.848824f, 0.489725f);
 
-    //	float3 arbitrary = math::normalize(float3(0.5f, 0.5f, 0.5f));
+    //	float3 arbitrary = normalize(float3(0.5f, 0.5f, 0.5f));
 
-    float3 wo = math::normalize(float3(0.4f, 0.4f, 0.6f));
-    float3 wi = math::normalize(float3(0.f, 0.f, 1.f));
+    float3 wo = normalize(float3(0.4f, 0.4f, 0.6f));
+    float3 wi = normalize(float3(0.f, 0.f, 1.f));
 
     setup.test(wi, wo, t, b, n, sampler);
 
@@ -78,7 +78,7 @@ void test() {
     float3 b(0.f, 1.f, 0.f);
     float3 n(0.f, 0.f, 1.f);
 
-    float3 arbitrary = math::normalize(float3(0.5f, 0.5f, 0.5f));
+    float3 arbitrary = normalize(float3(0.5f, 0.5f, 0.5f));
 
     float3 wo = n;
 
@@ -125,7 +125,7 @@ void Setup::test(float3 const& wi, float3 const& wo, float3 const& t, float3 con
     {
         auto /*const*/ result = sample.evaluate(wi, true);
 
-        result.reflection *= math::dot(n, wo);
+        result.reflection *= dot(n, wo);
 
         print(result);
     }

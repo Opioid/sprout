@@ -52,7 +52,7 @@ class Morphable_mesh : public Shape, public Morphable_shape {
                 Node_stack& node_stack, Sample_to& sample) const noexcept override final;
 
     bool sample(uint32_t part, Transformation const& transformation, float area, bool two_sided,
-                sampler::Sampler& sampler, uint32_t sampler_dimension, math::AABB const& bounds,
+                sampler::Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                 Node_stack& node_stack, Sample_from& sample) const noexcept override final;
 
     float pdf(Ray const& ray, const shape::Intersection& intersection,
@@ -64,7 +64,7 @@ class Morphable_mesh : public Shape, public Morphable_shape {
 
     bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
                 bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                math::AABB const& bounds, Sample_from& sample) const noexcept override final;
+                AABB const& bounds, Sample_from& sample) const noexcept override final;
 
     float pdf_uv(Ray const& ray, const shape::Intersection& intersection,
                  Transformation const& transformation, float area, bool two_sided) const

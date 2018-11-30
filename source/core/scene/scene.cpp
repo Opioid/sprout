@@ -85,12 +85,12 @@ void Scene::finish(uint64_t frame_step, uint64_t frame_duration) noexcept {
     }
 }
 
-math::AABB const& Scene::aabb() const noexcept {
+AABB const& Scene::aabb() const noexcept {
     return prop_bvh_.aabb();
 }
 
-math::AABB Scene::caustic_aabb() const noexcept {
-    math::AABB aabb = math::AABB::empty();
+AABB Scene::caustic_aabb() const noexcept {
+    AABB aabb = AABB::empty();
 
     for (auto const p : finite_props_) {
         if (p->has_caustic_material()) {

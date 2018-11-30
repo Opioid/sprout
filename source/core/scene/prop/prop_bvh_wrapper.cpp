@@ -18,7 +18,7 @@ void BVH_wrapper::set_infinite_props(std::vector<Prop*> const& infite_props) noe
     infinite_props_     = infite_props.data();
 }
 
-math::AABB const& BVH_wrapper::aabb() const noexcept {
+AABB const& BVH_wrapper::aabb() const noexcept {
     return tree_.aabb_;
 }
 

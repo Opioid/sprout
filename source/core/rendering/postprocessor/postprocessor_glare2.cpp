@@ -113,7 +113,7 @@ void Glare2::init(scene::camera::Camera const& camera, thread::Pool& pool) {
                 for (int32_t x = 0; x < kernel_dimensions_[0]; ++x) {
                     int2 const p(-dim[0] + x, -dim[1] + y);
 
-                    float const theta = math::length(float2(p)) * solid_angle;
+                    float const theta = length(float2(p)) * solid_angle;
 
                     float const a = f0(theta);
                     float const b = f1(theta);

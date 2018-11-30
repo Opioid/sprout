@@ -11,13 +11,7 @@ Light::Transformation const& Null_light::transformation_at(uint64_t /*time*/,
 
 bool Null_light::sample(float3 const& /*p*/, float3 const& /*n*/,
                         Transformation const& /*transformation*/, bool /*total_sphere*/,
-                        sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                        Worker const& /*worker*/, Sample_to& /*result*/) const noexcept {
-    return false;
-}
-
-bool Null_light::sample(float3 const& /*p*/, Transformation const& /*transformation*/,
-                        sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                        Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                         Worker const& /*worker*/, Sample_to& /*result*/) const noexcept {
     return false;
 }
@@ -27,8 +21,8 @@ float3 Null_light::evaluate(Sample_to const& /*sample*/, Filter /*filter*/,
     return float3(0.f);
 }
 
-bool Null_light::sample(Transformation const& /*transformation*/, sampler::Sampler& /*sampler*/,
-                        uint32_t /*sampler_dimension*/, math::AABB const& /*bounds*/,
+bool Null_light::sample(Transformation const& /*transformation*/, Sampler& /*sampler*/,
+                        uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
                         Worker const& /*worker*/, Sample_from& /*result*/) const noexcept {
     return false;
 }
@@ -44,7 +38,7 @@ float Null_light::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
     return 0.f;
 }
 
-float3 Null_light::power(math::AABB const& /*scene_bb*/) const noexcept {
+float3 Null_light::power(AABB const& /*scene_bb*/) const noexcept {
     return float3::identity();
 }
 

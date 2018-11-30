@@ -37,7 +37,7 @@ uint32_t Indexed_data<SV>::current_triangle() const noexcept {
 }
 
 template <typename SV>
-bool Indexed_data<SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) const noexcept {
+bool Indexed_data<SV>::intersect(uint32_t index, ray& ray, float2& uv) const noexcept {
     auto const t = triangles_[index];
 
     float3 const a = intersection_vertices_[t.a];
@@ -48,7 +48,7 @@ bool Indexed_data<SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) con
 }
 
 template <typename SV>
-bool Indexed_data<SV>::intersect_p(uint32_t index, math::Ray const& ray) const noexcept {
+bool Indexed_data<SV>::intersect_p(uint32_t index, ray const& ray) const noexcept {
     auto const tri = triangles_[index];
 
     float3 const a = intersection_vertices_[tri.a];
@@ -174,7 +174,7 @@ float3 Indexed_data<SV>::normal(uint32_t index) const noexcept {
 
     float3 const e1 = b - a;
     float3 const e2 = c - a;
-    return math::normalize(math::cross(e1, e2));
+    return normalize(cross(e1, e2));
 }
 
 template <typename SV>
@@ -188,7 +188,7 @@ Vector Indexed_data<SV>::normal_v(uint32_t index) const noexcept {
     Vector const e1 = math::sub(bp, ap);
     Vector const e2 = math::sub(cp, ap);
 
-    return math::normalized3(math::cross3(e1, e2));
+    return math::normalized3(cross3(e1, e2));
 }
 
 template <typename SV>
@@ -313,7 +313,7 @@ uint32_t Indexed_data_interleaved<V>::current_triangle() const {
 }
 
 template <typename V>
-bool Indexed_data_interleaved<V>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
+bool Indexed_data_interleaved<V>::intersect(uint32_t index, ray& ray, float2& uv) const {
     auto const& t = triangles_[index];
 
     V const& a = vertices_[t.a];
@@ -324,7 +324,7 @@ bool Indexed_data_interleaved<V>::intersect(uint32_t index, math::Ray& ray, floa
 }
 
 template <typename V>
-bool Indexed_data_interleaved<V>::intersect_p(uint32_t index, math::Ray const& ray) const {
+bool Indexed_data_interleaved<V>::intersect_p(uint32_t index, ray const& ray) const {
     auto const& tri = triangles_[index];
 
     V const& a = vertices_[tri.a];
@@ -379,7 +379,7 @@ float3 Indexed_data_interleaved<V>::normal(uint32_t index) const {
 
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
-    return math::normalize(math::cross(e1, e2));
+    return normalize(cross(e1, e2));
 }
 
 template <typename V>
@@ -494,7 +494,7 @@ uint32_t Hybrid_data<IV, SV>::current_triangle() const {
 }
 
 template <typename IV, typename SV>
-bool Hybrid_data<IV, SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
+bool Hybrid_data<IV, SV>::intersect(uint32_t index, ray& ray, float2& uv) const {
     uint32_t const vi = index * 3;
 
     IV const& a = intersection_vertices_[vi + 0];
@@ -505,7 +505,7 @@ bool Hybrid_data<IV, SV>::intersect(uint32_t index, math::Ray& ray, float2& uv) 
 }
 
 template <typename IV, typename SV>
-bool Hybrid_data<IV, SV>::intersect_p(uint32_t index, math::Ray const& ray) const {
+bool Hybrid_data<IV, SV>::intersect_p(uint32_t index, ray const& ray) const {
     uint32_t const vi = index * 3;
 
     IV const& a = intersection_vertices_[vi + 0];
@@ -631,7 +631,7 @@ float3 Hybrid_data<IV, SV>::normal(uint32_t index) const {
 
     float3 const e1 = b.p - a.p;
     float3 const e2 = c.p - a.p;
-    return math::normalize(math::cross(e1, e2));
+    return normalize(cross(e1, e2));
 }
 
 template <typename IV, typename SV>
@@ -649,7 +649,7 @@ Vector Hybrid_data<IV, SV>::normal_v(uint32_t index) const {
     Vector const e1 = math::sub(bp, ap);
     Vector const e2 = math::sub(cp, ap);
 
-    return math::normalized3(math::cross3(e1, e2));
+    return math::normalized3(cross3(e1, e2));
 }
 
 template <typename IV, typename SV>

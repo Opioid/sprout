@@ -12,9 +12,9 @@ namespace scene::material::volumetric {
 /*
 Height::Height(Sampler_settings const& sampler_settings) : Density(sampler_settings) {}
 
-float3 Height::optical_depth(Transformation const& transformation, math::AABB const& aabb,
-                                                         math::Ray const& ray, float step_size,
-rnd::Generator& rng, Filter filter, Worker const& worker) const { math::Ray const rn =
+float3 Height::optical_depth(Transformation const& transformation, AABB const& aabb,
+                                                         ray const& ray, float step_size,
+rnd::Generator& rng, Filter filter, Worker const& worker) const { ray const rn =
 ray.normalized();
 
         // This is an optimization of the generic stochastic method

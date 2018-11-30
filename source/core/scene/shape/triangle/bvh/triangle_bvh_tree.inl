@@ -37,11 +37,11 @@ scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) noexcept {
 }
 
 template <typename Data>
-math::AABB Tree<Data>::aabb() const noexcept {
+AABB Tree<Data>::aabb() const noexcept {
     if (nodes_) {
-        return math::AABB(float3(nodes_[0].min()), float3(nodes_[0].max()));
+        return AABB(float3(nodes_[0].min()), float3(nodes_[0].max()));
     } else {
-        return math::AABB::empty();
+        return AABB::empty();
     }
 }
 
@@ -66,7 +66,7 @@ uint32_t Tree<Data>::current_triangle() const noexcept {
 }
 
 template <typename Data>
-bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const
+bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const
     noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
@@ -120,7 +120,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack, Intersection&
 }
 
 template <typename Data>
-bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack) const noexcept {
+bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -257,7 +257,7 @@ bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ra
 }
 
 template <typename Data>
-bool Tree<Data>::intersect_p(math::Ray const& ray, Node_stack& node_stack) const noexcept {
+bool Tree<Data>::intersect_p(ray const& ray, Node_stack& node_stack) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -333,7 +333,7 @@ bool Tree<Data>::intersect_p(FVector ray_origin, FVector ray_direction, FVector 
 }
 
 template <typename Data>
-float Tree<Data>::opacity(math::Ray& ray, uint64_t time, Materials const& materials,
+float Tree<Data>::opacity(ray& ray, uint64_t time, Materials const& materials,
                           material::Sampler_settings::Filter filter, Worker const& worker) const
     noexcept {
     auto& node_stack = worker.node_stack();
@@ -397,7 +397,7 @@ float Tree<Data>::opacity(math::Ray& ray, uint64_t time, Materials const& materi
 }
 
 template <typename Data>
-float3 Tree<Data>::absorption(math::Ray& ray, uint64_t time, Materials const& materials,
+float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials const& materials,
                               material::Sampler_settings::Filter filter, Worker const& worker) const
     noexcept {
     auto& node_stack = worker.node_stack();

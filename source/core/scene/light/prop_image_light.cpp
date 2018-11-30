@@ -16,7 +16,7 @@ namespace scene::light {
 
 bool Prop_image_light::sample(float3 const& p, float3 const& n,
                               Transformation const& transformation, bool total_sphere,
-                              sampler::Sampler& sampler, uint32_t  sampler_dimension,
+                              Sampler& sampler, uint32_t           sampler_dimension,
                               Worker const& /*worker*/, Sample_to& result) const noexcept {
     auto const material = prop_->material(part_);
 
@@ -36,7 +36,7 @@ bool Prop_image_light::sample(float3 const& p, float3 const& n,
         return false;
     }
 
-    if (math::dot(result.wi, n) > 0.f || total_sphere) {
+    if (dot(result.wi, n) > 0.f || total_sphere) {
         result.pdf *= rs.pdf;
         return true;
     }
@@ -44,35 +44,9 @@ bool Prop_image_light::sample(float3 const& p, float3 const& n,
     return false;
 }
 
-bool Prop_image_light::sample(float3 const& p, Transformation const& transformation,
-                              sampler::Sampler& sampler, uint32_t  sampler_dimension,
-                              Worker const& /*worker*/, Sample_to& result) const noexcept {
-    auto const material = prop_->material(part_);
-
-    float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
-
-    auto const rs = material->radiance_sample(s2d);
-    if (0.f == rs.pdf) {
-        return false;
-    }
-
-    float const area = prop_->area(part_);
-
-    bool const two_sided = material->is_two_sided();
-
-    // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result)) {
-        return false;
-    }
-
-    result.pdf *= rs.pdf;
-
-    return true;
-}
-
-bool Prop_image_light::sample(Transformation const& transformation, sampler::Sampler& sampler,
-                              uint32_t sampler_dimension, math::AABB const& bounds,
-                              Worker const& /*worker*/, Sample_from&        result) const noexcept {
+bool Prop_image_light::sample(Transformation const& transformation, Sampler& sampler,
+                              uint32_t sampler_dimension, AABB const& bounds,
+                              Worker const& /*worker*/, Sample_from&  result) const noexcept {
     auto const material = prop_->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);

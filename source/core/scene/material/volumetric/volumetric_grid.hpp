@@ -36,7 +36,7 @@ class Emission_grid final : public Material {
 
     ~Emission_grid() noexcept override final;
 
-    float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
+    float3 emission(ray const& ray, Transformation const& transformation, float step_size,
                     rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 
@@ -54,7 +54,7 @@ class Flow_vis_grid final : public Material {
 
     ~Flow_vis_grid() noexcept override final;
 
-    float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
+    float3 emission(ray const& ray, Transformation const& transformation, float step_size,
                     rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 

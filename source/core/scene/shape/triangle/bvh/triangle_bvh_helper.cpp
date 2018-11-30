@@ -30,7 +30,7 @@ float3 triangle_max(float3 const& a, float3 const& b, float3 const& c, float3 co
 }
 
 float triangle_area(float3 const& a, float3 const& b, float3 const& c) {
-    return 0.5f * math::length(math::cross(b - a, c - a));
+    return 0.5f * length(cross(b - a, c - a));
 }
 
 uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, math::Plane const& p) {

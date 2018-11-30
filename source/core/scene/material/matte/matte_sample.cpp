@@ -17,11 +17,11 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
 
     //	float3 brdf = lambert::Isotropic::reflection(layer_.diffuse_color, n_dot_wi, layer_, pdf);
 
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const h_dot_wi = clamp_dot(h, wi);
 
-    //	float const wi_dot_wo = math::dot(wi, wo_);
+    //	float const wi_dot_wo = dot(wi, wo_);
     //	float const sl_wi_wo = 2.f + 2.f * wi_dot_wo;
     //	float const rcpl_wi_wo = math::rsqrt(sl_wi_wo);
     //	float const h_dot_wi = math::clamp(rcpl_wi_wo + rcpl_wi_wo * wi_dot_wo, 0.00001f, 1.f);

@@ -19,11 +19,11 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi, bool) const noexcept {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    float const n_dot_h = math::saturate(math::dot(layer_.n_, h));
+    float const n_dot_h = math::saturate(dot(layer_.n_, h));
 
     const fresnel::Conductor conductor(ior_, absorption_);
 
@@ -70,7 +70,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi, bool) const noexcept
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    float3 const h = math::normalize(wo_ + wi);
+    float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 

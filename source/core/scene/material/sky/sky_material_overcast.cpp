@@ -52,7 +52,7 @@ void Material_overcast::set_emission(float3 const& radiance) noexcept {
 }
 
 float3 Material_overcast::overcast(float3 const& wi) const noexcept {
-    return ((1.f + 2.f * math::dot(float3(0.f, 1.f, 0.f), wi)) / 3.f) * color_;
+    return ((1.f + 2.f * dot(float3(0.f, 1.f, 0.f), wi)) / 3.f) * color_;
 }
 
 }  // namespace scene::material::sky

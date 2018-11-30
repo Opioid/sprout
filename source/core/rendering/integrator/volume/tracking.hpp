@@ -5,7 +5,7 @@
 #include "scene/material/sampler_settings.hpp"
 
 namespace math {
-struct Ray;
+struct ray;
 }
 
 namespace rnd {
@@ -55,18 +55,18 @@ class Tracking {
     static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
                               float3& transmittance);
 
-    static bool tracking(math::Ray const& ray, CM const& cm, Material const& material, float srs,
+    static bool tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                          float3& w);
 
-    static Result tracking(math::Ray const& ray, CM const& cm, Material const& material, float srs,
+    static Result tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                            Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                            float3& w, float3& li);
 
-    static bool tracking(math::Ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
+    static bool tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
                          float3& w);
 
-    static bool tracking(math::Ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
+    static bool tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
                          float3& w, float3& li);
 
     static float constexpr Min_mt        = 1e-10f;

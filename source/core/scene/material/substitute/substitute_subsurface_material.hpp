@@ -26,7 +26,7 @@ class Material_subsurface final : public Material_base {
 
     void set_volumetric_anisotropy(float anisotropy) noexcept;
 
-    float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
+    float3 emission(ray const& ray, Transformation const& transformation, float step_size,
                     rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 

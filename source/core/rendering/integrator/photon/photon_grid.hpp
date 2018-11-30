@@ -45,7 +45,7 @@ class Grid {
 
     ~Grid() noexcept;
 
-    void resize(math::AABB const& aabb) noexcept;
+    void resize(AABB const& aabb) noexcept;
 
     void update(uint32_t num_photons, Photon* photons) noexcept;
 
@@ -79,7 +79,7 @@ class Grid {
     uint32_t num_photons_;
     Photon*  photons_;
 
-    math::AABB aabb_;
+    AABB aabb_;
 
     static float constexpr Grid_radius_factor = 4.f;
     static float constexpr Lower_cell_bound   = 1.f / Grid_radius_factor;

@@ -5,7 +5,7 @@
 
 namespace scene {
 
-struct Ray : public math::Ray {
+struct Ray : public ray {
     Ray() noexcept = default;
 
     Ray(float3 const& origin, float3 const& direction, float min_t = 0.f, float max_t = 1.f,

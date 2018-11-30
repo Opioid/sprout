@@ -9,7 +9,7 @@ class Density : public Material {
   public:
     Density(Sampler_settings const& sampler_settings) noexcept;
 
-    float3 emission(math::Ray const& ray, Transformation const& transformation, float step_size,
+    float3 emission(ray const& ray, Transformation const& transformation, float step_size,
                     rnd::Generator& rng, Filter filter, Worker const& worker) const
         noexcept override final;
 

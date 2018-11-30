@@ -45,7 +45,7 @@ class Node {
 
     void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives) noexcept;
 
-    //	bool intersect_p(math::Ray const& ray) const;
+    //	bool intersect_p(ray const& ray) const;
 
     bool intersect_p(FVector origin, FVector inv_direction, FVector min_t, FVector max_t) const
         noexcept;

@@ -50,7 +50,7 @@ bool Gridtree::is_valid() const noexcept {
     return nullptr != nodes_;
 }
 
-bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
+bool Gridtree::intersect(ray& ray, CM& data) const noexcept {
     float3 const p = ray.point(ray.min_t);
 
     int3 const c = int3(float3(dimensions_) * p);
@@ -103,8 +103,8 @@ bool Gridtree::intersect(math::Ray& ray, CM& data) const noexcept {
         }
     }
 
-    math::AABB const boxf(float3(box.bounds[0]) * inv_dimensions_,
-                          float3(box.bounds[1]) * inv_dimensions_);
+    AABB const boxf(float3(box.bounds[0]) * inv_dimensions_,
+                    float3(box.bounds[1]) * inv_dimensions_);
 
     if (float hit_t; boxf.intersect_inside(ray, hit_t)) {
         if (ray.max_t > hit_t) {

@@ -135,7 +135,7 @@ shape::Shape* Prop::shape() noexcept {
     return shape_.get();
 }
 
-math::AABB const& Prop::aabb() const noexcept {
+AABB const& Prop::aabb() const noexcept {
     return aabb_;
 }
 
@@ -171,7 +171,7 @@ void Prop::on_set_transformation() noexcept {
 
         static float constexpr interval = 1.f / static_cast<float>(num_steps);
 
-        math::AABB aabb = shape_->transformed_aabb(world_frames_[0].transformation);
+        AABB aabb = shape_->transformed_aabb(world_frames_[0].transformation);
 
         for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
             auto const& a = world_frames_[i].transformation;
