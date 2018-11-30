@@ -127,25 +127,15 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 
     auto cache = std::make_shared<Float3>(description);
 
+    float2 const idf = 1.f / float2(d);
+
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
-            float2 const uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
-                            (static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
-
-            //			scene::shape::Sample sample;
-            //			shape.sample(part, transformation, float3::identity(),
-            //						 uv, area, sample);
-
+            float2 const uv = (float2(x, y) + 0.5f) * idf;
             float3 const wi = unclipped_canopy_mapping(transformation, uv);
+            float3 const li = sky_.model().evaluate_sky(wi);
 
-            /*if (0.f == sample.pdf) {
-                    cache->at(x, y) = packed_float3::identity;
-            } else*/
-            {
-                float3 const radiance = sky_.model().evaluate_sky(/*sample.*/ wi);
-
-                cache->store(x, y, packed_float3(radiance));
-            }
+            cache->store(x, y, packed_float3(li));
         }
     }
 

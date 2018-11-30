@@ -288,7 +288,9 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
 void Loader::load_light(json::Value const& /*light_value*/, prop::Prop* prop, Scene& scene) {
     for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
         if (auto const material = prop->material(i); material->is_emissive()) {
-            if (prop->shape()->is_analytical() && material->has_emission_map()) {
+            if (material->is_scattering_volume()) {
+                scene.create_prop_volume_light(prop, i);
+            } else if (prop->shape()->is_analytical() && material->has_emission_map()) {
                 scene.create_prop_image_light(prop, i);
             } else {
                 scene.create_prop_light(prop, i);

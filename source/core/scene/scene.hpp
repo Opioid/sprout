@@ -41,6 +41,7 @@ namespace light {
 class Light;
 class Prop_light;
 class Prop_image_light;
+class Prop_volume_light;
 
 }  // namespace light
 
@@ -120,6 +121,8 @@ class Scene {
     light::Prop_light* create_prop_light(Prop* prop, uint32_t part) noexcept;
 
     light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part) noexcept;
+
+    light::Prop_volume_light* create_prop_volume_light(Prop* prop, uint32_t part) noexcept;
 
     void add_extension(Entity* extension) noexcept;
     void add_extension(Entity* extension, std::string const& name) noexcept;

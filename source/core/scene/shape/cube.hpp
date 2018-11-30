@@ -36,6 +36,10 @@ class Cube final : public Shape {
                 Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                 Node_stack& node_stack, Sample_from& sample) const noexcept override final;
 
+    bool sample_volume(uint32_t part, float3 const& p, Transformation const& transformation,
+                       float volume, Sampler& sampler, uint32_t sampler_dimension,
+                       Node_stack& node_stack, Sample_to& sample) const noexcept override final;
+
     float pdf(Ray const& ray, Intersection const& intersection,
               Transformation const& transformation, float area, bool two_sided,
               bool total_sphere) const noexcept override final;

@@ -1,6 +1,5 @@
 #include "prop_light.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "scene/material/material.hpp"
 #include "scene/prop/prop.hpp"

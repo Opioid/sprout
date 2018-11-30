@@ -51,6 +51,11 @@ float Material::similarity_relation_scale(uint32_t depth) const noexcept {
     return van_de_hulst(anisotropy_, gs);
 }
 
+float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
+                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
+    return emission_;
+}
+
 float3 Material::average_radiance(float /*area*/) const noexcept {
     return emission_;
 }

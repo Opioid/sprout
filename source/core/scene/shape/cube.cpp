@@ -202,6 +202,29 @@ bool Cube::sample(uint32_t /*part*/, Transformation const& /*transformation*/, f
     return false;
 }
 
+bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
+                         float volume, Sampler& sampler, uint32_t sampler_dimension,
+                         Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
+    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+    float const  r1 = sampler.generate_sample_1D(sampler_dimension);
+
+    float3 const r3(r2, r1);
+
+    float3 const xyz = 2.f * (r3 - 0.5f);
+
+    float3 const wp = transform_point(transformation.object_to_world, xyz);
+
+    float3 const axis = wp - p;
+
+    sample.wi = normalize(axis);
+
+    sample.pdf     = 1.f;  // / (0.2f );
+    sample.t       = length(axis);
+    sample.epsilon = 0.f;
+
+    return true;
+}
+
 float Cube::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
                 Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                 bool /*total_sphere*/) const noexcept {

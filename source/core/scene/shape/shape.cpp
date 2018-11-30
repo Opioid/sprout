@@ -39,6 +39,13 @@ bool Shape::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
                         node_stack, sample);
 }
 
+bool Shape::sample_volume(uint32_t /*part*/, float3 const& /*p*/,
+                          Transformation const& /*transformation*/, float /*volume*/,
+                          Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                          Node_stack& /*node_stack*/, Sample_to& /*sample*/) const noexcept {
+    return false;
+}
+
 bool Shape::is_complex() const noexcept {
     return false;
 }

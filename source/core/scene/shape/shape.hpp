@@ -78,6 +78,10 @@ class Shape {
                         float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                         Node_stack& node_stack, Sample_to& sample) const noexcept = 0;
 
+    virtual bool sample_volume(uint32_t part, float3 const& p, Transformation const& transformation,
+                               float volume, Sampler& sampler, uint32_t sampler_dimension,
+                               Node_stack& node_stack, Sample_to& sample) const noexcept;
+
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
                         bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                         AABB const& bounds, Node_stack& node_stack, Sample_from& sample) const
