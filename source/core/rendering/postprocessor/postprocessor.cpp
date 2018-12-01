@@ -13,7 +13,7 @@ bool Postprocessor::alpha_out(bool alpha_in) const {
     return alpha_in;
 }
 
-void Postprocessor::apply(const image::Float4& source, image::Float4& destination,
+void Postprocessor::apply(image::Float4 const& source, image::Float4& destination,
                           thread::Pool& pool) {
     pre_apply(source, destination, pool);
 
@@ -26,7 +26,7 @@ void Postprocessor::apply(const image::Float4& source, image::Float4& destinatio
     }
 }
 
-void Postprocessor::pre_apply(const image::Float4& /*source*/, image::Float4& /*destination*/,
+void Postprocessor::pre_apply(image::Float4 const& /*source*/, image::Float4& /*destination*/,
                               thread::Pool& /*pool*/) {}
 
 }  // namespace rendering::postprocessor

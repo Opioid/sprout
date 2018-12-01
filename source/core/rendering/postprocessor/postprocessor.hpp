@@ -21,14 +21,14 @@ class Postprocessor {
 
     virtual bool alpha_out(bool alpha_in) const;
 
-    void apply(const image::Float4& source, image::Float4& destination, thread::Pool& pool);
+    void apply(image::Float4 const& source, image::Float4& destination, thread::Pool& pool);
 
   private:
-    virtual void pre_apply(const image::Float4& source, image::Float4& destination,
+    virtual void pre_apply(image::Float4 const& source, image::Float4& destination,
                            thread::Pool& pool);
 
     virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
-                       const image::Float4& source, image::Float4& destination) = 0;
+                       image::Float4 const& source, image::Float4& destination) = 0;
 
     uint32_t num_passes_;
 };

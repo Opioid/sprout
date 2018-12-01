@@ -23,8 +23,17 @@ static inline constexpr uint8_t float_to_unorm(float x) {
     return static_cast<uint8_t>(x * 255.f + 0.5f);
 }
 
+static inline constexpr uint8_t float_to_unorm(float x, float dither) {
+    return static_cast<uint8_t>(x * 255.f + dither);
+}
+
 static inline constexpr byte3 float_to_unorm(float3 const& c) {
     return byte3(float_to_unorm(c[0]), float_to_unorm(c[1]), float_to_unorm(c[2]));
+}
+
+static inline constexpr byte3 float_to_unorm(float3 const& c, float dither) {
+    return byte3(float_to_unorm(c[0], dither), float_to_unorm(c[1], dither),
+                 float_to_unorm(c[2], dither));
 }
 
 static inline constexpr byte4 float_to_unorm(float4 const& c) {

@@ -8,7 +8,7 @@ namespace image::encoding::png {
 
 class Writer : public image::Writer, Srgb {
   public:
-    Writer(int2 dimensions);
+    Writer(int2 dimensions, bool dither);
 
     std::string file_extension() const override final;
 
@@ -33,10 +33,9 @@ class Writer_alpha : public image::Writer, Srgb_alpha {
   public:
     Writer_alpha(int2 dimensions);
 
-    virtual std::string file_extension() const override final;
+    std::string file_extension() const override final;
 
-    virtual bool write(std::ostream& stream, Float4 const& image,
-                       thread::Pool& pool) override final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) override final;
 };
 
 }  // namespace image::encoding::png

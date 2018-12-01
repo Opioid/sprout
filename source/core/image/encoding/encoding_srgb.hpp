@@ -7,7 +7,7 @@ namespace image::encoding {
 
 class Srgb {
   public:
-    Srgb(int2 dimensions);
+    Srgb(int2 dimensions, bool dither);
 
     ~Srgb();
 
@@ -21,6 +21,8 @@ class Srgb {
 
   protected:
     byte3* rgb_;
+
+    bool dither_;
 };
 
 class Srgb_alpha {

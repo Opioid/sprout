@@ -8,7 +8,7 @@
 
 namespace image::encoding::png {
 
-Writer::Writer(int2 dimensions) : Srgb(dimensions) {}
+Writer::Writer(int2 dimensions, bool dither) : Srgb(dimensions, dither) {}
 
 std::string Writer::file_extension() const {
     return "png";

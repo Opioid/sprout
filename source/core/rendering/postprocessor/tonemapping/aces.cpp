@@ -10,7 +10,7 @@ Aces::Aces(float hdr_max)
     : normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
 void Aces::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
-                 const image::Float4& source, image::Float4& destination) {
+                 image::Float4 const& source, image::Float4& destination) {
     float norm = normalization_factor_;
     for (int32_t i = begin; i < end; ++i) {
         float4 const& color = source.at(i);

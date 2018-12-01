@@ -20,7 +20,7 @@ class Server : public exporting::Sink {
     void run();
     void shutdown();
 
-    virtual void write(const image::Float4& image, uint32_t frame,
+    virtual void write(image::Float4 const& image, uint32_t frame,
                        thread::Pool& pool) override final;
 
   private:

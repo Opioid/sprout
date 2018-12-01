@@ -1,12 +1,14 @@
 #include "encoding_srgb.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector3.inl"
+#include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "image/typed_image.inl"
 
 namespace image::encoding {
 
-Srgb::Srgb(int2 dimensions) : rgb_(new byte3[static_cast<size_t>(dimensions[0] * dimensions[1])]) {}
+Srgb::Srgb(int2 dimensions, bool dither)
+    : rgb_(new byte3[static_cast<size_t>(dimensions[0] * dimensions[1])]), dither_(dither) {}
 
 Srgb::~Srgb() {
     delete[] rgb_;
@@ -18,31 +20,43 @@ byte3 const* Srgb::data() const {
 
 void Srgb::to_sRGB(Float3 const& image, int32_t begin, int32_t end) {
     for (int32_t i = begin; i < end; ++i) {
-        float3 color = float3(image.at(i));
-        color        = spectrum::linear_RGB_to_sRGB(color);
-        rgb_[i]      = ::encoding::float_to_unorm(color);
+        float3 const color = spectrum::linear_RGB_to_sRGB(float3(image.at(i)));
+
+        rgb_[i] = ::encoding::float_to_unorm(color);
     }
 }
 
 void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
-    for (int32_t i = begin; i < end; ++i) {
-        float3 color = image.at(i).xyz();
-        color        = spectrum::linear_RGB_to_sRGB(color);
-        rgb_[i]      = ::encoding::float_to_unorm(color);
+    if (dither_) {
+        rnd::Generator rng(0, begin);
+
+        for (int32_t i = begin; i < end; ++i) {
+            float3 const color = spectrum::linear_RGB_to_sRGB(image.at(i).xyz());
+
+            rgb_[i] = ::encoding::float_to_unorm(color, rng.random_float());
+        }
+    } else {
+        for (int32_t i = begin; i < end; ++i) {
+            float3 const color = spectrum::linear_RGB_to_sRGB(image.at(i).xyz());
+
+            rgb_[i] = ::encoding::float_to_unorm(color);
+        }
     }
 }
 
 void Srgb::to_byte(Float3 const& image, int32_t begin, int32_t end) {
     for (int32_t i = begin; i < end; ++i) {
         float3 const color = float3(image.at(i));
-        rgb_[i]            = ::encoding::float_to_unorm(color);
+
+        rgb_[i] = ::encoding::float_to_unorm(color);
     }
 }
 
 void Srgb::to_byte(Float4 const& image, int32_t begin, int32_t end) {
     for (int32_t i = begin; i < end; ++i) {
         float3 const color = image.at(i).xyz();
-        rgb_[i]            = ::encoding::float_to_unorm(color);
+
+        rgb_[i] = ::encoding::float_to_unorm(color);
     }
 }
 

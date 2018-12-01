@@ -10,7 +10,7 @@ Statistics::Statistics() {}
 
 Statistics::~Statistics() {}
 
-void Statistics::write(const image::Float4& image, uint32_t frame, thread::Pool& /*pool*/) {
+void Statistics::write(image::Float4 const& image, uint32_t frame, thread::Pool& /*pool*/) {
     logging::info("Frame: " + string::to_string(frame));
 
     float3 max_rgb;

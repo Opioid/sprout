@@ -254,7 +254,7 @@ static inline float2 mul_complex(float2 a, float2 b, float scale) {
     return scale * float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
-void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
+void Glare2::pre_apply(image::Float4 const& source, image::Float4& destination,
                        thread::Pool& pool) {
     auto const dim = kernel_dimensions_;
 
@@ -352,7 +352,7 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 }
 
 void Glare2::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t /*begin*/, int32_t /*end*/,
-                   const image::Float4& /*source*/, image::Float4& /*destination*/) {
+                   image::Float4 const& /*source*/, image::Float4& /*destination*/) {
     return;
 }
 

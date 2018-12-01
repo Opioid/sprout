@@ -107,9 +107,11 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
         if (take->exporters.empty()) {
             auto const d = take->view.camera->sensor().dimensions();
 
+            bool const dither = false;
+
             using namespace image;
 
-            std::unique_ptr<Writer> writer = std::make_unique<encoding::png::Writer>(d);
+            std::unique_ptr<Writer> writer = std::make_unique<encoding::png::Writer>(d, dither);
 
             take->exporters.push_back(
                 std::make_unique<exporting::Image_sequence>("output_", std::move(writer)));
@@ -697,12 +699,15 @@ std::vector<std::unique_ptr<exporting::Sink>> Loader::load_exporters(
                 writer = std::make_unique<image::encoding::rgbe::Writer>();
             } else {
                 bool const transparent_sensor = camera.sensor().has_alpha_transparency();
+
+                bool const dither = json::read_bool(n.value, "dither", false);
+
                 if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
                     writer = std::make_unique<image::encoding::png::Writer_alpha>(
                         camera.sensor().dimensions());
                 } else {
                     writer = std::make_unique<image::encoding::png::Writer>(
-                        camera.sensor().dimensions());
+                        camera.sensor().dimensions(), dither);
                 }
             }
 
