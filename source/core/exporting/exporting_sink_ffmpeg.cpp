@@ -9,8 +9,9 @@
 
 namespace exporting {
 
-Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, uint32_t framerate)
-    : Srgb(dimensions, false) {
+Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion,
+               uint32_t framerate)
+    : Srgb(dimensions, error_diffusion) {
     // -i - tells it to read frames from stdin
     std::ostringstream cmd;
 

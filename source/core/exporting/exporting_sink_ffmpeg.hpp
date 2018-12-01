@@ -9,7 +9,7 @@ namespace exporting {
 
 class Ffmpeg : public Sink, image::encoding::Srgb {
   public:
-    Ffmpeg(std::string const& filename, int2 dimensions, uint32_t framerate);
+    Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion, uint32_t framerate);
 
     ~Ffmpeg();
 

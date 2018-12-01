@@ -721,8 +721,10 @@ std::vector<std::unique_ptr<exporting::Sink>> Loader::load_exporters(
                 framerate = static_cast<uint32_t>(1.f / camera.frame_step() + 0.5f);
             }
 
+            bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
+
             exporters.push_back(std::make_unique<exporting::Ffmpeg>(
-                "output", camera.sensor().dimensions(), framerate));
+                "output", camera.sensor().dimensions(), error_diffusion, framerate));
         } else if ("Null" == n.name) {
             exporters.push_back(std::make_unique<exporting::Null>());
         } else if ("Statistics" == n.name) {
