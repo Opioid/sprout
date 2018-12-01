@@ -8,13 +8,11 @@ namespace image::encoding::png {
 
 class Writer : public image::Writer, Srgb {
   public:
-    Writer(int2 dimensions, bool dither);
+    Writer(int2 dimensions, bool error_diffusion);
 
     std::string file_extension() const override final;
 
     bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) override final;
-
-    bool write(std::ostream& stream, Float3 const& image, thread::Pool& pool);
 
     static bool write(std::string_view name, Byte3 const& image);
 
@@ -31,7 +29,7 @@ class Writer : public image::Writer, Srgb {
 
 class Writer_alpha : public image::Writer, Srgb_alpha {
   public:
-    Writer_alpha(int2 dimensions);
+    Writer_alpha(int2 dimensions, bool error_diffusion);
 
     std::string file_extension() const override final;
 

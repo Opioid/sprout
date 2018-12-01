@@ -26,7 +26,7 @@ struct Vector3 {
 
     explicit constexpr Vector3(Vector2<T> xy, T z = T(0)) noexcept;
 
-    explicit constexpr Vector3(T const* v) noexcept;
+    explicit constexpr Vector3(T const* a) noexcept;
 
     explicit constexpr Vector3(Vector3f_a const& a) noexcept;
 
@@ -110,7 +110,7 @@ struct alignas(16) Vector3f_a {
 
     float absolute_max(uint32_t& i) const noexcept;
 
-    static constexpr Vector3f_a identity() noexcept;
+    static Vector3f_a constexpr identity() noexcept;
 };
 
 }  // namespace math

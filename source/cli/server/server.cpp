@@ -9,7 +9,7 @@
 namespace server {
 
 Server::Server(int2 dimensions, Message_handler& message_handler)
-    : srgb_(dimensions), message_handler_(message_handler) {}
+    : srgb_(dimensions, false), message_handler_(message_handler) {}
 
 Server::~Server() {
     for (Client* c : clients_) {

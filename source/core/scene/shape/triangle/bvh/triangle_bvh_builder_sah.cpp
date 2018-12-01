@@ -240,9 +240,9 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& refe
                                                           AABB const& aabb, uint32_t depth,
                                                           bool&         exhausted,
                                                           thread::Pool& thread_pool) {
-    static constexpr uint8_t X = 0;
-    static constexpr uint8_t Y = 1;
-    static constexpr uint8_t Z = 2;
+    static uint8_t constexpr X = 0;
+    static uint8_t constexpr Y = 1;
+    static uint8_t constexpr Z = 2;
 
     split_candidates_.clear();
 

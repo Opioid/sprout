@@ -19,21 +19,26 @@ static inline float4 constexpr unorm_to_float(byte4 c) {
                   unorm_to_float(c[3]));
 }
 
-static inline constexpr uint8_t float_to_unorm(float x) {
+static inline uint8_t constexpr float_to_unorm(float x) {
     return static_cast<uint8_t>(x * 255.f + 0.5f);
 }
 
-static inline constexpr uint8_t float_to_unorm(float x, float dither) {
+static inline uint8_t constexpr float_to_unorm(float x, float dither) {
     return static_cast<uint8_t>(x * 255.f + dither);
 }
 
-static inline constexpr byte3 float_to_unorm(float3 const& c) {
+static inline byte3 constexpr float_to_unorm(float3 const& c) {
     return byte3(float_to_unorm(c[0]), float_to_unorm(c[1]), float_to_unorm(c[2]));
 }
 
-static inline constexpr byte3 float_to_unorm(float3 const& c, float dither) {
+static inline byte3 constexpr float_to_unorm(float3 const& c, float dither) {
     return byte3(float_to_unorm(c[0], dither), float_to_unorm(c[1], dither),
                  float_to_unorm(c[2], dither));
+}
+
+static inline byte3 constexpr float_to_unorm(float3 const& c, float3 const& dither) {
+    return byte3(float_to_unorm(c[0], dither[0]), float_to_unorm(c[1], dither[1]),
+                 float_to_unorm(c[2], dither[2]));
 }
 
 static inline constexpr byte4 float_to_unorm(float4 const& c) {
@@ -45,12 +50,12 @@ static inline float constexpr snorm_to_float(uint8_t byte) {
     return static_cast<float>(byte) * (1.f / 128.f) - 1.f;
 }
 
-static inline constexpr uint8_t float_to_snorm(float x) {
+static inline uint8_t constexpr float_to_snorm(float x) {
     //	return static_cast<uint8_t>((x + 1.f) * (0.5f * 255.f));
     return static_cast<uint8_t>((x + 1.f) * (x > 0.f ? 127.5f : 128.f));
 }
 
-static inline constexpr byte3 float_to_snorm(float3 const& c) {
+static inline byte3 constexpr float_to_snorm(float3 const& c) {
     return byte3(float_to_snorm(c[0]), float_to_snorm(c[1]), float_to_snorm(c[2]));
 }
 

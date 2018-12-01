@@ -23,6 +23,10 @@ template <typename T>
 constexpr Vector4<T>::Vector4(Vector3<T> const& xyz, T w) noexcept : v{xyz[0], xyz[1], xyz[2], w} {}
 
 template <typename T>
+constexpr Vector4<T>::Vector4(Vector4f_a const& a) noexcept
+    : v{T(a[0]), T(a[1]), T(a[2]), T(a[3])} {}
+
+template <typename T>
 constexpr Vector3<T> Vector4<T>::xyz() const noexcept {
     return Vector3<T>(v);
 }
@@ -114,9 +118,13 @@ inline constexpr Vector4f_a::Vector4f_a(Vector3f_a const& xyz, float w) noexcept
 inline constexpr Vector4f_a::Vector4f_a(Vector3<float> const& xyz, float w) noexcept
     : v{xyz[0], xyz[1], xyz[2], w} {}
 
-inline constexpr Vector3f_a Vector4f_a::xyz() const noexcept {
+inline Vector3f_a constexpr Vector4f_a::xyz() const noexcept {
     return Vector3f_a(v);
 }
+
+template <typename T>
+constexpr Vector4f_a::Vector4f_a(Vector4<T> const& a) noexcept
+    : v{float(a[0]), float(a[1]), float(a[2]), float(a[3])} {}
 
 inline float constexpr Vector4f_a::operator[](uint32_t i) const noexcept {
     return v[i];
@@ -130,8 +138,16 @@ inline constexpr Vector4f_a Vector4f_a::identity() noexcept {
     return Vector4f_a(0.f, 0.f, 0.f, 0.f);
 }
 
+static inline Vector4f_a constexpr operator+(Vector4f_a const& a, float s) noexcept {
+    return Vector4f_a(a[0] + s, a[1] + s, a[2] + s, a[3] + s);
+}
+
 static inline constexpr Vector4f_a operator+(Vector4f_a const& a, Vector4f_a const& b) noexcept {
     return Vector4f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
+}
+
+static inline constexpr Vector4f_a operator-(Vector4f_a const& a, Vector4f_a const& b) noexcept {
+    return Vector4f_a(a[0] - b[0], a[1] - b[1], a[2] - b[2], a[3] - b[3]);
 }
 
 static inline constexpr Vector4f_a operator*(Vector4f_a const& a, Vector4f_a const& b) noexcept {

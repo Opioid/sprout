@@ -8,33 +8,13 @@
 
 namespace image::encoding::png {
 
-Writer::Writer(int2 dimensions, bool dither) : Srgb(dimensions, dither) {}
+Writer::Writer(int2 dimensions, bool error_diffusion) : Srgb(dimensions, error_diffusion) {}
 
 std::string Writer::file_extension() const {
     return "png";
 }
 
 bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
-    auto const d = image.description().dimensions;
-
-    pool.run_range(
-        [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
-        0, d[0] * d[1]);
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, d[0], d[1], 3, &buffer_len);
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write(std::ostream& stream, Float3 const& image, thread::Pool& pool) {
     auto const d = image.description().dimensions;
 
     pool.run_range(
@@ -187,7 +167,8 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
     return true;
 }
 
-Writer_alpha::Writer_alpha(int2 dimensions) : Srgb_alpha(dimensions) {}
+Writer_alpha::Writer_alpha(int2 dimensions, bool error_diffusion)
+    : Srgb_alpha(dimensions, error_diffusion) {}
 
 std::string Writer_alpha::file_extension() const {
     return "png";
