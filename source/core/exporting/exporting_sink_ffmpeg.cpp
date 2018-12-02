@@ -47,7 +47,7 @@ void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool&
     auto const d = image.description().dimensions;
     pool.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
-        0, d[0] * d[1]);
+        0, d[1]);
 
     fwrite(rgb_, sizeof(byte3) * static_cast<size_t>(d[0] * d[1]), 1, stream_);
 }

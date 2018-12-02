@@ -108,7 +108,7 @@ static inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r)
     uint32_t fp     = 1;
     uint32_t parity = 0;
     for (; f + fp < num_samples; ++parity) {
-        uint32_t tmp = f;
+        uint32_t const tmp = f;
         f += fp;
         fp = tmp;
     }
