@@ -19,7 +19,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool
 
     pool.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
-        0, d[0] * d[1]);
+        0, d[1]);
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, d[0], d[1], 3, &buffer_len);
@@ -179,7 +179,7 @@ bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool
 
     pool.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
-        0, d[0] * d[1]);
+        0, d[1]);
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d[0], d[1], 4, &buffer_len);
