@@ -17,6 +17,9 @@ struct Vector2 {
     constexpr Vector2(T x, T y);
 
     template <typename U>
+    explicit constexpr Vector2(U x, U y);
+
+    template <typename U>
     explicit constexpr Vector2(Vector2<U> v);
 
     constexpr Vector2 yx() const;

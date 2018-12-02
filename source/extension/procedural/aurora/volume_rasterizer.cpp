@@ -20,7 +20,7 @@ void Volume_rasterizer::resolve(image::Byte3& target) const {
     int32_t const len = dimensions_[0] * dimensions_[1] * dimensions_[2];
 
     for (int32_t i = 0; i < len; ++i) {
-        float3 const color = spectrum::linear_RGB_to_sRGB(samples_[i]);
+        float3 const color = spectrum::linear_to_gamma_sRGB(samples_[i]);
         target.store(i, encoding::float_to_unorm(color));
     }
 }

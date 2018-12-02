@@ -13,6 +13,9 @@
 #include "base/debug/assert.hpp"
 #include "shape_test.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene::shape {
 
 Cube::Cube() noexcept {
@@ -218,14 +221,14 @@ bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation cons
 
     sample.wi = normalize(axis);
 
-    sample.pdf     = 1.f;  // / (0.2f );
+    sample.pdf     = 1.f;  // (0.2f * 0.2f * 0.2f);
     sample.t       = length(axis);
     sample.epsilon = 0.f;
 
     return true;
 }
 
-float Cube::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
+float Cube::pdf(Ray const&            ray, Intersection const& /*intersection*/,
                 Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                 bool /*total_sphere*/) const noexcept {
     float3 const axis                = transformation.position - ray.origin;

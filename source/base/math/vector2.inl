@@ -15,6 +15,10 @@ constexpr Vector2<T>::Vector2(T x, T y) : v{x, y} {}
 
 template <typename T>
 template <typename U>
+constexpr Vector2<T>::Vector2(U x, U y) : v{T(x), T(y)} {}
+
+template <typename T>
+template <typename U>
 constexpr Vector2<T>::Vector2(Vector2<U> v) : v{T(v[0]), T(v[1])} {}
 
 template <typename T>

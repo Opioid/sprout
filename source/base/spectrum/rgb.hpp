@@ -19,12 +19,12 @@ static inline float linear_to_sRGB(float c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-static inline float3 linear_RGB_to_sRGB(float3 const& c) {
+static inline float3 linear_to_gamma_sRGB(float3 const& c) {
     return float3(linear_to_sRGB(c[0]), linear_to_sRGB(c[1]), linear_to_sRGB(c[2]));
 }
 
 // convert sRGB linear color to sRGB gamma color
-static inline float4 linear_RGB_to_sRGB(float4 const& c) {
+static inline float4 linear_to_gamma_sRGB(float4 const& c) {
     return float4(linear_to_sRGB(c[0]), linear_to_sRGB(c[1]), linear_to_sRGB(c[2]), c[3]);
 }
 

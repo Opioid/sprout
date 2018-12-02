@@ -141,7 +141,7 @@ void Renderer::resolve_sRGB(Byte3& image) const {
         for (int32_t i = 0, len = image.area(); i < len; ++i) {
             auto const s = samples_[i];
 
-            byte3 const srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz()));
+            byte3 const srgb = encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(s.xyz()));
             image.store(i, srgb);
         }
     } else {
@@ -167,7 +167,7 @@ void Renderer::resolve_sRGB(Byte3& image) const {
                 }
 
                 byte3 const srgb = encoding::float_to_unorm(
-                    spectrum::linear_RGB_to_sRGB(n * result));
+                    spectrum::linear_to_gamma_sRGB(n * result));
                 image.store(i_x, i_y, srgb);
             }
         }

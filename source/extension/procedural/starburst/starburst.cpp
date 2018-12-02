@@ -203,7 +203,7 @@ void create(thread::Pool& pool) {
         [&float_image_a, &byte_image](uint32_t /*id*/, int32_t begin, int32_t end) {
             for (int32_t i = begin; i < end; ++i) {
                 float3 linear_rgb = float3(float_image_a.load(i));
-                byte3  srgb = ::encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
+                byte3 srgb = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(linear_rgb));
                 byte_image.store(i, srgb);
             }
         },
