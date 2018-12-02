@@ -40,7 +40,6 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
                 rgb_[i] = ci;
             }
         }
-
     } else {
         for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
             float3 const color = spectrum::linear_RGB_to_sRGB(image.at(i).xyz());
@@ -79,7 +78,6 @@ void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
                 rgba_[i] = ci;
             }
         }
-
     } else {
         for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
             float4 const color = spectrum::linear_RGB_to_sRGB(image.at(i));
