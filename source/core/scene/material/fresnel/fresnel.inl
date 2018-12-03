@@ -88,8 +88,8 @@ static inline float tp(float n1, float n2, float cosI, float cosT) noexcept {
 static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
                               float internal_ior, float thickness) noexcept {
     // Precompute the reflection phase changes (depends on IOR)
-    float delta10 = (thinfilm_ior < external_ior) ? math::Pi : 0.f;
-    float delta12 = (thinfilm_ior < internal_ior) ? math::Pi : 0.f;
+    float delta10 = (thinfilm_ior < external_ior) ? Pi : 0.f;
+    float delta12 = (thinfilm_ior < internal_ior) ? Pi : 0.f;
     float delta   = delta10 + delta12;
 
     // Calculate the thin film layer (and transmitted) angle cosines.
@@ -110,7 +110,7 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
 
     // Calculate the interference phase change.
     float3 phi = float3(2.f * thinfilm_ior * thickness * cos1);
-    phi *= (2.f * math::Pi) / float3(650.f, 510.f, 475.f);
+    phi *= (2.f * Pi) / float3(650.f, 510.f, 475.f);
     phi += float3(delta);
 
     // Obtain the various Fresnel amplitude coefficients.

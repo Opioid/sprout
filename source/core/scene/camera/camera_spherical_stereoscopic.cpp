@@ -48,8 +48,8 @@ bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t 
     float const x = d_x_ * coordinates[0];
     float const y = d_y_ * coordinates[1];
 
-    float const phi   = (x - 0.5f) * (2.f * math::Pi);
-    float const theta = y * math::Pi;
+    float const phi   = (x - 0.5f) * (2.f * Pi);
+    float const theta = y * Pi;
 
     float const sin_phi   = std::sin(phi);
     float const cos_phi   = std::cos(phi);

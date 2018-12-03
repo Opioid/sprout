@@ -23,7 +23,7 @@ inline bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float 
                                           float alpha, float3 const& color) noexcept {
     float3 const reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, alpha, color);
 
-    float const pdf = n_dot_wi * math::Pi_inv;
+    float const pdf = n_dot_wi * Pi_inv;
 
     //   SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf,
     //   layer));
@@ -47,7 +47,7 @@ inline float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& l
     result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, alpha, color);
     result.wi         = wi;
     result.h          = h;
-    result.pdf        = n_dot_wi * math::Pi_inv;
+    result.pdf        = n_dot_wi * Pi_inv;
     result.h_dot_wi   = h_dot_wi;
     result.type.clear(bxdf::Type::Diffuse_reflection);
 
@@ -64,7 +64,7 @@ inline float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo
     //	float const a = 1.f + fmo * math::pow5(1.f - n_dot_wi);
     //	float const b = 1.f + fmo * math::pow5(1.f - n_dot_wo);
 
-    //	return (a * b) * (math::Pi_inv * layer.diffuse_color_);
+    //	return (a * b) * (Pi_inv * layer.diffuse_color_);
 
     // More energy conserving variant
     float const energy_bias   = math::lerp(0.f, 0.5f, alpha);
@@ -76,14 +76,14 @@ inline float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo
     float const a = 1.f + fmo * math::pow5(1.f - n_dot_wi);
     float const b = 1.f + fmo * math::pow5(1.f - n_dot_wo);
 
-    return (a * b * energy_factor) * (math::Pi_inv * color);
+    return (a * b * energy_factor) * (Pi_inv * color);
 }
 
 inline bxdf::Result Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
                                                      float alpha, float3 const& color) noexcept {
     float3 const reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, alpha, color);
 
-    float const pdf = n_dot_wi * math::Pi_inv;
+    float const pdf = n_dot_wi * Pi_inv;
 
     //   SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf,
     //   layer));
@@ -108,7 +108,7 @@ inline float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Lay
     result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, alpha, color);
     result.wi         = wi;
     result.h          = h;
-    result.pdf        = n_dot_wi * math::Pi_inv;
+    result.pdf        = n_dot_wi * Pi_inv;
     result.h_dot_wi   = h_dot_wi;
     result.type.clear(bxdf::Type::Diffuse_reflection);
 
@@ -126,7 +126,7 @@ inline float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, flo
     float const rr = energy_factor * (2.f * alpha) * (h_dot_wi * h_dot_wi);
 
     // only the retro-reflection
-    return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (math::Pi_inv * color);
+    return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (Pi_inv * color);
 }
 
 }  // namespace scene::material::disney

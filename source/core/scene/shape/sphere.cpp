@@ -49,7 +49,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
+            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
             float theta = std::acos(xyz[1]);
 
             // avoid singularity at poles
@@ -65,7 +65,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             intersection.b     = -cross(t, n);
             intersection.n     = n;
             intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
+            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
             intersection.part  = 0;
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -85,7 +85,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
+            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
             float theta = std::acos(xyz[1]);
 
             // avoid singularity at poles
@@ -101,7 +101,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             intersection.b     = -cross(t, n);
             intersection.n     = n;
             intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
+            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
             intersection.part  = 0;
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -134,12 +134,12 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
+            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
             float theta = std::acos(xyz[1]);
 
             intersection.p     = p;
             intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
+            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
             intersection.part  = 0;
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -159,12 +159,12 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
+            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
             float theta = std::acos(xyz[1]);
 
             intersection.p     = p;
             intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
+            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
             intersection.part  = 0;
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -249,8 +249,8 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation,
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+                               std::acos(xyz[1]) * Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
         }
@@ -263,8 +263,8 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation,
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+                               std::acos(xyz[1]) * Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
         }
@@ -291,8 +291,8 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+                               std::acos(xyz[1]) * Pi_inv);
 
             return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
         }
@@ -305,8 +305,8 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+                               std::acos(xyz[1]) * Pi_inv);
 
             return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
         }
@@ -335,7 +335,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     float3 const z = axis / axis_length;
 
-    auto const [x, y] = math::orthonormal_basis(z);
+    auto const [x, y] = orthonormal_basis(z);
 
     float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
@@ -367,14 +367,14 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
 
     float3 const ws = transformation.position + (transformation.scale[0] * ls);
 
-    auto const [x, y] = math::orthonormal_basis(ls);
+    auto const [x, y] = orthonormal_basis(ls);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, ls);
 
     sample.p       = ws;
     sample.dir     = dir;
-    sample.pdf     = 1.f / ((1.f * math::Pi) * area);
+    sample.pdf     = 1.f / ((1.f * Pi) * area);
     sample.epsilon = 5e-4f;
 
     return true;
@@ -397,8 +397,8 @@ float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*inters
 bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
                     Transformation const& transformation, float area, bool /*two_sided*/,
                     Sample_to& sample) const noexcept {
-    float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
-    float theta = uv[1] * math::Pi;
+    float phi   = (uv[0] + 0.75f) * (2.f * Pi);
+    float theta = uv[1] * Pi;
 
     float sin_theta = std::sin(theta);
     float cos_theta = std::cos(theta);
@@ -443,13 +443,13 @@ float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersectio
                      Transformation const& /*transformation*/, float area, bool /*two_sided*/) const
     noexcept {
     //	float3 xyz = transform_vector_transposed(wn, transformation.rotation);
-    //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-    //	uv[1] =  std::acos(xyz[1]) * math::Pi_inv;
+    //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+    //	uv[1] =  std::acos(xyz[1]) * Pi_inv;
 
     //	// sin_theta because of the uv weight
     //	float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
 
-    float const sin_theta = std::sin(intersection.uv[1] * math::Pi);
+    float const sin_theta = std::sin(intersection.uv[1] * Pi);
 
     float const sl = ray.max_t * ray.max_t;
     float const c  = -dot(intersection.geo_n, ray.direction);
@@ -457,7 +457,7 @@ float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersectio
 }
 
 float Sphere::uv_weight(float2 uv) const noexcept {
-    float const sin_theta = std::sin(uv[1] * math::Pi);
+    float const sin_theta = std::sin(uv[1] * Pi);
 
     if (0.f == sin_theta) {
         // this case never seemed to be an issue?!
@@ -468,7 +468,7 @@ float Sphere::uv_weight(float2 uv) const noexcept {
 }
 
 float Sphere::area(uint32_t /*part*/, float3 const& scale) const noexcept {
-    return (4.f * math::Pi) * (scale[0] * scale[0]);
+    return (4.f * Pi) * (scale[0] * scale[0]);
 }
 
 size_t Sphere::num_bytes() const noexcept {

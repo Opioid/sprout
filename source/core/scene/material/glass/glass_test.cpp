@@ -83,7 +83,7 @@ void rough_refraction() {
     //  float3 const geo_n(0.f, 0.f, 1.f);
 
     //  n = normalize(float3(0.5f, 0.5f, 0.5f));
-    //  math::orthonormal_basis(n, t, b);
+    //  orthonormal_basis(n, t, b);
 
     float3 wo = normalize(float3(0.2f, -0.2f, 0.9f));
 

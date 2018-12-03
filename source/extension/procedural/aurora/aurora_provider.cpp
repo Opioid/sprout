@@ -112,11 +112,11 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 
         //	float const ix = 1.f - x;
 
-        float const z = std::sin(x * (2.f * math::Pi)) * 50000.f +
-                        std::sin(3.5f * x * (2.f * math::Pi)) * 20000.f +
-                        (x * x) * std::sin(17.f * x * (2.f * math::Pi)) * 12000.f;
+        float const z = std::sin(x * (2.f * Pi)) * 50000.f +
+                        std::sin(3.5f * x * (2.f * Pi)) * 20000.f +
+                        (x * x) * std::sin(17.f * x * (2.f * Pi)) * 12000.f;
 
-        float const y = (start_height + std::sin(x * (7.f * math::Pi)) * start_height_deviation);
+        float const y = (start_height + std::sin(x * (7.f * Pi)) * start_height_deviation);
         //	float const y = start_height + start_height_deviation;
 
         float3 const position(x * aurora_volume_[0], ground_to_bottom_ + aurora_height_,

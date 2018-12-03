@@ -22,9 +22,9 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
 
     float3 const color = same_side ? color_front : color_back;
 
-    float const pdf = n_dot_wi * math::Pi_inv;
+    float const pdf = n_dot_wi * Pi_inv;
 
-    float3 const lambert = math::Pi_inv * color;
+    float3 const lambert = Pi_inv * color;
 
     return {n_dot_wi * lambert, pdf};
 }
@@ -44,9 +44,9 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
 
     float3 const color = same_side ? color_front : color_back;
 
-    result.reflection = n_dot_wi * math::Pi_inv * color;
+    result.reflection = n_dot_wi * Pi_inv * color;
     result.wi         = wi;
-    result.pdf        = n_dot_wi * math::Pi_inv;
+    result.pdf        = n_dot_wi * Pi_inv;
     result.wavelength = 0.f;
     result.type.clear(bxdf::Type::Diffuse_reflection);
 }

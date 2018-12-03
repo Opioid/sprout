@@ -35,7 +35,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t - ray.min_t, minorant_mu_t);
 
-    if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
+    if (all_less(transmitted, Tracking::Abort_epsilon)) {
         return false;
     }
 
@@ -71,11 +71,11 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
 
         transmitted *= imt * mu_n;
 
-        if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
+        if (all_less(transmitted, Tracking::Abort_epsilon)) {
             return false;
         }
 
-        SOFT_ASSERT(math::all_finite(transmitted));
+        SOFT_ASSERT(all_finite(transmitted));
     }
 }
 
@@ -120,18 +120,18 @@ static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tra
         transmitted *= imt * mu_n;
 
         // TODO: Consider employing russian roulette instead of just aborting
-        if (math::all_less(transmitted, Tracking::Abort_epsilon)) {
+        if (all_less(transmitted, Tracking::Abort_epsilon)) {
             return false;
         }
 
-        //        if (math::all_less(transmitted, 0.01f)) {
+        //        if (all_less(transmitted, 0.01f)) {
         //            static float constexpr q = 0.1f;
         //            if (rendering::russian_roulette(transmitted, q, rng.random_float())) {
         //                return false;
         //            }
         //        }
 
-        SOFT_ASSERT(math::all_finite(transmitted));
+        SOFT_ASSERT(all_finite(transmitted));
     }
 }
 
@@ -252,8 +252,8 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& da
 
         float3 const mu_n = float3(mt) - mu_t;
 
-        float const ms = math::average(mu.s * lw);
-        float const mn = math::average(mu_n * lw);
+        float const ms = average(mu.s * lw);
+        float const mn = average(mu_n * lw);
         float const c  = 1.f / (ms + mn);
 
         float const ps = ms * c;
@@ -263,7 +263,7 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& da
         if (r1 <= 1.f - pn && ps > 0.f) {
             float3 const ws = mu.s / (mt * ps);
 
-            SOFT_ASSERT(math::all_finite(ws));
+            SOFT_ASSERT(all_finite(ws));
 
             t_out = t;
             w     = lw * ws;
@@ -271,7 +271,7 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& da
         } else {
             float3 const wn = mu_n / (mt * pn);
 
-            SOFT_ASSERT(math::all_finite(wn));
+            SOFT_ASSERT(all_finite(wn));
 
             lw *= wn;
         }
@@ -295,7 +295,7 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
 
     float3 lw = w;
 
-    SOFT_ASSERT(math::all_finite(lw));
+    SOFT_ASSERT(all_finite(lw));
 
     float const imt = 1.f / mt;
 
@@ -317,8 +317,8 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
 
         float3 const mu_n = float3(mt) - mu_t;
 
-        float const ms = math::average(mu.s * lw);
-        float const mn = math::average(mu_n * lw);
+        float const ms = average(mu.s * lw);
+        float const mn = average(mu_n * lw);
         float const c  = 1.f / (ms + mn);
 
         float const ps = ms * c;
@@ -328,7 +328,7 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
         if (r1 <= 1.f - pn && ps > 0.f) {
             float3 const ws = mu.s / (mt * ps);
 
-            SOFT_ASSERT(math::all_finite(ws));
+            SOFT_ASSERT(all_finite(ws));
 
             t_out = t;
             w     = lw * ws;
@@ -336,7 +336,7 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
         } else {
             float3 const wn = mu_n / (mt * pn);
 
-            SOFT_ASSERT(math::all_finite(wn));
+            SOFT_ASSERT(all_finite(wn));
 
             lw *= wn;
         }
@@ -354,7 +354,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const
 
     float3 lw = w;
 
-    SOFT_ASSERT(math::all_finite(lw));
+    SOFT_ASSERT(all_finite(lw));
 
     float const imt = 1.f / mt;
 
@@ -378,9 +378,9 @@ Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const
 
         float3 const mu_n = float3(mt) - mu_t;
 
-        float const ma = math::average(mu.a * lw);
-        float const ms = math::average(mu.s * lw);
-        float const mn = math::average(mu_n * lw);
+        float const ma = average(mu.a * lw);
+        float const ms = average(mu.s * lw);
+        float const mn = average(mu_n * lw);
         float const c  = 1.f / (ma + ms + mn);
 
         float const pa = ma * c;
@@ -397,7 +397,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const
         } else if (r1 <= 1.f - pn && ps > 0.f) {
             float3 const ws = mu.s / (mt * ps);
 
-            SOFT_ASSERT(math::all_finite(ws));
+            SOFT_ASSERT(all_finite(ws));
 
             t_out = t;
             w     = lw * ws;
@@ -406,7 +406,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const
         } else {
             float3 const wn = mu_n / (mt * pn);
 
-            SOFT_ASSERT(math::all_finite(wn));
+            SOFT_ASSERT(all_finite(wn));
 
             lw *= wn;
         }
@@ -417,7 +417,7 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
                         float3& w) {
     float3 const mu_t = mu.a + mu.s;
 
-    float const mt  = math::max_component(mu_t);
+    float const mt  = max_component(mu_t);
     float const imt = 1.f / mt;
 
     float3 const mu_n = float3(mt) - mu_t;
@@ -432,8 +432,8 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
             return false;
         }
 
-        float const ms = math::average(mu.s * lw);
-        float const mn = math::average(mu_n * lw);
+        float const ms = average(mu.s * lw);
+        float const mn = average(mu_n * lw);
 
         float const mc = ms + mn;
         if (mc < 1e-10f) {
@@ -456,7 +456,7 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
         } else {
             float3 const wn = mu_n / (mt * pn);
 
-            SOFT_ASSERT(math::all_finite(wn));
+            SOFT_ASSERT(all_finite(wn));
 
             lw *= wn;
         }
@@ -469,7 +469,7 @@ bool Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, flo
 
     float3 const mu_t = mu.a + mu.s;
 
-    float const mt  = math::max_component(mu_t);
+    float const mt  = max_component(mu_t);
     float const imt = 1.f / mt;
 
     float3 const mu_n = float3(mt) - mu_t;
@@ -485,9 +485,9 @@ bool Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, flo
             return false;
         }
 
-        float const ma = math::average(mu.a * lw);
-        float const ms = math::average(mu.s * lw);
-        float const mn = math::average(mu_n * lw);
+        float const ma = average(mu.a * lw);
+        float const ms = average(mu.s * lw);
+        float const mn = average(mu_n * lw);
 
         float const mc = ma + ms + mn;
         if (mc < 1e-10f) {
@@ -519,7 +519,7 @@ bool Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, flo
         } else {
             float3 const wn = mu_n / (mt * pn);
 
-            SOFT_ASSERT(math::all_finite(wn));
+            SOFT_ASSERT(all_finite(wn));
 
             lw *= wn;
         }
@@ -528,7 +528,7 @@ bool Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, flo
 
 #ifdef SU_DEBUG
 bool check(float3 const& majorant_mt, float mt) {
-    if (mt < math::max_component(majorant_mt)) {
+    if (mt < max_component(majorant_mt)) {
         std::cout << "mu_t: " << majorant_mt << " mt: " << mt << std::endl;
         return false;
     }

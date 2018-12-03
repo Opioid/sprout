@@ -197,7 +197,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     sample.dir     = dir;
     sample.p       = p;
-    sample.pdf     = 1.f / ((1.f * math::Pi) * (area * bounds_radius * bounds_radius));
+    sample.pdf     = 1.f / ((1.f * Pi) * (area * bounds_radius * bounds_radius));
     sample.epsilon = 5e-4f;
 
     return true;
@@ -235,7 +235,7 @@ float Celestial_disk::uv_weight(float2 /*uv*/) const noexcept {
 
 float Celestial_disk::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     float const radius = scale[0];
-    return math::Pi * (radius * radius);
+    return Pi * (radius * radius);
 }
 
 bool Celestial_disk::is_finite() const noexcept {

@@ -159,7 +159,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         result.li += throughput * sample_lights(ray, ray_offset, intersection, material_sample,
                                                 evaluate_back, filter, worker);
 
-        SOFT_ASSERT(math::all_finite(result.li));
+        SOFT_ASSERT(all_finite(result.li));
 
         float const previous_bxdf_pdf = sample_result.pdf;
 
@@ -226,7 +226,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             break;
         }
 
-        SOFT_ASSERT(math::all_finite(result.li));
+        SOFT_ASSERT(all_finite(result.li));
 
         if (!material_sample.ior_greater_one() && !treat_as_singular) {
             sample_result.pdf = previous_bxdf_pdf;
@@ -326,7 +326,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
         return float3(0.f);
     }
 
-    SOFT_ASSERT(math::all_finite(tv));
+    SOFT_ASSERT(all_finite(tv));
 
     auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
 
@@ -385,7 +385,7 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
 
     float3 const radiance = weight * ls_energy;
 
-    SOFT_ASSERT(math::all_finite_and_positive(radiance));
+    SOFT_ASSERT(all_finite_and_positive(radiance));
 
     return radiance;
 }

@@ -93,7 +93,7 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
         // If no tangents were loaded, compute the tangent space manually
         for (auto& v : handler.vertices()) {
             packed_float3 b;
-            math::orthonormal_basis(v.n, v.t, b);
+            orthonormal_basis(v.n, v.t, b);
             v.bitangent_sign = 1.f;
         }
     }
@@ -191,7 +191,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(std::string const& filename
             // If no tangents were loaded, compute the tangent space manually
             for (auto& v : handler.vertices()) {
                 packed_float3 b;
-                math::orthonormal_basis(v.n, v.t, b);
+                orthonormal_basis(v.n, v.t, b);
                 v.bitangent_sign = 1.f;
             }
         }

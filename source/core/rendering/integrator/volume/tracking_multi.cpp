@@ -184,8 +184,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                     return true;
                 }
 
-                float const ms = math::average(mu.s * w);
-                float const mn = math::average(mu_n * w);
+                float const ms = average(mu.s * w);
+                float const mn = average(mu_n * w);
                 float const c  = 1.f / (ms + mn);
 
                 float const ps = ms * c;
@@ -204,7 +204,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                 } else {
                     float3 const wn = mu_n / (mt * pn);
 
-                    SOFT_ASSERT(math::all_finite(wn));
+                    SOFT_ASSERT(all_finite(wn));
 
                     w *= wn;
                 }

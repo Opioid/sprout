@@ -164,9 +164,10 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
                     }
                 }
 
-                float3 const nr      = radiance * sample_result.reflection / sample_result.pdf;
-                float const  average = math::average(nr) / math::average(radiance);
-                float const  continue_prob = std::min(1.f, average);
+                float3 const nr  = radiance * sample_result.reflection / sample_result.pdf;
+                float const  avg = average(nr) / average(radiance);
+
+                float const continue_prob = std::min(1.f, avg);
 
                 if (sampler_.generate_sample_1D() > continue_prob) {
                     break;

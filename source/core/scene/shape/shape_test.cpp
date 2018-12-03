@@ -36,7 +36,7 @@ bool check(const Sample_to& sample) {
         return false;
     }
 
-    if (!math::all_finite(sample.uv)) {
+    if (!all_finite(sample.uv)) {
         return false;
     }
 
@@ -49,7 +49,7 @@ bool check(const Sample_to& sample, float2 uv) {
         return false;
     }
 
-    if (!math::all_finite(sample.uv)) {
+    if (!all_finite(sample.uv)) {
         std::cout << "uv " << uv << std::endl;
         return false;
     }

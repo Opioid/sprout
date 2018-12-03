@@ -139,8 +139,8 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation,
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+                               std::acos(xyz[1]) * Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
         }
@@ -153,8 +153,8 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation,
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * math::Pi_inv);
+            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+                               std::acos(xyz[1]) * Pi_inv);
 
             return materials[0]->opacity(uv, ray.time, filter, worker);
         }
@@ -183,7 +183,7 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
     float const  axis_length = std::sqrt(axis_squared_length);
     float3 const z           = axis / axis_length;
 
-    auto const [x, y] = math::orthonormal_basis(z);
+    auto const [x, y] = orthonormal_basis(z);
 
     float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
@@ -258,13 +258,13 @@ float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
                    Transformation const& /*transformation*/, float area, bool /*two_sided*/) const
     noexcept {
     //	float3 xyz = transform_vector_transposed(wn, transformation.rotation);
-    //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-    //	uv[1] =  std::acos(xyz[1]) * math::Pi_inv;
+    //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+    //	uv[1] =  std::acos(xyz[1]) * Pi_inv;
 
     //	// sin_theta because of the uv weight
     //	float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
 
-    float const sin_theta = std::sin(intersection.uv[1] * math::Pi);
+    float const sin_theta = std::sin(intersection.uv[1] * Pi);
 
     float const sl = ray.max_t * ray.max_t;
     float const c  = -dot(intersection.geo_n, ray.direction);
@@ -272,7 +272,7 @@ float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
 }
 
 float Cube::uv_weight(float2 uv) const noexcept {
-    float const sin_theta = std::sin(uv[1] * math::Pi);
+    float const sin_theta = std::sin(uv[1] * Pi);
 
     if (0.f == sin_theta) {
         // this case never seemed to be an issue?!
@@ -283,7 +283,7 @@ float Cube::uv_weight(float2 uv) const noexcept {
 }
 
 float Cube::area(uint32_t /*part*/, float3 const& scale) const noexcept {
-    return (4.f * math::Pi) * (scale[0] * scale[0]);
+    return (4.f * Pi) * (scale[0] * scale[0]);
 }
 
 size_t Cube::num_bytes() const noexcept {

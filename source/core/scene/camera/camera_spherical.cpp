@@ -39,8 +39,8 @@ bool Spherical::generate_ray(Camera_sample const& sample, uint32_t frame, uint32
     float x = d_x_ * coordinates[0];
     float y = d_y_ * coordinates[1];
 
-    float phi   = (x - 0.5f) * (2.f * math::Pi);
-    float theta = y * math::Pi;
+    float phi   = (x - 0.5f) * (2.f * Pi);
+    float theta = y * Pi;
 
     float sin_phi   = std::sin(phi);
     float cos_phi   = std::cos(phi);

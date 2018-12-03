@@ -35,8 +35,8 @@ static inline void max_probabilities(float mt,
                                                                          float3 const& mu_s,
                                                                          float3 const& mu_n,
                                                                          float& pa, float& ps,
-float& pn, float3& wa, float3& ws, float3& wn) { float const ma = math::max_component(mu_a); float
-const ms = math::max_component(mu_s); float const mn = math::max_component(mu_n); float const c
+float& pn, float3& wa, float3& ws, float3& wn) { float const ma = max_component(mu_a); float
+const ms = max_component(mu_s); float const mn = max_component(mu_n); float const c
 = 1.f / (ma + ms + mn);
 
         pa = ma * c;
@@ -51,8 +51,8 @@ const ms = math::max_component(mu_s); float const mn = math::max_component(mu_n)
 static inline void max_history_probabilities(float mt,
                                                                                          float3
 const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pa, float& ps, float&
-pn, float3& wa, float3& ws, float3& wn) { float const ma = math::max_component(mu_a * w); float
-const ms = math::max_component(mu_s * w); float const mn = math::max_component(mu_n * w); float
+pn, float3& wa, float3& ws, float3& wn) { float const ma = max_component(mu_a * w); float
+const ms = max_component(mu_s * w); float const mn = max_component(mu_n * w); float
 const c = 1.f / (ma + ms + mn);
 
         pa = ma * c;
@@ -67,8 +67,8 @@ const c = 1.f / (ma + ms + mn);
 static inline void max_history_probabilities(float mt,
                                                                                          float3
 const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pn, float3& wn) { float
-const ma = math::max_component(mu_a * w); float const ms = math::max_component(mu_s * w); float
-const mn = math::max_component(mu_n * w); float const c = 1.f / (ma + ms + mn);
+const ma = max_component(mu_a * w); float const ms = max_component(mu_s * w); float
+const mn = max_component(mu_n * w); float const c = 1.f / (ma + ms + mn);
 
         pn = mn * c;
 
@@ -80,8 +80,8 @@ static inline void avg_probabilities(float mt,
                                                                          float3 const& mu_s,
                                                                          float3 const& mu_n,
                                                                          float& pa, float& ps,
-float& pn, float3& wa, float3& ws, float3& wn) { float const ma = math::average(mu_a); float const
-ms = math::average(mu_s); float const mn = math::average(mu_n); float const c = 1.f / (ma + ms +
+float& pn, float3& wa, float3& ws, float3& wn) { float const ma = average(mu_a); float const
+ms = average(mu_s); float const mn = average(mu_n); float const c = 1.f / (ma + ms +
 mn);
 
         pa = ma * c;
@@ -96,8 +96,8 @@ mn);
 static inline void avg_history_probabilities(float mt,
                                                                                          float3
 const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pa, float& ps, float&
-pn, float3& wa, float3& ws, float3& wn) { float const ma = 0.f;//math::average(mu_a * w); float
-const ms = math::average(mu_s * w); float const mn = math::average(mu_n * w); float const c = 1.f /
+pn, float3& wa, float3& ws, float3& wn) { float const ma = 0.f;//average(mu_a * w); float
+const ms = average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f /
 (ma + ms + mn);
 
         pa = ma * c;
@@ -112,8 +112,8 @@ const ms = math::average(mu_s * w); float const mn = math::average(mu_n * w); fl
 static inline void avg_history_probabilities(float mt, float3 const& mu_s, float3 const& mu_n,
                                              float3 const& w, float& ps, float& pn, float3& ws,
                                              float3& wn) noexcept {
-    float const ms = math::average(mu_s * w);
-    float const mn = math::average(mu_n * w);
+    float const ms = average(mu_s * w);
+    float const mn = average(mu_n * w);
     float const c  = 1.f / (ms + mn);
 
     ps = ms * c;
@@ -126,7 +126,7 @@ static inline void avg_history_probabilities(float mt, float3 const& mu_s, float
 static inline void avg_history_probabilities(float mt,
                                                                                          float3
 const& mu_s, float3 const& mu_n, float3 const& w, float& pn, float3& wn) { float const ms =
-math::average(mu_s * w); float const mn = math::average(mu_n * w); float const c = 1.f / (ms + mn);
+average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f / (ms + mn);
 
         pn = mn * c;
 
@@ -218,8 +218,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
         transmittance = math::exp(-(d - ray.min_t) * extinction);
 
         float const r = rng_.random_float();
-        float const t = -std::log(1.f - r * (1.f - math::average(transmittance))) /
-                        math::average(extinction);
+        float const t = -std::log(1.f - r * (1.f - average(transmittance))) / average(extinction);
 
         float3 const p = ray.point(ray.min_t + t);
 
@@ -238,8 +237,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
         transmittance = math::exp(-(d - ray.min_t) * extinction);
 
         float const r = rng_.random_float();
-        float const t = -std::log(1.f - r * (1.f - math::average(transmittance))) /
-                        math::average(extinction);
+        float const t = -std::log(1.f - r * (1.f - average(transmittance))) / average(extinction);
 
         float3 const p = ray.point(ray.min_t + t);
 
@@ -282,7 +280,7 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
 
         if (float3 tv;
             worker.transmitted_visibility(shadow_ray, tintersection, Filter::Nearest, tv)) {
-            float const phase = 1.f / (4.f * math::Pi);
+            float const phase = 1.f / (4.f * Pi);
 
             float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 

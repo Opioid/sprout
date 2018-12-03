@@ -32,7 +32,7 @@ static inline float map_roughness(float roughness) noexcept {
 
 static inline float distribution_isotropic(float n_dot_h, float alpha2) noexcept {
     float const d = (n_dot_h * n_dot_h) * (alpha2 - 1.f) + 1.f;
-    return alpha2 / (math::Pi * d * d);
+    return alpha2 / (Pi * d * d);
 }
 
 static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
@@ -41,7 +41,7 @@ static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float
     float const y = (y_dot_h * y_dot_h) / alpha2[1];
     float const d = (x + y) + (n_dot_h * n_dot_h);
 
-    return 1.f / ((math::Pi * axy) * (d * d));
+    return 1.f / ((Pi * axy) * (d * d));
 }
 
 static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_dot_wo,
@@ -329,8 +329,7 @@ inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alph
     // sample point with polar coordinates (r, phi)
     float const a   = 1.f / (1.f + v[2]);
     float const r   = std::sqrt(xi[0]);
-    float const phi = (xi[1] < a) ? (xi[1] / a * math::Pi)
-                                  : (math::Pi + (xi[1] - a) / (1.f - a) * math::Pi);
+    float const phi = (xi[1] < a) ? (xi[1] / a * Pi) : (Pi + (xi[1] - a) / (1.f - a) * Pi);
 
     auto const [sin_phi, cos_phi] = math::sincos(phi);
 
@@ -448,7 +447,7 @@ float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
                            bxdf::Sample& result) noexcept {
     float2 const xi = sampler.generate_sample_2D();
 
-    float const phi     = (2.f * math::Pi) * xi[0];
+    float const phi     = (2.f * Pi) * xi[0];
     float const sin_phi = std::sin(phi);
     float const cos_phi = std::cos(phi);
 

@@ -272,7 +272,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
 
     sample.p       = ws;
     sample.dir     = dir;
-    sample.pdf     = 1.f / (math::Pi * area);
+    sample.pdf     = 1.f / (Pi * area);
     sample.epsilon = 5e-4f;
 
     return true;
@@ -317,7 +317,7 @@ float Disk::uv_weight(float2 /*uv*/) const noexcept {
 }
 
 float Disk::area(uint32_t /*part*/, float3 const& scale) const noexcept {
-    return math::Pi * scale[0] * scale[0];
+    return Pi * scale[0] * scale[0];
 }
 
 size_t Disk::num_bytes() const noexcept {

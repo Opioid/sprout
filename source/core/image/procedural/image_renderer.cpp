@@ -282,7 +282,7 @@ bool Renderer::intersect_n_gon(float2 pos, float angle, float radius, uint32_t n
     float2 const p = sample - pos;
 
     for (uint32_t i = 0; i < num_vertices; ++i) {
-        float const delta = (2.f * math::Pi) / static_cast<float>(num_vertices);
+        float const delta = (2.f * Pi) / static_cast<float>(num_vertices);
         float const start = static_cast<float>(i) * delta + angle;
 
         auto const [sin_start, cos_start] = math::sincos(start);

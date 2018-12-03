@@ -73,13 +73,13 @@ float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack)
 
         float3 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
 
-        SOFT_ASSERT(math::all_finite_and_positive(li));
+        SOFT_ASSERT(all_finite_and_positive(li));
 
         return float4(vtr * li + vli, 1.f);
     } else if (intersect_and_resolve_mask(ray, intersection, Filter::Undefined)) {
         float3 const li = surface_integrator_->li(ray, intersection, *this, interface_stack);
 
-        SOFT_ASSERT(math::all_finite_and_positive(li));
+        SOFT_ASSERT(all_finite_and_positive(li));
 
         return float4(li, 1.f);
     } else {
@@ -206,7 +206,7 @@ bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Filte
 
         if (float epsilon; intersect(ray, epsilon)) {
             if (float3 tr; volume_integrator_->transmittance(ray, *this, tr)) {
-                SOFT_ASSERT(math::all_finite_and_positive(tr));
+                SOFT_ASSERT(all_finite_and_positive(tr));
 
                 ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
                 ray.max_t = ray_max_t;

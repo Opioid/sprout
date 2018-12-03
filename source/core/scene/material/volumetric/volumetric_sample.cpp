@@ -10,7 +10,7 @@ namespace scene::material::volumetric {
 static inline float phase_hg(float cos_theta, float g) noexcept {
     float const gg    = g * g;
     float const denom = 1.f + gg + 2.f * g * cos_theta;
-    return (1.f / (4.f * math::Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
+    return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
 }
 
 const material::Layer& Sample::base_layer() const noexcept {
@@ -69,9 +69,9 @@ float Sample::sample(float3 const& wo, float2 r2, float3& wi) const noexcept {
     }
 
     float const sin_theta = std::sqrt(std::max(0.f, 1.f - cos_theta * cos_theta));
-    float const phi       = r2[1] * (2.f * math::Pi);
+    float const phi       = r2[1] * (2.f * Pi);
 
-    auto const [t, b] = math::orthonormal_basis(wo);
+    auto const [t, b] = orthonormal_basis(wo);
 
     wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
 

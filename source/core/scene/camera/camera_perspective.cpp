@@ -102,7 +102,7 @@ void Perspective::on_update(uint64_t time, Worker& worker) noexcept {
     float2 const fr(resolution_);
     float const  ratio = fr[0] / fr[1];
 
-    float const z = ratio * math::Pi / fov_ * 0.5f;
+    float const z = ratio * Pi / fov_ * 0.5f;
 
     //	float3 left_top   (-ratio,  1.f, z);
     //	float3 right_top  ( ratio,  1.f, z);

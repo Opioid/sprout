@@ -14,8 +14,7 @@ bool check(const bxdf::Sample& result, float3 const& wo, float n_dot_wi, float n
            float wo_dot_h, Layer const& layer) {
     using namespace testing;
 
-    if (!std::isfinite(result.pdf) || !math::all_finite(result.wi) ||
-        !math::all_finite(result.reflection)) {
+    if (!std::isfinite(result.pdf) || !all_finite(result.wi) || !all_finite(result.reflection)) {
         std::cout << "wi: ";
         print_vector(result.wi);
         std::cout << "wo: ";

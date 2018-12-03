@@ -16,8 +16,8 @@ inline CM::CM(float x) noexcept
 inline CM::CM(CC const& cc) noexcept {
     minorant_mu_a = math::min_component(cc.a);
     minorant_mu_s = math::min_component(cc.s);
-    majorant_mu_a = math::max_component(cc.a);
-    majorant_mu_s = math::max_component(cc.s);
+    majorant_mu_a = max_component(cc.a);
+    majorant_mu_s = max_component(cc.s);
 }
 
 inline float CM::minorant_mu_t() const noexcept {

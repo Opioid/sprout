@@ -32,7 +32,7 @@ void Material_subsurface::compile(thread::Pool& pool) noexcept {
 
     //	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
 
-    //	float const max_extinction = math::max_component(extinction_coefficient);
+    //	float const max_extinction = max_component(extinction_coefficient);
 
     //	majorant_mu_t_ = max_extinction;
 }

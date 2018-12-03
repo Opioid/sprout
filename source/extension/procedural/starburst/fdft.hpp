@@ -72,9 +72,9 @@ class Row {
         float const iss      = std::floor(1.f / alpha);
         float const dk       = 1.f / (m * iss);
 
-        float const ucot = 1.f / std::tan(alpha * (math::Pi * 0.5f));
-        float const cot  = math::Pi * ucot;
-        float const csc  = (2.f * math::Pi) / std::sin(alpha * (math::Pi * 0.5f));
+        float const ucot = 1.f / std::tan(alpha * (Pi * 0.5f));
+        float const cot  = Pi * ucot;
+        float const csc  = (2.f * Pi) / std::sin(alpha * (Pi * 0.5f));
 
         float2 const sx = sqrtc(float2(1.f, -ucot));
         /*

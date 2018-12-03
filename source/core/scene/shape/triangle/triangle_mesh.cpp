@@ -346,14 +346,14 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     float3 const sn = tree_.triangle_normal(s.offset);
     float3 const wn = transform_vector(transformation.rotation, sn);
 
-    auto const [x, y] = math::orthonormal_basis(wn);
+    auto const [x, y] = orthonormal_basis(wn);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, wn);
 
     sample.p       = ws;
     sample.dir     = dir;
-    sample.pdf     = 1.f / ((1.f * math::Pi) * area);
+    sample.pdf     = 1.f / ((1.f * Pi) * area);
     sample.epsilon = 5e-4f;
 
     return true;

@@ -264,7 +264,7 @@ uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced,
 
 static inline float kernel(float squared_distance, float inv_squared_radius) {
     float const s = 1.f - squared_distance * inv_squared_radius;
-    return (3.f * math::Pi_inv) * (s * s);
+    return (3.f * Pi_inv) * (s * s);
 }
 
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
@@ -308,7 +308,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
         float3 const mu_s = scattering_coefficient(intersection, worker);
 
-        result /= (((4.f / 3.f) * math::Pi) * (radius_3 * static_cast<float>(num_paths))) * mu_s;
+        result /= (((4.f / 3.f) * Pi) * (radius_3 * static_cast<float>(num_paths))) * mu_s;
     } else {
         float const radius_2     = photon_radius_ * photon_radius_;
         float const inv_radius_2 = 1.f / radius_2;

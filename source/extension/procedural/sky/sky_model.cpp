@@ -22,7 +22,7 @@ Model::~Model() noexcept {
 void Model::compile() noexcept {
     release();
 
-    float const elevation = std::max(dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
+    float const elevation = std::max(dot(sun_direction_, zenith()) * (-0.5f * Pi), 0.f);
 
     for (int32_t i = 0; i < Num_bands; ++i) {
         float const ga = ground_albedo_.value(i);

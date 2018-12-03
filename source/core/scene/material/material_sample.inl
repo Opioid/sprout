@@ -28,7 +28,7 @@ inline void Layer::set_tangent_frame(float3 const& t, float3 const& b, float3 co
 }
 
 inline void Layer::set_tangent_frame(float3 const& n) noexcept {
-    auto const [t, b] = math::orthonormal_basis(n);
+    auto const [t, b] = orthonormal_basis(n);
 
     t_ = t;
     b_ = b;

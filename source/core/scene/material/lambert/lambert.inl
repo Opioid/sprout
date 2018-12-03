@@ -14,9 +14,9 @@ namespace scene::material::lambert {
 
 inline bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
                                           Layer const& layer) noexcept {
-    float3 const reflection = math::Pi_inv * color;
+    float3 const reflection = Pi_inv * color;
 
-    float const pdf = n_dot_wi * math::Pi_inv;
+    float const pdf = n_dot_wi * Pi_inv;
 
     (void)layer;
     //    SOFT_ASSERT(testing::check(reflection, float3::identity(), float3::identity(), pdf,
@@ -35,9 +35,9 @@ inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
-    result.reflection = math::Pi_inv * color;
+    result.reflection = Pi_inv * color;
     result.wi         = wi;
-    result.pdf        = n_dot_wi * math::Pi_inv;
+    result.pdf        = n_dot_wi * Pi_inv;
     result.type.clear(bxdf::Type::Diffuse_reflection);
 
     SOFT_ASSERT(testing::check(result, float3::identity(), layer));

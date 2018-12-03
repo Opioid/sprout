@@ -1016,7 +1016,7 @@ void basis() {
     //		float3 result(0.f);
 
     //		for (size_t i = 0; i < num_values; ++i) {
-    //			math::orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
+    //			orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
 
     //			result += bs[i] + ts[i];
     //		}
@@ -1034,7 +1034,7 @@ void basis() {
     //		float3 result(0.f);
 
     //		for (size_t i = 0; i < num_values; ++i) {
-    //			math::orthonormal_basis1(vectors[i], bs[i], ts[i]);
+    //			orthonormal_basis1(vectors[i], bs[i], ts[i]);
 
     //			result += bs[i] + ts[i];
     //		}
@@ -1052,7 +1052,7 @@ void basis() {
         float3 result(0.f);
 
         for (size_t i = 0; i < num_values; ++i) {
-            auto const [t, b] = math::orthonormal_basis(vectors[i]);
+            auto const [t, b] = orthonormal_basis(vectors[i]);
 
             ts[i] = t;
             bs[i] = b;
@@ -1073,7 +1073,7 @@ void basis() {
     //			float3 result(0.f);
 
     //			for (size_t i = 0; i < num_values; ++i) {
-    //				math::orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
+    //				orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
 
     //				result += bs[i] + ts[i];
     //			}
@@ -1091,7 +1091,7 @@ void basis() {
     //			float3 result(0.f);
 
     //			for (size_t i = 0; i < num_values; ++i) {
-    //				math::orthonormal_basis1(vectors[i], bs[i], ts[i]);
+    //				orthonormal_basis1(vectors[i], bs[i], ts[i]);
 
     //				result += bs[i] + ts[i];
     //			}
@@ -1109,7 +1109,7 @@ void basis() {
         float3 result(0.f);
 
         for (size_t i = 0; i < num_values; ++i) {
-            auto const [t, b] = math::orthonormal_basis(vectors[i]);
+            auto const [t, b] = orthonormal_basis(vectors[i]);
 
             ts[i] = t;
             bs[i] = b;

@@ -61,9 +61,9 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(json::Value const& /*mes
 
         float randomness = 1.f;  // sampler.sample_1(*mask, s);
 
-        float rotation_y = rng.random_float() * 2.f * math::Pi;
+        float rotation_y = rng.random_float() * 2.f * Pi;
 
-        rotation_y = math::lerp(0.25f * math::Pi, rotation_y, randomness);
+        rotation_y = math::lerp(0.25f * Pi, rotation_y, randomness);
 
         float l = 0.05f + 0.1f * rng.random_float();  //- (0.15f * randomness);
         float w = 0.1f + 0.05f * rng.random_float();
@@ -155,7 +155,7 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
 
     Segment segments[num_segments + 2];
 
-    float ax = -0.4f * math::Pi;
+    float ax = -0.4f * Pi;
 
     float3x3 rx;
     math::set_rotation_x(rx, lean_factor * ax);

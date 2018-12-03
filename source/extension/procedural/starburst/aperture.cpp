@@ -11,7 +11,7 @@ Aperture::Aperture(uint32_t num_blades, float roundness, float rotation) : round
     float angle = rotation;
 
     for (uint32_t i = 0; i < num_blades; ++i) {
-        float delta = (2.f * math::Pi) / static_cast<float>(num_blades);
+        float delta = (2.f * Pi) / static_cast<float>(num_blades);
         float start = static_cast<float>(i) * delta /*- 0.5f * delta*/ + angle;
 
         float3 b = float3(std::sin(start), std::cos(start), 0.f);

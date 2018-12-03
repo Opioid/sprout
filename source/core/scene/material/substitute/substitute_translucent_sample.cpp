@@ -33,9 +33,9 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool) const noexcept
 
         float const f = base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
-        float const pdf = n_dot_wi * (0.5f * math::Pi_inv);
+        float const pdf = n_dot_wi * (0.5f * Pi_inv);
 
-        return {(n_dot_wi * math::Pi_inv * (1.f - f)) * (attenuation * diffuse_color_), pdf};
+        return {(n_dot_wi * Pi_inv * (1.f - f)) * (attenuation * diffuse_color_), pdf};
     }
 
     float3 const h = normalize(wo_ + wi);

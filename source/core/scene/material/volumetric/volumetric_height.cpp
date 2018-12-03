@@ -39,7 +39,7 @@ ray.normalized();
                 // special case where density stays exactly the same along the ray
                 float3 const result = d * (a_ * math::exp(-b_ * ha)) * attenuation;
 
-                SOFT_ASSERT(math::all_finite(result));
+                SOFT_ASSERT(all_finite(result));
 
                 return result;
         }
@@ -55,7 +55,7 @@ ray.normalized();
 
         float3 const result = d * ((a_ * (fb - fa) / b_) / (hb_ha)) * attenuation;
 
-        SOFT_ASSERT(math::all_finite(result));
+        SOFT_ASSERT(all_finite(result));
 
         return result;
 

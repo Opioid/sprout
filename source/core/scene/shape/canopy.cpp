@@ -140,7 +140,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
     sample.wi      = dir;
     sample.uv[0]   = 0.5f * disk[0] + 0.5f;
     sample.uv[1]   = 0.5f * disk[1] + 0.5f;
-    sample.pdf     = 1.f / (2.f * math::Pi);
+    sample.pdf     = 1.f / (2.f * Pi);
     sample.t       = Ray_max_t;
     sample.epsilon = 5e-4f;
 
@@ -159,7 +159,7 @@ bool Canopy::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
 float Canopy::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const noexcept {
-    return 1.f / (2.f * math::Pi);
+    return 1.f / (2.f * Pi);
 }
 
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
@@ -178,7 +178,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     sample.wi      = transform_vector(transformation.rotation, dir);
     sample.uv      = uv;
     sample.t       = Ray_max_t;
-    sample.pdf     = 1.f / (2.f * math::Pi);
+    sample.pdf     = 1.f / (2.f * Pi);
     sample.epsilon = 5e-4f;
 
     return true;
@@ -200,7 +200,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 
     float3 const ws = -transform_vector(transformation.rotation, ls);
 
-    auto const [t, b] = math::orthonormal_basis(ws);
+    auto const [t, b] = orthonormal_basis(ws);
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
@@ -213,7 +213,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
     sample.dir     = ws;
     sample.p       = p;
     sample.uv      = uv;
-    sample.pdf     = 1.f / ((2.f * math::Pi) * (1.f * math::Pi) * radius * radius);
+    sample.pdf     = 1.f / ((2.f * Pi) * (1.f * Pi) * radius * radius);
     sample.epsilon = 5e-4f;
 
     return true;
@@ -222,7 +222,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 float Canopy::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
                      Transformation const& /*transformation*/, float /*area*/,
                      bool /*two_sided*/) const noexcept {
-    return 1.f / (2.f * math::Pi);
+    return 1.f / (2.f * Pi);
 }
 
 float Canopy::uv_weight(float2 uv) const noexcept {
@@ -237,7 +237,7 @@ float Canopy::uv_weight(float2 uv) const noexcept {
 }
 
 float Canopy::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
-    return 2.f * math::Pi;
+    return 2.f * Pi;
 }
 
 bool Canopy::is_finite() const noexcept {

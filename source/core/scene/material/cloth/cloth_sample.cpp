@@ -12,7 +12,7 @@ const material::Layer& Sample::base_layer() const noexcept {
 
 bxdf::Result Sample::evaluate(float3 const& wi, bool /*include_back*/) const noexcept {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
-    float const pdf      = n_dot_wi * math::Pi_inv;
+    float const pdf      = n_dot_wi * Pi_inv;
     return {pdf * diffuse_color_, pdf};
 }
 

@@ -297,7 +297,7 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
 
     sample.p       = ws;
     sample.dir     = dir;
-    sample.pdf     = 1.f / (math::Pi * area);
+    sample.pdf     = 1.f / (Pi * area);
     sample.epsilon = 5e-4f;
 
     return true;

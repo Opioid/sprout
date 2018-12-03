@@ -58,7 +58,7 @@ void Perspective_stereoscopic::set_fov(float fov) noexcept {
     float2 fr(resolution_);
     float  ratio = fr[0] / fr[1];
 
-    float z = ratio * math::Pi / fov * 0.5f;
+    float z = ratio * Pi / fov * 0.5f;
 
     left_top_ = float3(-ratio, 1.f, z);
     float3 right_top(ratio, 1.f, z);
