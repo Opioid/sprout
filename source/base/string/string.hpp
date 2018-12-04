@@ -9,7 +9,7 @@
 namespace string {
 
 template <typename T>
-static std::string to_string(T value, int num_padded_zeros = 0) {
+static std::string to_string(T value, int num_padded_zeros = 0) noexcept {
     std::ostringstream stream;
 
     if (num_padded_zeros) {
@@ -20,19 +20,19 @@ static std::string to_string(T value, int num_padded_zeros = 0) {
     return stream.str();
 }
 
-bool is_space(char c);
+bool is_space(char c) noexcept;
 
-void trim(std::string& text);
+void trim(std::string& text) noexcept;
 
-std::string_view parent_directory(std::string_view const& filename);
+std::string_view parent_directory(std::string_view const& filename) noexcept;
 
-std::string_view suffix(std::string_view filename);
+std::string_view suffix(std::string_view filename) noexcept;
 
-std::string_view presuffix(std::string_view filename);
+std::string_view presuffix(std::string_view filename) noexcept;
 
-std::string extract_filename(std::string filename);
+std::string extract_filename(std::string filename) noexcept;
 
-std::string print_bytes(size_t num_bytes);
+std::string print_bytes(size_t num_bytes) noexcept;
 
 }  // namespace string
 
