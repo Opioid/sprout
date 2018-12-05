@@ -21,6 +21,8 @@ class Material : public material::Material {
 
     float similarity_relation_scale(uint32_t depth) const noexcept override final;
 
+    bool is_scattering_volume() const noexcept override final;
+
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override final;
 

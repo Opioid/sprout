@@ -19,8 +19,6 @@ class Glass_thin : public Material {
 
     bool has_tinted_shadow() const noexcept override final;
 
-    bool is_scattering_volume() const noexcept final override;
-
     size_t num_bytes() const noexcept override final;
 
     void set_normal_map(Texture_adapter const& normal_map) noexcept;

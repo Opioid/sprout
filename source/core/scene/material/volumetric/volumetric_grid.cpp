@@ -11,9 +11,32 @@
 namespace scene::material::volumetric {
 
 Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept
-    : Density(sampler_settings), grid_(grid) {}
+    : Material(sampler_settings), grid_(grid) {}
 
 Grid::~Grid() noexcept {}
+
+CC Grid::collision_coefficients() const noexcept {
+    return cc_;
+}
+
+CC Grid::collision_coefficients(float2 /*uv*/, Filter /*filter*/, Worker const& /*worker*/) const
+    noexcept {
+    return cc_;
+}
+
+CC Grid::collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
+    noexcept {
+    float const d = density(uvw, filter, worker);
+
+    return {d * cc_.a, d * cc_.s};
+}
+
+CCE Grid::collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                          Worker const& worker) const noexcept {
+    float const d = density(uvw, filter, worker);
+
+    return {{d * cc_.a, d * cc_.s}, d * emission_};
+}
 
 void Grid::compile(thread::Pool& pool) noexcept {
     auto const& texture = grid_.texture();

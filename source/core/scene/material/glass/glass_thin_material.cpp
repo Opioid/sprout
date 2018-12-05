@@ -54,10 +54,6 @@ bool Glass_thin::has_tinted_shadow() const noexcept {
     return true;
 }
 
-bool Glass_thin::is_scattering_volume() const noexcept {
-    return false;
-}
-
 size_t Glass_thin::num_bytes() const noexcept {
     return sizeof(*this);
 }

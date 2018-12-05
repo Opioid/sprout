@@ -18,8 +18,6 @@ class Glass : public Material {
 
     float ior() const noexcept override final;
 
-    bool is_scattering_volume() const noexcept override final;
-
     size_t num_bytes() const noexcept override;
 
     void set_normal_map(Texture_adapter const& normal_map) noexcept;

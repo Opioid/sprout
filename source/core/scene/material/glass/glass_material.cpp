@@ -43,10 +43,6 @@ float Glass::ior() const noexcept {
     return ior_;
 }
 
-bool Glass::is_scattering_volume() const noexcept {
-    return false;
-}
-
 size_t Glass::num_bytes() const noexcept {
     return sizeof(*this);
 }

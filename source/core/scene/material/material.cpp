@@ -124,7 +124,7 @@ bool Material::is_textured_volume() const noexcept {
 }
 
 bool Material::is_scattering_volume() const noexcept {
-    return true;
+    return false;
 }
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,

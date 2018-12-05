@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_MATERIAL_VOLUMETRIC_HEIGHT_HPP
 #define SU_CORE_SCENE_MATERIAL_VOLUMETRIC_HEIGHT_HPP
 
-#include "volumetric_density.hpp"
+// #include "volumetric_density.hpp"
 
 namespace scene::material::volumetric {
 
