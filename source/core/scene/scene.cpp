@@ -180,6 +180,8 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
     // but I think it is more efficient to handle those cases outside or implicitely.
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
+    id = light::Light::strip_mask(id);
+
     float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
     return {*lights_[id], pdf};
 }

@@ -214,12 +214,22 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         if (!worker.interface_stack().empty()) {
             float3     vli, vtr;
-            bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
+            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
-            result.li += throughput * vli;
+            if (Event::Absorb == hit) {
+                if (0 == i) {
+                    result.li += throughput * vli;
+                } else {
+                    result.li += throughput *
+                                 evaluate_light_volume(vli, ray, intersection, previous_bxdf_pdf,
+                                                       treat_as_singular, is_translucent, worker);
+                }
+                break;
+            }
+
             throughput *= vtr;
 
-            if (!hit) {
+            if (Event::Undefined == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
@@ -343,7 +353,7 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
                                       bool is_translucent, Filter filter, Worker& worker,
                                       bool& pure_emissive) noexcept {
     uint32_t const light_id = intersection.light_id();
-    if (!Light::is_light(light_id)) {
+    if (!Light::is_area_light(light_id)) {
         pure_emissive = false;
         return float3(0.f);
     }
@@ -388,6 +398,38 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
     SOFT_ASSERT(all_finite_and_positive(radiance));
 
     return radiance;
+}
+
+float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
+                                             Intersection const& intersection, float bxdf_pdf,
+                                             bool treat_as_singular, bool is_translucent,
+                                             Worker& worker) const noexcept {
+    uint32_t const light_id = intersection.light_id();
+    if (!Light::is_light(light_id)) {
+        return float3(0.f);
+    }
+
+    float light_pdf = 0.f;
+
+    if (!treat_as_singular) {
+        bool const calculate_pdf = Light_sampling::Strategy::Single ==
+                                   settings_.light_sampling.strategy;
+
+        auto const light = worker.scene().light(light_id, calculate_pdf);
+
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent, Filter::Nearest,
+                                           worker);
+
+        if (0.f == ls_pdf) {
+            return float3(0.f);
+        }
+
+        light_pdf = ls_pdf * light.pdf;
+    }
+
+    float const weight = power_heuristic(bxdf_pdf, light_pdf);
+
+    return weight * vli;
 }
 
 sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) noexcept {

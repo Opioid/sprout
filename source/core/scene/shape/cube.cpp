@@ -240,6 +240,12 @@ float Cube::pdf(Ray const&            ray, Intersection const& /*intersection*/,
     return math::cone_pdf_uniform(cos_theta_max);
 }
 
+float Cube::pdf_volume(Ray const& ray, Intersection const& /*intersection*/,
+                       Transformation const& /*transformation*/, float volume) const noexcept {
+    float sl = ray.max_t * ray.max_t;
+    return sl / (volume);
+}
+
 bool Cube::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const noexcept {

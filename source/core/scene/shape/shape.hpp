@@ -87,11 +87,14 @@ class Shape {
                         AABB const& bounds, Node_stack& node_stack, Sample_from& sample) const
         noexcept = 0;
 
-    // Both pdf functions implicitely assume that the passed
+    // All pdf functions implicitely assume that the passed
     // ray/intersection/transformation combination actually lead to a hit.
     virtual float pdf(Ray const& ray, Intersection const& intersection,
                       Transformation const& transformation, float area, bool two_sided,
                       bool total_sphere) const noexcept = 0;
+
+    virtual float pdf_volume(Ray const& ray, Intersection const& intersection,
+                             Transformation const& transformation, float volume) const noexcept = 0;
 
     // The following three functions are used for textured lights
     // and should have the uv weight baked in!

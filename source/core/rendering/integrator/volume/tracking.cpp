@@ -343,13 +343,13 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
     }
 }
 
-Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
-                                    float srs, Filter filter, rnd::Generator& rng, Worker& worker,
-                                    float& t_out, float3& w, float3& li) {
+Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material, float srs,
+                         Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
+                         float3& w, float3& li) {
     float const mt = cm.majorant_mu_t();
 
     if (mt < Min_mt) {
-        return Result::Pass;
+        return Event::Pass;
     }
 
     float3 lw = w;
@@ -364,7 +364,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const
         if (t > d) {
             w  = lw;
             li = float3(0.);
-            return Result::Pass;
+            return Event::Pass;
         }
 
         float3 const uvw = ray.point(t);
@@ -393,7 +393,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const
 
             w  = float3(0.f);
             li = lw * wa * cce.e;
-            return Result::Absorb;
+            return Event::Absorb;
         } else if (r1 <= 1.f - pn && ps > 0.f) {
             float3 const ws = mu.s / (mt * ps);
 
@@ -402,7 +402,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CM const& cm, Material const
             t_out = t;
             w     = lw * ws;
             li    = float3(0.);
-            return Result::Scatter;
+            return Event::Scatter;
         } else {
             float3 const wn = mu_n / (mt * pn);
 
@@ -463,8 +463,8 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
     }
 }
 
-Tracking::Result Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng,
-                                    float& t_out, float3& w, float3& li) {
+Event Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
+                         float3& w, float3& li) {
     CC const& mu = cce.cc;
 
     float3 const mu_t = mu.a + mu.s;
@@ -482,7 +482,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generat
         if (t > d) {
             w  = lw;
             li = float3(0.f);
-            return Result::Pass;
+            return Event::Pass;
         }
 
         float const ma = average(mu.a * lw);
@@ -493,7 +493,7 @@ Tracking::Result Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generat
         if (mc < 1e-10f) {
             w  = lw;
             li = float3(0.);
-            return Result::Pass;
+            return Event::Pass;
         }
 
         float const c = 1.f / mc;
@@ -506,16 +506,17 @@ Tracking::Result Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generat
         if (r1 < pa) {
             float3 const wa = mu.a / (mt * pa);
 
-            w  = float3(0.f);
-            li = lw * wa * cce.e;
-            return Result::Absorb;
+            t_out = t;
+            w     = float3(0.f);
+            li    = lw * wa * cce.e;
+            return Event::Absorb;
         } else if (r1 <= 1.f - pn && ps > 0.f) {
             float3 const ws = mu.s / (mt * ps);
 
             t_out = t;
             w     = lw * ws;
             li    = float3(0.f);
-            return Result::Scatter;
+            return Event::Scatter;
         } else {
             float3 const wn = mu_n / (mt * pn);
 

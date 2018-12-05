@@ -93,7 +93,13 @@ class Light {
 
     virtual bool equals(Prop const* prop, uint32_t part) const noexcept = 0;
 
+    static uint32_t constexpr Volume_light_mask = 0x40000000;
+
     static bool is_light(uint32_t id) noexcept;
+
+    static bool is_area_light(uint32_t id) noexcept;
+
+    static uint32_t strip_mask(uint32_t id) noexcept;
 };
 
 }  // namespace light

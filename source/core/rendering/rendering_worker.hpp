@@ -16,6 +16,8 @@ class Sample;
 
 namespace rendering {
 
+enum class Event;
+
 namespace integrator {
 
 namespace photon {
@@ -57,8 +59,8 @@ class Worker : public scene::Worker {
 
     float4 li(Ray& ray, scene::prop::Interface_stack const& interface_stack) noexcept;
 
-    bool volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
-                float3& transmittance) noexcept;
+    Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
+                 float3& transmittance) noexcept;
 
     bool transmitted_visibility(Ray& ray, Intersection const& intersection, Filter filter,
                                 float3& tv) noexcept;

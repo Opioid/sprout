@@ -59,6 +59,10 @@ class Morphable_mesh : public Shape, public Morphable_shape {
               Transformation const& transformation, float area, bool two_sided,
               bool total_sphere) const noexcept override final;
 
+    float pdf_volume(Ray const& ray, shape::Intersection const& intersection,
+                     Transformation const& transformation, float volume) const
+        noexcept override final;
+
     bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& transformation,
                 float area, bool two_sided, Sample_to& sample) const noexcept override final;
 

@@ -2,6 +2,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene.hpp"
@@ -24,9 +25,9 @@ bool Emission::transmittance(Ray const& ray, Worker& worker, float3& transmittan
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
-bool Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /*filter*/,
-                         Worker& /*worker*/, float3& /*li*/, float3& /*transmittance*/) noexcept {
-    return false;
+Event Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /*filter*/,
+                          Worker& /*worker*/, float3& /*li*/, float3& /*transmittance*/) noexcept {
+    return Event::Pass;
 }
 
 size_t Emission::num_bytes() const noexcept {

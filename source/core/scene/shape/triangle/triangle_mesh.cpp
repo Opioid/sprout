@@ -372,6 +372,11 @@ float Mesh::pdf(Ray const& ray, const shape::Intersection&      intersection,
     return sl / (c * area);
 }
 
+float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
+                       Transformation const& /*transformation*/, float /*area*/) const noexcept {
+    return 0.f;
+}
+
 bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const noexcept {

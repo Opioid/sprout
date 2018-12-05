@@ -197,6 +197,12 @@ float Morphable_mesh::pdf(Ray const& /*ray*/, const shape::Intersection& /*inter
     return 0.f;
 }
 
+float Morphable_mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
+                                 Transformation const& /*transformation*/, float /*volume*/) const
+    noexcept {
+    return 0.f;
+}
+
 bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, Sample_to& /*sample*/) const noexcept {

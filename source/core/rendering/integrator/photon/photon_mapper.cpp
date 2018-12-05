@@ -1,6 +1,7 @@
 #include "photon_mapper.hpp"
 #include "base/math/aabb.inl"
 #include "photon_map.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
 #include "scene/material/bxdf.hpp"
@@ -199,12 +200,12 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
             if (!worker.interface_stack().empty()) {
                 float3     vli, vtr;
-                bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
+                auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
                 //   radiance += throughput * vli;
                 radiance *= vtr;
 
-                if (!hit) {
+                if (Event::Undefined == hit) {
                     break;
                 }
             } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

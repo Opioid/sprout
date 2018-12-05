@@ -139,12 +139,12 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
         if (!worker.interface_stack().empty()) {
             float3     vli, vtr;
-            bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
+            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             result += throughput * vli;
             throughput *= vtr;
 
-            if (!hit) {
+            if (Event::Undefined == hit || Event::Absorb == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

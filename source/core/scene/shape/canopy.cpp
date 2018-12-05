@@ -162,6 +162,11 @@ float Canopy::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*
     return 1.f / (2.f * Pi);
 }
 
+float Canopy::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+                         Transformation const& /*transformation*/, float /*area*/) const noexcept {
+    return 0.f;
+}
+
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
                     Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                     Sample_to&            sample) const noexcept {

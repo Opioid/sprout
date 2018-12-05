@@ -146,7 +146,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         if (!worker.interface_stack().empty()) {
             float3     vli, vtr;
-            bool const hit = worker.volume(ray, intersection, filter, vli, vtr);
+            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             if (treat_as_singular) {
                 result += throughput * vli;
@@ -154,7 +154,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
             throughput *= vtr;
 
-            if (!hit) {
+            if (Event::Undefined == hit || Event::Absorb == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

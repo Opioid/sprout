@@ -176,6 +176,12 @@ float Infinite_sphere::pdf(Ray const& /*ray*/, const shape::Intersection& /*inte
     }
 }
 
+float Infinite_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+                                  Transformation const& /*transformation*/, float /*volume*/) const
+    noexcept {
+    return 0.f;
+}
+
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
                              Transformation const& transformation, float /*area*/,
                              bool /*two_sided*/, Sample_to& sample) const noexcept {

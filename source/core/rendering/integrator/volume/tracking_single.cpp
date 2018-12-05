@@ -138,13 +138,13 @@ bool Tracking_single::transmittance(Ray const& ray, Worker& worker,
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
-bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
-                                float3& li, float3& transmittance) noexcept {
+Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter,
+                                 Worker& worker, float3& li, float3& transmittance) noexcept {
     bool const hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
     if (!hit) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        return false;
+        return Event::Undefined;
     }
 
     float const d     = ray.max_t;
@@ -154,7 +154,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
         li            = float3(0.f);
         transmittance = float3(1.f);
         //	weight = float3(1.f);
-        return true;
+        return Event::Pass;
     }
 
     SOFT_ASSERT(!worker.interface_stack().empty());
@@ -170,7 +170,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
         li            = float3(0.f);
         transmittance = attenuation(range, mu_a);
         //	weight = float3(1.f);
-        return true;
+        return Event::Pass;
     }
 
     if (material.is_heterogeneous_volume()) {
@@ -196,7 +196,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
                                                 worker, t, w)) {
                     li            = w * direct_light(ray, ray.point(t), intersection, worker);
                     transmittance = float3(0.f);
-                    return true;
+                    return Event::Pass;
                 }
             }
 
@@ -206,7 +206,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
 
         li            = float3(0.f);
         transmittance = w;
-        return true;
+        return Event::Pass;
 
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
@@ -248,7 +248,7 @@ bool Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fil
         li = l;
     }
 
-    return true;
+    return Event::Pass;
 }
 
 size_t Tracking_single::num_bytes() const noexcept {

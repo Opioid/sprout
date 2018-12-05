@@ -6,6 +6,8 @@
 
 namespace rendering {
 
+enum class Event { Absorb, Scatter, Pass, Undefined };
+
 static inline float attenuation(float distance, float c) noexcept {
     return math::exp(-distance * c);
 }

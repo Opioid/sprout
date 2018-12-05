@@ -36,4 +36,12 @@ bool Light::is_light(uint32_t id) noexcept {
     return 0xFFFFFFFF != id;
 }
 
+bool Light::is_area_light(uint32_t id) noexcept {
+    return 0 == (id & Volume_light_mask);
+}
+
+uint32_t Light::strip_mask(uint32_t id) noexcept {
+    return ~Volume_light_mask & id;
+}
+
 }  // namespace scene::light

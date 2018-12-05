@@ -37,6 +37,8 @@ namespace rendering {
 
 class Worker;
 
+enum class Event;
+
 namespace integrator::volume {
 
 class Tracking {
@@ -50,8 +52,6 @@ class Tracking {
     using CM             = scene::material::CM;
     using Intersection   = scene::prop::Intersection;
 
-    enum class Result { Absorb, Scatter, Pass };
-
     static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
                               float3& transmittance);
 
@@ -59,15 +59,15 @@ class Tracking {
                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
                          float3& w);
 
-    static Result tracking(ray const& ray, CM const& cm, Material const& material, float srs,
-                           Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
-                           float3& w, float3& li);
+    static Event tracking(ray const& ray, CM const& cm, Material const& material, float srs,
+                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
+                          float3& w, float3& li);
 
     static bool tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
                          float3& w);
 
-    static Result tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
-                           float3& w, float3& li);
+    static Event tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
+                          float3& w, float3& li);
 
     static float constexpr Min_mt        = 1e-10f;
     static float constexpr Ray_epsilon   = 5e-4f;

@@ -30,12 +30,12 @@ bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& trans
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
-bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
-                               float3& li, float3& transmittance) noexcept {
+Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
+                                float3& li, float3& transmittance) noexcept {
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        return false;
+        return Event::Undefined;
     }
 
     float const d     = ray.max_t;
@@ -44,7 +44,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
     if (range < Tracking::Ray_epsilon) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        return true;
+        return Event::Pass;
     }
 
     SOFT_ASSERT(!worker.interface_stack().empty());
@@ -59,7 +59,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
         li            = float3(0.f);
         transmittance = attenuation(range, mu_a);
-        return true;
+        return Event::Pass;
     }
 
     if (material.is_heterogeneous_volume()) {
@@ -95,10 +95,10 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                     auto const result = Tracking::tracking(local_ray, cm, material, srs, filter,
                                                            rng_, worker, t, w, li);
 
-                    if (Tracking::Result::Scatter == result) {
+                    if (Event::Scatter == result) {
                         set_scattering(intersection, interface, ray.point(t));
                         break;
-                    } else if (Tracking::Result::Absorb == result) {
+                    } else if (Event::Absorb == result) {
                         break;
                     }
                 }
@@ -129,7 +129,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
         }
 
         transmittance = w;
-        return math::any_greater_equal(w, Tracking::Abort_epsilon);
+        return math::any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Undefined;
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
@@ -140,7 +140,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
         li            = float3(0.f);
         transmittance = w;
-        return true;
+        return Event::Pass;
     } else {
         static bool constexpr decomposition = false;
 
@@ -158,7 +158,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                 li            = float3(0.f);
                 transmittance = float3(cm.minorant_mu_s / minorant_mu_t);
 
-                return true;
+                return Event::Scatter;
             }
 
             float const mt = cm.majorant_mu_t() - minorant_mu_t;
@@ -181,7 +181,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                 if (t > d) {
                     li            = float3(0.f);
                     transmittance = w;
-                    return true;
+                    return Event::Pass;
                 }
 
                 float const ms = average(mu.s * w);
@@ -200,7 +200,7 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
                     li            = float3(0.f);
                     transmittance = w * ws;
 
-                    return true;
+                    return Event::Scatter;
                 } else {
                     float3 const wn = mu_n / (mt * pn);
 
@@ -220,13 +220,15 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
                 transmittance = w;
 
-                if (Tracking::Result::Scatter == result) {
+                if (Event::Scatter == result) {
                     set_scattering(intersection, interface, ray.point(t));
-                } else if (Tracking::Result::Absorb == result) {
-                    return false;
+                } else if (Event::Absorb == result) {
+                    ray.max_t = t;
+                    return Event::Absorb;
                 }
 
-                return math::any_greater_equal(w, Tracking::Abort_epsilon);
+                return math::any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
+                                                                           : Event::Undefined;
             } else {
                 auto const mu = material.collision_coefficients();
 
@@ -236,7 +238,8 @@ bool Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filt
 
                 li            = float3(0.f);
                 transmittance = w;
-                return math::any_greater_equal(w, Tracking::Abort_epsilon);
+                return math::any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
+                                                                           : Event::Undefined;
             }
         }
     }

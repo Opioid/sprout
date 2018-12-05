@@ -394,6 +394,12 @@ float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*inters
     return math::cone_pdf_uniform(cos_theta_max);
 }
 
+float Sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+                         Transformation const& /*transformation*/, float /*volume*/) const
+    noexcept {
+    return 0.f;
+}
+
 bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
                     Transformation const& transformation, float area, bool /*two_sided*/,
                     Sample_to& sample) const noexcept {

@@ -3,6 +3,7 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/photon/photon_map.hpp"
 #include "rendering/integrator/photon/photon_mapper.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
@@ -65,7 +66,9 @@ float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack)
         reset_interface_stack(interface_stack);
 
         float3 vli, vtr;
-        if (!volume_integrator_->integrate(ray, intersection, Filter::Undefined, *this, vli, vtr)) {
+        if (auto const event = volume_integrator_->integrate(ray, intersection, Filter::Undefined,
+                                                             *this, vli, vtr);
+            Event::Absorb == event) {
             return float4(vli, spectrum::luminance(vli));
         }
 
@@ -87,8 +90,8 @@ float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack)
     }
 }
 
-bool Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
-                    float3& transmittance) noexcept {
+Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
+                     float3& transmittance) noexcept {
     return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
 }
 

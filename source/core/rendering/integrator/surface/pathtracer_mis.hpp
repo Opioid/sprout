@@ -59,6 +59,11 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
                           Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
                           Filter filter, Worker& worker, bool& pure_emissive) noexcept;
 
+    float3 evaluate_light_volume(float3 const& vli, Ray const& ray,
+                                 Intersection const& intersection, float bxdf_pdf,
+                                 bool treat_as_singular, bool is_translucent, Worker& worker) const
+        noexcept;
+
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
     sampler::Sampler& light_sampler(uint32_t bounce) noexcept;
 
