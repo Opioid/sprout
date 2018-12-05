@@ -400,6 +400,11 @@ float Mesh::area(uint32_t part, float3 const& scale) const noexcept {
     return distributions_[part].distribution.integral() * scale[0] * scale[1];
 }
 
+float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    // HACK: This only really works for uniform scales!
+    return 1.f;
+}
+
 bool Mesh::is_complex() const noexcept {
     return true;
 }

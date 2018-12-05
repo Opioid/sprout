@@ -11,11 +11,9 @@ bool Prop_volume_light::sample(float3 const& p, float3 const& n,
                                Transformation const& transformation, bool /*total_sphere*/,
                                Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                                Sample_to& result) const noexcept {
-    //  auto const material = prop_->material(part_);
+    float const volume = prop_->volume(part_);
 
-    float const area = prop_->area(part_);
-
-    if (!prop_->shape()->sample_volume(part_, p, transformation, area, sampler, sampler_dimension,
+    if (!prop_->shape()->sample_volume(part_, p, transformation, volume, sampler, sampler_dimension,
                                        worker.node_stack(), result)) {
         return false;
     }
@@ -47,7 +45,17 @@ float Prop_volume_light::pdf(Ray const& ray, Intersection const& intersection, b
     return 0.f;
 }
 
+float3 Prop_volume_light::power(AABB const& /*scene_bb*/) const noexcept {
+    float const volume = prop_->volume(part_);
+
+    float3 const radiance = prop_->material(part_)->average_radiance(volume);
+
+    return volume * radiance;
+}
+
 void Prop_volume_light::prepare_sampling(uint32_t light_id, uint64_t time,
-                                         thread::Pool& pool) noexcept {}
+                                         thread::Pool& pool) noexcept {
+    prop_->prepare_sampling_volume(part_, light_id, time, false, pool);
+}
 
 }  // namespace scene::light

@@ -240,6 +240,10 @@ float Canopy::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
     return 2.f * Pi;
 }
 
+float Canopy::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    return 0.f;
+}
+
 bool Canopy::is_finite() const noexcept {
     return false;
 }

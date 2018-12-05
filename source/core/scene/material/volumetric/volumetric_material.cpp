@@ -53,11 +53,11 @@ float Material::similarity_relation_scale(uint32_t depth) const noexcept {
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
                                    Filter /*filter*/, Worker const& /*worker*/) const noexcept {
-    return emission_;
+    return cc_.a * emission_;
 }
 
-float3 Material::average_radiance(float /*area*/) const noexcept {
-    return emission_;
+float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
+    return cc_.a * emission_;
 }
 
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,

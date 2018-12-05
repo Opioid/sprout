@@ -77,6 +77,8 @@ class Mesh : public Shape {
 
     float area(uint32_t part, float3 const& scale) const noexcept override final;
 
+    float volume(uint32_t part, float3 const& scale) const noexcept override final;
+
     bool is_complex() const noexcept override final;
 
     bool is_analytical() const noexcept override final;

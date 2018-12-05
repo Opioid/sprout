@@ -207,6 +207,22 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
                                        material_importance_sampling, pool);
 }
 
+void Prop::prepare_sampling_volume(uint32_t part, uint32_t light_id, uint64_t time,
+                                   bool material_importance_sampling, thread::Pool& pool) noexcept {
+    shape_->prepare_sampling(part);
+
+    Transformation temp;
+    auto const&    transformation = transformation_at(time, temp);
+
+    float const volume  = shape_->volume(part, transformation.scale);
+    parts_[part].volume = volume;
+
+    parts_[part].light_id = light_id;
+
+    materials_[part]->prepare_sampling(*shape_, part, time, transformation, volume,
+                                       material_importance_sampling, pool);
+}
+
 float Prop::opacity(Ray const& ray, Filter filter, Worker const& worker) const noexcept {
     if (!has_masked_material()) {
         return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
@@ -247,6 +263,10 @@ float3 Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker
 
 float Prop::area(uint32_t part) const noexcept {
     return parts_[part].area;
+}
+
+float Prop::volume(uint32_t part) const noexcept {
+    return parts_[part].volume;
 }
 
 uint32_t Prop::light_id(uint32_t part) const noexcept {

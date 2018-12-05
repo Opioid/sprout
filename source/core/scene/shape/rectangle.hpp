@@ -55,6 +55,8 @@ class Rectangle final : public Shape {
 
     float area(uint32_t part, float3 const& scale) const noexcept override final;
 
+    float volume(uint32_t part, float3 const& scale) const noexcept override final;
+
     size_t num_bytes() const noexcept override final;
 };
 

@@ -238,6 +238,10 @@ float Celestial_disk::area(uint32_t /*part*/, float3 const& scale) const noexcep
     return Pi * (radius * radius);
 }
 
+float Celestial_disk::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    return 0.f;
+}
+
 bool Celestial_disk::is_finite() const noexcept {
     return false;
 }

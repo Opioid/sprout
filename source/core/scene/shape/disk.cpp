@@ -320,6 +320,10 @@ float Disk::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     return Pi * scale[0] * scale[0];
 }
 
+float Disk::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    return 0.f;
+}
+
 size_t Disk::num_bytes() const noexcept {
     return sizeof(*this);
 }

@@ -111,6 +111,8 @@ class Shape {
 
     virtual float area(uint32_t part, float3 const& scale) const noexcept = 0;
 
+    virtual float volume(uint32_t part, float3 const& scale) const noexcept = 0;
+
     virtual bool is_complex() const noexcept;
     virtual bool is_finite() const noexcept;
     virtual bool is_analytical() const noexcept;

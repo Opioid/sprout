@@ -225,6 +225,10 @@ float Morphable_mesh::area(uint32_t /*part*/, float3 const& /*scale*/) const noe
     return 1.f;
 }
 
+float Morphable_mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    return 1.f;
+}
+
 bool Morphable_mesh::is_complex() const noexcept {
     return true;
 }

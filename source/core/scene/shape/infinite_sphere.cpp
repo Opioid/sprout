@@ -262,6 +262,10 @@ float Infinite_sphere::area(uint32_t /*part*/, float3 const& /*scale*/) const no
     return 4.f * Pi;
 }
 
+float Infinite_sphere::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    return 0.f;
+}
+
 bool Infinite_sphere::is_finite() const noexcept {
     return false;
 }

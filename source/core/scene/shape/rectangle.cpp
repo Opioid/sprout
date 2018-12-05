@@ -372,6 +372,10 @@ float Rectangle::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     return 4.f * scale[0] * scale[1];
 }
 
+float Rectangle::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    return 0.f;
+}
+
 size_t Rectangle::num_bytes() const noexcept {
     return sizeof(*this);
 }

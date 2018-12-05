@@ -66,8 +66,8 @@ class Tracking {
     static bool tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
                          float3& w);
 
-    static bool tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
-                         float3& w, float3& li);
+    static Result tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
+                           float3& w, float3& li);
 
     static float constexpr Min_mt        = 1e-10f;
     static float constexpr Ray_epsilon   = 5e-4f;

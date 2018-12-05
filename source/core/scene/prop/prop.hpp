@@ -63,11 +63,16 @@ class Prop : public entity::Entity {
     void prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
                           bool material_importance_sampling, thread::Pool& pool) noexcept;
 
+    void prepare_sampling_volume(uint32_t part, uint32_t light_id, uint64_t time,
+                                 bool material_importance_sampling, thread::Pool& pool) noexcept;
+
     float opacity(Ray const& ray, Filter filter, Worker const& worker) const noexcept;
 
     float3 thin_absorption(Ray const& ray, Filter filter, Worker const& worker) const noexcept;
 
     float area(uint32_t part) const noexcept;
+
+    float volume(uint32_t part) const noexcept;
 
     uint32_t light_id(uint32_t part) const noexcept;
 
@@ -94,7 +99,11 @@ class Prop : public entity::Entity {
     Shape_ptr shape_;
 
     struct Part {
-        float    area;
+        union {
+            float area;
+            float volume;
+        };
+
         uint32_t light_id;
     };
 

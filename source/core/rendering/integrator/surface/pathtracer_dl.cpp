@@ -204,7 +204,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 
             float const weight = 1.f / (light.pdf * light_sample.pdf);
-            // tv = float3(1.f);
+
             result += weight * (tv * radiance * bxdf.reflection);
         }
     }

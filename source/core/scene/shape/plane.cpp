@@ -197,6 +197,10 @@ float Plane::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
     return 1.f;
 }
 
+float Plane::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+    return 0.f;
+}
+
 bool Plane::is_finite() const noexcept {
     return false;
 }

@@ -212,17 +212,16 @@ bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation cons
     float const  r1 = sampler.generate_sample_1D(sampler_dimension);
 
     float3 const r3(r2, r1);
-
-    float3 const xyz = 2.f * (r3 - 0.5f);
-
-    float3 const wp = transform_point(transformation.object_to_world, xyz);
-
+    float3 const xyz  = 2.f * (r3 - 0.5f);
+    float3 const wp   = transform_point(transformation.object_to_world, xyz);
     float3 const axis = wp - p;
 
-    sample.wi = normalize(axis);
+    float const sl = squared_length(axis);
+    float const t  = std::sqrt(sl);
 
-    sample.pdf     = 1.f;  // (0.2f * 0.2f * 0.2f);
-    sample.t       = length(axis);
+    sample.wi      = axis / t;
+    sample.pdf     = sl / (volume);
+    sample.t       = t;
     sample.epsilon = 0.f;
 
     return true;
@@ -283,7 +282,13 @@ float Cube::uv_weight(float2 uv) const noexcept {
 }
 
 float Cube::area(uint32_t /*part*/, float3 const& scale) const noexcept {
-    return (4.f * Pi) * (scale[0] * scale[0]);
+    float3 const d = 2.f * scale;
+    return 2.f * (d[0] * d[1]) + 2.f * (d[0] * d[2]) + 2.f * (d[1] * d[2]);
+}
+
+float Cube::volume(uint32_t /*part*/, float3 const& scale) const noexcept {
+    float3 const d = 2.f * scale;
+    return d[0] * d[1] * d[2];
 }
 
 size_t Cube::num_bytes() const noexcept {

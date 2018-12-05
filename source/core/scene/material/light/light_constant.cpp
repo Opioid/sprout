@@ -32,7 +32,7 @@ float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float ar
 }
 
 float3 Constant::average_radiance(float area) const noexcept {
-    float3 radiance = emittance_.radiance(area);
+    float3 const radiance = emittance_.radiance(area);
 
     if (is_two_sided()) {
         return 2.f * radiance;
