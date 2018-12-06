@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_MATERIAL_DISPLAY_EMISSIONMAP_HPP
+#define SU_SCENE_MATERIAL_DISPLAY_EMISSIONMAP_HPP
 
 #include "scene/material/light/light_emissionmap.hpp"
 
@@ -28,3 +29,5 @@ class Emissionmap : public light::Emissionmap {
 };
 
 }  // namespace scene::material::display
+
+#endif

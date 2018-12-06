@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_MATERIAL_LIGHT_EMISSIONMAP_ANIMATED_HPP
+#define SU_SCENE_MATERIAL_LIGHT_EMISSIONMAP_ANIMATED_HPP
 
 #include "base/math/distribution/distribution_2d.hpp"
 #include "image/texture/texture.hpp"
@@ -62,3 +63,5 @@ class Emissionmap_animated : public Material {
 };
 
 }  // namespace scene::material::light
+
+#endif
