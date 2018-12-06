@@ -6,6 +6,9 @@
 namespace math {
 
 template <typename T>
+Distribution_t_2D<T>::Distribution_t_2D() = default;
+
+template <typename T>
 Distribution_t_2D<T>::~Distribution_t_2D() {}
 
 template <typename T>

@@ -15,6 +15,8 @@ class Distribution_t_2D {
   public:
     using Distribution_impl = T;
 
+    Distribution_t_2D();
+
     ~Distribution_t_2D();
 
     void init(float const* data, int2 dimensions);
