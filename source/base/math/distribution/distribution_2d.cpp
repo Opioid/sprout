@@ -1,6 +1,3 @@
-#ifndef SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_2D_INL
-#define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_2D_INL
-
 #include "distribution_1d.inl"
 #include "distribution_2d.hpp"
 #include "math/vector2.inl"
@@ -30,7 +27,7 @@ template <typename T>
 void Distribution_t_2D<T>::init(float const* data, int2 dimensions, thread::Pool& pool) {
     conditional_.resize(dimensions[1]);
 
-    std::vector<float> integrals(dimensions[1]);
+    std::vector<float> integrals(static_cast<size_t>(dimensions[1]));
 
     pool.run_range(
         [this, data, &integrals, dimensions](uint32_t /*id*/, int32_t begin, int32_t end) {
@@ -84,6 +81,7 @@ float Distribution_t_2D<T>::pdf(float2 uv) const {
 
     uint32_t const i     = static_cast<uint32_t>(uv[1] * conditional_size_);
     uint32_t const c     = std::min(i, conditional_max_);
+
     float const    u_pdf = conditional_[c].pdf(uv[0]);
 
     return u_pdf * v_pdf;
@@ -99,6 +97,6 @@ size_t Distribution_t_2D<T>::num_bytes() const {
     return sizeof(*this) + marginal_.num_bytes() + num_bytes;
 }
 
-}  // namespace math
+template class Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
 
-#endif
+}  // namespace math

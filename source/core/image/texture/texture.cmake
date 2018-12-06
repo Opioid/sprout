@@ -18,7 +18,7 @@ target_sources(core
     "${CMAKE_CURRENT_LIST_DIR}/texture_byte_3_unorm.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/texture_encoding.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/texture_encoding.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/texture_float_1.inl"
+    "${CMAKE_CURRENT_LIST_DIR}/texture_float_1.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/texture_float_1.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/texture_float_2.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/texture_float_2.hpp"

@@ -1,5 +1,4 @@
 #include "display_constant.hpp"
-#include "base/math/distribution/distribution_2d.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"

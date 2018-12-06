@@ -1,6 +1,3 @@
-#ifndef SU_CORE_IMAGE_TEXTURE_FLOAT1_INL
-#define SU_CORE_IMAGE_TEXTURE_FLOAT1_INL
-
 #include "base/math/vector4.inl"
 #include "image/typed_image.inl"
 #include "texture_float_1.hpp"
@@ -93,6 +90,7 @@ float3 Float1_t<T>::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
     return float3(image_.load(x, y, z), 0.f, 0.f);
 }
 
-}  // namespace image::texture
+template class Float1_t<image::Float1>;
+template class Float1_t<image::Float1_sparse>;
 
-#endif
+}  // namespace image::texture

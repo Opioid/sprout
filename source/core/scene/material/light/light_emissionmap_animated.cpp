@@ -1,5 +1,4 @@
 #include "light_emissionmap_animated.hpp"
-#include "base/math/distribution/distribution_2d.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
@@ -10,6 +9,7 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "scene/shape/shape.hpp"
+#include "base/thread/thread_pool.hpp"
 
 namespace scene::material::light {
 

@@ -1,10 +1,10 @@
+/*
 #include "testing_cdf.hpp"
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include "base/chrono/chrono.hpp"
 #include "base/math/distribution/distribution_1d.inl"
-#include "base/math/distribution/distribution_2d.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/string/string.hpp"
@@ -278,3 +278,4 @@ void init(T& distribution, const image::texture::Float3& texture) {
 
 }  // namespace cdf
 }  // namespace testing
+*/

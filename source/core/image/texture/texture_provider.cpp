@@ -14,7 +14,7 @@
 #include "texture_byte_3_srgb.hpp"
 #include "texture_byte_3_unorm.hpp"
 #include "texture_encoding.hpp"
-#include "texture_float_1.inl"
+#include "texture_float_1.hpp"
 #include "texture_float_3.hpp"
 
 #include "base/debug/assert.hpp"
