@@ -42,6 +42,8 @@ class Distribution_t_2D {
     uint32_t conditional_max_;
 };
 
+extern template class Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
+
 using Distribution_2D = Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
 
 }  // namespace math
