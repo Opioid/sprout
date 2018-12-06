@@ -1,5 +1,5 @@
-#include "distribution_1d.inl"
 #include "distribution_2d.hpp"
+#include "distribution_1d.inl"
 #include "math/vector2.inl"
 #include "thread/thread_pool.hpp"
 
@@ -79,10 +79,10 @@ template <typename T>
 float Distribution_t_2D<T>::pdf(float2 uv) const {
     float const v_pdf = marginal_.pdf(uv[1]);
 
-    uint32_t const i     = static_cast<uint32_t>(uv[1] * conditional_size_);
-    uint32_t const c     = std::min(i, conditional_max_);
+    uint32_t const i = static_cast<uint32_t>(uv[1] * conditional_size_);
+    uint32_t const c = std::min(i, conditional_max_);
 
-    float const    u_pdf = conditional_[c].pdf(uv[0]);
+    float const u_pdf = conditional_[c].pdf(uv[0]);
 
     return u_pdf * v_pdf;
 }

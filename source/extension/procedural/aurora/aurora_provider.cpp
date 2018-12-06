@@ -59,11 +59,11 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     //	const int3 dimensions(32, 32, 32);
 
-//    auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
+    //    auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
-//    render(*target, manager.thread_pool());
+    //    render(*target, manager.thread_pool());
 
-//    auto texture = std::make_shared<texture::Byte3_sRGB>(target);
+    //    auto texture = std::make_shared<texture::Byte3_sRGB>(target);
     /*
         std::shared_ptr<Material> material = std::make_shared<volumetric::Emission_grid>(
             Sampler_settings(), Texture_adapter(texture));
@@ -82,17 +82,16 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
         volume->set_transformation(transformation);
     */
 
-
     auto target = std::make_shared<Float1>(Image::Description(Image::Type::Float1, dimensions));
 
     render(*target, manager.thread_pool());
 
     auto texture = std::make_shared<texture::Float1>(target);
 
-    auto material = std::make_shared<volumetric::Grid>(
-        Sampler_settings(), Texture_adapter(texture));
+    auto material = std::make_shared<volumetric::Grid>(Sampler_settings(),
+                                                       Texture_adapter(texture));
 
-//    auto material = std::make_shared<volumetric::Homogeneous>(Sampler_settings());
+    //    auto material = std::make_shared<volumetric::Homogeneous>(Sampler_settings());
 
     material->set_attenuation(float3(0.99f), float3(0.f), 100.f);
     material->set_emission(float3(0.3f, 1.f, 0.5f));
@@ -115,7 +114,6 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
     volume->propagate_frame_allocation();
 
     volume->set_transformation(transformation);
-
 
     Aurora* aurora = new Aurora();
 
@@ -169,11 +167,11 @@ void Provider::render(image::Byte3& target, thread::Pool& /*thread_pool*/) {
     //	float const filter_radius = 4.f;
     //	float const alpha = 0.125f;
 
-//    float const filter_radius = 6.f;
-//    float const alpha         = 0.075f;
+    //    float const filter_radius = 6.f;
+    //    float const alpha         = 0.075f;
 
-//    Volume_filter filter(target.description().dimensions, filter_radius, alpha,
-//                         thread_pool.num_threads());
+    //    Volume_filter filter(target.description().dimensions, filter_radius, alpha,
+    //                         thread_pool.num_threads());
 
     //	filter.filter(renderer.data(), thread_pool);
 
@@ -253,7 +251,8 @@ void Provider::simulate_particle(float3 const& start, float peak_height, rnd::Ge
         //	float const progress = 1.f - normalized_height;
         float const spread = progress * progress * progress * 3000.f;
 
-        float3 const color(1.f);// = progress * grace_progress * spectrum::linear_rgb(normalized_height);
+        float3 const color(
+            1.f);  // = progress * grace_progress * spectrum::linear_rgb(normalized_height);
 
         renderer.splat(world_to_grid(position), color);
 

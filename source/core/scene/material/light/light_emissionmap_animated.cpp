@@ -2,6 +2,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "light_material_sample.hpp"
 #include "scene/material/material_sample.inl"
@@ -9,7 +10,6 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "scene/shape/shape.hpp"
-#include "base/thread/thread_pool.hpp"
 
 namespace scene::material::light {
 
