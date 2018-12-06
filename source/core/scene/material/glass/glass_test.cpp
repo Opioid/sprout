@@ -94,9 +94,9 @@ void rough_refraction() {
     sample_rough.layer_.set_tangent_frame(t, b, n);
 
     float3 refraction_color(1.f, 1.f, 1.f);
-    float3 absorption_color(1.f, 1.f, 1.f);
+  //  float3 absorption_color(1.f, 1.f, 1.f);
 
-    float attenuation_distance = 1.f;
+//    float attenuation_distance = 1.f;
     float ior                  = 1.02f;
     float roughness            = 0.5f;  // ggx::Min_roughness;
     float alpha                = roughness * roughness;
@@ -105,7 +105,7 @@ void rough_refraction() {
 
     sample_rough.set(refraction_color, ior, 1.f, alpha, false);
 
-    bool const same_side = sample.same_hemisphere(wo);
+  //  bool const same_side = sample.same_hemisphere(wo);
 
     //   sample.refract(same_side, sample.layer_, sampler, result);
 
