@@ -25,6 +25,15 @@ void Volume_rasterizer::resolve(image::Byte3& target) const {
     }
 }
 
+void Volume_rasterizer::resolve(image::Float1& target) const {
+    int32_t const len = dimensions_[0] * dimensions_[1] * dimensions_[2];
+
+    for (int32_t i = 0; i < len; ++i) {
+        float3 const color = samples_[i];
+        target.store(i, color[0]);
+    }
+}
+
 void Volume_rasterizer::set_brush(float3 const& color) {
     brush_ = color;
 }

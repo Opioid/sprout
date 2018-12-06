@@ -34,6 +34,8 @@ class Provider : public scene::entity::Extension_provider {
   private:
     void render(image::Byte3& target, thread::Pool& thread_pool);
 
+    void render(image::Float1& target, thread::Pool& thread_pool);
+
     void simulate_particle(float3 const& start, float peak_height, rnd::Generator& rng,
                            Volume_rasterizer& renderer) const;
 
@@ -45,8 +47,8 @@ class Provider : public scene::entity::Extension_provider {
 
     float3 aurora_volume_;
 
-    static float constexpr ground_to_bottom_ = 100000.f;
-    static float constexpr aurora_height_    = 200000.f;
+    static float constexpr Ground_to_bottom_ = 100000.f;
+    static float constexpr Aurora_height_    = 200000.f;
 };
 
 }  // namespace procedural::aurora

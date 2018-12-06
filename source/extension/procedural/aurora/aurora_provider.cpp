@@ -11,9 +11,11 @@
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture_adapter.inl"
 #include "core/image/texture/texture_byte_3_srgb.hpp"
+#include "core/image/texture/texture_float_1.hpp"
 #include "core/image/typed_image.inl"
 #include "core/resource/resource_manager.hpp"
 #include "core/scene/material/volumetric/volumetric_grid.hpp"
+#include "core/scene/material/volumetric/volumetric_homogeneous.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
@@ -39,7 +41,7 @@ void Provider::set_scene_loader(Loader& loader) {
     scene_loader_ = &loader;
 }
 
-entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& /*scene*/,
+entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
                                            resource::Manager& manager) {
     spectrum::init();
 
@@ -57,11 +59,11 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     //	const int3 dimensions(32, 32, 32);
 
-    auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
+//    auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
-    render(*target, manager.thread_pool());
+//    render(*target, manager.thread_pool());
 
-    auto texture = std::make_shared<texture::Byte3_sRGB>(target);
+//    auto texture = std::make_shared<texture::Byte3_sRGB>(target);
     /*
         std::shared_ptr<Material> material = std::make_shared<volumetric::Emission_grid>(
             Sampler_settings(), Texture_adapter(texture));
@@ -70,7 +72,6 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
         materials[0] = material;
 
         prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
-        // volume::Volume* volume = scene.create_height_volume();
 
         math::Transformation transformation{float3::identity(),
                                             //	float3(1000000.f, 100000.f, 50000.f),
@@ -80,30 +81,66 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
         volume->set_transformation(transformation);
     */
+
+
+    auto target = std::make_shared<Float1>(Image::Description(Image::Type::Float1, dimensions));
+
+    render(*target, manager.thread_pool());
+
+    auto texture = std::make_shared<texture::Float1>(target);
+
+    auto material = std::make_shared<volumetric::Grid>(
+        Sampler_settings(), Texture_adapter(texture));
+
+//    auto material = std::make_shared<volumetric::Homogeneous>(Sampler_settings());
+
+    material->set_attenuation(float3(0.99f), float3(0.f), 100.f);
+    material->set_emission(float3(0.3f, 1.f, 0.5f));
+    material->set_anisotropy(0.f);
+
+    material->compile(manager.thread_pool());
+
+    Materials materials(1);
+    materials[0] = material;
+
+    prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
+
+    math::Transformation transformation{float3::identity(),
+                                        //	float3(1000000.f, 100000.f, 50000.f),
+                                        float3(1250000.f, 100000.f, 80000.f),
+                                        //	float3(10.f, 1.f, 1.f),
+                                        math::quaternion::identity()};
+
+    volume->allocate_local_frame();
+    volume->propagate_frame_allocation();
+
+    volume->set_transformation(transformation);
+
+
     Aurora* aurora = new Aurora();
 
-    //   aurora->attach(volume);
+    aurora->attach(volume);
 
     return aurora;
 }
 
-void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
+void Provider::render(image::Byte3& target, thread::Pool& /*thread_pool*/) {
     rnd::Generator rng(0, 0);
 
     Volume_rasterizer renderer(target.description().dimensions);
 
     float3 const dimensions(target.description().dimensions);
 
-    voxel_ratio_ = dimensions[1] / aurora_height_;
+    voxel_ratio_ = dimensions[1] / Aurora_height_;
 
-    aurora_volume_ = float3(dimensions[0] / voxel_ratio_, aurora_height_,
+    aurora_volume_ = float3(dimensions[0] / voxel_ratio_, Aurora_height_,
                             dimensions[2] / voxel_ratio_);
 
     renderer.set_brush(float3(0.f));
     renderer.clear();
 
     float const start_height_deviation = 60000.f;
-    float const start_height = ground_to_bottom_ + aurora_height_ - start_height_deviation;
+    float const start_height = Ground_to_bottom_ + Aurora_height_ - start_height_deviation;
 
     uint32_t const num_particles = 4 * 16384;
 
@@ -119,7 +156,63 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
         float const y = (start_height + std::sin(x * (7.f * Pi)) * start_height_deviation);
         //	float const y = start_height + start_height_deviation;
 
-        float3 const position(x * aurora_volume_[0], ground_to_bottom_ + aurora_height_,
+        float3 const position(x * aurora_volume_[0], Ground_to_bottom_ + Aurora_height_,
+                              0.5f * aurora_volume_[2] + z);
+
+        simulate_particle(position, y, rng, renderer);
+    }
+
+    // Keep those as useful
+    //	float const filter_radius = 8.f;
+    //	float const alpha = 0.04f;
+
+    //	float const filter_radius = 4.f;
+    //	float const alpha = 0.125f;
+
+//    float const filter_radius = 6.f;
+//    float const alpha         = 0.075f;
+
+//    Volume_filter filter(target.description().dimensions, filter_radius, alpha,
+//                         thread_pool.num_threads());
+
+    //	filter.filter(renderer.data(), thread_pool);
+
+    renderer.resolve(target);
+}
+
+void Provider::render(image::Float1& target, thread::Pool& thread_pool) {
+    rnd::Generator rng(0, 0);
+
+    Volume_rasterizer renderer(target.description().dimensions);
+
+    float3 const dimensions(target.description().dimensions);
+
+    voxel_ratio_ = dimensions[1] / Aurora_height_;
+
+    aurora_volume_ = float3(dimensions[0] / voxel_ratio_, Aurora_height_,
+                            dimensions[2] / voxel_ratio_);
+
+    renderer.set_brush(float3(0.f));
+    renderer.clear();
+
+    float const start_height_deviation = 60000.f;
+    float const start_height = Ground_to_bottom_ + Aurora_height_ - start_height_deviation;
+
+    uint32_t const num_particles = 4 * 16384;
+
+    for (uint32_t i = 0; i < num_particles; ++i) {
+        float const x = math::radical_inverse_vdC(i, 0);
+
+        //	float const ix = 1.f - x;
+
+        float const z = std::sin(x * (2.f * Pi)) * 50000.f +
+                        std::sin(3.5f * x * (2.f * Pi)) * 20000.f +
+                        (x * x) * std::sin(17.f * x * (2.f * Pi)) * 12000.f;
+
+        float const y = (start_height + std::sin(x * (7.f * Pi)) * start_height_deviation);
+        //	float const y = start_height + start_height_deviation;
+
+        float3 const position(x * aurora_volume_[0], Ground_to_bottom_ + Aurora_height_,
                               0.5f * aurora_volume_[2] + z);
 
         simulate_particle(position, y, rng, renderer);
@@ -147,20 +240,20 @@ void Provider::simulate_particle(float3 const& start, float peak_height, rnd::Ge
                                  Volume_rasterizer& renderer) const {
     float const step_size = 1.f / voxel_ratio_;
 
-    float const range       = (start[1] - ground_to_bottom_);
+    float const range       = (start[1] - Ground_to_bottom_);
     float const grace_range = (start[1] - peak_height);
 
     float3 position = start;
-    for (float edge = ground_to_bottom_ + (8.f * step_size); position[1] > edge;) {
-        float const normalized_height = (position[1] - ground_to_bottom_) / aurora_height_;
+    for (float edge = Ground_to_bottom_ + (8.f * step_size); position[1] > edge;) {
+        float const normalized_height = (position[1] - Ground_to_bottom_) / Aurora_height_;
 
-        float const progress       = 1.f - (position[1] - ground_to_bottom_) / range;
+        float const progress       = 1.f - (position[1] - Ground_to_bottom_) / range;
         float const grace_progress = std::min(1.f - (position[1] - peak_height) / grace_range, 1.f);
 
         //	float const progress = 1.f - normalized_height;
         float const spread = progress * progress * progress * 3000.f;
 
-        float3 const color = progress * grace_progress * spectrum::linear_rgb(normalized_height);
+        float3 const color(1.f);// = progress * grace_progress * spectrum::linear_rgb(normalized_height);
 
         renderer.splat(world_to_grid(position), color);
 
@@ -176,7 +269,7 @@ void Provider::simulate_particle(float3 const& start, float peak_height, rnd::Ge
 
 float3 Provider::world_to_grid(float3 const& position) const {
     return voxel_ratio_ *
-           float3(position[0], (ground_to_bottom_ + aurora_height_) - position[1], position[2]);
+           float3(position[0], (Ground_to_bottom_ + Aurora_height_) - position[1], position[2]);
 }
 
 }  // namespace procedural::aurora

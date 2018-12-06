@@ -13,6 +13,8 @@ class Volume_rasterizer {
 
     void resolve(image::Byte3& target) const;
 
+    void resolve(image::Float1& target) const;
+
     void set_brush(float3 const& color);
 
     void clear();
