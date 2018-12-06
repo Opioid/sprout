@@ -6,6 +6,9 @@
 namespace math {
 
 template <typename T>
+Distribution_t_2D<T>::~Distribution_t_2D() {}
+
+template <typename T>
 void Distribution_t_2D<T>::init(float const* data, int2 dimensions) {
     conditional_.resize(dimensions[1]);
 
