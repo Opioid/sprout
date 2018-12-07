@@ -10,8 +10,8 @@ class Material : public material::Material {
     Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, sampler::Sampler& sampler,
-                                   Worker const& worker) const noexcept override final;
+                                   Filter filter, Sampler& sampler, Worker const& worker) const
+        noexcept override final;
 
     float ior() const noexcept override final;
 

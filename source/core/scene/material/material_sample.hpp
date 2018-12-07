@@ -45,13 +45,15 @@ struct Layer {
 
 class Sample {
   public:
+    using Sampler = sampler::Sampler;
+
     virtual ~Sample();
 
     virtual Layer const& base_layer() const noexcept = 0;
 
     virtual bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept = 0;
 
-    virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept = 0;
+    virtual void sample(Sampler& sampler, bxdf::Sample& result) const noexcept = 0;
 
     virtual float3 radiance() const noexcept;
 

@@ -13,6 +13,8 @@ struct Result {
 
 class Clearcoat {
   public:
+    using Sampler = sampler::Sampler;
+
     void set(float3 const& absorption_coefficient, float thickness, float ior, float f0,
              float alpha, float weight) noexcept;
 
@@ -20,8 +22,8 @@ class Clearcoat {
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     Layer const& layer, bool avoid_caustics) const noexcept;
 
-    void sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
-                float3& attenuation, bxdf::Sample& result) const noexcept;
+    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
+                bxdf::Sample& result) const noexcept;
 
   public:
     float3 absorption_coefficient_;
@@ -35,14 +37,16 @@ class Clearcoat {
 
 class Thinfilm {
   public:
+    using Sampler = sampler::Sampler;
+
     void set(float ior, float ior_internal, float alpha, float thickness) noexcept;
 
   protected:
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     Layer const& layer, bool avoid_caustics) const noexcept;
 
-    void sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
-                float3& attenuation, bxdf::Sample& result) const noexcept;
+    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
+                bxdf::Sample& result) const noexcept;
 
   public:
     float ior_;
@@ -54,11 +58,13 @@ class Thinfilm {
 template <typename Coating>
 class Coating_layer : public Layer, public Coating {
   public:
+    using Sampler = sampler::Sampler;
+
     Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                     bool avoid_caustics) const noexcept;
 
-    void sample(float3 const& wo, sampler::Sampler& sampler, float3& attenuation,
-                bxdf::Sample& result) const noexcept;
+    void sample(float3 const& wo, Sampler& sampler, float3& attenuation, bxdf::Sample& result) const
+        noexcept;
 };
 
 using Clearcoat_layer = Coating_layer<Clearcoat>;

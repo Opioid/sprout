@@ -20,6 +20,8 @@ struct Sample;
 
 namespace ggx {
 
+using Sampler = sampler::Sampler;
+
 class Isotropic {
   public:
     template <typename Fresnel>
@@ -33,12 +35,11 @@ class Isotropic {
 
     template <typename Fresnel>
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept;
+                         Fresnel const& fresnel, Sampler& sampler, bxdf::Sample& result) noexcept;
 
     template <typename Fresnel>
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
+                         Fresnel const& fresnel, Sampler& sampler, float3& fresnel_result,
                          bxdf::Sample& result) noexcept;
 
     template <typename Fresnel>
@@ -48,7 +49,7 @@ class Isotropic {
 
     template <typename Fresnel>
     static float refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         IoR const& ior, Fresnel const& fresnel, sampler::Sampler& sampler,
+                         IoR const& ior, Fresnel const& fresnel, Sampler& sampler,
                          bxdf::Sample& result) noexcept;
 
     static float3 sample(float3 const& wo, Layer const& layer, float alpha,
@@ -71,8 +72,7 @@ class Anisotropic {
 
     template <typename Layer, typename Fresnel>
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                         Fresnel const& fresnel, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept;
+                         Fresnel const& fresnel, Sampler& sampler, bxdf::Sample& result) noexcept;
 };
 
 }  // namespace ggx

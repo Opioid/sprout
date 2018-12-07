@@ -10,8 +10,8 @@ class Glass : public Material {
     Glass(Sampler_settings const& sampler_settings) noexcept;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, sampler::Sampler& sampler,
-                                   Worker const& worker) const noexcept override;
+                                   Filter filter, Sampler& sampler, Worker const& worker) const
+        noexcept override;
 
     float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;

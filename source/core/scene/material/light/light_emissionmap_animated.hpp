@@ -16,8 +16,8 @@ class Emissionmap_animated : public Emissionmap {
     void tick(float absolute_time, float time_slice) noexcept override final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, sampler::Sampler& sampler,
-                                   Worker const& worker) const noexcept override;
+                                   Filter filter, Sampler& sampler, Worker const& worker) const
+        noexcept override;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override final;

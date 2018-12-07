@@ -90,9 +90,8 @@ bxdf::Result Sample_base<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 
 }
 
 template <typename Diffuse>
-void Sample_base<Diffuse>::diffuse_sample(float3 const& wo, sampler::Sampler& sampler,
-                                          bool avoid_caustics, bxdf::Sample& result) const
-    noexcept {
+void Sample_base<Diffuse>::diffuse_sample(float3 const& wo, Sampler& sampler, bool avoid_caustics,
+                                          bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo);
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer_, alpha_, diffuse_color_, sampler,
                                             result);
@@ -114,7 +113,7 @@ void Sample_base<Diffuse>::diffuse_sample(float3 const& wo, sampler::Sampler& sa
 }
 
 template <typename Diffuse>
-void Sample_base<Diffuse>::gloss_sample(float3 const& wo, sampler::Sampler& sampler,
+void Sample_base<Diffuse>::gloss_sample(float3 const& wo, Sampler& sampler,
                                         bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo);
 
@@ -130,7 +129,7 @@ void Sample_base<Diffuse>::gloss_sample(float3 const& wo, sampler::Sampler& samp
 }
 
 template <typename Diffuse>
-void Sample_base<Diffuse>::pure_gloss_sample(float3 const& wo, sampler::Sampler& sampler,
+void Sample_base<Diffuse>::pure_gloss_sample(float3 const& wo, Sampler& sampler,
                                              bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo);
 

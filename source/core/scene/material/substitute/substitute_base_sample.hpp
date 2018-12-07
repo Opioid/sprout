@@ -21,14 +21,12 @@ class Sample_base : public material::Sample {
     bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                      float wo_dot_h, bool avoid_caustics) const noexcept;
 
-    void diffuse_sample(float3 const& wo, sampler::Sampler& sampler, bool avoid_caustics,
+    void diffuse_sample(float3 const& wo, Sampler& sampler, bool avoid_caustics,
                         bxdf::Sample& result) const noexcept;
 
-    void gloss_sample(float3 const& wo, sampler::Sampler& sampler, bxdf::Sample& result) const
-        noexcept;
+    void gloss_sample(float3 const& wo, Sampler& sampler, bxdf::Sample& result) const noexcept;
 
-    void pure_gloss_sample(float3 const& wo, sampler::Sampler& sampler, bxdf::Sample& result) const
-        noexcept;
+    void pure_gloss_sample(float3 const& wo, Sampler& sampler, bxdf::Sample& result) const noexcept;
 
     float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const noexcept;
 

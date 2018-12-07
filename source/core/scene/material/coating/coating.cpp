@@ -49,8 +49,8 @@ Result Clearcoat::evaluate(float3 const& wi, float3 const& wo, float3 const& h, 
     return {weight_ * n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
 }
 
-void Clearcoat::sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
-                       float3& attenuation, bxdf::Sample& result) const noexcept {
+void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
+                       bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -94,8 +94,8 @@ Result Thinfilm::evaluate(float3 const& wi, float3 const& wo, float3 const& h, f
     return {n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
 }
 
-void Thinfilm::sample(float3 const& wo, Layer const& layer, sampler::Sampler& sampler,
-                      float3& attenuation, bxdf::Sample& result) const noexcept {
+void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
+                      bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Thinfilm const thinfilm(1.f, ior_, ior_internal_, thickness_);

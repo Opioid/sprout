@@ -10,7 +10,7 @@ Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noe
     : material::Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                         Filter filter, sampler::Sampler& sampler,
+                                         Filter filter, Sampler& sampler,
                                          Worker const& worker) const noexcept {
     auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);
 

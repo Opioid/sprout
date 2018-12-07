@@ -19,8 +19,7 @@ class Sample : public material::Sample {
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                               float wo_dot_h) const noexcept;
 
-        void sample(float3 const& wo, sampler::Sampler& sampler, bxdf::Sample& result) const
-            noexcept;
+        void sample(float3 const& wo, Sampler& sampler, bxdf::Sample& result) const noexcept;
 
         float3 color_a_;
         float3 color_b_;
@@ -34,7 +33,7 @@ class Sample : public material::Sample {
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                               float3& fresnel_result) const noexcept;
 
-        void sample(float3 const& wo, sampler::Sampler& sampler, float3& fresnel_result,
+        void sample(float3 const& wo, Sampler& sampler, float3& fresnel_result,
                     bxdf::Sample& result) const noexcept;
 
         float3 ior_;

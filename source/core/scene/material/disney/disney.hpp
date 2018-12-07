@@ -19,14 +19,15 @@ struct Layer;
 
 namespace disney {
 
+using Sampler = sampler::Sampler;
+
 class Isotropic {
   public:
     static bxdf::Result reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
                                    float3 const& color) noexcept;
 
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         float3 const& color, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept;
+                         float3 const& color, Sampler& sampler, bxdf::Sample& result) noexcept;
 
   private:
     static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
@@ -39,8 +40,7 @@ class Isotropic_no_lambert {
                                    float3 const& color) noexcept;
 
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         float3 const& color, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept;
+                         float3 const& color, Sampler& sampler, bxdf::Sample& result) noexcept;
 
   private:
     static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,

@@ -12,8 +12,8 @@ Result Coating_layer<Coating>::evaluate(float3 const& wi, float3 const& wo, floa
 }
 
 template <typename Coating>
-void Coating_layer<Coating>::sample(float3 const& wo, sampler::Sampler& sampler,
-                                    float3& attenuation, bxdf::Sample& result) const noexcept {
+void Coating_layer<Coating>::sample(float3 const& wo, Sampler& sampler, float3& attenuation,
+                                    bxdf::Sample& result) const noexcept {
     Coating::sample(wo, *this, sampler, attenuation, result);
 }
 

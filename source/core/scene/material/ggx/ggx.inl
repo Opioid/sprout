@@ -158,15 +158,14 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 
 template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept {
+                         Fresnel const& fresnel, Sampler& sampler, bxdf::Sample& result) noexcept {
     float3 fresnel_result;
     return reflect(wo, n_dot_wo, layer, alpha, fresnel, sampler, fresnel_result, result);
 }
 
 template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, sampler::Sampler& sampler, float3& fresnel_result,
+                         Fresnel const& fresnel, Sampler& sampler, float3& fresnel_result,
                          bxdf::Sample& result) noexcept {
     float        n_dot_h;
     float3 const h = sample(wo, layer, alpha, sampler, n_dot_h);
@@ -236,7 +235,7 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
 template <typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         IoR const& ior, Fresnel const& fresnel, sampler::Sampler& sampler,
+                         IoR const& ior, Fresnel const& fresnel, Sampler& sampler,
                          bxdf::Sample& result) noexcept {
     float        n_dot_h;
     float3 const h = sample(wo, layer, alpha, sampler, n_dot_h);
@@ -443,7 +442,7 @@ bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_do
 
 template <typename Layer, typename Fresnel>
 float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                           Fresnel const& fresnel, sampler::Sampler& sampler,
+                           Fresnel const& fresnel, Sampler& sampler,
                            bxdf::Sample& result) noexcept {
     float2 const xi = sampler.generate_sample_2D();
 
