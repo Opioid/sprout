@@ -5,8 +5,7 @@
 // http://pushover.sourceforge.net/repos/head/src/sha1.h
 // http://pushover.sourceforge.net/repos/head/src/sha1.cpp
 
-namespace crypto {
-namespace sha1 {
+namespace crypto::sha1 {
 
 std::vector<uint8_t> encode(std::string const& input) {
     SHA1 checksum;
@@ -254,5 +253,4 @@ void SHA1::read(std::istream& is, std::string& s, size_t max) {
     s.assign(sbuf.data(), is.gcount());
 }
 
-}  // namespace sha1
-}  // namespace crypto
+}  // namespace crypto::sha1

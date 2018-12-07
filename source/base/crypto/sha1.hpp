@@ -11,6 +11,7 @@ std::vector<uint8_t> encode(std::string const& input);
 class SHA1 {
   public:
     SHA1();
+
     ~SHA1();
 
     void update(std::string const& s);
@@ -24,9 +25,11 @@ class SHA1 {
     static uint32_t constexpr Block_bytes = Block_ints * 4;
 
     void reset();
+
     void transform(uint32_t block[Block_bytes]);
 
     static void buffer_to_block(std::string const& buffer, uint32_t block[Block_bytes]);
+
     static void read(std::istream& is, std::string& s, size_t max);
 
     uint64_t transforms_;
