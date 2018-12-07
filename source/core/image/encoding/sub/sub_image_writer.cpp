@@ -3,8 +3,7 @@
 #include "base/memory/bitfield.inl"
 #include "base/string/string.hpp"
 #include "image/image.hpp"
-#include "image/typed_image.inl"
-#include "image/typed_image_fwd.hpp"
+#include "image/typed_image.hpp"
 
 #include <iostream>
 

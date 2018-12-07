@@ -3,7 +3,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/thread/thread_pool.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "rendering_camera_worker.hpp"
 #include "sampler/sampler.hpp"

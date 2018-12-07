@@ -2,7 +2,7 @@
 #include <iostream>
 #include "base/math/print.hpp"
 #include "base/math/vector3.inl"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 #include "texture_encoding.hpp"
 
 namespace image::texture::testing {

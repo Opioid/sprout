@@ -2,7 +2,7 @@
 #include "base/encoding/encoding.inl"
 #include "base/math/vector3.inl"
 #include "base/spectrum/rgb.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 namespace image::encoding {
 

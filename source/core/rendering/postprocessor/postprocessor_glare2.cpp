@@ -10,7 +10,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
 #include "base/thread/thread_pool.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 // #include "image/encoding/png/png_writer.hpp"
 

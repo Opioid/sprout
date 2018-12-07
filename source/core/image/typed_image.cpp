@@ -1,11 +1,7 @@
-#ifndef SU_CORE_IMAGE_TYPED_IMAGE_INL
-#define SU_CORE_IMAGE_TYPED_IMAGE_INL
-
+#include "typed_image.hpp"
 #include <cstring>
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
-#include "typed_image.hpp"
-#include "typed_image_fwd.hpp"
 
 namespace image {
 
@@ -165,7 +161,7 @@ Typed_sparse_image<T>::Typed_sparse_image(const Image::Description& description)
 
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
-    cells_ = memory::allocate_aligned<Cell>(cell_len);
+    cells_ = memory::allocate_aligned<Cell>(static_cast<uint64_t>(cell_len));
 
     for (int32_t i = 0; i < cell_len; ++i) {
         cells_[i].homogeneous = true;
@@ -404,6 +400,13 @@ size_t Typed_sparse_image<T>::num_bytes() const noexcept {
     return num_bytes;
 }
 
-}  // namespace image
+template class Typed_image<uint8_t>;
+template class Typed_image<byte2>;
+template class Typed_image<byte3>;
+template class Typed_image<float>;
+template class Typed_sparse_image<float>;
+template class Typed_image<float2>;
+template class Typed_image<packed_float3>;
+template class Typed_image<float4>;
 
-#endif
+}  // namespace image

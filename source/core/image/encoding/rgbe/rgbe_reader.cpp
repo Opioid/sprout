@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "base/math/vector4.inl"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 

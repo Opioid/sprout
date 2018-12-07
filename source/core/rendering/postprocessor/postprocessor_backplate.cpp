@@ -1,7 +1,7 @@
 #include "postprocessor_backplate.hpp"
 #include "base/math/vector4.inl"
 #include "image/texture/texture.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 namespace rendering::postprocessor {
 

@@ -3,7 +3,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
-#include "core/image/typed_image.inl"
+#include "core/image/typed_image.hpp"
 
 namespace procedural::aurora {
 

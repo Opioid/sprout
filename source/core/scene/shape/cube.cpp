@@ -221,7 +221,7 @@ bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation cons
 
     sample.wi      = axis / t;
     sample.uvw     = r3;
-    sample.pdf     = sl / (volume);
+    sample.pdf     = sl / volume;
     sample.t       = t;
     sample.epsilon = 0.f;
 

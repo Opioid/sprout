@@ -5,7 +5,7 @@
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include "image/encoding/png/png_writer.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"

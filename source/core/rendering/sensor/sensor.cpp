@@ -1,7 +1,7 @@
 #include "sensor.hpp"
 #include "base/math/vector4.inl"
 #include "base/thread/thread_pool.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 namespace rendering::sensor {
 

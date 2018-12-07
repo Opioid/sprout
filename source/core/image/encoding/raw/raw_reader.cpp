@@ -3,7 +3,7 @@
 #include <string>
 #include "base/math/vector4.inl"
 #include "image/encoding/sub/sub_image_writer.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 namespace image::encoding::raw {
 

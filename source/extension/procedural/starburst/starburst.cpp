@@ -13,7 +13,7 @@
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/filter/image_gaussian.inl"
 #include "core/image/procedural/image_renderer.inl"
-#include "core/image/typed_image.inl"
+#include "core/image/typed_image.hpp"
 #include "dirt.hpp"
 #include "fdft.hpp"
 

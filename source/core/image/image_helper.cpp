@@ -1,7 +1,7 @@
 #include "image_helper.hpp"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
-#include "typed_image.inl"
+#include "typed_image.hpp"
 
 namespace image {
 

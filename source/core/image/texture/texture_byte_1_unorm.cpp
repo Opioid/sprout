@@ -1,6 +1,6 @@
 #include "texture_byte_1_unorm.hpp"
 #include "base/math/vector4.inl"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 #include "texture_encoding.hpp"
 
 namespace image::texture {

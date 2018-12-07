@@ -6,7 +6,7 @@
 #include "base/random/generator.inl"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 namespace image::procedural::flakes {
 

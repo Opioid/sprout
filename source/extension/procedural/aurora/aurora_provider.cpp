@@ -12,7 +12,7 @@
 #include "core/image/texture/texture_adapter.inl"
 #include "core/image/texture/texture_byte_3_srgb.hpp"
 #include "core/image/texture/texture_float_1.hpp"
-#include "core/image/typed_image.inl"
+#include "core/image/typed_image.hpp"
 #include "core/resource/resource_manager.hpp"
 #include "core/scene/material/volumetric/volumetric_grid.hpp"
 #include "core/scene/material/volumetric/volumetric_homogeneous.hpp"

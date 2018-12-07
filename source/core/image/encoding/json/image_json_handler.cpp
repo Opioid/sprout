@@ -1,6 +1,5 @@
 #include "image_json_handler.hpp"
-#include "image/typed_image.inl"
-#include "image/typed_image_fwd.hpp"
+#include "image/typed_image.hpp"
 
 namespace image::encoding::json {
 

@@ -5,7 +5,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 #include "sampler_golden_ratio.hpp"
 #include "sampler_hammersley.hpp"
 #include "sampler_random.hpp"

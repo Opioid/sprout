@@ -5,7 +5,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "core/image/texture/texture_adapter.inl"
 #include "core/image/texture/texture_float_3.hpp"
-#include "core/image/typed_image.inl"
+#include "core/image/typed_image.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/prop/prop.hpp"

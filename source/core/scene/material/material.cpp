@@ -8,7 +8,7 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 
-//#include "image/typed_image.inl"
+//#include "image/typed_image.hpp"
 //#include "image/encoding/png/png_writer.hpp"
 //#include "base/spectrum/rgb.hpp"
 //#include "base/encoding/encoding.inl"

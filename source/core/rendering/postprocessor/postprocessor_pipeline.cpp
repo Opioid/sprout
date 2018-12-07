@@ -1,6 +1,6 @@
 #include "postprocessor_pipeline.hpp"
 #include "base/math/vector4.inl"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 #include "postprocessor.hpp"
 #include "rendering/sensor/sensor.hpp"
 

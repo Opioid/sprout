@@ -3,6 +3,7 @@
 
 #include "base/math/vector.hpp"
 #include "image.hpp"
+#include "typed_image_fwd.hpp"
 
 namespace image {
 

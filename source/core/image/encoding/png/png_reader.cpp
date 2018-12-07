@@ -5,7 +5,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/string/string.hpp"
 #include "image/tiled_image.inl"
-#include "image/typed_image.inl"
+#include "image/typed_image.hpp"
 
 namespace image {
 namespace encoding {
