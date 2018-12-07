@@ -3,6 +3,8 @@
 
 namespace image {
 
+Image::Description::Description() noexcept = default;
+
 Image::Description::Description(Type type, int2 dimensions, int32_t num_elements) noexcept
     : type(type), dimensions(dimensions, 1), num_elements(num_elements) {}
 
@@ -31,6 +33,8 @@ int32_t Image::Description::num_channels() const noexcept {
             return 0;
     }
 }
+
+Image::Image() noexcept = default;
 
 Image::Image(Description const& description) noexcept : description_(description) {}
 

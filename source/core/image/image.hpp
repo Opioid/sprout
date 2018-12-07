@@ -21,7 +21,7 @@ class Image {
     };
 
     struct Description {
-        Description() noexcept = default;
+        Description() noexcept;
         Description(Type type, int2 dimensions, int32_t num_elements = 1) noexcept;
         Description(Type type, int3 const& dimensions, int32_t num_elements = 1) noexcept;
 
@@ -36,7 +36,7 @@ class Image {
         int32_t num_elements = 0;
     };
 
-    Image() noexcept = default;
+    Image() noexcept;
     Image(Description const& description) noexcept;
 
     virtual ~Image() noexcept;

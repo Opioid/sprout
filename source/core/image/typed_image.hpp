@@ -14,7 +14,7 @@ class Typed_image final : public Image {
 
     Typed_image(Description const& description) noexcept;
 
-    ~Typed_image() noexcept;
+    ~Typed_image() noexcept override;
 
     Typed_image<T> clone() const noexcept;
 
@@ -65,7 +65,7 @@ class Typed_sparse_image final : public Image {
 
     Typed_sparse_image(Description const& description) noexcept;
 
-    ~Typed_sparse_image() noexcept;
+    ~Typed_sparse_image() noexcept override;
 
     T load(int64_t index) const noexcept;
 
@@ -112,6 +112,15 @@ class Typed_sparse_image final : public Image {
 
     Cell* cells_ = nullptr;
 };
+
+extern template class Typed_image<uint8_t>;
+extern template class Typed_image<byte2>;
+extern template class Typed_image<byte3>;
+extern template class Typed_image<float>;
+extern template class Typed_sparse_image<float>;
+extern template class Typed_image<float2>;
+extern template class Typed_image<packed_float3>;
+extern template class Typed_image<float4>;
 
 }  // namespace image
 
