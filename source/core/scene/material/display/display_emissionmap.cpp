@@ -1,7 +1,4 @@
 #include "display_emissionmap.hpp"
-#include "base/math/math.hpp"
-#include "base/math/vector4.inl"
-#include "base/spectrum/rgb.hpp"
 #include "display_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/fresnel/fresnel.inl"

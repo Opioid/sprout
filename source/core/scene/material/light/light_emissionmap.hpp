@@ -17,7 +17,7 @@ class Emissionmap : public Material {
                                    uint32_t sample_level) const noexcept override;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             Worker const& worker) const noexcept override final;
+                             Worker const& worker) const noexcept override;
 
     float3 average_radiance(float area) const noexcept override final;
 
@@ -32,14 +32,17 @@ class Emissionmap : public Material {
 
     void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& pool) noexcept override final;
-
-    size_t num_bytes() const noexcept override;
+                          bool importance_sampling, thread::Pool& pool) noexcept override;
 
     void set_emission_map(Texture_adapter const& emission_map) noexcept;
     void set_emission_factor(float emission_factor) noexcept;
 
+    size_t num_bytes() const noexcept override;
+
   protected:
+    void prepare_sampling_internal(shape::Shape const& shape, int32_t element,
+                                   bool importance_sampling, thread::Pool& pool) noexcept;
+
     Texture_adapter emission_map_;
 
     math::Distribution_2D distribution_;

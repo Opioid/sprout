@@ -265,9 +265,11 @@ Material_ptr Provider::load_display(json::Value const& display_value, resource::
 
     if (emission_map.is_valid()) {
         if (animation_duration > 0) {
-            auto material = std::make_shared<display::Emissionmap_animated>(
-                sampler_settings, two_sided, emission_map, emission_factor, animation_duration);
+            auto material = std::make_shared<display::Emissionmap_animated>(sampler_settings,
+                                                                            two_sided);
             material->set_mask(mask);
+            material->set_emission_map(emission_map, animation_duration);
+            material->set_emission_factor(emission_factor);
             material->set_roughness(roughness);
             material->set_ior(ior);
             return material;
@@ -440,9 +442,11 @@ Material_ptr Provider::load_light(json::Value const& light_value, resource::Mana
 
     if (emission_map.is_valid()) {
         if (animation_duration > 0) {
-            auto material = std::make_shared<light::Emissionmap_animated>(
-                sampler_settings, two_sided, emission_map, emission_factor, animation_duration);
+            auto material = std::make_shared<light::Emissionmap_animated>(sampler_settings,
+                                                                          two_sided);
             material->set_mask(mask);
+            material->set_emission_map(emission_map, animation_duration);
+            material->set_emission_factor(emission_factor);
             return material;
         } else {
             auto material = std::make_shared<light::Emissionmap>(sampler_settings, two_sided);

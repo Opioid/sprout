@@ -3,15 +3,13 @@
 
 #include "base/math/distribution/distribution_2d.hpp"
 #include "image/texture/texture.hpp"
-#include "scene/material/material.hpp"
+#include "light_emissionmap.hpp"
 
 namespace scene::material::light {
 
-class Emissionmap_animated : public Material {
+class Emissionmap_animated : public Emissionmap {
   public:
-    Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided,
-                         Texture_adapter const& emission_map, float emission_factor,
-                         uint64_t animation_duration) noexcept;
+    Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
     ~Emissionmap_animated() noexcept override;
 
@@ -24,17 +22,6 @@ class Emissionmap_animated : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override final;
 
-    float3 average_radiance(float area) const noexcept override final;
-
-    float ior() const noexcept override;
-
-    bool has_emission_map() const noexcept override final;
-
-    Sample_2D radiance_sample(float2 r2) const noexcept override final;
-
-    float emission_pdf(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
-
     float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const
         noexcept override final;
 
@@ -44,20 +31,13 @@ class Emissionmap_animated : public Material {
 
     bool is_animated() const noexcept override final;
 
+    void set_emission_map(Texture_adapter const& emission_map,
+                          uint64_t               animation_duration) noexcept;
+
     size_t num_bytes() const noexcept override;
 
   protected:
-    Texture_adapter emission_map_;
-
-    math::Distribution_2D distribution_;
-
-    float3 average_emission_;
-
-    float emission_factor_;
-
-    float total_weight_;
-
-    uint64_t const frame_length_;
+    uint64_t frame_length_;
 
     int32_t element_;
 };

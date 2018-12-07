@@ -77,6 +77,23 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
         return;
     }
 
+    prepare_sampling_internal(shape, 0, importance_sampling, pool);
+}
+
+void Emissionmap::set_emission_map(Texture_adapter const& emission_map) noexcept {
+    emission_map_ = emission_map;
+}
+
+void Emissionmap::set_emission_factor(float emission_factor) noexcept {
+    emission_factor_ = emission_factor;
+}
+
+size_t Emissionmap::num_bytes() const noexcept {
+    return sizeof(*this) + distribution_.num_bytes();
+}
+
+void Emissionmap::prepare_sampling_internal(shape::Shape const& shape, int32_t element,
+                                            bool importance_sampling, thread::Pool& pool) noexcept {
     if (importance_sampling) {
         auto const& texture = emission_map_.texture();
 
@@ -92,8 +109,8 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
         float const ef = emission_factor_;
 
         pool.run_range(
-            [&conditional, &artws, &shape, &texture, d, rd, ef](uint32_t id, int32_t begin,
-                                                                int32_t end) {
+            [&conditional, &artws, &shape, &texture, d, rd, element, ef](uint32_t id, int32_t begin,
+                                                                         int32_t end) {
                 std::vector<float> luminance(static_cast<uint32_t>(d[0]));
 
                 float4 artw(0.f);
@@ -106,7 +123,7 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const radiance = ef * texture.at_3(x, y);
+                        float3 const radiance = ef * texture.at_element_3(x, y, element);
 
                         luminance[static_cast<uint32_t>(x)] = uv_weight *
                                                               spectrum::luminance(radiance);
@@ -122,7 +139,7 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
             },
             0, d[1]);
 
-        // artw: (float3(averave_radiance), total_weight)
+        // arw: (float3(averave_radiance), total_weight)
         float4 artw(0.f);
         for (auto& a : artws) {
             artw += a;
@@ -140,18 +157,6 @@ void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
     if (is_two_sided()) {
         average_emission_ *= 2.f;
     }
-}
-
-size_t Emissionmap::num_bytes() const noexcept {
-    return sizeof(*this) + distribution_.num_bytes();
-}
-
-void Emissionmap::set_emission_map(Texture_adapter const& emission_map) noexcept {
-    emission_map_ = emission_map;
-}
-
-void Emissionmap::set_emission_factor(float emission_factor) noexcept {
-    emission_factor_ = emission_factor;
 }
 
 }  // namespace scene::material::light
