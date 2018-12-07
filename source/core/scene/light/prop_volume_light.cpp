@@ -30,9 +30,9 @@ float3 Prop_volume_light::evaluate(Sample_to const& sample, Filter filter,
                                    Worker const& worker) const noexcept {
     auto const material = prop_->material(part_);
 
-    float const area = prop_->area(part_);
+    float const volume = prop_->volume(part_);
 
-    return material->evaluate_radiance(sample.wi, sample.uv, area, filter, worker);
+    return material->evaluate_radiance(sample.wi, sample.uvw, volume, filter, worker);
 }
 
 bool Prop_volume_light::sample(Transformation const& /*transformation*/, Sampler& /*sampler*/,

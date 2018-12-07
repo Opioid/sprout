@@ -23,8 +23,6 @@ bool check(Intersection const& intersection, const entity::Composed_transformati
 
 bool check(const Sample_to& sample);
 
-bool check(const Sample_to& sample, float2 uv);
-
 void test();
 
 }  // namespace testing

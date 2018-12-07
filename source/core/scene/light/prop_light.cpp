@@ -55,7 +55,7 @@ float3 Prop_light::evaluate(Sample_to const& sample, Filter filter, Worker const
 
     float const area = prop_->area(part_);
 
-    return material->evaluate_radiance(sample.wi, sample.uv, area, filter, worker);
+    return material->evaluate_radiance(sample.wi, sample.uvw.xy(), area, filter, worker);
 }
 
 bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,

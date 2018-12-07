@@ -7,6 +7,11 @@ namespace scene::material::volumetric {
 Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings) {}
 
+float3 Homogeneous::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, float /*volume*/,
+                                      Filter /*filter*/, Worker const& /*worker*/) const noexcept {
+    return cc_.a * emission_;
+}
+
 float3 Homogeneous::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
                                            Worker const& /*worker*/) const noexcept {
     return cc_.a;

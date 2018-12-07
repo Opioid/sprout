@@ -348,9 +348,9 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv,
         return false;
     }
 
-    sample.wi = dir;
-    sample.uv = uv;
-    sample.t  = d;
+    sample.wi  = dir;
+    sample.uvw = float3(uv);
+    sample.t   = d;
     // sin_theta because of the uv weight
     sample.pdf = sl / (c * area /** sin_theta*/);
 

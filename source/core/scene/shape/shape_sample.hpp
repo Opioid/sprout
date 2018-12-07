@@ -8,7 +8,7 @@ namespace scene::shape {
 
 struct Sample_to {
     float3 wi;
-    float2 uv;
+    float3 uvw;
     float  pdf;
     float  t;
     float  epsilon;

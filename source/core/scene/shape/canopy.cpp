@@ -138,8 +138,8 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
     float2 const disk = math::hemisphere_to_disk_equidistant(xyz);
 
     sample.wi      = dir;
-    sample.uv[0]   = 0.5f * disk[0] + 0.5f;
-    sample.uv[1]   = 0.5f * disk[1] + 0.5f;
+    sample.uvw[0]  = 0.5f * disk[0] + 0.5f;
+    sample.uvw[1]  = 0.5f * disk[1] + 0.5f;
     sample.pdf     = 1.f / (2.f * Pi);
     sample.t       = Ray_max_t;
     sample.epsilon = 5e-4f;
@@ -181,7 +181,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     float3 const dir = math::disk_to_hemisphere_equidistant(disk);
 
     sample.wi      = transform_vector(transformation.rotation, dir);
-    sample.uv      = uv;
+    sample.uvw     = float3(uv);
     sample.t       = Ray_max_t;
     sample.pdf     = 1.f / (2.f * Pi);
     sample.epsilon = 5e-4f;

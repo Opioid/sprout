@@ -98,7 +98,7 @@ struct alignas(16) Vector3f_a {
 
     explicit constexpr Vector3f_a(float s) noexcept;
 
-    explicit constexpr Vector3f_a(Vector2<float> const xy, float z) noexcept;
+    explicit constexpr Vector3f_a(Vector2<float> const xy, float z = 0.f) noexcept;
 
     template <typename T>
     explicit constexpr Vector3f_a(Vector3<T> const& a) noexcept;

@@ -54,11 +54,6 @@ bool Material::is_scattering_volume() const noexcept {
     return true;
 }
 
-float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
-                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
-    return cc_.a * emission_;
-}
-
 float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
     return cc_.a * emission_;
 }

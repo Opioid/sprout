@@ -42,6 +42,11 @@ float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*
     return float3(0.f);
 }
 
+float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, float /*volume*/,
+                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
+    return float3(0.f);
+}
+
 float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
     return float3(0.f);
 }

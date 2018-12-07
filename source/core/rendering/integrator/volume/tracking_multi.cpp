@@ -99,7 +99,9 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                         set_scattering(intersection, interface, ray.point(t));
                         break;
                     } else if (Event::Absorb == result) {
-                        break;
+                        transmittance = w;
+                        ray.max_t     = t;
+                        return Event::Absorb;
                     }
                 }
 

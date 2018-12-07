@@ -36,21 +36,7 @@ bool check(const Sample_to& sample) {
         return false;
     }
 
-    if (!all_finite(sample.uv)) {
-        return false;
-    }
-
-    return true;
-}
-
-bool check(const Sample_to& sample, float2 uv) {
-    if (sample.pdf <= 0.f) {
-        std::cout << "pdf " << sample.pdf << std::endl;
-        return false;
-    }
-
-    if (!all_finite(sample.uv)) {
-        std::cout << "uv " << uv << std::endl;
+    if (!all_finite(sample.uvw)) {
         return false;
     }
 

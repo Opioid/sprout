@@ -217,13 +217,9 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             if (Event::Absorb == hit) {
-                if (0 == i) {
-                    result.li += throughput * vli;
-                } else {
-                    result.li += throughput *
-                                 evaluate_light_volume(vli, ray, intersection, previous_bxdf_pdf,
-                                                       treat_as_singular, is_translucent, worker);
-                }
+                result.li += throughput *
+                             evaluate_light_volume(vli, ray, intersection, previous_bxdf_pdf,
+                                                   treat_as_singular, is_translucent, worker);
                 break;
             }
 
@@ -428,7 +424,6 @@ float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
     }
 
     float const weight = power_heuristic(bxdf_pdf, light_pdf);
-
     return weight * vli;
 }
 

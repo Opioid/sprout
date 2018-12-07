@@ -15,6 +15,13 @@ Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid
 
 Grid::~Grid() noexcept {}
 
+float3 Grid::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
+                               Filter filter, Worker const& worker) const noexcept {
+    float const d = density(uvw, filter, worker);
+
+    return d * cc_.a * emission_;
+}
+
 CC Grid::collision_coefficients() const noexcept {
     return cc_;
 }

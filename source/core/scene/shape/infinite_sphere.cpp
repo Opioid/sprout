@@ -122,8 +122,8 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 
     float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, dir));
 
-    sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
-    sample.uv[1] = std::acos(xyz[1]) * Pi_inv;
+    sample.uvw[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+    sample.uvw[1] = std::acos(xyz[1]) * Pi_inv;
 
     sample.pdf = 1.f / (2.f * Pi);
 
@@ -146,8 +146,8 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
 
     float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, dir));
 
-    sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
-    sample.uv[1] = std::acos(xyz[1]) * Pi_inv;
+    sample.uvw[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+    sample.uvw[1] = std::acos(xyz[1]) * Pi_inv;
 
     sample.pdf = 1.f / (4.f * Pi);
 
@@ -194,8 +194,8 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
 
     float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    sample.wi = transform_vector(transformation.rotation, dir);
-    sample.uv = uv;
+    sample.wi  = transform_vector(transformation.rotation, dir);
+    sample.uvw = float3(uv);
     // sin_theta because of the uv weight
     sample.pdf = 1.f / ((4.f * Pi) * sin_theta);
 

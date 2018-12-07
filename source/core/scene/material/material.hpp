@@ -76,6 +76,9 @@ class Material {
     virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                                      Worker const& worker) const noexcept;
 
+    virtual float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume,
+                                     Filter filter, Worker const& worker) const noexcept;
+
     virtual float3 average_radiance(float area_or_volume) const noexcept;
 
     virtual bool has_emission_map() const noexcept;

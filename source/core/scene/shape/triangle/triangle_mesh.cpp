@@ -321,7 +321,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
     }
 
     sample.wi      = dir;
-    sample.uv      = tc;
+    sample.uvw     = float3(tc);
     sample.pdf     = sl / (c * area);
     sample.t       = d;
     sample.epsilon = 3e-3f * d;

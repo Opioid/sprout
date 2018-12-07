@@ -23,9 +23,6 @@ class Material : public material::Material {
 
     bool is_scattering_volume() const noexcept override final;
 
-    float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             Worker const& worker) const noexcept override final;
-
     float3 average_radiance(float area) const noexcept override final;
 
     void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,

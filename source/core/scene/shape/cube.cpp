@@ -220,6 +220,7 @@ bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation cons
     float const t  = std::sqrt(sl);
 
     sample.wi      = axis / t;
+    sample.uvw     = r3;
     sample.pdf     = sl / (volume);
     sample.t       = t;
     sample.epsilon = 0.f;
@@ -242,7 +243,7 @@ float Cube::pdf(Ray const&            ray, Intersection const& /*intersection*/,
 
 float Cube::pdf_volume(Ray const& ray, Intersection const& /*intersection*/,
                        Transformation const& /*transformation*/, float volume) const noexcept {
-    float sl = ray.max_t * ray.max_t;
+    float const sl = ray.max_t * ray.max_t;
     return sl / (volume);
 }
 

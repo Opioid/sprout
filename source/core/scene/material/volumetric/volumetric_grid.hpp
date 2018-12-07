@@ -13,6 +13,9 @@ class Grid final : public Material {
 
     ~Grid() noexcept override final;
 
+    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
+                             Worker const& worker) const noexcept override final;
+
     CC collision_coefficients() const noexcept override final;
 
     CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
