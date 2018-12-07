@@ -10,14 +10,15 @@ namespace image {
 template <typename T>
 class Typed_image final : public Image {
   public:
-    Typed_image() noexcept = default;
-    Typed_image(const Image::Description& description) noexcept;
+    Typed_image() noexcept;
+
+    Typed_image(Description const& description) noexcept;
 
     ~Typed_image() noexcept;
 
     Typed_image<T> clone() const noexcept;
 
-    void resize(const Image::Description& description) noexcept;
+    void resize(Description const& description) noexcept;
 
     void clear(T v) noexcept;
 
@@ -60,8 +61,9 @@ class Typed_image final : public Image {
 template <typename T>
 class Typed_sparse_image final : public Image {
   public:
-    Typed_sparse_image() noexcept = default;
-    Typed_sparse_image(const Image::Description& description) noexcept;
+    Typed_sparse_image() noexcept;
+
+    Typed_sparse_image(Description const& description) noexcept;
 
     ~Typed_sparse_image() noexcept;
 

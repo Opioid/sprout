@@ -6,7 +6,10 @@
 namespace image {
 
 template <typename T>
-Typed_image<T>::Typed_image(const Image::Description& description) noexcept
+Typed_image<T>::Typed_image() noexcept = default;
+
+template <typename T>
+Typed_image<T>::Typed_image(Description const& description) noexcept
     : Image(description), data_(memory::allocate_aligned<T>(description.num_pixels())) {}
 
 template <typename T>
@@ -20,7 +23,7 @@ Typed_image<T> Typed_image<T>::clone() const noexcept {
 }
 
 template <typename T>
-void Typed_image<T>::resize(const Image::Description& description) noexcept {
+void Typed_image<T>::resize(Description const& description) noexcept {
     memory::free_aligned(data_);
 
     Image::resize(description);
@@ -151,7 +154,10 @@ size_t Typed_image<T>::num_bytes() const noexcept {
 }
 
 template <typename T>
-Typed_sparse_image<T>::Typed_sparse_image(const Image::Description& description) noexcept
+Typed_sparse_image<T>::Typed_sparse_image() noexcept = default;
+
+template <typename T>
+Typed_sparse_image<T>::Typed_sparse_image(Description const& description) noexcept
     : Image(description) {
     int3 const d = description.dimensions;
 
