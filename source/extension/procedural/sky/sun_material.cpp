@@ -20,11 +20,11 @@ using namespace scene;
 
 Sun_material::Sun_material(Sky& sky) noexcept : Material(sky) {}
 
-const material::Sample& Sun_material::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
-                                             sampler::Sampler& /*sampler*/, Worker const& worker,
-                                             uint32_t sample_level) const noexcept {
-    auto& sample = worker.sample<material::light::Sample>(sample_level);
+                                             sampler::Sampler& /*sampler*/,
+                                             Worker const& worker) const noexcept {
+    auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 
@@ -55,12 +55,11 @@ size_t Sun_material::num_bytes() const noexcept {
 
 Sun_baked_material::Sun_baked_material(Sky& sky) noexcept : Material(sky) {}
 
-const material::Sample& Sun_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter /*filter*/,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker,
-                                                   uint32_t      sample_level) const noexcept {
-    auto& sample = worker.sample<material::light::Sample>(sample_level);
+                                                   Worker const& worker) const noexcept {
+    auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 
@@ -102,7 +101,7 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
 
         float3 const radiance = sky_.model().evaluate_sky_and_sun(sky_.sun_wi(v));
 
-        cache[i] = radiance;
+        cache[static_cast<uint32_t>(i)] = radiance;
     }
 
     emission_.from_array(0.f, 1.f, cache.size(), cache.data());

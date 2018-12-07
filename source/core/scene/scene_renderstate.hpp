@@ -27,6 +27,8 @@ struct Renderstate {
 
     bool subsurface;
     bool avoid_caustics;
+
+    uint32_t sample_level;
 };
 
 }  // namespace scene

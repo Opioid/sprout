@@ -15,9 +15,8 @@ Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings,
 material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker, uint32_t depth) const
-    noexcept {
-    auto& sample = worker.sample<Sample_clearcoat>(depth);
+                                                   Worker const& worker) const noexcept {
+    auto& sample = worker.sample<Sample_clearcoat>(rs.sample_level);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -71,9 +70,8 @@ Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings,
 material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray const& /*ray*/,
                                                   Renderstate const& rs, Filter filter,
                                                   sampler::Sampler& /*sampler*/,
-                                                  Worker const& worker, uint32_t depth) const
-    noexcept {
-    auto& sample = worker.sample<Sample_thinfilm>(depth);
+                                                  Worker const& worker) const noexcept {
+    auto& sample = worker.sample<Sample_thinfilm>(rs.sample_level);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

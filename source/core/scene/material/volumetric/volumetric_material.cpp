@@ -16,10 +16,9 @@ Material::~Material() noexcept {}
 
 material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                          Filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker, uint32_t sample_level) const
-    noexcept {
+                                         Worker const& worker) const noexcept {
     if (rs.subsurface) {
-        auto& sample = worker.sample<Sample>(sample_level);
+        auto& sample = worker.sample<Sample>(rs.sample_level);
 
         sample.set_basis(rs.geo_n, wo);
 
@@ -30,7 +29,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
         return sample;
     }
 
-    auto& sample = worker.sample<null::Sample>(sample_level);
+    auto& sample = worker.sample<null::Sample>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 

@@ -18,9 +18,9 @@ Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noe
 
 material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
                                          Renderstate const& rs, Filter                filter,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker,
-                                         uint32_t sample_level) const noexcept {
-    auto& sample = worker.sample<Sample>(sample_level);
+                                         sampler::Sampler& /*sampler*/, Worker const& worker) const
+    noexcept {
+    auto& sample = worker.sample<Sample>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 

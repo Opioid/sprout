@@ -17,9 +17,8 @@ Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings,
 material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker, uint32_t depth) const
-    noexcept {
-    auto& sample = worker.sample<Sample_isotropic>(depth);
+                                                   Worker const& worker) const noexcept {
+    auto& sample = worker.sample<Sample_isotropic>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 
@@ -74,9 +73,8 @@ Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_setti
 material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
                                                      sampler::Sampler& /*sampler*/,
-                                                     Worker const& worker, uint32_t depth) const
-    noexcept {
-    auto& sample = worker.sample<Sample_anisotropic>(depth);
+                                                     Worker const& worker) const noexcept {
+    auto& sample = worker.sample<Sample_anisotropic>(rs.sample_level);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

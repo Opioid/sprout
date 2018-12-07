@@ -69,8 +69,8 @@ class Material {
     virtual void tick(float absolute_time, float time_slice) noexcept;
 
     virtual const Sample& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                 Filter filter, sampler::Sampler& sampler, Worker const& worker,
-                                 uint32_t sample_level) const noexcept = 0;
+                                 Filter filter, sampler::Sampler& sampler,
+                                 Worker const& worker) const noexcept = 0;
 
     virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                                      Worker const& worker) const noexcept;

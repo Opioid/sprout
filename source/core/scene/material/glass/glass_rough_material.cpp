@@ -15,10 +15,10 @@ Glass_rough::Glass_rough(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings, false) {}
 
 material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*ray*/,
-                                            Renderstate const& rs, Filter                filter,
-                                            sampler::Sampler& /*sampler*/, Worker const& worker,
-                                            uint32_t depth) const noexcept {
-    auto& sample = worker.sample<Sample_rough>(depth);
+                                            Renderstate const& rs, Filter filter,
+                                            sampler::Sampler& /*sampler*/,
+                                            Worker const& worker) const noexcept {
+    auto& sample = worker.sample<Sample_rough>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 

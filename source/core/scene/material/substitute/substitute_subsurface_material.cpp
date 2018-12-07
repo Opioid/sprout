@@ -40,16 +40,15 @@ void Material_subsurface::compile(thread::Pool& pool) noexcept {
 material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray const& /*ray*/,
                                                     Renderstate const& rs, Filter filter,
                                                     sampler::Sampler& /*sampler*/,
-                                                    Worker const& worker, uint32_t depth) const
-    noexcept {
+                                                    Worker const& worker) const noexcept {
     if (rs.subsurface) {
-        //        auto& sample = worker.sample<volumetric::Sample>(sample_level);
+        //        auto& sample = worker.sample<volumetric::Sample>(rs.sample_level);
 
         //        sample.set_basis(rs.geo_n, wo);
 
         //        sample.set(anisotropy_);
 
-        auto& sample = worker.sample<Sample_subsurface_volumetric>(depth);
+        auto& sample = worker.sample<Sample_subsurface_volumetric>(rs.sample_level);
 
         sample.set_basis(rs.geo_n, wo);
 
@@ -58,7 +57,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
         return sample;
     }
 
-    auto& sample = worker.sample<Sample_subsurface>(depth);
+    auto& sample = worker.sample<Sample_subsurface>(rs.sample_level);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

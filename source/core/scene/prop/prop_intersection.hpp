@@ -44,7 +44,7 @@ struct Intersection {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Filter filter,
                                    bool avoid_caustics, sampler::Sampler& sampler,
-                                   Worker const& worker, uint32_t depth = 0) const noexcept;
+                                   Worker const& worker, uint32_t sample_level = 0) const noexcept;
 
     bool same_hemisphere(float3 const& v) const noexcept;
 

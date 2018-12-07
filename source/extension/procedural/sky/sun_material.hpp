@@ -10,13 +10,14 @@ class Sun_material : public Material {
   public:
     Sun_material(Sky& sky) noexcept;
 
-    const scene::material::Sample& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,
-                                          sampler::Sampler& sampler, scene::Worker const& worker,
-                                          uint32_t sample_level) const noexcept override final;
+                                          sampler::Sampler&    sampler,
+                                          scene::Worker const& worker) const
+        noexcept override final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             const scene::Worker& worker) const noexcept override final;
+                             scene::Worker const& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
 
@@ -31,13 +32,14 @@ class Sun_baked_material : public Material {
   public:
     Sun_baked_material(Sky& sky) noexcept;
 
-    const scene::material::Sample& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,
-                                          sampler::Sampler& sampler, scene::Worker const& worker,
-                                          uint32_t sample_level) const noexcept override final;
+                                          sampler::Sampler&    sampler,
+                                          scene::Worker const& worker) const
+        noexcept override final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             const scene::Worker& worker) const noexcept override final;
+                             scene::Worker const& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
 

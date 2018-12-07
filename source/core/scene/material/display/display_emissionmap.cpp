@@ -14,10 +14,10 @@ Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_side
     : light::Emissionmap(sampler_settings, two_sided) {}
 
 material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*ray*/,
-                                            Renderstate const& rs, Filter                filter,
-                                            sampler::Sampler& /*sampler*/, Worker const& worker,
-                                            uint32_t sample_level) const noexcept {
-    auto& sample = worker.sample<Sample>(sample_level);
+                                            Renderstate const& rs, Filter filter,
+                                            sampler::Sampler& /*sampler*/,
+                                            Worker const& worker) const noexcept {
+    auto& sample = worker.sample<Sample>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
 

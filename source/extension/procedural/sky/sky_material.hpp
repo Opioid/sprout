@@ -10,13 +10,14 @@ class Sky_material : public Material {
   public:
     Sky_material(Sky& sky) noexcept;
 
-    const scene::material::Sample& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
-                                          sampler::Sampler& sampler, const scene::Worker& worker,
-                                          uint32_t sample_level) const noexcept override final;
+                                          sampler::Sampler&    sampler,
+                                          scene::Worker const& worker) const
+        noexcept override final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             const scene::Worker& worker) const noexcept override final;
+                             scene::Worker const& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
 
@@ -33,13 +34,14 @@ class Sky_baked_material : public Material {
 
     ~Sky_baked_material() noexcept override;
 
-    const scene::material::Sample& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
-                                          sampler::Sampler& sampler, const scene::Worker& worker,
-                                          uint32_t sample_level) const noexcept override final;
+                                          sampler::Sampler&    sampler,
+                                          scene::Worker const& worker) const
+        noexcept override final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             const scene::Worker& worker) const noexcept override final;
+                             scene::Worker const& worker) const noexcept override final;
 
     float3 average_radiance(float area) const noexcept override final;
 
@@ -47,7 +49,7 @@ class Sky_baked_material : public Material {
 
     Sample_2D radiance_sample(float2 r2) const noexcept override final;
 
-    float emission_pdf(float2 uv, Filter filter, const scene::Worker& worker) const
+    float emission_pdf(float2 uv, Filter filter, scene::Worker const& worker) const
         noexcept override final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
