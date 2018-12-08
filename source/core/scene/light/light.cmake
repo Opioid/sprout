@@ -10,6 +10,8 @@ target_sources(core
     "${CMAKE_CURRENT_LIST_DIR}/prop_image_light.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/prop_light.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/prop_light.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/prop_volume_light.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/prop_volume_image_light.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/prop_volume_image_light.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/prop_volume_light.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/prop_volume_light.hpp"
     ) 

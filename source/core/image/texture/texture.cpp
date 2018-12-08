@@ -48,6 +48,19 @@ float3 const& Texture::dimensions_float3() const noexcept {
     return dimensions_float_;
 }
 
+float Texture::average_1() const noexcept {
+    float average(0.f);
+
+    auto const& d = dimensions_3();
+
+    for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
+        average += at_1(i);
+    }
+
+    auto const df = dimensions_float3();
+    return average / (df[0] * df[1] * d[2]);
+}
+
 float3 Texture::average_3() const noexcept {
     float3 average(0.f);
 

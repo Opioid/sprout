@@ -91,6 +91,15 @@ class Material {
 
     virtual float emission_pdf(float2 uv, Filter filter, Worker const& worker) const noexcept;
 
+    struct Sample_3D {
+        float3 uvw;
+        float  pdf;
+    };
+    virtual Sample_3D radiance_sample(float3 const& r3) const noexcept;
+
+    virtual float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const
+        noexcept;
+
     virtual float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const
         noexcept;
 

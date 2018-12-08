@@ -1,17 +1,18 @@
 #ifndef SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 #define SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 
+#include "base/math/distribution/distribution_3d.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "volumetric_material.hpp"
 #include "volumetric_octree.hpp"
 
 namespace scene::material::volumetric {
 
-class Grid final : public Material {
+class Grid : public Material {
   public:
     Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
 
-    ~Grid() noexcept override final;
+    ~Grid() noexcept override;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const noexcept override final;
@@ -35,12 +36,35 @@ class Grid final : public Material {
 
     size_t num_bytes() const noexcept override final;
 
-  private:
+  protected:
     float density(float3 const& uvw, Filter filter, Worker const& worker) const noexcept;
 
     Texture_adapter grid_;
 
     Gridtree tree_;
+};
+
+class Grid_emission : public Grid {
+  public:
+    Grid_emission(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
+
+    ~Grid_emission() noexcept override;
+
+    Sample_3D radiance_sample(float3 const& r2) const noexcept override final;
+
+    float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const
+        noexcept override final;
+
+    void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
+                          Transformation const& transformation, float area,
+                          bool importance_sampling, thread::Pool& pool) noexcept override final;
+
+  private:
+    math::Distribution_3D distribution_;
+
+    float3 average_emission_;
+
+    float total_weight_;
 };
 
 }  // namespace scene::material::volumetric

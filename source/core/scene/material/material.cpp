@@ -64,6 +64,15 @@ float Material::emission_pdf(float2 /*uv*/, Filter /*filter*/, Worker const& /*w
     return 1.f;
 }
 
+Material::Sample_3D Material::radiance_sample(float3 const& r3) const noexcept {
+    return {r3, 1.f};
+}
+
+float Material::emission_pdf(float3 const& /*uvw*/, Filter /*filter*/,
+                             Worker const& /*worker*/) const noexcept {
+    return 1.f;
+}
+
 float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker const& worker) const
     noexcept {
     if (mask_.is_valid()) {

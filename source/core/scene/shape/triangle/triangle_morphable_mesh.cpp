@@ -209,6 +209,12 @@ bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*
     return false;
 }
 
+bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+                            Transformation const& /*transformation*/, float /*volume*/,
+                            Sample_to& /*sample*/) const noexcept {
+    return false;
+}
+
 bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,

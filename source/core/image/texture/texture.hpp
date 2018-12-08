@@ -49,6 +49,8 @@ class Texture {
     virtual float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept = 0;
     virtual float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept = 0;
 
+    float average_1() const noexcept;
+
     float3 average_3() const noexcept;
     float3 average_3(int32_t element) const noexcept;
 

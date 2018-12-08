@@ -96,11 +96,15 @@ class Shape {
     virtual float pdf_volume(Ray const& ray, Intersection const& intersection,
                              Transformation const& transformation, float volume) const noexcept = 0;
 
-    // The following three functions are used for textured lights
+    // The following functions are used for textured lights
     // and should have the uv weight baked in!
     virtual bool sample(uint32_t part, float3 const& p, float2 uv,
                         Transformation const& transformation, float area, bool two_sided,
                         Sample_to& sample) const noexcept = 0;
+
+    virtual bool sample(uint32_t part, float3 const& p, float3 const& uvw,
+                        Transformation const& transformation, float volume, Sample_to& sample) const
+        noexcept = 0;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
                         bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
@@ -109,6 +113,8 @@ class Shape {
     virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
                          Transformation const& transformation, float area, bool two_sided) const
         noexcept = 0;
+
+    // ----
 
     virtual float uv_weight(float2 uv) const noexcept = 0;
 

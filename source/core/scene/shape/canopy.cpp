@@ -189,6 +189,12 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     return true;
 }
 
+bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+                    Transformation const& /*transformation*/, float /*volume*/,
+                    Sample_to& /*sample*/) const noexcept {
+    return false;
+}
+
 bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
                     float /*area*/, bool /*two_sided*/, Sampler&        sampler,
                     uint32_t sampler_dimension, AABB const& bounds, Sample_from& sample) const

@@ -1096,19 +1096,22 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
     absorption_color = use_absorption_color ? absorption_color : color;
     scattering_color = use_scattering_color ? scattering_color : color;
 
-    if (density_map.is_valid()) {
-        auto material = std::make_shared<volumetric::Grid>(sampler_settings, density_map);
-        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
-        material->set_emission(emission);
-        material->set_anisotropy(anisotropy);
-        return material;
+    using namespace volumetric;
 
-        //    } else if (emission_map.is_valid()) {
-        //        auto material = std::make_shared<volumetric::Emission_grid>(sampler_settings,
-        //        emission_map); material->set_attenuation(absorption_color, scattering_color,
-        //        attenuation_distance); material->set_emission(emission);
-        //        material->set_anisotropy(anisotropy);
-        //        return material;
+    if (density_map.is_valid()) {
+        if (any_greater_zero(emission)) {
+            auto material = std::make_shared<Grid_emission>(sampler_settings, density_map);
+            material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+            material->set_emission(emission);
+            material->set_anisotropy(anisotropy);
+            return material;
+        } else {
+            auto material = std::make_shared<Grid>(sampler_settings, density_map);
+            material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+            material->set_emission(emission);
+            material->set_anisotropy(anisotropy);
+            return material;
+        }
     } /*else if (a > 0.f && b > 0.f) {
             auto material = std::make_shared<volumetric::Height>(sampler_settings);
             material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
@@ -1117,7 +1120,7 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
             return material;
     }*/
 
-    auto material = std::make_shared<volumetric::Homogeneous>(sampler_settings);
+    auto material = std::make_shared<Homogeneous>(sampler_settings);
     material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
     material->set_emission(emission);
     material->set_anisotropy(anisotropy);

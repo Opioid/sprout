@@ -705,7 +705,7 @@ static inline constexpr bool operator!=(Vector3f_a const& a, Vector3f_a const& b
 }
 
 static inline constexpr bool all_equal_zero(Vector3f_a const& v) noexcept {
-	return v[0] == 0.f && v[1] == 0.f && v[2] == 0.f;
+    return v[0] == 0.f && v[1] == 0.f && v[2] == 0.f;
 }
 
 static inline constexpr bool all_less(Vector3f_a const& v, float s) noexcept {

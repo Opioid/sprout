@@ -1,18 +1,17 @@
 #include "distribution_2d.hpp"
 #include "distribution_1d.inl"
 #include "math/vector2.inl"
-#include "thread/thread_pool.hpp"
 
 namespace math {
 
 template <typename T>
-Distribution_t_2D<T>::Distribution_t_2D() = default;
+Distribution_t_2D<T>::Distribution_t_2D() noexcept = default;
 
 template <typename T>
-Distribution_t_2D<T>::~Distribution_t_2D() {}
+Distribution_t_2D<T>::~Distribution_t_2D() noexcept {}
 
 template <typename T>
-void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) {
+void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) noexcept {
     conditional_ = std::move(conditional);
 
     std::vector<float> integrals(conditional_.size());
@@ -30,7 +29,13 @@ void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) {
 }
 
 template <typename T>
-typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuous(float2 r2) const {
+float Distribution_t_2D<T>::integral() const noexcept {
+    return marginal_.integral();
+}
+
+template <typename T>
+typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuous(float2 r2) const
+    noexcept {
     auto const v = marginal_.sample_continuous(r2[1]);
 
     uint32_t const i = static_cast<uint32_t>(v.offset * conditional_size_);
@@ -42,7 +47,7 @@ typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuou
 }
 
 template <typename T>
-float Distribution_t_2D<T>::pdf(float2 uv) const {
+float Distribution_t_2D<T>::pdf(float2 uv) const noexcept {
     float const v_pdf = marginal_.pdf(uv[1]);
 
     uint32_t const i = static_cast<uint32_t>(uv[1] * conditional_size_);
@@ -54,9 +59,9 @@ float Distribution_t_2D<T>::pdf(float2 uv) const {
 }
 
 template <typename T>
-size_t Distribution_t_2D<T>::num_bytes() const {
+size_t Distribution_t_2D<T>::num_bytes() const noexcept {
     size_t num_bytes = 0;
-    for (auto& c : conditional_) {
+    for (auto const& c : conditional_) {
         num_bytes += c.num_bytes();
     }
 

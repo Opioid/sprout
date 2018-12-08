@@ -12,6 +12,7 @@
 #include "image/texture/texture.hpp"
 #include "light/prop_image_light.hpp"
 #include "light/prop_light.hpp"
+#include "light/prop_volume_image_light.hpp"
 #include "light/prop_volume_light.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
@@ -317,7 +318,7 @@ prop::Prop* Scene::create_prop(Shape_ptr const& shape, Materials const& material
     return prop;
 }
 
-light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) noexcept {
+light::Light* Scene::create_prop_light(Prop* prop, uint32_t part) noexcept {
     light::Prop_light* light = new light::Prop_light;
 
     lights_.push_back(light);
@@ -327,7 +328,7 @@ light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) noexcept 
     return light;
 }
 
-light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t part) noexcept {
+light::Light* Scene::create_prop_image_light(Prop* prop, uint32_t part) noexcept {
     light::Prop_image_light* light = new light::Prop_image_light;
 
     lights_.push_back(light);
@@ -337,8 +338,18 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
     return light;
 }
 
-light::Prop_volume_light* Scene::create_prop_volume_light(Prop* prop, uint32_t part) noexcept {
+light::Light* Scene::create_prop_volume_light(Prop* prop, uint32_t part) noexcept {
     light::Prop_volume_light* light = new light::Prop_volume_light;
+
+    lights_.push_back(light);
+
+    light->init(prop, part);
+
+    return light;
+}
+
+light::Light* Scene::create_prop_volume_image_light(Prop* prop, uint32_t part) noexcept {
+    light::Prop_volume_image_light* light = new light::Prop_volume_image_light;
 
     lights_.push_back(light);
 

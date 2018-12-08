@@ -66,6 +66,10 @@ class Morphable_mesh : public Shape, public Morphable_shape {
     bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& transformation,
                 float area, bool two_sided, Sample_to& sample) const noexcept override final;
 
+    bool sample(uint32_t part, float3 const& p, float3 const& uvw,
+                Transformation const& transformation, float volume, Sample_to& sample) const
+        noexcept override final;
+
     bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
                 bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
                 AABB const& bounds, Sample_from& sample) const noexcept override final;

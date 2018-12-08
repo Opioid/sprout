@@ -3,6 +3,8 @@
 #include "base/math/ray.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/heatmap.hpp"
+#include "base/spectrum/rgb.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/scene_worker.hpp"
@@ -68,6 +70,93 @@ float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) cons
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     return grid_.sample_1(sampler, uvw);
+}
+
+Grid_emission::Grid_emission(Sampler_settings const& sampler_settings,
+                             Texture_adapter const&  grid) noexcept
+    : Grid(sampler_settings, grid) {}
+
+Grid_emission::~Grid_emission() noexcept {}
+
+Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const noexcept {
+    auto const result = distribution_.sample_continuous(r3);
+
+    return {result.uvw, result.pdf * total_weight_};
+}
+
+float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const
+    noexcept {
+    auto& sampler = worker.sampler_3D(sampler_key(), filter);
+
+    return distribution_.pdf(sampler.address(uvw)) * total_weight_;
+}
+
+void Grid_emission::prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
+                                     Transformation const& transformation, float area,
+                                     bool importance_sampling, thread::Pool& pool) noexcept {
+    if (importance_sampling) {
+        auto const& texture = grid_.texture();
+
+        auto const& d = texture.dimensions_3();
+
+        std::vector<math::Distribution_2D> conditional(static_cast<uint32_t>(d[2]));
+
+        std::vector<float4> artws(pool.num_threads(), float4::identity());
+
+        float3 const idf = 1.f / float3(d);
+
+        float3 const emission = cc_.a * emission_;
+
+        pool.run_range(
+            [&emission, &conditional, &artws, &texture, d, idf](uint32_t id, int32_t begin,
+                                                                int32_t end) {
+                std::vector<float> luminance(static_cast<uint32_t>(d[0]));
+
+                float4 artw(0.f);
+
+                for (int32_t z = begin; z < end; ++z) {
+                    std::vector<math::Distribution_2D::Distribution_impl> conditional_2d(
+                        static_cast<uint32_t>(d[1]));
+
+                    for (int32_t y = 0; y < d[1]; ++y) {
+                        float const v = idf[1] * (static_cast<float>(y) + 0.5f);
+
+                        for (int32_t x = 0; x < d[0]; ++x) {
+                            float const u = idf[0] * (static_cast<float>(x) + 0.5f);
+
+                            float const density = texture.at_1(x, u, z);
+
+                            float3 const radiance = density * emission;
+
+                            luminance[static_cast<uint32_t>(x)] = spectrum::luminance(radiance);
+
+                            artw += float4(radiance, 1.f);
+                        }
+
+                        conditional_2d[static_cast<uint32_t>(y)].init(luminance.data(),
+                                                                      static_cast<uint32_t>(d[0]));
+                    }
+
+                    conditional[static_cast<uint32_t>(z)].init(conditional_2d);
+                }
+
+                artws[id] += artw;
+            },
+            0, d[2]);
+
+        float4 artw(0.f);
+        for (auto& a : artws) {
+            artw += a;
+        }
+
+        average_emission_ = artw.xyz() / artw[3];
+
+        total_weight_ = artw[3];
+
+        distribution_.init(conditional);
+    } else {
+        average_emission_ = grid_.texture().average_1() * cc_.a * emission_;
+    }
 }
 
 }  // namespace scene::material::volumetric

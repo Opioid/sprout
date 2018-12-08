@@ -11,21 +11,23 @@ class Distribution_t_2D {
   public:
     using Distribution_impl = T;
 
-    Distribution_t_2D();
+    Distribution_t_2D() noexcept;
 
-    ~Distribution_t_2D();
+    ~Distribution_t_2D() noexcept;
 
-    void init(std::vector<Distribution_impl>& conditional);
+    void init(std::vector<Distribution_impl>& conditional) noexcept;
+
+    float integral() const noexcept;
 
     struct Continuous {
         float2 uv;
         float  pdf;
     };
-    Continuous sample_continuous(float2 r2) const;
+    Continuous sample_continuous(float2 r2) const noexcept;
 
-    float pdf(float2 uv) const;
+    float pdf(float2 uv) const noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
     Distribution_impl marginal_;
