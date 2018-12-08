@@ -12,46 +12,6 @@ template <typename T>
 Distribution_t_2D<T>::~Distribution_t_2D() {}
 
 template <typename T>
-void Distribution_t_2D<T>::init(float const* data, int2 dimensions) {
-    conditional_.resize(dimensions[1]);
-
-    std::vector<float> integrals(dimensions[1]);
-
-    for (int32_t i = 0; i < dimensions[1]; ++i) {
-        conditional_[i].init(data + i * dimensions[0], dimensions[0]);
-
-        integrals[i] = conditional_[i].integral();
-    }
-
-    marginal_.init(integrals.data(), dimensions[1]);
-
-    conditional_size_ = static_cast<float>(conditional_.size());
-    conditional_max_  = static_cast<uint32_t>(conditional_.size() - 1);
-}
-
-template <typename T>
-void Distribution_t_2D<T>::init(float const* data, int2 dimensions, thread::Pool& pool) {
-    conditional_.resize(dimensions[1]);
-
-    std::vector<float> integrals(static_cast<size_t>(dimensions[1]));
-
-    pool.run_range(
-        [this, data, &integrals, dimensions](uint32_t /*id*/, int32_t begin, int32_t end) {
-            for (int32_t i = begin; i < end; ++i) {
-                conditional_[i].init(data + i * dimensions[0], dimensions[0]);
-
-                integrals[i] = conditional_[i].integral();
-            }
-        },
-        0, dimensions[1]);
-
-    marginal_.init(integrals.data(), dimensions[1]);
-
-    conditional_size_ = static_cast<float>(conditional_.size());
-    conditional_max_  = static_cast<uint32_t>(conditional_.size() - 1);
-}
-
-template <typename T>
 void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) {
     conditional_ = std::move(conditional);
 

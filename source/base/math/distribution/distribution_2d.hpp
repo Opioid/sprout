@@ -4,10 +4,6 @@
 #include "distribution_1d.hpp"
 #include "math/vector2.hpp"
 
-namespace thread {
-class Pool;
-}
-
 namespace math {
 
 template <typename T>
@@ -19,8 +15,6 @@ class Distribution_t_2D {
 
     ~Distribution_t_2D();
 
-    void init(float const* data, int2 dimensions);
-    void init(float const* data, int2 dimensions, thread::Pool& pool);
     void init(std::vector<Distribution_impl>& conditional);
 
     struct Continuous {

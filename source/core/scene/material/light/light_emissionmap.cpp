@@ -139,7 +139,6 @@ void Emissionmap::prepare_sampling_internal(shape::Shape const& shape, int32_t e
             },
             0, d[1]);
 
-        // arw: (float3(averave_radiance), total_weight)
         float4 artw(0.f);
         for (auto& a : artws) {
             artw += a;

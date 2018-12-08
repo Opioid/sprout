@@ -3,6 +3,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
 #include "base/spectrum/rgb.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture_adapter.inl"
 #include "core/image/texture/texture_float_3.hpp"
 #include "core/image/typed_image.hpp"
@@ -111,8 +112,7 @@ float Sky_baked_material::emission_pdf(float2 uv, Filter filter, Worker const& w
 
 void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                           Transformation const& transformation, float /*area*/,
-                                          bool                  importance_sampling,
-                                          thread::Pool& /*pool*/) noexcept {
+                                          bool importance_sampling, thread::Pool& pool) noexcept {
     using namespace image;
 
     if (!sky_.sky_changed_since_last_check()) {
@@ -148,34 +148,53 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     //	}
 
     if (importance_sampling) {
-        float3 average_radiance = float3::identity();
+        std::vector<math::Distribution_2D::Distribution_impl> conditional(
+            static_cast<uint32_t>(d[1]));
 
-        float total_weight = 0.f;
+        std::vector<float4> artws(pool.num_threads(), float4::identity());
 
-        std::vector<float> luminance(d[0] * d[1]);
+        float2 const rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
 
-        for (int32_t y = 0, l = 0; y < d[1]; ++y) {
-            for (int32_t x = 0; x < d[0]; ++x, ++l) {
-                float3 const radiance = float3(cache->at(x, y));
+        pool.run_range(
+            [&conditional, &artws, &shape, &cache, d, rd](uint32_t id, int32_t begin, int32_t end) {
+                std::vector<float> luminance(static_cast<uint32_t>(d[0]));
 
-                float2 const uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
-                                (static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
+                float4 artw(0.f);
 
-                float const weight = shape.uv_weight(uv);
+                for (int32_t y = begin; y < end; ++y) {
+                    float const v = rd[1] * (static_cast<float>(y) + 0.5f);
 
-                average_radiance += weight * radiance;
+                    for (int32_t x = 0; x < d[0]; ++x) {
+                        float const u = rd[0] * (static_cast<float>(x) + 0.5f);
 
-                total_weight += weight;
+                        float const uv_weight = shape.uv_weight(float2(u, v));
 
-                luminance[static_cast<uint32_t>(l)] = weight * spectrum::luminance(radiance);
-            }
+                        float3 const radiance = float3(cache->at(x, y));
+
+                        luminance[static_cast<uint32_t>(x)] = uv_weight *
+                                                              spectrum::luminance(radiance);
+
+                        artw += float4(uv_weight * radiance, uv_weight);
+                    }
+
+                    conditional[static_cast<uint32_t>(y)].init(luminance.data(),
+                                                               static_cast<uint32_t>(d[0]));
+                }
+
+                artws[id] += artw;
+            },
+            0, d[1]);
+
+        float4 artw(0.f);
+        for (auto& a : artws) {
+            artw += a;
         }
 
-        average_emission_ = average_radiance / total_weight;
+        average_emission_ = artw.xyz() / artw[3];
 
-        total_weight_ = total_weight;
+        total_weight_ = artw[3];
 
-        distribution_.init(luminance.data(), d);
+        distribution_.init(conditional);
     } else {
         // This controls how often the sky will be sampled,
         // Zenith sample cause less variance in one test (favoring the sun)...
