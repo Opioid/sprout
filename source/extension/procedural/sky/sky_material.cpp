@@ -125,18 +125,6 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 
     auto cache = std::make_shared<Float3>(description);
 
-    float2 const idf = 1.f / float2(d);
-
-    for (int32_t y = 0; y < d[1]; ++y) {
-        for (int32_t x = 0; x < d[0]; ++x) {
-            float2 const uv = (float2(x, y) + 0.5f) * idf;
-            float3 const wi = unclipped_canopy_mapping(transformation, uv);
-            float3 const li = sky_.model().evaluate_sky(wi);
-
-            cache->store(x, y, packed_float3(li));
-        }
-    }
-
     auto cache_texture = std::make_shared<texture::Float3>(cache);
 
     emission_map_ = Texture_adapter(cache_texture);
@@ -148,33 +136,37 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     //	}
 
     if (importance_sampling) {
+        float2 const idf = 1.f / float2(d);
+
         std::vector<math::Distribution_2D::Distribution_impl> conditional(
             static_cast<uint32_t>(d[1]));
 
         std::vector<float4> artws(pool.num_threads(), float4::identity());
 
-        float2 const rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
-
         pool.run_range(
-            [&conditional, &artws, &shape, &cache, d, rd](uint32_t id, int32_t begin, int32_t end) {
+            [this, &transformation, &conditional, &artws, &shape, &cache, d, idf](
+                uint32_t id, int32_t begin, int32_t end) {
                 std::vector<float> luminance(static_cast<uint32_t>(d[0]));
 
                 float4 artw(0.f);
 
                 for (int32_t y = begin; y < end; ++y) {
-                    float const v = rd[1] * (static_cast<float>(y) + 0.5f);
+                    float const v = idf[1] * (static_cast<float>(y) + 0.5f);
 
                     for (int32_t x = 0; x < d[0]; ++x) {
-                        float const u = rd[0] * (static_cast<float>(x) + 0.5f);
+                        float const u = idf[0] * (static_cast<float>(x) + 0.5f);
+
+                        float2 const uv = float2(u, v);
+                        float3 const wi = unclipped_canopy_mapping(transformation, uv);
+                        float3 const li = sky_.model().evaluate_sky(wi);
+
+                        cache->store(x, y, packed_float3(li));
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const radiance = float3(cache->at(x, y));
+                        luminance[static_cast<uint32_t>(x)] = uv_weight * spectrum::luminance(li);
 
-                        luminance[static_cast<uint32_t>(x)] = uv_weight *
-                                                              spectrum::luminance(radiance);
-
-                        artw += float4(uv_weight * radiance, uv_weight);
+                        artw += float4(uv_weight * li, uv_weight);
                     }
 
                     conditional[static_cast<uint32_t>(y)].init(luminance.data(),

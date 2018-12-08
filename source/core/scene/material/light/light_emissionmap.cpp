@@ -104,22 +104,22 @@ void Emissionmap::prepare_sampling_internal(shape::Shape const& shape, int32_t e
 
         std::vector<float4> artws(pool.num_threads(), float4::identity());
 
-        float2 const rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
+        float2 const idf = 1.f / float2(d);
 
         float const ef = emission_factor_;
 
         pool.run_range(
-            [&conditional, &artws, &shape, &texture, d, rd, element, ef](uint32_t id, int32_t begin,
-                                                                         int32_t end) {
+            [&conditional, &artws, &shape, &texture, d, idf, element, ef](
+                uint32_t id, int32_t begin, int32_t end) {
                 std::vector<float> luminance(static_cast<uint32_t>(d[0]));
 
                 float4 artw(0.f);
 
                 for (int32_t y = begin; y < end; ++y) {
-                    float const v = rd[1] * (static_cast<float>(y) + 0.5f);
+                    float const v = idf[1] * (static_cast<float>(y) + 0.5f);
 
                     for (int32_t x = 0; x < d[0]; ++x) {
-                        float const u = rd[0] * (static_cast<float>(x) + 0.5f);
+                        float const u = idf[0] * (static_cast<float>(x) + 0.5f);
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
