@@ -1,4 +1,5 @@
 #include "sky_material.hpp"
+#include "base/math/distribution/distribution_1d.inl"
 #include "base/math/mapping.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
