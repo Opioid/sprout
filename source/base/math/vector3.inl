@@ -704,6 +704,10 @@ static inline constexpr bool operator!=(Vector3f_a const& a, Vector3f_a const& b
     return a[0] != b[0] || a[1] != b[1] || a[2] != b[2];
 }
 
+static inline constexpr bool all_equal_zero(Vector3f_a const& v) noexcept {
+	return v[0] == 0.f && v[1] == 0.f && v[2] == 0.f;
+}
+
 static inline constexpr bool all_less(Vector3f_a const& v, float s) noexcept {
     return v[0] < s && v[1] < s && v[2] < s;
 }

@@ -60,7 +60,11 @@ float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
 
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                                float distance) noexcept {
-    cc_ = attenuation(absorption_color, scattering_color, distance);
+	if (all_equal_zero(scattering_color)) {
+		cc_ = {extinction_coefficient(absorption_color, distance), float3(0.f)};
+	} else {
+		cc_ = attenuation(absorption_color, scattering_color, distance);
+	}
 
     cm_ = CM(cc_);
 }
