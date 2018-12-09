@@ -57,7 +57,7 @@ class Grid_emission : public Grid {
     float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
+    void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& pool) noexcept override final;
 

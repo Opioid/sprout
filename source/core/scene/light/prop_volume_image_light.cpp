@@ -48,9 +48,6 @@ float Prop_volume_image_light::pdf(Ray const& ray, Intersection const& intersect
 
     auto const material = prop_->material(part_);
 
-    bool const two_sided = material->is_two_sided();
-
-    // this pdf includes the uv weight which adjusts for texture distortion by the shape
     float const shape_pdf = prop_->shape()->pdf_volume(ray, intersection, transformation, volume);
 
     float const material_pdf = material->emission_pdf(intersection.uvw, filter, worker);

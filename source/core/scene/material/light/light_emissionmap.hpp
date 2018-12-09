@@ -30,7 +30,7 @@ class Emissionmap : public Material {
     float emission_pdf(float2 uv, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
+    void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& pool) noexcept override;
 
@@ -40,8 +40,8 @@ class Emissionmap : public Material {
     size_t num_bytes() const noexcept override;
 
   protected:
-    void prepare_sampling_internal(shape::Shape const& shape, int32_t element,
-                                   bool importance_sampling, thread::Pool& pool) noexcept;
+    void prepare_sampling_internal(Shape const& shape, int32_t element, bool importance_sampling,
+                                   thread::Pool& pool) noexcept;
 
     Texture_adapter emission_map_;
 

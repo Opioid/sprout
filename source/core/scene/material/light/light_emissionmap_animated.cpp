@@ -26,7 +26,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) noexc
 
 material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
-                                                     sampler::Sampler& /*sampler*/,
+                                                     Sampler& /*sampler*/,
                                                      Worker const& worker) const noexcept {
     auto& sample = worker.sample<Sample>(rs.sample_level);
 
@@ -59,8 +59,8 @@ float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
     }
 }
 
-void Emissionmap_animated::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/,
-                                            uint64_t time, Transformation const& /*transformation*/,
+void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,
+                                            Transformation const& /*transformation*/,
                                             float /*area*/, bool importance_sampling,
                                             thread::Pool& pool) noexcept {
     int32_t const element = static_cast<int32_t>(

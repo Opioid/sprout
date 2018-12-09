@@ -25,7 +25,7 @@ class Emissionmap_animated : public Emissionmap {
     float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const
         noexcept override final;
 
-    void prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
+    void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& pool) noexcept override final;
 

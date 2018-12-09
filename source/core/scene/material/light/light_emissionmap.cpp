@@ -68,7 +68,7 @@ float Emissionmap::emission_pdf(float2 uv, Filter filter, Worker const& worker) 
     return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(shape::Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
+void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                    Transformation const& /*transformation*/, float /*area*/,
                                    bool importance_sampling, thread::Pool& pool) noexcept {
     if (average_emission_[0] >= 0.f) {
@@ -92,15 +92,14 @@ size_t Emissionmap::num_bytes() const noexcept {
     return sizeof(*this) + distribution_.num_bytes();
 }
 
-void Emissionmap::prepare_sampling_internal(shape::Shape const& shape, int32_t element,
+void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                                             bool importance_sampling, thread::Pool& pool) noexcept {
     if (importance_sampling) {
         auto const& texture = emission_map_.texture();
 
         auto const d = texture.dimensions_2();
 
-        std::vector<math::Distribution_2D::Distribution_impl> conditional(
-            static_cast<uint32_t>(d[1]));
+        std::vector<Distribution_2D::Distribution_impl> conditional(d[1]);
 
         std::vector<float4> artws(pool.num_threads(), float4::identity());
 
@@ -111,7 +110,7 @@ void Emissionmap::prepare_sampling_internal(shape::Shape const& shape, int32_t e
         pool.run_range(
             [&conditional, &artws, &shape, &texture, d, idf, element, ef](
                 uint32_t id, int32_t begin, int32_t end) {
-                std::vector<float> luminance(static_cast<uint32_t>(d[0]));
+                std::vector<float> luminance(d[0]);
 
                 float4 artw(0.f);
 
@@ -125,14 +124,12 @@ void Emissionmap::prepare_sampling_internal(shape::Shape const& shape, int32_t e
 
                         float3 const radiance = ef * texture.at_element_3(x, y, element);
 
-                        luminance[static_cast<uint32_t>(x)] = uv_weight *
-                                                              spectrum::luminance(radiance);
+                        luminance[x] = uv_weight * spectrum::luminance(radiance);
 
                         artw += float4(uv_weight * radiance, uv_weight);
                     }
 
-                    conditional[static_cast<uint32_t>(y)].init(luminance.data(),
-                                                               static_cast<uint32_t>(d[0]));
+                    conditional[y].init(luminance.data(), d[0]);
                 }
 
                 artws[id] += artw;
@@ -140,7 +137,7 @@ void Emissionmap::prepare_sampling_internal(shape::Shape const& shape, int32_t e
             0, d[1]);
 
         float4 artw(0.f);
-        for (auto& a : artws) {
+        for (auto const& a : artws) {
             artw += a;
         }
 

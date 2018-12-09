@@ -75,7 +75,7 @@ float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) cons
 
 Grid_emission::Grid_emission(Sampler_settings const& sampler_settings,
                              Texture_adapter const&  grid) noexcept
-    : Grid(sampler_settings, grid) {}
+    : Grid(sampler_settings, grid), average_emission_(float3(-1.f)) {}
 
 Grid_emission::~Grid_emission() noexcept {}
 
@@ -96,30 +96,35 @@ float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const
     return distribution_.pdf(sampler.address(uvw)) * total_weight_;
 }
 
-void Grid_emission::prepare_sampling(shape::Shape const& shape, uint32_t part, uint64_t time,
-                                     Transformation const& transformation, float area,
+void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
+                                     Transformation const& /*transformation*/, float /*area*/,
                                      bool importance_sampling, thread::Pool& pool) noexcept {
+    if (average_emission_[0] >= 0.f) {
+        // Hacky way to check whether prepare_sampling has been called before
+        // average_emission_ is initialized with negative values...
+        return;
+    }
+
     if (importance_sampling) {
         auto const& texture = grid_.texture();
 
         auto const& d = texture.dimensions_3();
 
-        std::vector<math::Distribution_2D> conditional(static_cast<uint32_t>(d[2]));
+        std::vector<Distribution_2D> conditional_2d(d[2]);
 
         std::vector<float4> artws(pool.num_threads(), float4::identity());
 
         float3 const emission = cc_.a * emission_;
 
         pool.run_range(
-            [&emission, &conditional, &artws, &texture, d](uint32_t id, int32_t begin,
-                                                           int32_t end) {
-                std::vector<float> luminance(static_cast<uint32_t>(d[0]));
+            [&emission, &conditional_2d, &artws, &texture, d](uint32_t id, int32_t begin,
+                                                              int32_t end) {
+                std::vector<float> luminance(d[0]);
 
                 float4 artw(0.f);
 
                 for (int32_t z = begin; z < end; ++z) {
-                    std::vector<math::Distribution_2D::Distribution_impl> conditional_2d(
-                        static_cast<uint32_t>(d[1]));
+                    std::vector<Distribution_2D::Distribution_impl> conditional(d[1]);
 
                     for (int32_t y = 0; y < d[1]; ++y) {
                         for (int32_t x = 0; x < d[0]; ++x) {
@@ -127,16 +132,15 @@ void Grid_emission::prepare_sampling(shape::Shape const& shape, uint32_t part, u
 
                             float3 const radiance = density * emission;
 
-                            luminance[static_cast<uint32_t>(x)] = spectrum::luminance(radiance);
+                            luminance[x] = spectrum::luminance(radiance);
 
                             artw += float4(radiance, 1.f);
                         }
 
-                        conditional_2d[static_cast<uint32_t>(y)].init(luminance.data(),
-                                                                      static_cast<uint32_t>(d[0]));
+                        conditional[y].init(luminance.data(), d[0]);
                     }
 
-                    conditional[static_cast<uint32_t>(z)].init(conditional_2d);
+                    conditional_2d[z].init(conditional);
                 }
 
                 artws[id] += artw;
@@ -144,7 +148,7 @@ void Grid_emission::prepare_sampling(shape::Shape const& shape, uint32_t part, u
             0, d[2]);
 
         float4 artw(0.f);
-        for (auto& a : artws) {
+        for (auto const& a : artws) {
             artw += a;
         }
 
@@ -152,7 +156,7 @@ void Grid_emission::prepare_sampling(shape::Shape const& shape, uint32_t part, u
 
         total_weight_ = artw[3];
 
-        distribution_.init(conditional);
+        distribution_.init(conditional_2d);
     } else {
         average_emission_ = grid_.texture().average_1() * cc_.a * emission_;
     }
