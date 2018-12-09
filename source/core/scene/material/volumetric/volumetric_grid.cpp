@@ -1,4 +1,5 @@
 #include "volumetric_grid.hpp"
+#include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"
 #include "base/random/generator.inl"
@@ -78,6 +79,10 @@ Grid_emission::Grid_emission(Sampler_settings const& sampler_settings,
 
 Grid_emission::~Grid_emission() noexcept {}
 
+bool Grid_emission::has_emission_map() const noexcept {
+    return true;
+}
+
 Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const noexcept {
     auto const result = distribution_.sample_continuous(r3);
 
@@ -103,13 +108,11 @@ void Grid_emission::prepare_sampling(shape::Shape const& shape, uint32_t part, u
 
         std::vector<float4> artws(pool.num_threads(), float4::identity());
 
-        float3 const idf = 1.f / float3(d);
-
         float3 const emission = cc_.a * emission_;
 
         pool.run_range(
-            [&emission, &conditional, &artws, &texture, d, idf](uint32_t id, int32_t begin,
-                                                                int32_t end) {
+            [&emission, &conditional, &artws, &texture, d](uint32_t id, int32_t begin,
+                                                           int32_t end) {
                 std::vector<float> luminance(static_cast<uint32_t>(d[0]));
 
                 float4 artw(0.f);
@@ -119,12 +122,8 @@ void Grid_emission::prepare_sampling(shape::Shape const& shape, uint32_t part, u
                         static_cast<uint32_t>(d[1]));
 
                     for (int32_t y = 0; y < d[1]; ++y) {
-                        float const v = idf[1] * (static_cast<float>(y) + 0.5f);
-
                         for (int32_t x = 0; x < d[0]; ++x) {
-                            float const u = idf[0] * (static_cast<float>(x) + 0.5f);
-
-                            float const density = texture.at_1(x, u, z);
+                            float const density = texture.at_1(x, y, z);
 
                             float3 const radiance = density * emission;
 

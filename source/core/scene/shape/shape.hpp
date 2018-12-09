@@ -114,9 +114,8 @@ class Shape {
                          Transformation const& transformation, float area, bool two_sided) const
         noexcept = 0;
 
-    // ----
-
     virtual float uv_weight(float2 uv) const noexcept = 0;
+    // ---
 
     virtual float area(uint32_t part, float3 const& scale) const noexcept = 0;
 

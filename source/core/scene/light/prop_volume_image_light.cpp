@@ -5,6 +5,7 @@
 #include "scene/scene_ray.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/shape.hpp"
+#include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 
 namespace scene::light {
@@ -25,7 +26,6 @@ bool Prop_volume_image_light::sample(float3 const& p, float3 const& n,
 
     float const volume = prop_->volume(part_);
 
-    // this pdf includes the uv weight which adjusts for texture distortion by the shape
     if (!prop_->shape()->sample(part_, p, rs.uvw, transformation, volume, result)) {
         return false;
     }
@@ -39,14 +39,23 @@ bool Prop_volume_image_light::sample(float3 const& p, float3 const& n,
 }
 
 float Prop_volume_image_light::pdf(Ray const& ray, Intersection const& intersection,
-                                   bool /*total_sphere*/, Filter /*filter*/,
-                                   Worker const& /*worker*/) const noexcept {
+                                   bool /*total_sphere*/, Filter filter, Worker const& worker) const
+    noexcept {
     Transformation temp;
     auto const&    transformation = prop_->transformation_at(ray.time, temp);
 
     float const volume = prop_->volume(part_);
 
-    return prop_->shape()->pdf_volume(ray, intersection, transformation, volume);
+    auto const material = prop_->material(part_);
+
+    bool const two_sided = material->is_two_sided();
+
+    // this pdf includes the uv weight which adjusts for texture distortion by the shape
+    float const shape_pdf = prop_->shape()->pdf_volume(ray, intersection, transformation, volume);
+
+    float const material_pdf = material->emission_pdf(intersection.uvw, filter, worker);
+
+    return shape_pdf * material_pdf;
 }
 
 void Prop_volume_image_light::prepare_sampling(uint32_t light_id, uint64_t time,

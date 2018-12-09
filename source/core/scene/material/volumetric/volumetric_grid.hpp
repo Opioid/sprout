@@ -50,6 +50,8 @@ class Grid_emission : public Grid {
 
     ~Grid_emission() noexcept override;
 
+    bool has_emission_map() const noexcept override final;
+
     Sample_3D radiance_sample(float3 const& r2) const noexcept override final;
 
     float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const

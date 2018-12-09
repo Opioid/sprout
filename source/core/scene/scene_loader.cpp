@@ -289,7 +289,7 @@ void Loader::load_light(json::Value const& /*light_value*/, prop::Prop* prop, Sc
         if (auto const material = prop->material(i); material->is_emissive()) {
             if (material->is_scattering_volume()) {
                 if (prop->shape()->is_analytical() && material->has_emission_map()) {
-                    scene.create_prop_volume_image_light(prop, i);
+					scene.create_prop_volume_light(prop, i);
                 } else {
                     scene.create_prop_volume_light(prop, i);
                 }

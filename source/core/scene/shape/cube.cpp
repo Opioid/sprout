@@ -253,10 +253,23 @@ bool Cube::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
     return false;
 }
 
-bool Cube::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                  Transformation const& /*transformation*/, float /*volume*/,
-                  Sample_to& /*sample*/) const noexcept {
-    return false;
+bool Cube::sample(uint32_t /*part*/, float3 const& p, float3 const& uvw,
+                  Transformation const& transformation, float volume, Sample_to& sample) const
+    noexcept {
+    float3 const xyz  = 2.f * (uvw - 0.5f);
+    float3 const wp   = transform_point(transformation.object_to_world, xyz);
+    float3 const axis = wp - p;
+
+    float const sl = squared_length(axis);
+    float const t  = std::sqrt(sl);
+
+    sample.wi      = axis / t;
+    sample.uvw     = uvw;
+    sample.pdf     = sl / volume;
+    sample.t       = t;
+    sample.epsilon = 0.f;
+
+    return true;
 }
 
 bool Cube::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
