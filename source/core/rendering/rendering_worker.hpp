@@ -45,19 +45,22 @@ class Factory;
 class Worker : public scene::Worker {
   public:
     using Ray             = scene::Ray;
+    using Scene           = scene::Scene;
     using Material_sample = scene::material::Sample;
+    using Surface_factory = integrator::surface::Factory;
+    using Volume_factory  = integrator::volume::Factory;
+    using Photon_map      = integrator::photon::Map;
+    using Photon_mapper   = integrator::photon::Mapper;
 
     ~Worker() noexcept;
 
-    void init(uint32_t id, take::Settings const& settings, scene::Scene const& scene,
-              scene::camera::Camera const& camera, uint32_t max_material_sample_size,
-              uint32_t                      num_samples_per_pixel,
-              integrator::surface::Factory& surface_integrator_factory,
-              integrator::volume::Factory&  volume_integrator_factory,
-              sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
+    void init(uint32_t id, take::Settings const& settings, Scene const& scene, Camera const& camera,
+              uint32_t max_material_sample_size, uint32_t num_samples_per_pixel,
+              Surface_factory& surface_factory, Volume_factory& volume_factory,
+              sampler::Factory& sampler_factory, Photon_map* photon_map,
               take::Photon_settings const& photon_settings_) noexcept;
 
-    float4 li(Ray& ray, scene::prop::Interface_stack const& interface_stack) noexcept;
+    float4 li(Ray& ray, Interface_stack const& interface_stack) noexcept;
 
     Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
                  float3& transmittance) noexcept;
@@ -83,8 +86,8 @@ class Worker : public scene::Worker {
 
     sampler::Sampler* sampler_ = nullptr;
 
-    integrator::photon::Mapper* photon_mapper_ = nullptr;
-    integrator::photon::Map*    photon_map_    = nullptr;
+    Photon_mapper* photon_mapper_ = nullptr;
+    Photon_map*    photon_map_    = nullptr;
 };
 
 }  // namespace rendering

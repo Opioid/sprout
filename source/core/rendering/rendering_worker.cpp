@@ -28,38 +28,36 @@ Worker::~Worker() noexcept {
     memory::destroy(surface_integrator_);
 }
 
-void Worker::init(uint32_t id, take::Settings const& settings, scene::Scene const& scene,
-                  scene::camera::Camera const& camera, uint32_t max_material_sample_size,
-                  uint32_t                      num_samples_per_pixel,
-                  integrator::surface::Factory& surface_integrator_factory,
-                  integrator::volume::Factory&  volume_integrator_factory,
-                  sampler::Factory& sampler_factory, integrator::photon::Map* photon_map,
-                  take::Photon_settings const& photon_settings) noexcept {
+void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scene,
+                  Camera const& camera, uint32_t max_material_sample_size,
+                  uint32_t num_samples_per_pixel, Surface_factory& surface_factory,
+                  Volume_factory& volume_factory, sampler::Factory& sampler_factory,
+                  Photon_map* photon_map, take::Photon_settings const& photon_settings) noexcept {
     scene::Worker::init(id, settings, scene, camera, max_material_sample_size,
-                        surface_integrator_factory.max_sample_depth());
+                        surface_factory.max_sample_depth());
 
-    surface_integrator_ = surface_integrator_factory.create(id, rng_);
+    surface_integrator_ = surface_factory.create(id, rng_);
     surface_integrator_->prepare(scene, num_samples_per_pixel);
 
-    volume_integrator_ = volume_integrator_factory.create(id, rng_);
+    volume_integrator_ = volume_factory.create(id, rng_);
     volume_integrator_->prepare(scene, num_samples_per_pixel);
 
     sampler_ = sampler_factory.create(id, rng_);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
     if (photon_settings.num_photons) {
-        integrator::photon::Mapper::Settings const ps{photon_settings.max_bounces,
-                                                      photon_settings.indirect_caustics,
-                                                      photon_settings.full_light_path};
+        Photon_mapper::Settings const ps{photon_settings.max_bounces,
+                                         photon_settings.indirect_caustics,
+                                         photon_settings.full_light_path};
 
-        photon_mapper_ = new integrator::photon::Mapper(rng_, settings, ps);
+        photon_mapper_ = new Photon_mapper(rng_, settings, ps);
         photon_mapper_->prepare(scene, 0);
 
         photon_map_ = photon_map;
     }
 }
 
-float4 Worker::li(Ray& ray, scene::prop::Interface_stack const& interface_stack) noexcept {
+float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
     Intersection intersection;
 
     if (!interface_stack.empty()) {
@@ -194,6 +192,10 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
 
         tray.min_t = tray.max_t + intersection.geo.epsilon * settings_.ray_offset_factor;
         tray.max_t = ray_max_t;
+
+        if (tray.min_t > tray.max_t) {
+            break;
+        }
     }
 
     interface_stack_.swap(interface_stack_temp_);
