@@ -159,7 +159,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         result.li += throughput * sample_lights(ray, ray_offset, intersection, material_sample,
                                                 evaluate_back, filter, worker);
 
-        SOFT_ASSERT(all_finite(result.li));
+        SOFT_ASSERT(all_finite_and_positive(result.li));
 
         float const previous_bxdf_pdf = sample_result.pdf;
 
@@ -217,9 +217,17 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             if (Event::Absorb == hit) {
-                result.li += throughput *
-                             evaluate_light_volume(vli, ray, intersection, previous_bxdf_pdf,
-                                                   treat_as_singular, is_translucent, worker);
+                if (0 == ray.depth) {
+                    // This is the direct eye-light connection for the volume case.
+                    result.li += vli;
+                } else {
+                    result.li += throughput *
+                                 evaluate_light_volume(vli, ray, intersection, previous_bxdf_pdf,
+                                                       treat_as_singular, is_translucent, worker);
+                }
+
+                SOFT_ASSERT(all_finite_and_positive(result.li));
+
                 break;
             }
 
@@ -424,6 +432,7 @@ float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
     }
 
     float const weight = power_heuristic(bxdf_pdf, light_pdf);
+
     return weight * vli;
 }
 

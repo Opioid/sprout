@@ -202,7 +202,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     sample.t       = Ray_max_t;
     sample.epsilon = 5e-4f;
 
-    SOFT_ASSERT(testing::check(sample, uv));
+    SOFT_ASSERT(testing::check(sample));
 
     return true;
 }

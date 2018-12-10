@@ -389,7 +389,6 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) noexce
 
 // The initial motivation for this version comes from the following article:
 // https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
-// For the data I tested the
 
 inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1D() noexcept
     : lut_(nullptr), lut_size_(0), cdf_(nullptr), cdf_size_(0) {}
@@ -414,16 +413,7 @@ inline float Distribution_implicit_pdf_lut_lin_1D::integral() const noexcept {
     return integral_;
 }
 
-static inline uint32_t search(float const* buffer, uint32_t begin,
-                              /*uint32_t end,*/ float key) noexcept {
-    //	for (uint32_t i = begin; i < end; ++i) {
-    //		if (buffer[i] >= key) {
-    //			return i;
-    //		}
-    //	}
-
-    //	return end;
-
+static inline uint32_t search(float const* buffer, uint32_t begin, float key) noexcept {
     // The loop will terminate eventually, because buffer[len - 1] == 1.f and key <= 1.f
     for (uint32_t i = begin;; ++i) {
         if (buffer[i] >= key) {
@@ -436,11 +426,8 @@ inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample(float r) const noex
     uint32_t const bucket = map(r);
 
     uint32_t const begin = lut_[bucket];
-    //	uint32_t const end   = lut_[bucket + 1];
 
-    uint32_t const it = search(cdf_, begin, /*end,*/ r);
-
-    if (0 != it) {
+    if (uint32_t const it = search(cdf_, begin, r); 0 != it) {
         return it - 1;
     }
 
@@ -550,9 +537,7 @@ inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) no
     uint32_t last   = 0;
 
     for (uint32_t i = 1, len = cdf_size_; i < len; ++i) {
-        uint32_t const mapped = map(cdf_[i]);
-
-        if (mapped > border) {
+        if (uint32_t const mapped = map(cdf_[i]); mapped > border) {
             last = i;
 
             for (uint32_t j = border + 1; j <= mapped; ++j) {

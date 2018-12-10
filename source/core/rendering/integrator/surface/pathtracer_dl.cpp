@@ -91,6 +91,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         result += throughput *
                   direct_light(ray, intersection, material_sample, evaluate_back, filter, worker);
 
+        SOFT_ASSERT(all_finite_and_positive(result));
+
         if (ray.depth >= settings_.max_bounces - 1) {
             break;
         }

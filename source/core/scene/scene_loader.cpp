@@ -61,7 +61,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
         mount_folder_ = string::parent_directory(resolved_name);
 
-        auto root = json::parse(*stream_pointer);
+        auto const root = json::parse(*stream_pointer);
 
         if (auto const materials_node = root->FindMember("materials");
             root->MemberEnd() != materials_node) {
@@ -70,7 +70,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
         filesystem.push_mount(mount_folder_);
 
-        for (auto& n : root->GetObject()) {
+        for (auto const& n : root->GetObject()) {
             if ("entities" == n.name) {
                 load_entities(n.value, nullptr, scene);
             }
