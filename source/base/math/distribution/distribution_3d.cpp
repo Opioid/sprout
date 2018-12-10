@@ -25,6 +25,10 @@ void Distribution_3D::init(std::vector<Distribution_2D>& conditional) {
     conditional_max_  = num_conditional - 1;
 }
 
+float Distribution_3D::integral() const noexcept {
+    return marginal_.integral();
+}
+
 Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3) const {
     auto const w = marginal_.sample_continuous(r3[2]);
 

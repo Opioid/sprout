@@ -112,16 +112,16 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         std::vector<Distribution_2D> conditional_2d(d[2]);
 
-        std::vector<float4> artws(pool.num_threads(), float4::identity());
+        std::vector<float3> ars(pool.num_threads(), float3::identity());
 
         float3 const emission = cc_.a * emission_;
 
         pool.run_range(
-            [&emission, &conditional_2d, &artws, &texture, d](uint32_t id, int32_t begin,
-                                                              int32_t end) {
+            [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
+                                                            int32_t end) {
                 std::vector<float> luminance(d[0]);
 
-                float4 artw(0.f);
+                float3 ar(0.f);
 
                 for (int32_t z = begin; z < end; ++z) {
                     std::vector<Distribution_2D::Distribution_impl> conditional(d[1]);
@@ -134,7 +134,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
                             luminance[x] = spectrum::luminance(radiance);
 
-                            artw += float4(radiance, 1.f);
+                            ar += radiance;
                         }
 
                         conditional[y].init(luminance.data(), d[0]);
@@ -143,18 +143,20 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                     conditional_2d[z].init(conditional);
                 }
 
-                artws[id] += artw;
+                ars[id] += ar;
             },
             0, d[2]);
 
-        float4 artw(0.f);
-        for (auto const& a : artws) {
-            artw += a;
+        float3 ar(0.f);
+        for (auto const& a : ars) {
+            ar += a;
         }
 
-        average_emission_ = artw.xyz() / artw[3];
+        float const total_weight = static_cast<float>(d[0] * d[1] * d[2]);
 
-        total_weight_ = artw[3];
+        average_emission_ = ar / total_weight;
+
+        total_weight_ = total_weight;
 
         distribution_.init(conditional_2d);
     } else {

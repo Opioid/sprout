@@ -16,6 +16,8 @@ class Distribution_3D {
 
     void init(std::vector<Distribution_2D>& conditional);
 
+    float integral() const noexcept;
+
     struct Continuous {
         float3 uvw;
         float  pdf;
