@@ -391,8 +391,9 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
         if (r1 < pa) {
             float3 const wa = mu.a / (mt * pa);
 
-            w  = float3(0.f);
-            li = lw * wa * cce.e;
+            t_out = t;
+            w     = float3(0.f);
+            li    = lw * wa * cce.e;
             return Event::Absorb;
         } else if (r1 <= 1.f - pn && ps > 0.f) {
             float3 const ws = mu.s / (mt * ps);
