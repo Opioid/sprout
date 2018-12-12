@@ -114,7 +114,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         Distribution_2D* conditional_2d = distribution_.allocate(d[2]);
 
-        std::vector<float3> ars(pool.num_threads(), float3::identity());
+        std::vector<float3> ars(pool.num_threads(), float3(0.f));
 
         pool.run_range(
             [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,

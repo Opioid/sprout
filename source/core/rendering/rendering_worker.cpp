@@ -119,7 +119,7 @@ float3 Worker::photon_li(Intersection const& intersection, Material_sample const
         return photon_map_->li(intersection, sample, *this);
     }
 
-    return float3::identity();
+    return float3(0.f);
 }
 
 size_t Worker::num_bytes() const noexcept {

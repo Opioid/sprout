@@ -11,15 +11,15 @@ const material::Layer& Sample::base_layer() const noexcept {
 }
 
 bxdf::Result Sample::evaluate(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
-    return {float3::identity(), 0.f};
+    return {float3(0.f), 0.f};
 }
 
 float3 Sample::radiance() const noexcept {
     return radiance_;
 }
 
-void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
-    result.reflection = float3::identity();
+void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
+    result.reflection = float3(0.f);
     result.pdf        = 0.f;
 }
 

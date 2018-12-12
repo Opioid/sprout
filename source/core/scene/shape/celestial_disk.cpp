@@ -13,7 +13,7 @@
 namespace scene::shape {
 
 Celestial_disk::Celestial_disk() noexcept {
-    aabb_.set_min_max(float3::identity(), float3::identity());
+    aabb_.set_min_max(float3(0.f), float3(0.f));
 }
 
 bool Celestial_disk::intersect(Ray& ray, Transformation const&           transformation,

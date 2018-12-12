@@ -15,7 +15,7 @@ const material::Layer& Sample::base_layer() const noexcept {
 
 bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
     if (!same_hemisphere(wo_)) {
-        return {float3::identity(), 0.f};
+        return {float3(0.f), 0.f};
     }
 
     float3 const h = normalize(wo_ + wi);

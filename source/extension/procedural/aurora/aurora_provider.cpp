@@ -73,7 +73,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
         prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
 
-        math::Transformation transformation{float3::identity(),
+        math::Transformation transformation{float3(0.f),
                                             //	float3(1000000.f, 100000.f, 50000.f),
                                             float3(1250000.f, 100000.f, 80000.f),
                                             //	float3(10.f, 1.f, 1.f),
@@ -104,7 +104,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
 
-    math::Transformation transformation{float3::identity(),
+    math::Transformation transformation{float3(0.f),
                                         //	float3(1000000.f, 100000.f, 50000.f),
                                         float3(1250000.f, 100000.f, 80000.f),
                                         //	float3(10.f, 1.f, 1.f),

@@ -78,8 +78,6 @@ struct Vector3 {
     //	explicit operator unsigned int() const;
 
     T absolute_max(uint32_t& i) const noexcept;
-
-    static constexpr Vector3 identity() noexcept;
 };
 
 //==============================================================================
@@ -109,8 +107,6 @@ struct alignas(16) Vector3f_a {
     float constexpr& operator[](uint32_t i) noexcept;
 
     float absolute_max(uint32_t& i) const noexcept;
-
-    static Vector3f_a constexpr identity() noexcept;
 };
 
 }  // namespace math

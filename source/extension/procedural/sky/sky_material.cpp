@@ -30,8 +30,8 @@ Sky_material::Sky_material(Sky& sky) noexcept : Material(sky) {}
 
 material::Sample const& Sky_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
-                                             sampler::Sampler& /*sampler*/,
-                                             Worker const& worker) const noexcept {
+                                             Sampler& /*sampler*/, Worker const& worker) const
+    noexcept {
     auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
 
     sample.set_basis(rs.geo_n, wo);
@@ -66,9 +66,9 @@ Sky_baked_material::Sky_baked_material(Sky& sky) noexcept : Material(sky) {}
 Sky_baked_material::~Sky_baked_material() noexcept {}
 
 material::Sample const& Sky_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
-                                                   Renderstate const& rs, Filter filter,
-                                                   sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker) const noexcept {
+                                                   Renderstate const& rs, Filter       filter,
+                                                   Sampler& /*sampler*/, Worker const& worker) const
+    noexcept {
     auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -141,7 +141,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(d[1]);
 
-        std::vector<float4> artws(pool.num_threads(), float4::identity());
+        std::vector<float4> artws(pool.num_threads(), float4(0.f));
 
         pool.run_range(
             [this, &transformation, &conditional, &artws, &shape, &cache, d, idf](

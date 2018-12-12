@@ -11,7 +11,7 @@ class Sample : public material::Sample {
 
     bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
     bool is_translucent() const noexcept override final;
 
@@ -22,7 +22,7 @@ class Sample : public material::Sample {
   private:
     float phase(float3 const& wo, float3 const& wi) const noexcept;
 
-    float sample(float3 const& wo, float2 r2, float3& wi) const noexcept;
+    float4 sample(float3 const& wo, float2 r2) const noexcept;
 
     Layer layer_;
 

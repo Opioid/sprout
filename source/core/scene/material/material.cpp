@@ -91,30 +91,30 @@ float3 Material::thin_absorption(float3 const& /*wo*/, float3 const& /*n*/, floa
 
 float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
                                         Worker const& /*worker*/) const noexcept {
-    return float3::identity();
+    return float3(0.f);
 }
 
 CC Material::collision_coefficients() const noexcept {
-    return {float3::identity(), float3::identity()};
+    return {float3(0.f), float3(0.f)};
 }
 
 CC Material::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const noexcept {
-    return {float3::identity(), float3::identity()};
+    return {float3(0.f), float3(0.f)};
 }
 
 CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const noexcept {
-    return {float3::identity(), float3::identity()};
+    return {float3(0.f), float3(0.f)};
 }
 
 CCE Material::collision_coefficients_emission() const noexcept {
-    return {{float3::identity(), float3::identity()}, float3::identity()};
+    return {{float3(0.f), float3(0.f)}, float3(0.f)};
 }
 
 CCE Material::collision_coefficients_emission(float3 const& /*uvw*/, Filter /*filter*/,
                                               Worker const& /*worker*/) const noexcept {
-    return {{float3::identity(), float3::identity()}, float3::identity()};
+    return {{float3(0.f), float3(0.f)}, float3(0.f)};
 }
 
 CM Material::control_medium() const noexcept {

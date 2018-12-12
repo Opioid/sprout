@@ -9,7 +9,7 @@ namespace scene::material::substitute {
 
 bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
     if (!same_hemisphere(wo_)) {
-        return {float3::identity(), 0.f};
+        return {float3(0.f), 0.f};
     }
 
     float3 const h = normalize(wo_ + wi);
@@ -23,7 +23,7 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
     return base_evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

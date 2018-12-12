@@ -181,8 +181,7 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
             continue;
         }
 
-        math::Transformation transformation{float3::identity(), float3(1.f),
-                                            quaternion::identity()};
+        math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
 
         json::Value const* animation_value = nullptr;
         json::Value const* children        = nullptr;

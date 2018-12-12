@@ -86,11 +86,6 @@ static constexpr bool operator!=(const Vector4<T>& a, const Vector4<T>& b) noexc
 }
 
 template <typename T>
-constexpr Vector4<T> Vector4<T>::identity() noexcept {
-    return Vector4(T(0), T(0), T(0), T(0));
-}
-
-template <typename T>
 constexpr Vector4<T> operator*(T s, const Vector4<T>& v) noexcept {
     return Vector4<T>(s * v[0], s * v[1], s * v[2], s * v[3]);
 }
@@ -132,10 +127,6 @@ inline float constexpr Vector4f_a::operator[](uint32_t i) const noexcept {
 
 inline float constexpr& Vector4f_a::operator[](uint32_t i) noexcept {
     return v[i];
-}
-
-inline constexpr Vector4f_a Vector4f_a::identity() noexcept {
-    return Vector4f_a(0.f, 0.f, 0.f, 0.f);
 }
 
 static inline Vector4f_a constexpr operator+(Vector4f_a const& a, float s) noexcept {

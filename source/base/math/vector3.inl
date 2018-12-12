@@ -173,11 +173,6 @@ T Vector3<T>::absolute_max(uint32_t& i) const noexcept {
 }
 
 template <typename T>
-constexpr Vector3<T> Vector3<T>::identity() noexcept {
-    return Vector3<T>(0.f, 0.f, 0.f);
-}
-
-template <typename T>
 static Vector3<T> operator*(T s, Vector3<T> const& v) noexcept {
     return Vector3<T>(s * v[0], s * v[1], s * v[2]);
 }
@@ -368,10 +363,6 @@ inline float Vector3f_a::absolute_max(uint32_t& i) const noexcept {
 
     i = 2;
     return az;
-}
-
-inline Vector3f_a constexpr Vector3f_a::identity() noexcept {
-    return Vector3f_a(0.f, 0.f, 0.f);
 }
 
 static inline Vector3f_a constexpr operator+(Vector3f_a const& a, float s) noexcept {

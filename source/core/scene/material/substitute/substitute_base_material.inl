@@ -48,7 +48,7 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
     if (emission_map_.is_valid()) {
         radiance = emission_factor_ * emission_map_.sample_3(sampler, rs.uv);
     } else {
-        radiance = float3::identity();
+        radiance = float3(0.f);
     }
 
     sample.set(color, radiance, fresnel::schlick_f0(ior_, ior_outside), surface[0], surface[1],

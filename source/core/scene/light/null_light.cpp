@@ -39,7 +39,7 @@ float Null_light::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
 }
 
 float3 Null_light::power(AABB const& /*scene_bb*/) const noexcept {
-    return float3::identity();
+    return float3(0.f);
 }
 
 void Null_light::prepare_sampling(uint32_t /*light_id*/, uint64_t /*time*/,

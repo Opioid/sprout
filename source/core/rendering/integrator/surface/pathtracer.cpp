@@ -47,7 +47,7 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
                       Interface_stack const& initial_stack) noexcept {
     float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 
-    float3 result = float3::identity();
+    float3 result = float3(0.f);
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         worker.reset_interface_stack(initial_stack);

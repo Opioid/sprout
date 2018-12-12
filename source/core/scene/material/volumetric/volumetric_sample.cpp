@@ -23,15 +23,14 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
     return {float3(phase), phase};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
     float2 const r2 = sampler.generate_sample_2D();
 
-    float3      dir;
-    float const phase = sample(wo_, r2, dir);
+    float4 const ps = sample(wo_, r2);
 
-    result.reflection = float3(phase);
-    result.wi         = dir;
-    result.pdf        = phase;
+    result.reflection = float3(ps[3]);
+    result.wi         = ps.xyz();
+    result.pdf        = ps[3];
     result.wavelength = 0.f;
     result.type.clear(bxdf::Type::Diffuse_reflection);
 }
@@ -55,7 +54,7 @@ float Sample::phase(float3 const& wo, float3 const& wi) const noexcept {
     //	return phase_schlick(dot(wo, wi), k);
 }
 
-float Sample::sample(float3 const& wo, float2 r2, float3& wi) const noexcept {
+float4 Sample::sample(float3 const& wo, float2 r2) const noexcept {
     float const g = anisotropy_;
 
     float cos_theta;
@@ -73,9 +72,9 @@ float Sample::sample(float3 const& wo, float2 r2, float3& wi) const noexcept {
 
     auto const [t, b] = orthonormal_basis(wo);
 
-    wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
+    float3 const wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
 
-    return phase_hg(-cos_theta, g);
+    return float4(wi, phase_hg(-cos_theta, g));
 }
 
 }  // namespace scene::material::volumetric

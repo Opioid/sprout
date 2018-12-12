@@ -77,7 +77,7 @@ inline float3 Layer::world_to_tangent(float3 const& v) const noexcept {
 inline Sample::~Sample() {}
 
 inline float3 Sample::radiance() const noexcept {
-    return float3::identity();
+    return float3(0.f);
 }
 
 inline bool Sample::is_pure_emissive() const noexcept {

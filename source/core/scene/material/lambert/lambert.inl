@@ -19,7 +19,7 @@ inline bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
     float const pdf = n_dot_wi * Pi_inv;
 
     (void)layer;
-    //    SOFT_ASSERT(testing::check(reflection, float3::identity(), float3::identity(), pdf,
+    //    SOFT_ASSERT(testing::check(reflection, float3(0.f), float3(0.f), pdf,
     //    layer));
 
     return {reflection, pdf};
@@ -40,7 +40,7 @@ inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler
     result.pdf        = n_dot_wi * Pi_inv;
     result.type.clear(bxdf::Type::Diffuse_reflection);
 
-    SOFT_ASSERT(testing::check(result, float3::identity(), layer));
+    SOFT_ASSERT(testing::check(result, float3(0.f), layer));
 
     return n_dot_wi;
 }

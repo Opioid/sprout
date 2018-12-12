@@ -101,7 +101,7 @@ Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin
                                                index end) noexcept {
     split_candidates_.clear();
 
-    float3 average = float3::identity();
+    float3 average = float3(0.f);
 
     for (index i = begin; i != end; ++i) {
         average += (*i)->aabb().position();

@@ -58,7 +58,7 @@ void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
 
                             float3 origin = bake_quad_origin + offset;
 
-                            float3 irradiance = float3::identity();
+                            float3 irradiance = float3(0.f);
 
                             for (uint32_t s = 0; s < num_samples; ++s) {
                                     ray.origin = origin;

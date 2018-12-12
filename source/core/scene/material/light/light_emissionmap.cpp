@@ -19,9 +19,9 @@ Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_side
 Emissionmap::~Emissionmap() noexcept {}
 
 material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*ray*/,
-                                            Renderstate const& rs, Filter filter,
-                                            sampler::Sampler& /*sampler*/,
-                                            Worker const& worker) const noexcept {
+                                            Renderstate const& rs, Filter       filter,
+                                            Sampler& /*sampler*/, Worker const& worker) const
+    noexcept {
     auto& sample = worker.sample<Sample>(rs.sample_level);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -101,7 +101,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(d[1]);
 
-        std::vector<float4> artws(pool.num_threads(), float4::identity());
+        std::vector<float4> artws(pool.num_threads(), float4(0.f));
 
         float2 const idf = 1.f / float2(d);
 

@@ -257,7 +257,7 @@ size_t Tracking_single::num_bytes() const noexcept {
 
 float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
                                      Intersection const& intersection, Worker& worker) noexcept {
-    float3 result = float3::identity();
+    float3 result = float3(0.f);
 
     Ray shadow_ray;
     shadow_ray.origin = position;

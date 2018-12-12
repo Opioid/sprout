@@ -19,7 +19,7 @@ namespace scene::shape {
 static float constexpr Canopy_eps = -0.0005f;
 
 Canopy::Canopy() noexcept {
-    aabb_.set_min_max(float3::identity(), float3::identity());
+    aabb_.set_min_max(float3(0.f), float3(0.f));
 }
 
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,

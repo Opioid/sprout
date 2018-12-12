@@ -270,16 +270,16 @@ static inline float kernel(float squared_distance, float inv_squared_radius) {
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
                 scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
-        return float3::identity();
+        return float3(0.f);
     }
 
     float3 const position = intersection.geo.p;
 
     if (!aabb_.intersect(position)) {
-        return float3::identity();
+        return float3(0.f);
     }
 
-    float3 result = float3::identity();
+    float3 result = float3(0.f);
 
     Adjacency adjacency;
     adjacent_cells(position, adjacency);

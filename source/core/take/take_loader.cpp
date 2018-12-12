@@ -179,8 +179,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
         throw std::runtime_error("Empty camera object");
     }
 
-    math::Transformation transformation{float3::identity(), float3(1.f),
-                                        math::quaternion::identity()};
+    math::Transformation transformation{float3(0.f), float3(1.f), math::quaternion::identity()};
 
     json::Value const* parameters_value = nullptr;
     json::Value const* animation_value  = nullptr;

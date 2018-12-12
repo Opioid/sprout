@@ -16,7 +16,7 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
     sun_ = sun;
 
     const math::Transformation transformation{
-        float3::identity(), float3(1.f),
+        float3(0.f), float3(1.f),
         math::quaternion::create_rotation_x(math::degrees_to_radians(90.f))};
 
     sky->set_transformation(transformation);
@@ -25,7 +25,7 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
 void Sky::set_parameters(json::Value const& parameters) noexcept {
     for (auto& n : parameters.GetObject()) {
         if ("sun" == n.name) {
-            float3 const angles = json::read_float3(n.value, "rotation", float3::identity());
+            float3 const angles = json::read_float3(n.value, "rotation", float3(0.f));
             sun_rotation_       = json::create_rotation_matrix(angles);
 
             // Supposedly the sun direction in the disney cloud scene
@@ -88,7 +88,7 @@ void Sky::update() noexcept {
     model_.set_ground_albedo(ground_albedo_);
     model_.set_turbidity(turbidity_);
 
-    math::Transformation transformation{float3::identity(),
+    math::Transformation transformation{float3(0.f),
                                         float3(math::degrees_to_radians(model_.degrees())),
                                         math::quaternion::create(sun_rotation_)};
 

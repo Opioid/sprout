@@ -52,7 +52,7 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint
 
         direction = focus - origin;
     } else {
-        origin = float3::identity();
+        origin = float3(0.f);
     }
 
     uint64_t const time = absolute_time(frame, sample.time);

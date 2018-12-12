@@ -12,7 +12,7 @@ namespace scene::material::substitute {
 template <typename Coating>
 bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi, bool) const noexcept {
     if (!same_hemisphere(wo_)) {
-        return {float3::identity(), 0.f};
+        return {float3(0.f), 0.f};
     }
 
     float3 const h = normalize(wo_ + wi);

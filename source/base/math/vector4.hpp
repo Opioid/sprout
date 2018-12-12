@@ -43,8 +43,6 @@ struct Vector4 {
     constexpr Vector4& operator+=(Vector4 const& v) noexcept;
 
     constexpr Vector4& operator-=(Vector4 const& v) noexcept;
-
-    static constexpr Vector4 identity() noexcept;
 };
 
 //==============================================================================
@@ -73,8 +71,6 @@ struct alignas(16) Vector4f_a {
 
     float constexpr  operator[](uint32_t i) const noexcept;
     float constexpr& operator[](uint32_t i) noexcept;
-
-    static constexpr Vector4f_a identity() noexcept;
 };
 
 //==============================================================================

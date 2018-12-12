@@ -13,7 +13,7 @@ class Sample : public material::Sample {
 
     float3 radiance() const noexcept override final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
     bool is_pure_emissive() const noexcept override final;
 

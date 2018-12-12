@@ -17,7 +17,7 @@
 namespace scene::shape {
 
 Infinite_sphere::Infinite_sphere() noexcept {
-    aabb_.set_min_max(float3::identity(), float3::identity());
+    aabb_.set_min_max(float3(0.f), float3(0.f));
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transformation,

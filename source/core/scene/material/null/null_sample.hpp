@@ -11,7 +11,7 @@ class Sample final : public material::Sample {
 
     bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
     bool ior_greater_one() const noexcept override final;
 

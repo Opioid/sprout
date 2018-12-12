@@ -10,7 +10,7 @@
 namespace scene::shape {
 
 Plane::Plane() noexcept {
-    aabb_.set_min_max(float3::identity(), float3::identity());
+    aabb_.set_min_max(float3(0.f), float3(0.f));
 }
 
 bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
