@@ -10,7 +10,7 @@ namespace scene::material::volumetric {
 
 class Grid : public Material {
   public:
-    Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept;
+    Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density) noexcept;
 
     ~Grid() noexcept override;
 
@@ -39,7 +39,7 @@ class Grid : public Material {
   protected:
     float density(float3 const& uvw, Filter filter, Worker const& worker) const noexcept;
 
-    Texture_adapter grid_;
+    Texture_adapter density_;
 
     Gridtree tree_;
 };

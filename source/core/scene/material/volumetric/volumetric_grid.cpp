@@ -13,8 +13,8 @@
 
 namespace scene::material::volumetric {
 
-Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& grid) noexcept
-    : Material(sampler_settings), grid_(grid) {}
+Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density) noexcept
+    : Material(sampler_settings), density_(density) {}
 
 Grid::~Grid() noexcept {}
 
@@ -49,7 +49,7 @@ CCE Grid::collision_coefficients_emission(float3 const& uvw, Filter filter,
 }
 
 void Grid::compile(thread::Pool& pool) noexcept {
-    auto const& texture = grid_.texture();
+    auto const& texture = density_.texture();
 
     Octree_builder builder;
     builder.build(tree_, texture, cm_, pool);
@@ -70,7 +70,7 @@ size_t Grid::num_bytes() const noexcept {
 float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return grid_.sample_1(sampler, uvw);
+    return density_.sample_1(sampler, uvw);
 }
 
 Grid_emission::Grid_emission(Sampler_settings const& sampler_settings,
@@ -105,26 +105,27 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
         return;
     }
 
-    if (importance_sampling) {
-        auto const& texture = grid_.texture();
+    auto const& texture = density_.texture();
 
+    float3 const emission = cc_.a * emission_;
+
+    if (importance_sampling) {
         auto const& d = texture.dimensions_3();
 
-        std::vector<Distribution_2D> conditional_2d(d[2]);
+        Distribution_2D* conditional_2d = distribution_.allocate(d[2]);
 
         std::vector<float3> ars(pool.num_threads(), float3::identity());
-
-        float3 const emission = cc_.a * emission_;
 
         pool.run_range(
             [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
                                                             int32_t end) {
-                std::vector<float> luminance(d[0]);
+                float* luminance = memory::allocate_aligned<float>(d[0]);
 
                 float3 ar(0.f);
 
                 for (int32_t z = begin; z < end; ++z) {
-                    std::vector<Distribution_2D::Distribution_impl> conditional(d[1]);
+                    Distribution_2D::Distribution_impl* conditional = conditional_2d[z].allocate(
+                        d[1]);
 
                     for (int32_t y = 0; y < d[1]; ++y) {
                         for (int32_t x = 0; x < d[0]; ++x) {
@@ -137,13 +138,15 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                             ar += radiance;
                         }
 
-                        conditional[y].init(luminance.data(), d[0]);
+                        conditional[y].init(luminance, d[0]);
                     }
 
-                    conditional_2d[z].init(conditional);
+                    conditional_2d[z].init();
                 }
 
                 ars[id] += ar;
+
+                memory::free_aligned(luminance);
             },
             0, d[2]);
 
@@ -158,9 +161,9 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         total_weight_ = total_weight;
 
-        distribution_.init(conditional_2d);
+        distribution_.init();
     } else {
-        average_emission_ = grid_.texture().average_1() * cc_.a * emission_;
+        average_emission_ = texture.average_1() * emission;
     }
 }
 

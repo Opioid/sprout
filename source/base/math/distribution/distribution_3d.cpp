@@ -4,35 +4,43 @@
 
 namespace math {
 
-Distribution_3D::Distribution_3D() = default;
+Distribution_3D::Distribution_3D() noexcept : conditional_(nullptr), conditional_size_(0) {}
 
-Distribution_3D::~Distribution_3D() {}
+Distribution_3D::~Distribution_3D() noexcept {
+    memory::free_aligned(conditional_);
+}
 
-void Distribution_3D::init(std::vector<Distribution_2D>& conditional) {
-    conditional_ = std::move(conditional);
+Distribution_2D* Distribution_3D::allocate(uint32_t num) noexcept {
+    conditional_      = memory::allocate_aligned<Distribution_2D>(num);
+    conditional_size_ = num;
+    return conditional_;
+}
 
-    std::vector<float> integrals(conditional_.size());
+void Distribution_3D::init() noexcept {
+    uint32_t const num_conditional = conditional_size_;
 
-    uint32_t const num_conditional = static_cast<uint32_t>(conditional_.size());
+    float* integrals = memory::allocate_aligned<float>(num_conditional);
 
     for (uint32_t i = 0; i < num_conditional; ++i) {
         integrals[i] = conditional_[i].integral();
     }
 
-    marginal_.init(integrals.data(), num_conditional);
+    marginal_.init(integrals, num_conditional);
 
-    conditional_size_ = static_cast<float>(num_conditional);
-    conditional_max_  = num_conditional - 1;
+    conditional_sizef_ = static_cast<float>(num_conditional);
+    conditional_max_   = num_conditional - 1;
+
+    memory::free_aligned(integrals);
 }
 
 float Distribution_3D::integral() const noexcept {
     return marginal_.integral();
 }
 
-Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3) const {
+Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3) const noexcept {
     auto const w = marginal_.sample_continuous(r3[2]);
 
-    uint32_t const i = static_cast<uint32_t>(w.offset * conditional_size_);
+    uint32_t const i = static_cast<uint32_t>(w.offset * conditional_sizef_);
     uint32_t const c = std::min(i, conditional_max_);
 
     auto const uv = conditional_[c].sample_continuous(r3.xy());
@@ -40,10 +48,10 @@ Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3)
     return {float3(uv.uv, w.offset), uv.pdf * w.pdf};
 }
 
-float Distribution_3D::pdf(float3 const& uvw) const {
+float Distribution_3D::pdf(float3 const& uvw) const noexcept {
     float const w_pdf = marginal_.pdf(uvw[2]);
 
-    uint32_t const i = static_cast<uint32_t>(uvw[2] * conditional_size_);
+    uint32_t const i = static_cast<uint32_t>(uvw[2] * conditional_sizef_);
     uint32_t const c = std::min(i, conditional_max_);
 
     float const uv_pdf = conditional_[c].pdf(uvw.xy());
@@ -51,10 +59,11 @@ float Distribution_3D::pdf(float3 const& uvw) const {
     return uv_pdf * w_pdf;
 }
 
-size_t Distribution_3D::num_bytes() const {
+size_t Distribution_3D::num_bytes() const noexcept {
     size_t num_bytes = 0;
-    for (auto const& c : conditional_) {
-        num_bytes += c.num_bytes();
+
+    for (int32_t i = 0, len = conditional_size_; i < len; ++i) {
+        num_bytes += conditional_[i].num_bytes();
     }
 
     return sizeof(*this) + marginal_.num_bytes() + num_bytes;

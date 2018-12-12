@@ -15,7 +15,9 @@ class Distribution_t_2D {
 
     ~Distribution_t_2D() noexcept;
 
-    void init(std::vector<Distribution_impl>& conditional) noexcept;
+    Distribution_impl* allocate(uint32_t num) noexcept;
+
+    void init() noexcept;
 
     float integral() const noexcept;
 
@@ -32,9 +34,10 @@ class Distribution_t_2D {
   private:
     Distribution_impl marginal_;
 
-    std::vector<Distribution_impl> conditional_;
+    Distribution_impl* conditional_;
+    uint32_t           conditional_size_;
 
-    float    conditional_size_;
+    float    conditional_sizef_;
     uint32_t conditional_max_;
 };
 

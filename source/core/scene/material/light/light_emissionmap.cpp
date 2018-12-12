@@ -99,7 +99,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         auto const d = texture.dimensions_2();
 
-        std::vector<Distribution_2D::Distribution_impl> conditional(d[1]);
+        Distribution_2D::Distribution_impl* conditional = distribution_.allocate(d[1]);
 
         std::vector<float4> artws(pool.num_threads(), float4::identity());
 
@@ -110,7 +110,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
         pool.run_range(
             [&conditional, &artws, &shape, &texture, d, idf, element, ef](
                 uint32_t id, int32_t begin, int32_t end) {
-                std::vector<float> luminance(d[0]);
+                float* luminance = memory::allocate_aligned<float>(d[0]);
 
                 float4 artw(0.f);
 
@@ -129,10 +129,12 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                         artw += float4(uv_weight * radiance, uv_weight);
                     }
 
-                    conditional[y].init(luminance.data(), d[0]);
+                    conditional[y].init(luminance, d[0]);
                 }
 
                 artws[id] += artw;
+
+                memory::free_aligned(luminance);
             },
             0, d[1]);
 
@@ -145,7 +147,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         total_weight_ = artw[3];
 
-        distribution_.init(conditional);
+        distribution_.init();
     } else {
         average_emission_ = emission_factor_ * emission_map_.texture().average_3();
     }

@@ -10,11 +10,13 @@ class Distribution_3D {
   public:
     using Distribution_impl = Distribution_2D::Distribution_impl;
 
-    Distribution_3D();
+    Distribution_3D() noexcept;
 
-    ~Distribution_3D();
+    ~Distribution_3D() noexcept;
 
-    void init(std::vector<Distribution_2D>& conditional);
+    Distribution_2D* allocate(uint32_t num) noexcept;
+
+    void init() noexcept;
 
     float integral() const noexcept;
 
@@ -22,18 +24,19 @@ class Distribution_3D {
         float3 uvw;
         float  pdf;
     };
-    Continuous sample_continuous(float3 const& r3) const;
+    Continuous sample_continuous(float3 const& r3) const noexcept;
 
-    float pdf(float3 const& uvw) const;
+    float pdf(float3 const& uvw) const noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
     Distribution_impl marginal_;
 
-    std::vector<Distribution_2D> conditional_;
+    Distribution_2D* conditional_;
+    uint32_t         conditional_size_;
 
-    float    conditional_size_;
+    float    conditional_sizef_;
     uint32_t conditional_max_;
 };
 
