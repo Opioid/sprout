@@ -45,7 +45,7 @@ class Emissionmap : public Material {
 
     Texture_adapter emission_map_;
 
-    math::Distribution_2D distribution_;
+    Distribution_2D distribution_;
 
     float3 average_emission_;
 

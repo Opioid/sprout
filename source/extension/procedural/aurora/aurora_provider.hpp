@@ -25,11 +25,12 @@ void init(scene::Loader& loader);
 
 class Provider : public scene::entity::Extension_provider {
   public:
-    void set_scene_loader(scene::Loader& loader);
+    ~Provider() noexcept override final;
 
-    virtual scene::entity::Entity* create_extension(json::Value const& extension_value,
-                                                    scene::Scene&      scene,
-                                                    resource::Manager& manager) override final;
+    void set_scene_loader(scene::Loader& loader) noexcept;
+
+    scene::entity::Entity* create_extension(json::Value const& extension_value, scene::Scene& scene,
+                                            resource::Manager& manager) noexcept override final;
 
   private:
     void render(image::Byte3& target, thread::Pool& thread_pool);

@@ -13,9 +13,11 @@ namespace procedural::sky {
 
 class Sky : public scene::entity::Entity {
   public:
-    Sky() noexcept = default;
+    Sky() noexcept;
 
     ~Sky() noexcept override;
+
+    bool is_extension() const noexcept final override;
 
     void set_parameters(json::Value const& parameters) noexcept override final;
 

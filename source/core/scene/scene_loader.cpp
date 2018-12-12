@@ -117,6 +117,26 @@ Scene::Shape_ptr Loader::cube() {
     return cube_;
 }
 
+void Loader::create_light(prop::Prop* prop, Scene& scene) {
+    for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
+        if (auto const material = prop->material(i); material->is_emissive()) {
+            if (material->is_scattering_volume()) {
+                if (prop->shape()->is_analytical() && material->has_emission_map()) {
+                    scene.create_prop_volume_image_light(prop, i);
+                } else {
+                    scene.create_prop_volume_light(prop, i);
+                }
+            } else {
+                if (prop->shape()->is_analytical() && material->has_emission_map()) {
+                    scene.create_prop_image_light(prop, i);
+                } else {
+                    scene.create_prop_light(prop, i);
+                }
+            }
+        }
+    }
+}
+
 size_t Loader::num_bytes() const {
     return 0;
 }
@@ -161,7 +181,7 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
                 prop::Prop* prop = load_prop(e, name, scene);
 
                 if (prop && prop->visible_in_reflection()) {
-                    load_light(e, prop, scene);
+                    create_light(prop, scene);
                 }
 
                 entity = prop;
@@ -283,32 +303,14 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
     return prop;
 }
 
-void Loader::load_light(json::Value const& /*light_value*/, prop::Prop* prop, Scene& scene) {
-    for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
-        if (auto const material = prop->material(i); material->is_emissive()) {
-            if (material->is_scattering_volume()) {
-                if (prop->shape()->is_analytical() && material->has_emission_map()) {
-                    scene.create_prop_volume_image_light(prop, i);
-                } else {
-                    scene.create_prop_volume_light(prop, i);
-                }
-            } else {
-                if (prop->shape()->is_analytical() && material->has_emission_map()) {
-                    scene.create_prop_image_light(prop, i);
-                } else {
-                    scene.create_prop_light(prop, i);
-                }
-            }
-        }
-    }
-}
-
 entity::Entity* Loader::load_extension(std::string const& type, json::Value const& extension_value,
                                        std::string const& name, Scene& scene) {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
         entity::Entity* entity = p->second->create_extension(extension_value, scene,
                                                              resource_manager_);
-        scene.add_extension(entity, name);
+        if (entity->is_extension()) {
+            scene.add_extension(entity, name);
+        }
 
         return entity;
     }

@@ -29,7 +29,7 @@ namespace procedural::aurora {
 using namespace scene;
 using namespace scene::material;
 
-Provider provider;
+static Provider provider;
 
 void init(scene::Loader& loader) {
     provider.set_scene_loader(loader);
@@ -37,12 +37,14 @@ void init(scene::Loader& loader) {
     loader.register_extension_provider("Aurora", &provider);
 }
 
-void Provider::set_scene_loader(Loader& loader) {
+Provider::~Provider() noexcept {}
+
+void Provider::set_scene_loader(Loader& loader) noexcept {
     scene_loader_ = &loader;
 }
 
 entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
-                                           resource::Manager& manager) {
+                                           resource::Manager& manager) noexcept {
     spectrum::init();
 
     using namespace image;

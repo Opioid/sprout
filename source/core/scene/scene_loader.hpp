@@ -76,6 +76,8 @@ class Loader {
     Shape_ptr celestial_disk();
     Shape_ptr cube();
 
+    void create_light(prop::Prop* prop, Scene& scene);
+
     size_t num_bytes() const;
 
   private:
@@ -86,8 +88,6 @@ class Loader {
     void set_visibility(entity::Entity* entity, json::Value const& visibility_value);
 
     prop::Prop* load_prop(json::Value const& prop_value, std::string const& name, Scene& scene);
-
-    void load_light(json::Value const& light_value, prop::Prop* prop, Scene& scene);
 
     entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
                                    std::string const& name, Scene& scene);

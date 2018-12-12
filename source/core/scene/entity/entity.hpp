@@ -13,9 +13,11 @@ class Entity {
   public:
     using Transformation = Composed_transformation;
 
-    Entity() noexcept = default;
+    Entity() noexcept;
 
     virtual ~Entity() noexcept;
+
+    virtual bool is_extension() const noexcept;
 
     virtual void set_parameters(json::Value const& parameters) noexcept = 0;
 

@@ -24,6 +24,7 @@
 #include "core/take/take.hpp"
 #include "core/take/take_loader.hpp"
 #include "extension/procedural/aurora/aurora_provider.hpp"
+#include "extension/procedural/flame/flame_provider.hpp"
 #include "extension/procedural/mesh/mesh.hpp"
 #include "extension/procedural/sky/sky_provider.hpp"
 #include "options/options.hpp"
@@ -149,6 +150,7 @@ int main(int argc, char const* argv[]) {
     scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 
     procedural::aurora::init(scene_loader);
+    procedural::flame::init(scene_loader);
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 

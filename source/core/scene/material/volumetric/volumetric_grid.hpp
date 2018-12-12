@@ -62,7 +62,7 @@ class Grid_emission : public Grid {
                           bool importance_sampling, thread::Pool& pool) noexcept override final;
 
   private:
-    math::Distribution_3D distribution_;
+    Distribution_3D distribution_;
 
     float3 average_emission_;
 

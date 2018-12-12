@@ -5,9 +5,15 @@
 
 namespace scene::entity {
 
+Entity::Entity() noexcept = default;
+
 Entity::~Entity() noexcept {
     delete[] local_frames_;
     delete[] world_frames_;
+}
+
+bool Entity::is_extension() const noexcept {
+    return false;
 }
 
 void Entity::allocate_frames(uint32_t num_frames) noexcept {

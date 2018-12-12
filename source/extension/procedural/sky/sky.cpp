@@ -9,7 +9,13 @@
 
 namespace procedural::sky {
 
+Sky::Sky() noexcept = default;
+
 Sky::~Sky() noexcept {}
+
+bool Sky::is_extension() const noexcept {
+    return true;
+}
 
 void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
     sky_ = sky;

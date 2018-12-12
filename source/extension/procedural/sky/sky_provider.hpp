@@ -19,6 +19,8 @@ void init(scene::Loader& loader, scene::material::Provider& material_provider) n
 
 class Provider : public scene::entity::Extension_provider {
   public:
+    ~Provider() noexcept override final;
+
     void set_scene_loader(scene::Loader& loader) noexcept;
     void set_material_provider(scene::material::Provider& provider) noexcept;
 
