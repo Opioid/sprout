@@ -18,15 +18,15 @@ class Gaussian : public Filter {
     float evaluate(float2 p) const override final;
 
   private:
-    float gaussian(float d) const;
+    //  float gaussian(float d) const;
 
     float radius_;
 
-    math::Interpolated_function<float> gaussian_;
+    Interpolated_function<float> gaussian_;
 
-    float exp_;
+    //    float exp_;
 
-    float alpha_;
+    //    float alpha_;
 };
 
 }  // namespace rendering::sensor::filter

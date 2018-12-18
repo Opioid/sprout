@@ -276,8 +276,34 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
     take.view.camera = camera;
 }
 
-std::unique_ptr<rendering::sensor::Sensor> Loader::load_sensor(json::Value const& sensor_value,
-                                                               int2               dimensions) {
+template <typename Base>
+Loader::Sensor_ptr Loader::make_filtered_sensor(int2 dimensions, float exposure,
+                                                float3 const&        clamp_max,
+                                                Sensor_filter const* filter) {
+    using namespace rendering::sensor;
+
+    bool const clamp = !math::any_negative(clamp_max);
+
+    if (clamp) {
+        if (filter->radius() > 1.f) {
+            return std::make_unique<Filtered_inf<Base, clamp::Clamp>>(
+                dimensions, exposure, clamp::Clamp(clamp_max), filter);
+        }
+
+        return std::make_unique<Filtered_1p0<Base, clamp::Clamp>>(dimensions, exposure,
+                                                                  clamp::Clamp(clamp_max), filter);
+    }
+
+    if (filter->radius() > 1.f) {
+        return std::make_unique<Filtered_inf<Base, clamp::Identity>>(dimensions, exposure,
+                                                                     clamp::Identity(), filter);
+    }
+
+    return std::make_unique<Filtered_1p0<Base, clamp::Identity>>(dimensions, exposure,
+                                                                 clamp::Identity(), filter);
+}
+
+Loader::Sensor_ptr Loader::load_sensor(json::Value const& sensor_value, int2 dimensions) {
     using namespace rendering::sensor;
 
     bool alpha_transparency = false;
@@ -300,27 +326,15 @@ std::unique_ptr<rendering::sensor::Sensor> Loader::load_sensor(json::Value const
         }
     }
 
-    bool const clamp = !math::any_negative(clamp_max);
-
     if (filter) {
         if (alpha_transparency) {
-            if (clamp) {
-                return std::make_unique<Filtered<Transparent, clamp::Clamp>>(
-                    dimensions, exposure, clamp::Clamp(clamp_max), filter);
-            } else {
-                return std::make_unique<Filtered<Transparent, clamp::Identity>>(
-                    dimensions, exposure, clamp::Identity(), filter);
-            }
+            return make_filtered_sensor<Transparent>(dimensions, exposure, clamp_max, filter);
         }
 
-        if (clamp) {
-            return std::make_unique<Filtered<Opaque, clamp::Clamp>>(
-                dimensions, exposure, clamp::Clamp(clamp_max), filter);
-        } else {
-            return std::make_unique<Filtered<Opaque, clamp::Identity>>(dimensions, exposure,
-                                                                       clamp::Identity(), filter);
-        }
+        return make_filtered_sensor<Opaque>(dimensions, exposure, clamp_max, filter);
     }
+
+    bool const clamp = !math::any_negative(clamp_max);
 
     if (alpha_transparency) {
         if (clamp) {

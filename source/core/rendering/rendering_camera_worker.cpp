@@ -41,7 +41,7 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
             int2 const pixel(x, y);
 
             for (uint32_t i = 0; i < num_samples; ++i) {
-                sampler::Camera_sample sample = sampler_->generate_camera_sample(pixel, i);
+                sampler::Camera_sample const sample = sampler_->generate_camera_sample(pixel, i);
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, ray)) {
                     float4 const color = li(ray, camera.interface_stack());

@@ -80,6 +80,10 @@ class Loader {
 
     static void load_camera(json::Value const& camera_value, Take& take);
 
+    template <typename Base>
+    static Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
+                                           Sensor_filter const* filter);
+
     static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions);
 
     static Sensor_filter const* load_filter(rapidjson::Value const& filter_value);
