@@ -2,6 +2,7 @@
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
+#include "base/math/distribution/distribution_1d.inl"
 #include "base/memory/variant_map.inl"
 #include "bvh/triangle_bvh_builder_sah.inl"
 #include "bvh/triangle_bvh_data.inl"
