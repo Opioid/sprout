@@ -1,6 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_UNFILTERED_INL
 #define SU_CORE_RENDERING_SENSOR_UNFILTERED_INL
 
+#include "base/math/vector4.inl"
 #include "sampler/camera_sample.hpp"
 #include "unfiltered.hpp"
 
@@ -22,8 +23,7 @@ int4 Unfiltered<Base, Clamp>::isolated_tile(int4 const& tile) const noexcept {
 
 template <class Base, class Clamp>
 void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, float4 const& color,
-                                         int4 const& /*isolated_bounds*/,
-                                         int4 const& bounds) noexcept {
+                                         int4 const& /*isolated*/, int4 const& bounds) noexcept {
     Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 

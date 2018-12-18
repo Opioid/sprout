@@ -17,6 +17,8 @@ namespace rendering::sensor {
 
 class Sensor {
   public:
+    using Camera_sample = sampler::Camera_sample;
+
     Sensor(int2 dimensions, float exposure) noexcept;
 
     virtual ~Sensor() noexcept;
@@ -31,8 +33,8 @@ class Sensor {
 
     virtual void clear() = 0;
 
-    virtual void add_sample(sampler::Camera_sample const& sample, float4 const& color,
-                            int4 const& isolated_bounds, int4 const& bounds) noexcept = 0;
+    virtual void add_sample(Camera_sample const& sample, float4 const& color, int4 const& isolated,
+                            int4 const& bounds) noexcept = 0;
 
     virtual bool has_alpha_transparency() const noexcept = 0;
 

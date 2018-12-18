@@ -35,9 +35,8 @@ int4 Filtered<Base, Clamp>::isolated_tile(int4 const& tile) const noexcept {
 }
 
 template <class Base, class Clamp>
-void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4 const& color,
-                                               int4 const& isolated_bounds,
-                                               int4 const& bounds) noexcept {
+void Filtered<Base, Clamp>::add_weighted(int2 pixel, float weight, float4 const& color,
+                                         int4 const& isolated_bounds, int4 const& bounds) noexcept {
     if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2]) &&
         static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
         if (static_cast<uint32_t>(pixel[0] - isolated_bounds[0]) <=
@@ -52,9 +51,9 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4 
 }
 
 template <class Base, class Clamp>
-void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
-                                                 float4 const& color, int4 const& isolated_bounds,
-                                                 int4 const& bounds) noexcept {
+void Filtered<Base, Clamp>::weight_and_add(int2 pixel, float2 relative_offset, float4 const& color,
+                                           int4 const& isolated_bounds,
+                                           int4 const& bounds) noexcept {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
     if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2]) &&
@@ -85,9 +84,9 @@ Filtered_1p0<Base, Clamp>::Filtered_1p0(int2 dimensions, float exposure,
 
 template <class Base, class Clamp>
 void Filtered_1p0<Base, Clamp>::add_sample(sampler::Camera_sample const& sample,
-                                           float4 const& color, int4 const& isolated_bounds,
+                                           float4 const& color, int4 const& isolated,
                                            int4 const& bounds) noexcept {
-    float4 const clamped_color = Filtered<Base, Clamp>::clamp_.clamp(color);
+    float4 const clamped = Filtered<Base, Clamp>::clamp_.clamp(color);
 
     int32_t const x = bounds[0] + sample.pixel[0];
     int32_t const y = bounds[1] + sample.pixel[1];
@@ -104,19 +103,19 @@ void Filtered_1p0<Base, Clamp>::add_sample(sampler::Camera_sample const& sample,
     float const wy2 = Filtered<Base, Clamp>::filter_->evaluate(oy - 1.f);
 
     // 1. row
-    add_weighted_pixel(int2(x - 1, y - 1), wx0 * wy0, clamped_color, isolated_bounds, bounds);
-    add_weighted_pixel(int2(x, y - 1), wx1 * wy0, clamped_color, isolated_bounds, bounds);
-    add_weighted_pixel(int2(x + 1, y - 1), wx2 * wy0, clamped_color, isolated_bounds, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x - 1, y - 1), wx0 * wy0, clamped, isolated, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x, y - 1), wx1 * wy0, clamped, isolated, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x + 1, y - 1), wx2 * wy0, clamped, isolated, bounds);
 
     // 2. row
-    add_weighted_pixel(int2(x - 1, y), wx0 * wy1, clamped_color, isolated_bounds, bounds);
-    add_weighted_pixel(int2(x, y), wx1 * wy1, clamped_color, isolated_bounds, bounds);
-    add_weighted_pixel(int2(x + 1, y), wx2 * wy1, clamped_color, isolated_bounds, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x - 1, y), wx0 * wy1, clamped, isolated, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x, y), wx1 * wy1, clamped, isolated, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x + 1, y), wx2 * wy1, clamped, isolated, bounds);
 
     // 3. row
-    add_weighted_pixel(int2(x - 1, y + 1), wx0 * wy2, clamped_color, isolated_bounds, bounds);
-    add_weighted_pixel(int2(x, y + 1), wx1 * wy2, clamped_color, isolated_bounds, bounds);
-    add_weighted_pixel(int2(x + 1, y + 1), wx2 * wy2, clamped_color, isolated_bounds, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x - 1, y + 1), wx0 * wy2, clamped, isolated, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x, y + 1), wx1 * wy2, clamped, isolated, bounds);
+    Filtered<Base, Clamp>::add_weighted(int2(x + 1, y + 1), wx2 * wy2, clamped, isolated, bounds);
 }
 
 template <class Base, class Clamp>
@@ -132,9 +131,9 @@ Filtered_inf<Base, Clamp>::Filtered_inf(int2 dimensions, float exposure,
 
 template <class Base, class Clamp>
 void Filtered_inf<Base, Clamp>::add_sample(sampler::Camera_sample const& sample,
-                                           float4 const& color, int4 const& isolated_bounds,
+                                           float4 const& color, int4 const& isolated,
                                            int4 const& bounds) noexcept {
-    float4 const clamped_color = Filtered<Base, Clamp>::clamp_.clamp(color);
+    float4 const clamped = Filtered<Base, Clamp>::clamp_.clamp(color);
 
     int32_t const px = bounds[0] + sample.pixel[0];
     int32_t const py = bounds[1] + sample.pixel[1];
@@ -145,8 +144,7 @@ void Filtered_inf<Base, Clamp>::add_sample(sampler::Camera_sample const& sample,
         for (int32_t kx = -r; kx <= r; ++kx) {
             float2 const relative_offset = sample.pixel_uv - 0.5f - float2(kx, ky);
 
-            weight_and_add_pixel(int2(px + kx, py + ky), relative_offset, clamped_color,
-                                 isolated_bounds, bounds);
+            weight_and_add(int2(px + kx, py + ky), relative_offset, clamped, isolated, bounds);
         }
     }
 }

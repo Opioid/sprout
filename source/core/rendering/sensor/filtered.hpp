@@ -35,15 +35,12 @@ class Filtered : public Base {
 
     int4 isolated_tile(int4 const& tile) const noexcept override final;
 
-    //    void add_sample(sampler::Camera_sample const& sample, float4 const&,
-    //                    int4 const& isolated_bounds, int4 const& bounds) noexcept override final;
-
   protected:
-    void add_weighted_pixel(int2 pixel, float weight, float4 const& color,
-                            int4 const& isolated_bounds, int4 const& bounds) noexcept;
+    void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& isolated,
+                      int4 const& bounds) noexcept;
 
-    void weight_and_add_pixel(int2 pixel, float2 relative_offset, float4 const& color,
-                              int4 const& isolated_bounds, int4 const& bounds) noexcept;
+    void weight_and_add(int2 pixel, float2 relative_offset, float4 const& color,
+                        int4 const& isolated, int4 const& bounds) noexcept;
 
     Clamp clamp_;
 
@@ -59,8 +56,8 @@ class Filtered_1p0 : public Filtered<Base, Clamp> {
     Filtered_1p0(int2 dimensions, float exposure, Texture_ptr const& backplate, const Clamp& clamp,
                  filter::Filter const* filter) noexcept;
 
-    void add_sample(sampler::Camera_sample const& sample, float4 const&,
-                    int4 const& isolated_bounds, int4 const& bounds) noexcept override final;
+    void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
+                    int4 const& bounds) noexcept override final;
 };
 
 template <class Base, class Clamp>
@@ -72,8 +69,8 @@ class Filtered_inf : public Filtered<Base, Clamp> {
     Filtered_inf(int2 dimensions, float exposure, Texture_ptr const& backplate, const Clamp& clamp,
                  filter::Filter const* filter) noexcept;
 
-    void add_sample(sampler::Camera_sample const& sample, float4 const&,
-                    int4 const& isolated_bounds, int4 const& bounds) noexcept override final;
+    void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
+                    int4 const& bounds) noexcept override final;
 };
 
 }  // namespace rendering::sensor
