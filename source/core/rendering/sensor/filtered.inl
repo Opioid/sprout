@@ -138,13 +138,15 @@ void Filtered_inf<Base, Clamp>::add_sample(sampler::Camera_sample const& sample,
     int32_t const px = bounds[0] + sample.pixel[0];
     int32_t const py = bounds[1] + sample.pixel[1];
 
-    int32_t const r = filter_radius_int();
+    int32_t const r = Filtered<Base, Clamp>::filter_radius_int();
 
     for (int32_t ky = -r; ky <= r; ++ky) {
         for (int32_t kx = -r; kx <= r; ++kx) {
-            float2 const relative_offset = sample.pixel_uv - 0.5f - float2(kx, ky);
+            int2 const pixel(px + kx, py + ky);
 
-            weight_and_add(int2(px + kx, py + ky), relative_offset, clamped, isolated, bounds);
+            float2 const offset = sample.pixel_uv - 0.5f - float2(kx, ky);
+
+            Filtered<Base, Clamp>::weight_and_add(pixel, offset, clamped, isolated, bounds);
         }
     }
 }
