@@ -34,6 +34,7 @@
 #include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filter/sensor_gaussian.hpp"
+#include "rendering/sensor/filter/sensor_mitchell.hpp"
 #include "rendering/sensor/filtered.inl"
 #include "rendering/sensor/opaque.hpp"
 #include "rendering/sensor/transparent.hpp"
@@ -285,21 +286,31 @@ Loader::Sensor_ptr Loader::make_filtered_sensor(int2 dimensions, float exposure,
     bool const clamp = !math::any_negative(clamp_max);
 
     if (clamp) {
-        if (filter->radius() > 1.f) {
-            return std::make_unique<Filtered_inf<Base, clamp::Clamp>>(
+        if (filter->radius() <= 1.f) {
+            return std::make_unique<Filtered_1p0<Base, clamp::Clamp>>(
                 dimensions, exposure, clamp::Clamp(clamp_max), filter);
         }
 
-        return std::make_unique<Filtered_1p0<Base, clamp::Clamp>>(dimensions, exposure,
+        if (filter->radius() <= 2.f) {
+            return std::make_unique<Filtered_2p0<Base, clamp::Clamp>>(
+                dimensions, exposure, clamp::Clamp(clamp_max), filter);
+        }
+
+        return std::make_unique<Filtered_inf<Base, clamp::Clamp>>(dimensions, exposure,
                                                                   clamp::Clamp(clamp_max), filter);
     }
 
-    if (filter->radius() > 1.f) {
-        return std::make_unique<Filtered_inf<Base, clamp::Identity>>(dimensions, exposure,
+    if (filter->radius() <= 1.f) {
+        return std::make_unique<Filtered_1p0<Base, clamp::Identity>>(dimensions, exposure,
                                                                      clamp::Identity(), filter);
     }
 
-    return std::make_unique<Filtered_1p0<Base, clamp::Identity>>(dimensions, exposure,
+    if (filter->radius() <= 2.f) {
+        return std::make_unique<Filtered_2p0<Base, clamp::Identity>>(dimensions, exposure,
+                                                                     clamp::Identity(), filter);
+    }
+
+    return std::make_unique<Filtered_inf<Base, clamp::Identity>>(dimensions, exposure,
                                                                  clamp::Identity(), filter);
 }
 
@@ -356,12 +367,20 @@ Loader::Sensor_ptr Loader::load_sensor(json::Value const& sensor_value, int2 dim
 }
 
 rendering::sensor::filter::Filter const* Loader::load_filter(json::Value const& filter_value) {
+    using namespace rendering::sensor::filter;
+
     for (auto& n : filter_value.GetObject()) {
         if ("Gaussian" == n.name) {
             float const radius = json::read_float(n.value, "radius", 1.f);
             float const alpha  = json::read_float(n.value, "alpha", 1.8f);
 
-            return new rendering::sensor::filter::Gaussian(radius, alpha);
+            return new Gaussian(radius, alpha);
+        } else if ("Mitchell" == n.name) {
+            float const radius = json::read_float(n.value, "radius", 2.f);
+            float const b      = json::read_float(n.value, "b", 1.f / 3.f);
+            float const c      = json::read_float(n.value, "c", 1.f / 3.f);
+
+            return new Mitchell(radius, b, c);
         }
     }
 

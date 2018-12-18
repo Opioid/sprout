@@ -61,6 +61,19 @@ class Filtered_1p0 : public Filtered<Base, Clamp> {
 };
 
 template <class Base, class Clamp>
+class Filtered_2p0 : public Filtered<Base, Clamp> {
+  public:
+    Filtered_2p0(int2 dimensions, float exposure, const Clamp& clamp,
+                 filter::Filter const* filter) noexcept;
+
+    Filtered_2p0(int2 dimensions, float exposure, Texture_ptr const& backplate, const Clamp& clamp,
+                 filter::Filter const* filter) noexcept;
+
+    void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
+                    int4 const& bounds) noexcept override final;
+};
+
+template <class Base, class Clamp>
 class Filtered_inf : public Filtered<Base, Clamp> {
   public:
     Filtered_inf(int2 dimensions, float exposure, const Clamp& clamp,
