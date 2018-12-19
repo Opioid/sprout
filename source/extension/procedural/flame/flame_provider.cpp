@@ -5,7 +5,6 @@
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
-#include "flame.hpp"
 
 namespace procedural::flame {
 

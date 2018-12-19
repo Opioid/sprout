@@ -1,0 +1,30 @@
+#ifndef SU_EXTENSION_PROCEDURAL_FLUID_VORTON_INL
+#define SU_EXTENSION_PROCEDURAL_FLUID_VORTON_INL
+
+#include "base/math/math.hpp"
+#include "base/math/vector3.inl"
+#include "fluid_vorton.hpp"
+
+namespace procedural::fluid {
+
+static const float sAvoidSingularity = std::pow(FLT_MIN, 1.0f / 3.0f);
+
+float3 Vorton::accumulate_velocity(float3 const& query_position) const noexcept {
+    const float3 vNeighborToSelf = query_position - position_;
+
+    const float radius2     = radius_ * radius_;
+    const float dist2       = squared_length(vNeighborToSelf) + sAvoidSingularity;
+    const float oneOverDist = 1.f / std::sqrt(dist2);
+
+    const float3 vNeighborToSelfDir = oneOverDist * vNeighborToSelf;
+
+    // If the reciprocal law is used everywhere then when 2 vortices get close, they tend to
+    // jettison. Mitigate this by using a linear law when 2 vortices get close to each other.
+    const float distLaw = (dist2 < radius2) ? oneOverDist / radius2 : oneOverDist / dist2;
+    return (1.f / (4.f * Pi)) * (8.f * radius2 * radius_) * distLaw *
+           cross(vorticity_, vNeighborToSelf);
+}
+
+}  // namespace procedural::fluid
+
+#endif

@@ -26,7 +26,7 @@ float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uv
     float const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
     float const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
 
-    return math::lerp(c0, c1, stu[2]);
+    return lerp(c0, c1, stu[2]);
 }
 
 template <typename Address_mode>
@@ -46,7 +46,7 @@ float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3 const& u
     float2 const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
     float2 const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
 
-    return math::lerp(c0, c1, stu[2]);
+    return lerp(c0, c1, stu[2]);
 }
 
 template <typename Address_mode>
@@ -66,7 +66,7 @@ float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3 const& u
     float3 const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
     float3 const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
 
-    return math::lerp(c0, c1, stu[2]);
+    return lerp(c0, c1, stu[2]);
 }
 
 template <typename Address_mode>
@@ -75,7 +75,7 @@ float3 Linear_3D<Address_mode>::address(float3 const& uvw) const noexcept {
 }
 
 template <typename Address_mode>
-float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, int3& xyz,
+float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, int3& xyz0,
                                     int3& xyz1) noexcept {
     auto const& d = texture.dimensions_float3();
 
@@ -93,9 +93,9 @@ float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, i
 
     auto const& b = texture.back_3();
 
-    xyz[0] = Address_mode::lower_bound(x, b[0]);
-    xyz[1] = Address_mode::lower_bound(y, b[1]);
-    xyz[2] = Address_mode::lower_bound(z, b[2]);
+    xyz0[0] = Address_mode::lower_bound(x, b[0]);
+    xyz0[1] = Address_mode::lower_bound(y, b[1]);
+    xyz0[2] = Address_mode::lower_bound(z, b[2]);
 
     xyz1[0] = Address_mode::increment(x, b[0]);
     xyz1[1] = Address_mode::increment(y, b[1]);

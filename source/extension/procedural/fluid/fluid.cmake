@@ -1,0 +1,13 @@
+target_sources(extension
+	PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_grid.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_grid.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_provider.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_provider.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_simulation.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_simulation.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_vorton.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_vorton.inl"
+    "${CMAKE_CURRENT_LIST_DIR}/volume_renderer.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/volume_renderer.hpp"
+	)
