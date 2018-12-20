@@ -1,7 +1,7 @@
 #ifndef SU_EXTENSION_PROCEDURAL_FLUID_GRID_HPP
 #define SU_EXTENSION_PROCEDURAL_FLUID_GRID_HPP
 
-#include "base/math/vector3.hpp"
+#include "base/math/matrix3x3.hpp"
 
 namespace procedural::fluid {
 
@@ -29,6 +29,9 @@ class Grid {
 
     T* voxels_;
 };
+
+extern template class Grid<float3>;
+extern template class Grid<float3x3>;
 
 }  // namespace procedural::fluid
 
