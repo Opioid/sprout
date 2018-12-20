@@ -4,10 +4,11 @@
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
 #include "fluid_vorton.hpp"
+#include <limits>
 
 namespace procedural::fluid {
 
-static const float sAvoidSingularity = std::pow(FLT_MIN, 1.0f / 3.0f);
+static const float sAvoidSingularity = std::pow(std::numeric_limits<float>::min(), 1.0f / 3.0f);
 
 float3 Vorton::accumulate_velocity(float3 const& query_position) const noexcept {
     const float3 vNeighborToSelf = query_position - position_;
