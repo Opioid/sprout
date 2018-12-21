@@ -77,6 +77,8 @@ class Loader {
     using Sampler_factory_ptr = std::shared_ptr<sampler::Factory>;
     using Surface_factory_ptr = std::shared_ptr<rendering::integrator::surface::Factory>;
     using Volume_factory_ptr  = std::shared_ptr<rendering::integrator::volume::Factory>;
+    using Postprocessor_ptr   = std::unique_ptr<rendering::postprocessor::Postprocessor>;
+    using Light_sampling      = rendering::integrator::Light_sampling;
 
     static void load_camera(json::Value const& camera_value, Take& take);
 
@@ -86,7 +88,7 @@ class Loader {
 
     static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions);
 
-    static Sensor_filter const* load_filter(rapidjson::Value const& filter_value);
+    static Sensor_filter const* load_filter(json::Value const& filter_value);
 
     static Sampler_factory_ptr load_sampler_factory(json::Value const& sampler_value,
                                                     uint32_t           num_workers,
@@ -108,8 +110,7 @@ class Loader {
     static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
                                     Take& take);
 
-    static std::unique_ptr<rendering::postprocessor::Postprocessor> load_tonemapper(
-        json::Value const& tonemapper_value);
+    static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value);
 
     static bool peek_stereoscopic(json::Value const& parameters_value);
 
@@ -118,8 +119,7 @@ class Loader {
 
     static void load_settings(json::Value const& settings_value, Settings& settings);
 
-    static void load_light_sampling(json::Value const&                     parent_value,
-                                    rendering::integrator::Light_sampling& sampling);
+    static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling);
 };
 
 }  // namespace take

@@ -206,10 +206,10 @@ size_t Lighttracer::num_bytes() const noexcept {
 Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          uint32_t num_integrators, uint32_t min_bounces,
                                          uint32_t max_bounces,
-                                         float    path_termination_probability) noexcept
+                                         float    path_continuation_probability) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, 1.f - path_termination_probability} {}
+      settings_{min_bounces, max_bounces, path_continuation_probability} {}
 
 Lighttracer_factory::~Lighttracer_factory() noexcept {
     memory::free_aligned(integrators_);

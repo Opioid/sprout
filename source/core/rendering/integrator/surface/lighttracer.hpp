@@ -50,7 +50,7 @@ class Lighttracer_factory final : public Factory {
   public:
     Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
                         uint32_t min_bounces, uint32_t max_bounces,
-                        float path_termination_probability) noexcept;
+                        float path_continuation_probability) noexcept;
 
     ~Lighttracer_factory() noexcept override final;
 

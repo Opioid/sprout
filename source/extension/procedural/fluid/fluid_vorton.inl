@@ -1,10 +1,10 @@
 #ifndef SU_EXTENSION_PROCEDURAL_FLUID_VORTON_INL
 #define SU_EXTENSION_PROCEDURAL_FLUID_VORTON_INL
 
+#include <limits>
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
 #include "fluid_vorton.hpp"
-#include <limits>
 
 namespace procedural::fluid {
 

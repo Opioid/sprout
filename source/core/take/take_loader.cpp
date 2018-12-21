@@ -137,13 +137,13 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
         uint32_t const min_bounces = 4;
         uint32_t const max_bounces = 8;
 
-        float const path_termination_probability = 0.9f;
+        float const path_continuation_probability = 0.9f;
 
         bool const enable_caustics = false;
 
         take->surface_integrator_factory = std::make_shared<surface::Pathtracer_MIS_factory>(
             take->settings, num_threads, num_samples, min_bounces, max_bounces,
-            path_termination_probability, light_sampling, enable_caustics);
+            path_continuation_probability, light_sampling, enable_caustics);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
@@ -366,7 +366,7 @@ Loader::Sensor_ptr Loader::load_sensor(json::Value const& sensor_value, int2 dim
                                                                  clamp::Identity());
 }
 
-rendering::sensor::filter::Filter const* Loader::load_filter(json::Value const& filter_value) {
+Loader::Sensor_filter const* Loader::load_filter(json::Value const& filter_value) {
     using namespace rendering::sensor::filter;
 
     for (auto& n : filter_value.GetObject()) {
@@ -391,9 +391,9 @@ rendering::sensor::filter::Filter const* Loader::load_filter(json::Value const& 
     return nullptr;
 }
 
-std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(json::Value const& sampler_value,
-                                                               uint32_t           num_workers,
-                                                               uint32_t& num_samples_per_pixel) {
+Loader::Sampler_factory_ptr Loader::load_sampler_factory(json::Value const& sampler_value,
+                                                         uint32_t           num_workers,
+                                                         uint32_t&          num_samples_per_pixel) {
     for (auto& n : sampler_value.GetObject()) {
         num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 
@@ -431,9 +431,8 @@ void Loader::load_integrator_factories(json::Value const& integrator_value, uint
     }
 }
 
-std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_integrator_factory(
+Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
     json::Value const& integrator_value, Settings const& settings, uint32_t num_workers) {
-    using namespace rendering::integrator;
     using namespace rendering::integrator::surface;
 
     uint32_t default_min_bounces = 4;
@@ -441,7 +440,7 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
 
     Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
 
-    float default_path_termination_probability = 0.1f;
+    float default_path_continuation_probability = 0.9f;
 
     bool default_caustics = true;
 
@@ -462,11 +461,11 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_termination_probability = json::read_float(
-                n.value, "path_termination_probability", default_path_termination_probability);
+            float const path_continuation_probability = json::read_float(
+                n.value, "path_continuation_probability", default_path_continuation_probability);
 
-            return std::make_shared<Lighttracer_factory>(settings, num_workers, min_bounces,
-                                                         max_bounces, path_termination_probability);
+            return std::make_shared<Lighttracer_factory>(
+                settings, num_workers, min_bounces, max_bounces, path_continuation_probability);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -476,14 +475,14 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_termination_probability = json::read_float(
-                n.value, "path_termination_probability", default_path_termination_probability);
+            float const path_continuation_probability = json::read_float(
+                n.value, "path_continuation_probability", default_path_continuation_probability);
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
             return std::make_shared<Pathtracer_factory>(
                 settings, num_workers, num_samples, min_bounces, max_bounces,
-                path_termination_probability, enable_caustics);
+                path_continuation_probability, enable_caustics);
         } else if ("PTDL" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -491,8 +490,8 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_termination_probability = json::read_float(
-                n.value, "path_termination_probability", default_path_termination_probability);
+            float const path_continuation_probability = json::read_float(
+                n.value, "path_continuation_probability", default_path_continuation_probability);
 
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
                                                                light_sampling.num_samples);
@@ -500,7 +499,7 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
             return std::make_shared<Pathtracer_DL_factory>(
-                settings, num_workers, min_bounces, max_bounces, path_termination_probability,
+                settings, num_workers, min_bounces, max_bounces, path_continuation_probability,
                 num_light_samples, enable_caustics);
         } else if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
@@ -511,8 +510,8 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_termination_probability = json::read_float(
-                n.value, "path_termination_probability", default_path_termination_probability);
+            float const path_continuation_probability = json::read_float(
+                n.value, "path_continuation_probability", default_path_continuation_probability);
 
             load_light_sampling(n.value, light_sampling);
 
@@ -520,7 +519,7 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
 
             return std::make_shared<Pathtracer_MIS_factory>(
                 settings, num_workers, num_samples, min_bounces, max_bounces,
-                path_termination_probability, light_sampling, enable_caustics);
+                path_continuation_probability, light_sampling, enable_caustics);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 
@@ -545,7 +544,7 @@ std::shared_ptr<rendering::integrator::surface::Factory> Loader::load_surface_in
     return nullptr;
 }
 
-std::shared_ptr<rendering::integrator::volume::Factory> Loader::load_volume_integrator_factory(
+Loader::Volume_factory_ptr Loader::load_volume_integrator_factory(
     json::Value const& integrator_value, Settings const& settings, uint32_t num_workers) {
     using namespace rendering::integrator::volume;
 
@@ -674,8 +673,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
     }
 }
 
-std::unique_ptr<rendering::postprocessor::Postprocessor> Loader::load_tonemapper(
-    json::Value const& tonemapper_value) {
+Loader::Postprocessor_ptr Loader::load_tonemapper(json::Value const& tonemapper_value) {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : tonemapper_value.GetObject()) {
@@ -775,8 +773,7 @@ void Loader::load_settings(json::Value const& settings_value, Settings& settings
     }
 }
 
-void Loader::load_light_sampling(json::Value const&                     parent_value,
-                                 rendering::integrator::Light_sampling& sampling) {
+void Loader::load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) {
     auto const light_sampling_node = parent_value.FindMember("light_sampling");
     if (parent_value.MemberEnd() == light_sampling_node) {
         return;
@@ -784,12 +781,12 @@ void Loader::load_light_sampling(json::Value const&                     parent_v
 
     for (auto& n : light_sampling_node->value.GetObject()) {
         if ("strategy" == n.name) {
-            std::string strategy = json::read_string(n.value);
+            std::string const strategy = json::read_string(n.value);
 
             if ("Single" == strategy) {
-                sampling.strategy = rendering::integrator::Light_sampling::Strategy::Single;
+                sampling.strategy = Light_sampling::Strategy::Single;
             } else if ("All" == strategy) {
-                sampling.strategy = rendering::integrator::Light_sampling::Strategy::All;
+                sampling.strategy = Light_sampling::Strategy::All;
             }
         } else if ("num_samples" == n.name) {
             sampling.num_samples = json::read_uint(n.value);

@@ -455,12 +455,12 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(take::Settings const& take_settings,
                                                uint32_t num_integrators, uint32_t num_samples,
                                                uint32_t min_bounces, uint32_t max_bounces,
-                                               float          path_termination_probability,
+                                               float          path_continuation_probability,
                                                Light_sampling light_sampling,
                                                bool           enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
-      settings_{num_samples,    min_bounces,     max_bounces, 1.f - path_termination_probability,
+      settings_{num_samples,    min_bounces,     max_bounces, path_continuation_probability,
                 light_sampling, !enable_caustics} {}
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() noexcept {

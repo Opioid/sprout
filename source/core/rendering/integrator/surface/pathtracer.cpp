@@ -176,11 +176,11 @@ size_t Pathtracer::num_bytes() const noexcept {
 Pathtracer_factory::Pathtracer_factory(take::Settings const& take_settings,
                                        uint32_t num_integrators, uint32_t num_samples,
                                        uint32_t min_bounces, uint32_t max_bounces,
-                                       float path_termination_probability,
+                                       float path_continuation_probability,
                                        bool  enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
-      settings_{num_samples, min_bounces, max_bounces, 1.f - path_termination_probability,
+      settings_{num_samples, min_bounces, max_bounces, path_continuation_probability,
                 !enable_caustics} {}
 
 Pathtracer_factory::~Pathtracer_factory() noexcept {
