@@ -10,8 +10,14 @@
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
+#include "fluid_particle.hpp"
 #include "fluid_simulation.hpp"
+#include "fluid_vorton.hpp"
 #include "volume_renderer.hpp"
+#include "base/chrono/chrono.hpp"
+#include "base/string/string.hpp"
+
+#include <iostream>
 
 namespace procedural::fluid {
 
@@ -42,18 +48,55 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     Simulation sim(dimensions);
 
-    Volume_renderer renderer(dimensions, 1);
+	std::cout << "Simulating..." << std::endl;
 
-    auto target = std::make_shared<Float1>(Image::Description(Image::Type::Float1, dimensions));
+	    rnd::Generator rng(0, 0);
 
-    rnd::Generator rng(0, 0);
+		for (uint32_t i = 0, len = sim.num_vortons(); i < len; ++i) {
+            Vorton& v = sim.vortons()[i];
 
-    for (uint32_t i = 0; i < 4096; ++i) {
-        float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
+			v.radius = 0.01f;
 
-        float3 const c = p * float3(dimensions);
+            float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
 
-        renderer.splat(c, 1.f);
+            v.position = 0.2f * (2.f * p - 1.f);
+
+			
+			float3 const vorticity = 2.f * float3(rng.random_float(), rng.random_float(),
+                                                  rng.random_float()) - 1.f;
+
+            v.vorticity = 16.f * normalize(vorticity);
+        }
+
+        for (uint32_t i = 0, len = sim.num_tracers(); i < len; ++i) {
+            float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
+
+            sim.tracers()[i].position = (0.05f + 0.01f * rng.random_float()) * normalize(2.f * p - 1.f);
+        }
+
+
+	for (uint32_t i = 0; i < 3; ++i) {
+        auto const start = std::chrono::high_resolution_clock::now();
+
+        sim.simulate(manager.thread_pool());
+
+		std::cout << "Iteration " << i << " in "
+                  << string::to_string(chrono::seconds_since(start)) << " s" << std::endl;
+	}
+
+	int3 const viz_dimensions(320);
+
+    Volume_renderer renderer(viz_dimensions, 128);
+
+	renderer.clear();
+
+    auto target = std::make_shared<Float1>(
+            Image::Description(Image::Type::Float1, viz_dimensions));
+
+	for (uint32_t i = 0, len = sim.num_tracers(); i < len; ++i) {
+        float3 const p = sim.world_to_texture_point(sim.tracers()[i].position);
+
+        renderer.splat(p, 1.f);
     }
 
     renderer.resolve(*target);
@@ -63,7 +106,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
     auto material = std::make_shared<volumetric::Grid>(Sampler_settings(),
                                                        Texture_adapter(texture));
 
-    material->set_attenuation(float3(0.8f), float3(0.5f), 0.001f);
+    material->set_attenuation(float3(0.8f), float3(0.5f), 0.0005f);
     material->set_emission(float3(0.f));
     material->set_anisotropy(0.f);
 

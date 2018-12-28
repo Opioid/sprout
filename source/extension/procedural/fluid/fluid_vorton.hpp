@@ -5,15 +5,13 @@
 
 namespace procedural::fluid {
 
-class Vorton {
-  public:
+struct Vorton {
     float3 accumulate_velocity(float3 const& query_position) const noexcept;
 
-  private:
-    float3 position_;
-    float3 vorticity_;
+    float3 position;
+    float3 vorticity;
 
-    float radius_;
+    float radius;
 };
 
 }  // namespace procedural::fluid

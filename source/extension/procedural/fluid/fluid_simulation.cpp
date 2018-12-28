@@ -1,21 +1,280 @@
 #include "fluid_simulation.hpp"
 #include "base/math/matrix3x3.inl"
 #include "base/memory/align.hpp"
+#include "fluid_particle.hpp"
 #include "fluid_vorton.inl"
+#include "base/math/aabb.inl"
+#include "base/thread/thread_pool.hpp"
+#include <vector>
 
 namespace procedural::fluid {
 
-static uint32_t constexpr Num_vortons = 1024;
+static uint32_t constexpr Num_tracers = 51200000;
+static uint32_t constexpr Num_vortons = 256;
 
 void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent);
 
 Simulation::Simulation(int3 const& dimensions) noexcept
-    : velocity_(dimensions),
+    : aabb_(float3(-0.2f), float3(0.2f)),
+      viscosity_(0.5f),
+	  velocity_(dimensions),
+      velocity_jacobian_(dimensions),
       vortons_(memory::allocate_aligned<Vorton>(Num_vortons)),
-      num_vortons_(Num_vortons) {}
+      num_vortons_(Num_vortons),
+      tracers_(memory::allocate_aligned<Particle>(Num_tracers)),
+      num_tracers_(Num_tracers)
+{}
 
 Simulation::~Simulation() noexcept {
     memory::free_aligned(vortons_);
+}
+
+void Simulation::simulate(thread::Pool& pool) noexcept {
+    compute_velocity_grid(pool);
+
+    stretch_and_tilt_vortons(pool);
+
+	diffuse_vorticity_PSE();
+
+	advect_vortons();
+
+	advect_tracers(pool);
+}
+
+Vorton* Simulation::vortons() noexcept {
+    return vortons_;
+}
+
+uint32_t Simulation::num_vortons() const noexcept {
+    return num_vortons_;
+}
+
+Particle* Simulation::tracers() noexcept {
+    return tracers_;
+}
+
+uint32_t Simulation::num_tracers() const noexcept {
+    return num_tracers_;
+}
+
+float3 Simulation::world_to_texture_point(float3 const& v) const noexcept {
+    return (v - aabb_.min()) / aabb_.extent();
+}
+
+void Simulation::compute_velocity_grid(thread::Pool& pool) noexcept {
+    int3 const d = velocity_.dimensions();
+
+    float3 const spacing = aabb_.extent() / float3(d);
+
+	pool.run_range(
+        [this, d, spacing](uint32_t /*id*/, int32_t begin, int32_t end) {
+            for (int32_t z = begin; z < end; ++z) {
+                for (int32_t y = 0; y < d[1]; ++y) {
+                    for (int32_t x = 0; x < d[0]; ++x) {
+                        int3 const xyz(x, y, z);
+
+                        float3 const p(aabb_.min() + ((float3(xyz) + 0.5f) * spacing));
+
+                        float3 const v = compute_velocity(p);
+
+                        velocity_.set(xyz, v);
+                    }
+                }
+            }
+        },
+        0, d[2]);
+}
+
+void Simulation::stretch_and_tilt_vortons(thread::Pool& pool) noexcept {
+    float constexpr timeStep = 0.1f;
+
+    compute_jacobian(velocity_jacobian_, velocity_, aabb_.extent());
+
+	pool.run_range(
+        [this, timeStep](uint32_t /*id*/, int32_t begin, int32_t end) {
+            for (int32_t i = begin; i < end; ++i) {
+                Vorton&  vorton = vortons_[i];
+
+                float3x3 const vel_jac  = velocity_jacobian_.interpolate(
+                    world_to_texture_point(vorton.position));
+
+                float3 const stretch_tilt = transform_vector(vel_jac, vorton.vorticity);
+
+                vorton.vorticity += /* fudge factor for stability */ 0.5f * timeStep * stretch_tilt;
+            }
+        },
+        0, num_vortons_);
+}
+
+void Simulation::diffuse_vorticity_PSE() noexcept {
+    float const timeStep = 0.1f;
+
+    // Phase 1: Partition vortons
+
+    // Create a spatial partition for the vortons.
+    // Each cell contains a dynamic array of integers
+    // whose values are offsets into mVortons.
+    Grid<std::vector<uint32_t> > ugVortRef(velocity_.dimensions());
+ //   ugVortRef.Init();
+
+    for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {  
+        Vorton& rVorton = vortons_[i];
+        // Insert the vorton's offset into the spatial partition.
+
+		float3 const p = world_to_texture_point(rVorton.position);
+
+			    if (p[0] < 0.f || p[0] >= 1.f || p[1] < 0.f || p[1] >= 1.f ||
+                    p[2] < 0.f || p[2] >= 1.f) {
+                    continue;
+                }
+
+        ugVortRef.at(p).push_back(i);
+    }
+
+    // Phase 2: Exchange vorticity with nearest neighbors
+
+	int3 const d = ugVortRef.dimensions();
+
+    const unsigned nx   = d[0];
+    const unsigned  nxm1 = nx - 1;
+    const unsigned ny   = d[1];
+    const unsigned  nym1 = ny - 1;
+    const unsigned  nxy  = nx * ny;
+    const unsigned nz   = d[2];
+    const unsigned  nzm1 = nz - 1;
+    unsigned        idx[3];
+    for (idx[2] = 0; idx[2] < nzm1; ++idx[2]) {  // For all points along z except the last...
+        const unsigned offsetZ0 = idx[2] * nxy;
+        const unsigned offsetZp = (idx[2] + 1) * nxy;
+        for (idx[1] = 0; idx[1] < nym1; ++idx[1]) {  // For all points along y except the last...
+            const unsigned offsetY0Z0 = idx[1] * nx + offsetZ0;
+            const unsigned offsetYpZ0 = (idx[1] + 1) * nx + offsetZ0;
+            const unsigned offsetY0Zp = idx[1] * nx + offsetZp;
+            for (idx[0] = 0; idx[0] < nxm1;
+                 ++idx[0]) {  // For all points along x except the last...
+                const unsigned offsetX0Y0Z0 = idx[0] + offsetY0Z0;
+                for (unsigned ivHere = 0; ivHere < ugVortRef.at(offsetX0Y0Z0).size();
+                     ++ivHere) {  // For each vorton in this gridcell...
+                    const unsigned& rVortIdxHere   = ugVortRef.at(offsetX0Y0Z0)[ivHere];
+                    Vorton&         rVortonHere    = vortons_[rVortIdxHere];
+                    float3&           rVorticityHere = rVortonHere.vorticity;
+
+                    // Diffuse vorticity with other vortons in this same cell:
+                    for (unsigned ivThere = ivHere + 1; ivThere < ugVortRef.at(offsetX0Y0Z0).size();
+                         ++ivThere) {  // For each OTHER vorton within this same cell...
+                        const unsigned& rVortIdxThere   = ugVortRef.at(offsetX0Y0Z0)[ivThere];
+                        Vorton&           rVortonThere    = vortons_[rVortIdxThere];
+                        float3&           rVorticityThere = rVortonThere.vorticity;
+                        const float3    vortDiff        = rVorticityHere - rVorticityThere;
+                        const float3      exchange =
+                            2.0f * viscosity_ * timeStep *
+                            vortDiff;  // Amount of vorticity to exchange between particles.
+                        rVorticityHere -=
+                            exchange;  // Make "here" vorticity a little closer to "there".
+                        rVorticityThere +=
+                            exchange;  // Make "there" vorticity a little closer to "here".
+                    }
+
+                    // Diffuse vorticity with vortons in adjacent cells:
+                    {
+                        const unsigned offsetXpY0Z0 =
+                            idx[0] + 1 + offsetY0Z0;  // offset of adjacent cell in +X direction
+                        for (unsigned ivThere = 0; ivThere < ugVortRef.at(offsetXpY0Z0).size();
+                             ++ivThere) {  // For each vorton in the adjacent cell in +X
+                                           // direction...
+                            const unsigned& rVortIdxThere   = ugVortRef.at(offsetXpY0Z0)[ivThere];
+                            Vorton&         rVortonThere    = vortons_[rVortIdxThere];
+                            float3&         rVorticityThere = rVortonThere.vorticity;
+                            const float3    vortDiff        = rVorticityHere - rVorticityThere;
+                            const float3    exchange =
+                                viscosity_ * timeStep *
+                                vortDiff;  // Amount of vorticity to exchange between particles.
+                            rVorticityHere -=
+                                exchange;  // Make "here" vorticity a little closer to "there".
+                            rVorticityThere +=
+                                exchange;  // Make "there" vorticity a little closer to "here".
+                        }
+                    }
+
+                    {
+                        const unsigned offsetX0YpZ0 =
+                            idx[0] + offsetYpZ0;  // offset of adjacent cell in +Y direction
+                        for (unsigned ivThere = 0; ivThere < ugVortRef.at(offsetX0YpZ0).size();
+                             ++ivThere) {  // For each vorton in the adjacent cell in +Y
+                                           // direction...
+                            const unsigned& rVortIdxThere   = ugVortRef.at(offsetX0YpZ0)[ivThere];
+                            Vorton&         rVortonThere    = vortons_[rVortIdxThere];
+                            float3&         rVorticityThere = rVortonThere.vorticity;
+                            const float3    vortDiff        = rVorticityHere - rVorticityThere;
+                            const float3    exchange =
+                                viscosity_ * timeStep *
+                                vortDiff;  // Amount of vorticity to exchange between particles.
+                            rVorticityHere -=
+                                exchange;  // Make "here" vorticity a little closer to "there".
+                            rVorticityThere +=
+                                exchange;  // Make "there" vorticity a little closer to "here".
+                        }
+                    }
+
+                    {
+                        const unsigned offsetX0Y0Zp =
+                            idx[0] + offsetY0Zp;  // offset of adjacent cell in +Z direction
+                        for (unsigned ivThere = 0; ivThere < ugVortRef.at(offsetX0Y0Zp).size();
+                             ++ivThere) {  // For each vorton in the adjacent cell in +Z
+                                           // direction...
+                            const unsigned& rVortIdxThere   = ugVortRef.at(offsetX0Y0Zp)[ivThere];
+                            Vorton&         rVortonThere    = vortons_[rVortIdxThere];
+                            float3&         rVorticityThere = rVortonThere.vorticity;
+                            const float3    vortDiff        = rVorticityHere - rVorticityThere;
+                            const float3    exchange =
+                                viscosity_ * timeStep *
+                                vortDiff;  // Amount of vorticity to exchange between particles.
+                            rVorticityHere -=
+                                exchange;  // Make "here" vorticity a little closer to "there".
+                            rVorticityThere +=
+                                exchange;  // Make "there" vorticity a little closer to "here".
+                        }
+                    }
+
+                    // Dissipate vorticity.  See notes in header comment.
+                    rVorticityHere -= viscosity_ * timeStep *
+                                      rVorticityHere;  // Reduce "here" vorticity.
+                }
+            }
+        }
+    }
+}
+
+void Simulation::advect_vortons() noexcept {
+    float constexpr timeStep = 0.1f;
+
+    for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {  
+        Vorton& rVorton = vortons_[i];
+        float3 const velocity = velocity_.interpolate(world_to_texture_point(rVorton.position));
+        rVorton.position += timeStep * velocity;
+     //   rVorton.mVelocity = velocity;  // Cache this for use in collisions with rigid bodies.
+    }
+}
+
+void Simulation::advect_tracers(thread::Pool& pool) noexcept {
+    float constexpr timeStep = 0.1f;
+
+
+	  pool.run_range(
+        [this, timeStep](uint32_t /*id*/, int32_t begin, int32_t end) {
+            for (int32_t i = begin; i < end; ++i) {
+                Particle& tracer = tracers_[i];
+
+                float3 const velocity = velocity_.interpolate(
+                    world_to_texture_point(tracer.position));
+
+                tracer.position += timeStep * velocity;
+
+                //   rVorton.mVelocity = velocity;  // Cache this for use in collisions with rigid
+                //   bodies.
+            }
+        },
+        0, num_tracers_);
 }
 
 float3 Simulation::compute_velocity(float3 const& position) const noexcept {

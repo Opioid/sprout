@@ -16,9 +16,11 @@ class Volume_renderer {
 
     void clear() noexcept;
 
-    void splat(float3 const& position, float value) noexcept;
+    void splat(float3 const& uvw, float value) noexcept;
 
   private:
+    void splat(int3 const& c, float value) noexcept;
+
     int3 dimensions_;
 
     float* voxels_;

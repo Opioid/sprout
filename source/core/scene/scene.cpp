@@ -254,7 +254,7 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     bvh_builder_.build(volume_bvh_.tree(), volumes_);
     volume_bvh_.set_infinite_props(infinite_volumes_);
 
-    // resort lights PDF
+    // re-sort lights PDF
     light_powers_.clear();
 
     for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
