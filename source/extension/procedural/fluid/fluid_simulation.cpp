@@ -1,11 +1,11 @@
 #include "fluid_simulation.hpp"
+#include <vector>
+#include "base/math/aabb.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/memory/align.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "fluid_particle.hpp"
 #include "fluid_vorton.inl"
-#include "base/math/aabb.inl"
-#include "base/thread/thread_pool.hpp"
-#include <vector>
 
 namespace procedural::fluid {
 
@@ -17,13 +17,12 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
 Simulation::Simulation(int3 const& dimensions) noexcept
     : aabb_(float3(-0.2f), float3(0.2f)),
       viscosity_(0.5f),
-	  velocity_(dimensions),
+      velocity_(dimensions),
       velocity_jacobian_(dimensions),
       vortons_(memory::allocate_aligned<Vorton>(Num_vortons)),
       num_vortons_(Num_vortons),
       tracers_(memory::allocate_aligned<Particle>(Num_tracers)),
-      num_tracers_(Num_tracers)
-{}
+      num_tracers_(Num_tracers) {}
 
 Simulation::~Simulation() noexcept {
     memory::free_aligned(vortons_);
@@ -34,11 +33,11 @@ void Simulation::simulate(thread::Pool& pool) noexcept {
 
     stretch_and_tilt_vortons(pool);
 
-	diffuse_vorticity_PSE();
+    diffuse_vorticity_PSE();
 
-	advect_vortons();
+    advect_vortons();
 
-	advect_tracers(pool);
+    advect_tracers(pool);
 }
 
 Vorton* Simulation::vortons() noexcept {
@@ -66,7 +65,7 @@ void Simulation::compute_velocity_grid(thread::Pool& pool) noexcept {
 
     float3 const spacing = aabb_.extent() / float3(d);
 
-	pool.run_range(
+    pool.run_range(
         [this, d, spacing](uint32_t /*id*/, int32_t begin, int32_t end) {
             for (int32_t z = begin; z < end; ++z) {
                 for (int32_t y = 0; y < d[1]; ++y) {
@@ -90,12 +89,12 @@ void Simulation::stretch_and_tilt_vortons(thread::Pool& pool) noexcept {
 
     compute_jacobian(velocity_jacobian_, velocity_, aabb_.extent());
 
-	pool.run_range(
+    pool.run_range(
         [this, timeStep](uint32_t /*id*/, int32_t begin, int32_t end) {
             for (int32_t i = begin; i < end; ++i) {
-                Vorton&  vorton = vortons_[i];
+                Vorton& vorton = vortons_[i];
 
-                float3x3 const vel_jac  = velocity_jacobian_.interpolate(
+                float3x3 const vel_jac = velocity_jacobian_.interpolate(
                     world_to_texture_point(vorton.position));
 
                 float3 const stretch_tilt = transform_vector(vel_jac, vorton.vorticity);
@@ -115,34 +114,33 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
     // Each cell contains a dynamic array of integers
     // whose values are offsets into mVortons.
     Grid<std::vector<uint32_t> > ugVortRef(velocity_.dimensions());
- //   ugVortRef.Init();
+    //   ugVortRef.Init();
 
-    for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {  
+    for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {
         Vorton& rVorton = vortons_[i];
         // Insert the vorton's offset into the spatial partition.
 
-		float3 const p = world_to_texture_point(rVorton.position);
+        float3 const p = world_to_texture_point(rVorton.position);
 
-			    if (p[0] < 0.f || p[0] >= 1.f || p[1] < 0.f || p[1] >= 1.f ||
-                    p[2] < 0.f || p[2] >= 1.f) {
-                    continue;
-                }
+        if (p[0] < 0.f || p[0] >= 1.f || p[1] < 0.f || p[1] >= 1.f || p[2] < 0.f || p[2] >= 1.f) {
+            continue;
+        }
 
         ugVortRef.at(p).push_back(i);
     }
 
     // Phase 2: Exchange vorticity with nearest neighbors
 
-	int3 const d = ugVortRef.dimensions();
+    int3 const d = ugVortRef.dimensions();
 
     const unsigned nx   = d[0];
-    const unsigned  nxm1 = nx - 1;
+    const unsigned nxm1 = nx - 1;
     const unsigned ny   = d[1];
-    const unsigned  nym1 = ny - 1;
-    const unsigned  nxy  = nx * ny;
+    const unsigned nym1 = ny - 1;
+    const unsigned nxy  = nx * ny;
     const unsigned nz   = d[2];
-    const unsigned  nzm1 = nz - 1;
-    unsigned        idx[3];
+    const unsigned nzm1 = nz - 1;
+    unsigned       idx[3];
     for (idx[2] = 0; idx[2] < nzm1; ++idx[2]) {  // For all points along z except the last...
         const unsigned offsetZ0 = idx[2] * nxy;
         const unsigned offsetZp = (idx[2] + 1) * nxy;
@@ -157,16 +155,16 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
                      ++ivHere) {  // For each vorton in this gridcell...
                     const unsigned& rVortIdxHere   = ugVortRef.at(offsetX0Y0Z0)[ivHere];
                     Vorton&         rVortonHere    = vortons_[rVortIdxHere];
-                    float3&           rVorticityHere = rVortonHere.vorticity;
+                    float3&         rVorticityHere = rVortonHere.vorticity;
 
                     // Diffuse vorticity with other vortons in this same cell:
                     for (unsigned ivThere = ivHere + 1; ivThere < ugVortRef.at(offsetX0Y0Z0).size();
                          ++ivThere) {  // For each OTHER vorton within this same cell...
                         const unsigned& rVortIdxThere   = ugVortRef.at(offsetX0Y0Z0)[ivThere];
-                        Vorton&           rVortonThere    = vortons_[rVortIdxThere];
-                        float3&           rVorticityThere = rVortonThere.vorticity;
+                        Vorton&         rVortonThere    = vortons_[rVortIdxThere];
+                        float3&         rVorticityThere = rVortonThere.vorticity;
                         const float3    vortDiff        = rVorticityHere - rVorticityThere;
-                        const float3      exchange =
+                        const float3    exchange =
                             2.0f * viscosity_ * timeStep *
                             vortDiff;  // Amount of vorticity to exchange between particles.
                         rVorticityHere -=
@@ -248,19 +246,18 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
 void Simulation::advect_vortons() noexcept {
     float constexpr timeStep = 0.1f;
 
-    for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {  
-        Vorton& rVorton = vortons_[i];
+    for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {
+        Vorton&      rVorton  = vortons_[i];
         float3 const velocity = velocity_.interpolate(world_to_texture_point(rVorton.position));
         rVorton.position += timeStep * velocity;
-     //   rVorton.mVelocity = velocity;  // Cache this for use in collisions with rigid bodies.
+        //   rVorton.mVelocity = velocity;  // Cache this for use in collisions with rigid bodies.
     }
 }
 
 void Simulation::advect_tracers(thread::Pool& pool) noexcept {
     float constexpr timeStep = 0.1f;
 
-
-	  pool.run_range(
+    pool.run_range(
         [this, timeStep](uint32_t /*id*/, int32_t begin, int32_t end) {
             for (int32_t i = begin; i < end; ++i) {
                 Particle& tracer = tracers_[i];

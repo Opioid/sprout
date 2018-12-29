@@ -1,9 +1,9 @@
 #include "fluid_grid.hpp"
-#include "core/image/texture/sampler/address_mode.hpp"
-#include "core/image/texture/sampler/bilinear.hpp"
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "core/image/texture/sampler/address_mode.hpp"
+#include "core/image/texture/sampler/bilinear.hpp"
 
 namespace procedural::fluid {
 
@@ -66,9 +66,9 @@ T Grid<T>::interpolate(float3 const& uvw) noexcept {
     int32_t const i = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 
     return voxels_[i];
-	*/
+        */
 
-	using namespace image::texture::sampler;
+    using namespace image::texture::sampler;
 
     int3         xyz, xyz1;
     float3 const stu = map(uvw, xyz, xyz1);
@@ -88,6 +88,7 @@ T Grid<T>::interpolate(float3 const& uvw) noexcept {
     return lerp(c0, c1, stu[2]);
 }
 
+template <>
 std::vector<uint32_t> Grid<std::vector<uint32_t>>::interpolate(float3 const& uvw) noexcept {
     int3 c(uvw * float3(dimensions_));
 

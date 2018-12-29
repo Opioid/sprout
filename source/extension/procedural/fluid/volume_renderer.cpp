@@ -39,42 +39,42 @@ void Volume_renderer::clear() noexcept {
 void Volume_renderer::splat(float3 const& uvw, float value) noexcept {
     const int3 c(uvw * float3(dimensions_) + 0.5f);
 
-	float constexpr weight = 1.f / (3.f * 3.f * 3.f);
+    float constexpr weight = 1.f / (3.f * 3.f * 3.f);
 
-	splat(c + int3(-1, -1, -1), weight * value);
-    splat(c + int3( 0, -1, -1), weight * value);
-	splat(c + int3(+1, -1, -1), weight * value);
+    splat(c + int3(-1, -1, -1), weight * value);
+    splat(c + int3(0, -1, -1), weight * value);
+    splat(c + int3(+1, -1, -1), weight * value);
 
-	splat(c + int3(-1, 0, -1), weight * value);
-    splat(c + int3( 0, 0, -1), weight * value);
+    splat(c + int3(-1, 0, -1), weight * value);
+    splat(c + int3(0, 0, -1), weight * value);
     splat(c + int3(+1, 0, -1), weight * value);
 
-	splat(c + int3(-1, 1, -1), weight * value);
-    splat(c + int3( 0, 1, -1), weight * value);
+    splat(c + int3(-1, 1, -1), weight * value);
+    splat(c + int3(0, 1, -1), weight * value);
     splat(c + int3(+1, 1, -1), weight * value);
 
-	splat(c + int3(-1, -1, 0), weight * value);
-    splat(c + int3( 0, -1, 0), weight * value);
+    splat(c + int3(-1, -1, 0), weight * value);
+    splat(c + int3(0, -1, 0), weight * value);
     splat(c + int3(+1, -1, 0), weight * value);
 
     splat(c + int3(-1, 0, 0), weight * value);
-    splat(c + int3( 0, 0, 0), weight * value);
+    splat(c + int3(0, 0, 0), weight * value);
     splat(c + int3(+1, 0, 0), weight * value);
 
     splat(c + int3(-1, 1, 0), weight * value);
-    splat(c + int3( 0, 1, 0), weight * value);
+    splat(c + int3(0, 1, 0), weight * value);
     splat(c + int3(+1, 1, 0), weight * value);
 
-	splat(c + int3(-1, -1, 1), weight * value);
-    splat(c + int3( 0, -1, 1), weight * value);
+    splat(c + int3(-1, -1, 1), weight * value);
+    splat(c + int3(0, -1, 1), weight * value);
     splat(c + int3(+1, -1, 1), weight * value);
 
     splat(c + int3(-1, 0, 1), weight * value);
-    splat(c + int3( 0, 0, 1), weight * value);
+    splat(c + int3(0, 0, 1), weight * value);
     splat(c + int3(+1, 0, 1), weight * value);
 
     splat(c + int3(-1, 1, 1), weight * value);
-    splat(c + int3( 0, 1, 1), weight * value);
+    splat(c + int3(0, 1, 1), weight * value);
     splat(c + int3(+1, 1, 1), weight * value);
 }
 

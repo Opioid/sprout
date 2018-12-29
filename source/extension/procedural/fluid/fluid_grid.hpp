@@ -1,8 +1,8 @@
 #ifndef SU_EXTENSION_PROCEDURAL_FLUID_GRID_HPP
 #define SU_EXTENSION_PROCEDURAL_FLUID_GRID_HPP
 
-#include "base/math/matrix3x3.hpp"
 #include <vector>
+#include "base/math/matrix3x3.hpp"
 
 namespace procedural::fluid {
 
@@ -17,7 +17,7 @@ class Grid {
 
     T const& at(int32_t index) const noexcept;
 
-	T& at(float3 const& v) noexcept;
+    T& at(float3 const& v) noexcept;
 
     void clear(T const& value) noexcept;
 
@@ -30,12 +30,15 @@ class Grid {
   private:
     float3 map(float3 const& uvw, int3& xyz0, int3& xyz1) const noexcept;
 
-	T const& at(int32_t x, int32_t y, int32_t z) const noexcept;
+    T const& at(int32_t x, int32_t y, int32_t z) const noexcept;
 
     int3 dimensions_;
 
     T* voxels_;
 };
+
+template <>
+std::vector<uint32_t> Grid<std::vector<uint32_t>>::interpolate(float3 const& uvw) noexcept;
 
 extern template class Grid<float3>;
 extern template class Grid<float3x3>;

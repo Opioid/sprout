@@ -277,32 +277,16 @@ inline Matrix3x3f_a constexpr Matrix3x3f_a::identity() noexcept {
     return Matrix3x3f_a(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
 }
 
-static inline Matrix3x3f_a constexpr operator+(Matrix3x3f_a const& a, const Matrix3x3f_a& b) noexcept {
-    return Matrix3x3f_a(a.r[0][0] + b.r[0][0],
-                        a.r[0][1] + b.r[0][1],
-                        a.r[0][2] + b.r[0][2],
-
-                        a.r[1][0] + b.r[1][0],
-                        a.r[1][1] + b.r[1][1],
-                        a.r[1][2] + b.r[1][2],
-
-                        a.r[2][0] + b.r[2][0],
-                        a.r[2][1] + b.r[2][1],
-                        a.r[2][2] + b.r[2][2]);
+static inline Matrix3x3f_a constexpr operator+(Matrix3x3f_a const& a,
+                                               const Matrix3x3f_a& b) noexcept {
+    return Matrix3x3f_a(a.r[0][0] + b.r[0][0], a.r[0][1] + b.r[0][1], a.r[0][2] + b.r[0][2],
+                        a.r[1][0] + b.r[1][0], a.r[1][1] + b.r[1][1], a.r[1][2] + b.r[1][2],
+                        a.r[2][0] + b.r[2][0], a.r[2][1] + b.r[2][1], a.r[2][2] + b.r[2][2]);
 }
 
-static inline Matrix3x3f_a operator*(float s, const Matrix3x3f_a& b) noexcept {
-    return Matrix3x3f_a(s * b.r[0][0],
-                        s * b.r[0][1],
-                        s * b.r[0][2],
-
-                        s * b.r[1][0],
-                        s * b.r[1][1],
-                        s * b.r[1][2],
-
-                        s * b.r[2][0],
-                        s * b.r[2][1],
-                        s * b.r[2][2]);
+static inline Matrix3x3f_a constexpr operator*(float s, const Matrix3x3f_a& b) noexcept {
+    return Matrix3x3f_a(s * b.r[0][0], s * b.r[0][1], s * b.r[0][2], s * b.r[1][0], s * b.r[1][1],
+                        s * b.r[1][2], s * b.r[2][0], s * b.r[2][1], s * b.r[2][2]);
 }
 
 static inline Matrix3x3f_a operator*(Matrix3x3f_a const& a, const Matrix3x3f_a& b) noexcept {

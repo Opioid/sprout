@@ -1,8 +1,8 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_BILINEAR_HPP
 #define SU_CORE_IMAGE_TEXTURE_SAMPLER_BILINEAR_HPP
 
-#include "base/math/vector4.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/vector4.inl"
 
 namespace image::texture::sampler {
 
