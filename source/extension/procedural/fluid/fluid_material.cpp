@@ -18,7 +18,7 @@ namespace procedural::fluid {
 Material::Material(Sampler_settings const& sampler_settings,
                    Texture_adapter const&  density) noexcept
     : scene::material::volumetric::Grid(sampler_settings, density),
-      sim_(int3(64)),
+	  sim_(int3(128)),
       current_frame_(0) {
     rnd::Generator rng(0, 0);
 
