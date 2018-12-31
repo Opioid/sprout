@@ -27,6 +27,10 @@ inline bool Adapter::is_valid() const noexcept {
     return !texture_ == false;
 }
 
+inline Texture& Adapter::texture() noexcept {
+    return *texture_.get();
+}
+
 inline Texture const& Adapter::texture() const noexcept {
     return *texture_.get();
 }

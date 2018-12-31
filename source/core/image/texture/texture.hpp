@@ -16,6 +16,7 @@ class Texture {
 
     virtual ~Texture() noexcept;
 
+    Image&       image() noexcept;
     Image const& image() const noexcept;
 
     int32_t num_channels() const noexcept;

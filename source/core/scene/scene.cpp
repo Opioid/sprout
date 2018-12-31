@@ -214,6 +214,10 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
         p->morph(thread_pool);
     }
 
+    for (auto m : materials_) {
+        m->simulate(frames_start, frames_end, tick_duration_, thread_pool);
+    }
+
     compile(start, thread_pool);
 }
 

@@ -14,8 +14,9 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
 
 Emissionmap_animated::~Emissionmap_animated() noexcept {}
 
-void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) noexcept {
-    int32_t const element = static_cast<int32_t>(absolute_time / frame_length_) %
+void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /*frame_length*/,
+                                    thread::Pool& /*pool*/) noexcept {
+    int32_t const element = static_cast<int32_t>(start / frame_length_) %
                             emission_map_.texture().num_elements();
 
     if (element != element_) {

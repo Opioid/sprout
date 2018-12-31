@@ -34,7 +34,7 @@ class Grid : public Material {
 
     bool is_heterogeneous_volume() const noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept override;
 
   protected:
     float density(float3 const& uvw, Filter filter, Worker const& worker) const noexcept;
@@ -60,6 +60,8 @@ class Grid_emission : public Grid {
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& pool) noexcept override final;
+
+    size_t num_bytes() const noexcept override;
 
   private:
     Distribution_3D distribution_;

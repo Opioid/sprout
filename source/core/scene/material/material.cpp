@@ -35,7 +35,8 @@ void Material::set_parameters(json::Value const& parameters) noexcept {
 
 void Material::compile(thread::Pool& /*pool*/) noexcept {}
 
-void Material::tick(float /*absolute_time*/, float /*time_slice*/) noexcept {}
+void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
+                        thread::Pool& pool) noexcept {}
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
                                    Filter /*filter*/, Worker const& /*worker*/) const noexcept {

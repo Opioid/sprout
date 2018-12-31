@@ -13,7 +13,8 @@ class Emissionmap_animated : public Emissionmap {
 
     ~Emissionmap_animated() noexcept override;
 
-    void tick(float absolute_time, float time_slice) noexcept override final;
+    void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
+                  thread::Pool& pool) noexcept override final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const

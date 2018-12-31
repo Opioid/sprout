@@ -2,6 +2,8 @@ target_sources(extension
 	PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/fluid_grid.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/fluid_grid.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_material.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fluid_material.hpp"	
 	"${CMAKE_CURRENT_LIST_DIR}/fluid_particle.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/fluid_provider.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/fluid_provider.hpp"

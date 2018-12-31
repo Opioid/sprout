@@ -12,6 +12,10 @@ Texture::Texture(std::shared_ptr<Image> const& image) noexcept
 
 Texture::~Texture() noexcept {}
 
+Image& Texture::image() noexcept {
+    return *untyped_image_.get();
+}
+
 Image const& Texture::image() const noexcept {
     return *untyped_image_.get();
 }

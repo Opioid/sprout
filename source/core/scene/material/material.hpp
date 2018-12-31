@@ -67,7 +67,8 @@ class Material {
 
     virtual void compile(thread::Pool& pool) noexcept;
 
-    virtual void tick(float absolute_time, float time_slice) noexcept;
+    virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
+                          thread::Pool& pool) noexcept;
 
     virtual const Sample& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, Sampler& sampler, Worker const& worker) const

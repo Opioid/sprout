@@ -167,4 +167,8 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
     }
 }
 
+size_t Grid_emission::num_bytes() const noexcept {
+    return sizeof(*this) + tree_.num_bytes() + distribution_.num_bytes();
+}
+
 }  // namespace scene::material::volumetric
