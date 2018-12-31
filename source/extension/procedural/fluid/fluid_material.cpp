@@ -3,6 +3,7 @@
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "core/image/texture/texture.hpp"
+#include "core/image/texture/texture_adapter.inl"
 #include "core/image/typed_image.hpp"
 #include "fluid_particle.hpp"
 #include "fluid_vorton.hpp"
