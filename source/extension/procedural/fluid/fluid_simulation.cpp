@@ -12,7 +12,7 @@ namespace procedural::fluid {
 static uint32_t constexpr Num_tracers = 51200000;
 static uint32_t constexpr Num_vortons = 512;
 
-void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent);
+void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent, thread::Pool& pool);
 
 Simulation::Simulation(int3 const& dimensions) noexcept
     : aabb_(float3(-0.2f), float3(0.2f)),
@@ -34,7 +34,7 @@ void Simulation::simulate(thread::Pool& pool) noexcept {
 
     stretch_and_tilt_vortons(pool);
 
-    diffuse_vorticity_PSE();
+	diffuse_vorticity_PSE();
 
     advect_vortons();
 
@@ -86,7 +86,7 @@ void Simulation::compute_velocity_grid(thread::Pool& pool) noexcept {
 }
 
 void Simulation::stretch_and_tilt_vortons(thread::Pool& pool) noexcept {
-    compute_jacobian(velocity_jacobian_, velocity_, aabb_.extent());
+	compute_jacobian(velocity_jacobian_, velocity_, aabb_.extent(), pool);
 
     pool.run_range(
         [this](uint32_t /*id*/, int32_t begin, int32_t end) {
@@ -142,21 +142,24 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
     for (idx[2] = 0; idx[2] < nzm1; ++idx[2]) {
 		uint32_t const offsetZ0 = idx[2] * nxy;
 		uint32_t const offsetZp = (idx[2] + 1) * nxy;
+
         for (idx[1] = 0; idx[1] < nym1; ++idx[1]) {
 			uint32_t const offsetY0Z0 = idx[1] * nx + offsetZ0;
 			uint32_t const offsetYpZ0 = (idx[1] + 1) * nx + offsetZ0;
 			uint32_t const offsetY0Zp = idx[1] * nx + offsetZp;
+
             for (idx[0] = 0; idx[0] < nxm1; ++idx[0]) {
-				uint32_t const offsetX0Y0Z0 = idx[0] + offsetY0Z0;
-				for (uint32_t ivHere = 0; ivHere < ugVortRef.at(offsetX0Y0Z0).size(); ++ivHere) {
-					uint32_t const vortIdxHere = ugVortRef.at(offsetX0Y0Z0)[ivHere];
+				auto const& vortRefX0Y0Z0 = ugVortRef.at(idx[0] + offsetY0Z0);
+
+				for (uint32_t ivHere = 0; ivHere < vortRefX0Y0Z0.size(); ++ivHere) {
+					uint32_t const vortIdxHere = vortRefX0Y0Z0[ivHere];
 
 					float3& vorticityHere = vortons_[vortIdxHere].vorticity;
 
                     // Diffuse vorticity with other vortons in this same cell:
-					for (uint32_t ivThere = ivHere + 1; ivThere < ugVortRef.at(offsetX0Y0Z0).size();
+					for (uint32_t ivThere = ivHere + 1; ivThere < vortRefX0Y0Z0.size();
                          ++ivThere) {
-						uint32_t const vortIdxThere = ugVortRef.at(offsetX0Y0Z0)[ivThere];
+						uint32_t const vortIdxThere = vortRefX0Y0Z0[ivThere];
 
 						Vorton& vortonThere    = vortons_[vortIdxThere];
 						float3& vorticityThere = vortonThere.vorticity;
@@ -170,11 +173,11 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
 
                     // Diffuse vorticity with vortons in adjacent cells:
                     {
-						uint32_t const offsetXpY0Z0 = idx[0] + 1 + offsetY0Z0;
+						auto const& vortRefXpY0Z0 = ugVortRef.at(idx[0] + 1 + offsetY0Z0);
 
-						for (uint32_t ivThere = 0; ivThere < ugVortRef.at(offsetXpY0Z0).size();
+						for (uint32_t ivThere = 0; ivThere < vortRefXpY0Z0.size();
                              ++ivThere) {
-							uint32_t const vortIdxThere = ugVortRef.at(offsetXpY0Z0)[ivThere];
+							uint32_t const vortIdxThere = vortRefXpY0Z0[ivThere];
 
 							float3& vorticityThere = vortons_[vortIdxThere].vorticity;
 
@@ -187,11 +190,11 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
                     }
 
                     {
-						uint32_t const offsetX0YpZ0 = idx[0] + offsetYpZ0;
+						auto const& vortRefX0YpZ0 = ugVortRef.at(idx[0] + offsetYpZ0);
 
-						for (uint32_t ivThere = 0; ivThere < ugVortRef.at(offsetX0YpZ0).size();
+						for (uint32_t ivThere = 0; ivThere < vortRefX0YpZ0.size();
                              ++ivThere) {
-							uint32_t const vortIdxThere = ugVortRef.at(offsetX0YpZ0)[ivThere];
+							uint32_t const vortIdxThere = vortRefX0YpZ0[ivThere];
 
 							float3& vorticityThere = vortons_[vortIdxThere].vorticity;
 
@@ -203,12 +206,12 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
                         }
                     }
 
-                    {
-						uint32_t const offsetX0Y0Zp = idx[0] + offsetY0Zp;
+					{
+						auto const& vortRefX0Y0Zp = ugVortRef.at(idx[0] + offsetY0Zp);
 
-						for (uint32_t ivThere = 0; ivThere < ugVortRef.at(offsetX0Y0Zp).size();
+						for (uint32_t ivThere = 0; ivThere < vortRefX0Y0Zp.size();
                              ++ivThere) {
-							uint32_t const vortIdxThere = ugVortRef.at(offsetX0Y0Zp)[ivThere];
+							uint32_t const vortIdxThere = vortRefX0Y0Zp[ivThere];
 
 							float3& vorticityThere = vortons_[vortIdxThere].vorticity;
 
@@ -278,7 +281,7 @@ float3 Simulation::compute_velocity(float3 const& position) const noexcept {
     \param vec - UniformGrid of 3-vector values
 
 */
-void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent) {
+void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent, thread::Pool& pool) {
 	float3 const spacing = extent / float3(vec.dimensions());
 
 	float3 const reciprocalSpacing     = 1.f / spacing;
@@ -313,6 +316,37 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
 	uint32_t const offsetX0Y0ZP = index[0] + offsetY0ZP;
 
     // Compute derivatives for interior (i.e. away from boundaries).
+
+	pool.run_range(
+		[&jacobian, &vec, halfReciprocalSpacing, dims, dimsMinus1, numXY](uint32_t /*id*/, int32_t begin, int32_t end) {
+		int32_t index[3];
+		for (index[2] = begin; index[2] < end; ++index[2]) {
+			ASSIGN_Z_OFFSETS;
+			for (index[1] = 1; index[1] < dimsMinus1[1]; ++index[1]) {
+				ASSIGN_YZ_OFFSETS;
+				for (index[0] = 1; index[0] < dimsMinus1[0]; ++index[0]) {
+					ASSIGN_XYZ_OFFSETS;
+
+					float3x3& rMatrix = jacobian.data()[offsetX0Y0Z0];
+
+					// Compute d/dx
+					rMatrix.r[0] = halfReciprocalSpacing[0] *
+								   (vec.at(offsetXPY0Z0) - vec.at(offsetXMY0Z0));
+
+					// Compute d/dy
+					rMatrix.r[1] = halfReciprocalSpacing[1] *
+								   (vec.at(offsetX0YPZ0) - vec.at(offsetX0YMZ0));
+
+					// Compute d/dz
+					rMatrix.r[2] = halfReciprocalSpacing[2] *
+								   (vec.at(offsetX0Y0ZP) - vec.at(offsetX0Y0ZM));
+				}
+			}
+		}
+		},
+		1, dimsMinus1[2]);
+
+	/*
     for (index[2] = 1; index[2] < dimsMinus1[2]; ++index[2]) {
         ASSIGN_Z_OFFSETS;
         for (index[1] = 1; index[1] < dimsMinus1[1]; ++index[1]) {
@@ -321,19 +355,22 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
                 ASSIGN_XYZ_OFFSETS;
 
                 float3x3& rMatrix = jacobian.data()[offsetX0Y0Z0];
-                /* Compute d/dx */
+
+				// Compute d/dx
                 rMatrix.r[0] = halfReciprocalSpacing[0] *
                                (vec.at(offsetXPY0Z0) - vec.at(offsetXMY0Z0));
-                /* Compute d/dy */
+
+				// Compute d/dy
                 rMatrix.r[1] = halfReciprocalSpacing[1] *
                                (vec.at(offsetX0YPZ0) - vec.at(offsetX0YMZ0));
-                /* Compute d/dz */
+
+				// Compute d/dz.
                 rMatrix.r[2] = halfReciprocalSpacing[2] *
                                (vec.at(offsetX0Y0ZP) - vec.at(offsetX0Y0ZM));
             }
         }
     }
-
+*/
     // Compute derivatives for boundaries: 6 faces of box.
     // In some situations, these macros compute extraneous data.
     // A tiny bit more efficiency could be squeezed from this routine,
@@ -363,6 +400,60 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
         rMatrix.r[2] = halfReciprocalSpacing[2] * (vec.at(offsetX0Y0ZP) - vec.at(offsetX0Y0ZM)); \
     }
 
+	// Mega kernel
+
+	pool.run_range(
+		[&jacobian, &vec, reciprocalSpacing, halfReciprocalSpacing, dims, dimsMinus1, numXY](uint32_t /*id*/, int32_t begin, int32_t end) {
+		int32_t index[3];
+	for (index[2] = begin; index[2] < end; ++index[2]) {
+		ASSIGN_Z_OFFSETS;
+
+		// Compute derivatives for -X boundary.
+		index[0] = 0;
+		for (index[1] = 0; index[1] < dims[1]; ++index[1]) {
+			ASSIGN_YZ_OFFSETS;
+			{
+				ASSIGN_XYZ_OFFSETS;
+				COMPUTE_FINITE_DIFF;
+			}
+		}
+
+		// Compute derivatives for -Y boundary.
+		index[1] = 0;
+		{
+			ASSIGN_YZ_OFFSETS;
+			for (index[0] = 0; index[0] < dims[0]; ++index[0]) {
+				ASSIGN_XYZ_OFFSETS;
+				COMPUTE_FINITE_DIFF;
+			}
+		}
+
+		// Compute derivatives for +X boundary.
+		index[0] = dimsMinus1[0];
+
+		for (index[1] = 0; index[1] < dims[1]; ++index[1]) {
+			ASSIGN_YZ_OFFSETS;
+			{
+				ASSIGN_XYZ_OFFSETS;
+				COMPUTE_FINITE_DIFF;
+			}
+		}
+
+		// Compute derivatives for +Y boundary.
+		index[1] = dimsMinus1[1];
+
+		{
+			ASSIGN_YZ_OFFSETS;
+			for (index[0] = 0; index[0] < dims[0]; ++index[0]) {
+				ASSIGN_XYZ_OFFSETS;
+				COMPUTE_FINITE_DIFF;
+			}
+		}
+	}
+	},
+	0, dims[2]);
+
+	/*
     // Compute derivatives for -X boundary.
     index[0] = 0;
     for (index[2] = 0; index[2] < dims[2]; ++index[2]) {
@@ -375,7 +466,9 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
             }
         }
     }
+	*/
 
+	/*
     // Compute derivatives for -Y boundary.
     index[1] = 0;
     for (index[2] = 0; index[2] < dims[2]; ++index[2]) {
@@ -388,6 +481,7 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
             }
         }
     }
+	*/
 
     // Compute derivatives for -Z boundary.
     index[2] = 0;
@@ -402,6 +496,19 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
         }
     }
 
+	index[2] = dimsMinus1[2];
+	{
+		ASSIGN_Z_OFFSETS;
+		for (index[1] = 0; index[1] < dims[1]; ++index[1]) {
+			ASSIGN_YZ_OFFSETS;
+			for (index[0] = 0; index[0] < dims[0]; ++index[0]) {
+				ASSIGN_XYZ_OFFSETS;
+				COMPUTE_FINITE_DIFF;
+			}
+		}
+	}
+
+	/*
     // Compute derivatives for +X boundary.
     index[0] = dimsMinus1[0];
     for (index[2] = 0; index[2] < dims[2]; ++index[2]) {
@@ -414,7 +521,9 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
             }
         }
     }
+	*/
 
+	/*
     // Compute derivatives for +Y boundary.
     index[1] = dimsMinus1[1];
     for (index[2] = 0; index[2] < dims[2]; ++index[2]) {
@@ -427,6 +536,7 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
             }
         }
     }
+	*/
 
     // Compute derivatives for +Z boundary.
     index[2] = dimsMinus1[2];
