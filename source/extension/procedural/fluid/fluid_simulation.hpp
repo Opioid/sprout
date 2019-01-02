@@ -46,6 +46,8 @@ class Simulation {
 
     AABB aabb_;
 
+    static float constexpr Time_step = 1.f / 60.f;
+
     float viscosity_;
 
     Grid<float3> velocity_;

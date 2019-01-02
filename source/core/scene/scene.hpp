@@ -145,7 +145,7 @@ class Scene {
 
     take::Settings const take_settings_;
 
-    uint64_t tick_duration_ = Units_per_second / 60;
+    uint64_t const tick_duration_ = Units_per_second / 60;
 
     bvh::Builder<prop::Prop> bvh_builder_;
 

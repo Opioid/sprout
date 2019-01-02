@@ -18,7 +18,7 @@ namespace procedural::fluid {
 Material::Material(Sampler_settings const& sampler_settings,
                    Texture_adapter const&  density) noexcept
     : scene::material::volumetric::Grid(sampler_settings, density),
-	  sim_(int3(128)),
+      sim_(int3(128)),
       current_frame_(0) {
     rnd::Generator rng(0, 0);
 
@@ -35,7 +35,7 @@ Material::Material(Sampler_settings const& sampler_settings,
                                               rng.random_float()) -
                                  1.f;
 
-        v.vorticity = 16.f * normalize(vorticity);
+        v.vorticity = 64.f * normalize(vorticity);
     }
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
@@ -65,7 +65,7 @@ void Material::simulate(uint64_t start, uint64_t /*end*/, uint64_t frame_length,
 
     current_frame_ = sim_frame;
 
-    Volume_renderer renderer(density_.texture().dimensions_3(), 128);
+    Volume_renderer renderer(density_.texture().dimensions_3(), 256);
 
     renderer.clear();
 
