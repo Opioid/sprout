@@ -6,12 +6,10 @@
 namespace procedural::fluid {
 
 struct Vorton {
-    float3 accumulate_velocity(float3 const& query_position) const noexcept;
+    float3 accumulate_velocity(float3 const& query_position, float radius) const noexcept;
 
     float3 position;
     float3 vorticity;
-
-    float radius;
 };
 
 }  // namespace procedural::fluid

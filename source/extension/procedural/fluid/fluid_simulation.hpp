@@ -8,6 +8,10 @@ namespace thread {
 class Pool;
 }
 
+namespace scene::prop {
+class Prop;
+}
+
 namespace procedural::fluid {
 
 struct Particle;
@@ -18,6 +22,8 @@ class Simulation {
     Simulation(int3 const& dimensions) noexcept;
 
     ~Simulation() noexcept;
+
+    void set_prop(scene::prop::Prop* prop) noexcept;
 
     void simulate(thread::Pool& pool) noexcept;
 
@@ -44,11 +50,17 @@ class Simulation {
 
     float3 compute_velocity(float3 const& position) const noexcept;
 
+    scene::prop::Prop* prop_;
+
     AABB aabb_;
+
+    float3 inv_extent_;
 
     static float constexpr Time_step = 1.f / 60.f;
 
     float viscosity_;
+
+    float vorton_radius_;
 
     Grid<float3> velocity_;
 

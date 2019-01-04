@@ -179,7 +179,7 @@ void Prop::on_set_transformation() noexcept {
 
             float t = interval;
             for (uint32_t j = num_steps - 1; j > 0; --j, t += interval) {
-                math::Transformation const interpolated = math::lerp(a, b, t);
+                math::Transformation const interpolated = lerp(a, b, t);
 
                 aabb.merge_assign(shape_->transformed_aabb(interpolated));
             }

@@ -19,6 +19,8 @@ class Material : public scene::material::volumetric::Grid {
 
     bool is_animated() const noexcept override final;
 
+    Simulation& simulation() noexcept;
+
   private:
     Simulation sim_;
 

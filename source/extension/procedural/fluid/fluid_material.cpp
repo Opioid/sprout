@@ -25,8 +25,6 @@ Material::Material(Sampler_settings const& sampler_settings,
     for (uint32_t i = 0, len = sim_.num_vortons(); i < len; ++i) {
         Vorton& v = sim_.vortons()[i];
 
-        v.radius = 0.01f;
-
         float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
 
         v.position = 0.2f * (2.f * p - 1.f);
@@ -82,6 +80,10 @@ void Material::simulate(uint64_t start, uint64_t /*end*/, uint64_t frame_length,
 
 bool Material::is_animated() const noexcept {
     return true;
+}
+
+Simulation& Material::simulation() noexcept {
+    return sim_;
 }
 
 }  // namespace procedural::fluid
