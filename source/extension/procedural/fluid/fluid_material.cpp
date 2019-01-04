@@ -5,6 +5,7 @@
 #include "core/image/texture/texture.hpp"
 #include "core/image/texture/texture_adapter.inl"
 #include "core/image/typed_image.hpp"
+#include "core/scene/prop/prop.hpp"
 #include "fluid_particle.hpp"
 #include "fluid_vorton.hpp"
 #include "volume_renderer.hpp"
@@ -25,15 +26,23 @@ Material::Material(Sampler_settings const& sampler_settings,
     for (uint32_t i = 0, len = sim_.num_vortons(); i < len; ++i) {
         Vorton& v = sim_.vortons()[i];
 
+        //        float3 const r0(rng.random_float(), rng.random_float(), rng.random_float());
+
+        //        v.position = 0.195f * (2.f * r0 - 1.f);
+
+        //        float3 const r1(rng.random_float(), rng.random_float(), rng.random_float());
+
+        //        v.vorticity = 64.f * normalize((2.f * r1 - 1.f));
+
+        //        v.vorticity = 64.f * float3(0.f, 1.f, 0.f);
+
         float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
 
-        v.position = 0.195f * (2.f * p - 1.f);
+        float3 const dir = normalize(2.f * p - 1.f);
 
-        float3 const vorticity = 2.f * float3(rng.random_float(), rng.random_float(),
-                                              rng.random_float()) -
-                                 1.f;
+        v.position = (0.05f + 0.01f * rng.random_float()) * dir;
 
-        v.vorticity = 64.f * normalize(vorticity);
+        v.vorticity = 64.f * dir;
     }
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
@@ -46,9 +55,17 @@ Material::Material(Sampler_settings const& sampler_settings,
 
 Material::~Material() noexcept {}
 
-void Material::simulate(uint64_t start, uint64_t /*end*/, uint64_t frame_length,
+void Material::set_prop(scene::prop::Prop* prop) noexcept {
+    prop_ = prop;
+}
+
+void Material::simulate(uint64_t      start, uint64_t /*end*/, uint64_t /*frame_length*/,
                         thread::Pool& pool) noexcept {
-    uint32_t const sim_frame = static_cast<uint32_t>(start / frame_length);
+    // Hacky, but "moving" fluid props are not supported at the moment
+    prop_->calculate_world_transformation();
+    sim_.set_aabb(prop_->aabb());
+
+    uint32_t const sim_frame = static_cast<uint32_t>(start / Simulation::Frame_length);
 
     std::cout << "Simulating..." << std::endl;
 

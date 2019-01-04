@@ -20,7 +20,17 @@ float3 Vorton::accumulate_velocity(float3 const& query_position, float radius) c
     // If the reciprocal law is used everywhere then when 2 vortices get close, they tend to
     // jettison. Mitigate this by using a linear law when 2 vortices get close to each other.
     float const dist_law = (dist2 < radius2) ? inv_dist / radius2 : inv_dist / dist2;
+
     return (1.f / (4.f * Pi)) * (8.f * radius2 * radius) * dist_law * cross(vorticity, d);
+}
+
+void Vorton::assign_by_velocity(float3 const& query_position, float3 const& velocity,
+                                float radius) noexcept {
+    const float3 relative = query_position - position;
+
+    const float dist = length(relative);
+
+    vorticity = (4.f * Pi) * dist * cross(relative, velocity) / (8.f * radius * radius * radius);
 }
 
 }  // namespace procedural::fluid

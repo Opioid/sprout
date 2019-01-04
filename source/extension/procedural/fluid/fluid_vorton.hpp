@@ -8,6 +8,9 @@ namespace procedural::fluid {
 struct Vorton {
     float3 accumulate_velocity(float3 const& query_position, float radius) const noexcept;
 
+    void assign_by_velocity(float3 const& query_position, float3 const& velocity,
+                            float radius) noexcept;
+
     float3 position;
     float3 vorticity;
 };

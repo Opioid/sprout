@@ -49,7 +49,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     prop->set_visibility(true, true, true);
 
-    material->simulation().set_prop(prop);
+    material->set_prop(prop);
 
     return prop;
 }

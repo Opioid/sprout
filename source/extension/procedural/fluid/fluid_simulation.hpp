@@ -2,14 +2,11 @@
 #define SU_EXTENSION_PROCEDURAL_FLUID_SIMULATION_HPP
 
 #include "base/math/aabb.hpp"
+#include "core/scene/scene_constants.hpp"
 #include "fluid_grid.hpp"
 
 namespace thread {
 class Pool;
-}
-
-namespace scene::prop {
-class Prop;
 }
 
 namespace procedural::fluid {
@@ -23,7 +20,7 @@ class Simulation {
 
     ~Simulation() noexcept;
 
-    void set_prop(scene::prop::Prop* prop) noexcept;
+    void set_aabb(AABB const& aabb) noexcept;
 
     void simulate(thread::Pool& pool) noexcept;
 
@@ -44,19 +41,22 @@ class Simulation {
 
     void diffuse_vorticity_PSE() noexcept;
 
-    void advect_vortons() noexcept;
+    void advect_vortons(thread::Pool& pool) noexcept;
 
     void advect_tracers(thread::Pool& pool) noexcept;
 
     float3 compute_velocity(float3 const& position) const noexcept;
 
-    scene::prop::Prop* prop_;
-
     AABB aabb_;
 
     float3 inv_extent_;
 
-    static float constexpr Time_step = 1.f / 60.f;
+  public:
+    static uint64_t constexpr Frame_length = scene::Units_per_second / 120;
+
+  private:
+    static float constexpr Time_step = static_cast<float>(
+        static_cast<double>(Frame_length) / static_cast<double>(scene::Units_per_second));
 
     float viscosity_;
 

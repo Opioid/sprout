@@ -2,9 +2,9 @@
 #include <vector>
 #include "base/math/aabb.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/ray.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
-#include "core/scene/prop/prop.hpp"
 #include "fluid_particle.hpp"
 #include "fluid_vorton.inl"
 
@@ -31,25 +31,20 @@ Simulation::~Simulation() noexcept {
     memory::free_aligned(vortons_);
 }
 
-void Simulation::set_prop(scene::prop::Prop* prop) noexcept {
-    prop_ = prop;
+void Simulation::set_aabb(AABB const& aabb) noexcept {
+    aabb_ = aabb;
+
+    inv_extent_ = 1.f / aabb_.extent();
 }
 
 void Simulation::simulate(thread::Pool& pool) noexcept {
-    // Hacky, but "moving" fluid props are not supperted at the moment
-    prop_->calculate_world_transformation();
-
-    aabb_ = prop_->aabb();
-
-    inv_extent_ = 1.f / aabb_.extent();
-
     compute_velocity_grid(pool);
 
     stretch_and_tilt_vortons(pool);
 
     diffuse_vorticity_PSE();
 
-    advect_vortons();
+    advect_vortons(pool);
 
     advect_tracers(pool);
 }
@@ -245,19 +240,53 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
     }
 }
 
-void Simulation::advect_vortons() noexcept {
-    for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {
-        Vorton& vorton = vortons_[i];
+void Simulation::advect_vortons(thread::Pool& pool) noexcept {
+    pool.run_range(
+        [this](uint32_t /*id*/, int32_t begin, int32_t end) {
+            float const radius = vorton_radius_;
 
-        float3 const velocity = velocity_.interpolate(world_to_texture_point(vorton.position));
+            for (int32_t i = begin; i < end; ++i) {
+                Vorton& vorton = vortons_[i];
 
-        //        float const magnitude = length(velocity);
+                float3 const velocity = velocity_.interpolate(
+                    world_to_texture_point(vorton.position));
 
-        //        math::Ray ray(vorton.position, velocity / magnitude, 0.f, magnitude +
-        //        vorton_radius_)
+                float3 const dir = Time_step * velocity;
 
-        vorton.position += Time_step * velocity;
-    }
+                float const magnitude = length(dir);
+
+                math::ray ray(vorton.position, dir / magnitude, 0.f, magnitude + radius);
+
+                if (float hit_t; aabb_.intersect_p(ray, hit_t) && hit_t < ray.max_t) {
+                    float3 const contact = ray.point(hit_t);
+
+                    float3 const ambient = velocity_.interpolate(world_to_texture_point(contact));
+
+                    float3 const vel_due_to_vort = vorton.accumulate_velocity(contact, radius);
+
+                    float3 const vel_flow = ambient - vel_due_to_vort;
+
+                    // surface normal at intersection
+                    float3 const distance = math::abs(1.f - math::abs(contact));
+
+                    uint32_t const i = math::index_min_component(distance);
+
+                    float3 normal(0.f);
+                    normal[i] = -math::copysign1(contact[i]);
+
+                    float3 const vel_dir  = normalize(vel_flow);
+                    float3 const vort_dir = cross(normal, vel_dir);
+                    float3 const bend_dir = normalize(cross(vort_dir, vel_dir));
+
+                    vorton.position = contact - radius * bend_dir;
+
+                    vorton.assign_by_velocity(contact, -vel_flow, radius);
+                } else {
+                    vorton.position += dir;
+                }
+            }
+        },
+        0, num_vortons_);
 }
 
 void Simulation::advect_tracers(thread::Pool& pool) noexcept {
@@ -269,7 +298,17 @@ void Simulation::advect_tracers(thread::Pool& pool) noexcept {
                 float3 const velocity = velocity_.interpolate(
                     world_to_texture_point(tracer.position));
 
-                tracer.position += Time_step * velocity;
+                float3 const dir = Time_step * velocity;
+
+                float const magnitude = length(dir);
+
+                math::ray ray(tracer.position, dir / magnitude, 0.f, magnitude);
+
+                if (float hit_t; aabb_.intersect_p(ray, hit_t) && hit_t < ray.max_t) {
+                    tracer.position = ray.point(hit_t - 0.001f);
+                } else {
+                    tracer.position += dir;
+                }
             }
         },
         0, num_tracers_);

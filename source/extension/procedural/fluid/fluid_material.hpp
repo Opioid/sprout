@@ -4,6 +4,10 @@
 #include "fluid_simulation.hpp"
 #include "scene/material/volumetric/volumetric_grid.hpp"
 
+namespace scene::prop {
+class Prop;
+}
+
 namespace procedural::fluid {
 
 class Material : public scene::material::volumetric::Grid {
@@ -14,6 +18,8 @@ class Material : public scene::material::volumetric::Grid {
 
     ~Material() noexcept override;
 
+    void set_prop(scene::prop::Prop* prop) noexcept;
+
     void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
                   thread::Pool& pool) noexcept override final;
 
@@ -22,6 +28,8 @@ class Material : public scene::material::volumetric::Grid {
     Simulation& simulation() noexcept;
 
   private:
+    scene::prop::Prop* prop_;
+
     Simulation sim_;
 
     uint32_t current_frame_;

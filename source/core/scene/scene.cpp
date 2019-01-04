@@ -215,7 +215,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
     }
 
     for (auto m : materials_) {
-        m->simulate(frames_start, frames_end, tick_duration_, thread_pool);
+        m->simulate(start, end, tick_duration_, thread_pool);
     }
 
     compile(start, thread_pool);
