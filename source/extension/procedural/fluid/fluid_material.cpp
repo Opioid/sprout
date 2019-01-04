@@ -27,7 +27,7 @@ Material::Material(Sampler_settings const& sampler_settings,
 
         float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
 
-        v.position = 0.2f * (2.f * p - 1.f);
+        v.position = 0.195f * (2.f * p - 1.f);
 
         float3 const vorticity = 2.f * float3(rng.random_float(), rng.random_float(),
                                               rng.random_float()) -

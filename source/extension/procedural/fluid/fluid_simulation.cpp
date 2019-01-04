@@ -246,8 +246,6 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
 }
 
 void Simulation::advect_vortons() noexcept {
-    float constexpr timeStep = 0.1f;
-
     for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {
         Vorton& vorton = vortons_[i];
 
@@ -258,7 +256,7 @@ void Simulation::advect_vortons() noexcept {
         //        math::Ray ray(vorton.position, velocity / magnitude, 0.f, magnitude +
         //        vorton_radius_)
 
-        vorton.position += timeStep * velocity;
+        vorton.position += Time_step * velocity;
     }
 }
 
