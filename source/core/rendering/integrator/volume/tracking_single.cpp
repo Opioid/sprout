@@ -7,6 +7,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/light/light.hpp"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
