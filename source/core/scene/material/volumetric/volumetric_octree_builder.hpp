@@ -19,7 +19,7 @@ class Octree_builder {
   public:
     using Texture = image::texture::Texture;
 
-    void build(Gridtree& tree, Texture const& texture, CM const& idata, thread::Pool& pool);
+    void build(Gridtree& tree, Texture const& texture, CM const& cm, thread::Pool& pool);
 
   private:
     struct Build_node {
@@ -31,7 +31,7 @@ class Octree_builder {
     };
 
     struct Splitter {
-        void split(Build_node* node, Box const& box, Texture const& texture, CM const& idata,
+        void split(Build_node* node, Box const& box, Texture const& texture, CM const& cm,
                    uint32_t depth);
 
         uint32_t num_nodes = 0;

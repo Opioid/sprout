@@ -71,6 +71,42 @@ class Grid_emission : public Grid {
     float total_weight_;
 };
 
+class Grid_color : public Material {
+  public:
+    Grid_color(Sampler_settings const& sampler_settings, Texture_adapter const& color) noexcept;
+
+    ~Grid_color() noexcept override;
+
+    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
+                             Worker const& worker) const noexcept override final;
+
+    CC collision_coefficients() const noexcept override final;
+
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
+        noexcept override final;
+
+    CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
+        noexcept override final;
+
+    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                        Worker const& worker) const noexcept override final;
+
+    void compile(thread::Pool& pool) noexcept override final;
+
+    Gridtree const* volume_tree() const noexcept override final;
+
+    bool is_heterogeneous_volume() const noexcept override final;
+
+    size_t num_bytes() const noexcept override;
+
+  protected:
+    float3 color(float3 const& uvw, Filter filter, Worker const& worker) const noexcept;
+
+    Texture_adapter color_;
+
+    Gridtree tree_;
+};
+
 }  // namespace scene::material::volumetric
 
 #endif

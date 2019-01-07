@@ -44,6 +44,8 @@ class Material : public material::Material {
 
     float3 emission_;
 
+    float distance_;
+
     float anisotropy_;
 
   private:

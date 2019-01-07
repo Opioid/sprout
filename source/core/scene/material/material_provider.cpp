@@ -1036,6 +1036,7 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
                                       Sampler_settings::Address::Clamp);
 
     Texture_adapter density_map;
+    Texture_adapter color_map;
     Texture_adapter emission_map;
 
     float3 color(0.6f, 0.6f, 0.6f);
@@ -1083,7 +1084,12 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
                 if ("Density" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Mask);
                     density_map = create_texture(texture_description, options, manager);
-                } /*else if ("Emission" == texture_description.usage) {
+                } else if ("Color" == texture_description.usage) {
+                    options.set("usage", image::texture::Provider::Usage::Color);
+                    color_map = create_texture(texture_description, options, manager);
+                }
+
+                /*else if ("Emission" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Color);
                     emission_map = create_texture(texture_description, options, manager);
                 }*/
@@ -1112,7 +1118,15 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
             material->set_anisotropy(anisotropy);
             return material;
         }
-    } /*else if (a > 0.f && b > 0.f) {
+    } else if (color_map.is_valid()) {
+        auto material = std::make_shared<Grid_color>(sampler_settings, color_map);
+        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+        material->set_emission(emission);
+        material->set_anisotropy(anisotropy);
+        return material;
+    }
+
+    /*else if (a > 0.f && b > 0.f) {
             auto material = std::make_shared<volumetric::Height>(sampler_settings);
             material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
             material->set_anisotropy(anisotropy);

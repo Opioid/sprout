@@ -8,6 +8,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/scene_worker.hpp"
 #include "volumetric_octree_builder.hpp"
 
@@ -169,6 +170,71 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
 size_t Grid_emission::num_bytes() const noexcept {
     return sizeof(*this) + tree_.num_bytes() + distribution_.num_bytes();
+}
+
+Grid_color::Grid_color(Sampler_settings const& sampler_settings,
+                       Texture_adapter const&  color) noexcept
+    : Material(sampler_settings), color_(color) {}
+
+Grid_color::~Grid_color() noexcept {}
+
+float3 Grid_color::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
+                                     Filter filter, Worker const& worker) const noexcept {
+    float3 const c = color(uvw, filter, worker);
+
+    CC const cc = attenuation(c, distance_);
+
+    return cc.a * emission_;
+}
+
+CC Grid_color::collision_coefficients() const noexcept {
+    return cc_;
+}
+
+CC Grid_color::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
+                                      Worker const& /*worker*/) const noexcept {
+    return cc_;
+}
+
+CC Grid_color::collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
+    noexcept {
+    float3 const c = color(uvw, filter, worker);
+
+    return attenuation(c, distance_);
+}
+
+CCE Grid_color::collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                                Worker const& worker) const noexcept {
+    float3 const c = color(uvw, filter, worker);
+
+    CC const cc = attenuation(c, distance_);
+
+    return {cc, emission_};
+}
+
+void Grid_color::compile(thread::Pool& pool) noexcept {
+    auto const& texture = color_.texture();
+
+    Octree_builder builder;
+    builder.build(tree_, texture, cm_, pool);
+}
+
+Gridtree const* Grid_color::volume_tree() const noexcept {
+    return &tree_;
+}
+
+bool Grid_color::is_heterogeneous_volume() const noexcept {
+    return true;
+}
+
+size_t Grid_color::num_bytes() const noexcept {
+    return sizeof(*this) + tree_.num_bytes();
+}
+
+float3 Grid_color::color(float3 const& uvw, Filter filter, Worker const& worker) const noexcept {
+    auto const& sampler = worker.sampler_3D(sampler_key(), filter);
+
+    return color_.sample_3(sampler, uvw);
 }
 
 }  // namespace scene::material::volumetric

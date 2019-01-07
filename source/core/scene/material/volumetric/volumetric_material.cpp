@@ -67,6 +67,8 @@ void Material::set_attenuation(float3 const& absorption_color, float3 const& sca
     }
 
     cm_ = CM(cc_);
+
+    distance_ = distance;
 }
 
 void Material::set_emission(float3 const& emission) noexcept {

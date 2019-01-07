@@ -28,7 +28,7 @@ void Material::set_mask(Texture_adapter const& mask) noexcept {
 }
 
 void Material::set_parameters(json::Value const& parameters) noexcept {
-    for (auto& n : parameters.GetObject()) {
+    for (auto const& n : parameters.GetObject()) {
         set_parameter(n.name.GetString(), n.value);
     }
 }
@@ -36,7 +36,7 @@ void Material::set_parameters(json::Value const& parameters) noexcept {
 void Material::compile(thread::Pool& /*pool*/) noexcept {}
 
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
-                        thread::Pool& pool) noexcept {}
+                        thread::Pool& /*pool*/) noexcept {}
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
                                    Filter /*filter*/, Worker const& /*worker*/) const noexcept {
