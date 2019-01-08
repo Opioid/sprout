@@ -90,6 +90,11 @@ float3 Float1_t<T>::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
     return float3(image_.load(x, y, z), 0.f, 0.f);
 }
 
+template <typename T>
+float4 Float1_t<T>::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
+    return float4(image_.load(x, y, z), 0.f, 0.f, 1.f);
+}
+
 template class Float1_t<image::Float1>;
 template class Float1_t<image::Float1_sparse>;
 

@@ -1,16 +1,17 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_NEAREST_3D_INL
+#define SU_CORE_IMAGE_TEXTURE_SAMPLER_NEAREST_3D_INL
 
 #include <algorithm>
 #include "address_mode.hpp"
 #include "image/texture/texture.hpp"
-#include "math/vector3.inl"
+#include "math/vector4.inl"
 #include "sampler_nearest_3d.hpp"
 
 namespace image::texture::sampler {
 
 template <typename Address_mode>
 float Nearest_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uvw) const noexcept {
-    const int3 xyz = map(texture, uvw);
+    int3 const xyz = map(texture, uvw);
 
     return texture.at_1(xyz[0], xyz[1], xyz[2]);
 }
@@ -18,7 +19,7 @@ float Nearest_3D<Address_mode>::sample_1(Texture const& texture, float3 const& u
 template <typename Address_mode>
 float2 Nearest_3D<Address_mode>::sample_2(Texture const& texture, float3 const& uvw) const
     noexcept {
-    const int3 xyz = map(texture, uvw);
+    int3 const xyz = map(texture, uvw);
 
     return texture.at_2(xyz[0], xyz[1], xyz[2]);
 }
@@ -26,9 +27,17 @@ float2 Nearest_3D<Address_mode>::sample_2(Texture const& texture, float3 const& 
 template <typename Address_mode>
 float3 Nearest_3D<Address_mode>::sample_3(Texture const& texture, float3 const& uvw) const
     noexcept {
-    const int3 xyz = map(texture, uvw);
+    int3 const xyz = map(texture, uvw);
 
     return texture.at_3(xyz[0], xyz[1], xyz[2]);
+}
+
+template <typename Address_mode>
+float4 Nearest_3D<Address_mode>::sample_4(Texture const& texture, float3 const& uvw) const
+    noexcept {
+    int3 const xyz = map(texture, uvw);
+
+    return texture.at_4(xyz[0], xyz[1], xyz[2]);
 }
 
 template <typename Address_mode>
@@ -52,3 +61,5 @@ int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) no
 }
 
 }  // namespace image::texture::sampler
+
+#endif

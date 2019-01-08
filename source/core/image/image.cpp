@@ -27,6 +27,7 @@ int32_t Image::Description::num_channels() const noexcept {
         case Type::Byte3:
         case Type::Float3:
             return 3;
+        case Type::Byte4:
         case Type::Float4:
             return 4;
         default:

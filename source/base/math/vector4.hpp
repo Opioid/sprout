@@ -29,6 +29,7 @@ struct Vector4 {
 
     explicit constexpr Vector4(Vector4f_a const& a) noexcept;
 
+    constexpr Vector2<T> xy() const noexcept;
     constexpr Vector3<T> xyz() const noexcept;
 
     constexpr T  operator[](uint32_t i) const noexcept;

@@ -269,10 +269,10 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
                     // surface normal at intersection
                     float3 const distance = math::abs(1.f - math::abs(contact));
 
-                    uint32_t const i = math::index_min_component(distance);
+                    uint32_t const mc = math::index_min_component(distance);
 
                     float3 normal(0.f);
-                    normal[i] = -math::copysign1(contact[i]);
+                    normal[mc] = -math::copysign1(contact[mc]);
 
                     float3 const vel_dir  = normalize(vel_flow);
                     float3 const vort_dir = cross(normal, vel_dir);
@@ -346,10 +346,10 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
     float3 const reciprocalSpacing     = 1.f / spacing;
     float3 const halfReciprocalSpacing = 0.5f * reciprocalSpacing;
 
-    const int3 dims       = vec.dimensions();
-    const int3 dimsMinus1 = dims - 1;
+    int3 const dims       = vec.dimensions();
+    int3 const dimsMinus1 = dims - 1;
 
-    const int32_t numXY = dims[0] * dims[1];
+    int32_t const numXY = dims[0] * dims[1];
 
     int32_t index[3];
 

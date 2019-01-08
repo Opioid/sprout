@@ -44,6 +44,14 @@ static inline float3 bilinear(float3 const& c00, float3 const& c10, float3 const
     return _t * (_s * c00 + s * c10) + t * (_s * c01 + s * c11);
 }
 
+static inline float4 bilinear(float4 const& c00, float4 const& c10, float4 const& c01,
+                              float4 const& c11, float s, float t) noexcept {
+    float const _s = 1.f - s;
+    float const _t = 1.f - t;
+
+    return _t * (_s * c00 + s * c10) + t * (_s * c01 + s * c11);
+}
+
 static inline float3x3 bilinear(float3x3 const& c00, float3x3 const& c10, float3x3 const& c01,
                                 float3x3 const& c11, float s, float t) noexcept {
     float const _s = 1.f - s;

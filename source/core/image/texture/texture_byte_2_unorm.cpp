@@ -104,4 +104,10 @@ float3 Byte2_unorm::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
                   encoding::cached_unorm_to_float(value[1]), 0.f);
 }
 
+float4 Byte2_unorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
+    auto value = image_.load(x, y, z);
+    return float4(encoding::cached_unorm_to_float(value[0]),
+                  encoding::cached_unorm_to_float(value[1]), 0.f, 1.f);
+}
+
 }  // namespace image::texture

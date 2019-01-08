@@ -1,15 +1,14 @@
-#ifndef SU_CORE_IMAGE_TEXTURE_FLOAT1_HPP
-#define SU_CORE_IMAGE_TEXTURE_FLOAT1_HPP
+#ifndef SU_CORE_IMAGE_TEXTURE_BYTE3_SRGB_HPP
+#define SU_CORE_IMAGE_TEXTURE_BYTE3_SRGB_HPP
 
 #include "image/typed_image_fwd.hpp"
 #include "texture.hpp"
 
 namespace image::texture {
 
-template <typename T>
-class Float1_t final : public Texture {
+class Byte4_sRGB final : public Texture {
   public:
-    Float1_t(std::shared_ptr<Image> const& image) noexcept;
+    Byte4_sRGB(std::shared_ptr<Image> const& image) noexcept;
 
     float  at_1(int32_t i) const noexcept override final;
     float3 at_3(int32_t i) const noexcept override final;
@@ -32,12 +31,8 @@ class Float1_t final : public Texture {
     float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept override final;
 
   private:
-    T const& image_;
+    Byte4 const& image_;
 };
-
-using Float1 = Float1_t<image::Float1>;
-
-using Float1_sparse = Float1_t<image::Float1_sparse>;
 
 }  // namespace image::texture
 
