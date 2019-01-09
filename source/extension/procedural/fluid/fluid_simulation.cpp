@@ -14,18 +14,20 @@
 namespace procedural::fluid {
 
 static uint32_t constexpr Num_tracers = 51200000;
-static uint32_t constexpr Num_vortons = 512;
+static uint32_t constexpr Num_vortons = 1024;
 
-static float constexpr Vel_clamp = 1e8f;
+static float constexpr Vel_clamp = 1e6f;
 
 void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent,
                       thread::Pool& pool);
 
-Simulation::Simulation(int3 const& dimensions) noexcept
+Simulation::Simulation(int3 const& dimensions, int3 const& visualization_dimensions) noexcept
     : viscosity_(0.1f),
       vorton_radius_(0.01f),
+      tracer_radius_(0.f),
       velocity_(dimensions),
       velocity_jacobian_(dimensions),
+      visualization_dimensions_(visualization_dimensions),
       vortons_(memory::allocate_aligned<Vorton>(Num_vortons)),
       num_vortons_(Num_vortons),
       tracers_(memory::allocate_aligned<Particle>(Num_tracers)),
@@ -40,6 +42,8 @@ void Simulation::set_aabb(AABB const& aabb) noexcept {
     aabb_ = aabb;
 
     inv_extent_ = 1.f / aabb_.extent();
+
+    tracer_radius_ = 0.5f * aabb_.extent()[0] / static_cast<float>(visualization_dimensions_[0]);
 }
 
 void Simulation::simulate(thread::Pool& pool) noexcept {
@@ -301,6 +305,8 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
 void Simulation::advect_tracers(thread::Pool& pool) noexcept {
     pool.run_range(
         [this](uint32_t /*id*/, int32_t begin, int32_t end) {
+            float const radius = tracer_radius_;
+
             for (int32_t i = begin; i < end; ++i) {
                 Particle& tracer = tracers_[i];
 
@@ -314,7 +320,7 @@ void Simulation::advect_tracers(thread::Pool& pool) noexcept {
                 math::ray ray(tracer.position, dir / magnitude, 0.f, magnitude);
 
                 if (float hit_t; aabb_.intersect_p(ray, hit_t) && hit_t < ray.max_t) {
-                    tracer.position = ray.point(hit_t - 0.001f);
+                    tracer.position = ray.point(hit_t - radius);
                 } else {
                     tracer.position += dir;
                 }

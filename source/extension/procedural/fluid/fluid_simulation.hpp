@@ -16,7 +16,7 @@ struct Vorton;
 
 class Simulation {
   public:
-    Simulation(int3 const& dimensions) noexcept;
+    Simulation(int3 const& dimensions, int3 const& visualization_dimensions) noexcept;
 
     ~Simulation() noexcept;
 
@@ -62,11 +62,15 @@ class Simulation {
 
     float vorton_radius_;
 
+    float tracer_radius_;
+
     Grid<float3> velocity_;
 
     Grid<float3x3> velocity_jacobian_;
 
     //	Grid<std::vector<uint32_t>>
+
+    int3 visualization_dimensions_;
 
     Vorton*  vortons_;
     uint32_t num_vortons_;
