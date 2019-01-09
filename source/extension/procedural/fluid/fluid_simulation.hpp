@@ -52,7 +52,7 @@ class Simulation {
     float3 inv_extent_;
 
   public:
-    static uint64_t constexpr Frame_length = scene::Units_per_second / 120;
+    static uint64_t constexpr Frame_length = scene::Units_per_second / 60;
 
   private:
     static float constexpr Time_step = static_cast<float>(

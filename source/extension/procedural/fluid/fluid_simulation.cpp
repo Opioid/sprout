@@ -8,10 +8,15 @@
 #include "fluid_particle.hpp"
 #include "fluid_vorton.inl"
 
+#include "base/debug/assert.hpp"
+#include "base/math/print.hpp"
+
 namespace procedural::fluid {
 
 static uint32_t constexpr Num_tracers = 51200000;
 static uint32_t constexpr Num_vortons = 512;
+
+static float constexpr Vel_clamp = 1e8f;
 
 void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent,
                       thread::Pool& pool);
@@ -132,10 +137,6 @@ void Simulation::diffuse_vorticity_PSE() noexcept {
 
         float3 const p = world_to_texture_point(vorton.position);
 
-        if (p[0] < 0.f || p[0] >= 1.f || p[1] < 0.f || p[1] >= 1.f || p[2] < 0.f || p[2] >= 1.f) {
-            continue;
-        }
-
         ugVortRef.at(p).push_back(i);
     }
 
@@ -248,10 +249,14 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 Vorton& vorton = vortons_[i];
 
+                SOFT_ASSERT(all_finite(vorton.position));
+
                 float3 const velocity = velocity_.interpolate(
                     world_to_texture_point(vorton.position));
 
-                float3 const dir = Time_step * velocity;
+                float3 const dir = Time_step * clamp(velocity, -Vel_clamp, Vel_clamp);
+
+                SOFT_ASSERT(all_finite(dir));
 
                 float const magnitude = length(dir);
 
@@ -264,7 +269,7 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
 
                     float3 const vel_due_to_vort = vorton.accumulate_velocity(contact, radius);
 
-                    float3 const vel_flow = ambient - vel_due_to_vort;
+                    float3 const vel_flow = clamp(ambient - vel_due_to_vort, -Vel_clamp, Vel_clamp);
 
                     // surface normal at intersection
                     float3 const distance = math::abs(1.f - math::abs(contact));
@@ -281,8 +286,12 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
                     vorton.position = contact - radius * bend_dir;
 
                     vorton.assign_by_velocity(contact, -vel_flow, radius);
+
+                    SOFT_ASSERT(all_finite(vorton.position));
                 } else {
                     vorton.position += dir;
+
+                    SOFT_ASSERT(all_finite(vorton.position));
                 }
             }
         },
@@ -320,7 +329,9 @@ float3 Simulation::compute_velocity(float3 const& position) const noexcept {
     float const radius = vorton_radius_;
 
     for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {
-        velocity += vortons_[i].accumulate_velocity(position, radius);
+        if (aabb_.intersect(vortons_[i].position)) {
+            velocity += vortons_[i].accumulate_velocity(position, radius);
+        }
     }
 
     return velocity;

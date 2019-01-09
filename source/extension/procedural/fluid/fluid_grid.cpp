@@ -33,7 +33,7 @@ T const& Grid<T>::at(int32_t index) const noexcept {
 
 template <typename T>
 T& Grid<T>::at(float3 const& v) noexcept {
-    int3 const c = int3(v * float3(dimensions_));
+    int3 const c = min(max(int3(v * float3(dimensions_)), int3(0)), dimensions_ - 1);
 
     int32_t const i = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 

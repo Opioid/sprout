@@ -1,7 +1,4 @@
 #include "fluid_provider.hpp"
-#include "core/image/texture/texture_adapter.inl"
-#include "core/image/texture/texture_float_1.hpp"
-#include "core/image/typed_image.hpp"
 #include "core/resource/resource_manager.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
@@ -29,15 +26,7 @@ void Provider::set_scene_loader(Loader& loader) noexcept {
 
 entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
                                            resource::Manager& /*manager*/) noexcept {
-    using namespace image;
-
-    int3 const viz_dimensions(320);
-
-    auto target = std::make_shared<Float1>(Image::Description(Image::Type::Float1, viz_dimensions));
-
-    auto texture = std::make_shared<texture::Float1>(target);
-
-    auto material = std::make_shared<Material>(Sampler_settings(), Texture_adapter(texture));
+    auto material = std::make_shared<Material>(Sampler_settings());
 
     material->set_attenuation(float3(0.8f), float3(0.5f), 0.0005f);
     material->set_emission(float3(0.f));
