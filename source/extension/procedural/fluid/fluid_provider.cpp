@@ -27,7 +27,9 @@ void Provider::set_scene_loader(Loader& loader) noexcept {
 
 entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
                                            resource::Manager& /*manager*/) noexcept {
-    auto material = std::make_shared<Material>(Sampler_settings());
+    auto material = std::make_shared<Material>(Sampler_settings(Sampler_settings::Filter::Linear,
+                                                                Sampler_settings::Address::Clamp,
+                                                                Sampler_settings::Address::Clamp));
 
     material->set_attenuation(float3(0.8f), float3(0.5f), 0.0004f);
     material->set_emission(float3(0.f));
