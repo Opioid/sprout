@@ -1,4 +1,5 @@
 #include "fluid_provider.hpp"
+#include "base/math/vector3.inl"
 #include "core/resource/resource_manager.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
@@ -28,7 +29,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
                                            resource::Manager& /*manager*/) noexcept {
     auto material = std::make_shared<Material>(Sampler_settings());
 
-    material->set_attenuation(float3(0.8f), float3(0.5f), 0.0005f);
+    material->set_attenuation(float3(0.8f), float3(0.5f), 0.0004f);
     material->set_emission(float3(0.f));
     material->set_anisotropy(0.f);
 
