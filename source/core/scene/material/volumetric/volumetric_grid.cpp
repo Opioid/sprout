@@ -216,7 +216,7 @@ void Grid_color::compile(thread::Pool& pool) noexcept {
     auto const& texture = color_.texture();
 
     Octree_builder builder;
-    builder.build(tree_, texture, cm_, pool);
+    builder.build(tree_, texture, CM(distance_), pool);
 }
 
 Gridtree const* Grid_color::volume_tree() const noexcept {

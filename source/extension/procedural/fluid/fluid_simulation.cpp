@@ -10,8 +10,11 @@
 
 namespace procedural::fluid {
 
-static uint32_t constexpr Num_tracers = 51200000;
-static uint32_t constexpr Num_vortons = 512;
+//static uint32_t constexpr Num_tracers = 51200000;
+//static uint32_t constexpr Num_vortons = 512;
+
+static uint32_t constexpr Num_tracers = 12800;
+static uint32_t constexpr Num_vortons = 128;
 
 void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent,
                       thread::Pool& pool);

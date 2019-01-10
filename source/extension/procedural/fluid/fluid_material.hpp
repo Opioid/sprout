@@ -10,7 +10,7 @@ class Prop;
 
 namespace procedural::fluid {
 
-class Material : public scene::material::volumetric::Grid {
+class Material : public scene::material::volumetric::Grid_color {
   public:
     using Sampler_settings = scene::material::Sampler_settings;
 

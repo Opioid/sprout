@@ -7,6 +7,8 @@ namespace procedural::fluid {
 
 struct Particle {
     float3 position;
+
+    float3 color;
 };
 
 }  // namespace procedural::fluid

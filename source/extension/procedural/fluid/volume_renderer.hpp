@@ -8,22 +8,26 @@ namespace procedural::fluid {
 
 class Volume_renderer {
   public:
+    using Type = float3;
+
     Volume_renderer(int3 const& dimensions, uint32_t max_saturation) noexcept;
 
     ~Volume_renderer() noexcept;
+
+    void resolve(image::Byte3& target) const noexcept;
 
     void resolve(image::Float1& target) const noexcept;
 
     void clear() noexcept;
 
-    void splat(float3 const& uvw, float value) noexcept;
+    void splat(float3 const& uvw, Type const& value) noexcept;
 
   private:
-    void splat(int3 const& c, float value) noexcept;
+    void splat(int3 const& c, Type const& value) noexcept;
 
     int3 dimensions_;
 
-    float* voxels_;
+    Type* voxels_;
 
     float max_saturation_;
 };
