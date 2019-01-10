@@ -42,7 +42,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
     return volume;
 
-    //            const int3 dimensions(2, 2, 2);
+    //            int3 const dimensions(2, 2, 2);
 
     //            Image::Description description(Image::Type::Float1, dimensions);
 

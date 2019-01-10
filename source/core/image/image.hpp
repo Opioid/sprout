@@ -13,6 +13,7 @@ class Image {
         Byte1,
         Byte2,
         Byte3,
+        Byte4,
         Float1,
         Float1_sparse,
         Float2,

@@ -1,8 +1,5 @@
 #include "fluid_provider.hpp"
-#include "core/image/texture/texture_adapter.inl"
-#include "core/image/texture/texture_byte_3_srgb.hpp"
-#include "core/image/texture/texture_float_1.hpp"
-#include "core/image/typed_image.hpp"
+#include "base/math/vector3.inl"
 #include "core/resource/resource_manager.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
@@ -30,21 +27,11 @@ void Provider::set_scene_loader(Loader& loader) noexcept {
 
 entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
                                            resource::Manager& /*manager*/) noexcept {
-    using namespace image;
+    auto material = std::make_shared<Material>(Sampler_settings(Sampler_settings::Filter::Linear,
+                                                                Sampler_settings::Address::Clamp,
+                                                                Sampler_settings::Address::Clamp));
 
-    int3 const viz_dimensions(320);
-
-//    auto target = std::make_shared<Float1>(Image::Description(Image::Type::Float1, viz_dimensions));
-
-//    auto texture = std::make_shared<texture::Float1>(target);
-
-    auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, viz_dimensions));
-
-    auto texture = std::make_shared<texture::Byte3_sRGB>(target);
-
-    auto material = std::make_shared<Material>(Sampler_settings(), Texture_adapter(texture));
-
-    material->set_attenuation(float3(0.8f), float3(0.5f), 0.5f);
+    material->set_attenuation(float3(0.8f), float3(0.5f), 0.0004f);
     material->set_emission(float3(0.f));
     material->set_anisotropy(0.f);
 

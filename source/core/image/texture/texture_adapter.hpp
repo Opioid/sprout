@@ -21,7 +21,7 @@ class Adapter {
 
     ~Adapter();
 
-    bool operator==(const Adapter& other) const noexcept;
+    bool operator==(Adapter const& other) const noexcept;
 
     bool is_valid() const noexcept;
 
@@ -45,6 +45,7 @@ class Adapter {
     float  sample_1(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
     float2 sample_2(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
     float3 sample_3(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
+    float4 sample_4(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
 
     float3 address(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
 

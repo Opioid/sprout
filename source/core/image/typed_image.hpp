@@ -116,6 +116,7 @@ class Typed_sparse_image final : public Image {
 extern template class Typed_image<uint8_t>;
 extern template class Typed_image<byte2>;
 extern template class Typed_image<byte3>;
+extern template class Typed_image<byte4>;
 extern template class Typed_image<float>;
 extern template class Typed_sparse_image<float>;
 extern template class Typed_image<float2>;

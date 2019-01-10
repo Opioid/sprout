@@ -108,4 +108,11 @@ float3 Byte3_snorm::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
                   encoding::cached_snorm_to_float(value[2]));
 }
 
+float4 Byte3_snorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
+    auto value = image_.load(x, y, z);
+    return float4(encoding::cached_snorm_to_float(value[0]),
+                  encoding::cached_snorm_to_float(value[1]),
+                  encoding::cached_snorm_to_float(value[2]), 1.f);
+}
+
 }  // namespace image::texture

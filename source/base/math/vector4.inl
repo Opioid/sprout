@@ -27,6 +27,11 @@ constexpr Vector4<T>::Vector4(Vector4f_a const& a) noexcept
     : v{T(a[0]), T(a[1]), T(a[2]), T(a[3])} {}
 
 template <typename T>
+constexpr Vector2<T> Vector4<T>::xy() const noexcept {
+    return Vector2<T>(v);
+}
+
+template <typename T>
 constexpr Vector3<T> Vector4<T>::xyz() const noexcept {
     return Vector3<T>(v);
 }
@@ -180,6 +185,12 @@ static inline constexpr Vector4f_a operator*(float s, Vector4f_a const& a) noexc
 
 static inline float constexpr dot(Vector4f_a const& a, Vector4f_a const& b) noexcept {
     return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
+}
+
+static inline Vector4f_a constexpr lerp(Vector4f_a const& a, Vector4f_a const& b,
+                                        float t) noexcept {
+    float const u = 1.f - t;
+    return u * a + t * b;
 }
 
 static inline bool all_finite(Vector4f_a const& v) noexcept {

@@ -49,17 +49,17 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     using namespace image;
 
-    // const int3 dimensions(2048, 512, 256);
-    // const int3 dimensions(3072, 384, 192);
-    //	const int3 dimensions(3200, 320, 160);
-    //	const int3 dimensions(3200, 320, 256);
+    // int3 const dimensions(2048, 512, 256);
+    // int3 const dimensions(3072, 384, 192);
+    //	int3 const dimensions(3200, 320, 160);
+    //	int3 const dimensions(3200, 320, 256);
 
-    //	const int3 dimensions(1600, 160, 128);
-    const int3 dimensions(1600, 128, 102);
+    //	int3 const dimensions(1600, 160, 128);
+    int3 const dimensions(1600, 128, 102);
 
-    //	const int3 dimensions(320, 32, 16);
+    //	int3 const dimensions(320, 32, 16);
 
-    //	const int3 dimensions(32, 32, 32);
+    //	int3 const dimensions(32, 32, 32);
 
     //    auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 

@@ -70,6 +70,26 @@ float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3 const& u
 }
 
 template <typename Address_mode>
+float4 Linear_3D<Address_mode>::sample_4(Texture const& texture, float3 const& uvw) const noexcept {
+    int3         xyz, xyz1;
+    float3 const stu = map(texture, uvw, xyz, xyz1);
+
+    float4 const c000 = texture.at_4(xyz[0], xyz[1], xyz[2]);
+    float4 const c100 = texture.at_4(xyz1[0], xyz[1], xyz[2]);
+    float4 const c010 = texture.at_4(xyz[0], xyz1[1], xyz[2]);
+    float4 const c110 = texture.at_4(xyz1[0], xyz1[1], xyz[2]);
+    float4 const c001 = texture.at_4(xyz[0], xyz[1], xyz1[2]);
+    float4 const c101 = texture.at_4(xyz1[0], xyz[1], xyz1[2]);
+    float4 const c011 = texture.at_4(xyz[0], xyz1[1], xyz1[2]);
+    float4 const c111 = texture.at_4(xyz1[0], xyz1[1], xyz1[2]);
+
+    float4 const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
+    float4 const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
+
+    return lerp(c0, c1, stu[2]);
+}
+
+template <typename Address_mode>
 float3 Linear_3D<Address_mode>::address(float3 const& uvw) const noexcept {
     return float3(Address_mode::f(uvw[0]), Address_mode::f(uvw[1]), Address_mode::f(uvw[2]));
 }

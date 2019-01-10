@@ -4,6 +4,7 @@
 #include "base/random/generator.inl"
 #include "core/image/texture/texture.hpp"
 #include "core/image/texture/texture_adapter.inl"
+#include "core/image/texture/texture_float_1.hpp"
 #include "core/image/typed_image.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "fluid_particle.hpp"
@@ -16,10 +17,16 @@
 
 namespace procedural::fluid {
 
-Material::Material(Sampler_settings const& sampler_settings,
-                   Texture_adapter const&  density) noexcept
-    : scene::material::volumetric::Grid_color(sampler_settings, density),
-      sim_(int3(128)),
+using namespace image;
+
+static int3 constexpr Visualization_dimensions(320);
+
+Material::Material(Sampler_settings const& sampler_settings) noexcept
+    : scene::material::volumetric::Grid(
+          sampler_settings,
+          Texture_adapter(std::make_shared<texture::Float1>(std::make_shared<Float1>(
+              Image::Description(Image::Type::Float1, Visualization_dimensions))))),
+      sim_(int3(256), Visualization_dimensions),
       current_frame_(0) {
     rnd::Generator rng(0, 0);
 
@@ -50,7 +57,7 @@ Material::Material(Sampler_settings const& sampler_settings,
 
         v.position = o + (0.05f + 0.01f * rng.random_float()) * dir;
 
-        v.vorticity = 64.f * dir;
+        v.vorticity = 8.f * dir;
     }
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
@@ -100,7 +107,7 @@ void Material::simulate(uint64_t      start, uint64_t /*end*/, uint64_t /*frame_
 
     current_frame_ = sim_frame;
 
-    Volume_renderer renderer(color_.texture().dimensions_3(), 256);
+    Volume_renderer renderer(color_.texture().dimensions_3(), 128);
 
     renderer.clear();
 

@@ -14,7 +14,7 @@ class Material : public scene::material::volumetric::Grid_color {
   public:
     using Sampler_settings = scene::material::Sampler_settings;
 
-    Material(Sampler_settings const& sampler_settings, Texture_adapter const& density) noexcept;
+    Material(Sampler_settings const& sampler_settings) noexcept;
 
     ~Material() noexcept override;
 
