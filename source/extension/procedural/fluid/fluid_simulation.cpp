@@ -8,6 +8,7 @@
 #include "fluid_particle.hpp"
 #include "fluid_vorton.inl"
 
+#include <iostream>
 #include "base/debug/assert.hpp"
 #include "base/math/print.hpp"
 
@@ -16,13 +17,14 @@ namespace procedural::fluid {
 static uint32_t constexpr Num_tracers = 51200000;
 static uint32_t constexpr Num_vortons = 1024;
 
-static float constexpr Vel_clamp = 1e6f;
+static float constexpr Vort_clamp = 5e3f;
+static float constexpr Vel_clamp  = 1e3f;
 
 void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 const& extent,
                       thread::Pool& pool);
 
 Simulation::Simulation(int3 const& dimensions, int3 const& visualization_dimensions) noexcept
-    : viscosity_(0.1f),
+    : viscosity_(0.025f),
       vorton_radius_(0.01f),
       tracer_radius_(0.f),
       velocity_(dimensions),
@@ -40,6 +42,10 @@ Simulation::~Simulation() noexcept {
 
 void Simulation::set_aabb(AABB const& aabb) noexcept {
     aabb_ = aabb;
+
+    float3 const padding = 1.f * (aabb_.extent() / float3(velocity_.dimensions()));
+
+    padded_aabb_ = AABB(aabb.min() + padding, aabb.max() - padding);
 
     inv_extent_ = 1.f / aabb_.extent();
 
@@ -115,12 +121,29 @@ void Simulation::stretch_and_tilt_vortons(thread::Pool& pool) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 Vorton& vorton = vortons_[i];
 
-                float3x3 const vel_jac = velocity_jacobian_.interpolate(
-                    world_to_texture_point(vorton.position));
+                if (!aabb_.intersect(vorton.position)) {
+                    vorton.vorticity = float3(0.f);
+                    continue;
+                }
+
+                float3x3 const vel_jac = clamp(
+                    velocity_jacobian_.interpolate(world_to_texture_point(vorton.position)),
+                    -Vort_clamp, Vort_clamp);
 
                 float3 const stretch_tilt = transform_vector(vel_jac, vorton.vorticity);
 
                 vorton.vorticity += 0.5f * Time_step * stretch_tilt;
+
+                //     SOFT_ASSERT(all_finite(vorton.vorticity));
+
+                if (!all_finite(vorton.vorticity)) {
+                    std::cout << "t(position): " << world_to_texture_point(vorton.position)
+                              << std::endl;
+
+                    //     std::cout << "stretch_tilt: " << stretch_tilt << std::endl;
+
+                    std::cout << "vel_jac: " << vel_jac << std::endl;
+                }
             }
         },
         0, num_vortons_);
@@ -253,20 +276,20 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 Vorton& vorton = vortons_[i];
 
-                SOFT_ASSERT(all_finite(vorton.position));
+                //    SOFT_ASSERT(all_finite(vorton.position));
 
                 float3 const velocity = velocity_.interpolate(
                     world_to_texture_point(vorton.position));
 
                 float3 const dir = Time_step * clamp(velocity, -Vel_clamp, Vel_clamp);
 
-                SOFT_ASSERT(all_finite(dir));
+                //     SOFT_ASSERT(all_finite(dir));
 
                 float const magnitude = length(dir);
 
                 math::ray ray(vorton.position, dir / magnitude, 0.f, magnitude + radius);
 
-                if (float hit_t; aabb_.intersect_p(ray, hit_t) && hit_t < ray.max_t) {
+                if (float hit_t; padded_aabb_.intersect_p(ray, hit_t) && hit_t < ray.max_t) {
                     float3 const contact = ray.point(hit_t);
 
                     float3 const ambient = velocity_.interpolate(world_to_texture_point(contact));
@@ -289,13 +312,38 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
 
                     vorton.position = contact - radius * bend_dir;
 
+                    if (!aabb_.intersect(vorton.position)) {
+                        std::cout << "Alarm 0" << std::endl;
+                    }
+
+                    //     std::cout << max_component(abs(vorton.position)) << std::endl;
+
+                    float3 const old_vorticity = vorton.vorticity;
+
                     vorton.assign_by_velocity(contact, -vel_flow, radius);
 
-                    SOFT_ASSERT(all_finite(vorton.position));
+                    float constexpr Gain           = 0.1f;
+                    float constexpr One_minus_gain = 1.f - Gain;
+
+                    vorton.vorticity = clamp(
+                        Gain * vorton.vorticity + One_minus_gain * old_vorticity, -Vort_clamp,
+                        Vort_clamp);
+
+                    //                    if (!all_finite(vorton.vorticity)) {
+                    //                        std::cout << "vorticity " << vorton.vorticity <<
+                    //                        std::endl; std::cout << "old vorticity " <<
+                    //                        old_vorticity << std::endl;
+                    //                    }
+
+                    //                    SOFT_ASSERT(all_finite(vorton.position));
                 } else {
                     vorton.position += dir;
 
-                    SOFT_ASSERT(all_finite(vorton.position));
+                    if (!aabb_.intersect(vorton.position)) {
+                        std::cout << "Alarm 1" << std::endl;
+                    }
+
+                    //                   SOFT_ASSERT(all_finite(vorton.position));
                 }
             }
         },
@@ -340,7 +388,9 @@ float3 Simulation::compute_velocity(float3 const& position) const noexcept {
         }
     }
 
-    return velocity;
+    return clamp(velocity, -Vel_clamp, Vel_clamp);
+
+    //    return velocity;
 }
 
 /*! \brief Compute Jacobian of a vector field

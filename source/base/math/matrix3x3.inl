@@ -395,6 +395,15 @@ static inline Matrix3x3f_a constexpr lerp(Matrix3x3f_a const& a, Matrix3x3f_a co
     return u * a + t * b;
 }
 
+static inline Matrix3x3f_a constexpr clamp(Matrix3x3f_a const& m, float mi, float ma) {
+    return Matrix3x3f_a(
+        std::min(std::max(m.r[0][0], mi), ma), std::min(std::max(m.r[0][1], mi), ma),
+        std::min(std::max(m.r[0][2], mi), ma), std::min(std::max(m.r[1][0], mi), ma),
+        std::min(std::max(m.r[1][1], mi), ma), std::min(std::max(m.r[1][2], mi), ma),
+        std::min(std::max(m.r[2][0], mi), ma), std::min(std::max(m.r[2][1], mi), ma),
+        std::min(std::max(m.r[2][2], mi), ma));
+}
+
 }  // namespace math
 
 #endif
