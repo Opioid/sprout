@@ -10,6 +10,10 @@ static inline float van_de_hulst(float g, float gs) noexcept {
     return (1.f - g) / (1 - gs);
 }
 
+static inline CC constexpr operator*(float s, CC const& cc) noexcept {
+    return {s * cc.a, s * cc.s};
+}
+
 inline CM::CM() noexcept = default;
 
 inline CM::CM(float x) noexcept

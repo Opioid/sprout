@@ -174,15 +174,18 @@ size_t Grid_emission::num_bytes() const noexcept {
 
 Grid_color::Grid_color(Sampler_settings const& sampler_settings,
                        Texture_adapter const&  color) noexcept
-    : Material(sampler_settings), color_(color) {}
+    : Material(sampler_settings), color_(color) {
+    cc_ = CC{float3(0.5f), float3(0.5f)};
+    cm_ = CM(cc_);
+}
 
 Grid_color::~Grid_color() noexcept {}
 
 float3 Grid_color::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
                                      Filter filter, Worker const& worker) const noexcept {
-    float3 const c = color(uvw, filter, worker);
+    float4 const c = color(uvw, filter, worker);
 
-    CC const cc = attenuation(c, distance_);
+    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), distance_);
 
     return cc.a * emission_;
 }
@@ -198,25 +201,31 @@ CC Grid_color::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
 
 CC Grid_color::collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
     noexcept {
-    float3 const c = color(uvw, filter, worker);
+    float4 const c = color(uvw, filter, worker);
 
-    return attenuation(c, distance_);
+    return c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), distance_);
 }
 
 CCE Grid_color::collision_coefficients_emission(float3 const& uvw, Filter filter,
                                                 Worker const& worker) const noexcept {
-    float3 const c = color(uvw, filter, worker);
+    float4 const c = color(uvw, filter, worker);
 
-    CC const cc = attenuation(c, distance_);
+    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), distance_);
 
     return {cc, emission_};
+}
+
+void Grid_color::set_attenuation(float scattering_factor,
+                     float distance) noexcept {
+    distance_ = distance;
+    scattering_factor_ = scattering_factor;
 }
 
 void Grid_color::compile(thread::Pool& pool) noexcept {
     auto const& texture = color_.texture();
 
     Octree_builder builder;
-    builder.build(tree_, texture, CM(distance_), pool);
+    builder.build(tree_, texture, CM(distance_, scattering_factor_), pool);
 }
 
 Gridtree const* Grid_color::volume_tree() const noexcept {
@@ -231,10 +240,10 @@ size_t Grid_color::num_bytes() const noexcept {
     return sizeof(*this) + tree_.num_bytes();
 }
 
-float3 Grid_color::color(float3 const& uvw, Filter filter, Worker const& worker) const noexcept {
+float4 Grid_color::color(float3 const& uvw, Filter filter, Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return color_.sample_3(sampler, uvw);
+    return color_.sample_4(sampler, uvw);
 }
 
 }  // namespace scene::material::volumetric

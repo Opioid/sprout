@@ -8,13 +8,13 @@ namespace procedural::fluid {
 
 class Volume_renderer {
   public:
-    using Type = float3;
+    using Type = float4;
 
     Volume_renderer(int3 const& dimensions, uint32_t max_saturation) noexcept;
 
     ~Volume_renderer() noexcept;
 
-    void resolve(image::Byte3& target) const noexcept;
+    void resolve(image::Byte4& target) const noexcept;
 
     void resolve(image::Float1& target) const noexcept;
 

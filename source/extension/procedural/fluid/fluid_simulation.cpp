@@ -13,8 +13,8 @@
 
 namespace procedural::fluid {
 
-static uint32_t constexpr Num_tracers = 12800;
-static uint32_t constexpr Num_vortons = 128;
+static uint32_t constexpr Num_tracers = 51200000;
+static uint32_t constexpr Num_vortons = 512;
 
 static float constexpr Vel_clamp = 1e6f;
 

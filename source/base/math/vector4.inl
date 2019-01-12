@@ -193,6 +193,14 @@ static inline Vector4f_a constexpr lerp(Vector4f_a const& a, Vector4f_a const& b
     return u * a + t * b;
 }
 
+static inline Vector4f_a constexpr min(Vector4f_a const& a, float s) noexcept {
+    return Vector4f_a(std::min(a[0], s), std::min(a[1], s), std::min(a[2], s), std::min(a[3], s));
+}
+
+static inline Vector4f_a constexpr min(Vector4f_a const& a, Vector4f_a const& b) noexcept {
+    return Vector4f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]), std::min(a[3], b[3]));
+}
+
 static inline bool all_finite(Vector4f_a const& v) noexcept {
     return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]) && std::isfinite(v[3]);
 }

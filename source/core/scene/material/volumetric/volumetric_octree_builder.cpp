@@ -1,5 +1,5 @@
 #include "volumetric_octree_builder.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.hpp"
 #include "scene/material/collision_coefficients.inl"
@@ -93,17 +93,18 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
     int3 const minb = math::max(box.bounds[0] - 1, 0);
     int3 const maxb = math::min(box.bounds[1] + 1, d);
 
-    if (3 == texture.num_channels()) {
+    if (4 == texture.num_channels()) {
         float const distance = cm.minorant_mu_a;
+        float const scattering_factor = cm.majorant_mu_a;
 
         CM lcm(1.f, 0.f);
 
         for (int32_t z = minb[2]; z < maxb[2]; ++z) {
             for (int32_t y = minb[1]; y < maxb[1]; ++y) {
                 for (int32_t x = minb[0]; x < maxb[0]; ++x) {
-                    float3 const color = texture.at_3(x, y, z);
+                    float4 const color = texture.at_4(x, y, z);
 
-                    lcm.add(attenuation(color, distance));
+                    lcm.add(color[3] * attenuation(color.xyz(), scattering_factor * color.xyz(), distance));
                 }
             }
         }
@@ -113,8 +114,8 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
         //            max_density = 0.f;
         //        }
 
-        float const diff = 1.f;//std::max(lcm.majorant_mu_a - lcm.minorant_mu_a,
-                             //       lcm.majorant_mu_s - lcm.minorant_mu_s);
+        float const diff = std::max(lcm.majorant_mu_a - lcm.minorant_mu_a,
+                                    lcm.majorant_mu_s - lcm.minorant_mu_s);
 
         if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || math::any_less(maxb - minb, w)) {
             for (uint32_t i = 0; i < 8; ++i) {
