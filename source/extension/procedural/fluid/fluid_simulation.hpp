@@ -49,6 +49,8 @@ class Simulation {
 
     AABB aabb_;
 
+    AABB padded_aabb_;
+
     float3 inv_extent_;
 
   public:
