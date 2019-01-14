@@ -57,7 +57,7 @@ void Simulation::simulate(thread::Pool& pool) noexcept {
 
     stretch_and_tilt_vortons(pool);
 
-	diffuse_vorticity_PSE();
+    diffuse_vorticity_PSE();
 
     advect_vortons(pool);
 
@@ -121,32 +121,32 @@ void Simulation::stretch_and_tilt_vortons(thread::Pool& pool) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 Vorton& vorton = vortons_[i];
 
-//                if (!aabb_.intersect(vorton.position)) {
-//                    vorton.vorticity = float3(0.f);
-//                    continue;
-//                }
+                //                if (!aabb_.intersect(vorton.position)) {
+                //                    vorton.vorticity = float3(0.f);
+                //                    continue;
+                //                }
 
+                float3x3 const vel_jac = velocity_jacobian_.interpolate(
+                    world_to_texture_point(vorton.position));
 
-                float3x3 const vel_jac =
-                    velocity_jacobian_.interpolate(world_to_texture_point(vorton.position));
-
-//                float3x3 const vel_jac = clamp(
-//                    velocity_jacobian_.interpolate(world_to_texture_point(vorton.position)),
-//                    -Vort_clamp, Vort_clamp);
+                //                float3x3 const vel_jac = clamp(
+                //                    velocity_jacobian_.interpolate(world_to_texture_point(vorton.position)),
+                //                    -Vort_clamp, Vort_clamp);
 
                 float3 const stretch_tilt = transform_vector(vel_jac, vorton.vorticity);
 
-            //    vorton.vorticity += 0.5f * Time_step * stretch_tilt;
+                //    vorton.vorticity += 0.5f * Time_step * stretch_tilt;
 
-                vorton.vorticity = clamp(vorton.vorticity + 0.5f * Time_step * stretch_tilt, -Vort_clamp, Vort_clamp);
+                vorton.vorticity = clamp(vorton.vorticity + 0.5f * Time_step * stretch_tilt,
+                                         -Vort_clamp, Vort_clamp);
 
-				 SOFT_ASSERT(all_finite(vorton.vorticity));
+                SOFT_ASSERT(all_finite(vorton.vorticity));
 
                 if (!all_finite(vorton.vorticity)) {
                     std::cout << "t(position): " << world_to_texture_point(vorton.position)
                               << std::endl;
 
-					std::cout << "stretch_tilt: " << stretch_tilt << std::endl;
+                    std::cout << "stretch_tilt: " << stretch_tilt << std::endl;
 
                     std::cout << "vel_jac: " << vel_jac << std::endl;
                 }
@@ -287,7 +287,7 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
                 float3 const velocity = velocity_.interpolate(
                     world_to_texture_point(vorton.position));
 
-          //      float3 const dir = Time_step * clamp(velocity, -Vel_clamp, Vel_clamp);
+                //      float3 const dir = Time_step * clamp(velocity, -Vel_clamp, Vel_clamp);
                 float3 const dir = Time_step * velocity;
 
                 //     SOFT_ASSERT(all_finite(dir));
@@ -304,7 +304,8 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
                     float3 const vel_due_to_vort = vorton.accumulate_velocity(contact, radius);
 
                     float3 const vel_flow = ambient - vel_due_to_vort;
-              //      float3 const vel_flow = clamp(ambient - vel_due_to_vort, -Vel_clamp, Vel_clamp);
+                    //      float3 const vel_flow = clamp(ambient - vel_due_to_vort, -Vel_clamp,
+                    //      Vel_clamp);
 
                     float3 const normal = padded_aabb_.normal(contact);
 
@@ -322,25 +323,24 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
 
                     float3 const old_vorticity = vorton.vorticity;
 
-			  //      vorton.assign_by_velocity(contact, -vel_flow, radius);
+                    vorton.assign_by_velocity(contact, -vel_flow, radius);
 
                     float constexpr Gain           = 0.1f;
                     float constexpr One_minus_gain = 1.f - Gain;
 
-//                    vorton.vorticity = clamp(
-//                        Gain * vorton.vorticity + One_minus_gain * old_vorticity, -Vel_clamp,
-//                        Vel_clamp);
+                    //                    vorton.vorticity = clamp(
+                    //                        Gain * vorton.vorticity + One_minus_gain *
+                    //                        old_vorticity, -Vel_clamp, Vel_clamp);
 
-                    vorton.vorticity =
-                        Gain * vorton.vorticity + One_minus_gain * old_vorticity;
+                    vorton.vorticity = Gain * vorton.vorticity + One_minus_gain * old_vorticity;
 
-					if (!all_finite(vorton.vorticity)) {
-						std::cout << "ambient " << ambient << std::endl;
-						std::cout << "vel_due_to_vort " << vel_due_to_vort << std::endl;
-						std::cout << "vel_flow " << vel_flow << std::endl;
-						std::cout << "vorticity " << vorton.vorticity << std::endl;
-						std::cout << "old vorticity " << old_vorticity << std::endl;
-					}
+                    if (!all_finite(vorton.vorticity)) {
+                        std::cout << "ambient " << ambient << std::endl;
+                        std::cout << "vel_due_to_vort " << vel_due_to_vort << std::endl;
+                        std::cout << "vel_flow " << vel_flow << std::endl;
+                        std::cout << "vorticity " << vorton.vorticity << std::endl;
+                        std::cout << "old vorticity " << old_vorticity << std::endl;
+                    }
 
                     SOFT_ASSERT(all_finite(vorton.position));
                 } else {
@@ -390,14 +390,14 @@ float3 Simulation::compute_velocity(float3 const& position) const noexcept {
     float const radius = vorton_radius_;
 
     for (uint32_t i = 0, len = num_vortons_; i < len; ++i) {
-     //   if (aabb_.intersect(vortons_[i].position)) {
-            velocity += vortons_[i].accumulate_velocity(position, radius);
-     //   }
+        //   if (aabb_.intersect(vortons_[i].position)) {
+        velocity += vortons_[i].accumulate_velocity(position, radius);
+        //   }
     }
 
-  //  return clamp(velocity, -Vel_clamp, Vel_clamp);
+    //  return clamp(velocity, -Vel_clamp, Vel_clamp);
 
-        return velocity;
+    return velocity;
 }
 
 /*! \brief Compute Jacobian of a vector field

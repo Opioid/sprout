@@ -26,7 +26,7 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
           sampler_settings,
           Texture_adapter(std::make_shared<texture::Float1>(std::make_shared<Float1>(
               Image::Description(Image::Type::Float1, Visualization_dimensions))))),
-	  sim_(int3(32), Visualization_dimensions),
+      sim_(int3(256), Visualization_dimensions),
       current_frame_(0) {
     rnd::Generator rng(0, 0);
 
@@ -49,7 +49,7 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
 
         v.position = (0.05f + 0.01f * rng.random_float()) * dir;
 
-		v.vorticity = 512.f * dir;
+        v.vorticity = 8.f * dir;
     }
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
