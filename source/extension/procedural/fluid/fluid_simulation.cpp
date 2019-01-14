@@ -57,7 +57,7 @@ void Simulation::simulate(thread::Pool& pool) noexcept {
 
     stretch_and_tilt_vortons(pool);
 
-    diffuse_vorticity_PSE();
+	diffuse_vorticity_PSE();
 
     advect_vortons(pool);
 
@@ -140,13 +140,13 @@ void Simulation::stretch_and_tilt_vortons(thread::Pool& pool) noexcept {
 
                 vorton.vorticity = clamp(vorton.vorticity + 0.5f * Time_step * stretch_tilt, -Vort_clamp, Vort_clamp);
 
-                //     SOFT_ASSERT(all_finite(vorton.vorticity));
+				 SOFT_ASSERT(all_finite(vorton.vorticity));
 
                 if (!all_finite(vorton.vorticity)) {
                     std::cout << "t(position): " << world_to_texture_point(vorton.position)
                               << std::endl;
 
-                    //     std::cout << "stretch_tilt: " << stretch_tilt << std::endl;
+					std::cout << "stretch_tilt: " << stretch_tilt << std::endl;
 
                     std::cout << "vel_jac: " << vel_jac << std::endl;
                 }
@@ -322,7 +322,7 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
 
                     float3 const old_vorticity = vorton.vorticity;
 
-                    vorton.assign_by_velocity(contact, -vel_flow, radius);
+			  //      vorton.assign_by_velocity(contact, -vel_flow, radius);
 
                     float constexpr Gain           = 0.1f;
                     float constexpr One_minus_gain = 1.f - Gain;
@@ -334,11 +334,13 @@ void Simulation::advect_vortons(thread::Pool& pool) noexcept {
                     vorton.vorticity =
                         Gain * vorton.vorticity + One_minus_gain * old_vorticity;
 
-                    //                    if (!all_finite(vorton.vorticity)) {
-                    //                        std::cout << "vorticity " << vorton.vorticity <<
-                    //                        std::endl; std::cout << "old vorticity " <<
-                    //                        old_vorticity << std::endl;
-                    //                    }
+					if (!all_finite(vorton.vorticity)) {
+						std::cout << "ambient " << ambient << std::endl;
+						std::cout << "vel_due_to_vort " << vel_due_to_vort << std::endl;
+						std::cout << "vel_flow " << vel_flow << std::endl;
+						std::cout << "vorticity " << vorton.vorticity << std::endl;
+						std::cout << "old vorticity " << old_vorticity << std::endl;
+					}
 
                     SOFT_ASSERT(all_finite(vorton.position));
                 } else {
