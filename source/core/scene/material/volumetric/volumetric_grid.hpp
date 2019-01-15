@@ -91,8 +91,7 @@ class Grid_color : public Material {
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const noexcept override final;
 
-    void set_attenuation(float scattering_factor,
-                         float distance) noexcept;
+    void set_attenuation(float scattering_factor, float distance) noexcept;
 
     void compile(thread::Pool& pool) noexcept override final;
 

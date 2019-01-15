@@ -215,9 +215,8 @@ CCE Grid_color::collision_coefficients_emission(float3 const& uvw, Filter filter
     return {cc, emission_};
 }
 
-void Grid_color::set_attenuation(float scattering_factor,
-                     float distance) noexcept {
-    distance_ = distance;
+void Grid_color::set_attenuation(float scattering_factor, float distance) noexcept {
+    distance_          = distance;
     scattering_factor_ = scattering_factor;
 }
 

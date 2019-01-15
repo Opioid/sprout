@@ -198,7 +198,8 @@ static inline Vector4f_a constexpr min(Vector4f_a const& a, float s) noexcept {
 }
 
 static inline Vector4f_a constexpr min(Vector4f_a const& a, Vector4f_a const& b) noexcept {
-    return Vector4f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]), std::min(a[3], b[3]));
+    return Vector4f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]),
+                      std::min(a[3], b[3]));
 }
 
 static inline bool all_finite(Vector4f_a const& v) noexcept {

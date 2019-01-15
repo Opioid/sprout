@@ -1,11 +1,12 @@
 #include "fluid_material.hpp"
 #include "base/chrono/chrono.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "core/image/texture/texture.hpp"
 #include "core/image/texture/texture_adapter.inl"
-#include "core/image/texture/texture_float_1.hpp"
 #include "core/image/texture/texture_byte_4_srgb.hpp"
+#include "core/image/texture/texture_float_1.hpp"
 #include "core/image/typed_image.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "fluid_particle.hpp"
@@ -52,9 +53,7 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
             o = float3(0.08f, 0.f, 0.f);
         }
 
-        float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
-
-        float3 const dir = normalize(2.f * p - 1.f);
+        float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
 
         v.position = o + (0.05f + 0.01f * rng.random_float()) * dir;
 
@@ -64,20 +63,19 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
         Particle& p = sim_.tracers()[i];
 
-        float3 const r0(rng.random_float(), rng.random_float(), rng.random_float());
-
         float3 o;
 
         if (i < len / 2) {
-            o = float3(-0.08f, 0.f, 0.f);
+            o       = float3(-0.08f, 0.f, 0.f);
             p.color = float3(0.8f, 0.2f, 0.2f);
         } else {
-            o = float3(0.08f, 0.f, 0.f);
+            o       = float3(0.08f, 0.f, 0.f);
             p.color = float3(0.2f, 0.8f, 0.2f);
         }
 
-        p.position = o + (0.05f + 0.01f * rng.random_float()) *
-                                     normalize(2.f * r0 - 1.f);
+        float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
+
+        p.position = o + (0.05f + 0.01f * rng.random_float()) * dir;
     }
 }
 
