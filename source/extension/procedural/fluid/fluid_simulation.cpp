@@ -15,7 +15,7 @@
 namespace procedural::fluid {
 
 static uint32_t constexpr Num_tracers = 51200000;
-static uint32_t constexpr Num_vortons = 1024;
+static uint32_t constexpr Num_vortons = 2048;
 
 static float constexpr Vort_clamp = 1e4f;
 static float constexpr Vel_clamp  = 1e3f;
@@ -25,7 +25,7 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
 
 Simulation::Simulation(int3 const& dimensions, int3 const& visualization_dimensions) noexcept
     : viscosity_(0.025f),
-      vorton_radius_(0.01f),
+      vorton_radius_(0.003f),
       tracer_radius_(0.f),
       velocity_(dimensions),
       velocity_jacobian_(dimensions),

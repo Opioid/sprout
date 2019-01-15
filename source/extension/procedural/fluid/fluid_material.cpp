@@ -1,5 +1,6 @@
 #include "fluid_material.hpp"
 #include "base/chrono/chrono.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "core/image/texture/texture.hpp"
@@ -43,20 +44,17 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
 
         //        v.vorticity = 64.f * float3(0.f, 1.f, 0.f);
 
-        float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
-
-        float3 const dir = normalize(2.f * p - 1.f);
+        float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
 
         v.position = (0.05f + 0.01f * rng.random_float()) * dir;
 
-        v.vorticity = 8.f * dir;
+        v.vorticity = 32.f * dir;
     }
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
-        float3 const p(rng.random_float(), rng.random_float(), rng.random_float());
+        float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
 
-        sim_.tracers()[i].position = (0.05f + 0.01f * rng.random_float()) *
-                                     normalize(2.f * p - 1.f);
+        sim_.tracers()[i].position = (0.05f + 0.01f * rng.random_float()) * dir;
     }
 }
 
