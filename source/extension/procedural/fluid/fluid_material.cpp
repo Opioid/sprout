@@ -67,10 +67,10 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
 
         if (i < len / 2) {
             o       = float3(-0.08f, 0.f, 0.f);
-            p.color = float3(0.8f, 0.2f, 0.2f);
+            p.color = float3(0.3f, 0.8f, 0.3f);
         } else {
             o       = float3(0.08f, 0.f, 0.f);
-            p.color = float3(0.2f, 0.8f, 0.2f);
+            p.color = float3(0.8f, 0.3f, 0.3f);
         }
 
         float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));

@@ -31,7 +31,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
                                                                 Sampler_settings::Address::Clamp,
                                                                 Sampler_settings::Address::Clamp));
 
-    material->set_attenuation(0.5f, 0.0004f);
+    material->set_attenuation(0.4f, 0.0004f);
     material->set_emission(float3(0.f));
     material->set_anisotropy(0.f);
 
