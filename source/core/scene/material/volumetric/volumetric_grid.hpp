@@ -91,6 +91,8 @@ class Grid_color : public Material {
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const noexcept override final;
 
+    void set_attenuation(float scattering_factor, float distance) noexcept;
+
     void compile(thread::Pool& pool) noexcept override final;
 
     Gridtree const* volume_tree() const noexcept override final;
@@ -100,11 +102,13 @@ class Grid_color : public Material {
     size_t num_bytes() const noexcept override;
 
   protected:
-    float3 color(float3 const& uvw, Filter filter, Worker const& worker) const noexcept;
+    float4 color(float3 const& uvw, Filter filter, Worker const& worker) const noexcept;
 
     Texture_adapter color_;
 
     Gridtree tree_;
+
+    float scattering_factor_;
 };
 
 }  // namespace scene::material::volumetric

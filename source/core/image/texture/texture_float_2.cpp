@@ -75,4 +75,8 @@ float3 Float2::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
     return float3(image_.load(x, y, z), 0.f);
 }
 
+float4 Float2::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
+    return float4(image_.load(x, y, z), 0.f, 1.f);
+}
+
 }  // namespace image::texture

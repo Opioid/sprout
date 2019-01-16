@@ -703,6 +703,10 @@ static inline constexpr bool all_less(Vector3f_a const& v, float s) noexcept {
     return v[0] < s && v[1] < s && v[2] < s;
 }
 
+static inline constexpr bool all_less_equal(Vector3f_a const& v, float s) noexcept {
+    return v[0] <= s && v[1] <= s && v[2] <= s;
+}
+
 static inline constexpr bool all_greater_equal(Vector3f_a const& v, float s) noexcept {
     return v[0] >= s && v[1] >= s && v[2] >= s;
 }

@@ -1120,7 +1120,7 @@ Material_ptr Provider::load_volumetric(json::Value const& volumetric_value,
         }
     } else if (color_map.is_valid()) {
         auto material = std::make_shared<Grid_color>(sampler_settings, color_map);
-        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+        material->set_attenuation(1.f, attenuation_distance);
         material->set_emission(emission);
         material->set_anisotropy(anisotropy);
         return material;

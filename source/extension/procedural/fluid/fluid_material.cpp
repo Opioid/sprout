@@ -5,6 +5,7 @@
 #include "base/random/generator.inl"
 #include "core/image/texture/texture.hpp"
 #include "core/image/texture/texture_adapter.inl"
+#include "core/image/texture/texture_byte_4_srgb.hpp"
 #include "core/image/texture/texture_float_1.hpp"
 #include "core/image/typed_image.hpp"
 #include "core/scene/prop/prop.hpp"
@@ -23,10 +24,10 @@ using namespace image;
 static int3 constexpr Visualization_dimensions(320);
 
 Material::Material(Sampler_settings const& sampler_settings) noexcept
-    : scene::material::volumetric::Grid(
+    : scene::material::volumetric::Grid_color(
           sampler_settings,
-          Texture_adapter(std::make_shared<texture::Float1>(std::make_shared<Float1>(
-              Image::Description(Image::Type::Float1, Visualization_dimensions))))),
+          Texture_adapter(std::make_shared<texture::Byte4_sRGB>(std::make_shared<Byte4>(
+              Image::Description(Image::Type::Byte4, Visualization_dimensions))))),
       sim_(int3(256), Visualization_dimensions),
       current_frame_(0) {
     rnd::Generator rng(0, 0);
@@ -44,17 +45,37 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
 
         //        v.vorticity = 64.f * float3(0.f, 1.f, 0.f);
 
+        float3 o;
+
+        if (i < len / 2) {
+            o = float3(-0.08f, 0.f, 0.f);
+        } else {
+            o = float3(0.08f, 0.f, 0.f);
+        }
+
         float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
 
-        v.position = (0.05f + 0.01f * rng.random_float()) * dir;
+        v.position = o + (0.05f + 0.01f * rng.random_float()) * dir;
 
         v.vorticity = 32.f * dir;
     }
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
+        Particle& p = sim_.tracers()[i];
+
+        float3 o;
+
+        if (i < len / 2) {
+            o       = float3(-0.08f, 0.f, 0.f);
+            p.color = float3(0.8f, 0.2f, 0.2f);
+        } else {
+            o       = float3(0.08f, 0.f, 0.f);
+            p.color = float3(0.2f, 0.8f, 0.2f);
+        }
+
         float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
 
-        sim_.tracers()[i].position = (0.05f + 0.01f * rng.random_float()) * dir;
+        p.position = o + (0.05f + 0.01f * rng.random_float()) * dir;
     }
 }
 
@@ -85,17 +106,19 @@ void Material::simulate(uint64_t      start, uint64_t /*end*/, uint64_t /*frame_
 
     current_frame_ = sim_frame;
 
-    Volume_renderer renderer(density_.texture().dimensions_3(), 128);
+    Volume_renderer renderer(color_.texture().dimensions_3(), 128);
 
     renderer.clear();
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
-        float3 const p = sim_.world_to_texture_point(sim_.tracers()[i].position);
+        auto const& tracer = sim_.tracers()[i];
 
-        renderer.splat(p, 1.f);
+        float3 const p = sim_.world_to_texture_point(tracer.position);
+
+        renderer.splat(p, float4(tracer.color, 1.f));
     }
 
-    renderer.resolve(*static_cast<image::Float1*>(&density_.texture().image()));
+    renderer.resolve(*static_cast<image::Byte4*>(&color_.texture().image()));
 
     compile(pool);
 }
