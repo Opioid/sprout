@@ -16,15 +16,18 @@ template <typename T>
 Typed_cache<T>::Typed_cache(Provider<T>& provider) : provider_(provider) {}
 
 template <typename T>
-Typed_cache<T>::~Typed_cache() {}
+Typed_cache<T>::~Typed_cache() {
+    for (auto r : resources_) {
+        delete r.second;
+    }
+}
 
 template <typename T>
-std::shared_ptr<T> Typed_cache<T>::load(std::string const&         filename,
-                                        memory::Variant_map const& options, Manager& manager) {
+T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& options,
+                        Manager& manager) {
     auto const key = std::make_pair(filename, options);
 
-    auto cached = resources_.find(key);
-    if (resources_.end() != cached) {
+    if (auto cached = resources_.find(key); resources_.end() != cached) {
         return cached->second;
     }
 
@@ -45,9 +48,8 @@ std::shared_ptr<T> Typed_cache<T>::load(std::string const&         filename,
 }
 
 template <typename T>
-std::shared_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
-                                        std::string_view           mount_folder,
-                                        memory::Variant_map const& options, Manager& manager) {
+T* Typed_cache<T>::load(std::string const& name, void const* data, std::string_view mount_folder,
+                        memory::Variant_map const& options, Manager& manager) {
     auto const key = std::make_pair(name, options);
 
     auto resource = provider_.load(data, mount_folder, options, manager);
@@ -61,12 +63,10 @@ std::shared_ptr<T> Typed_cache<T>::load(std::string const& name, void const* dat
 }
 
 template <typename T>
-std::shared_ptr<T> Typed_cache<T>::get(std::string const&         filename,
-                                       memory::Variant_map const& options) {
+T* Typed_cache<T>::get(std::string const& filename, memory::Variant_map const& options) {
     auto const key = std::make_pair(filename, options);
 
-    auto cached = resources_.find(key);
-    if (resources_.end() != cached) {
+    if (auto cached = resources_.find(key); resources_.end() != cached) {
         return cached->second;
     }
 
@@ -75,7 +75,7 @@ std::shared_ptr<T> Typed_cache<T>::get(std::string const&         filename,
 
 template <typename T>
 void Typed_cache<T>::store(std::string const& name, memory::Variant_map const& options,
-                           std::shared_ptr<T> const& resource) noexcept {
+                           T* resource) noexcept {
     auto const key = std::make_pair(name, options);
 
     resources_[key] = resource;

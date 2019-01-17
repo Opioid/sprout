@@ -9,12 +9,11 @@
 
 namespace image::texture {
 
-inline Adapter::Adapter() noexcept = default;
+inline Adapter::Adapter() noexcept : texture_(nullptr) {}
 
-inline Adapter::Adapter(std::shared_ptr<Texture> const& texture) noexcept
-    : texture_(texture), scale_(float2(1.f, 1.f)) {}
+inline Adapter::Adapter(Texture* texture) noexcept : texture_(texture), scale_(float2(1.f, 1.f)) {}
 
-inline Adapter::Adapter(std::shared_ptr<Texture> const& texture, float2 scale) noexcept
+inline Adapter::Adapter(Texture* texture, float2 scale) noexcept
     : texture_(texture), scale_(scale) {}
 
 inline Adapter::~Adapter() {}
@@ -24,15 +23,15 @@ inline bool Adapter::operator==(Adapter const& other) const noexcept {
 }
 
 inline bool Adapter::is_valid() const noexcept {
-    return !texture_ == false;
+    return texture_ != nullptr;
 }
 
 inline Texture& Adapter::texture() noexcept {
-    return *texture_.get();
+    return *texture_;
 }
 
 inline Texture const& Adapter::texture() const noexcept {
-    return *texture_.get();
+    return *texture_;
 }
 
 inline float Adapter::sample_1(Sampler_2D const& sampler, float2 uv) const noexcept {

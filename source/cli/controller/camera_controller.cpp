@@ -5,9 +5,9 @@
 
 namespace controller {
 
-Camera::Camera(std::shared_ptr<scene::camera::Camera> camera) : camera_(camera) {
+Camera::Camera(scene::camera::Camera& camera) : camera_(camera) {
     scene::entity::Composed_transformation temp;
-    auto&                                  transformation = camera_->transformation_at(0, temp);
+    auto&                                  transformation = camera_.transformation_at(0, temp);
 
     position_ = transformation.position;
 }
@@ -19,7 +19,7 @@ void Camera::mouse_delta(float3 delta) {
 
     math::Transformation transformation{position_, float3(1.f), math::quaternion::identity()};
 
-    camera_->set_transformation(transformation);
+    camera_.set_transformation(transformation);
 }
 
 }  // namespace controller

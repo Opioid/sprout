@@ -42,15 +42,15 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
 
     static bool constexpr bake = true;
 
-    std::shared_ptr<Material> sky_material;
-    std::shared_ptr<Material> sun_material;
+    Material* sky_material;
+    Material* sun_material;
 
     if (bake) {
-        sky_material = std::make_shared<Sky_baked_material>(*sky);
-        sun_material = std::make_shared<Sun_baked_material>(*sky);
+        sky_material = new Sky_baked_material(*sky);
+        sun_material = new Sun_baked_material(*sky);
     } else {
-        sky_material = std::make_shared<Sky_material>(*sky);
-        sun_material = std::make_shared<Sun_material>(*sky);
+        sky_material = new Sky_material(*sky);
+        sun_material = new Sun_material(*sky);
     }
 
     manager.store<material::Material>("proc:sky", sky_material);

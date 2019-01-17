@@ -40,7 +40,7 @@ size_t Material::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Material::set_materials(Material_ptr const& a, Material_ptr const& b) noexcept {
+void Material::set_materials(material::Material const* a, material::Material const* b) noexcept {
     material_a_ = a;
     material_b_ = b;
 }

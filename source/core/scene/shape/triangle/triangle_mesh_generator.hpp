@@ -18,8 +18,7 @@ class Provider;
 
 class Generator {
   public:
-    virtual std::shared_ptr<Shape> create_mesh(json::Value const& mesh_value,
-                                               resource::Manager& manager) = 0;
+    virtual Shape* create_mesh(json::Value const& mesh_value, resource::Manager& manager) = 0;
 };
 
 }  // namespace triangle

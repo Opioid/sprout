@@ -84,14 +84,13 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
         volume->set_transformation(transformation);
     */
 
-    auto target = std::make_shared<Float1>(Image::Description(Image::Type::Float1, dimensions));
+    auto target = new Float1(Image::Description(Image::Type::Float1, dimensions));
 
     render(*target, manager.thread_pool());
 
-    auto texture = std::make_shared<texture::Float1>(target);
+    auto texture = new texture::Float1(target);
 
-    auto material = std::make_shared<volumetric::Grid>(Sampler_settings(),
-                                                       Texture_adapter(texture));
+    auto material = new volumetric::Grid(Sampler_settings(), Texture_adapter(texture));
 
     //    auto material = std::make_shared<volumetric::Homogeneous>(Sampler_settings());
 
@@ -101,10 +100,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     material->compile(manager.thread_pool());
 
-    Materials materials(1);
-    materials[0] = material;
-
-    prop::Prop* volume = scene.create_prop(scene_loader_->cube(), materials);
+    prop::Prop* volume = scene.create_prop(scene_loader_->cube(), {material});
 
     math::Transformation transformation{float3(0.f),
                                         //	float3(1000000.f, 100000.f, 50000.f),

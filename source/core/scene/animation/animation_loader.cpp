@@ -7,16 +7,16 @@
 
 namespace scene::animation {
 
-std::shared_ptr<animation::Animation> load_keyframes(
-    json::Value const& keyframes_value, math::Transformation const& default_transformation);
+animation::Animation* load_keyframes(json::Value const&          keyframes_value,
+                                     math::Transformation const& default_transformation);
 
-std::shared_ptr<animation::Animation> load_sequence(
-    json::Value const& keyframes_value, math::Transformation const& default_transformation);
+animation::Animation* load_sequence(json::Value const&          keyframes_value,
+                                    math::Transformation const& default_transformation);
 
 void read_morphing(json::Value const& value, entity::Keyframe::Morphing& morphing);
 
-std::shared_ptr<animation::Animation> load(json::Value const&          animation_value,
-                                           math::Transformation const& default_transformation) {
+animation::Animation* load(json::Value const&          animation_value,
+                           math::Transformation const& default_transformation) {
     for (auto n = animation_value.MemberBegin(); n != animation_value.MemberEnd(); ++n) {
         std::string const       node_name  = n->name.GetString();
         rapidjson::Value const& node_value = n->value;
@@ -31,13 +31,13 @@ std::shared_ptr<animation::Animation> load(json::Value const&          animation
     return nullptr;
 }
 
-std::shared_ptr<animation::Animation> load_keyframes(
-    json::Value const& keyframes_value, math::Transformation const& default_transformation) {
+animation::Animation* load_keyframes(json::Value const&          keyframes_value,
+                                     math::Transformation const& default_transformation) {
     if (!keyframes_value.IsArray()) {
         return nullptr;
     }
 
-    auto animation = std::make_shared<animation::Animation>();
+    auto animation = new animation::Animation;
 
     animation->init(keyframes_value.Size());
 
@@ -69,8 +69,8 @@ std::shared_ptr<animation::Animation> load_keyframes(
     return animation;
 }
 
-std::shared_ptr<animation::Animation> load_sequence(
-    json::Value const& sequence_value, math::Transformation const& default_transformation) {
+animation::Animation* load_sequence(json::Value const&          sequence_value,
+                                    math::Transformation const& default_transformation) {
     uint32_t start_frame       = 0;
     uint32_t num_frames        = 0;
     uint32_t frames_per_second = 0;
@@ -91,12 +91,13 @@ std::shared_ptr<animation::Animation> load_sequence(
         return nullptr;
     }
 
-    auto animation = std::make_shared<animation::Animation>();
+    auto animation = new animation::Animation;
 
     animation->init(num_frames);
 
-    uint64_t time           = 0;
-    uint64_t time_increment = scene::Units_per_second / frames_per_second;
+    uint64_t time = 0;
+
+    uint64_t const time_increment = scene::Units_per_second / frames_per_second;
 
     for (uint32_t i = 0; i < num_frames; ++i) {
         entity::Keyframe keyframe;

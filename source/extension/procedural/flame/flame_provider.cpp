@@ -33,7 +33,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     //   auto texture = std::make_shared<texture::Float1>(target);
 
-    auto material = std::make_shared<volumetric::Homogeneous>(Sampler_settings());
+    auto material = new volumetric::Homogeneous(Sampler_settings());
 
     //    auto material = std::make_shared<volumetric::Homogeneous>(Sampler_settings());
 

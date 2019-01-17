@@ -124,9 +124,9 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 
     Image::Description const description(Image::Type::Float3, d);
 
-    auto cache = std::make_shared<Float3>(description);
+    auto cache = new Float3(description);
 
-    auto cache_texture = std::make_shared<texture::Float3>(cache);
+    auto cache_texture = new texture::Float3(cache);
 
     emission_map_ = Texture_adapter(cache_texture);
 

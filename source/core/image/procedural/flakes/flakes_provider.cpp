@@ -10,7 +10,7 @@
 
 namespace image::procedural::flakes {
 
-std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& options) noexcept {
+Image* Provider::create_normal_map(memory::Variant_map const& options) noexcept {
     Properties props(options);
 
     Renderer renderer(props.dimensions, 1);
@@ -34,8 +34,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
         //   renderer.draw_bounding_square(flake.pos, props.radius);
     }
 
-    std::shared_ptr<Byte3> image = std::make_shared<Byte3>(
-        Image::Description(Image::Type::Byte3, props.dimensions));
+    Byte3* image = new Byte3(Image::Description(Image::Type::Byte3, props.dimensions));
 
     renderer.resolve(*image);
 
@@ -44,7 +43,7 @@ std::shared_ptr<Image> Provider::create_normal_map(memory::Variant_map const& op
     return image;
 }
 
-std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options) noexcept {
+Image* Provider::create_mask(memory::Variant_map const& options) noexcept {
     Properties props(options);
 
     Renderer renderer(props.dimensions, 8);
@@ -64,8 +63,7 @@ std::shared_ptr<Image> Provider::create_mask(memory::Variant_map const& options)
         renderer.draw_disk(flake.pos, flake.normal, props.radius);
     }
 
-    std::shared_ptr<Byte1> image = std::make_shared<Byte1>(
-        Image::Description(Image::Type::Byte1, props.dimensions));
+    Byte1* image = new Byte1(Image::Description(Image::Type::Byte1, props.dimensions));
 
     renderer.resolve(*image);
 

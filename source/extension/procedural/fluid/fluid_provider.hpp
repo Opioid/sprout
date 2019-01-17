@@ -9,6 +9,8 @@ class Loader;
 
 namespace procedural::fluid {
 
+class Material;
+
 void init(scene::Loader& loader);
 
 class Provider : public scene::entity::Extension_provider {
@@ -22,6 +24,8 @@ class Provider : public scene::entity::Extension_provider {
 
   private:
     scene::Loader* scene_loader_ = nullptr;
+
+    Material* material_ = nullptr;
 };
 
 }  // namespace procedural::fluid

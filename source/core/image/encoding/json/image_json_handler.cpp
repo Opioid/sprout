@@ -65,7 +65,7 @@ void Json_handler::clear() {
     image_handler_ = nullptr;
 }
 
-std::shared_ptr<Image> const& Json_handler::image() const {
+Image* Json_handler::image() const {
     return image_;
 }
 
@@ -179,13 +179,13 @@ bool Json_handler::EndObject(size_t /*memberCount*/) {
         if (Image::Type::Byte1 == type_) {
             Image::Description description(Image::Type::Byte1, dimensions_);
 
-            image_ = std::make_shared<Byte1>(description);
+            image_ = new Byte1(description);
 
             image_handler_ = new Byte1_handler(*image_);
         } else if (Image::Type::Float1 == type_) {
             Image::Description description(Image::Type::Float1, dimensions_);
 
-            image_ = std::make_shared<Float1>(description);
+            image_ = new Float1(description);
 
             image_handler_ = new Float1_handler(*image_);
         }

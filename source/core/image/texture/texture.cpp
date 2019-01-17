@@ -4,7 +4,7 @@
 
 namespace image::texture {
 
-Texture::Texture(std::shared_ptr<Image> const& image) noexcept
+Texture::Texture(Image* image) noexcept
     : untyped_image_(image),
       back_(int3(image->description().dimensions[0] - 1, image->description().dimensions[1] - 1,
                  image->description().dimensions[2] - 1)),
@@ -13,11 +13,11 @@ Texture::Texture(std::shared_ptr<Image> const& image) noexcept
 Texture::~Texture() noexcept {}
 
 Image& Texture::image() noexcept {
-    return *untyped_image_.get();
+    return *untyped_image_;
 }
 
 Image const& Texture::image() const noexcept {
-    return *untyped_image_.get();
+    return *untyped_image_;
 }
 
 int32_t Texture::num_channels() const noexcept {

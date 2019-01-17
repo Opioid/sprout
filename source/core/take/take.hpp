@@ -30,7 +30,9 @@ class Factory;
 namespace take {
 
 struct Take {
-    Take() = default;
+    Take();
+
+    ~Take();
 
     Settings    settings;
     std::string scene_filename;
@@ -38,12 +40,12 @@ struct Take {
 
     Photon_settings photon_settings;
 
-    std::shared_ptr<scene::animation::Animation> camera_animation;
+    scene::animation::Animation* camera_animation = nullptr;
 
-    std::shared_ptr<rendering::integrator::surface::Factory> surface_integrator_factory;
-    std::shared_ptr<rendering::integrator::volume::Factory>  volume_integrator_factory;
+    std::unique_ptr<rendering::integrator::surface::Factory> surface_integrator_factory;
+    std::unique_ptr<rendering::integrator::volume::Factory>  volume_integrator_factory;
 
-    std::shared_ptr<sampler::Factory> sampler_factory;
+    std::unique_ptr<sampler::Factory> sampler_factory;
 
     std::vector<std::unique_ptr<exporting::Sink>> exporters;
 };

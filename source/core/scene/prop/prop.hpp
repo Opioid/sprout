@@ -30,7 +30,7 @@ class Prop : public entity::Entity {
   public:
     using Node_stack = shape::Node_stack;
     using Filter     = material::Sampler_settings::Filter;
-    using Shape_ptr  = std::shared_ptr<shape::Shape>;
+    using Shape      = shape::Shape;
 
     ~Prop() noexcept override;
 
@@ -56,7 +56,7 @@ class Prop : public entity::Entity {
 
     AABB const& aabb() const noexcept;
 
-    void set_shape_and_materials(Shape_ptr const& shape, Materials const& materials) noexcept;
+    void set_shape_and_materials(Shape* shape, Materials const& materials) noexcept;
 
     void set_parameters(json::Value const& parameters) noexcept override;
 
@@ -86,7 +86,7 @@ class Prop : public entity::Entity {
     size_t num_bytes() const noexcept;
 
   protected:
-    void set_shape(Shape_ptr const& shape) noexcept;
+    void set_shape(Shape* shape) noexcept;
 
     bool visible(uint32_t ray_depth) const noexcept;
 
@@ -96,7 +96,7 @@ class Prop : public entity::Entity {
     // For moving objects it must cover the entire area occupied by the object during the tick.
     AABB aabb_;
 
-    Shape_ptr shape_;
+    Shape* shape_;
 
     struct Part {
         union {

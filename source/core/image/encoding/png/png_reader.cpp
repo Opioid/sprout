@@ -11,8 +11,8 @@ namespace image {
 namespace encoding {
 namespace png {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels, int32_t num_elements,
-                                    bool swap_xy, bool invert) {
+Image* Reader::read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
+                    bool invert) {
     std::array<uint8_t, Signature_size> signature;
 
     stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -42,8 +42,8 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels, int
     return create_image(info, channels, num_elements, swap_xy, invert);
 }
 
-std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
-                                            int32_t num_elements, bool swap_xy, bool invert) {
+Image* Reader::create_image(const Info& info, Channels channels, int32_t num_elements, bool swap_xy,
+                            bool invert) {
     if (0 == info.num_channels || Channels::None == channels) {
         return nullptr;
     }
@@ -77,8 +77,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
     }
 
     if (1 == num_channels) {
-        std::shared_ptr<Byte1> image = std::make_shared<Byte1>(
-            Image::Description(Image::Type::Byte1, dimensions, num_elements));
+        Byte1* image = new Byte1(Image::Description(Image::Type::Byte1, dimensions, num_elements));
 
         int32_t c;
 
@@ -116,8 +115,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
         return image;
     } else if (2 == num_channels) {
-        std::shared_ptr<Byte2> image = std::make_shared<Byte2>(
-            Image::Description(Image::Type::Byte2, dimensions, num_elements));
+        Byte2* image = new Byte2(Image::Description(Image::Type::Byte2, dimensions, num_elements));
 
         byte2 color(0, 0);
 
@@ -134,8 +132,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
         return image;
     } else if (3 == num_channels) {
-        std::shared_ptr<Byte3> image = std::make_shared<Byte3>(
-            Image::Description(Image::Type::Byte3, dimensions, num_elements));
+        Byte3* image = new Byte3(Image::Description(Image::Type::Byte3, dimensions, num_elements));
 
         byte3 color(0, 0, 0);
 

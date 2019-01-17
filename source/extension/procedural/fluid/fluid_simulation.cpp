@@ -25,7 +25,7 @@ void compute_jacobian(Grid<float3x3>& jacobian, Grid<float3> const& vec, float3 
 
 Simulation::Simulation(int3 const& dimensions, int3 const& visualization_dimensions) noexcept
     : viscosity_(0.025f),
-      vorton_radius_(0.004f),
+      vorton_radius_(0.003f),
       tracer_radius_(0.f),
       velocity_(dimensions),
       velocity_jacobian_(dimensions),

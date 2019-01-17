@@ -21,9 +21,9 @@ namespace procedural::flakes {
 
 class Provider {
   public:
-    std::shared_ptr<Image> create_normal_map(memory::Variant_map const& options) noexcept;
+    Image* create_normal_map(memory::Variant_map const& options) noexcept;
 
-    std::shared_ptr<Image> create_mask(memory::Variant_map const& options) noexcept;
+    Image* create_mask(memory::Variant_map const& options) noexcept;
 
   private:
     struct Properties {

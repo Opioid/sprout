@@ -10,8 +10,6 @@ class Adapter;
 
 }  // namespace image::texture
 
-using Texture_ptr = std::shared_ptr<image::texture::Texture>;
-
 using Texture_adapter = image::texture::Adapter;
 
 #endif

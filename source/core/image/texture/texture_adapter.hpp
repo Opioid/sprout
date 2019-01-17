@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_ADAPTER_HPP
 #define SU_CORE_IMAGE_TEXTURE_ADAPTER_HPP
 
-#include <memory>
 #include "base/math/vector2.hpp"
 
 namespace image::texture {
@@ -16,8 +15,8 @@ class Texture;
 class Adapter {
   public:
     Adapter() noexcept;
-    Adapter(std::shared_ptr<Texture> const& texture) noexcept;
-    Adapter(std::shared_ptr<Texture> const& texture, float2 scale) noexcept;
+    Adapter(Texture* texture) noexcept;
+    Adapter(Texture* texture, float2 scale) noexcept;
 
     ~Adapter();
 
@@ -50,7 +49,7 @@ class Adapter {
     float3 address(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
 
   private:
-    std::shared_ptr<Texture> texture_;
+    Texture* texture_;
 
     float2 scale_;
 };

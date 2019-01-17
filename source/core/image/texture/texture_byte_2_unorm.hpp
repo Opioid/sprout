@@ -7,7 +7,7 @@ namespace image::texture {
 
 class Byte2_unorm final : public Texture {
   public:
-    Byte2_unorm(std::shared_ptr<Image> image) noexcept;
+    Byte2_unorm(Image* image) noexcept;
 
     float  at_1(int32_t i) const noexcept override final;
     float3 at_3(int32_t i) const noexcept override final;

@@ -1,7 +1,6 @@
 #ifndef SU_CORE_RENDERING_DRIVER_HPP
 #define SU_CORE_RENDERING_DRIVER_HPP
 
-#include <memory>
 #include "base/math/vector2.hpp"
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"

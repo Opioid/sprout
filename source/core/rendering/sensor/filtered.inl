@@ -14,7 +14,7 @@ Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, const Clamp& cl
     : Base(dimensions, exposure), clamp_(clamp), filter_(filter) {}
 
 template <class Base, class Clamp>
-Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, Texture_ptr const& backplate,
+Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, image::texture::Texture* backplate,
                                 const Clamp& clamp, filter::Filter const* filter) noexcept
     : Base(dimensions, exposure, backplate), clamp_(clamp), filter_(filter) {}
 
@@ -78,7 +78,7 @@ Filtered_1p0<Base, Clamp>::Filtered_1p0(int2 dimensions, float exposure, const C
 
 template <class Base, class Clamp>
 Filtered_1p0<Base, Clamp>::Filtered_1p0(int2 dimensions, float exposure,
-                                        Texture_ptr const& backplate, const Clamp& clamp,
+                                        image::texture::Texture* backplate, const Clamp& clamp,
                                         filter::Filter const* filter) noexcept
     : Filtered<Base, Clamp>(dimensions, exposure, backplate, clamp, filter) {}
 
@@ -125,7 +125,7 @@ Filtered_2p0<Base, Clamp>::Filtered_2p0(int2 dimensions, float exposure, const C
 
 template <class Base, class Clamp>
 Filtered_2p0<Base, Clamp>::Filtered_2p0(int2 dimensions, float exposure,
-                                        Texture_ptr const& backplate, const Clamp& clamp,
+                                        image::texture::Texture* backplate, const Clamp& clamp,
                                         filter::Filter const* filter) noexcept
     : Filtered<Base, Clamp>(dimensions, exposure, backplate, clamp, filter) {}
 
@@ -196,7 +196,7 @@ Filtered_inf<Base, Clamp>::Filtered_inf(int2 dimensions, float exposure, const C
 
 template <class Base, class Clamp>
 Filtered_inf<Base, Clamp>::Filtered_inf(int2 dimensions, float exposure,
-                                        Texture_ptr const& backplate, const Clamp& clamp,
+                                        image::texture::Texture* backplate, const Clamp& clamp,
                                         filter::Filter const* filter) noexcept
     : Filtered<Base, Clamp>(dimensions, exposure, backplate, clamp, filter) {}
 

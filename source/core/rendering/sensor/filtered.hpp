@@ -8,8 +8,6 @@ namespace image::texture {
 class Texture;
 }
 
-using Texture_ptr = std::shared_ptr<image::texture::Texture>;
-
 namespace sampler {
 struct Camera_sample;
 }
@@ -26,8 +24,8 @@ class Filtered : public Base {
     Filtered(int2 dimensions, float exposure, const Clamp& clamp,
              filter::Filter const* filter) noexcept;
 
-    Filtered(int2 dimensions, float exposure, Texture_ptr const& backplate, const Clamp& clamp,
-             filter::Filter const* filter) noexcept;
+    Filtered(int2 dimensions, float exposure, image::texture::Texture* backplate,
+             const Clamp& clamp, filter::Filter const* filter) noexcept;
 
     ~Filtered() noexcept override;
 
@@ -53,8 +51,8 @@ class Filtered_1p0 : public Filtered<Base, Clamp> {
     Filtered_1p0(int2 dimensions, float exposure, const Clamp& clamp,
                  filter::Filter const* filter) noexcept;
 
-    Filtered_1p0(int2 dimensions, float exposure, Texture_ptr const& backplate, const Clamp& clamp,
-                 filter::Filter const* filter) noexcept;
+    Filtered_1p0(int2 dimensions, float exposure, image::texture::Texture* backplate,
+                 const Clamp& clamp, filter::Filter const* filter) noexcept;
 
     void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
@@ -66,8 +64,8 @@ class Filtered_2p0 : public Filtered<Base, Clamp> {
     Filtered_2p0(int2 dimensions, float exposure, const Clamp& clamp,
                  filter::Filter const* filter) noexcept;
 
-    Filtered_2p0(int2 dimensions, float exposure, Texture_ptr const& backplate, const Clamp& clamp,
-                 filter::Filter const* filter) noexcept;
+    Filtered_2p0(int2 dimensions, float exposure, image::texture::Texture* backplate,
+                 const Clamp& clamp, filter::Filter const* filter) noexcept;
 
     void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
@@ -79,8 +77,8 @@ class Filtered_inf : public Filtered<Base, Clamp> {
     Filtered_inf(int2 dimensions, float exposure, const Clamp& clamp,
                  filter::Filter const* filter) noexcept;
 
-    Filtered_inf(int2 dimensions, float exposure, Texture_ptr const& backplate, const Clamp& clamp,
-                 filter::Filter const* filter) noexcept;
+    Filtered_inf(int2 dimensions, float exposure, image::texture::Texture* backplate,
+                 const Clamp& clamp, filter::Filter const* filter) noexcept;
 
     void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;

@@ -6,6 +6,8 @@
 
 namespace rendering::postprocessor {
 
+Pipeline::Pipeline() = default;
+
 Pipeline::~Pipeline() {}
 
 void Pipeline::reserve(size_t num_pps) {

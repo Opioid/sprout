@@ -26,8 +26,8 @@ Provider::Provider() noexcept : resource::Provider<Texture>("Texture") {
     encoding::init();
 }
 
-Provider::Texture_ptr Provider::load(std::string const& filename, Variant_map const& options,
-                                     resource::Manager& manager) {
+Texture* Provider::load(std::string const& filename, Variant_map const& options,
+                        resource::Manager& manager) {
     Channels channels = Channels::XYZ;
 
     Usage usage = Usage::Undefined;
@@ -64,29 +64,29 @@ Provider::Texture_ptr Provider::load(std::string const& filename, Variant_map co
         }
 
         if (Image::Type::Byte1 == image->description().type) {
-            return std::make_shared<Byte1_unorm>(image);
+            return new Byte1_unorm(image);
         } else if (Image::Type::Byte2 == image->description().type) {
             if (Usage::Anisotropy == usage) {
-                return std::make_shared<Byte2_snorm>(image);
+                return new Byte2_snorm(image);
             } else {
-                return std::make_shared<Byte2_unorm>(image);
+                return new Byte2_unorm(image);
             }
         } else if (Image::Type::Byte3 == image->description().type) {
             if (Usage::Normal == usage) {
-                SOFT_ASSERT(testing::is_valid_normal_map(*image.get(), filename));
+                SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
 
-                return std::make_shared<Byte3_snorm>(image);
+                return new Byte3_snorm(image);
             } else if (Usage::Surface == usage) {
-                return std::make_shared<Byte3_unorm>(image);
+                return new Byte3_unorm(image);
             } else {
-                return std::make_shared<Byte3_sRGB>(image);
+                return new Byte3_sRGB(image);
             }
         } else if (Image::Type::Float1 == image->description().type) {
-            return std::make_shared<Float1>(image);
+            return new Float1(image);
         } else if (Image::Type::Float1_sparse == image->description().type) {
-            return std::make_shared<Float1_sparse>(image);
+            return new Float1_sparse(image);
         } else if (Image::Type::Float3 == image->description().type) {
-            return std::make_shared<Float3>(image);
+            return new Float3(image);
         } else {
             logging::error("Loading texture \"" + filename + "\": Image is of unknown type.");
         }
@@ -97,9 +97,8 @@ Provider::Texture_ptr Provider::load(std::string const& filename, Variant_map co
     return nullptr;
 }
 
-Provider::Texture_ptr Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                                     Variant_map const& /*options*/,
-                                     resource::Manager& /*manager*/) {
+Texture* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
+                        Variant_map const& /*options*/, resource::Manager& /*manager*/) {
     return nullptr;
 }
 

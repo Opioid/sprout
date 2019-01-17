@@ -14,12 +14,11 @@ class Provider final : public resource::Provider<Image> {
 
     ~Provider() noexcept override final;
 
-    std::shared_ptr<Image> load(std::string const& filename, Variant_map const& options,
-                                resource::Manager& manager) override final;
+    Image* load(std::string const& filename, Variant_map const& options,
+                resource::Manager& manager) override final;
 
-    std::shared_ptr<Image> load(void const* data, std::string_view mount_folder,
-                                Variant_map const& options,
-                                resource::Manager& manager) override final;
+    Image* load(void const* data, std::string_view mount_folder, Variant_map const& options,
+                resource::Manager& manager) override final;
 
     size_t num_bytes() const noexcept override final;
 

@@ -14,8 +14,6 @@ namespace scene::material {
 
 class Material;
 
-using Material_ptr = std::shared_ptr<Material>;
-
 struct Sampler_settings;
 
 class Provider final : public resource::Provider<Material> {
@@ -24,43 +22,43 @@ class Provider final : public resource::Provider<Material> {
 
     ~Provider() noexcept override final;
 
-    Material_ptr load(std::string const& filename, Variant_map const& options,
-                      resource::Manager& manager) override final;
+    Material* load(std::string const& filename, Variant_map const& options,
+                   resource::Manager& manager) override final;
 
-    Material_ptr load(void const* data, std::string_view mount_folder, Variant_map const& options,
-                      resource::Manager& manager) override final;
+    Material* load(void const* data, std::string_view mount_folder, Variant_map const& options,
+                   resource::Manager& manager) override final;
 
     size_t num_bytes() const noexcept override final;
 
-    Material_ptr fallback_material() const noexcept;
+    Material* fallback_material() const noexcept;
 
   private:
-    Material_ptr load(json::Value const& value, std::string_view mount_folder,
-                      resource::Manager& manager);
+    Material* load(json::Value const& value, std::string_view mount_folder,
+                   resource::Manager& manager);
 
-    Material_ptr load_cloth(json::Value const& cloth_value, resource::Manager& manager);
+    Material* load_cloth(json::Value const& cloth_value, resource::Manager& manager);
 
-    Material_ptr load_debug(json::Value const& debug_value, resource::Manager& manager);
+    Material* load_debug(json::Value const& debug_value, resource::Manager& manager);
 
-    Material_ptr load_display(json::Value const& display_value, resource::Manager& manager);
+    Material* load_display(json::Value const& display_value, resource::Manager& manager);
 
-    Material_ptr load_glass(json::Value const& glass_value, resource::Manager& manager);
+    Material* load_glass(json::Value const& glass_value, resource::Manager& manager);
 
-    Material_ptr load_light(json::Value const& light_value, resource::Manager& manager);
+    Material* load_light(json::Value const& light_value, resource::Manager& manager);
 
-    Material_ptr load_matte(json::Value const& matte_value, resource::Manager& manager);
+    Material* load_matte(json::Value const& matte_value, resource::Manager& manager);
 
-    Material_ptr load_metal(json::Value const& metal_value, resource::Manager& manager);
+    Material* load_metal(json::Value const& metal_value, resource::Manager& manager);
 
-    Material_ptr load_metallic_paint(json::Value const& paint_value, resource::Manager& manager);
+    Material* load_metallic_paint(json::Value const& paint_value, resource::Manager& manager);
 
-    Material_ptr load_mix(json::Value const& mix_value, resource::Manager& manager);
+    Material* load_mix(json::Value const& mix_value, resource::Manager& manager);
 
-    Material_ptr load_sky(json::Value const& sky_value, resource::Manager& manager);
+    Material* load_sky(json::Value const& sky_value, resource::Manager& manager);
 
-    Material_ptr load_substitute(json::Value const& substitute_value, resource::Manager& manager);
+    Material* load_substitute(json::Value const& substitute_value, resource::Manager& manager);
 
-    Material_ptr load_volumetric(json::Value const& volumetric_value, resource::Manager& manager);
+    Material* load_volumetric(json::Value const& volumetric_value, resource::Manager& manager);
 
     struct Texture_description {
         std::string filename;
@@ -104,7 +102,7 @@ class Provider final : public resource::Provider<Material> {
 
     static float3 read_spectrum(json::Value const& spectrum_value);
 
-    Material_ptr fallback_material_;
+    Material* fallback_material_;
 
   public:
     static uint32_t max_sample_size();

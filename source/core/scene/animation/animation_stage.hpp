@@ -21,7 +21,8 @@ class Stage {
 
   private:
     entity::Entity* entity_;
-    Animation*      animation_;
+
+    Animation* animation_;
 };
 
 }  // namespace animation

@@ -39,9 +39,8 @@ Provider::Provider() noexcept : resource::Provider<Shape>("Mesh") {}
 
 Provider::~Provider() noexcept {}
 
-std::shared_ptr<Shape> Provider::load(std::string const& filename,
-                                      memory::Variant_map const& /*options*/,
-                                      resource::Manager& manager) {
+Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
+                      resource::Manager& manager) {
     auto stream_pointer = manager.filesystem().read_stream(filename);
 
     file::Type type = file::query_type(*stream_pointer);
@@ -103,7 +102,7 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
 
     // Exporter::write(filename, handler);
 
-    auto mesh = std::make_shared<Mesh>();
+    auto mesh = new Mesh;
 
     mesh->tree().allocate_parts(static_cast<uint32_t>(handler.parts().size()));
 
@@ -129,9 +128,8 @@ std::shared_ptr<Shape> Provider::load(std::string const& filename,
     return mesh;
 }
 
-std::shared_ptr<Shape> Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                                      memory::Variant_map const& /*options*/,
-                                      resource::Manager& /*manager*/) {
+Shape* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
+                      memory::Variant_map const& /*options*/, resource::Manager& /*manager*/) {
     return nullptr;
 }
 
@@ -139,13 +137,13 @@ size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-std::shared_ptr<Shape> Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
-                                             uint32_t num_parts, thread::Pool& thread_pool) {
+Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
+                             uint32_t num_parts, thread::Pool& thread_pool) {
     if (triangles.empty() || vertices.empty() || !num_parts) {
         throw std::runtime_error("No mesh data");
     }
 
-    auto mesh = std::make_shared<Mesh>();
+    auto mesh = new Mesh;
 
     mesh->tree().allocate_parts(num_parts);
 
@@ -158,10 +156,9 @@ std::shared_ptr<Shape> Provider::create_mesh(Triangles const& triangles, Vertice
     return mesh;
 }
 
-std::shared_ptr<Shape> Provider::load_morphable_mesh(std::string const& filename,
-                                                     Strings const&     morph_targets,
-                                                     resource::Manager& manager) {
-    auto collection = std::make_shared<Morph_target_collection>();
+Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
+                                     resource::Manager& manager) {
+    auto collection = new Morph_target_collection;
 
     Json_handler handler;
 
@@ -225,8 +222,9 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(std::string const& filename
         return nullptr;
     }
 
-    uint32_t num_parts = static_cast<uint32_t>(handler.parts().size());
-    auto     mesh      = std::make_shared<Morphable_mesh>(collection, num_parts);
+    uint32_t const num_parts = static_cast<uint32_t>(handler.parts().size());
+
+    auto mesh = new Morphable_mesh(collection, num_parts);
 
     return mesh;
 }
@@ -256,7 +254,7 @@ void fill_triangles(const std::vector<Part>& parts, Index const* indices,
     }
 }
 
-std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) {
+Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) {
     stream.seekg(4);
 
     uint64_t json_size = 0;
@@ -332,7 +330,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
     stream.seekg(static_cast<std::streamoff>(binary_start + indices_offset));
     stream.read(indices, static_cast<std::streamsize>(indices_size));
 
-    auto mesh = std::make_shared<Mesh>();
+    auto mesh = new Mesh;
 
     mesh->tree().allocate_parts(static_cast<uint32_t>(parts.size()));
 

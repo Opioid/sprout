@@ -16,8 +16,9 @@ class Morph_target_collection;
 
 class Morphable_mesh : public Shape, public Morphable_shape {
   public:
-    Morphable_mesh(std::shared_ptr<Morph_target_collection> collection,
-                   uint32_t                                 num_parts) noexcept;
+    Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts) noexcept;
+
+    ~Morphable_mesh();
 
     void init() noexcept;
 
@@ -103,7 +104,7 @@ class Morphable_mesh : public Shape, public Morphable_shape {
 
     Tree tree_;
 
-    std::shared_ptr<Morph_target_collection> collection_;
+    Morph_target_collection* collection_;
 
     std::vector<Vertex> vertices_;
 

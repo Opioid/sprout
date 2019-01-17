@@ -74,9 +74,9 @@ class Loader {
 
     using Sensor_filter       = rendering::sensor::filter::Filter;
     using Sensor_ptr          = std::unique_ptr<rendering::sensor::Sensor>;
-    using Sampler_factory_ptr = std::shared_ptr<sampler::Factory>;
-    using Surface_factory_ptr = std::shared_ptr<rendering::integrator::surface::Factory>;
-    using Volume_factory_ptr  = std::shared_ptr<rendering::integrator::volume::Factory>;
+    using Sampler_factory_ptr = std::unique_ptr<sampler::Factory>;
+    using Surface_factory_ptr = std::unique_ptr<rendering::integrator::surface::Factory>;
+    using Volume_factory_ptr  = std::unique_ptr<rendering::integrator::volume::Factory>;
     using Postprocessor_ptr   = std::unique_ptr<rendering::postprocessor::Postprocessor>;
     using Light_sampling      = rendering::integrator::Light_sampling;
 

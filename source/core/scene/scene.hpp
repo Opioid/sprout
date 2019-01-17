@@ -2,7 +2,6 @@
 #define SU_CORE_SCENE_SCENE_HPP
 
 #include <map>
-#include <memory>
 #include <vector>
 #include "base/math/distribution/distribution_1d.hpp"
 #include "bvh/scene_bvh_builder.hpp"
@@ -61,9 +60,10 @@ class Scene {
   public:
     using Node_stack = shape::Node_stack;
     using Filter     = material::Sampler_settings::Filter;
-    using Shape_ptr  = std::shared_ptr<shape::Shape>;
     using Entity     = entity::Entity;
     using Prop       = prop::Prop;
+    using Material   = material::Material;
+    using Shape      = shape::Shape;
 
     Scene(take::Settings const& settings) noexcept;
 
@@ -114,10 +114,9 @@ class Scene {
     entity::Dummy* create_dummy() noexcept;
     entity::Dummy* create_dummy(std::string const& name) noexcept;
 
-    Prop* create_prop(Shape_ptr const& shape, Materials const& materials) noexcept;
+    Prop* create_prop(Shape* shape, Materials const& materials) noexcept;
 
-    Prop* create_prop(Shape_ptr const& shape, Materials const& materials,
-                      std::string const& name) noexcept;
+    Prop* create_prop(Shape* shape, Materials const& materials, std::string const& name) noexcept;
 
     light::Light* create_prop_light(Prop* prop, uint32_t part) noexcept;
 
@@ -130,9 +129,9 @@ class Scene {
     void add_extension(Entity* extension) noexcept;
     void add_extension(Entity* extension, std::string const& name) noexcept;
 
-    void add_material(Material_ptr const& material) noexcept;
+    void add_material(Material* material) noexcept;
 
-    void add_animation(std::shared_ptr<animation::Animation> const& animation) noexcept;
+    void add_animation(animation::Animation* animation) noexcept;
 
     void create_animation_stage(Entity* entity, animation::Animation* animation) noexcept;
 
@@ -178,9 +177,9 @@ class Scene {
 
     math::Distribution_1D light_distribution_;
 
-    std::vector<Material_ptr> materials_;
+    std::vector<Material*> materials_;
 
-    std::vector<std::shared_ptr<animation::Animation>> animations_;
+    std::vector<animation::Animation*> animations_;
 
     std::vector<animation::Stage> animation_stages_;
 };

@@ -19,7 +19,9 @@ void init(scene::Loader& loader) {
     loader.register_extension_provider("Fluid", &provider);
 }
 
-Provider::~Provider() noexcept {}
+Provider::~Provider() noexcept {
+    delete material_;
+}
 
 void Provider::set_scene_loader(Loader& loader) noexcept {
     scene_loader_ = &loader;
@@ -27,21 +29,25 @@ void Provider::set_scene_loader(Loader& loader) noexcept {
 
 entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
                                            resource::Manager& /*manager*/) noexcept {
-    auto material = std::make_shared<Material>(Sampler_settings(Sampler_settings::Filter::Linear,
-                                                                Sampler_settings::Address::Clamp,
-                                                                Sampler_settings::Address::Clamp));
+    if (!material_) {
+        Material* material = new Material(Sampler_settings(Sampler_settings::Filter::Linear,
+                                                           Sampler_settings::Address::Clamp,
+                                                           Sampler_settings::Address::Clamp));
 
-    material->set_attenuation(0.4f, 0.0004f);
-    material->set_emission(float3(0.f));
-    material->set_anisotropy(0.f);
+        material->set_attenuation(0.4f, 0.0004f);
+        material->set_emission(float3(0.f));
+        material->set_anisotropy(0.f);
 
-    scene.add_material(material);
+        scene.add_material(material);
 
-    prop::Prop* prop = scene.create_prop(scene_loader_->cube(), {material});
+        material_ = material;
+    }
+
+    prop::Prop* prop = scene.create_prop(scene_loader_->cube(), {material_});
 
     prop->set_visibility(true, true, true);
 
-    material->set_prop(prop);
+    material_->set_prop(prop);
 
     return prop;
 }

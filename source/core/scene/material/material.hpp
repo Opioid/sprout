@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
-#include <memory>
 #include <vector>
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
@@ -179,8 +178,7 @@ class Material {
 
 }  // namespace material
 
-using Material_ptr = std::shared_ptr<material::Material>;
-using Materials    = std::vector<Material_ptr>;
+using Materials = std::vector<material::Material*>;
 
 }  // namespace scene
 

@@ -18,7 +18,7 @@ class Json_handler {
 
     void clear();
 
-    std::shared_ptr<Image> const& image() const;
+    Image* image() const;
 
     bool Null();
     bool Bool(bool b);
@@ -57,7 +57,7 @@ class Json_handler {
 
     uint32_t current_texel_;
 
-    std::shared_ptr<Image> image_;
+    Image* image_;
 
   public:
     class Image_handler {

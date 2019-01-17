@@ -41,6 +41,10 @@ Scene::Scene(take::Settings const& settings) noexcept : take_settings_(settings)
 }
 
 Scene::~Scene() noexcept {
+    for (auto a : animations_) {
+        delete a;
+    }
+
     for (auto e : extensions_) {
         delete e;
     }
@@ -289,7 +293,7 @@ entity::Dummy* Scene::create_dummy(std::string const& name) noexcept {
     return dummy;
 }
 
-Prop* Scene::create_prop(Shape_ptr const& shape, Materials const& materials) noexcept {
+Prop* Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     prop::Prop* prop = new prop::Prop;
 
     prop->set_shape_and_materials(shape, materials);
@@ -313,7 +317,7 @@ Prop* Scene::create_prop(Shape_ptr const& shape, Materials const& materials) noe
     return prop;
 }
 
-prop::Prop* Scene::create_prop(Shape_ptr const& shape, Materials const& materials,
+prop::Prop* Scene::create_prop(Shape* shape, Materials const& materials,
                                std::string const& name) noexcept {
     prop::Prop* prop = create_prop(shape, materials);
 
@@ -374,11 +378,11 @@ void Scene::add_extension(Entity* extension, std::string const& name) noexcept {
     add_named_entity(extension, name);
 }
 
-void Scene::add_material(Material_ptr const& material) noexcept {
+void Scene::add_material(Material* material) noexcept {
     materials_.push_back(material);
 }
 
-void Scene::add_animation(std::shared_ptr<animation::Animation> const& animation) noexcept {
+void Scene::add_animation(animation::Animation* animation) noexcept {
     animations_.push_back(animation);
 }
 

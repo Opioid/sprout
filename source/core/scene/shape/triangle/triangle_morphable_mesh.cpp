@@ -17,11 +17,14 @@
 
 namespace scene::shape::triangle {
 
-Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection,
-                               uint32_t                                 num_parts) noexcept
+Morphable_mesh::Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts) noexcept
     : collection_(collection) {
     tree_.allocate_parts(num_parts);
     vertices_.resize(collection_->vertices(0).size());
+}
+
+Morphable_mesh::~Morphable_mesh() {
+    delete collection_;
 }
 
 void Morphable_mesh::init() noexcept {

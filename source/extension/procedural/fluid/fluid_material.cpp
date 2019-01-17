@@ -24,12 +24,13 @@ using namespace image;
 static int3 constexpr Visualization_dimensions(320);
 
 Material::Material(Sampler_settings const& sampler_settings) noexcept
-    : scene::material::volumetric::Grid_color(
-          sampler_settings,
-          Texture_adapter(std::make_shared<texture::Byte4_sRGB>(std::make_shared<Byte4>(
-              Image::Description(Image::Type::Byte4, Visualization_dimensions))))),
+    : scene::material::volumetric::Grid_color(sampler_settings),
+      image_(new Byte4(Image::Description(Image::Type::Byte4, Visualization_dimensions))),
+      texture_(new texture::Byte4_sRGB(image_)),
       sim_(int3(256), Visualization_dimensions),
       current_frame_(0) {
+    set_color(Texture_adapter(texture_));
+
     rnd::Generator rng(0, 0);
 
     for (uint32_t i = 0, len = sim_.num_vortons(); i < len; ++i) {
@@ -53,11 +54,21 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
             o = float3(0.08f, 0.f, 0.f);
         }
 
-        float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
+        //      float3 const dir = sample_sphere_uniform(float2(rng.random_float(),
+        //      rng.random_float()));
 
-        v.position = o + (0.05f + 0.01f * rng.random_float()) * dir;
+        float3 const pos = sample_sphere_volume_uniform(
+            float3(rng.random_float(), rng.random_float(), rng.random_float()));
 
-        v.vorticity = 32.f * dir;
+        //    v.position = o + (0.03f + 0.03f * rng.random_float()) * dir;
+        //    v.position = o + 0.04f * dir;
+        //    v.position = o + (0.01f + 0.04f * rng.random_float()) * dir;
+
+        v.position = o + 0.05f * pos;
+
+        //    v.vorticity = 32.f * dir;
+
+        v.vorticity = 32.f * normalize(pos);
     }
 
     for (uint32_t i = 0, len = sim_.num_tracers(); i < len; ++i) {
@@ -73,13 +84,23 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
             p.color = float3(0.8f, 0.3f, 0.3f);
         }
 
-        float3 const dir = sample_sphere_uniform(float2(rng.random_float(), rng.random_float()));
+        //     float3 const dir = sample_sphere_uniform(float2(rng.random_float(),
+        //     rng.random_float()));
 
-        p.position = o + (0.05f + 0.01f * rng.random_float()) * dir;
+        float3 const pos = sample_sphere_volume_uniform(
+            float3(rng.random_float(), rng.random_float(), rng.random_float()));
+
+        //    p.position = o + (0.03f + 0.03f * rng.random_float()) * dir;
+        //   p.position = o + (0.06f * rng.random_float()) * dir;
+
+        p.position = o + 0.06f * pos;
     }
 }
 
-Material::~Material() noexcept {}
+Material::~Material() noexcept {
+    delete texture_;
+    delete image_;
+}
 
 void Material::set_prop(scene::prop::Prop* prop) noexcept {
     prop_ = prop;

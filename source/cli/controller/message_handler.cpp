@@ -87,7 +87,7 @@ void Message_handler::handle(std::string const& message) {
                 std::string index_string = index.substr(1, index.size() - 2);
 
                 scene::material::Material* material =
-                    resource_manager_.get<scene::material::Material>(index_string).get();
+                    resource_manager_.get<scene::material::Material>(index_string);
                 handle_material(material, value, parameters);
             }
         } else {

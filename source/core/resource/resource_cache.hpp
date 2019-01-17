@@ -2,7 +2,6 @@
 #define SU_CORE_RESOURCE_CACHE_HPP
 
 #include <map>
-#include <memory>
 #include <string>
 #include <utility>
 #include "resource_provider.hpp"
@@ -18,26 +17,24 @@ template <typename T>
 class Typed_cache : public Cache {
   public:
     Typed_cache(Provider<T>& provider);
+
     virtual ~Typed_cache() override final;
 
-    std::shared_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
-                            Manager& manager);
+    T* load(std::string const& filename, memory::Variant_map const& options, Manager& manager);
 
-    std::shared_ptr<T> load(std::string const& name, void const* data,
-                            std::string_view mount_folder, memory::Variant_map const& options,
-                            Manager& manager);
+    T* load(std::string const& name, void const* data, std::string_view mount_folder,
+            memory::Variant_map const& options, Manager& manager);
 
-    std::shared_ptr<T> get(std::string const& filename, memory::Variant_map const& options);
+    T* get(std::string const& filename, memory::Variant_map const& options);
 
-    void store(std::string const& name, memory::Variant_map const& options,
-               std::shared_ptr<T> const& resource) noexcept;
+    void store(std::string const& name, memory::Variant_map const& options, T* resource) noexcept;
 
     size_t num_bytes() const noexcept;
 
   private:
     Provider<T>& provider_;
 
-    std::map<std::pair<std::string, memory::Variant_map>, std::shared_ptr<T>> resources_;
+    std::map<std::pair<std::string, memory::Variant_map>, T*> resources_;
 };
 
 }  // namespace resource

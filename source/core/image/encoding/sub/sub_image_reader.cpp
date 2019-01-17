@@ -21,7 +21,7 @@ static Image::Type read_image_type(json::Value const& value) {
     return Image::Type::Undefined;
 }
 
-std::shared_ptr<Image> Reader::read(std::istream& stream) {
+Image* Reader::read(std::istream& stream) {
     stream.seekg(4);
 
     uint64_t json_size = 0;
@@ -107,7 +107,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
 
             stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
-            auto image = std::make_shared<Byte1>(description);
+            auto image = new Byte1(description);
 
             uint8_t* data = image->data();
 
@@ -137,7 +137,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
             stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
             if (sparse) {
-                auto image = std::make_shared<Float1_sparse>(description);
+                auto image = new Float1_sparse(description);
 
                 for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                     if (field.get(i)) {
@@ -150,7 +150,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
 
                 return image;
             } else {
-                auto image = std::make_shared<Float1>(description);
+                auto image = new Float1(description);
 
                 float* data = image->data();
 
@@ -173,7 +173,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
         if (Image::Type::Byte1 == type) {
             Image::Description description(Image::Type::Byte1, dimensions);
 
-            auto image = std::make_shared<Byte1>(description);
+            auto image = new Byte1(description);
 
             stream.read(reinterpret_cast<char*>(image->data()),
                         static_cast<std::streamsize>(pixels_size));
@@ -182,7 +182,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) {
         } else /*if (Image::Type::Float1 == type)*/ {
             Image::Description description(Image::Type::Float1, dimensions);
 
-            auto image = std::make_shared<Float1>(description);
+            auto image = new Float1(description);
 
             stream.read(reinterpret_cast<char*>(image->data()),
                         static_cast<std::streamsize>(pixels_size));

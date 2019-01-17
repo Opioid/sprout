@@ -123,7 +123,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
     }
 
     if (!take->sampler_factory) {
-        take->sampler_factory = std::make_shared<sampler::Random_factory>(num_threads);
+        take->sampler_factory = std::make_unique<sampler::Random_factory>(num_threads);
 
         logging::warning("No valid sampler was specified, defaulting to Random sampler.");
     }
@@ -141,7 +141,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
         bool const enable_caustics = false;
 
-        take->surface_integrator_factory = std::make_shared<surface::Pathtracer_MIS_factory>(
+        take->surface_integrator_factory = std::make_unique<surface::Pathtracer_MIS_factory>(
             take->settings, num_threads, num_samples, min_bounces, max_bounces,
             path_continuation_probability, light_sampling, enable_caustics);
 
@@ -149,7 +149,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
     }
 
     if (!take->volume_integrator_factory) {
-        take->volume_integrator_factory = std::make_shared<volume::Tracking_multi_factory>(
+        take->volume_integrator_factory = std::make_unique<volume::Tracking_multi_factory>(
             take->settings, num_threads);
 
         logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
@@ -219,7 +219,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
         take.camera_animation = scene::animation::load(*animation_value, transformation);
     }
 
-    std::shared_ptr<Camera> camera;
+    std::unique_ptr<Camera> camera;
 
     if ("Cubic" == type_name) {
         if (stereo) {
@@ -230,7 +230,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
                 layout = Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
             }
 
-            camera = std::make_shared<Cubic_stereoscopic>(layout, resolution);
+            camera = std::make_unique<Cubic_stereoscopic>(layout, resolution);
         } else {
             Cubic::Layout layout = Cubic::Layout::xmxymyzmz;
 
@@ -238,22 +238,22 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
                 layout = Cubic::Layout::xmxy_myzmz;
             }
 
-            camera = std::make_shared<Cubic>(layout, resolution);
+            camera = std::make_unique<Cubic>(layout, resolution);
         }
     } else if ("Perspective" == type_name) {
         if (stereo) {
-            camera = std::make_shared<Perspective_stereoscopic>(resolution);
+            camera = std::make_unique<Perspective_stereoscopic>(resolution);
         } else {
-            camera = std::make_shared<Perspective>(resolution);
+            camera = std::make_unique<Perspective>(resolution);
         }
     } else if ("Spherical" == type_name) {
         if (stereo) {
-            camera = std::make_shared<Spherical_stereoscopic>(resolution);
+            camera = std::make_unique<Spherical_stereoscopic>(resolution);
         } else {
-            camera = std::make_shared<Spherical>(resolution);
+            camera = std::make_unique<Spherical>(resolution);
         }
     } else if ("Hemispherical" == type_name) {
-        camera = std::make_shared<Hemispherical>(resolution);
+        camera = std::make_unique<Hemispherical>(resolution);
     } else {
         throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
     }
@@ -274,7 +274,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
         camera->set_sensor(std::move(sensor));
     }
 
-    take.view.camera = camera;
+    take.view.camera = std::move(camera);
 }
 
 template <typename Base>
@@ -399,17 +399,17 @@ Loader::Sampler_factory_ptr Loader::load_sampler_factory(json::Value const& samp
 
         if ("Uniform" == n.name) {
             num_samples_per_pixel = 1;
-            return std::make_shared<sampler::Uniform_factory>(num_workers);
+            return std::make_unique<sampler::Uniform_factory>(num_workers);
         } else if ("Random" == n.name) {
-            return std::make_shared<sampler::Random_factory>(num_workers);
+            return std::make_unique<sampler::Random_factory>(num_workers);
         } else if ("RD" == n.name) {
-            return std::make_shared<sampler::RD_factory>(num_workers);
+            return std::make_unique<sampler::RD_factory>(num_workers);
         } else if ("Hammersley" == n.name) {
-            return std::make_shared<sampler::Hammersley_factory>(num_workers);
+            return std::make_unique<sampler::Hammersley_factory>(num_workers);
         } else if ("Golden_ratio" == n.name) {
-            return std::make_shared<sampler::Golden_ratio_factory>(num_workers);
+            return std::make_unique<sampler::Golden_ratio_factory>(num_workers);
         } else if ("LD" == n.name) {
-            return std::make_shared<sampler::LD_factory>(num_workers);
+            return std::make_unique<sampler::LD_factory>(num_workers);
         }
     }
 
@@ -448,12 +448,12 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
         if ("AO" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
             float const    radius      = json::read_float(n.value, "radius", 1.f);
-            return std::make_shared<AO_factory>(settings, num_workers, num_samples, radius);
+            return std::make_unique<AO_factory>(settings, num_workers, num_samples, radius);
         } else if ("Whitted" == n.name) {
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
                                                                light_sampling.num_samples);
 
-            return std::make_shared<Whitted_factory>(settings, num_workers, num_light_samples);
+            return std::make_unique<Whitted_factory>(settings, num_workers, num_light_samples);
         } else if ("LT" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -464,7 +464,7 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
             float const path_continuation_probability = json::read_float(
                 n.value, "path_continuation_probability", default_path_continuation_probability);
 
-            return std::make_shared<Lighttracer_factory>(
+            return std::make_unique<Lighttracer_factory>(
                 settings, num_workers, min_bounces, max_bounces, path_continuation_probability);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
@@ -480,7 +480,7 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return std::make_shared<Pathtracer_factory>(
+            return std::make_unique<Pathtracer_factory>(
                 settings, num_workers, num_samples, min_bounces, max_bounces,
                 path_continuation_probability, enable_caustics);
         } else if ("PTDL" == n.name) {
@@ -498,7 +498,7 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return std::make_shared<Pathtracer_DL_factory>(
+            return std::make_unique<Pathtracer_DL_factory>(
                 settings, num_workers, min_bounces, max_bounces, path_continuation_probability,
                 num_light_samples, enable_caustics);
         } else if ("PTMIS" == n.name) {
@@ -517,7 +517,7 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return std::make_shared<Pathtracer_MIS_factory>(
+            return std::make_unique<Pathtracer_MIS_factory>(
                 settings, num_workers, num_samples, min_bounces, max_bounces,
                 path_continuation_probability, light_sampling, enable_caustics);
         } else if ("Debug" == n.name) {
@@ -537,7 +537,7 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
                 vector = Debug::Settings::Vector::UV;
             }
 
-            return std::make_shared<Debug_factory>(settings, num_workers, vector);
+            return std::make_unique<Debug_factory>(settings, num_workers, vector);
         }
     }
 
@@ -552,7 +552,7 @@ Loader::Volume_factory_ptr Loader::load_volume_integrator_factory(
         if ("Emission" == n.name) {
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
-            return std::make_shared<Emission_factory>(settings, num_workers, step_size);
+            return std::make_unique<Emission_factory>(settings, num_workers, step_size);
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
@@ -563,9 +563,9 @@ Loader::Volume_factory_ptr Loader::load_volume_integrator_factory(
             Volumetric_material::set_similarity_relation_range(sr_range[0], sr_range[1]);
 
             if (multiple_scattering) {
-                return std::make_shared<Tracking_multi_factory>(settings, num_workers);
+                return std::make_unique<Tracking_multi_factory>(settings, num_workers);
             } else {
-                return std::make_shared<Tracking_single_factory>(settings, num_workers);
+                return std::make_unique<Tracking_single_factory>(settings, num_workers);
             }
         }
     }
@@ -602,8 +602,9 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
         if ("tonemapper" == n->name) {
             pipeline.add(load_tonemapper(n->value));
         } else if ("Backplate" == n->name) {
-            std::string const name      = json::read_string(n->value, "file");
-            auto              backplate = manager.load<image::texture::Texture>(name);
+            std::string const name = json::read_string(n->value, "file");
+
+            auto backplate = manager.load<image::texture::Texture>(name);
 
             if (take.view.camera &&
                 backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {

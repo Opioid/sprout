@@ -13,7 +13,7 @@
 
 namespace image::encoding::json {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream, std::string const& filename) {
+Image* Reader::read(std::istream& stream, std::string const& filename) {
     Json_handler handler;
 
     rapidjson::IStreamWrapper json_stream(stream);

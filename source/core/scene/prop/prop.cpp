@@ -14,7 +14,7 @@ namespace scene::prop {
 
 Prop::~Prop() noexcept {}
 
-void Prop::set_shape_and_materials(Shape_ptr const& shape, Materials const& materials) noexcept {
+void Prop::set_shape_and_materials(Shape* shape, Materials const& materials) noexcept {
     set_shape(shape);
 
     parts_.resize(shape->num_parts());
@@ -128,18 +128,18 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
 //}
 
 shape::Shape const* Prop::shape() const noexcept {
-    return shape_.get();
+    return shape_;
 }
 
 shape::Shape* Prop::shape() noexcept {
-    return shape_.get();
+    return shape_;
 }
 
 AABB const& Prop::aabb() const noexcept {
     return aabb_;
 }
 
-void Prop::set_shape(Shape_ptr const& shape) noexcept {
+void Prop::set_shape(Shape* shape) noexcept {
     shape_ = shape;
 
     properties_.clear();
@@ -274,7 +274,7 @@ uint32_t Prop::light_id(uint32_t part) const noexcept {
 }
 
 material::Material const* Prop::material(uint32_t part) const noexcept {
-    return materials_[part].get();
+    return materials_[part];
 }
 
 bool Prop::has_masked_material() const noexcept {

@@ -21,11 +21,11 @@ class Material : public material::Material {
 
     size_t num_bytes() const noexcept override final;
 
-    void set_materials(Material_ptr const& a, Material_ptr const& b) noexcept;
+    void set_materials(material::Material const* a, material::Material const* const b) noexcept;
 
   private:
-    Material_ptr material_a_;
-    Material_ptr material_b_;
+    material::Material const* material_a_;
+    material::Material const* material_b_;
 };
 
 }  // namespace scene::material::mix

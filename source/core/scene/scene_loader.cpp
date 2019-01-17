@@ -30,16 +30,16 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, Material_ptr const& fallback_material)
+Loader::Loader(resource::Manager& manager, Material* fallback_material)
     : resource_manager_(manager),
-      canopy_(std::make_shared<shape::Canopy>()),
-      celestial_disk_(std::make_shared<shape::Celestial_disk>()),
-      cube_(std::make_shared<shape::Cube>()),
-      disk_(std::make_shared<shape::Disk>()),
-      infinite_sphere_(std::make_shared<shape::Infinite_sphere>()),
-      plane_(std::make_shared<shape::Plane>()),
-      rectangle_(std::make_shared<shape::Rectangle>()),
-      sphere_(std::make_shared<shape::Sphere>()),
+      canopy_(new shape::Canopy()),
+      celestial_disk_(new shape::Celestial_disk()),
+      cube_(new shape::Cube()),
+      disk_(new shape::Disk()),
+      infinite_sphere_(new shape::Infinite_sphere()),
+      plane_(new shape::Plane()),
+      rectangle_(new shape::Rectangle()),
+      sphere_(new shape::Sphere()),
       fallback_material_(fallback_material) {}
 
 Loader::~Loader() {}
@@ -80,7 +80,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
         if (take.camera_animation && take.view.camera) {
             scene.add_animation(take.camera_animation);
-            scene.create_animation_stage(take.view.camera.get(), take.camera_animation.get());
+            scene.create_animation_stage(take.view.camera.get(), take.camera_animation);
         }
 
         scene.finish(take.view.camera ? take.view.camera->frame_step() : 0,
@@ -105,15 +105,15 @@ void Loader::register_mesh_generator(std::string const&          name,
     mesh_generators_[name] = generator;
 }
 
-Scene::Shape_ptr Loader::canopy() {
+Scene::Shape* Loader::canopy() {
     return canopy_;
 }
 
-Scene::Shape_ptr Loader::celestial_disk() {
+Scene::Shape* Loader::celestial_disk() {
     return celestial_disk_;
 }
 
-Scene::Shape_ptr Loader::cube() {
+Scene::Shape* Loader::cube() {
     return cube_;
 }
 
@@ -232,7 +232,7 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
         if (animation_value) {
             if (auto animation = animation::load(*animation_value, transformation); animation) {
                 scene.add_animation(animation);
-                scene.create_animation_stage(entity, animation.get());
+                scene.create_animation_stage(entity, animation);
             }
         } else {
             entity->allocate_local_frame();
@@ -265,7 +265,7 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
 
 prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& name,
                               Scene& scene) {
-    Shape_ptr shape;
+    Shape*    shape = nullptr;
     Materials materials;
 
     json::Value const* visibility = nullptr;
@@ -318,7 +318,7 @@ entity::Entity* Loader::load_extension(std::string const& type, json::Value cons
     return nullptr;
 }
 
-Scene::Shape_ptr Loader::load_shape(json::Value const& shape_value) {
+Scene::Shape* Loader::load_shape(json::Value const& shape_value) {
     if (std::string const type = json::read_string(shape_value, "type"); !type.empty()) {
         return shape(type, shape_value);
     }
@@ -332,7 +332,7 @@ Scene::Shape_ptr Loader::load_shape(json::Value const& shape_value) {
     return nullptr;
 }
 
-Scene::Shape_ptr Loader::shape(std::string const& type, json::Value const& shape_value) const {
+Scene::Shape* Loader::shape(std::string const& type, json::Value const& shape_value) const {
     if ("Canopy" == type) {
         return canopy_;
     } else if ("Celestial_disk" == type) {
@@ -377,7 +377,7 @@ void Loader::load_materials(json::Value const& materials_value, Scene& scene,
     }
 }
 
-Material_ptr Loader::load_material(std::string const& name, Scene& scene) {
+material::Material* Loader::load_material(std::string const& name, Scene& scene) {
     // First, check if we maybe already have cached the material.
     if (auto material = resource_manager_.get<material::Material>(name); material) {
         return material;

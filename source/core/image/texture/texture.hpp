@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
-#include <memory>
 #include "base/math/vector3.hpp"
 
 namespace image {
@@ -12,7 +11,7 @@ namespace texture {
 
 class Texture {
   public:
-    Texture(std::shared_ptr<Image> const& image) noexcept;
+    Texture(Image* image) noexcept;
 
     virtual ~Texture() noexcept;
 
@@ -57,7 +56,7 @@ class Texture {
     float3 average_3(int32_t element) const noexcept;
 
   protected:
-    std::shared_ptr<Image> untyped_image_;
+    Image* untyped_image_;
 
     int3 back_;
 

@@ -4,6 +4,10 @@
 #include "fluid_simulation.hpp"
 #include "scene/material/volumetric/volumetric_grid.hpp"
 
+namespace image {
+class Image;
+}
+
 namespace scene::prop {
 class Prop;
 }
@@ -28,6 +32,9 @@ class Material : public scene::material::volumetric::Grid_color {
     Simulation& simulation() noexcept;
 
   private:
+    image::Image*            image_;
+    image::texture::Texture* texture_;
+
     scene::prop::Prop* prop_;
 
     Simulation sim_;

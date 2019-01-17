@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include "base/math/vector3.hpp"
 
 namespace scene {
@@ -13,12 +12,12 @@ namespace controller {
 
 class Camera {
   public:
-    Camera(std::shared_ptr<scene::camera::Camera> camera);
+    Camera(scene::camera::Camera& camera);
 
     void mouse_delta(float3 delta);
 
   private:
-    std::shared_ptr<scene::camera::Camera> camera_;
+    scene::camera::Camera& camera_;
 
     float3 position_;
 };

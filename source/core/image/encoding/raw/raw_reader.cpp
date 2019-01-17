@@ -7,7 +7,7 @@
 
 namespace image::encoding::raw {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream) const {
+Image* Reader::read(std::istream& stream) const {
     /*
     int3 const dimensions(512, 512, 32);
 
@@ -30,7 +30,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
     Image::Description description(Image::Type::Float1, dimensions);
 
-    auto volume = std::make_shared<Float1>(description);
+    auto volume = new Float1(description);
 
     uint64_t const num_voxels = static_cast<uint64_t>(dimensions[0]) *
                                 static_cast<uint64_t>(dimensions[1]) *

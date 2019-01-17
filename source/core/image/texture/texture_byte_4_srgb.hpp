@@ -8,7 +8,7 @@ namespace image::texture {
 
 class Byte4_sRGB final : public Texture {
   public:
-    Byte4_sRGB(std::shared_ptr<Image> const& image) noexcept;
+    Byte4_sRGB(Image* image) noexcept;
 
     float  at_1(int32_t i) const noexcept override final;
     float3 at_3(int32_t i) const noexcept override final;

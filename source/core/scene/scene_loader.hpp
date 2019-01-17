@@ -2,7 +2,6 @@
 #define SU_CORE_SCENE_LOADER_HPP
 
 #include <map>
-#include <memory>
 #include <string>
 #include "base/json/json_types.hpp"
 #include "material/material.hpp"
@@ -60,9 +59,10 @@ class Scene;
 
 class Loader {
   public:
-    using Shape_ptr = std::shared_ptr<shape::Shape>;
+    using Shape    = shape::Shape;
+    using Material = material::Material;
 
-    Loader(resource::Manager& manager, Material_ptr const& fallback_material);
+    Loader(resource::Manager& manager, Material* fallback_material);
 
     ~Loader();
 
@@ -72,9 +72,9 @@ class Loader {
     void register_extension_provider(std::string const& name, entity::Extension_provider* provider);
     void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
 
-    Shape_ptr canopy();
-    Shape_ptr celestial_disk();
-    Shape_ptr cube();
+    Shape* canopy();
+    Shape* celestial_disk();
+    Shape* cube();
 
     void create_light(prop::Prop* prop, Scene& scene);
 
@@ -92,26 +92,26 @@ class Loader {
     entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
                                    std::string const& name, Scene& scene);
 
-    Shape_ptr load_shape(json::Value const& shape_value);
+    Shape* load_shape(json::Value const& shape_value);
 
-    Shape_ptr shape(std::string const& type, json::Value const& shape_value) const;
+    Shape* shape(std::string const& type, json::Value const& shape_value) const;
 
     void load_materials(json::Value const& materials_value, Scene& scene, Materials& materials);
 
-    Material_ptr load_material(std::string const& name, Scene& scene);
+    Material* load_material(std::string const& name, Scene& scene);
 
     resource::Manager& resource_manager_;
 
-    Shape_ptr canopy_;
-    Shape_ptr celestial_disk_;
-    Shape_ptr cube_;
-    Shape_ptr disk_;
-    Shape_ptr infinite_sphere_;
-    Shape_ptr plane_;
-    Shape_ptr rectangle_;
-    Shape_ptr sphere_;
+    Shape* canopy_;
+    Shape* celestial_disk_;
+    Shape* cube_;
+    Shape* disk_;
+    Shape* infinite_sphere_;
+    Shape* plane_;
+    Shape* rectangle_;
+    Shape* sphere_;
 
-    Material_ptr fallback_material_;
+    Material* fallback_material_;
 
     std::map<std::string, json::Value const*> local_materials_;
 

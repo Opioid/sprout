@@ -73,9 +73,11 @@ class Grid_emission : public Grid {
 
 class Grid_color : public Material {
   public:
-    Grid_color(Sampler_settings const& sampler_settings, Texture_adapter const& color) noexcept;
+    Grid_color(Sampler_settings const& sampler_settings) noexcept;
 
     ~Grid_color() noexcept override;
+
+    void set_color(Texture_adapter const& color) noexcept;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const noexcept override final;

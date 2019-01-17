@@ -12,12 +12,12 @@ namespace image {
 namespace encoding {
 namespace rgbe {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream) {
+Image* Reader::read(std::istream& stream) {
     const Header header = read_header(stream);
 
     int2 const dimensions(header.width, header.height);
 
-    auto image = std::make_shared<Float3>(Image::Description(Image::Type::Float3, dimensions));
+    auto image = new Float3(Image::Description(Image::Type::Float3, dimensions));
 
     read_pixels_RLE(stream, header.width, header.height, *image);
 

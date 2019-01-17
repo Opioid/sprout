@@ -172,14 +172,17 @@ size_t Grid_emission::num_bytes() const noexcept {
     return sizeof(*this) + tree_.num_bytes() + distribution_.num_bytes();
 }
 
-Grid_color::Grid_color(Sampler_settings const& sampler_settings,
-                       Texture_adapter const&  color) noexcept
-    : Material(sampler_settings), color_(color) {
+Grid_color::Grid_color(Sampler_settings const& sampler_settings) noexcept
+    : Material(sampler_settings) {
     cc_ = CC{float3(0.5f), float3(0.5f)};
     cm_ = CM(cc_);
 }
 
 Grid_color::~Grid_color() noexcept {}
+
+void Grid_color::set_color(Texture_adapter const& color) noexcept {
+    color_ = color;
+}
 
 float3 Grid_color::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
                                      Filter filter, Worker const& worker) const noexcept {

@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <iosfwd>
-#include <memory>
 #include "base/math/vector3.hpp"
 #include "image/typed_image_fwd.hpp"
 
@@ -11,7 +10,7 @@ namespace image::encoding::rgbe {
 
 class Reader {
   public:
-    static std::shared_ptr<Image> read(std::istream& stream);
+    static Image* read(std::istream& stream);
 
   private:
     struct Header {

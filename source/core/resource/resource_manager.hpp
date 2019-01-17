@@ -26,8 +26,6 @@ class Provider;
 class Manager {
   public:
     using Variant_map = memory::Variant_map;
-    template <typename T>
-    using Ptr = std::shared_ptr<T>;
 
     Manager(file::System& filesystem, thread::Pool& thread_pool) noexcept;
 
@@ -41,17 +39,17 @@ class Manager {
     void register_provider(Provider<T>& provider) noexcept;
 
     template <typename T>
-    Ptr<T> load(std::string const& filename, Variant_map const& options = Variant_map());
+    T* load(std::string const& filename, Variant_map const& options = Variant_map());
 
     template <typename T>
-    Ptr<T> load(std::string const& name, void const* data, std::string const& mount_folder,
-                Variant_map const& options = Variant_map());
+    T* load(std::string const& name, void const* data, std::string const& mount_folder,
+            Variant_map const& options = Variant_map());
 
     template <typename T>
-    Ptr<T> get(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;
+    T* get(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>
-    void store(std::string const& name, Ptr<T> resource,
+    void store(std::string const& name, T* resource,
                Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>

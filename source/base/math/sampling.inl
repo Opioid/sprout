@@ -164,6 +164,30 @@ static inline float3 sample_sphere_uniform(float2 uv) {
     return float3(cos_phi * r, sin_phi * r, z);
 }
 
+static inline float3 sample_sphere_volume_uniform(float3 const& uvw) {
+    //    var u = Math.random();
+    //    var v = Math.random();
+    //    var theta = u * 2.0 * Math.PI;
+    //    var phi = Math.acos(2.0 * v - 1.0);
+    //    var r = Math.cbrt(Math.random());
+    //    var sinTheta = Math.sin(theta);
+    //    var cosTheta = Math.cos(theta);
+    //    var sinPhi = Math.sin(phi);
+    //    var cosPhi = Math.cos(phi);
+    //    var x = r * sinPhi * cosTheta;
+    //    var y = r * sinPhi * sinTheta;
+    //    var z = r * cosPhi;
+
+    float const theta = uvw[0] * (2.f * Pi);
+    float const phi   = std::acos(2.f * uvw[1] - 1.f);
+    float const r     = std::cbrt(uvw[2]);
+
+    auto const [sin_theta, cos_theta] = sincos(theta);
+    auto const [sin_phi, cos_phi]     = sincos(phi);
+
+    return float3(r * sin_phi * cos_theta, r * sin_phi * sin_theta, r * cos_phi);
+}
+
 static inline float3 sphere_direction(float sin_theta, float cos_theta, float phi, float3 const& x,
                                       float3 const& y, float3 const& z) {
     auto const [sin_phi, cos_phi] = math::sincos(phi);

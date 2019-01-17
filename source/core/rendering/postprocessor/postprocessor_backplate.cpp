@@ -5,7 +5,8 @@
 
 namespace rendering::postprocessor {
 
-Backplate::Backplate(Texture_ptr const& backplate) : Postprocessor(1), backplate_(backplate) {}
+Backplate::Backplate(image::texture::Texture* backplate)
+    : Postprocessor(1), backplate_(backplate) {}
 
 void Backplate::init(scene::camera::Camera const& /*camera*/, thread::Pool& /*pool*/) {}
 

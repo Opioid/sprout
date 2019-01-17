@@ -8,7 +8,7 @@ namespace image::texture {
 
 class Float3 final : public Texture {
   public:
-    Float3(std::shared_ptr<Image> const& image) noexcept;
+    Float3(Image* image) noexcept;
 
     float  at_1(int32_t i) const noexcept override final;
     float3 at_3(int32_t i) const noexcept override final;

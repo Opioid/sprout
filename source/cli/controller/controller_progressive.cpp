@@ -27,7 +27,7 @@ size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& res
 
     //	driver.set_force_statistics(true);
 
-    Camera camera(take.view.camera);
+    Camera camera(*take.view.camera);
 
     Message_handler handler(driver, resource_manager, camera);
 

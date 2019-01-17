@@ -7,7 +7,6 @@
 #include <array>
 #include <cstdint>
 #include <iosfwd>
-#include <memory>
 #include <vector>
 #include "image/channels.hpp"
 #include "miniz/miniz.hpp"
@@ -20,8 +19,8 @@ namespace encoding::png {
 
 class Reader {
   public:
-    static std::shared_ptr<Image> read(std::istream& stream, Channels channels,
-                                       int32_t num_elements, bool swap_xy, bool invert);
+    static Image* read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
+                       bool invert);
 
   private:
     struct Chunk {
@@ -64,8 +63,8 @@ class Reader {
         mz_stream stream;
     };
 
-    static std::shared_ptr<Image> create_image(const Info& info, Channels channels,
-                                               int32_t num_elements, bool swap_xy, bool invert);
+    static Image* create_image(const Info& info, Channels channels, int32_t num_elements,
+                               bool swap_xy, bool invert);
 
     static void read_chunk(std::istream& stream, Chunk& chunk);
 

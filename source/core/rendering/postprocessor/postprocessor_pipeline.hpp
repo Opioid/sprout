@@ -23,7 +23,8 @@ class Postprocessor;
 
 class Pipeline {
   public:
-    Pipeline() = default;
+    Pipeline();
+
     ~Pipeline();
 
     void reserve(size_t num_pps);

@@ -12,7 +12,7 @@ namespace encoding::sub {
 
 class Reader {
   public:
-    static std::shared_ptr<Image> read(std::istream& stream);
+    static Image* read(std::istream& stream);
 };
 
 }  // namespace encoding::sub

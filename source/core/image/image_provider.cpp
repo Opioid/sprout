@@ -19,8 +19,8 @@ Provider::Provider() noexcept : resource::Provider<Image>("Image") {}
 
 Provider::~Provider() noexcept {}
 
-std::shared_ptr<Image> Provider::load(std::string const& filename, Variant_map const& options,
-                                      resource::Manager& manager) {
+Image* Provider::load(std::string const& filename, Variant_map const& options,
+                      resource::Manager& manager) {
     if ("proc:flakes" == filename) {
         return flakes_provider_.create_normal_map(options);
     } else if ("proc:flakes_mask" == filename) {
@@ -64,9 +64,8 @@ std::shared_ptr<Image> Provider::load(std::string const& filename, Variant_map c
     throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
 }
 
-std::shared_ptr<Image> Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                                      Variant_map const& /*options*/,
-                                      resource::Manager& /*manager*/) {
+Image* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
+                      Variant_map const& /*options*/, resource::Manager& /*manager*/) {
     return nullptr;
 }
 
