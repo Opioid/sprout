@@ -3,9 +3,14 @@
 
 #include <cstddef>
 #include <vector>
-#include "scene/entity/keyframe.hpp"
 
-namespace scene::animation {
+namespace scene {
+
+namespace entity {
+struct alignas(16) Keyframe;
+}
+
+namespace animation {
 
 class Animation {
   public:
@@ -37,6 +42,7 @@ class Animation {
     entity::Keyframe* interpolated_frames_ = nullptr;
 };
 
-}  // namespace scene::animation
+}  // namespace animation
+}  // namespace scene
 
 #endif

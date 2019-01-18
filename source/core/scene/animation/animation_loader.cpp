@@ -2,7 +2,9 @@
 #include "animation.hpp"
 #include "base/json/json.hpp"
 #include "base/math/quaternion.inl"
+#include "base/math/transformation.hpp"
 #include "base/math/vector3.inl"
+#include "scene/entity/keyframe.hpp"
 #include "scene/scene_constants.hpp"
 
 namespace scene::animation {

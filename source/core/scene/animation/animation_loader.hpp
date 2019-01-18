@@ -3,7 +3,10 @@
 
 #include <memory>
 #include "base/json/json_types.hpp"
-#include "base/math/transformation.hpp"
+
+namespace math {
+struct Transformation;
+}
 
 namespace scene::animation {
 
