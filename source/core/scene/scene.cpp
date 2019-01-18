@@ -25,7 +25,7 @@
 
 namespace scene {
 
-Scene::Scene(take::Settings const& settings) noexcept : take_settings_(settings) {
+Scene::Scene() noexcept {
     dummies_.reserve(16);
     finite_props_.reserve(16);
     infinite_props_.reserve(2);

@@ -65,7 +65,7 @@ class Scene {
     using Material   = material::Material;
     using Shape      = shape::Shape;
 
-    Scene(take::Settings const& settings) noexcept;
+    Scene() noexcept;
 
     ~Scene() noexcept;
 
@@ -141,8 +141,6 @@ class Scene {
     void add_named_entity(Entity* entity, std::string const& name) noexcept;
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
-
-    take::Settings const take_settings_;
 
     uint64_t const tick_duration_ = Units_per_second / 60;
 

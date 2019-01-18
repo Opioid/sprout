@@ -35,6 +35,9 @@ class Float1_t final : public Texture {
     T const& image_;
 };
 
+extern template class Float1_t<image::Float1>;
+extern template class Float1_t<image::Float1_sparse>;
+
 using Float1 = Float1_t<image::Float1>;
 
 using Float1_sparse = Float1_t<image::Float1_sparse>;

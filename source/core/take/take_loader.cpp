@@ -163,7 +163,8 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 void Loader::load_camera(json::Value const& camera_value, Take& take) {
     using namespace scene::camera;
 
-    std::string        type_name;
+    std::string type_name;
+
     json::Value const* type_value = nullptr;
 
     for (auto& n : camera_value.GetObject()) {

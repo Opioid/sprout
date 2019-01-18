@@ -8,6 +8,7 @@
 #include "core/baking/baking_driver.hpp"
 #include "core/file/file_system.hpp"
 #include "core/image/image_provider.hpp"
+#include "core/image/texture/texture.hpp"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/logging.hpp"
 #include "core/progress/progress_sink_null.hpp"
@@ -156,7 +157,7 @@ int main(int argc, char const* argv[]) {
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    scene::Scene scene(take->settings);
+    scene::Scene scene;
 
     if (!scene_loader.load(take->scene_filename, take_name, *take, scene)) {
         return 1;

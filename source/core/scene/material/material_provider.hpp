@@ -5,6 +5,7 @@
 #include "base/json/json_types.hpp"
 #include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
+#include "debug/debug_material.hpp"
 #include "image/channels.hpp"
 #include "image/texture/texture_types.hpp"
 #include "material_sample_cache.hpp"
@@ -30,7 +31,7 @@ class Provider final : public resource::Provider<Material> {
 
     size_t num_bytes() const noexcept override final;
 
-    Material* fallback_material() const noexcept;
+    Material& fallback_material() noexcept;
 
   private:
     Material* load(json::Value const& value, std::string_view mount_folder,
@@ -102,7 +103,7 @@ class Provider final : public resource::Provider<Material> {
 
     static float3 read_spectrum(json::Value const& spectrum_value);
 
-    Material* fallback_material_;
+    debug::Material fallback_material_;
 
   public:
     static uint32_t max_sample_size();

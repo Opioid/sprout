@@ -62,7 +62,7 @@ class Loader {
     using Shape    = shape::Shape;
     using Material = material::Material;
 
-    Loader(resource::Manager& manager, Material* fallback_material);
+    Loader(resource::Manager& manager, Material& fallback_material);
 
     ~Loader();
 
@@ -111,7 +111,7 @@ class Loader {
     Shape* rectangle_;
     Shape* sphere_;
 
-    Material* fallback_material_;
+    Material& fallback_material_;
 
     std::map<std::string, json::Value const*> local_materials_;
 

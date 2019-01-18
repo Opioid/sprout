@@ -7,7 +7,6 @@
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "cloth/cloth_material.hpp"
-#include "debug/debug_material.hpp"
 #include "display/display_constant.hpp"
 #include "display/display_emissionmap.hpp"
 #include "display/display_emissionmap_animated.hpp"
@@ -43,7 +42,7 @@ namespace scene::material {
 
 Provider::Provider() noexcept
     : resource::Provider<Material>("Material"),
-      fallback_material_(new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear))) {
+      fallback_material_(Sampler_settings(Sampler_settings::Filter::Linear)) {
     Material::init_rainbow();
 }
 
@@ -70,7 +69,7 @@ size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-Material* Provider::fallback_material() const noexcept {
+Material& Provider::fallback_material() noexcept {
     return fallback_material_;
 }
 

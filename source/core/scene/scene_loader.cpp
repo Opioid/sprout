@@ -30,7 +30,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, Material* fallback_material)
+Loader::Loader(resource::Manager& manager, Material& fallback_material)
     : resource_manager_(manager),
       canopy_(new shape::Canopy()),
       celestial_disk_(new shape::Celestial_disk()),
@@ -42,7 +42,16 @@ Loader::Loader(resource::Manager& manager, Material* fallback_material)
       sphere_(new shape::Sphere()),
       fallback_material_(fallback_material) {}
 
-Loader::~Loader() {}
+Loader::~Loader() {
+    delete sphere_;
+    delete rectangle_;
+    delete plane_;
+    delete infinite_sphere_;
+    delete disk_;
+    delete cube_;
+    delete celestial_disk_;
+    delete canopy_;
+}
 
 bool Loader::load(std::string const& filename, std::string_view take_name, take::Take const& take,
                   Scene& scene) {
@@ -287,7 +296,7 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
     if (1 == materials.size() && 1.f == materials[0]->ior()) {
     } else {
         while (materials.size() < shape->num_parts()) {
-            materials.push_back(fallback_material_);
+            materials.push_back(&fallback_material_);
         }
     }
 
@@ -410,7 +419,7 @@ material::Material* Loader::load_material(std::string const& name, Scene& scene)
         logging::error("Loading \"" + name + "\": " + e.what() + ". Using fallback material.");
     }
 
-    return fallback_material_;
+    return &fallback_material_;
 }
 
 }  // namespace scene
