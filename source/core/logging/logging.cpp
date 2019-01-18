@@ -1,11 +1,13 @@
 #include "logging.hpp"
+#include <memory>
 #include "log_null.hpp"
 #include "log_std_out.hpp"
 
 namespace logging {
 
 static std::unique_ptr<Log> log;
-static bool                 log_verbose = false;
+
+static bool log_verbose = false;
 
 void init(Type type, bool verbose) {
     switch (type) {
