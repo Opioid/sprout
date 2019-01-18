@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
 #define SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
 
-#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace scene {
@@ -14,11 +14,9 @@ namespace animation {
 
 class Animation {
   public:
-    Animation() = default;
+    Animation(uint32_t count) noexcept;
 
-    ~Animation();
-
-    void init(uint32_t count) noexcept;
+    ~Animation() noexcept;
 
     void allocate_interpolated_frames(uint32_t num_frames) noexcept;
 
@@ -33,7 +31,7 @@ class Animation {
     entity::Keyframe const* interpolated_frames() const noexcept;
 
   private:
-    uint32_t last_frame_;
+    uint32_t last_frame_ = 0;
 
     std::vector<entity::Keyframe> keyframes_;
 

@@ -5,28 +5,31 @@
 #include "base/math/transformation.hpp"
 #include "base/math/vector3.inl"
 #include "scene/entity/keyframe.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 
 namespace scene::animation {
 
 animation::Animation* load_keyframes(json::Value const&          keyframes_value,
-                                     math::Transformation const& default_transformation);
+                                     math::Transformation const& default_transformation,
+                                     Scene&                      scene);
 
 animation::Animation* load_sequence(json::Value const&          keyframes_value,
-                                    math::Transformation const& default_transformation);
+                                    math::Transformation const& default_transformation,
+                                    Scene&                      scene);
 
 void read_morphing(json::Value const& value, entity::Keyframe::Morphing& morphing);
 
 animation::Animation* load(json::Value const&          animation_value,
-                           math::Transformation const& default_transformation) {
+                           math::Transformation const& default_transformation, Scene& scene) {
     for (auto n = animation_value.MemberBegin(); n != animation_value.MemberEnd(); ++n) {
         std::string const       node_name  = n->name.GetString();
         rapidjson::Value const& node_value = n->value;
 
         if ("keyframes" == node_name) {
-            return load_keyframes(node_value, default_transformation);
+            return load_keyframes(node_value, default_transformation, scene);
         } else if ("morph_sequence" == node_name) {
-            return load_sequence(node_value, default_transformation);
+            return load_sequence(node_value, default_transformation, scene);
         }
     }
 
@@ -34,24 +37,16 @@ animation::Animation* load(json::Value const&          animation_value,
 }
 
 animation::Animation* load_keyframes(json::Value const&          keyframes_value,
-                                     math::Transformation const& default_transformation) {
+                                     math::Transformation const& default_transformation,
+                                     Scene&                      scene) {
     if (!keyframes_value.IsArray()) {
         return nullptr;
     }
 
-    auto animation = new animation::Animation;
-
-    animation->init(keyframes_value.Size());
+    auto animation = scene.create_animation(keyframes_value.Size());
 
     for (auto const& k : keyframes_value.GetArray()) {
-        entity::Keyframe keyframe;
-        keyframe.transformation = default_transformation;
-
-        keyframe.morphing.targets[0] = 0;
-        keyframe.morphing.targets[1] = 0;
-        keyframe.morphing.weight     = 0.f;
-
-        keyframe.time = 0;
+        entity::Keyframe keyframe{default_transformation, {{0, 0}, 0.f}, 0};
 
         for (auto& n : k.GetObject()) {
             std::string const node_name = n.name.GetString();
@@ -72,7 +67,8 @@ animation::Animation* load_keyframes(json::Value const&          keyframes_value
 }
 
 animation::Animation* load_sequence(json::Value const&          sequence_value,
-                                    math::Transformation const& default_transformation) {
+                                    math::Transformation const& default_transformation,
+                                    Scene&                      scene) {
     uint32_t start_frame       = 0;
     uint32_t num_frames        = 0;
     uint32_t frames_per_second = 0;
@@ -93,25 +89,16 @@ animation::Animation* load_sequence(json::Value const&          sequence_value,
         return nullptr;
     }
 
-    auto animation = new animation::Animation;
-
-    animation->init(num_frames);
+    auto animation = scene.create_animation(num_frames);
 
     uint64_t time = 0;
 
     uint64_t const time_increment = scene::Units_per_second / frames_per_second;
 
     for (uint32_t i = 0; i < num_frames; ++i) {
-        entity::Keyframe keyframe;
+        uint32_t const target = start_frame + i;
 
-        keyframe.time = time;
-
-        keyframe.transformation = default_transformation;
-
-        uint32_t target              = start_frame + i;
-        keyframe.morphing.targets[0] = target;
-        keyframe.morphing.targets[1] = target;
-        keyframe.morphing.weight     = 0.f;
+        entity::Keyframe const keyframe{default_transformation, {{target, target}, 0.f}, time};
 
         animation->push_back(keyframe);
 

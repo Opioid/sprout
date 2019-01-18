@@ -131,7 +131,7 @@ class Scene {
 
     void add_material(Material* material) noexcept;
 
-    void add_animation(animation::Animation* animation) noexcept;
+    animation::Animation* create_animation(uint32_t count) noexcept;
 
     void create_animation_stage(Entity* entity, animation::Animation* animation) noexcept;
 

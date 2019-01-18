@@ -126,6 +126,8 @@ int main(int argc, char const* argv[]) {
         resource_manager.register_provider(texture_provider);
     }
 
+    scene::Scene scene;
+
     std::string take_name;
 
     std::unique_ptr<take::Take> take;
@@ -134,7 +136,7 @@ int main(int argc, char const* argv[]) {
         auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
                                          : file_system.read_stream(args.take, take_name);
 
-        take = take::Loader::load(*stream, resource_manager);
+        take = take::Loader::load(*stream, scene, resource_manager);
     } catch (const std::exception& e) {
         logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
         return 1;
@@ -156,8 +158,6 @@ int main(int argc, char const* argv[]) {
     procedural::fluid::init(scene_loader);
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
-
-    scene::Scene scene;
 
     if (!scene_loader.load(take->scene_filename, take_name, *take, scene)) {
         return 1;

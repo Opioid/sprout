@@ -88,7 +88,6 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
         filesystem.pop_mount();
 
         if (take.camera_animation && take.view.camera) {
-            scene.add_animation(take.camera_animation);
             scene.create_animation_stage(take.view.camera.get(), take.camera_animation);
         }
 
@@ -239,8 +238,8 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
         }
 
         if (animation_value) {
-            if (auto animation = animation::load(*animation_value, transformation); animation) {
-                scene.add_animation(animation);
+            if (auto animation = animation::load(*animation_value, transformation, scene);
+                animation) {
                 scene.create_animation_stage(entity, animation);
             }
         } else {

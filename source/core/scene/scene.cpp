@@ -382,8 +382,12 @@ void Scene::add_material(Material* material) noexcept {
     materials_.push_back(material);
 }
 
-void Scene::add_animation(animation::Animation* animation) noexcept {
+animation::Animation* Scene::create_animation(uint32_t count) noexcept {
+    animation::Animation* animation = new animation::Animation(count);
+
     animations_.push_back(animation);
+
+    return animation;
 }
 
 void Scene::create_animation_stage(Entity* entity, animation::Animation* animation) noexcept {

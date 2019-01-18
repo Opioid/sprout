@@ -20,9 +20,13 @@ namespace resource {
 class Manager;
 }
 
-namespace scene::camera {
+namespace scene {
+namespace camera {
 class Camera;
 }
+
+class Scene;
+}  // namespace scene
 
 namespace sampler {
 class Factory;
@@ -65,7 +69,10 @@ struct Photon_settings;
 
 class Loader {
   public:
-    static std::unique_ptr<Take> load(std::istream& stream, resource::Manager& manager);
+    using Scene = scene::Scene;
+
+    static std::unique_ptr<Take> load(std::istream& stream, Scene& scene,
+                                      resource::Manager& manager);
 
   private:
     struct Stereoscopic {
@@ -80,7 +87,7 @@ class Loader {
     using Postprocessor_ptr   = std::unique_ptr<rendering::postprocessor::Postprocessor>;
     using Light_sampling      = rendering::integrator::Light_sampling;
 
-    static void load_camera(json::Value const& camera_value, Take& take);
+    static void load_camera(json::Value const& camera_value, Take& take, Scene& scene);
 
     template <typename Base>
     static Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,

@@ -59,7 +59,7 @@
 
 namespace take {
 
-std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& manager) {
+std::unique_ptr<Take> Loader::load(std::istream& stream, Scene& scene, resource::Manager& manager) {
     uint32_t const num_threads = manager.thread_pool().num_threads();
 
     auto root = json::parse(stream);
@@ -71,7 +71,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
     for (auto& n : root->GetObject()) {
         if ("camera" == n.name) {
-            load_camera(n.value, *take);
+            load_camera(n.value, *take, scene);
         } else if ("export" == n.name) {
             exporter_value = &n.value;
         } else if ("start_frame" == n.name) {
@@ -160,7 +160,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
     return take;
 }
 
-void Loader::load_camera(json::Value const& camera_value, Take& take) {
+void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& scene) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -217,7 +217,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take) {
     }
 
     if (animation_value) {
-        take.camera_animation = scene::animation::load(*animation_value, transformation);
+        take.camera_animation = scene::animation::load(*animation_value, transformation, scene);
     }
 
     std::unique_ptr<Camera> camera;

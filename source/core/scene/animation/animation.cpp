@@ -6,14 +6,13 @@
 
 namespace scene::animation {
 
-Animation::~Animation() {
-    delete[] interpolated_frames_;
-}
-
-void Animation::init(uint32_t count) noexcept {
-    last_frame_ = 0;
+Animation::Animation(uint32_t count) noexcept {
     keyframes_.clear();
     keyframes_.reserve(count);
+}
+
+Animation::~Animation() noexcept {
+    delete[] interpolated_frames_;
 }
 
 void Animation::allocate_interpolated_frames(uint32_t num_frames) noexcept {
