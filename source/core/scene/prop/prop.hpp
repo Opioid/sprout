@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_PROP_PROP_HPP
 #define SU_CORE_SCENE_PROP_PROP_HPP
 
-#include <memory>
 #include <vector>
 #include "base/math/aabb.hpp"
 #include "scene/entity/entity.hpp"

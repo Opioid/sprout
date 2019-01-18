@@ -2,7 +2,6 @@
 #define SU_CORE_RESOURCE_MANAGER_HPP
 
 #include <map>
-#include <memory>
 #include "base/memory/variant_map.hpp"
 
 namespace file {

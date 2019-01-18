@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_PROCEDURAL_FLAKES_PROVIDER_HPP
 #define SU_CORE_IMAGE_PROCEDURAL_FLAKES_PROVIDER_HPP
 
-#include <memory>
 #include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
 

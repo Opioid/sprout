@@ -1,5 +1,4 @@
 #include "logging.hpp"
-#include <memory>
 #include "log_null.hpp"
 #include "log_std_out.hpp"
 

@@ -2,7 +2,6 @@
 #define SU_CORE_IMAGE_ENCODING_SUB_WRITER_HPP
 
 #include <iosfwd>
-#include <memory>
 
 namespace image {
 
