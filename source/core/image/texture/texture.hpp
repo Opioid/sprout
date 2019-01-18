@@ -11,11 +11,10 @@ namespace texture {
 
 class Texture {
   public:
-    Texture(Image* image) noexcept;
+    Texture(Image const& image) noexcept;
 
     virtual ~Texture() noexcept;
 
-    Image&       image() noexcept;
     Image const& image() const noexcept;
 
     int32_t num_channels() const noexcept;
@@ -56,7 +55,7 @@ class Texture {
     float3 average_3(int32_t element) const noexcept;
 
   protected:
-    Image* untyped_image_;
+    Image const& untyped_image_;
 
     int3 back_;
 

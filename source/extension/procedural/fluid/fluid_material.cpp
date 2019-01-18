@@ -5,9 +5,6 @@
 #include "base/random/generator.inl"
 #include "core/image/texture/texture.hpp"
 #include "core/image/texture/texture_adapter.inl"
-#include "core/image/texture/texture_byte_4_srgb.hpp"
-#include "core/image/texture/texture_float_1.hpp"
-#include "core/image/typed_image.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "fluid_particle.hpp"
 #include "fluid_vorton.hpp"
@@ -25,11 +22,11 @@ static int3 constexpr Visualization_dimensions(320);
 
 Material::Material(Sampler_settings const& sampler_settings) noexcept
     : scene::material::volumetric::Grid_color(sampler_settings),
-      image_(new Byte4(Image::Description(Image::Type::Byte4, Visualization_dimensions))),
-      texture_(new texture::Byte4_sRGB(image_)),
+      image_(Image::Description(Image::Type::Byte4, Visualization_dimensions)),
+      texture_(image_),
       sim_(int3(256), Visualization_dimensions),
       current_frame_(0) {
-    set_color(Texture_adapter(texture_));
+    set_color(Texture_adapter(&texture_));
 
     rnd::Generator rng(0, 0);
 
@@ -97,10 +94,7 @@ Material::Material(Sampler_settings const& sampler_settings) noexcept
     }
 }
 
-Material::~Material() noexcept {
-    delete texture_;
-    delete image_;
-}
+Material::~Material() noexcept {}
 
 void Material::set_prop(scene::prop::Prop* prop) noexcept {
     prop_ = prop;
@@ -127,7 +121,7 @@ void Material::simulate(uint64_t      start, uint64_t /*end*/, uint64_t /*frame_
 
     current_frame_ = sim_frame;
 
-    Volume_renderer renderer(color_.texture().dimensions_3(), 128);
+    Volume_renderer renderer(texture_.dimensions_3(), 128);
 
     renderer.clear();
 
@@ -139,7 +133,7 @@ void Material::simulate(uint64_t      start, uint64_t /*end*/, uint64_t /*frame_
         renderer.splat(p, float4(tracer.color, 1.f));
     }
 
-    renderer.resolve(*static_cast<image::Byte4*>(&color_.texture().image()));
+    renderer.resolve(image_);
 
     compile(pool);
 }

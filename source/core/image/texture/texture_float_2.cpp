@@ -4,8 +4,8 @@
 
 namespace image::texture {
 
-Float2::Float2(Image* image) noexcept
-    : Texture(image), image_(*static_cast<const image::Float2*>(image)) {}
+Float2::Float2(Image const& image) noexcept
+    : Texture(image), image_(static_cast<image::Float2 const&>(image)) {}
 
 float Float2::at_1(int32_t i) const noexcept {
     return image_.load(i)[0];

@@ -4,36 +4,32 @@
 
 namespace image::texture {
 
-Texture::Texture(Image* image) noexcept
+Texture::Texture(Image const& image) noexcept
     : untyped_image_(image),
-      back_(int3(image->description().dimensions[0] - 1, image->description().dimensions[1] - 1,
-                 image->description().dimensions[2] - 1)),
-      dimensions_float_(float3(image->description().dimensions)) {}
+      back_(int3(image.description().dimensions[0] - 1, image.description().dimensions[1] - 1,
+                 image.description().dimensions[2] - 1)),
+      dimensions_float_(float3(image.description().dimensions)) {}
 
 Texture::~Texture() noexcept {}
 
-Image& Texture::image() noexcept {
-    return *untyped_image_;
-}
-
 Image const& Texture::image() const noexcept {
-    return *untyped_image_;
+    return untyped_image_;
 }
 
 int32_t Texture::num_channels() const noexcept {
-    return untyped_image_->description().num_channels();
+    return untyped_image_.description().num_channels();
 }
 
 int32_t Texture::num_elements() const noexcept {
-    return untyped_image_->description().num_elements;
+    return untyped_image_.description().num_elements;
 }
 
 int2 Texture::dimensions_2() const noexcept {
-    return untyped_image_->description().dimensions.xy();
+    return untyped_image_.description().dimensions.xy();
 }
 
 int3 const& Texture::dimensions_3() const noexcept {
-    return untyped_image_->description().dimensions;
+    return untyped_image_.description().dimensions;
 }
 
 int2 Texture::back_2() const noexcept {

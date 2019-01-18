@@ -2,6 +2,8 @@
 #define SU_EXTENSION_PROCEDURAL_SKY_SKY_MATERIAL_HPP
 
 #include "base/math/distribution/distribution_2d.hpp"
+#include "core/image/texture/texture_float_3.hpp"
+#include "core/image/typed_image.hpp"
 #include "sky_material_base.hpp"
 
 namespace procedural::sky {
@@ -59,6 +61,10 @@ class Sky_baked_material : public Material {
   private:
     static float3 unclipped_canopy_mapping(Transformation const& transformation,
                                            float2                uv) noexcept;
+
+    image::Float3 cache_;
+
+    image::texture::Float3 cache_texture_;
 
     Texture_adapter emission_map_;
 

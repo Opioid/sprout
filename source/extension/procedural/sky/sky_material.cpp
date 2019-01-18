@@ -6,8 +6,6 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture_adapter.inl"
-#include "core/image/texture/texture_float_3.hpp"
-#include "core/image/typed_image.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/prop/prop.hpp"
@@ -61,7 +59,13 @@ size_t Sky_material::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-Sky_baked_material::Sky_baked_material(Sky& sky) noexcept : Material(sky) {}
+static int2 constexpr Bake_dimensions(256);
+
+Sky_baked_material::Sky_baked_material(Sky& sky) noexcept
+    : Material(sky),
+      cache_(image::Image::Description(image::Image::Type::Float3, Bake_dimensions)),
+      cache_texture_(cache_),
+      emission_map_(&cache_texture_) {}
 
 Sky_baked_material::~Sky_baked_material() noexcept {}
 
@@ -120,16 +124,6 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
         return;
     }
 
-    int2 const d(256);
-
-    Image::Description const description(Image::Type::Float3, d);
-
-    auto cache = new Float3(description);
-
-    auto cache_texture = new texture::Float3(cache);
-
-    emission_map_ = Texture_adapter(cache_texture);
-
     //	std::ofstream stream("sky.png", std::ios::binary);
     //	if (stream) {
     //		image::encoding::png::Writer writer(d);
@@ -137,30 +131,33 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     //	}
 
     if (importance_sampling) {
-        float2 const idf = 1.f / float2(d);
-
-        Distribution_2D::Distribution_impl* conditional = distribution_.allocate(d[1]);
+        Distribution_2D::Distribution_impl* conditional = distribution_.allocate(
+            Bake_dimensions[1]);
 
         std::vector<float4> artws(pool.num_threads(), float4(0.f));
 
         pool.run_range(
-            [this, &transformation, &conditional, &artws, &shape, &cache, d, idf](
-                uint32_t id, int32_t begin, int32_t end) {
-                float* luminance = memory::allocate_aligned<float>(d[0]);
+            [this, &transformation, &conditional, &artws, &shape](uint32_t id, int32_t begin,
+                                                                  int32_t end) {
+                image::Float3& cache = cache_;
+
+                float2 const idf = 1.f / float2(Bake_dimensions);
+
+                float* luminance = memory::allocate_aligned<float>(Bake_dimensions[0]);
 
                 float4 artw(0.f);
 
                 for (int32_t y = begin; y < end; ++y) {
                     float const v = idf[1] * (y + 0.5f);
 
-                    for (int32_t x = 0; x < d[0]; ++x) {
+                    for (int32_t x = 0; x < Bake_dimensions[0]; ++x) {
                         float const u = idf[0] * (x + 0.5f);
 
                         float2 const uv = float2(u, v);
                         float3 const wi = unclipped_canopy_mapping(transformation, uv);
                         float3 const li = sky_.model().evaluate_sky(wi);
 
-                        cache->store(x, y, packed_float3(li));
+                        cache.store(x, y, packed_float3(li));
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
@@ -169,14 +166,14 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
                         artw += float4(uv_weight * li, uv_weight);
                     }
 
-                    conditional[y].init(luminance, d[0]);
+                    conditional[y].init(luminance, Bake_dimensions[0]);
                 }
 
                 artws[id] += artw;
 
                 memory::free_aligned(luminance);
             },
-            0, d[1]);
+            0, Bake_dimensions[1]);
 
         float4 artw(0.f);
         for (auto& a : artws) {

@@ -9,7 +9,7 @@ namespace image::texture {
 template <typename T>
 class Float1_t final : public Texture {
   public:
-    Float1_t(Image* image) noexcept;
+    Float1_t(Image const& image) noexcept;
 
     float  at_1(int32_t i) const noexcept override final;
     float3 at_3(int32_t i) const noexcept override final;

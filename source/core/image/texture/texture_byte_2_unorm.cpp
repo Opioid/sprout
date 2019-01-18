@@ -5,8 +5,8 @@
 
 namespace image::texture {
 
-Byte2_unorm::Byte2_unorm(Image* image) noexcept
-    : Texture(image), image_(*static_cast<const Byte2*>(image)) {}
+Byte2_unorm::Byte2_unorm(Image const& image) noexcept
+    : Texture(image), image_(static_cast<Byte2 const&>(image)) {}
 
 float Byte2_unorm::at_1(int32_t i) const noexcept {
     auto value = image_.load(i);

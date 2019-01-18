@@ -24,7 +24,6 @@ class Adapter {
 
     bool is_valid() const noexcept;
 
-    Texture&       texture() noexcept;
     Texture const& texture() const noexcept;
 
     using Sampler_2D = sampler::Sampler_2D;

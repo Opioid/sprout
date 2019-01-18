@@ -1,6 +1,8 @@
 #ifndef SU_EXTENSION_PROCEDURAL_FLUID_MATERIAL_HPP
 #define SU_EXTENSION_PROCEDURAL_FLUID_MATERIAL_HPP
 
+#include "core/image/texture/texture_byte_4_srgb.hpp"
+#include "core/image/typed_image.hpp"
 #include "fluid_simulation.hpp"
 #include "scene/material/volumetric/volumetric_grid.hpp"
 
@@ -32,8 +34,9 @@ class Material : public scene::material::volumetric::Grid_color {
     Simulation& simulation() noexcept;
 
   private:
-    image::Image*            image_;
-    image::texture::Texture* texture_;
+    image::Byte4 image_;
+
+    image::texture::Byte4_sRGB texture_;
 
     scene::prop::Prop* prop_;
 

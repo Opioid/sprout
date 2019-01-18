@@ -26,10 +26,6 @@ inline bool Adapter::is_valid() const noexcept {
     return texture_ != nullptr;
 }
 
-inline Texture& Adapter::texture() noexcept {
-    return *texture_;
-}
-
 inline Texture const& Adapter::texture() const noexcept {
     return *texture_;
 }

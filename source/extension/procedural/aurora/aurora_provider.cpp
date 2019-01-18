@@ -88,7 +88,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     render(*target, manager.thread_pool());
 
-    auto texture = new texture::Float1(target);
+    auto texture = new texture::Float1(*target);
 
     auto material = new volumetric::Grid(Sampler_settings(), Texture_adapter(texture));
 

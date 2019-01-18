@@ -9,7 +9,7 @@ class Image;
 
 namespace texture::testing {
 
-bool is_valid_normal_map(const Image& image, std::string const& filename);
+bool is_valid_normal_map(const Image const& image, std::string const& filename);
 }
 }  // namespace image
 
