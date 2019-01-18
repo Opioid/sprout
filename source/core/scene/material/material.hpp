@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
+#include <string_view>
 #include <vector>
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
