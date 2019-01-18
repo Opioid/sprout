@@ -8,10 +8,6 @@
 #include "take_settings.hpp"
 #include "take_view.hpp"
 
-namespace scene::animation {
-class Animation;
-}
-
 namespace rendering::integrator {
 
 namespace surface {
@@ -34,13 +30,13 @@ struct Take {
 
     ~Take();
 
-    Settings    settings;
+    Settings settings;
+
     std::string scene_filename;
-    take::View  view;
+
+    take::View view;
 
     Photon_settings photon_settings;
-
-    scene::animation::Animation* camera_animation = nullptr;
 
     std::unique_ptr<rendering::integrator::surface::Factory> surface_integrator_factory;
     std::unique_ptr<rendering::integrator::volume::Factory>  volume_integrator_factory;

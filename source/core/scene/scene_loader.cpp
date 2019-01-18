@@ -87,10 +87,6 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
         filesystem.pop_mount();
 
-        if (take.camera_animation && take.view.camera) {
-            scene.create_animation_stage(take.view.camera.get(), take.camera_animation);
-        }
-
         scene.finish(take.view.camera ? take.view.camera->frame_step() : 0,
                      take.view.camera ? take.view.camera->frame_duration() : 0);
     } catch (std::exception& e) {

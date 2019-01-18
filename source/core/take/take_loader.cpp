@@ -55,6 +55,7 @@
 #include "scene/camera/camera_spherical.hpp"
 #include "scene/camera/camera_spherical_stereoscopic.hpp"
 #include "scene/material/volumetric/volumetric_material.hpp"
+#include "scene/scene.hpp"
 #include "take.hpp"
 
 namespace take {
@@ -216,10 +217,6 @@ void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& sce
         throw std::runtime_error("No sensor configuration included");
     }
 
-    if (animation_value) {
-        take.camera_animation = scene::animation::load(*animation_value, transformation, scene);
-    }
-
     std::unique_ptr<Camera> camera;
 
     if ("Cubic" == type_name) {
@@ -263,16 +260,21 @@ void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& sce
         camera->set_parameters(*parameters_value);
     }
 
-    if (!take.camera_animation) {
-        camera->allocate_local_frame();
-        camera->propagate_frame_allocation();
-        camera->set_transformation(transformation);
-    }
-
     if (sensor_value) {
         auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions());
 
         camera->set_sensor(std::move(sensor));
+    }
+
+    if (animation_value) {
+        if (auto animation = scene::animation::load(*animation_value, transformation, scene);
+            animation) {
+            scene.create_animation_stage(camera.get(), animation);
+        }
+    } else {
+        camera->allocate_local_frame();
+        camera->propagate_frame_allocation();
+        camera->set_transformation(transformation);
     }
 
     take.view.camera = std::move(camera);
