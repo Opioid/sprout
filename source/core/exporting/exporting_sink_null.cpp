@@ -1,12 +1,12 @@
 #include "exporting_sink_null.hpp"
-#include "base/math/vector4.inl"
 
 namespace exporting {
 
-Null::Null() {}
+Null::Null() noexcept {}
 
-Null::~Null() {}
+Null::~Null() noexcept {}
 
-void Null::write(image::Float4 const& /*image*/, uint32_t /*frame*/, thread::Pool& /*pool*/) {}
+void Null::write(image::Float4 const& /*image*/, uint32_t /*frame*/,
+                 thread::Pool& /*pool*/) noexcept {}
 
 }  // namespace exporting

@@ -1,9 +1,7 @@
 #ifndef SU_CORE_SCENE_CAMERA_CAMERA_HPP
 #define SU_CORE_SCENE_CAMERA_CAMERA_HPP
 
-#include <memory>
-#include <string>
-#include <vector>
+#include <string_view>
 #include "base/math/vector2.hpp"
 #include "scene/entity/entity.hpp"
 #include "scene/prop/interface_stack.hpp"
@@ -53,7 +51,7 @@ class Camera : public entity::Entity {
 
     Sensor& sensor() const noexcept;
 
-    void set_sensor(std::unique_ptr<Sensor> sensor) noexcept;
+    void set_sensor(Sensor* sensor) noexcept;
 
     prop::Interface_stack const& interface_stack() const noexcept;
 
@@ -73,7 +71,7 @@ class Camera : public entity::Entity {
 
     int2 resolution_;
 
-    std::unique_ptr<Sensor> sensor_;
+    Sensor* sensor_;
 
     prop::Interface_stack interface_stack_;
     prop::Interface_stack interfaces_;

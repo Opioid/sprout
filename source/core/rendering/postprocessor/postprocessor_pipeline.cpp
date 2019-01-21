@@ -8,15 +8,19 @@ namespace rendering::postprocessor {
 
 Pipeline::Pipeline() = default;
 
-Pipeline::~Pipeline() {}
+Pipeline::~Pipeline() {
+    for (auto pp : postprocessors_) {
+        delete pp;
+    }
+}
 
 void Pipeline::reserve(size_t num_pps) {
     postprocessors_.reserve(num_pps);
 }
 
-void Pipeline::add(std::unique_ptr<Postprocessor> pp) {
+void Pipeline::add(Postprocessor* pp) {
     if (pp) {
-        postprocessors_.push_back(std::move(pp));
+        postprocessors_.push_back(pp);
     }
 }
 
@@ -29,13 +33,13 @@ void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) {
                                                 camera.sensor_dimensions());
     scratch_.resize(description);
 
-    for (auto& pp : postprocessors_) {
+    for (auto pp : postprocessors_) {
         pp->init(camera, pool);
     }
 }
 
 bool Pipeline::has_alpha_transparency(bool alpha_in) const {
-    for (auto const& pp : postprocessors_) {
+    for (auto const pp : postprocessors_) {
         alpha_in = pp->alpha_out(alpha_in);
     }
 
@@ -58,7 +62,7 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread
 
         sensor.resolve(pool, *targets[0]);
 
-        for (auto& pp : postprocessors_) {
+        for (auto pp : postprocessors_) {
             pp->apply(*targets[0], *targets[1], pool);
             std::swap(targets[0], targets[1]);
         }
@@ -67,7 +71,7 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread
 
 size_t Pipeline::num_bytes() const {
     size_t num_bytes = 0;
-    for (auto const& pp : postprocessors_) {
+    for (auto const pp : postprocessors_) {
         num_bytes += pp->num_bytes();
     }
 

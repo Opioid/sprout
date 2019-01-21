@@ -3,6 +3,7 @@
 #include "base/math/math.hpp"
 #include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
+#include "base/math/vector.hpp"
 #include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink_ffmpeg.hpp"
@@ -60,78 +61,118 @@
 
 namespace take {
 
-std::unique_ptr<Take> Loader::load(std::istream& stream, Scene& scene, resource::Manager& manager) {
+using Scene               = scene::Scene;
+using Sensor_filter       = rendering::sensor::filter::Filter;
+using Sensor_ptr          = rendering::sensor::Sensor*;
+using Surface_factory_ptr = rendering::integrator::surface::Factory*;
+using Volume_factory_ptr  = rendering::integrator::volume::Factory*;
+using Postprocessor_ptr   = rendering::postprocessor::Postprocessor*;
+using Light_sampling      = rendering::integrator::Light_sampling;
+
+void load_camera(json::Value const& camera_value, Take& take, Scene& scene);
+
+template <typename Base>
+Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
+                                Sensor_filter const* filter);
+
+Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions);
+
+Sensor_filter const* load_filter(json::Value const& filter_value);
+
+sampler::Factory* load_sampler_factory(json::Value const& sampler_value, uint32_t num_workers,
+                                       uint32_t& num_samples_per_pixel);
+
+void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
+                               Take& take);
+
+Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
+                                                    Settings const& settings, uint32_t num_workers);
+
+Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
+                                                  Settings const& settings, uint32_t num_workers);
+
+void load_photon_settings(json::Value const& value, Photon_settings& settings);
+
+void load_postprocessors(json::Value const& pp_value, resource::Manager& manager, Take& take);
+
+Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value);
+
+bool peek_stereoscopic(json::Value const& parameters_value);
+
+std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value, const View& view);
+
+void load_settings(json::Value const& settings_value, Settings& settings);
+
+void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling);
+
+void Loader::load(Take& take, std::istream& stream, Scene& scene, resource::Manager& manager) {
     uint32_t const num_threads = manager.thread_pool().num_threads();
 
     auto root = json::parse(stream);
-
-    auto take = std::make_unique<Take>();
 
     json::Value const* postprocessors_value = nullptr;
     json::Value const* exporter_value       = nullptr;
 
     for (auto& n : root->GetObject()) {
         if ("camera" == n.name) {
-            load_camera(n.value, *take, scene);
+            load_camera(n.value, take, scene);
         } else if ("export" == n.name) {
             exporter_value = &n.value;
         } else if ("start_frame" == n.name) {
-            take->view.start_frame = json::read_uint(n.value);
+            take.view.start_frame = json::read_uint(n.value);
         } else if ("num_frames" == n.name) {
-            take->view.num_frames = json::read_uint(n.value);
+            take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
-            load_integrator_factories(n.value, num_threads, *take);
+            load_integrator_factories(n.value, num_threads, take);
         } else if ("postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
-            take->sampler_factory = load_sampler_factory(n.value, num_threads,
-                                                         take->view.num_samples_per_pixel);
+            take.sampler_factory = load_sampler_factory(n.value, num_threads,
+                                                        take.view.num_samples_per_pixel);
         } else if ("scene" == n.name) {
-            take->scene_filename = n.value.GetString();
+            take.scene_filename = n.value.GetString();
         } else if ("settings" == n.name) {
-            load_settings(n.value, take->settings);
+            load_settings(n.value, take.settings);
         }
     }
 
-    if (take->scene_filename.empty()) {
+    if (take.scene_filename.empty()) {
         throw std::runtime_error("No reference to scene included");
     }
 
-    if (take->view.camera) {
+    if (take.view.camera) {
         if (postprocessors_value) {
-            load_postprocessors(*postprocessors_value, manager, *take);
+            load_postprocessors(*postprocessors_value, manager, take);
         }
 
         if (exporter_value) {
-            take->exporters = load_exporters(*exporter_value, take->view);
+            take.exporters = load_exporters(*exporter_value, take.view);
         }
 
-        if (take->exporters.empty()) {
-            auto const d = take->view.camera->sensor().dimensions();
+        if (take.exporters.empty()) {
+            auto const d = take.view.camera->sensor().dimensions();
 
             bool const error_diffusion = false;
 
             using namespace image;
 
-            std::unique_ptr<Writer> writer = std::make_unique<encoding::png::Writer>(
-                d, error_diffusion);
+            Writer* writer = new encoding::png::Writer(d, error_diffusion);
 
-            take->exporters.push_back(
-                std::make_unique<exporting::Image_sequence>("output_", std::move(writer)));
+            take.exporters.push_back(new exporting::Image_sequence("output_", writer));
 
             logging::warning("No valid exporter was specified, defaulting to PNG writer.");
         }
     }
 
-    if (!take->sampler_factory) {
-        take->sampler_factory = std::make_unique<sampler::Random_factory>(num_threads);
+    if (!take.sampler_factory) {
+        take.sampler_factory = new sampler::Random_factory(num_threads);
 
         logging::warning("No valid sampler was specified, defaulting to Random sampler.");
     }
 
     using namespace rendering::integrator;
 
-    if (!take->surface_integrator_factory) {
+    if (!take.surface_integrator_factory) {
         Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
 
         uint32_t const num_samples = 1;
@@ -142,26 +183,24 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, Scene& scene, resource:
 
         bool const enable_caustics = false;
 
-        take->surface_integrator_factory = std::make_unique<surface::Pathtracer_MIS_factory>(
-            take->settings, num_threads, num_samples, min_bounces, max_bounces,
+        take.surface_integrator_factory = new surface::Pathtracer_MIS_factory(
+            take.settings, num_threads, num_samples, min_bounces, max_bounces,
             path_continuation_probability, light_sampling, enable_caustics);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
 
-    if (!take->volume_integrator_factory) {
-        take->volume_integrator_factory = std::make_unique<volume::Tracking_multi_factory>(
-            take->settings, num_threads);
+    if (!take.volume_integrator_factory) {
+        take.volume_integrator_factory = new volume::Tracking_multi_factory(take.settings,
+                                                                            num_threads);
 
         logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
     }
 
-    take->view.init(manager.thread_pool());
-
-    return take;
+    take.view.init(manager.thread_pool());
 }
 
-void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& scene) {
+void load_camera(json::Value const& camera_value, Take& take, Scene& scene) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -217,7 +256,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& sce
         throw std::runtime_error("No sensor configuration included");
     }
 
-    std::unique_ptr<Camera> camera;
+    Camera* camera;
 
     if ("Cubic" == type_name) {
         if (stereo) {
@@ -228,7 +267,7 @@ void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& sce
                 layout = Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
             }
 
-            camera = std::make_unique<Cubic_stereoscopic>(layout, resolution);
+            camera = new Cubic_stereoscopic(layout, resolution);
         } else {
             Cubic::Layout layout = Cubic::Layout::xmxymyzmz;
 
@@ -236,22 +275,22 @@ void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& sce
                 layout = Cubic::Layout::xmxy_myzmz;
             }
 
-            camera = std::make_unique<Cubic>(layout, resolution);
+            camera = new Cubic(layout, resolution);
         }
     } else if ("Perspective" == type_name) {
         if (stereo) {
-            camera = std::make_unique<Perspective_stereoscopic>(resolution);
+            camera = new Perspective_stereoscopic(resolution);
         } else {
-            camera = std::make_unique<Perspective>(resolution);
+            camera = new Perspective(resolution);
         }
     } else if ("Spherical" == type_name) {
         if (stereo) {
-            camera = std::make_unique<Spherical_stereoscopic>(resolution);
+            camera = new Spherical_stereoscopic(resolution);
         } else {
-            camera = std::make_unique<Spherical>(resolution);
+            camera = new Spherical(resolution);
         }
     } else if ("Hemispherical" == type_name) {
-        camera = std::make_unique<Hemispherical>(resolution);
+        camera = new Hemispherical(resolution);
     } else {
         throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
     }
@@ -263,13 +302,13 @@ void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& sce
     if (sensor_value) {
         auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions());
 
-        camera->set_sensor(std::move(sensor));
+        camera->set_sensor(sensor);
     }
 
     if (animation_value) {
         if (auto animation = scene::animation::load(*animation_value, transformation, scene);
             animation) {
-            scene.create_animation_stage(camera.get(), animation);
+            scene.create_animation_stage(camera, animation);
         }
     } else {
         camera->allocate_local_frame();
@@ -277,47 +316,45 @@ void Loader::load_camera(json::Value const& camera_value, Take& take, Scene& sce
         camera->set_transformation(transformation);
     }
 
-    take.view.camera = std::move(camera);
+    take.view.camera = camera;
 }
 
 template <typename Base>
-Loader::Sensor_ptr Loader::make_filtered_sensor(int2 dimensions, float exposure,
-                                                float3 const&        clamp_max,
-                                                Sensor_filter const* filter) {
+Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
+                                Sensor_filter const* filter) {
     using namespace rendering::sensor;
 
     bool const clamp = !math::any_negative(clamp_max);
 
     if (clamp) {
         if (filter->radius() <= 1.f) {
-            return std::make_unique<Filtered_1p0<Base, clamp::Clamp>>(
-                dimensions, exposure, clamp::Clamp(clamp_max), filter);
+            return new Filtered_1p0<Base, clamp::Clamp>(dimensions, exposure,
+                                                        clamp::Clamp(clamp_max), filter);
         }
 
         if (filter->radius() <= 2.f) {
-            return std::make_unique<Filtered_2p0<Base, clamp::Clamp>>(
-                dimensions, exposure, clamp::Clamp(clamp_max), filter);
+            return new Filtered_2p0<Base, clamp::Clamp>(dimensions, exposure,
+                                                        clamp::Clamp(clamp_max), filter);
         }
 
-        return std::make_unique<Filtered_inf<Base, clamp::Clamp>>(dimensions, exposure,
-                                                                  clamp::Clamp(clamp_max), filter);
+        return new Filtered_inf<Base, clamp::Clamp>(dimensions, exposure, clamp::Clamp(clamp_max),
+                                                    filter);
     }
 
     if (filter->radius() <= 1.f) {
-        return std::make_unique<Filtered_1p0<Base, clamp::Identity>>(dimensions, exposure,
-                                                                     clamp::Identity(), filter);
+        return new Filtered_1p0<Base, clamp::Identity>(dimensions, exposure, clamp::Identity(),
+                                                       filter);
     }
 
     if (filter->radius() <= 2.f) {
-        return std::make_unique<Filtered_2p0<Base, clamp::Identity>>(dimensions, exposure,
-                                                                     clamp::Identity(), filter);
+        return new Filtered_2p0<Base, clamp::Identity>(dimensions, exposure, clamp::Identity(),
+                                                       filter);
     }
 
-    return std::make_unique<Filtered_inf<Base, clamp::Identity>>(dimensions, exposure,
-                                                                 clamp::Identity(), filter);
+    return new Filtered_inf<Base, clamp::Identity>(dimensions, exposure, clamp::Identity(), filter);
 }
 
-Loader::Sensor_ptr Loader::load_sensor(json::Value const& sensor_value, int2 dimensions) {
+Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) {
     using namespace rendering::sensor;
 
     bool alpha_transparency = false;
@@ -352,24 +389,22 @@ Loader::Sensor_ptr Loader::load_sensor(json::Value const& sensor_value, int2 dim
 
     if (alpha_transparency) {
         if (clamp) {
-            return std::make_unique<Unfiltered<Transparent, clamp::Clamp>>(dimensions, exposure,
-                                                                           clamp::Clamp(clamp_max));
+            return new Unfiltered<Transparent, clamp::Clamp>(dimensions, exposure,
+                                                             clamp::Clamp(clamp_max));
         } else {
-            return std::make_unique<Unfiltered<Transparent, clamp::Identity>>(dimensions, exposure,
-                                                                              clamp::Identity());
+            return new Unfiltered<Transparent, clamp::Identity>(dimensions, exposure,
+                                                                clamp::Identity());
         }
     }
 
     if (clamp) {
-        return std::make_unique<Unfiltered<Opaque, clamp::Clamp>>(dimensions, exposure,
-                                                                  clamp::Clamp(clamp_max));
+        return new Unfiltered<Opaque, clamp::Clamp>(dimensions, exposure, clamp::Clamp(clamp_max));
     }
 
-    return std::make_unique<Unfiltered<Opaque, clamp::Identity>>(dimensions, exposure,
-                                                                 clamp::Identity());
+    return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
 }
 
-Loader::Sensor_filter const* Loader::load_filter(json::Value const& filter_value) {
+Sensor_filter const* load_filter(json::Value const& filter_value) {
     using namespace rendering::sensor::filter;
 
     for (auto& n : filter_value.GetObject()) {
@@ -394,33 +429,32 @@ Loader::Sensor_filter const* Loader::load_filter(json::Value const& filter_value
     return nullptr;
 }
 
-Loader::Sampler_factory_ptr Loader::load_sampler_factory(json::Value const& sampler_value,
-                                                         uint32_t           num_workers,
-                                                         uint32_t&          num_samples_per_pixel) {
+sampler::Factory* load_sampler_factory(json::Value const& sampler_value, uint32_t num_workers,
+                                       uint32_t& num_samples_per_pixel) {
     for (auto& n : sampler_value.GetObject()) {
         num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 
         if ("Uniform" == n.name) {
             num_samples_per_pixel = 1;
-            return std::make_unique<sampler::Uniform_factory>(num_workers);
+            return new sampler::Uniform_factory(num_workers);
         } else if ("Random" == n.name) {
-            return std::make_unique<sampler::Random_factory>(num_workers);
+            return new sampler::Random_factory(num_workers);
         } else if ("RD" == n.name) {
-            return std::make_unique<sampler::RD_factory>(num_workers);
+            return new sampler::RD_factory(num_workers);
         } else if ("Hammersley" == n.name) {
-            return std::make_unique<sampler::Hammersley_factory>(num_workers);
+            return new sampler::Hammersley_factory(num_workers);
         } else if ("Golden_ratio" == n.name) {
-            return std::make_unique<sampler::Golden_ratio_factory>(num_workers);
+            return new sampler::Golden_ratio_factory(num_workers);
         } else if ("LD" == n.name) {
-            return std::make_unique<sampler::LD_factory>(num_workers);
+            return new sampler::LD_factory(num_workers);
         }
     }
 
     return nullptr;
 }
 
-void Loader::load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
-                                       Take& take) {
+void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
+                               Take& take) {
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
             take.surface_integrator_factory = load_surface_integrator_factory(
@@ -434,8 +468,9 @@ void Loader::load_integrator_factories(json::Value const& integrator_value, uint
     }
 }
 
-Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
-    json::Value const& integrator_value, Settings const& settings, uint32_t num_workers) {
+Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
+                                                    Settings const&    settings,
+                                                    uint32_t           num_workers) {
     using namespace rendering::integrator::surface;
 
     uint32_t default_min_bounces = 4;
@@ -451,12 +486,12 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
         if ("AO" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
             float const    radius      = json::read_float(n.value, "radius", 1.f);
-            return std::make_unique<AO_factory>(settings, num_workers, num_samples, radius);
+            return new AO_factory(settings, num_workers, num_samples, radius);
         } else if ("Whitted" == n.name) {
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
                                                                light_sampling.num_samples);
 
-            return std::make_unique<Whitted_factory>(settings, num_workers, num_light_samples);
+            return new Whitted_factory(settings, num_workers, num_light_samples);
         } else if ("LT" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -467,8 +502,8 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
             float const path_continuation_probability = json::read_float(
                 n.value, "path_continuation_probability", default_path_continuation_probability);
 
-            return std::make_unique<Lighttracer_factory>(
-                settings, num_workers, min_bounces, max_bounces, path_continuation_probability);
+            return new Lighttracer_factory(settings, num_workers, min_bounces, max_bounces,
+                                           path_continuation_probability);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -483,9 +518,9 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return std::make_unique<Pathtracer_factory>(
-                settings, num_workers, num_samples, min_bounces, max_bounces,
-                path_continuation_probability, enable_caustics);
+            return new Pathtracer_factory(settings, num_workers, num_samples, min_bounces,
+                                          max_bounces, path_continuation_probability,
+                                          enable_caustics);
         } else if ("PTDL" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -501,9 +536,9 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return std::make_unique<Pathtracer_DL_factory>(
-                settings, num_workers, min_bounces, max_bounces, path_continuation_probability,
-                num_light_samples, enable_caustics);
+            return new Pathtracer_DL_factory(settings, num_workers, min_bounces, max_bounces,
+                                             path_continuation_probability, num_light_samples,
+                                             enable_caustics);
         } else if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -520,9 +555,9 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return std::make_unique<Pathtracer_MIS_factory>(
-                settings, num_workers, num_samples, min_bounces, max_bounces,
-                path_continuation_probability, light_sampling, enable_caustics);
+            return new Pathtracer_MIS_factory(settings, num_workers, num_samples, min_bounces,
+                                              max_bounces, path_continuation_probability,
+                                              light_sampling, enable_caustics);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 
@@ -540,22 +575,22 @@ Loader::Surface_factory_ptr Loader::load_surface_integrator_factory(
                 vector = Debug::Settings::Vector::UV;
             }
 
-            return std::make_unique<Debug_factory>(settings, num_workers, vector);
+            return new Debug_factory(settings, num_workers, vector);
         }
     }
 
     return nullptr;
 }
 
-Loader::Volume_factory_ptr Loader::load_volume_integrator_factory(
-    json::Value const& integrator_value, Settings const& settings, uint32_t num_workers) {
+Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
+                                                  Settings const& settings, uint32_t num_workers) {
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
         if ("Emission" == n.name) {
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
-            return std::make_unique<Emission_factory>(settings, num_workers, step_size);
+            return new Emission_factory(settings, num_workers, step_size);
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
@@ -566,9 +601,9 @@ Loader::Volume_factory_ptr Loader::load_volume_integrator_factory(
             Volumetric_material::set_similarity_relation_range(sr_range[0], sr_range[1]);
 
             if (multiple_scattering) {
-                return std::make_unique<Tracking_multi_factory>(settings, num_workers);
+                return new Tracking_multi_factory(settings, num_workers);
             } else {
-                return std::make_unique<Tracking_single_factory>(settings, num_workers);
+                return new Tracking_single_factory(settings, num_workers);
             }
         }
     }
@@ -576,7 +611,7 @@ Loader::Volume_factory_ptr Loader::load_volume_integrator_factory(
     return nullptr;
 }
 
-void Loader::load_photon_settings(json::Value const& value, Photon_settings& settings) {
+void load_photon_settings(json::Value const& value, Photon_settings& settings) {
     settings.num_photons            = json::read_uint(value, "num_photons", 0);
     settings.max_bounces            = json::read_uint(value, "max_bounces", 2);
     settings.iteration_threshold    = json::read_float(value, "iteration_threshold", 0.f);
@@ -587,8 +622,7 @@ void Loader::load_photon_settings(json::Value const& value, Photon_settings& set
     settings.full_light_path        = json::read_bool(value, "full_light_path", false);
 }
 
-void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
-                                 Take& take) {
+void load_postprocessors(json::Value const& pp_value, resource::Manager& manager, Take& take) {
     if (!pp_value.IsArray()) {
         return;
     }
@@ -617,14 +651,14 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
                 continue;
             }
 
-            pipeline.add(std::make_unique<Backplate>(backplate));
+            pipeline.add(new Backplate(backplate));
         } else if ("Bloom" == n->name) {
             float const angle     = json::read_float(n->value, "angle", 0.05f);
             float const alpha     = json::read_float(n->value, "alpha", 0.005f);
             float const threshold = json::read_float(n->value, "threshold", 2.f);
             float const intensity = json::read_float(n->value, "intensity", 0.1f);
 
-            pipeline.add(std::make_unique<Bloom>(angle, alpha, threshold, intensity));
+            pipeline.add(new Bloom(angle, alpha, threshold, intensity));
         } else if ("Glare" == n->name) {
             Glare::Adaption adaption = Glare::Adaption::Mesopic;
 
@@ -640,7 +674,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
             float const threshold = json::read_float(n->value, "threshold", 2.f);
             float const intensity = json::read_float(n->value, "intensity", 1.f);
 
-            pipeline.add(std::make_unique<Glare>(adaption, threshold, intensity));
+            pipeline.add(new Glare(adaption, threshold, intensity));
         } else if ("Glare2" == n->name) {
             Glare2::Adaption adaption = Glare2::Adaption::Mesopic;
 
@@ -656,7 +690,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
             float const threshold = json::read_float(n->value, "threshold", 2.f);
             float const intensity = json::read_float(n->value, "intensity", 1.f);
 
-            pipeline.add(std::make_unique<Glare2>(adaption, threshold, intensity));
+            pipeline.add(new Glare2(adaption, threshold, intensity));
         } else if ("Glare3" == n->name) {
             Glare3::Adaption adaption = Glare3::Adaption::Mesopic;
 
@@ -672,19 +706,19 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
             float const threshold = json::read_float(n->value, "threshold", 2.f);
             float const intensity = json::read_float(n->value, "intensity", 1.f);
 
-            pipeline.add(std::make_unique<Glare3>(adaption, threshold, intensity));
+            pipeline.add(new Glare3(adaption, threshold, intensity));
         }
     }
 }
 
-Loader::Postprocessor_ptr Loader::load_tonemapper(json::Value const& tonemapper_value) {
+Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : tonemapper_value.GetObject()) {
         if ("ACES" == n.name) {
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-            return std::make_unique<Aces>(hdr_max);
+            return new Aces(hdr_max);
         } else if ("Generic" == n.name) {
             float const contrast = json::read_float(n.value, "contrast", 1.15f);
             float const shoulder = json::read_float(n.value, "shoulder", 0.99f);
@@ -692,20 +726,20 @@ Loader::Postprocessor_ptr Loader::load_tonemapper(json::Value const& tonemapper_
             float const mid_out  = json::read_float(n.value, "mid_out", 0.18f);
             float const hdr_max  = json::read_float(n.value, "hdr_max", 1.f);
 
-            return std::make_unique<Generic>(contrast, shoulder, mid_in, mid_out, hdr_max);
+            return new Generic(contrast, shoulder, mid_in, mid_out, hdr_max);
         } else if ("Identity" == n.name) {
-            return std::make_unique<Identity>();
+            return new Identity();
         } else if ("Uncharted" == n.name) {
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-            return std::make_unique<Uncharted>(hdr_max);
+            return new Uncharted(hdr_max);
         }
     }
 
     return nullptr;
 }
 
-bool Loader::peek_stereoscopic(json::Value const& parameters_value) {
+bool peek_stereoscopic(json::Value const& parameters_value) {
     auto const export_node = parameters_value.FindMember("stereo");
     if (parameters_value.MemberEnd() == export_node) {
         return false;
@@ -714,40 +748,38 @@ bool Loader::peek_stereoscopic(json::Value const& parameters_value) {
     return true;
 }
 
-std::vector<std::unique_ptr<exporting::Sink>> Loader::load_exporters(
-    json::Value const& exporter_value, const View& view) {
+std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value, const View& view) {
     if (!view.camera) {
         return {};
     }
 
     auto const& camera = *view.camera;
 
-    std::vector<std::unique_ptr<exporting::Sink>> exporters;
+    std::vector<exporting::Sink*> exporters;
 
     for (auto& n : exporter_value.GetObject()) {
         if ("Image" == n.name) {
             std::string const format = json::read_string(n.value, "format", "PNG");
 
-            std::unique_ptr<image::Writer> writer;
+            image::Writer* writer;
 
             if ("RGBE" == format) {
-                writer = std::make_unique<image::encoding::rgbe::Writer>();
+                writer = new image::encoding::rgbe::Writer();
             } else {
                 bool const transparent_sensor = camera.sensor().has_alpha_transparency();
 
                 bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
 
                 if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
-                    writer = std::make_unique<image::encoding::png::Writer_alpha>(
-                        camera.sensor().dimensions(), error_diffusion);
+                    writer = new image::encoding::png::Writer_alpha(camera.sensor().dimensions(),
+                                                                    error_diffusion);
                 } else {
-                    writer = std::make_unique<image::encoding::png::Writer>(
-                        camera.sensor().dimensions(), error_diffusion);
+                    writer = new image::encoding::png::Writer(camera.sensor().dimensions(),
+                                                              error_diffusion);
                 }
             }
 
-            exporters.push_back(
-                std::make_unique<exporting::Image_sequence>("output_", std::move(writer)));
+            exporters.push_back(new exporting::Image_sequence("output_", writer));
         } else if ("Movie" == n.name) {
             uint32_t framerate = json::read_uint(n.value, "framerate");
 
@@ -757,19 +789,19 @@ std::vector<std::unique_ptr<exporting::Sink>> Loader::load_exporters(
 
             bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
 
-            exporters.push_back(std::make_unique<exporting::Ffmpeg>(
-                "output", camera.sensor().dimensions(), error_diffusion, framerate));
+            exporters.push_back(new exporting::Ffmpeg("output", camera.sensor().dimensions(),
+                                                      error_diffusion, framerate));
         } else if ("Null" == n.name) {
-            exporters.push_back(std::make_unique<exporting::Null>());
+            exporters.push_back(new exporting::Null);
         } else if ("Statistics" == n.name) {
-            exporters.push_back(std::make_unique<exporting::Statistics>());
+            exporters.push_back(new exporting::Statistics);
         }
     }
 
     return exporters;
 }
 
-void Loader::load_settings(json::Value const& settings_value, Settings& settings) {
+void load_settings(json::Value const& settings_value, Settings& settings) {
     for (auto& n : settings_value.GetObject()) {
         if ("ray_offset_factor" == n.name) {
             settings.ray_offset_factor = json::read_float(n.value);
@@ -777,7 +809,7 @@ void Loader::load_settings(json::Value const& settings_value, Settings& settings
     }
 }
 
-void Loader::load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) {
+void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) {
     auto const light_sampling_node = parent_value.FindMember("light_sampling");
     if (parent_value.MemberEnd() == light_sampling_node) {
         return;

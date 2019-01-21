@@ -1,7 +1,6 @@
 #ifndef SU_CORE_TAKE_VIEW_HPP
 #define SU_CORE_TAKE_VIEW_HPP
 
-#include <memory>
 #include "rendering/postprocessor/postprocessor_pipeline.hpp"
 
 namespace scene::camera {
@@ -11,15 +10,13 @@ class Camera;
 namespace take {
 
 struct View {
-    View() = default;
+    View() noexcept;
 
-    void init(thread::Pool& pool) {
-        if (camera) {
-            pipeline.init(*camera, pool);
-        }
-    }
+    ~View() noexcept;
 
-    std::unique_ptr<scene::camera::Camera> camera;
+    void init(thread::Pool& pool) noexcept;
+
+    scene::camera::Camera* camera;
 
     uint32_t num_samples_per_pixel = 1;
 

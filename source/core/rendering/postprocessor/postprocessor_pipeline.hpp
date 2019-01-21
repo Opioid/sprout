@@ -1,11 +1,13 @@
 #ifndef SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 #define SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 
-#include <memory>
 #include <vector>
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"
-#include "scene/camera/camera.hpp"
+
+namespace scene::camera {
+class Camera;
+}
 
 namespace thread {
 class Pool;
@@ -29,7 +31,7 @@ class Pipeline {
 
     void reserve(size_t num_pps);
 
-    void add(std::unique_ptr<Postprocessor> pp);
+    void add(Postprocessor* pp);
 
     void init(scene::camera::Camera const& camera, thread::Pool& pool);
 
@@ -42,7 +44,7 @@ class Pipeline {
   private:
     image::Float4 scratch_;
 
-    std::vector<std::unique_ptr<Postprocessor>> postprocessors_;
+    std::vector<Postprocessor*> postprocessors_;
 };
 
 }  // namespace postprocessor

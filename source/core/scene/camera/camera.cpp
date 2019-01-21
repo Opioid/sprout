@@ -15,9 +15,11 @@
 
 namespace scene::camera {
 
-Camera::Camera(int2 resolution) noexcept : resolution_(resolution) {}
+Camera::Camera(int2 resolution) noexcept : resolution_(resolution), sensor_(nullptr) {}
 
-Camera::~Camera() noexcept {}
+Camera::~Camera() noexcept {
+    delete sensor_;
+}
 
 void Camera::update(Scene const& scene, uint64_t time, Worker& worker) noexcept {
     calculate_world_transformation();
@@ -86,8 +88,8 @@ rendering::sensor::Sensor& Camera::sensor() const noexcept {
     return *sensor_;
 }
 
-void Camera::set_sensor(std::unique_ptr<Sensor> sensor) noexcept {
-    sensor_ = std::move(sensor);
+void Camera::set_sensor(Sensor* sensor) noexcept {
+    sensor_ = sensor;
 }
 
 prop::Interface_stack const& Camera::interface_stack() const noexcept {

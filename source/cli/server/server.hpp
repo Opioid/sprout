@@ -14,14 +14,16 @@ class Message_handler;
 
 class Server : public exporting::Sink {
   public:
-    Server(int2 dimensions, Message_handler& message_handler);
-    virtual ~Server() override final;
+    Server(int2 dimensions, Message_handler& message_handler) noexcept;
 
-    void run();
-    void shutdown();
+    ~Server() noexcept override final;
 
-    virtual void write(image::Float4 const& image, uint32_t frame,
-                       thread::Pool& pool) override final;
+    void run() noexcept;
+
+    void shutdown() noexcept;
+
+    void write(image::Float4 const& image, uint32_t frame,
+               thread::Pool& pool) noexcept override final;
 
   private:
     void accept_loop();

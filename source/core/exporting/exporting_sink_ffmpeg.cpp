@@ -10,7 +10,7 @@
 namespace exporting {
 
 Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion,
-               uint32_t framerate)
+               uint32_t framerate) noexcept
     : Srgb(dimensions, error_diffusion) {
     // -i - tells it to read frames from stdin
     std::ostringstream cmd;
@@ -39,7 +39,7 @@ Ffmpeg::~Ffmpeg() {
     }
 }
 
-void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool& pool) {
+void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool& pool) noexcept {
     if (!stream_) {
         return;
     }

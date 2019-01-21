@@ -8,10 +8,10 @@
 
 namespace server {
 
-Server::Server(int2 dimensions, Message_handler& message_handler)
+Server::Server(int2 dimensions, Message_handler& message_handler) noexcept
     : srgb_(dimensions, false), message_handler_(message_handler) {}
 
-Server::~Server() {
+Server::~Server() noexcept {
     for (Client* c : clients_) {
         delete c;
     }
@@ -19,7 +19,7 @@ Server::~Server() {
     net::Socket::release();
 }
 
-void Server::run() {
+void Server::run() noexcept {
     if (!net::Socket::init()) {
         logging::error("Could not start socket environment.");
         return;
@@ -37,7 +37,7 @@ void Server::run() {
     accept_thread_ = std::thread(&Server::accept_loop, this);
 }
 
-void Server::shutdown() {
+void Server::shutdown() noexcept {
     shutdown_ = true;
 
     accept_socket_.cancel_blocking_accept();
@@ -51,7 +51,7 @@ void Server::shutdown() {
     }
 }
 
-void Server::write(image::Float4 const& image, uint32_t frame, thread::Pool& pool) {
+void Server::write(image::Float4 const& image, uint32_t frame, thread::Pool& pool) noexcept {
     auto const d = image.description().dimensions;
     pool.run_range([this, &image](uint32_t /*id*/, int32_t begin,
                                   int32_t end) { srgb_.to_sRGB(image, begin, end); },

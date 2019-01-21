@@ -3,6 +3,7 @@ target_sources(core
     "${CMAKE_CURRENT_LIST_DIR}/take_loader.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/take_loader.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/take_settings.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/take_view.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/take_view.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/take.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/take.hpp"

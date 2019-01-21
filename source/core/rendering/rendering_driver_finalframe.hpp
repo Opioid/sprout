@@ -1,7 +1,6 @@
 #ifndef SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
 #define SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
 
-#include <memory>
 #include <vector>
 #include "rendering_driver.hpp"
 
@@ -24,7 +23,7 @@ class Driver_finalframe : public Driver {
     Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                       uint32_t max_sample_size) noexcept;
 
-    using Exporters = std::vector<std::unique_ptr<exporting::Sink>>;
+    using Exporters = std::vector<exporting::Sink*>;
 
     void render(Exporters& exporters, progress::Sink& progressor) noexcept;
 

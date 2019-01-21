@@ -130,13 +130,13 @@ int main(int argc, char const* argv[]) {
 
     std::string take_name;
 
-    std::unique_ptr<take::Take> take;
+    take::Take take;
 
     try {
         auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
                                          : file_system.read_stream(args.take, take_name);
 
-        take = take::Loader::load(*stream, scene, resource_manager);
+        take::Loader::load(take, *stream, scene, resource_manager);
     } catch (const std::exception& e) {
         logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
         return 1;
@@ -159,7 +159,7 @@ int main(int argc, char const* argv[]) {
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    if (!scene_loader.load(take->scene_filename, take_name, *take, scene)) {
+    if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
         return 1;
     }
 
@@ -172,19 +172,19 @@ int main(int argc, char const* argv[]) {
     size_t rendering_num_bytes = 0;
 
     if (args.progressive) {
-        rendering_num_bytes = controller::progressive(*take, scene, resource_manager, thread_pool,
+        rendering_num_bytes = controller::progressive(take, scene, resource_manager, thread_pool,
                                                       max_sample_size);
     } else {
         progress::Std_out progressor;
 
         auto const rendering_start = std::chrono::high_resolution_clock::now();
 
-        if (take->view.camera) {
-            rendering::Driver_finalframe driver(*take, scene, thread_pool, max_sample_size);
+        if (take.view.camera) {
+            rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size);
 
             rendering_num_bytes += driver.num_bytes();
 
-            driver.render(take->exporters, progressor);
+            driver.render(take.exporters, progressor);
         } else {
             //			baking::Driver
             // driver(take->surface_integrator_factory,
@@ -203,7 +203,7 @@ int main(int argc, char const* argv[]) {
                       string::to_string(chrono::seconds_since(total_start)) + " s");
     }
 
-    log_memory_consumption(resource_manager, *take, scene_loader, scene, rendering_num_bytes);
+    log_memory_consumption(resource_manager, take, scene_loader, scene, rendering_num_bytes);
 
     return 0;
 }

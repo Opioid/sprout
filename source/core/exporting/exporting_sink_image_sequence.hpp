@@ -1,7 +1,6 @@
 #ifndef SU_CORE_EXPORTING_SINK_IMAGE_SEQUENCE_HPP
 #define SU_CORE_EXPORTING_SINK_IMAGE_SEQUENCE_HPP
 
-#include <memory>
 #include <string>
 #include "exporting_sink.hpp"
 
@@ -13,14 +12,17 @@ namespace exporting {
 
 class Image_sequence : public Sink {
   public:
-    Image_sequence(std::string const& filename, std::unique_ptr<image::Writer> writer);
+    Image_sequence(std::string const& filename, image::Writer* writer) noexcept;
 
-    void write(image::Float4 const& image, uint32_t frame, thread::Pool& pool) override final;
+    ~Image_sequence() noexcept override final;
+
+    void write(image::Float4 const& image, uint32_t frame,
+               thread::Pool& pool) noexcept override final;
 
   private:
     std::string filename_;
 
-    std::unique_ptr<image::Writer> writer_;
+    image::Writer* writer_;
 };
 
 }  // namespace exporting

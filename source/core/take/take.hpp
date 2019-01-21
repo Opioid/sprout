@@ -1,12 +1,14 @@
 #ifndef SU_CORE_TAKE_TAKE_HPP
 #define SU_CORE_TAKE_TAKE_HPP
 
-#include <memory>
 #include <string>
 #include <vector>
-#include "exporting/exporting_sink.hpp"
 #include "take_settings.hpp"
 #include "take_view.hpp"
+
+namespace exporting {
+class Sink;
+}
 
 namespace rendering::integrator {
 
@@ -26,9 +28,9 @@ class Factory;
 namespace take {
 
 struct Take {
-    Take();
+    Take() noexcept;
 
-    ~Take();
+    ~Take() noexcept;
 
     Settings settings;
 
@@ -38,12 +40,12 @@ struct Take {
 
     Photon_settings photon_settings;
 
-    std::unique_ptr<rendering::integrator::surface::Factory> surface_integrator_factory;
-    std::unique_ptr<rendering::integrator::volume::Factory>  volume_integrator_factory;
+    rendering::integrator::surface::Factory* surface_integrator_factory = nullptr;
+    rendering::integrator::volume::Factory*  volume_integrator_factory  = nullptr;
 
-    std::unique_ptr<sampler::Factory> sampler_factory;
+    sampler::Factory* sampler_factory = nullptr;
 
-    std::vector<std::unique_ptr<exporting::Sink>> exporters;
+    std::vector<exporting::Sink*> exporters;
 };
 
 }  // namespace take
