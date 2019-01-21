@@ -27,7 +27,7 @@ System::Stream_ptr System::read_stream(std::string_view name, std::string& resol
     return std::unique_ptr<std::istream>(stream);
 }
 
-void System::push_mount(std::string_view folder) {
+void System::push_mount(std::string_view folder) noexcept {
     // We also have to push empty folders, otherwise popping gets complicated
 
     std::stringstream stream;
@@ -40,11 +40,12 @@ void System::push_mount(std::string_view folder) {
     mount_folders_.push_back(stream.str());
 }
 
-void System::pop_mount() {
+void System::pop_mount() noexcept {
     mount_folders_.pop_back();
 }
 
-std::istream* System::open_read_stream(std::string_view name, std::string& resolved_name) const {
+std::istream* System::open_read_stream(std::string_view name, std::string& resolved_name) const
+    noexcept {
     // TODO: Use something like std::filesytem::exists() when it is available
 
     for (auto const& f : mount_folders_) {

@@ -16,12 +16,13 @@ class System {
 
     Stream_ptr read_stream(std::string_view name, std::string& resolved_name) const;
 
-    void push_mount(std::string_view folder);
+    void push_mount(std::string_view folder) noexcept;
 
-    void pop_mount();
+    void pop_mount() noexcept;
 
   private:
-    std::istream* open_read_stream(std::string_view name, std::string& resolved_name) const;
+    std::istream* open_read_stream(std::string_view name, std::string& resolved_name) const
+        noexcept;
 
     std::vector<std::string> mount_folders_;
 };

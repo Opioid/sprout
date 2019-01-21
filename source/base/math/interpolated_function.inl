@@ -8,9 +8,12 @@
 namespace math {
 
 template <typename T>
+Interpolated_function<T>::Interpolated_function() noexcept {}
+
+template <typename T>
 template <typename F>
 Interpolated_function<T>::Interpolated_function(float range_begin, float range_end,
-                                                size_t num_samples, F f)
+                                                size_t num_samples, F f) noexcept
     : range_end_(range_end),
       num_samples_(num_samples + 1),
       samples_(memory::allocate_aligned<T>(num_samples + 1)) {
@@ -29,13 +32,13 @@ Interpolated_function<T>::Interpolated_function(float range_begin, float range_e
 }
 
 template <typename T>
-Interpolated_function<T>::~Interpolated_function() {
+Interpolated_function<T>::~Interpolated_function() noexcept {
     memory::free_aligned(samples_);
 }
 
 template <typename T>
 void Interpolated_function<T>::from_array(float range_begin, float range_end, size_t num_samples,
-                                          T const t[]) {
+                                          T const t[]) noexcept {
     if (num_samples_ != num_samples) {
         memory::free_aligned(samples_);
 
@@ -58,7 +61,7 @@ void Interpolated_function<T>::from_array(float range_begin, float range_end, si
 }
 
 template <typename T>
-T Interpolated_function<T>::operator()(float x) const {
+T Interpolated_function<T>::operator()(float x) const noexcept {
     x = std::min(x, range_end_);
 
     float const    o      = x * inverse_range_;
