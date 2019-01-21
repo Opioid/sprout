@@ -69,41 +69,46 @@ using Volume_factory_ptr  = rendering::integrator::volume::Factory*;
 using Postprocessor_ptr   = rendering::postprocessor::Postprocessor*;
 using Light_sampling      = rendering::integrator::Light_sampling;
 
-void load_camera(json::Value const& camera_value, Take& take, Scene& scene);
+static void load_camera(json::Value const& camera_value, Take& take, Scene& scene);
 
 template <typename Base>
-Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
-                                Sensor_filter const* filter);
+static Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
+                                       Sensor_filter const* filter);
 
-Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions);
+static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions);
 
-Sensor_filter const* load_filter(json::Value const& filter_value);
+static Sensor_filter const* load_filter(json::Value const& filter_value);
 
-sampler::Factory* load_sampler_factory(json::Value const& sampler_value, uint32_t num_workers,
-                                       uint32_t& num_samples_per_pixel);
+static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
+                                              uint32_t           num_workers,
+                                              uint32_t&          num_samples_per_pixel);
 
-void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
-                               Take& take);
+static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
+                                      Take& take);
 
-Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
-                                                    Settings const& settings, uint32_t num_workers);
+static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
+                                                           Settings const&    settings,
+                                                           uint32_t           num_workers);
 
-Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
-                                                  Settings const& settings, uint32_t num_workers);
+static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
+                                                         Settings const&    settings,
+                                                         uint32_t           num_workers);
 
-void load_photon_settings(json::Value const& value, Photon_settings& settings);
+static void load_photon_settings(json::Value const& value, Photon_settings& settings);
 
-void load_postprocessors(json::Value const& pp_value, resource::Manager& manager, Take& take);
+static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
+                                Take& take);
 
-Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value);
+static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value);
 
-bool peek_stereoscopic(json::Value const& parameters_value);
+static bool peek_stereoscopic(json::Value const& parameters_value);
 
-std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value, const View& view);
+static std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value,
+                                                    const View&        view);
 
-void load_settings(json::Value const& settings_value, Settings& settings);
+static void load_settings(json::Value const& settings_value, Settings& settings);
 
-void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling);
+static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling);
 
 void Loader::load(Take& take, std::istream& stream, Scene& scene, resource::Manager& manager) {
     uint32_t const num_threads = manager.thread_pool().num_threads();
@@ -200,7 +205,7 @@ void Loader::load(Take& take, std::istream& stream, Scene& scene, resource::Mana
     take.view.init(manager.thread_pool());
 }
 
-void load_camera(json::Value const& camera_value, Take& take, Scene& scene) {
+static void load_camera(json::Value const& camera_value, Take& take, Scene& scene) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -320,8 +325,8 @@ void load_camera(json::Value const& camera_value, Take& take, Scene& scene) {
 }
 
 template <typename Base>
-Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
-                                Sensor_filter const* filter) {
+static Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
+                                       Sensor_filter const* filter) {
     using namespace rendering::sensor;
 
     bool const clamp = !math::any_negative(clamp_max);
@@ -354,7 +359,7 @@ Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& c
     return new Filtered_inf<Base, clamp::Identity>(dimensions, exposure, clamp::Identity(), filter);
 }
 
-Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) {
+static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) {
     using namespace rendering::sensor;
 
     bool alpha_transparency = false;
@@ -404,7 +409,7 @@ Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) {
     return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
 }
 
-Sensor_filter const* load_filter(json::Value const& filter_value) {
+static Sensor_filter const* load_filter(json::Value const& filter_value) {
     using namespace rendering::sensor::filter;
 
     for (auto& n : filter_value.GetObject()) {
@@ -429,8 +434,9 @@ Sensor_filter const* load_filter(json::Value const& filter_value) {
     return nullptr;
 }
 
-sampler::Factory* load_sampler_factory(json::Value const& sampler_value, uint32_t num_workers,
-                                       uint32_t& num_samples_per_pixel) {
+static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
+                                              uint32_t           num_workers,
+                                              uint32_t&          num_samples_per_pixel) {
     for (auto& n : sampler_value.GetObject()) {
         num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 
@@ -453,8 +459,8 @@ sampler::Factory* load_sampler_factory(json::Value const& sampler_value, uint32_
     return nullptr;
 }
 
-void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
-                               Take& take) {
+static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
+                                      Take& take) {
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
             take.surface_integrator_factory = load_surface_integrator_factory(
@@ -468,9 +474,9 @@ void load_integrator_factories(json::Value const& integrator_value, uint32_t num
     }
 }
 
-Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
-                                                    Settings const&    settings,
-                                                    uint32_t           num_workers) {
+static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
+                                                           Settings const&    settings,
+                                                           uint32_t           num_workers) {
     using namespace rendering::integrator::surface;
 
     uint32_t default_min_bounces = 4;
@@ -582,8 +588,9 @@ Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrato
     return nullptr;
 }
 
-Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
-                                                  Settings const& settings, uint32_t num_workers) {
+static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
+                                                         Settings const&    settings,
+                                                         uint32_t           num_workers) {
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
@@ -611,7 +618,7 @@ Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_
     return nullptr;
 }
 
-void load_photon_settings(json::Value const& value, Photon_settings& settings) {
+static void load_photon_settings(json::Value const& value, Photon_settings& settings) {
     settings.num_photons            = json::read_uint(value, "num_photons", 0);
     settings.max_bounces            = json::read_uint(value, "max_bounces", 2);
     settings.iteration_threshold    = json::read_float(value, "iteration_threshold", 0.f);
@@ -622,7 +629,8 @@ void load_photon_settings(json::Value const& value, Photon_settings& settings) {
     settings.full_light_path        = json::read_bool(value, "full_light_path", false);
 }
 
-void load_postprocessors(json::Value const& pp_value, resource::Manager& manager, Take& take) {
+static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
+                                Take& take) {
     if (!pp_value.IsArray()) {
         return;
     }
@@ -711,7 +719,7 @@ void load_postprocessors(json::Value const& pp_value, resource::Manager& manager
     }
 }
 
-Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) {
+static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : tonemapper_value.GetObject()) {
@@ -739,7 +747,7 @@ Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) {
     return nullptr;
 }
 
-bool peek_stereoscopic(json::Value const& parameters_value) {
+static bool peek_stereoscopic(json::Value const& parameters_value) {
     auto const export_node = parameters_value.FindMember("stereo");
     if (parameters_value.MemberEnd() == export_node) {
         return false;
@@ -748,7 +756,8 @@ bool peek_stereoscopic(json::Value const& parameters_value) {
     return true;
 }
 
-std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value, const View& view) {
+static std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value,
+                                                    const View&        view) {
     if (!view.camera) {
         return {};
     }
@@ -801,7 +810,7 @@ std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value, 
     return exporters;
 }
 
-void load_settings(json::Value const& settings_value, Settings& settings) {
+static void load_settings(json::Value const& settings_value, Settings& settings) {
     for (auto& n : settings_value.GetObject()) {
         if ("ray_offset_factor" == n.name) {
             settings.ray_offset_factor = json::read_float(n.value);
@@ -809,7 +818,7 @@ void load_settings(json::Value const& settings_value, Settings& settings) {
     }
 }
 
-void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) {
+static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) {
     auto const light_sampling_node = parent_value.FindMember("light_sampling");
     if (parent_value.MemberEnd() == light_sampling_node) {
         return;

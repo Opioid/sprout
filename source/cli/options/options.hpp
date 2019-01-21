@@ -7,15 +7,18 @@
 namespace options {
 
 struct Options {
-    std::string              take;
+    std::string take;
+
     std::vector<std::string> mounts;
-    int                      threads     = 0;
-    bool                     progressive = false;
-    bool                     no_textures = false;
-    bool                     verbose     = false;
+
+    int threads = 0;
+
+    bool progressive = false;
+    bool no_textures = false;
+    bool verbose     = false;
 };
 
-Options parse(int argc, char const* argv[]);
+Options parse(int argc, char* argv[]);
 
 }  // namespace options
 

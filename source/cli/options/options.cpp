@@ -5,7 +5,7 @@
 
 namespace options {
 
-Options parse(int argc, char const* argv[]) {
+Options parse(int argc, char* argv[]) {
     Options result;
 
     try {

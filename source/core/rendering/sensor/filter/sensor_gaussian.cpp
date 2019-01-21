@@ -1,5 +1,4 @@
 #include "sensor_gaussian.hpp"
-#include <algorithm>
 #include "base/math/filter/gaussian.hpp"
 #include "base/math/interpolated_function.inl"
 #include "math/vector3.inl"
