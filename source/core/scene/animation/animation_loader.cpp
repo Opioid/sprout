@@ -10,18 +10,16 @@
 
 namespace scene::animation {
 
-animation::Animation* load_keyframes(json::Value const&          keyframes_value,
-                                     math::Transformation const& default_transformation,
-                                     Scene&                      scene);
+Animation* load_keyframes(json::Value const&          keyframes_value,
+                          math::Transformation const& default_transformation, Scene& scene);
 
-animation::Animation* load_sequence(json::Value const&          keyframes_value,
-                                    math::Transformation const& default_transformation,
-                                    Scene&                      scene);
+Animation* load_sequence(json::Value const&          keyframes_value,
+                         math::Transformation const& default_transformation, Scene& scene);
 
 void read_morphing(json::Value const& value, entity::Keyframe::Morphing& morphing);
 
-animation::Animation* load(json::Value const&          animation_value,
-                           math::Transformation const& default_transformation, Scene& scene) {
+Animation* load(json::Value const&          animation_value,
+                math::Transformation const& default_transformation, Scene& scene) {
     for (auto n = animation_value.MemberBegin(); n != animation_value.MemberEnd(); ++n) {
         std::string const       node_name  = n->name.GetString();
         rapidjson::Value const& node_value = n->value;
@@ -36,16 +34,19 @@ animation::Animation* load(json::Value const&          animation_value,
     return nullptr;
 }
 
-animation::Animation* load_keyframes(json::Value const&          keyframes_value,
-                                     math::Transformation const& default_transformation,
-                                     Scene&                      scene) {
+Animation* load_keyframes(json::Value const&          keyframes_value,
+                          math::Transformation const& default_transformation, Scene& scene) {
     if (!keyframes_value.IsArray()) {
         return nullptr;
     }
 
     auto animation = scene.create_animation(keyframes_value.Size());
 
-    for (auto const& k : keyframes_value.GetArray()) {
+    auto const& keyframes = keyframes_value.GetArray();
+
+    for (uint32_t i = 0, len = keyframes.Size(); i < len; ++i) {
+        auto const& k = keyframes[i];
+
         entity::Keyframe keyframe{default_transformation, {{0, 0}, 0.f}, 0};
 
         for (auto& n : k.GetObject()) {
@@ -60,15 +61,14 @@ animation::Animation* load_keyframes(json::Value const&          keyframes_value
             }
         }
 
-        animation->push_back(keyframe);
+        animation->set(i, keyframe);
     }
 
     return animation;
 }
 
-animation::Animation* load_sequence(json::Value const&          sequence_value,
-                                    math::Transformation const& default_transformation,
-                                    Scene&                      scene) {
+Animation* load_sequence(json::Value const&          sequence_value,
+                         math::Transformation const& default_transformation, Scene& scene) {
     uint32_t start_frame       = 0;
     uint32_t num_frames        = 0;
     uint32_t frames_per_second = 0;
@@ -100,7 +100,7 @@ animation::Animation* load_sequence(json::Value const&          sequence_value,
 
         entity::Keyframe const keyframe{default_transformation, {{target, target}, 0.f}, time};
 
-        animation->push_back(keyframe);
+        animation->set(i, keyframe);
 
         time += time_increment;
     }

@@ -16,7 +16,7 @@ struct View {
 
     void init(thread::Pool& pool) noexcept;
 
-    scene::camera::Camera* camera;
+    scene::camera::Camera* camera = nullptr;
 
     uint32_t num_samples_per_pixel = 1;
 

@@ -35,7 +35,7 @@ class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
     pos_type seekpos(pos_type pos, std::ios_base::openmode) override final;
 
     pos_type seekoff(off_type off, std::ios_base::seekdir dir,
-                             std::ios_base::openmode mode) override final;
+                     std::ios_base::openmode mode) override final;
 
     int_type overflow(int_type c = traits_type::eof()) override final;
 

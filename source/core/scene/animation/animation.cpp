@@ -6,13 +6,12 @@
 
 namespace scene::animation {
 
-Animation::Animation(uint32_t count) noexcept {
-    keyframes_.clear();
-    keyframes_.reserve(count);
-}
+Animation::Animation(uint32_t count) noexcept
+    : num_keyframes_(count), keyframes_(new entity::Keyframe[count]) {}
 
 Animation::~Animation() noexcept {
     delete[] interpolated_frames_;
+    delete[] keyframes_;
 }
 
 void Animation::allocate_interpolated_frames(uint32_t num_frames) noexcept {
@@ -21,14 +20,14 @@ void Animation::allocate_interpolated_frames(uint32_t num_frames) noexcept {
     interpolated_frames_ = new entity::Keyframe[num_frames];
 }
 
-void Animation::push_back(entity::Keyframe const& keyframe) noexcept {
-    keyframes_.push_back(keyframe);
+void Animation::set(uint32_t index, entity::Keyframe const& keyframe) noexcept {
+    keyframes_[index] = keyframe;
 }
 
 void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) noexcept {
     uint64_t time = start;
 
-    uint32_t const keyframes_back = static_cast<uint32_t>(keyframes_.size()) - 1;
+    uint32_t const keyframes_back = num_keyframes_ - 1;
 
     uint32_t last_frame = last_frame_ > 2 ? last_frame_ - 2 : 0;
 

@@ -15,8 +15,8 @@ namespace animation {
 
 class Animation;
 
-animation::Animation* load(json::Value const&          animation_value,
-                           math::Transformation const& default_transformation, Scene& scene);
+Animation* load(json::Value const&          animation_value,
+                math::Transformation const& default_transformation, Scene& scene);
 
 }  // namespace animation
 }  // namespace scene
