@@ -2,16 +2,16 @@
 #define SU_CORE_FILE_SYSTEM_HPP
 
 #include <iosfwd>
-#include <memory>
 #include <string>
 #include <vector>
+#include "base/memory/unique.hpp"
 
 namespace file {
 
+using Stream_ptr = memory::Unique_ptr<std::istream>;
+
 class System {
   public:
-    using Stream_ptr = std::unique_ptr<std::istream>;
-
     Stream_ptr read_stream(std::string_view name) const;
 
     Stream_ptr read_stream(std::string_view name, std::string& resolved_name) const;
@@ -28,5 +28,7 @@ class System {
 };
 
 }  // namespace file
+
+extern template class memory::Unique_ptr<std::istream>;
 
 #endif

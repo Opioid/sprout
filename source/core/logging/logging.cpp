@@ -1,22 +1,22 @@
 #include "logging.hpp"
-#include <memory>
+#include "base/memory/unique.inl"
 #include "log_null.hpp"
 #include "log_std_out.hpp"
 
 namespace logging {
 
-static std::unique_ptr<Log> log;
+static memory::Unique_ptr<Log> log;
 
 static bool log_verbose = false;
 
 void init(Type type, bool verbose) {
     switch (type) {
         case Type::Null:
-            log = std::make_unique<Null>();
+            log = memory::Unique_ptr<Log>(new Null);
             break;
         case Type::Std_out:
         default:
-            log = std::make_unique<Std_out>();
+            log = memory::Unique_ptr<Log>(new Std_out);
             break;
     }
 

@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
     take::Take take;
 
     try {
-        auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
+        auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
                                          : file_system.read_stream(args.take, take_name);
 
         take::Loader::load(take, *stream, scene, resource_manager);

@@ -2,17 +2,18 @@
 #include <fstream>
 #include <sstream>
 #include <string_view>
+#include "base/memory/unique.inl"
 #include "file.hpp"
 #include "gzip/gzip_read_stream.hpp"
 
 namespace file {
 
-System::Stream_ptr System::read_stream(std::string_view name) const {
+Stream_ptr System::read_stream(std::string_view name) const {
     std::string resolved_name;
     return read_stream(name, resolved_name);
 }
 
-System::Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const {
+Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
         throw std::runtime_error("Stream \"" + std::string(name) + "\" could not be opened");
@@ -21,10 +22,10 @@ System::Stream_ptr System::read_stream(std::string_view name, std::string& resol
     const Type type = query_type(*stream);
 
     if (Type::GZIP == type) {
-        return std::make_unique<gzip::Read_stream>(stream);
+        return Stream_ptr(new gzip::Read_stream(stream));
     }
 
-    return std::unique_ptr<std::istream>(stream);
+    return Stream_ptr(stream);
 }
 
 void System::push_mount(std::string_view folder) noexcept {
@@ -75,3 +76,5 @@ std::istream* System::open_read_stream(std::string_view name, std::string& resol
 }
 
 }  // namespace file
+
+template class memory::Unique_ptr<std::istream>;

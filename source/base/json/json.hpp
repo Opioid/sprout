@@ -6,17 +6,17 @@
 #include "math/quaternion.hpp"
 #include "math/transformation.hpp"
 #include "math/vector.hpp"
+#include "memory/unique.hpp"
 
 #include "rapidjson/document.h"
 
 #include <iosfwd>
-#include <memory>
 
 namespace json {
 
-std::unique_ptr<json::Document> parse_insitu(char* buffer);
-std::unique_ptr<json::Document> parse(std::string_view buffer);
-std::unique_ptr<json::Document> parse(std::istream& stream);
+memory::Unique_ptr<json::Document> parse_insitu(char* buffer);
+memory::Unique_ptr<json::Document> parse(std::string_view buffer);
+memory::Unique_ptr<json::Document> parse(std::istream& stream);
 
 bool read_bool(json::Value const& value) noexcept;
 bool read_bool(json::Value const& value, std::string_view name, bool default_value) noexcept;
@@ -71,5 +71,7 @@ std::string read_string(json::Value const& value, std::string_view name,
 void read_transformation(json::Value const& value, math::Transformation& transformation) noexcept;
 
 }  // namespace json
+
+extern template class memory::Unique_ptr<json::Document>;
 
 #endif

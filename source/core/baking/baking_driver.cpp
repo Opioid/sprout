@@ -14,9 +14,9 @@
 
 namespace baking {
 
-Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
-               std::shared_ptr<Volume_integrator_factory>  volume_integrator_factory,
-               std::shared_ptr<sampler::Factory>           sampler_factory)
+Driver::Driver(Surface_integrator_factory* surface_integrator_factory,
+               Volume_integrator_factory*  volume_integrator_factory,
+               sampler::Factory*           sampler_factory)
     : surface_integrator_factory_(surface_integrator_factory),
       volume_integrator_factory_(volume_integrator_factory),
       sampler_factory_(sampler_factory) {}

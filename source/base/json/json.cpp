@@ -3,6 +3,7 @@
 #include "math/matrix3x3.inl"
 #include "math/quaternion.inl"
 #include "math/vector4.inl"
+#include "memory/unique.inl"
 //#include "rapidjson/document.h"
 #include <sstream>
 #include "rapidjson/error/en.h"
@@ -47,8 +48,8 @@ std::string read_error(rapidjson::Document const& document, std::istream& stream
     return sstream.str();
 }
 
-std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
-    std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+memory::Unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
+    memory::Unique_ptr<rapidjson::Document> document(new rapidjson::Document);
 
     document->ParseInsitu(buffer);
 
@@ -59,8 +60,8 @@ std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
     return document;
 }
 
-std::unique_ptr<rapidjson::Document> parse(std::string_view buffer) {
-    std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+memory::Unique_ptr<rapidjson::Document> parse(std::string_view buffer) {
+    memory::Unique_ptr<rapidjson::Document> document(new rapidjson::Document);
 
     document->Parse(buffer.data());
 
@@ -71,15 +72,15 @@ std::unique_ptr<rapidjson::Document> parse(std::string_view buffer) {
     return document;
 }
 
-std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
+memory::Unique_ptr<rapidjson::Document> parse(std::istream& stream) {
     rapidjson::IStreamWrapper json_stream(stream);
 
-    std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+    memory::Unique_ptr<rapidjson::Document> document(new rapidjson::Document);
 
     document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
 
     if (document->HasParseError()) {
-        throw std::runtime_error(read_error(*document.get(), stream));
+        throw std::runtime_error(read_error(*document, stream));
     }
 
     return document;
@@ -268,3 +269,5 @@ void read_transformation(rapidjson::Value const& value,
 }
 
 }  // namespace json
+
+template class memory::Unique_ptr<json::Document>;
