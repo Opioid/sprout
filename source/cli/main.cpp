@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
     //  scene::material::glass::testing::rough_refraction();
-    //	testing::size();
+    //  testing::size();
     //	testing::simd::rsqrt();
     //	testing::simd::rcp();
     //	testing::simd::normalize();
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     //	testing::spectrum();
     //	testing::cdf::test_1D();
 
-    //    return 1;
+    // return 1;
 
     logging::init(logging::Type::Std_out);
 

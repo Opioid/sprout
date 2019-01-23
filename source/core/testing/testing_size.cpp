@@ -47,7 +47,7 @@ void size() {
 
     print_size<math::Transformation>("transformation", 48);
 
-    print_size<scene::entity::Keyframe>("Keyframe", 64);
+    print_size<scene::entity::Keyframe>("Keyframe", 80);
 
     print_size<scene::entity::Composed_transformation>("Composed_transformation", 208);
 
@@ -60,9 +60,9 @@ void size() {
 
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
-    print_size<scene::prop::Prop>("prop::Prop", 592);
+    print_size<scene::prop::Prop>("prop::Prop", 368);
 
-    print_size<scene::entity::Entity>("Entity", 496);
+    print_size<scene::entity::Entity>("Entity", 304);
 
     print_size<scene::Renderstate>("Renderstate", 112);
 
@@ -77,11 +77,11 @@ void size() {
 
     print_size<scene::shape::triangle::Shading_vertex_MTC>("Shading_vertex_MTC", 32);
 
-    print_size<image::texture::Adapter>("texture::Adapter", 24);
+    print_size<image::texture::Adapter>("texture::Adapter", 16);
 
     print_size<scene::bvh::Split_candidate<scene::prop::Prop>>("Split_candidate", 32);
 
-    print_size<scene::Worker>("scene::Worker", 232);
+    print_size<scene::Worker>("scene::Worker", 240);
     print_size<rendering::Camera_worker>("rendering::Camera_worker", 320);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 128);

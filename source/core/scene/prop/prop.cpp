@@ -18,13 +18,15 @@ Prop::~Prop() noexcept {
 }
 
 void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noexcept {
+    if (!shape_ || shape_->num_parts() != shape->num_parts()) {
+        delete[] parts_;
+        delete[] materials_;
+
+        parts_     = new Part[shape->num_parts()];
+        materials_ = new Material*[shape->num_parts()];
+    }
+
     set_shape(shape);
-
-    delete[] parts_;
-    delete[] materials_;
-
-    parts_     = new Part[shape->num_parts()];
-    materials_ = new Material*[shape->num_parts()];
 
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
         auto& p    = parts_[i];
