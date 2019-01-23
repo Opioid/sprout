@@ -6,15 +6,18 @@
 #include "memory/unique.inl"
 //#include "rapidjson/document.h"
 #include <sstream>
-#include <tuple>
 #include "rapidjson/error/en.h"
 #include "rapidjson/istreamwrapper.h"
 
 namespace json {
 
 // get the 0-based line number
-static std::tuple<size_t, size_t> calculate_line_number(std::istream& stream,
-                                                        size_t        offset) noexcept {
+struct Error {
+    size_t line;
+    size_t column;
+};
+
+static Error calculate_line_number(std::istream& stream, size_t offset) noexcept {
     size_t line   = 0;
     size_t count  = 0;
     size_t column = 0;
