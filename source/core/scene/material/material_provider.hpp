@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_MATERIAL_PROVIDER_HPP
 #define SU_CORE_SCENE_MATERIAL_PROVIDER_HPP
 
-#include <vector>
 #include "base/json/json_types.hpp"
 #include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"

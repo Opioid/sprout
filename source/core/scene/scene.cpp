@@ -296,7 +296,7 @@ entity::Dummy* Scene::create_dummy(std::string const& name) noexcept {
 Prop* Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     prop::Prop* prop = new prop::Prop;
 
-    prop->set_shape_and_materials(shape, materials);
+    prop->set_shape_and_materials(shape, materials.data());
 
     if (shape->is_finite()) {
         finite_props_.push_back(prop);

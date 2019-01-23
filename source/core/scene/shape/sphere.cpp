@@ -5,6 +5,7 @@
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/material/material.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -231,9 +232,8 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Sphere::opacity(Ray const& ray, Transformation const& transformation,
-                      Materials const& materials, Filter filter, Worker const& worker) const
-    noexcept {
+float Sphere::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+                      Filter filter, Worker const& worker) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -274,8 +274,8 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation,
 }
 
 float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformation,
-                               Materials const& materials, Filter filter,
-                               Worker const& worker) const noexcept {
+                               Materials materials, Filter filter, Worker const& worker) const
+    noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = dot(v, ray.direction);
     float  radius = transformation.scale[0];

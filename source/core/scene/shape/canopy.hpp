@@ -21,11 +21,11 @@ class Canopy final : public Shape {
     bool intersect_p(Ray const& ray, Transformation const& transformation,
                      Node_stack& node_stack) const noexcept override final;
 
-    float opacity(Ray const& ray, Transformation const& transformation, Materials const& materials,
+    float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
                   Filter filter, Worker const& worker) const noexcept override final;
 
     float3 thin_absorption(Ray const& ray, Transformation const& transformation,
-                           Materials const& materials, Filter filter, Worker const& worker) const
+                           Materials materials, Filter filter, Worker const& worker) const
         noexcept override final;
 
     bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,

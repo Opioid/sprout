@@ -266,9 +266,8 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 // node_stack);
 //}
 
-float Mesh::opacity(Ray const& ray, Transformation const& transformation,
-                    Materials const& materials, Filter filter, Worker const& worker) const
-    noexcept {
+float Mesh::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+                    Filter filter, Worker const& worker) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
@@ -279,7 +278,7 @@ float Mesh::opacity(Ray const& ray, Transformation const& transformation,
 }
 
 float3 Mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
-                             Materials const& materials, Filter filter, Worker const& worker) const
+                             Materials materials, Filter filter, Worker const& worker) const
     noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);

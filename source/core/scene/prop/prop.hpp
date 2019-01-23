@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_PROP_PROP_HPP
 #define SU_CORE_SCENE_PROP_PROP_HPP
 
-#include <vector>
 #include "base/math/aabb.hpp"
 #include "scene/entity/entity.hpp"
 #include "scene/material/material.hpp"
@@ -29,6 +28,7 @@ class Prop : public entity::Entity {
   public:
     using Node_stack = shape::Node_stack;
     using Filter     = material::Sampler_settings::Filter;
+    using Material   = material::Material;
     using Shape      = shape::Shape;
 
     ~Prop() noexcept override;
@@ -55,7 +55,7 @@ class Prop : public entity::Entity {
 
     AABB const& aabb() const noexcept;
 
-    void set_shape_and_materials(Shape* shape, Materials const& materials) noexcept;
+    void set_shape_and_materials(Shape* shape, Material* const* materials) noexcept;
 
     void set_parameters(json::Value const& parameters) noexcept override;
 
@@ -95,7 +95,7 @@ class Prop : public entity::Entity {
     // For moving objects it must cover the entire area occupied by the object during the tick.
     AABB aabb_;
 
-    Shape* shape_;
+    Shape* shape_ = nullptr;
 
     struct Part {
         union {
@@ -106,9 +106,9 @@ class Prop : public entity::Entity {
         uint32_t light_id;
     };
 
-    std::vector<Part> parts_;
+    Part* parts_ = nullptr;
 
-    Materials materials_;
+    Material** materials_ = nullptr;
 };
 
 }  // namespace prop

@@ -62,6 +62,8 @@ class Loader {
     using Shape    = shape::Shape;
     using Material = material::Material;
 
+    using Materials = std::vector<material::Material*>;
+
     Loader(resource::Manager& manager, Material& fallback_material);
 
     ~Loader();

@@ -3,7 +3,7 @@
 
 #include "base/math/aabb.hpp"
 #include "base/math/matrix.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/sampler_settings.hpp"
 
 namespace math {
 struct Transformation;
@@ -14,6 +14,10 @@ class Sampler;
 }
 
 namespace scene {
+
+namespace material {
+class Material;
+}
 
 struct Ray;
 class Worker;
@@ -33,6 +37,8 @@ class Morphable_shape;
 class Shape {
   public:
     using Filter         = material::Sampler_settings::Filter;
+    using Material       = material::Material;
+    using Materials      = Material const* const*;
     using Sampler        = sampler::Sampler;
     using Transformation = entity::Composed_transformation;
 
@@ -61,13 +67,12 @@ class Shape {
     virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
                              Node_stack& node_stack) const noexcept = 0;
 
-    virtual float opacity(Ray const& ray, Transformation const& transformation,
-                          Materials const& materials, Filter filter, Worker const& worker) const
-        noexcept = 0;
+    virtual float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+                          Filter filter, Worker const& worker) const noexcept = 0;
 
     virtual float3 thin_absorption(Ray const& ray, Transformation const& transformation,
-                                   Materials const& materials, Filter filter,
-                                   Worker const& worker) const noexcept = 0;
+                                   Materials materials, Filter filter, Worker const& worker) const
+        noexcept = 0;
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
                         Transformation const& transformation, float area, bool two_sided,

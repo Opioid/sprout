@@ -11,8 +11,8 @@ namespace thread {
 
 Pool::Pool(uint32_t num_threads) noexcept
     : num_threads_(num_threads),
-      uniques_(num_threads),
-      threads_(num_threads)
+      uniques_(new Unique[num_threads]),
+      threads_(new std::thread[num_threads])
 #ifdef GRANULAR_TASKS
       ,
       tasks_(num_threads * 64)
@@ -30,8 +30,8 @@ Pool::~Pool() noexcept {
 
     wake_all();
 
-    for (auto& t : threads_) {
-        t.join();
+    for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
+        threads_[i].join();
     }
 
     async_.quit = true;
@@ -39,6 +39,9 @@ Pool::~Pool() noexcept {
     wake_async();
 
     async_thread_.join();
+
+    delete[] threads_;
+    delete[] uniques_;
 }
 
 uint32_t Pool::num_threads() const noexcept {
@@ -79,7 +82,8 @@ void Pool::wait_async() noexcept {
 }
 
 void Pool::wake_all() noexcept {
-    for (auto& u : uniques_) {
+    for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
+        auto&                        u = uniques_[i];
         std::unique_lock<std::mutex> lock(u.mutex);
         u.wake = true;
         lock.unlock();
@@ -102,15 +106,16 @@ void Pool::wake_all(int32_t begin, int32_t end) noexcept {
     wake_all();
 #else
     float const range       = static_cast<float>(end - begin);
-    float const num_threads = static_cast<float>(threads_.size());
+    float const num_threads = static_cast<float>(num_threads_);
 
     int32_t const step = static_cast<int32_t>(std::ceil(range / num_threads));
 
     int32_t b = 0;
     int32_t e = begin;
 
-    for (auto& u : uniques_) {
-        b = e;
+    for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
+        auto& u = uniques_[i];
+        b       = e;
         e += step;
 
         std::unique_lock<std::mutex> lock(u.mutex);
@@ -131,7 +136,8 @@ void Pool::wake_async() noexcept {
 }
 
 void Pool::wait_all() noexcept {
-    for (auto& u : uniques_) {
+    for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
+        auto&                        u = uniques_[i];
         std::unique_lock<std::mutex> lock(u.mutex);
         u.done_signal.wait(lock, [&u]() noexcept { return !u.wake; });
     }

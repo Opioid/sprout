@@ -6,6 +6,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
+#include "scene/material/material.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
@@ -333,9 +334,8 @@ bool Tree<Data>::intersect_p(FVector ray_origin, FVector ray_direction, FVector 
 }
 
 template <typename Data>
-float Tree<Data>::opacity(ray& ray, uint64_t time, Materials const& materials,
-                          material::Sampler_settings::Filter filter, Worker const& worker) const
-    noexcept {
+float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter filter,
+                          Worker const& worker) const noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);
@@ -397,9 +397,8 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials const& materials,
 }
 
 template <typename Data>
-float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials const& materials,
-                              material::Sampler_settings::Filter filter, Worker const& worker) const
-    noexcept {
+float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
+                              Worker const& worker) const noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);

@@ -18,7 +18,7 @@ class Morphable_mesh : public Shape, public Morphable_shape {
   public:
     Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts) noexcept;
 
-    ~Morphable_mesh();
+    ~Morphable_mesh() override final;
 
     void init() noexcept;
 
@@ -36,11 +36,11 @@ class Morphable_mesh : public Shape, public Morphable_shape {
     bool intersect_p(Ray const& ray, Transformation const& transformation,
                      Node_stack& node_stack) const noexcept override final;
 
-    float opacity(Ray const& ray, Transformation const& transformation, Materials const& materials,
+    float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
                   Filter filter, Worker const& worker) const noexcept override final;
 
     float3 thin_absorption(Ray const& ray, Transformation const& transformation,
-                           Materials const& materials, Filter filter, Worker const& worker) const
+                           Materials materials, Filter filter, Worker const& worker) const
         noexcept override final;
 
     bool sample(uint32_t part, float3 const& p, float3 const& n,

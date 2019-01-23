@@ -5,6 +5,7 @@
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/material/material.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -154,9 +155,8 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Disk::opacity(Ray const& ray, Transformation const& transformation,
-                    Materials const& materials, Filter filter, Worker const& worker) const
-    noexcept {
+float Disk::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+                    Filter filter, Worker const& worker) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -185,7 +185,7 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation,
 }
 
 float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
-                             Materials const& materials, Filter filter, Worker const& worker) const
+                             Materials materials, Filter filter, Worker const& worker) const
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
 

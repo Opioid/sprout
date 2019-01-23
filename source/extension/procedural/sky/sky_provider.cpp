@@ -57,18 +57,12 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
 
     manager.store<material::Material>("proc:sun", sun_material);
 
-    Materials materials(1);
-
-    materials[0] = sky_material;
-
-    prop::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);
+    prop::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
 
     sky_prop->allocate_local_frame();
     sky_prop->propagate_frame_allocation();
 
-    materials[0] = sun_material;
-
-    prop::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
+    prop::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
 
     sun_prop->allocate_local_frame();
     sun_prop->propagate_frame_allocation();

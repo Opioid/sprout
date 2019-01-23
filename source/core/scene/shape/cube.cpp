@@ -5,6 +5,7 @@
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
+#include "scene/material/material.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -121,9 +122,8 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
     return true;
 }
 
-float Cube::opacity(Ray const& ray, Transformation const& transformation,
-                    Materials const& materials, Filter filter, Worker const& worker) const
-    noexcept {
+float Cube::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+                    Filter filter, Worker const& worker) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -164,7 +164,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation,
 }
 
 float3 Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                             Materials const& /*materials*/, Filter /*filter*/,
+                             Materials /*materials*/, Filter /*filter*/,
                              Worker const& /*worker*/) const noexcept {
     return float3(0.f);
 }

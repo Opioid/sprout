@@ -12,20 +12,29 @@
 
 namespace scene::prop {
 
-Prop::~Prop() noexcept {}
+Prop::~Prop() noexcept {
+    delete[] parts_;
+    delete[] materials_;
+}
 
-void Prop::set_shape_and_materials(Shape* shape, Materials const& materials) noexcept {
+void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noexcept {
     set_shape(shape);
 
-    parts_.resize(shape->num_parts());
-    for (auto& p : parts_) {
+    delete[] parts_;
+    delete[] materials_;
+
+    parts_     = new Part[shape->num_parts()];
+    materials_ = new Material*[shape->num_parts()];
+
+    for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
+        auto& p    = parts_[i];
         p.area     = 1.f;
         p.light_id = 0xFFFFFFFF;
-    }
 
-    materials_ = materials;
+        auto const m = materials[i];
 
-    for (auto m : materials_) {
+        materials_[i] = m;
+
         if (m->is_masked()) {
             properties_.set(Property::Masked_material);
         }
@@ -282,8 +291,8 @@ bool Prop::has_masked_material() const noexcept {
 }
 
 bool Prop::has_caustic_material() const noexcept {
-    for (auto const& m : materials_) {
-        if (m->is_caustic()) {
+    for (uint32_t i = 0, len = shape_->num_parts(); i < len; ++i) {
+        if (materials_[i]->is_caustic()) {
             return true;
         }
     }
@@ -296,7 +305,7 @@ bool Prop::has_tinted_shadow() const noexcept {
 }
 
 bool Prop::has_no_surface() const noexcept {
-    return 1 == materials_.size() && 1.f == materials_[0]->ior();
+    return 1 == shape_->num_parts() && 1.f == materials_[0]->ior();
 }
 
 size_t Prop::num_bytes() const noexcept {

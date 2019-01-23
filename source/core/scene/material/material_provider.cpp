@@ -716,7 +716,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
 
     bool two_sided = false;
 
-    Materials materials;
+    std::vector<material::Material*> materials;
 
     for (auto& n : mix_value.GetObject()) {
         if ("materials" == n.name) {
@@ -761,7 +761,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
 
     material->set_mask(mask);
 
-    //   material->set_materials(materials[0], materials[1]);
+    material->set_materials(materials[0], materials[1]);
 
     return material;
 }

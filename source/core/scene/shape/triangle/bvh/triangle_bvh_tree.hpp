@@ -1,15 +1,20 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_HPP
 
+#include <vector>
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/sampler_settings.hpp"
 
 namespace math {
 struct Ray;
 }
 
 namespace scene {
+
+namespace material {
+class Material;
+}
 
 namespace bvh {
 class Node;
@@ -39,7 +44,10 @@ class Tree {
 
     ~Tree() noexcept;
 
-    using Node = scene::bvh::Node;
+    using Node      = scene::bvh::Node;
+    using Filter    = material::Sampler_settings::Filter;
+    using Material  = material::Material;
+    using Materials = Material const* const*;
 
     Node* allocate_nodes(uint32_t num_nodes) noexcept;
 
@@ -70,12 +78,11 @@ class Tree {
                      FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
                      Node_stack& node_stack) const noexcept;
 
-    float opacity(ray& ray, uint64_t time, Materials const& materials,
-                  material::Sampler_settings::Filter filter, Worker const& worker) const noexcept;
+    float opacity(ray& ray, uint64_t time, Materials materials, Filter filter,
+                  Worker const& worker) const noexcept;
 
-    float3 absorption(ray& ray, uint64_t time, Materials const& materials,
-                      material::Sampler_settings::Filter filter, Worker const& worker) const
-        noexcept;
+    float3 absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
+                      Worker const& worker) const noexcept;
 
     void interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
                                    float2& tc) const noexcept;

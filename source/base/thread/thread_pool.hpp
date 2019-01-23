@@ -4,7 +4,6 @@
 #include <condition_variable>
 #include <functional>
 #include <thread>
-#include <vector>
 
 // #define GRANULAR_TASKS
 
@@ -68,9 +67,9 @@ class Pool {
 
     Range_program range_program_;
 
-    std::vector<Unique> uniques_;
+    Unique* uniques_;
 
-    std::vector<std::thread> threads_;
+    std::thread* threads_;
 
     struct Task {
         int32_t begin;
