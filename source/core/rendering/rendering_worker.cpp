@@ -47,7 +47,7 @@ void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scen
 
     if (photon_settings.num_photons) {
         Photon_mapper::Settings const ps{photon_settings.max_bounces,
-                                         photon_settings.indirect_caustics,
+                                         photon_settings.indirect_photons,
                                          photon_settings.full_light_path};
 
         photon_mapper_ = new Photon_mapper(rng_, settings, ps);

@@ -13,7 +13,7 @@ class Map {
     using Material_sample = scene::material::Sample;
 
     Map(uint32_t num_photons, float radius, float indirect_radius_factor,
-        bool separate_caustics) noexcept;
+        bool separate_indirect) noexcept;
 
     ~Map() noexcept;
 
@@ -39,7 +39,7 @@ class Map {
     float radius_;
     float indirect_radius_factor_;
 
-    bool separate_caustics_;
+    bool separate_indirect_;
 
     uint32_t* num_reduced_;
 

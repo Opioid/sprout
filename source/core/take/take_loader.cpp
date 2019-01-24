@@ -624,8 +624,8 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
     settings.iteration_threshold    = json::read_float(value, "iteration_threshold", 0.f);
     settings.radius                 = json::read_float(value, "radius", 0.05f);
     settings.indirect_radius_factor = json::read_float(value, "indirect_radius_factor", 4.f);
-    settings.indirect_caustics      = json::read_bool(value, "indirect_caustics", false);
-    settings.separate_caustics      = json::read_bool(value, "separate_caustics", true);
+    settings.indirect_photons       = json::read_bool(value, "indirect_photons", false);
+    settings.separate_indirect      = json::read_bool(value, "separate_indirect", true);
     settings.full_light_path        = json::read_bool(value, "full_light_path", false);
 }
 

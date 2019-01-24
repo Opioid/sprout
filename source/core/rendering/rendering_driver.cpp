@@ -28,7 +28,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
       target_(Image::Description(Image::Type::Float4, take.view.camera->sensor_dimensions())),
       photon_map_(take.photon_settings.num_photons, take.photon_settings.radius,
                   take.photon_settings.indirect_radius_factor,
-                  take.photon_settings.separate_caustics && take.photon_settings.indirect_caustics),
+                  take.photon_settings.separate_indirect && take.photon_settings.indirect_photons),
       photon_settings_(take.photon_settings),
       photon_infos_(nullptr) {
     uint32_t const num_photons = take.photon_settings.num_photons;
