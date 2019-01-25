@@ -233,12 +233,16 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
             parent->attach(entity);
         }
 
+        animation::Animation* animation = nullptr;
+
         if (animation_value) {
-            if (auto animation = animation::load(*animation_value, transformation, scene);
-                animation) {
+            animation = animation::load(*animation_value, transformation, scene);
+            if (animation) {
                 scene.create_animation_stage(entity, animation);
             }
-        } else {
+        }
+
+        if (!animation) {
             entity->allocate_local_frame();
             entity->set_transformation(transformation);
         }
