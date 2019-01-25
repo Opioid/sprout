@@ -81,7 +81,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
     }
 
     if (!handler.has_normals()) {
-        // If no normals were loaded assign something.
+        // If no normals were loaded, assign something.
         // Might be smarter to throw an exception,
         // or just go ahead and actually compute the geometry normal...
         for (auto& v : handler.vertices()) {

@@ -14,6 +14,27 @@
 
 namespace rendering::integrator::photon {
 
+static float constexpr Grid_radius_factor = 4.f;
+static float constexpr Lower_cell_bound   = 1.f / Grid_radius_factor;
+static float constexpr Upper_cell_bound   = 1.f - Lower_cell_bound;
+
+enum Adjacent { None = 0, Positive = 1, Negative = 2 };
+
+static uint8_t adjacent(float s) noexcept {
+    if (s <= Lower_cell_bound) {
+        return Negative;
+    }
+
+    if (s >= Upper_cell_bound) {
+        return Positive;
+    }
+
+    return None;
+}
+
+static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
+                                     scene::Worker const&             worker) noexcept;
+
 Grid::Grid(float radius, float merge_radius_factor) noexcept
     : num_photons_(0),
       photons_(nullptr),
@@ -298,7 +319,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                     continue;
                 }
 
-                if (math::squared_distance(photon.p, position) <= radius_2) {
+                if (squared_distance(photon.p, position) <= radius_2) {
                     auto const bxdf = sample.evaluate(photon.wi, true);
 
                     result += float3(photon.alpha) * bxdf.reflection;
@@ -323,7 +344,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                     continue;
                 }
 
-                if (float const distance_2 = math::squared_distance(photon.p, position);
+                if (float const distance_2 = squared_distance(photon.p, position);
                     distance_2 <= radius_2) {
                     if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
                         n_dot_wi > 0.f) {
@@ -413,20 +434,6 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
     return num_reduced;
 }
 
-enum Adjacent { None = 0, Positive = 1, Negative = 2 };
-
-uint8_t Grid::adjacent(float s) noexcept {
-    if (s <= Lower_cell_bound) {
-        return Negative;
-    }
-
-    if (s >= Upper_cell_bound) {
-        return Positive;
-    }
-
-    return None;
-}
-
 int32_t Grid::map1(float3 const& v) const noexcept {
     int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min())) + int3(1);
 
@@ -437,16 +444,16 @@ int3 Grid::map3(float3 const& v) const noexcept {
     return static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 }
 
-int3 Grid::map3(float3 const& v, uint8_t& adjacent) const noexcept {
+int3 Grid::map3(float3 const& v, uint8_t& adjacents) const noexcept {
     float3 const r = inverse_cell_size_ * (v - aabb_.min());
 
     int3 const c = static_cast<int3>(r);
 
     float3 const d = r - static_cast<float3>(c);
 
-    adjacent = static_cast<uint8_t>(Grid::adjacent(d[0]) << 4);
-    adjacent |= static_cast<uint8_t>(Grid::adjacent(d[1]) << 2);
-    adjacent |= Grid::adjacent(d[2]);
+    adjacents = static_cast<uint8_t>(adjacent(d[0]) << 4);
+    adjacents |= static_cast<uint8_t>(adjacent(d[1]) << 2);
+    adjacents |= adjacent(d[2]);
 
     return c + int3(1);
 }
@@ -466,8 +473,8 @@ void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept 
     }
 }
 
-float3 Grid::scattering_coefficient(Intersection const&  intersection,
-                                    scene::Worker const& worker) noexcept {
+static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
+                                     scene::Worker const&             worker) noexcept {
     using Filter = scene::material::Sampler_settings::Filter;
 
     auto const& material = *intersection.material();
