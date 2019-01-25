@@ -65,6 +65,8 @@ class Grid {
 
     int3 map3(float3 const& v, uint8_t& adjacents) const noexcept;
 
+    int3 mapu3(float3 const& v, uint8_t& adjacents) const noexcept;
+
     struct Adjacency {
         int2     cells[4];
         uint32_t num_cells;
@@ -84,6 +86,8 @@ class Grid {
     float upper_cell_bound_;
 
     int3 dimensions_;
+
+    float3 dimensionsf_;
 
     int2* grid_;
 

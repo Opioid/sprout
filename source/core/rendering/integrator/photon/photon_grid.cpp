@@ -12,6 +12,8 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::photon {
 
 static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
@@ -23,6 +25,7 @@ Grid::Grid(float radius, float merge_radius_factor, float grid_radius_factor) no
       photon_radius_(radius),
       merge_radius_factor_(merge_radius_factor),
       inverse_cell_size_(1.f / (grid_radius_factor * radius)),
+  //    inverse_cell_size_(1.f),
       lower_cell_bound_(1.f / grid_radius_factor),
       upper_cell_bound_(1.f - (1.f / grid_radius_factor)),
       dimensions_(0),
@@ -35,10 +38,17 @@ Grid::~Grid() noexcept {
 void Grid::resize(AABB const& aabb) noexcept {
     aabb_ = aabb;
 
+    uint8_t    adjacentsu;
+    int3 du = mapu3(float3(0.f), adjacentsu) + int3(2);
+
     uint8_t    adjacents;
     int3 const dimensions = map3(aabb.max(), adjacents) + int3(2);
 
     int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2];
+
+    if (lower_cell_bound_ > upper_cell_bound_) {
+        std::cout << "weird" << std::endl;
+    }
 
     if (dimensions_ != dimensions) {
         dimensions_ = dimensions;
@@ -434,12 +444,35 @@ uint8_t Grid::adjacent(float s) const noexcept {
 }
 
 int32_t Grid::map1(float3 const& v) const noexcept {
-    int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min())) + int3(1);
+ //   int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min())) + int3(1);
+
+    int3 const c = static_cast<int3>((v - aabb_.min()) / aabb_.extent()) + int3(1);
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
 int3 Grid::map3(float3 const& v, uint8_t& adjacents) const noexcept {
+ //   float3 const r = inverse_cell_size_ * (v - aabb_.min());
+    float3 const r = (v - aabb_.min()) / aabb_.extent();
+
+
+    int3 const c = static_cast<int3>(r);
+
+    float3 const d = r - static_cast<float3>(c);
+
+    adjacents = static_cast<uint8_t>(adjacent(d[0]) << 4);
+    adjacents |= static_cast<uint8_t>(adjacent(d[1]) << 2);
+    adjacents |= adjacent(d[2]);
+
+    return c + int3(1);
+}
+
+int3 Grid::mapu3(float3 const& v, uint8_t& adjacents) const noexcept {
+    float3 const r = (v - aabb_.min()) / aabb_.extent();
+
+    return int3(r);
+
+    /*
     float3 const r = inverse_cell_size_ * (v - aabb_.min());
 
     int3 const c = static_cast<int3>(r);
@@ -451,6 +484,7 @@ int3 Grid::map3(float3 const& v, uint8_t& adjacents) const noexcept {
     adjacents |= adjacent(d[2]);
 
     return c + int3(1);
+*/
 }
 
 void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept {
