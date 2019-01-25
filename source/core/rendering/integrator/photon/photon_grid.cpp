@@ -111,7 +111,7 @@ void Grid::resize(AABB const& aabb) noexcept {
         adjacencies_[4] = {{int2(0), int2(o__0_p1__0), int2(0), int2(0)}, 2};
 
         // 00, 01, 01
-        adjacencies_[5] = {{int2(0), int2(o__0_p1__0), int2(o__0__0_p1), int2(o__0_p1_m1)}, 4};
+        adjacencies_[5] = {{int2(0), int2(o__0_p1__0), int2(o__0__0_p1), int2(o__0_p1_p1)}, 4};
 
         // 00, 01, 10
         adjacencies_[6] = {{int2(0), int2(o__0_p1__0), int2(o__0__0_m1), int2(o__0_p1_m1)}, 4};
