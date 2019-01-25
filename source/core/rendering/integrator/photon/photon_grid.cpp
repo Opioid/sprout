@@ -459,12 +459,12 @@ int3 Grid::map3(float3 const& v, uint8_t& adjacents) const noexcept {
 }
 
 void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept {
-    uint8_t    adjacent;
-    int3 const c = map3(v, adjacent);
+    uint8_t    adjacents;
+    int3 const c = map3(v, adjacents);
 
     int32_t const ic = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 
-    adjacency = adjacencies_[adjacent];
+    adjacency = adjacencies_[adjacents];
 
     for (uint32_t i = 0; i < adjacency.num_cells; ++i) {
         int2 const cells      = adjacency.cells[i];
