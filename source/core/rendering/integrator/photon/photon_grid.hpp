@@ -63,7 +63,6 @@ class Grid {
 
     int32_t map1(float3 const& v) const noexcept;
 
-    int3 map3(float3 const& v) const noexcept;
     int3 map3(float3 const& v, uint8_t& adjacents) const noexcept;
 
     struct Adjacency {

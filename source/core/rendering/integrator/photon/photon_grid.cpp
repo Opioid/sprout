@@ -14,8 +14,6 @@
 
 namespace rendering::integrator::photon {
 
-enum Adjacent { None = 0, Positive = 1, Negative = 2 };
-
 static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
                                      scene::Worker const&             worker) noexcept;
 
@@ -37,7 +35,8 @@ Grid::~Grid() noexcept {
 void Grid::resize(AABB const& aabb) noexcept {
     aabb_ = aabb;
 
-    int3 const dimensions = map3(aabb.max()) + int3(3);
+    uint8_t    adjacents;
+    int3 const dimensions = map3(aabb.max(), adjacents) + int3(2);
 
     int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2];
 
@@ -90,7 +89,7 @@ void Grid::resize(AABB const& aabb) noexcept {
         adjacencies_[1] = {{int2(0), int2(o__0__0_p1), int2(0), int2(0)}, 2};
 
         // 00, 00, 10
-        adjacencies_[2] = {{int2(0), int2(o__0__0_m1), int2(0), int2(0)}, 2};
+        adjacencies_[2] = {{int2(o__0__0_m1), int2(0), int2(0), int2(0)}, 2};
         adjacencies_[3] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
 
         // 00, 01, 00
@@ -100,17 +99,17 @@ void Grid::resize(AABB const& aabb) noexcept {
         adjacencies_[5] = {{int2(0), int2(o__0_p1__0), int2(o__0__0_p1), int2(o__0_p1_p1)}, 4};
 
         // 00, 01, 10
-        adjacencies_[6] = {{int2(0), int2(o__0_p1__0), int2(o__0__0_m1), int2(o__0_p1_m1)}, 4};
+        adjacencies_[6] = {{int2(o__0__0_m1), int2(o__0_p1_m1), int2(0), int2(o__0_p1__0)}, 4};
         adjacencies_[7] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
 
         // 00, 10, 00
-        adjacencies_[8] = {{int2(0), int2(o__0_m1__0), int2(0), int2(0)}, 2};
+        adjacencies_[8] = {{int2(o__0_m1__0), int2(0), int2(0), int2(0)}, 2};
 
         // 00, 10, 01
-        adjacencies_[9] = {{int2(0), int2(o__0_m1__0), int2(o__0__0_p1), int2(o__0_m1_p1)}, 4};
+        adjacencies_[9] = {{int2(o__0_m1__0), int2(o__0_m1_p1), int2(0), int2(o__0__0_p1)}, 4};
 
         // 00, 10, 10
-        adjacencies_[10] = {{int2(0), int2(o__0_m1__0), int2(o__0__0_m1), int2(o__0_m1_m1)}, 4};
+        adjacencies_[10] = {{int2(o__0_m1_m1), int2(o__0__0_m1), int2(o__0_m1__0), int2(0)}, 4};
         adjacencies_[11] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
         adjacencies_[12] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
         adjacencies_[13] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
@@ -125,7 +124,7 @@ void Grid::resize(AABB const& aabb) noexcept {
                             2};
 
         // 01, 00, 10
-        adjacencies_[18] = {{int2(0, o_p1__0__0), int2(o__0__0_m1, o_p1__0_m1), int2(0), int2(0)},
+        adjacencies_[18] = {{int2(o__0__0_m1, o_p1__0_m1), int2(0, o_p1__0__0), int2(0), int2(0)},
                             2};
         adjacencies_[19] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
 
@@ -139,23 +138,23 @@ void Grid::resize(AABB const& aabb) noexcept {
                             4};
 
         // 01, 01, 10
-        adjacencies_[22] = {{int2(0, o_p1__0__0), int2(o__0_p1__0, o_p1_p1__0),
-                             int2(o__0__0_m1, o_p1__0_m1), int2(o__0_p1_m1, o_p1_p1_m1)},
+        adjacencies_[22] = {{int2(o__0__0_m1, o_p1__0_m1), int2(o__0_p1_m1, o_p1_p1_m1),
+                             int2(0, o_p1__0__0), int2(o__0_p1__0, o_p1_p1__0)},
                             4};
         adjacencies_[23] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
 
         // 01, 10, 00
-        adjacencies_[24] = {{int2(0, o_p1__0__0), int2(o__0_m1__0, o_p1_m1__0), int2(0), int2(0)},
+        adjacencies_[24] = {{int2(o__0_m1__0, o_p1_m1__0), int2(0, o_p1__0__0), int2(0), int2(0)},
                             2};
 
         // 01, 10, 01
-        adjacencies_[25] = {{int2(0, o_p1__0__0), int2(o__0_m1__0, o_p1_m1__0),
-                             int2(o__0__0_p1, o_p1__0_p1), int2(o__0_m1_p1, o_p1_m1_p1)},
+        adjacencies_[25] = {{int2(o__0_m1__0, o_p1_m1__0), int2(o__0_m1_p1, o_p1_m1_p1),
+                             int2(0, o_p1__0__0), int2(o__0__0_p1, o_p1__0_p1)},
                             4};
 
         // 01, 10, 10
-        adjacencies_[26] = {{int2(0, o_p1__0__0), int2(o__0_m1__0, o_p1_m1__0),
-                             int2(o__0__0_m1, o_p1__0_m1), int2(o__0_m1_m1, o_p1_m1_m1)},
+        adjacencies_[26] = {{int2(o__0_m1_m1, o_p1_m1_m1), int2(o__0__0_m1, o_p1__0_m1),
+                             int2(o__0_m1__0, o_p1_m1__0), int2(0, o_p1__0__0)},
                             4};
         adjacencies_[27] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
         adjacencies_[28] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
@@ -171,7 +170,7 @@ void Grid::resize(AABB const& aabb) noexcept {
                             2};
 
         // 10, 00, 10
-        adjacencies_[34] = {{int2(o_m1__0__0, 0), int2(o_m1__0_m1, o__0__0_m1), int2(0), int2(0)},
+        adjacencies_[34] = {{int2(o_m1__0_m1, o__0__0_m1), int2(o_m1__0__0, 0), int2(0), int2(0)},
                             2};
         adjacencies_[35] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
 
@@ -180,28 +179,28 @@ void Grid::resize(AABB const& aabb) noexcept {
                             2};
 
         // 10, 01, 01
-        adjacencies_[37] = {{int2(o_m1__0__0, 0), int2(o_m1_p1__0, o__0_p1__0),
-                             int2(o_m1__0_p1, o__0__0_p1), int2(o_m1_p1_p1, o__0_p1_p1)},
+        adjacencies_[37] = {{int2(o_m1__0__0, 0), int2(o_m1__0_p1, o__0__0_p1),
+                             int2(o_m1_p1__0, o__0_p1__0), int2(o_m1_p1_p1, o__0_p1_p1)},
                             4};
 
         // 10, 01, 10
-        adjacencies_[38] = {{int2(o_m1__0__0, 0), int2(o_m1_p1__0, o__0_p1__0),
-                             int2(o_m1__0_m1, o__0__0_m1), int2(o_m1_p1_m1, o__0_p1_m1)},
+        adjacencies_[38] = {{int2(o_m1__0_m1, o__0__0_m1), int2(o_m1_p1_m1, o__0_p1_m1),
+                             int2(o_m1__0__0, 0), int2(o_m1_p1__0, o__0_p1__0)},
                             4};
         adjacencies_[39] = {{int2(0), int2(0), int2(0), int2(0)}, 0};
 
         // 10, 10, 00
-        adjacencies_[40] = {{int2(o_m1__0__0, 0), int2(o_m1_m1__0, o__0_m1__0), int2(0), int2(0)},
+        adjacencies_[40] = {{int2(o_m1_m1__0, o__0_m1__0), int2(o_m1__0__0, 0), int2(0), int2(0)},
                             2};
 
         // 10, 10, 01
-        adjacencies_[41] = {{int2(o_m1__0__0, 0), int2(o_m1_m1__0, o__0_m1__0),
-                             int2(o_m1__0_p1, o__0__0_p1), int2(o_m1_m1_p1, o__0_m1_p1)},
+        adjacencies_[41] = {{int2(o_m1_m1__0, o__0_m1__0), int2(o_m1_m1_p1, o__0_m1_p1),
+                             int2(o_m1__0__0, 0), int2(o_m1__0_p1, o__0__0_p1)},
                             4};
 
         // 10, 10, 10
-        adjacencies_[42] = {{int2(o_m1__0__0, 0), int2(o_m1_m1__0, o__0_m1__0),
-                             int2(o_m1__0_m1, o__0__0_m1), int2(o_m1_m1_m1, o__0_m1_m1)},
+        adjacencies_[42] = {{int2(o_m1_m1_m1, o__0_m1_m1), int2(o_m1__0_m1, o__0__0_m1),
+                             int2(o_m1_m1__0, o__0_m1__0), int2(o_m1__0__0, 0)},
                             4};
     }
 }
@@ -421,6 +420,8 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
 }
 
 uint8_t Grid::adjacent(float s) const noexcept {
+    enum Adjacent { None = 0, Positive = 1, Negative = 2 };
+
     if (s <= lower_cell_bound_) {
         return Negative;
     }
@@ -436,10 +437,6 @@ int32_t Grid::map1(float3 const& v) const noexcept {
     int3 const c = static_cast<int3>(inverse_cell_size_ * (v - aabb_.min())) + int3(1);
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
-}
-
-int3 Grid::map3(float3 const& v) const noexcept {
-    return static_cast<int3>(inverse_cell_size_ * (v - aabb_.min()));
 }
 
 int3 Grid::map3(float3 const& v, uint8_t& adjacents) const noexcept {

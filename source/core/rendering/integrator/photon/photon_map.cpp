@@ -52,8 +52,10 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
         auto const indirect_photons = std::partition(
             photons_, photons_ + num_photons_,
             [](Photon const& p) { return p.properties.test(Photon::Property::First_hit); });
+
         uint32_t const num_caustics = static_cast<uint32_t>(
             std::distance(photons_, indirect_photons));
+
         uint32_t const num_indirect = num_photons_ - num_caustics;
 
         caustic_grid_.update(num_caustics, photons_);
