@@ -103,7 +103,6 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
         },
                                static_cast<int32_t>(begin),
                                static_cast<int32_t>(photon_settings_.num_photons));
-
         for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
             num_paths += photon_infos_[i].num_paths;
         }

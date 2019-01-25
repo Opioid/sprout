@@ -14,33 +14,19 @@
 
 namespace rendering::integrator::photon {
 
-static float constexpr Grid_radius_factor = 4.f;
-static float constexpr Lower_cell_bound   = 1.f / Grid_radius_factor;
-static float constexpr Upper_cell_bound   = 1.f - Lower_cell_bound;
-
 enum Adjacent { None = 0, Positive = 1, Negative = 2 };
-
-static uint8_t adjacent(float s) noexcept {
-    if (s <= Lower_cell_bound) {
-        return Negative;
-    }
-
-    if (s >= Upper_cell_bound) {
-        return Positive;
-    }
-
-    return None;
-}
 
 static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
                                      scene::Worker const&             worker) noexcept;
 
-Grid::Grid(float radius, float merge_radius_factor) noexcept
+Grid::Grid(float radius, float merge_radius_factor, float grid_radius_factor) noexcept
     : num_photons_(0),
       photons_(nullptr),
       photon_radius_(radius),
-      inverse_cell_size_(1.f / (Grid_radius_factor * radius)),
       merge_radius_factor_(merge_radius_factor),
+      inverse_cell_size_(1.f / (grid_radius_factor * radius)),
+      lower_cell_bound_(1.f / grid_radius_factor),
+      upper_cell_bound_(1.f - (1.f / grid_radius_factor)),
       dimensions_(0),
       grid_(nullptr) {}
 
@@ -432,6 +418,18 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
     }
 
     return num_reduced;
+}
+
+uint8_t Grid::adjacent(float s) const noexcept {
+    if (s <= lower_cell_bound_) {
+        return Negative;
+    }
+
+    if (s >= upper_cell_bound_) {
+        return Positive;
+    }
+
+    return None;
 }
 
 int32_t Grid::map1(float3 const& v) const noexcept {
