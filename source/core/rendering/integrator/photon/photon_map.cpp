@@ -9,7 +9,7 @@
 
 namespace rendering::integrator::photon {
 
-static float constexpr Merge_threshold = 0.2f;
+static float constexpr Merge_threshold = 0.25f;
 
 Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
          bool separate_indirect) noexcept
