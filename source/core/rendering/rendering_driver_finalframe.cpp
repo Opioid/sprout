@@ -95,14 +95,14 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     uint32_t num_paths = 0;
     uint32_t begin     = 0;
 
+    float const iteration_threshold = photon_settings_.iteration_threshold;
+
     for (;;) {
         thread_pool_.run_range([ this, frame ](uint32_t id, int32_t begin, int32_t end) noexcept {
             auto& worker = workers_[id];
 
             photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame);
-        },
-                               static_cast<int32_t>(begin),
-                               static_cast<int32_t>(photon_settings_.num_photons));
+        }, static_cast<int32_t>(begin), static_cast<int32_t>(photon_settings_.num_photons));
 
         for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
             num_paths += photon_infos_[i].num_paths;
@@ -115,16 +115,11 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
         uint32_t const new_begin = photon_map_.compile(num_paths, thread_pool_);
 
-        if (0 == new_begin || static_cast<float>(begin) / static_cast<float>(new_begin) > 0.99f) {
+        if (0 == new_begin || 0.f == iteration_threshold || static_cast<float>(begin) / static_cast<float>(new_begin) > (1.f - iteration_threshold)) {
             break;
         }
 
         begin = new_begin;
-
-        if (static_cast<float>(begin) / static_cast<float>(photon_settings_.num_photons) >=
-            photon_settings_.iteration_threshold) {
-            break;
-        }
     }
 
     auto const duration = chrono::seconds_since(start);
