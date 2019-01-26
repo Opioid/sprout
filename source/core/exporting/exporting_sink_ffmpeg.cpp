@@ -29,7 +29,7 @@ Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusio
 #endif
 }
 
-Ffmpeg::~Ffmpeg() {
+Ffmpeg::~Ffmpeg() noexcept {
     if (stream_) {
 #ifdef WIN32
         _pclose(stream_);

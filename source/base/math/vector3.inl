@@ -625,6 +625,10 @@ static inline Vector3f_a constexpr max(Vector3f_a const& a, Vector3f_a const& b)
     return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
+static inline Vector3f_a constexpr ceil(Vector3f_a const& v) noexcept {
+    return Vector3f_a(std::ceil(v[0]), std::ceil(v[1]), std::ceil(v[2]));
+}
+
 static inline float constexpr min_component(Vector3f_a const& v) noexcept {
     return std::min(std::min(v[0], v[1]), v[2]);
 }

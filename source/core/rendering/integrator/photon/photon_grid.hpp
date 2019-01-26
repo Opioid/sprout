@@ -65,8 +65,6 @@ class Grid {
 
     int3 map3(float3 const& v, uint8_t& adjacents) const noexcept;
 
-    int3 mapu3(float3 const& v, uint8_t& adjacents) const noexcept;
-
     struct Adjacency {
         int2     cells[4];
         uint32_t num_cells;
@@ -81,13 +79,13 @@ class Grid {
 
     float photon_radius_;
     float merge_radius_factor_;
-    float inverse_cell_size_;
+    float grid_cell_factor_;
     float lower_cell_bound_;
     float upper_cell_bound_;
 
     int3 dimensions_;
 
-    float3 dimensionsf_;
+    float3 local_to_texture_;
 
     int2* grid_;
 
