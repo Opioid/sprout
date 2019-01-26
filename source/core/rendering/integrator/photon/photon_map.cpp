@@ -9,7 +9,7 @@
 
 namespace rendering::integrator::photon {
 
-static float constexpr Merge_threshold = 0.15f;
+static float constexpr Merge_threshold = 0.2f;
 
 Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
          bool separate_indirect) noexcept
@@ -19,11 +19,11 @@ Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
       indirect_radius_factor_(indirect_radius_factor),
       separate_indirect_(separate_indirect),
       num_reduced_(nullptr),
-      caustic_grid_(radius, Merge_threshold, 2.25f),
+      caustic_grid_(radius, Merge_threshold, 1.75f),
       indirect_grid_(indirect_radius_factor_ * radius_,
                      Merge_threshold / (math::lerp(std::sqrt(indirect_radius_factor),
-                                                   indirect_radius_factor, 0.25f)),
-                     1.75f) {}
+                                                   indirect_radius_factor, 1.f)),
+                     1.1f) {}
 
 Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);
@@ -82,17 +82,17 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
         return red_num_caustics + red_num_indirect;
     } else {
         caustic_grid_.update(num_photons_, photons_);
-        return 1;
-//        uint32_t const red_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
-//                                                                        pool);
 
-//        float const percentage_caustics = static_cast<float>(red_num_caustics) /
-//                                          static_cast<float>(num_photons_);
+        uint32_t const red_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
+                                                                        pool);
 
-//        std::cout << red_num_caustics << " total left of " << num_photons_ << " ("
-//                  << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
+        float const percentage_caustics = static_cast<float>(red_num_caustics) /
+                                          static_cast<float>(num_photons_);
 
-//        return red_num_caustics;
+        std::cout << red_num_caustics << " total left of " << num_photons_ << " ("
+                  << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
+
+        return red_num_caustics;
     }
 }
 
