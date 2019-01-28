@@ -41,17 +41,16 @@ class Grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Grid(float search_radius, float merge_radius, float grid_radius_factor) noexcept;
+    Grid(float search_radius, float grid_radius_factor) noexcept;
 
     ~Grid() noexcept;
 
     void resize(AABB const& aabb) noexcept;
 
-    void set_range(uint32_t num_photons, Photon* photons) noexcept;
+    void init_cells(uint32_t num_photons, Photon* photons) noexcept;
 
-    void init_cells() noexcept;
-
-    uint32_t reduce_and_move(Photon* photons, uint32_t* num_reduced, thread::Pool& pool) noexcept;
+    uint32_t reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
+                             thread::Pool& pool) noexcept;
 
     float3 li(Intersection const& intersection, const Material_sample& sample, uint32_t num_paths,
               scene::Worker const& worker) const noexcept;
@@ -59,7 +58,7 @@ class Grid {
     size_t num_bytes() const noexcept;
 
   private:
-    uint32_t reduce(int32_t begin, int32_t end) noexcept;
+    uint32_t reduce(float merge_radius, int32_t begin, int32_t end) noexcept;
 
     uint8_t adjacent(float s) const noexcept;
 
@@ -80,7 +79,7 @@ class Grid {
     AABB aabb_;
 
     float search_radius_;
-    float merge_radius_;
+
     float grid_cell_factor_;
     float lower_cell_bound_;
     float upper_cell_bound_;

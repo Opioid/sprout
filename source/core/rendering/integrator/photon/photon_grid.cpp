@@ -17,11 +17,10 @@ namespace rendering::integrator::photon {
 static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
                                      scene::Worker const&             worker) noexcept;
 
-Grid::Grid(float search_radius, float merge_radius, float grid_cell_factor) noexcept
+Grid::Grid(float search_radius, float grid_cell_factor) noexcept
     : num_photons_(0),
       photons_(nullptr),
       search_radius_(search_radius),
-      merge_radius_(merge_radius),
       grid_cell_factor_(grid_cell_factor),
       lower_cell_bound_(0.5f / grid_cell_factor),
       upper_cell_bound_(1.f - (0.5f / grid_cell_factor)),
@@ -208,14 +207,9 @@ void Grid::resize(AABB const& aabb) noexcept {
     }
 }
 
-void Grid::set_range(uint32_t num_photons, Photon* photons) noexcept {
+void Grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
     num_photons_ = num_photons;
     photons_     = photons;
-}
-
-void Grid::init_cells() noexcept {
-    uint32_t const num_photons = num_photons_;
-    Photon*        photons     = photons_;
 
     if (0 == num_photons) {
         return;
@@ -247,13 +241,13 @@ void Grid::init_cells() noexcept {
     }
 }
 
-uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced,
+uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
                                thread::Pool& pool) noexcept {
-    init_cells();
-
-    pool.run_range([this, num_reduced](uint32_t id, int32_t begin,
-                                       int32_t end) { num_reduced[id] = reduce(begin, end); },
-                   0, static_cast<int32_t>(num_photons_));
+    pool.run_range(
+        [this, merge_radius, num_reduced](uint32_t id, int32_t begin, int32_t end) {
+            num_reduced[id] = reduce(merge_radius, begin, end);
+        },
+        0, static_cast<int32_t>(num_photons_));
 
     uint32_t comp_num_photons = num_photons_;
 
@@ -272,8 +266,6 @@ uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced,
             photons[i] = old_photons[i];
         }
     }
-
-    set_range(comp_num_photons, photons_);
 
     return comp_num_photons;
 }
@@ -369,8 +361,8 @@ size_t Grid::num_bytes() const noexcept {
     return num_bytes;
 }
 
-uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
-    float const merge_radius2 = merge_radius_ * merge_radius_;
+uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
+    float const merge_radius2 = merge_radius * merge_radius;
 
     uint32_t num_reduced = 0;
 

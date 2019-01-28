@@ -36,13 +36,19 @@ class Map {
     uint32_t num_paths_;
 
     uint32_t num_photons_;
-    Photon*  photons_;
+
+    uint32_t red_num_direct_;
+    uint32_t red_num_indirect_;
+
+    Photon* photons_;
 
     bool separate_indirect_;
 
+    float merge_radius_;
+
     uint32_t* num_reduced_;
 
-    Grid caustic_grid_;
+    Grid direct_grid_;
     Grid indirect_grid_;
 };
 
