@@ -17,11 +17,11 @@ namespace rendering::integrator::photon {
 static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
                                      scene::Worker const&             worker) noexcept;
 
-Grid::Grid(float radius, float merge_radius_factor, float grid_cell_factor) noexcept
+Grid::Grid(float search_radius, float merge_radius, float grid_cell_factor) noexcept
     : num_photons_(0),
       photons_(nullptr),
-      photon_radius_(radius),
-      merge_radius_factor_(merge_radius_factor),
+      search_radius_(search_radius),
+      merge_radius_(merge_radius),
       grid_cell_factor_(grid_cell_factor),
       lower_cell_bound_(0.5f / grid_cell_factor),
       upper_cell_bound_(1.f - (0.5f / grid_cell_factor)),
@@ -35,7 +35,7 @@ Grid::~Grid() noexcept {
 void Grid::resize(AABB const& aabb) noexcept {
     aabb_ = aabb;
 
-    float const diameter = 2.f * photon_radius_;
+    float const diameter = 2.f * search_radius_;
 
     int3 const dimensions = int3(ceil(aabb.extent() / (diameter * grid_cell_factor_))) + int(2);
 
@@ -294,8 +294,8 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     adjacent_cells(position, adjacency);
 
     if (intersection.subsurface) {
-        float const radius_2 = photon_radius_ * photon_radius_;
-        float const radius_3 = photon_radius_ * radius_2;
+        float const radius_2 = search_radius_ * search_radius_;
+        float const radius_3 = search_radius_ * radius_2;
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];
@@ -319,7 +319,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
         result /= (((4.f / 3.f) * Pi) * (radius_3 * static_cast<float>(num_paths))) * mu_s;
     } else {
-        float const radius_2     = photon_radius_ * photon_radius_;
+        float const radius_2     = search_radius_ * search_radius_;
         float const inv_radius_2 = 1.f / radius_2;
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
@@ -363,7 +363,7 @@ size_t Grid::num_bytes() const noexcept {
 }
 
 uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
-    float const merge_distance = math::pow2(merge_radius_factor_ * photon_radius_);
+    float const merge_radius2 = merge_radius_ * merge_radius_;
 
     uint32_t num_reduced = 0;
 
@@ -396,7 +396,7 @@ uint32_t Grid::reduce(int32_t begin, int32_t end) noexcept {
                     continue;
                 }
 
-                if (math::squared_distance(pa.p, pb.p) < merge_distance) {
+                if (math::squared_distance(pa.p, pb.p) < merge_radius2) {
                     ++local_reduced;
 
                     position += pb.p;

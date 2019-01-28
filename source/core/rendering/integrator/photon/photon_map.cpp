@@ -9,21 +9,14 @@
 
 namespace rendering::integrator::photon {
 
-static float constexpr Merge_threshold = 0.25f;
-
-Map::Map(uint32_t num_photons, float radius, float indirect_radius_factor,
-         bool separate_indirect) noexcept
+Map::Map(uint32_t num_photons, float search_radius, float merge_radius,
+         float indirect_radius_factor, bool separate_indirect) noexcept
     : num_photons_(num_photons),
       photons_(nullptr),
-      radius_(radius),
-      indirect_radius_factor_(indirect_radius_factor),
       separate_indirect_(separate_indirect),
       num_reduced_(nullptr),
-      caustic_grid_(radius, Merge_threshold, 1.75f),
-      indirect_grid_(indirect_radius_factor_ * radius_,
-                     Merge_threshold / (math::lerp(std::sqrt(indirect_radius_factor),
-                                                   indirect_radius_factor, 1.f)),
-                     1.1f) {}
+      caustic_grid_(search_radius, merge_radius, 1.75f),
+      indirect_grid_(indirect_radius_factor * search_radius, merge_radius, 1.1f) {}
 
 Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);

@@ -41,7 +41,7 @@ class Grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Grid(float radius, float merge_radius_factor, float grid_radius_factor) noexcept;
+    Grid(float search_radius, float merge_radius, float grid_radius_factor) noexcept;
 
     ~Grid() noexcept;
 
@@ -77,8 +77,8 @@ class Grid {
 
     AABB aabb_;
 
-    float photon_radius_;
-    float merge_radius_factor_;
+    float search_radius_;
+    float merge_radius_;
     float grid_cell_factor_;
     float lower_cell_bound_;
     float upper_cell_bound_;

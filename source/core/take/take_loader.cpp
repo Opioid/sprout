@@ -622,7 +622,8 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
     settings.num_photons            = json::read_uint(value, "num_photons", 0);
     settings.max_bounces            = json::read_uint(value, "max_bounces", 2);
     settings.iteration_threshold    = json::read_float(value, "iteration_threshold", 0.f);
-    settings.radius                 = json::read_float(value, "radius", 0.05f);
+    settings.search_radius          = json::read_float(value, "search_radius", 0.01f);
+    settings.merge_radius           = json::read_float(value, "merge_radius", 0.0025f);
     settings.indirect_radius_factor = json::read_float(value, "indirect_radius_factor", 4.f);
     settings.indirect_photons       = json::read_bool(value, "indirect_photons", false);
     settings.separate_indirect      = json::read_bool(value, "separate_indirect", true);

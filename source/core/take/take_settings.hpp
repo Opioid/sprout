@@ -14,7 +14,8 @@ struct Photon_settings {
     uint32_t max_bounces = 2;
 
     float iteration_threshold    = 0.f;
-    float radius                 = 0.05f;
+    float search_radius          = 0.01f;
+    float merge_radius           = 0.0025f;
     float indirect_radius_factor = 4.f;
 
     bool indirect_photons  = false;
