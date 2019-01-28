@@ -115,7 +115,7 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
             break;
         }
 
-        uint32_t const new_begin = photon_map_.compile(num_paths, thread_pool_);
+        uint32_t const new_begin = photon_map_.compile_iteration(num_paths, thread_pool_);
 
         if (0 == new_begin || 1.f <= iteration_threshold ||
             static_cast<float>(begin) / static_cast<float>(new_begin) >
@@ -125,6 +125,8 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
         begin = new_begin;
     }
+
+    photon_map_.compile_finalize();
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");

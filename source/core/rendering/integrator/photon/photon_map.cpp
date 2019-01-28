@@ -32,7 +32,7 @@ void Map::insert(Photon const& photon, uint32_t index) noexcept {
     photons_[index] = photon;
 }
 
-uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
+uint32_t Map::compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept {
     AABB const aabb = calculate_aabb(pool);
 
     caustic_grid_.resize(aabb);
@@ -51,12 +51,12 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
 
         uint32_t const num_indirect = num_photons_ - num_caustics;
 
-        caustic_grid_.update(num_caustics, photons_);
-
-        indirect_grid_.update(num_indirect, photons_ + num_caustics);
+        caustic_grid_.set_range(num_caustics, photons_);
 
         uint32_t const red_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
                                                                         pool);
+
+        indirect_grid_.set_range(num_indirect, photons_ + num_caustics);
 
         uint32_t const red_num_indirect = indirect_grid_.reduce_and_move(
             photons_ + red_num_caustics, num_reduced_, pool);
@@ -74,7 +74,7 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
 
         return red_num_caustics + red_num_indirect;
     } else {
-        caustic_grid_.update(num_photons_, photons_);
+        caustic_grid_.set_range(num_photons_, photons_);
 
         uint32_t const red_num_caustics = caustic_grid_.reduce_and_move(photons_, num_reduced_,
                                                                         pool);
@@ -86,6 +86,14 @@ uint32_t Map::compile(uint32_t num_paths, thread::Pool& pool) noexcept {
                   << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
 
         return red_num_caustics;
+    }
+}
+
+void Map::compile_finalize() noexcept {
+    caustic_grid_.init_cells();
+
+    if (separate_indirect_) {
+        indirect_grid_.init_cells();
     }
 }
 

@@ -208,9 +208,14 @@ void Grid::resize(AABB const& aabb) noexcept {
     }
 }
 
-void Grid::update(uint32_t num_photons, Photon* photons) noexcept {
+void Grid::set_range(uint32_t num_photons, Photon* photons) noexcept {
     num_photons_ = num_photons;
     photons_     = photons;
+}
+
+void Grid::init_cells() noexcept {
+    uint32_t const num_photons = num_photons_;
+    Photon*        photons     = photons_;
 
     if (0 == num_photons) {
         return;
@@ -244,6 +249,8 @@ void Grid::update(uint32_t num_photons, Photon* photons) noexcept {
 
 uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced,
                                thread::Pool& pool) noexcept {
+    init_cells();
+
     pool.run_range([this, num_reduced](uint32_t id, int32_t begin,
                                        int32_t end) { num_reduced[id] = reduce(begin, end); },
                    0, static_cast<int32_t>(num_photons_));
@@ -266,7 +273,7 @@ uint32_t Grid::reduce_and_move(Photon* photons, uint32_t* num_reduced,
         }
     }
 
-    update(comp_num_photons, photons_);
+    set_range(comp_num_photons, photons_);
 
     return comp_num_photons;
 }

@@ -47,7 +47,9 @@ class Grid {
 
     void resize(AABB const& aabb) noexcept;
 
-    void update(uint32_t num_photons, Photon* photons) noexcept;
+    void set_range(uint32_t num_photons, Photon* photons) noexcept;
+
+    void init_cells() noexcept;
 
     uint32_t reduce_and_move(Photon* photons, uint32_t* num_reduced, thread::Pool& pool) noexcept;
 

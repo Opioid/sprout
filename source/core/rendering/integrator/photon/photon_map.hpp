@@ -21,7 +21,9 @@ class Map {
 
     void insert(Photon const& photon, uint32_t index) noexcept;
 
-    uint32_t compile(uint32_t num_paths, thread::Pool& pool) noexcept;
+    uint32_t compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept;
+
+    void compile_finalize() noexcept;
 
     float3 li(Intersection const& intersection, Material_sample const& sample,
               scene::Worker const& worker) const noexcept;
