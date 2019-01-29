@@ -417,14 +417,14 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
 
                 float const brightness = average(b_alpha);
 
+                a_alpha += b_alpha;
+
+                b.alpha[0] = -1.f;
+
                 if (brightness > max_brightness) {
                     wi             = b.wi;
                     max_brightness = brightness;
                 }
-
-                a_alpha += b_alpha;
-
-                b.alpha[0] = -1.f;
             }
         }
 
