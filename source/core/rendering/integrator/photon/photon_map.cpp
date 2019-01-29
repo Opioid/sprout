@@ -60,7 +60,7 @@ uint32_t Map::compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept
         direct_grid_.init_cells(num_indirect, photons_ + num_caustics);
 
         uint32_t const red_num_indirect = direct_grid_.reduce_and_move(
-            photons_ + red_num_caustics, 1.25f * merge_radius_, num_reduced_, pool);
+            photons_ + red_num_caustics, merge_radius_, num_reduced_, pool);
 
         float const percentage_caustics = static_cast<float>(red_num_caustics) /
                                           static_cast<float>(num_caustics);

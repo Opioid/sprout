@@ -367,18 +367,24 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
     uint32_t num_reduced = 0;
 
     for (int32_t i = begin, ilen = end; i < ilen; ++i) {
-        auto& pa = photons_[i];
+        auto& a = photons_[i];
 
-        if (pa.alpha[0] < 0.f) {
+        if (a.alpha[0] < 0.f) {
             continue;
         }
 
-        float3 position = pa.p;
+        float3 position = a.p;
+
+        float3 wi = a.wi;
+
+        float3 a_alpha = float3(a.alpha);
+
+        float max_brightness = average(a_alpha);
 
         uint32_t local_reduced = 0;
 
         Adjacency adjacency;
-        adjacent_cells(pa.p, adjacency);
+        adjacent_cells(a.p, adjacency);
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];
@@ -389,30 +395,47 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
                     continue;
                 }
 
-                auto& pb = photons_[j];
+                auto& b = photons_[j];
 
-                if (pb.alpha[0] < 0.f) {
+                if (b.alpha[0] < 0.f) {
                     continue;
                 }
 
-                if (math::squared_distance(pa.p, pb.p) < merge_radius2) {
-                    ++local_reduced;
-
-                    position += pb.p;
-
-                    float3 const sum = float3(pa.alpha) + float3(pb.alpha);
-
-                    pa.alpha[0] = sum[0];
-                    pa.alpha[1] = sum[1];
-                    pa.alpha[2] = sum[2];
-
-                    pb.alpha[0] = -1.f;
+                if (dot(a.wi, b.wi) < 0.f) {
+                    continue;
                 }
+
+                if (squared_distance(a.p, b.p) > merge_radius2) {
+                    continue;
+                }
+
+                ++local_reduced;
+
+                position += b.p;
+
+                float3 const b_alpha = float3(b.alpha);
+
+                float const brightness = average(b_alpha);
+
+                if (brightness > max_brightness) {
+                    wi             = b.wi;
+                    max_brightness = brightness;
+                }
+
+                a_alpha += b_alpha;
+
+                b.alpha[0] = -1.f;
             }
         }
 
         if (local_reduced > 0) {
-            pa.p = position / static_cast<float>(local_reduced + 1);
+            a.p = position / static_cast<float>(local_reduced + 1);
+
+            a.wi = wi;
+
+            a.alpha[0] = a_alpha[0];
+            a.alpha[1] = a_alpha[1];
+            a.alpha[2] = a_alpha[2];
         }
 
         num_reduced += local_reduced;
