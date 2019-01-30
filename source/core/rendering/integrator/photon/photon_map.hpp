@@ -12,8 +12,8 @@ class Map {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Map(uint32_t num_photons, float search_radius, float merge_radius, float indirect_radius_factor,
-        bool separate_indirect) noexcept;
+    Map(uint32_t num_photons, float search_radius, float merge_radius, float coarse_search_radius,
+        bool separate_coarse) noexcept;
 
     ~Map() noexcept;
 
@@ -37,19 +37,19 @@ class Map {
 
     uint32_t num_photons_;
 
-    uint32_t red_num_direct_;
-    uint32_t red_num_indirect_;
+    uint32_t red_num_fine_;
+    uint32_t red_num_coarse_;
 
     Photon* photons_;
 
-    bool separate_indirect_;
+    bool separate_coarse_;
 
     float merge_radius_;
 
     uint32_t* num_reduced_;
 
-    Grid direct_grid_;
-    Grid indirect_grid_;
+    Grid fine_grid_;
+    Grid coarse_grid_;
 };
 
 }  // namespace rendering::integrator::photon

@@ -373,13 +373,13 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
             continue;
         }
 
-        float3 position = a.p;
-
-        float3 wi = a.wi;
-
         float3 a_alpha = float3(a.alpha);
 
-        float total_brightness = average(a_alpha);
+        float total_weight = average(a_alpha);
+
+        float3 position = total_weight * a.p;
+
+        float3 wi = a.wi;
 
         uint32_t local_reduced = 0;
 
@@ -403,10 +403,10 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
 
                 float3 const b_alpha = float3(b.alpha);
 
-                float const brightness = average(b_alpha);
+                float const weight = average(b_alpha);
 
-                float const ratio = total_brightness > brightness ? brightness / total_brightness
-                                                                  : total_brightness / brightness;
+                float const ratio = total_weight > weight ? weight / total_weight
+                                                          : total_weight / weight;
 
                 float const threshold = std::max(ratio - 0.1f, 0.f);
 
@@ -422,20 +422,20 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
 
                 b.alpha[0] = -1.f;
 
-                if (brightness > total_brightness) {
+                if (weight > total_weight) {
                     wi = b.wi;
                 }
 
-                total_brightness += brightness;
+                total_weight += weight;
 
-                position += b.p;
+                position += weight * b.p;
 
                 ++local_reduced;
             }
         }
 
         if (local_reduced > 0) {
-            a.p = position / static_cast<float>(local_reduced + 1);
+            a.p = position / total_weight;
 
             a.wi = wi;
 

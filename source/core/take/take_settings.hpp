@@ -13,14 +13,14 @@ struct Photon_settings {
     uint32_t num_photons = 0;
     uint32_t max_bounces = 2;
 
-    float iteration_threshold    = 0.f;
-    float search_radius          = 0.01f;
-    float merge_radius           = 0.0025f;
-    float indirect_radius_factor = 4.f;
+    float iteration_threshold  = 0.f;
+    float search_radius        = 0.01f;
+    float merge_radius         = 0.0025f;
+    float coarse_search_radius = 0.1f;
 
-    bool indirect_photons  = false;
-    bool separate_indirect = false;
-    bool full_light_path   = false;
+    bool indirect_photons = false;
+    bool separate_coarse  = false;
+    bool full_light_path  = false;
 };
 
 }  // namespace take
