@@ -379,7 +379,7 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
 
         float3 a_alpha = float3(a.alpha);
 
-        float max_brightness = average(a_alpha);
+        float total_brightness = average(a_alpha);
 
         uint32_t local_reduced = 0;
 
@@ -401,17 +401,13 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
                     continue;
                 }
 
-                if (dot(a.wi, b.wi) < 0.f) {
+                if (dot(wi, b.wi) < 0.f) {
                     continue;
                 }
 
                 if (squared_distance(a.p, b.p) > merge_radius2) {
                     continue;
                 }
-
-                ++local_reduced;
-
-                position += b.p;
 
                 float3 const b_alpha = float3(b.alpha);
 
@@ -421,10 +417,15 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
 
                 b.alpha[0] = -1.f;
 
-                if (brightness > max_brightness) {
-                    wi             = b.wi;
-                    max_brightness = brightness;
+                if (brightness > total_brightness) {
+                    wi = b.wi;
                 }
+
+                total_brightness += brightness;
+
+                position += b.p;
+
+                ++local_reduced;
             }
         }
 
