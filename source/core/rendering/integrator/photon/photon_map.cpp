@@ -10,10 +10,10 @@
 namespace rendering::integrator::photon {
 
 Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float coarse_search_radius,
-         bool separate_coarse) noexcept
+         bool separate_indirect) noexcept
     : num_photons_(num_photons),
       photons_(nullptr),
-      separate_coarse_(separate_coarse),
+      separate_indirect_(separate_indirect),
       merge_radius_(merge_radius),
       aabbs_(nullptr),
       num_reduced_(nullptr),
@@ -43,7 +43,7 @@ uint32_t Map::compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept
 
     num_paths_ = num_paths;
 
-    if (separate_coarse_) {
+    if (separate_indirect_) {
         coarse_grid_.resize(aabb);
 
         auto const indirect_photons = std::partition(
@@ -101,7 +101,7 @@ uint32_t Map::compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept
 void Map::compile_finalize() noexcept {
     fine_grid_.init_cells(red_num_fine_, photons_);
 
-    if (separate_coarse_) {
+    if (separate_indirect_) {
         coarse_grid_.init_cells(red_num_coarse_, photons_ + red_num_fine_);
     }
 }
