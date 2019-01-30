@@ -15,17 +15,20 @@ Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float co
       photons_(nullptr),
       separate_coarse_(separate_coarse),
       merge_radius_(merge_radius),
+      aabbs_(nullptr),
       num_reduced_(nullptr),
       fine_grid_(search_radius, 1.5f),
       coarse_grid_(coarse_search_radius, 1.1f) {}
 
 Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);
+    memory::free_aligned(aabbs_);
     memory::free_aligned(photons_);
 }
 
 void Map::init(uint32_t num_workers) noexcept {
     photons_     = memory::allocate_aligned<Photon>(num_photons_);
+    aabbs_       = memory::allocate_aligned<AABB>(num_photons_);
     num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
 }
 
@@ -117,16 +120,26 @@ size_t Map::num_bytes() const noexcept {
     return num_bytes;
 }
 
-AABB Map::calculate_aabb(thread::Pool& /*pool*/) const noexcept {
-    AABB aabb = AABB::empty();
+AABB Map::calculate_aabb(thread::Pool& pool) const noexcept {
+    pool.run_range(
+        [this](uint32_t id, int32_t begin, int32_t end) {
+            AABB aabb = AABB::empty();
 
-    for (uint32_t i = 0, len = num_photons_; i < len; ++i) {
-        aabb.insert(photons_[i].p);
+            for (int32_t i = begin; i < end; ++i) {
+                aabb.insert(photons_[i].p);
+            }
+
+            aabbs_[id] = aabb;
+        },
+        0, static_cast<int32_t>(num_photons_));
+
+    for (uint32_t i = 1, len = pool.num_threads(); i < len; ++i) {
+        aabbs_[0].merge_assign(aabbs_[i]);
     }
 
-    aabb.add(0.0001f);
+    aabbs_[0].add(0.0001f);
 
-    return aabb;
+    return aabbs_[0];
 }
 
 }  // namespace rendering::integrator::photon

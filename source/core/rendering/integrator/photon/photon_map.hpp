@@ -46,6 +46,8 @@ class Map {
 
     float merge_radius_;
 
+    AABB* aabbs_;
+
     uint32_t* num_reduced_;
 
     Grid fine_grid_;
