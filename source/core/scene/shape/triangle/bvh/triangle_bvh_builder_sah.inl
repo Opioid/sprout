@@ -29,11 +29,12 @@ void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, Vertices c
 
         References references(triangles.size());
 
-        std::vector<math::Simd_AABB> aabbs(thread_pool.num_threads(), AABB::empty());
+        std::vector<math::Simd_AABB> aabbs(thread_pool.num_threads());
 
         thread_pool.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin, int32_t end) {
                 math::Simd_AABB aabb(AABB::empty());
+
                 for (int32_t i = begin; i < end; ++i) {
                     auto a = simd::load_float3(vertices[triangles[i].i[0]].p);
                     auto b = simd::load_float3(vertices[triangles[i].i[1]].p);
@@ -46,7 +47,8 @@ void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, Vertices c
 
                     aabb.merge_assign(min, max);
                 }
-                aabbs[id].merge_assign(aabb);
+
+                aabbs[id] = aabb;
             },
             0, static_cast<int32_t>(triangles.size()));
 
