@@ -35,7 +35,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
         intersection.t = transformation.rotation.r[0];
         intersection.b = transformation.rotation.r[1];
 
-        float3 n           = -ray.direction;
+        float3 const n     = -ray.direction;
         intersection.n     = n;
         intersection.geo_n = n;
         intersection.part  = 0;
@@ -44,7 +44,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = normalize(xyz);
 
-        float2 disk        = math::hemisphere_to_disk_equidistant(xyz);
+        float2 const disk  = hemisphere_to_disk_equidistant(xyz);
         intersection.uv[0] = 0.5f * disk[0] + 0.5f;
         intersection.uv[1] = 0.5f * disk[1] + 0.5f;
 
@@ -69,7 +69,7 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
 
         intersection.p = ray.point(Ray_max_t);
 
-        float3 n           = -ray.direction;
+        float3 const n     = -ray.direction;
         intersection.geo_n = n;
         intersection.part  = 0;
 
@@ -77,7 +77,7 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = normalize(xyz);
 
-        float2 disk        = math::hemisphere_to_disk_equidistant(xyz);
+        float2 const disk  = hemisphere_to_disk_equidistant(xyz);
         intersection.uv[0] = 0.5f * disk[0] + 0.5f;
         intersection.uv[1] = 0.5f * disk[1] + 0.5f;
 
@@ -132,10 +132,10 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
                     uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
     noexcept {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
+    float3 const dir = sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
     float3 const xyz  = normalize(transform_vector_transposed(transformation.rotation, dir));
-    float2 const disk = math::hemisphere_to_disk_equidistant(xyz);
+    float2 const disk = hemisphere_to_disk_equidistant(xyz);
 
     sample.wi      = dir;
     sample.uvw[0]  = 0.5f * disk[0] + 0.5f;
@@ -172,8 +172,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
                     Sample_to&            sample) const noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-    float const z = dot(disk, disk);
-    if (z > 1.f) {
+    if (float const z = dot(disk, disk); z > 1.f) {
         sample.pdf = 0.f;
         return false;
     }
@@ -201,13 +200,12 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
     noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-    float const z = dot(disk, disk);
-    if (z > 1.f) {
+    if (float const z = dot(disk, disk); z > 1.f) {
         sample.pdf = 0.f;
         return false;
     }
 
-    float3 const ls = math::disk_to_hemisphere_equidistant(disk);
+    float3 const ls = disk_to_hemisphere_equidistant(disk);
 
     float3 const ws = -transform_vector(transformation.rotation, ls);
 
@@ -215,16 +213,18 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const radius = length(bounds.halfsize());
+    float const bounds_radius_2 = squared_length(bounds.halfsize());
 
-    float3 const receciver_disk = math::sample_oriented_disk_concentric(r0, t, b);
+    float const bounds_radius = std::sqrt(bounds_radius_2);
 
-    float3 const p = bounds.position() + radius * (receciver_disk - ws);
+    float3 const receciver_disk = sample_oriented_disk_concentric(r0, t, b);
+
+    float3 const p = bounds.position() + bounds_radius * (receciver_disk - ws);
 
     sample.dir     = ws;
     sample.p       = p;
     sample.uv      = uv;
-    sample.pdf     = 1.f / ((2.f * Pi) * (1.f * Pi) * radius * radius);
+    sample.pdf     = 1.f / ((2.f * Pi) * (1.f * Pi) * bounds_radius_2);
     sample.epsilon = 5e-4f;
 
     return true;
@@ -239,8 +239,7 @@ float Canopy::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
 float Canopy::uv_weight(float2 uv) const noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-    float const z = dot(disk, disk);
-    if (z > 1.f) {
+    if (float const z = dot(disk, disk); z > 1.f) {
         return 0.f;
     }
 

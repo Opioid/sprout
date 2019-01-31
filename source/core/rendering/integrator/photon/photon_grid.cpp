@@ -14,8 +14,10 @@
 
 namespace rendering::integrator::photon {
 
-static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
-                                     scene::Worker const&             worker) noexcept;
+using namespace scene;
+
+static float3 scattering_coefficient(prop::Intersection const& intersection,
+                                     Worker const&             worker) noexcept;
 
 Grid::Grid(float search_radius, float grid_cell_factor) noexcept
     : num_photons_(0),
@@ -499,14 +501,14 @@ void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept 
     }
 }
 
-static float3 scattering_coefficient(scene::prop::Intersection const& intersection,
-                                     scene::Worker const&             worker) noexcept {
-    using Filter = scene::material::Sampler_settings::Filter;
+static float3 scattering_coefficient(prop::Intersection const& intersection,
+                                     Worker const&             worker) noexcept {
+    using Filter = material::Sampler_settings::Filter;
 
     auto const& material = *intersection.material();
 
     if (material.is_heterogeneous_volume()) {
-        scene::entity::Composed_transformation temp;
+        entity::Composed_transformation temp;
         auto const& transformation = intersection.prop->transformation_at(0, temp);
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);

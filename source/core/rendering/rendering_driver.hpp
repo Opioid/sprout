@@ -75,8 +75,9 @@ class Driver {
 
     image::Float4 target_;
 
+    take::Photon_settings photon_settings_;
+
     integrator::photon::Map photon_map_;
-    take::Photon_settings   photon_settings_;
 
     struct Photon_info {
         uint32_t num_paths;

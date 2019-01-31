@@ -188,16 +188,18 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const bounds_radius = length(bounds.halfsize());
+    float const bounds_radius_2 = squared_length(bounds.halfsize());
 
-    float3 const receciver_disk = math::sample_oriented_disk_concentric(
-        r0, transformation.rotation.r[0], transformation.rotation.r[1]);
+    float const bounds_radius = std::sqrt(bounds_radius_2);
+
+    float3 const receciver_disk = sample_oriented_disk_concentric(r0, transformation.rotation.r[0],
+                                                                  transformation.rotation.r[1]);
 
     float3 const p = bounds.position() + bounds_radius * (receciver_disk - dir);
 
     sample.dir     = dir;
     sample.p       = p;
-    sample.pdf     = 1.f / ((1.f * Pi) * (area * bounds_radius * bounds_radius));
+    sample.pdf     = 1.f / ((1.f * Pi) * (area * bounds_radius_2));
     sample.epsilon = 5e-4f;
 
     return true;

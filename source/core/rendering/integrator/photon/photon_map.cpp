@@ -133,13 +133,15 @@ AABB Map::calculate_aabb(thread::Pool& pool) const noexcept {
         },
         0, static_cast<int32_t>(num_photons_));
 
+    AABB aabb = AABB::empty();
+
     for (uint32_t i = 1, len = pool.num_threads(); i < len; ++i) {
-        aabbs_[0].merge_assign(aabbs_[i]);
+        aabb.merge_assign(aabbs_[i]);
     }
 
-    aabbs_[0].add(0.0001f);
+    aabb.add(0.0001f);
 
-    return aabbs_[0];
+    return aabb;
 }
 
 }  // namespace rendering::integrator::photon
