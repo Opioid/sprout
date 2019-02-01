@@ -159,6 +159,8 @@ struct alignas(16) Matrix4x4f_a {
                  float m13, float m20, float m21, float m22, float m23, float m30, float m31,
                  float m32, float m33) noexcept;
 
+    explicit Matrix4x4f_a(Matrix3x3f_a const& m) noexcept;
+
     explicit Matrix4x4f_a(Transformation const& t) noexcept;
 
     Vector3f_a x() const noexcept;
