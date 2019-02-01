@@ -29,8 +29,9 @@ static inline float power_heuristic(float f_pdf, float g_pdf) noexcept {
     return f2 / (f2 + g_pdf * g_pdf);
 }
 
-static inline bool russian_roulette(float3& throughput, float continuation_probability,
-                                    float r) noexcept {
+static inline bool russian_roulette(float3& throughput, float r) noexcept {
+    float const continuation_probability = max_component(throughput);
+
     if (r > continuation_probability) {
         return true;
     }

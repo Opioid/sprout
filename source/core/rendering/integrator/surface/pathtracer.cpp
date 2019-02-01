@@ -94,8 +94,7 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (ray.depth > settings_.min_bounces) {
-            float const q = max_component(throughput);
-            if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
+            if (russian_roulette(throughput, sampler_.generate_sample_1D())) {
                 break;
             }
         }
