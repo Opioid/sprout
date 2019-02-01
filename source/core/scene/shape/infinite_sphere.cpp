@@ -232,9 +232,11 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const radius = length(bounds.halfsize());
+    float const radius_2 = squared_length(bounds.halfsize());
 
-    float3 const disk = math::sample_oriented_disk_concentric(r0, t, b);
+    float const radius = std::sqrt(radius_2);
+
+    float3 const disk = sample_oriented_disk_concentric(r0, t, b);
 
     float3 const p = bounds.position() + radius * (disk - ws);
 
@@ -242,7 +244,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     sample.p   = p;
     sample.uv  = uv;
     // sin_theta because of the uv weight
-    sample.pdf     = 1.f / ((4.f * Pi) * (1.f * Pi) * (sin_theta * radius * radius));
+    sample.pdf     = 1.f / ((4.f * Pi) * (1.f * Pi) * (sin_theta * radius_2));
     sample.epsilon = 5e-4f;
 
     return true;
