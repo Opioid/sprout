@@ -135,7 +135,7 @@ AABB Map::calculate_aabb(thread::Pool& pool) const noexcept {
 
     AABB aabb = AABB::empty();
 
-    for (uint32_t i = 1, len = pool.num_threads(); i < len; ++i) {
+    for (uint32_t i = 0, len = pool.num_threads(); i < len; ++i) {
         aabb.merge_assign(aabbs_[i]);
     }
 
