@@ -12,7 +12,6 @@ class alignas(64) Lighttracer final : public Integrator {
     struct Settings {
         uint32_t min_bounces;
         uint32_t max_bounces;
-        float    path_continuation_probability;
     };
 
     Lighttracer(rnd::Generator& rng, take::Settings const& take_settings,
@@ -49,8 +48,7 @@ class alignas(64) Lighttracer final : public Integrator {
 class Lighttracer_factory final : public Factory {
   public:
     Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                        uint32_t min_bounces, uint32_t max_bounces,
-                        float path_continuation_probability) noexcept;
+                        uint32_t min_bounces, uint32_t max_bounces) noexcept;
 
     ~Lighttracer_factory() noexcept override final;
 

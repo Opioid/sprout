@@ -14,8 +14,6 @@ class alignas(64) Pathtracer final : public Integrator {
         uint32_t min_bounces;
         uint32_t max_bounces;
 
-        float path_continuation_probability;
-
         bool avoid_caustics;
     };
 
@@ -50,7 +48,7 @@ class Pathtracer_factory final : public Factory {
   public:
     Pathtracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
                        uint32_t num_samples, uint32_t min_bounces, uint32_t max_bounces,
-                       float path_continuation_probability, bool enable_caustics) noexcept;
+                       bool enable_caustics) noexcept;
 
     ~Pathtracer_factory() noexcept override final;
 

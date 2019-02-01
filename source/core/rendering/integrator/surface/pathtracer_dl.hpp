@@ -13,7 +13,6 @@ class alignas(64) Pathtracer_DL final : public Integrator {
     struct Settings {
         uint32_t min_bounces;
         uint32_t max_bounces;
-        float    path_continuation_probability;
 
         uint32_t num_light_samples;
 
@@ -54,8 +53,7 @@ class alignas(64) Pathtracer_DL final : public Integrator {
 class Pathtracer_DL_factory final : public Factory {
   public:
     Pathtracer_DL_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                          uint32_t min_bounces, uint32_t max_bounces,
-                          float path_continuation_probability, uint32_t num_light_samples,
+                          uint32_t min_bounces, uint32_t max_bounces, uint32_t num_light_samples,
                           bool enable_caustics) noexcept;
 
     ~Pathtracer_DL_factory() noexcept override final;

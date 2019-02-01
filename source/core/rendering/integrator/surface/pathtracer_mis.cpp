@@ -266,7 +266,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (ray.depth > settings_.min_bounces) {
-            float const q = settings_.path_continuation_probability;
+            float const q = max_component(throughput);
             if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
                 break;
             }
@@ -455,13 +455,11 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(take::Settings const& take_settings,
                                                uint32_t num_integrators, uint32_t num_samples,
                                                uint32_t min_bounces, uint32_t max_bounces,
-                                               float          path_continuation_probability,
                                                Light_sampling light_sampling,
                                                bool           enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
-      settings_{num_samples,    min_bounces,     max_bounces, path_continuation_probability,
-                light_sampling, !enable_caustics} {}
+      settings_{num_samples, min_bounces, max_bounces, light_sampling, !enable_caustics} {}
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() noexcept {
     memory::free_aligned(integrators_);

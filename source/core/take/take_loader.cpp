@@ -184,13 +184,11 @@ void Loader::load(Take& take, std::istream& stream, Scene& scene, resource::Mana
         uint32_t const min_bounces = 4;
         uint32_t const max_bounces = 8;
 
-        float const path_continuation_probability = 0.9f;
-
         bool const enable_caustics = false;
 
         take.surface_integrator_factory = new surface::Pathtracer_MIS_factory(
-            take.settings, num_threads, num_samples, min_bounces, max_bounces,
-            path_continuation_probability, light_sampling, enable_caustics);
+            take.settings, num_threads, num_samples, min_bounces, max_bounces, light_sampling,
+            enable_caustics);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
@@ -479,14 +477,12 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
                                                            uint32_t           num_workers) {
     using namespace rendering::integrator::surface;
 
-    uint32_t default_min_bounces = 4;
-    uint32_t default_max_bounces = 8;
+    uint32_t const default_min_bounces = 4;
+    uint32_t const default_max_bounces = 8;
 
     Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
 
-    float default_path_continuation_probability = 0.9f;
-
-    bool default_caustics = true;
+    bool const default_caustics = true;
 
     for (auto& n : integrator_value.GetObject()) {
         if ("AO" == n.name) {
@@ -505,11 +501,7 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_continuation_probability = json::read_float(
-                n.value, "path_continuation_probability", default_path_continuation_probability);
-
-            return new Lighttracer_factory(settings, num_workers, min_bounces, max_bounces,
-                                           path_continuation_probability);
+            return new Lighttracer_factory(settings, num_workers, min_bounces, max_bounces);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -519,14 +511,10 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_continuation_probability = json::read_float(
-                n.value, "path_continuation_probability", default_path_continuation_probability);
-
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
             return new Pathtracer_factory(settings, num_workers, num_samples, min_bounces,
-                                          max_bounces, path_continuation_probability,
-                                          enable_caustics);
+                                          max_bounces, enable_caustics);
         } else if ("PTDL" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -534,17 +522,13 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_continuation_probability = json::read_float(
-                n.value, "path_continuation_probability", default_path_continuation_probability);
-
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
                                                                light_sampling.num_samples);
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
             return new Pathtracer_DL_factory(settings, num_workers, min_bounces, max_bounces,
-                                             path_continuation_probability, num_light_samples,
-                                             enable_caustics);
+                                             num_light_samples, enable_caustics);
         } else if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -554,16 +538,12 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            float const path_continuation_probability = json::read_float(
-                n.value, "path_continuation_probability", default_path_continuation_probability);
-
             load_light_sampling(n.value, light_sampling);
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
             return new Pathtracer_MIS_factory(settings, num_workers, num_samples, min_bounces,
-                                              max_bounces, path_continuation_probability,
-                                              light_sampling, enable_caustics);
+                                              max_bounces, light_sampling, enable_caustics);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 

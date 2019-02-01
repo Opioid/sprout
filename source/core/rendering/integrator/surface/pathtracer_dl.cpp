@@ -98,7 +98,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (ray.depth > settings_.min_bounces) {
-            float const q = settings_.path_continuation_probability;
+            float const q = max_component(throughput);
             if (rendering::russian_roulette(throughput, q, sampler_.generate_sample_1D())) {
                 break;
             }
@@ -236,17 +236,14 @@ size_t Pathtracer_DL::num_bytes() const noexcept {
 
 Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings,
                                              uint32_t num_integrators, uint32_t min_bounces,
-                                             uint32_t max_bounces,
-                                             float    path_continuation_probability,
-                                             uint32_t num_light_samples,
-                                             bool     enable_caustics) noexcept
+                                             uint32_t max_bounces, uint32_t num_light_samples,
+                                             bool enable_caustics) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_DL>(num_integrators)) {
-    settings_.min_bounces                   = min_bounces;
-    settings_.max_bounces                   = max_bounces;
-    settings_.path_continuation_probability = path_continuation_probability;
-    settings_.num_light_samples             = num_light_samples;
-    settings_.avoid_caustics                = !enable_caustics;
+    settings_.min_bounces       = min_bounces;
+    settings_.max_bounces       = max_bounces;
+    settings_.num_light_samples = num_light_samples;
+    settings_.avoid_caustics    = !enable_caustics;
 }
 
 Pathtracer_DL_factory::~Pathtracer_DL_factory() noexcept {
