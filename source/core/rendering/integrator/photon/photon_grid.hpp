@@ -88,7 +88,7 @@ class Grid {
 
     float3 local_to_texture_;
 
-    int2* grid_;
+    int32_t* grid_;
 
     Adjacency adjacencies_[43];
 };

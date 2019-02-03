@@ -117,7 +117,8 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
         uint32_t const new_begin = photon_map_.compile_iteration(num_paths, thread_pool_);
 
-        if (0 == new_begin || photon_settings_.num_photons == new_begin || 1.f <= iteration_threshold ||
+        if (0 == new_begin || photon_settings_.num_photons == new_begin ||
+            1.f <= iteration_threshold ||
             static_cast<float>(begin) / static_cast<float>(new_begin) >
                 (1.f - iteration_threshold)) {
             break;

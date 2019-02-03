@@ -12,6 +12,8 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::photon {
 
 using namespace scene;
@@ -45,10 +47,10 @@ void Grid::resize(AABB const& aabb) noexcept {
 
         local_to_texture_ = 1.f / aabb_.extent() * float3(dimensions - int3(2));
 
-        int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2];
+        int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2] + 1;
 
         memory::free_aligned(grid_);
-        grid_ = memory::allocate_aligned<int2>(static_cast<uint32_t>(num_cells));
+        grid_ = memory::allocate_aligned<int32_t>(static_cast<uint32_t>(num_cells));
 
         int32_t const area = dimensions[0] * dimensions[1];
 
@@ -225,21 +227,18 @@ void Grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
                   return ida < idb;
               });
 
-    int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2];
+    int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
 
     int32_t const len = static_cast<int32_t>(num_photons);
 
     int32_t current = 0;
     for (int32_t c = 0; c < num_cells; ++c) {
-        int32_t const begin = current;
+        grid_[c] = current;
         for (; current < len; ++current) {
             if (map1(photons[current].p) != c) {
                 break;
             }
         }
-
-        grid_[c][0] = begin;
-        grid_[c][1] = current;
     }
 }
 
@@ -495,9 +494,10 @@ void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept 
     adjacency = adjacencies_[adjacents];
 
     for (uint32_t i = 0; i < adjacency.num_cells; ++i) {
-        int2 const cells      = adjacency.cells[i];
-        adjacency.cells[i][0] = grid_[cells[0] + ic][0];
-        adjacency.cells[i][1] = grid_[cells[1] + ic][1];
+        int2 const cells = adjacency.cells[i];
+
+        adjacency.cells[i][0] = grid_[cells[0] + ic];
+        adjacency.cells[i][1] = grid_[cells[1] + ic + 1];
     }
 }
 

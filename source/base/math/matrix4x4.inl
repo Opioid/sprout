@@ -428,8 +428,9 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03, fl
     : r{Vector4f_a(m00, m01, m02, m03), Vector4f_a(m10, m11, m12, m13),
         Vector4f_a(m20, m21, m22, m23), Vector4f_a(m30, m31, m32, m33)} {}
 
-inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m) noexcept : r{Vector4f_a(m.r[0]), Vector4f_a(m.r[1]),
-        Vector4f_a(m.r[2]), Vector4f_a(0.f, 0.f, 0.f, 1.f)} {}
+inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m) noexcept
+    : r{Vector4f_a(m.r[0]), Vector4f_a(m.r[1]), Vector4f_a(m.r[2]),
+        Vector4f_a(0.f, 0.f, 0.f, 1.f)} {}
 
 static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a const& scale,
                                    Vector3f_a const& origin) noexcept {
