@@ -12,6 +12,8 @@ namespace rendering::integrator::photon {
 Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float coarse_search_radius,
          bool separate_indirect) noexcept
     : num_photons_(num_photons),
+      red_num_fine_(0),
+      red_num_coarse_(0),
       photons_(nullptr),
       separate_indirect_(separate_indirect),
       merge_radius_(merge_radius),

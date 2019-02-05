@@ -60,18 +60,16 @@ class Grid {
   private:
     uint32_t reduce(float merge_radius, int32_t begin, int32_t end) noexcept;
 
-    uint8_t adjacent(float s) const noexcept;
-
     int32_t map1(float3 const& v) const noexcept;
 
-    int3 map3(float3 const& v, uint8_t& adjacents) const noexcept;
+    int3 map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const noexcept;
 
     struct Adjacency {
         int2     cells[4];
         uint32_t num_cells;
     };
 
-    void adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept;
+    void adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const noexcept;
 
     uint32_t num_photons_;
     Photon*  photons_;
@@ -81,8 +79,8 @@ class Grid {
     float search_radius_;
 
     float grid_cell_factor_;
-    float lower_cell_bound_;
-    float upper_cell_bound_;
+
+    float2 cell_bound_;
 
     int3 dimensions_;
 

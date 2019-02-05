@@ -12,11 +12,23 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 
-#include <iostream>
-
 namespace rendering::integrator::photon {
 
 using namespace scene;
+
+enum Adjacent { None = 0, Positive = 1, Negative = 2 };
+
+static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
+    if (s < cell_bound[0]) {
+        return Negative;
+    }
+
+    if (s >= cell_bound[1]) {
+        return Positive;
+    }
+
+    return None;
+}
 
 static float3 scattering_coefficient(prop::Intersection const& intersection,
                                      Worker const&             worker) noexcept;
@@ -26,8 +38,7 @@ Grid::Grid(float search_radius, float grid_cell_factor) noexcept
       photons_(nullptr),
       search_radius_(search_radius),
       grid_cell_factor_(grid_cell_factor),
-      lower_cell_bound_(0.5f / grid_cell_factor),
-      upper_cell_bound_(1.f - (0.5f / grid_cell_factor)),
+      cell_bound_(0.5f / grid_cell_factor, 1.f - (0.5f / grid_cell_factor)),
       dimensions_(0),
       grid_(nullptr) {}
 
@@ -291,7 +302,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     float3 result = float3(0.f);
 
     Adjacency adjacency;
-    adjacent_cells(position, adjacency);
+    adjacent_cells(position, cell_bound_, adjacency);
 
     if (intersection.subsurface) {
         float const radius_2 = search_radius_ * search_radius_;
@@ -357,12 +368,16 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 size_t Grid::num_bytes() const noexcept {
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
 
-    size_t const num_bytes = static_cast<uint32_t>(num_cells) * sizeof(int32_t);
+    size_t const num_bytes = static_cast<size_t>(num_cells) * sizeof(int32_t);
 
     return num_bytes;
 }
 
 uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
+    float const merge_grid_cell_factor = (search_radius_ * grid_cell_factor_) / merge_radius;
+
+    float2 const cell_bound(0.5f / merge_grid_cell_factor, 1.f - (0.5f / merge_grid_cell_factor));
+
     float const merge_radius2 = merge_radius * merge_radius;
 
     uint32_t num_reduced = 0;
@@ -385,7 +400,7 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
         uint32_t local_reduced = 0;
 
         Adjacency adjacency;
-        adjacent_cells(a.p, adjacency);
+        adjacent_cells(a.p, cell_bound, adjacency);
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];
@@ -451,43 +466,29 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
     return num_reduced;
 }
 
-uint8_t Grid::adjacent(float s) const noexcept {
-    enum Adjacent { None = 0, Positive = 1, Negative = 2 };
-
-    if (s < lower_cell_bound_) {
-        return Negative;
-    }
-
-    if (s >= upper_cell_bound_) {
-        return Positive;
-    }
-
-    return None;
-}
-
 int32_t Grid::map1(float3 const& v) const noexcept {
-    int3 const c = static_cast<int3>((v - aabb_.min()) * local_to_texture_) + int3(1);
+    int3 const c = static_cast<int3>((v - aabb_.min()) * local_to_texture_) + 1;
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
-int3 Grid::map3(float3 const& v, uint8_t& adjacents) const noexcept {
+int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const noexcept {
     float3 const r = (v - aabb_.min()) * local_to_texture_;
 
     int3 const c = static_cast<int3>(r);
 
     float3 const d = r - static_cast<float3>(c);
 
-    adjacents = static_cast<uint8_t>(adjacent(d[0]) << 4);
-    adjacents |= static_cast<uint8_t>(adjacent(d[1]) << 2);
-    adjacents |= adjacent(d[2]);
+    adjacents = static_cast<uint8_t>(adjacent(d[0], cell_bound) << 4);
+    adjacents |= static_cast<uint8_t>(adjacent(d[1], cell_bound) << 2);
+    adjacents |= adjacent(d[2], cell_bound);
 
-    return c + int3(1);
+    return c + 1;
 }
 
-void Grid::adjacent_cells(float3 const& v, Adjacency& adjacency) const noexcept {
+void Grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const noexcept {
     uint8_t    adjacents;
-    int3 const c = map3(v, adjacents);
+    int3 const c = map3(v, cell_bound, adjacents);
 
     int32_t const ic = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 
