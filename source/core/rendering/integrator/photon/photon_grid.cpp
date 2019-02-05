@@ -417,6 +417,10 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
                     continue;
                 }
 
+                if (squared_distance(a.p, b.p) > merge_radius2) {
+                    continue;
+                }
+
                 float3 const b_alpha = float3(b.alpha);
 
                 float const weight = average(b_alpha);
@@ -427,10 +431,6 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
                 float const threshold = std::max(ratio - 0.1f, 0.f);
 
                 if (dot(wi, b.wi) < threshold) {
-                    continue;
-                }
-
-                if (squared_distance(a.p, b.p) > merge_radius2) {
                     continue;
                 }
 
