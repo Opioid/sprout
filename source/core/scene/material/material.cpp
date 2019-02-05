@@ -184,7 +184,7 @@ void Material::set_parameter(std::string_view /*name*/, json::Value const& /*val
 float3 Material::rainbow_[Num_bands + 1];
 
 void Material::init_rainbow() noexcept {
-    Spectrum::init(380.f, 720.f);
+    Spectrum::init(400.f, 700.f);
 
     float3 sum_rgb(0.f);
     for (int32_t i = 0; i < Num_bands; ++i) {
