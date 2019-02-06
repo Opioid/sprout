@@ -44,8 +44,8 @@ class Provider : public resource::Provider<Shape> {
     Shape* load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
                                resource::Manager& manager);
 
-    static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
-                          thread::Pool& thread_pool);
+    static void build_bvh(Mesh& mesh, Triangles const& triangles, uint32_t num_vertices,
+                          Vertex const* const vertices, thread::Pool& thread_pool);
 
     //	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
     //						  BVH_preset bvh_preset, thread::Pool& thread_pool);

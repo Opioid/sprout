@@ -116,7 +116,8 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
             }
         }
 
-        build_bvh(*mesh, triangles, vertices, manager.thread_pool());
+        build_bvh(*mesh, triangles, static_cast<uint32_t>(vertices.size()), vertices.data(),
+                  manager.thread_pool());
 
         logging::verbose("Finished asynchronously building triangle mesh BVH.");
     });
@@ -143,9 +144,11 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
 
     mesh->tree().allocate_parts(num_parts);
 
-    thread_pool.run_async(
-        [mesh, triangles_in = std::move(triangles), vertices_in = std::move(vertices),
-         &thread_pool]() { build_bvh(*mesh, triangles_in, vertices_in, thread_pool); });
+    thread_pool.run_async([mesh, triangles_in = std::move(triangles),
+                           vertices_in = std::move(vertices), &thread_pool]() {
+        build_bvh(*mesh, triangles_in, static_cast<uint32_t>(vertices_in.size()),
+                  vertices_in.data(), thread_pool);
+    });
 
     //	build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
 
@@ -225,10 +228,10 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
     return mesh;
 }
 
-void Provider::build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
-                         thread::Pool& thread_pool) {
+void Provider::build_bvh(Mesh& mesh, Triangles const& triangles, uint32_t num_vertices,
+                         Vertex const* const vertices, thread::Pool& thread_pool) {
     bvh::Builder_SAH builder(16, 64);
-    builder.build(mesh.tree(), triangles, vertices, 4, thread_pool);
+    builder.build(mesh.tree(), triangles, num_vertices, vertices, 4, thread_pool);
 
     mesh.init();
 }
@@ -345,7 +348,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) {
 
         delete[] local_indices;
 
-        build_bvh(*mesh, triangles, local_vertices, thread_pool);
+        build_bvh(*mesh, triangles, static_cast<uint32_t>(local_vertices.size()),
+                  local_vertices.data(), thread_pool);
     });
 
     return mesh;

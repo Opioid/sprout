@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_HPP
 
-#include <vector>
 #include "base/math/ray.hpp"
 #include "base/math/vector3.hpp"
 #include "base/simd/simd.hpp"
@@ -21,8 +20,6 @@ struct Reference;
 template <typename SV>
 class Indexed_data {
   public:
-    using Vertices = std::vector<Vertex>;
-
     Indexed_data() noexcept;
 
     ~Indexed_data() noexcept;
@@ -71,10 +68,11 @@ class Indexed_data {
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
 
-    void allocate_triangles(uint32_t num_triangles, Vertices const& vertices) noexcept;
+    void allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
+                            Vertex const* vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertices const& vertices) noexcept;
+                      Vertex const* vertices) noexcept;
 
     size_t num_bytes() const noexcept;
 
@@ -102,8 +100,6 @@ class Indexed_data {
 template <typename V>
 class Indexed_data_interleaved {
   public:
-    using Vertices = std::vector<Vertex>;
-
     Indexed_data_interleaved();
 
     ~Indexed_data_interleaved();
@@ -129,10 +125,10 @@ class Indexed_data_interleaved {
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
-    void allocate_triangles(uint32_t num_triangles, Vertices const& vertices);
+    void allocate_triangles(uint32_t num_triangles, uint32_t num_vertices, Vertex const* vertices);
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertices const& vertices);
+                      Vertex const* vertices);
 
     size_t num_bytes() const;
 
@@ -160,9 +156,8 @@ class Indexed_data_interleaved {
 template <typename IV, typename SV>
 class Hybrid_data {
   public:
-    using Vertices = std::vector<Vertex>;
-
     Hybrid_data();
+
     ~Hybrid_data();
 
     uint32_t num_triangles() const;
@@ -201,10 +196,10 @@ class Hybrid_data {
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
-    void allocate_triangles(uint32_t num_triangles, Vertices const& vertices);
+    void allocate_triangles(uint32_t num_triangles, uint32_t num_vertices, Vertex const* vertices);
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertices const& vertices);
+                      Vertex const* vertices);
 
     size_t num_bytes() const;
 

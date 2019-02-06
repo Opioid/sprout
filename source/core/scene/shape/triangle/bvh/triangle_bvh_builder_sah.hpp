@@ -56,8 +56,8 @@ class Builder_SAH /*: private Builder_base*/ {
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
 
     template <typename Data>
-    void build(Tree<Data>& tree, Triangles const& triangles, Vertices const& vertices,
-               uint32_t max_primitives, thread::Pool& thread_pool);
+    void build(Tree<Data>& tree, Triangles const& triangles, uint32_t num_vertices,
+               Vertex const* const vertices, uint32_t max_primitives, thread::Pool& thread_pool);
 
   private:
     using References = std::vector<Reference>;
@@ -123,7 +123,7 @@ class Builder_SAH /*: private Builder_base*/ {
                                     bool& exhausted, thread::Pool& thread_pool);
 
     template <typename Data>
-    void serialize(Build_node* node, Triangles const& triangles, Vertices const& vertices,
+    void serialize(Build_node* node, Triangles const& triangles, Vertex const* const vertices,
                    Tree<Data>& tree);
 
     using Node = scene::bvh::Node;

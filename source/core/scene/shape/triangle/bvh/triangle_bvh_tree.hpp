@@ -113,10 +113,11 @@ class Tree {
 
     void allocate_parts(uint32_t num_parts) noexcept;
 
-    void allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices) noexcept;
+    void allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
+                            Vertex const* const vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      const std::vector<Vertex>& vertices) noexcept;
+                      Vertex const* const vertices) noexcept;
 
     size_t num_bytes() const noexcept;
 

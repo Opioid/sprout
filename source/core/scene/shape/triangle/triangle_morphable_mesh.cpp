@@ -258,7 +258,7 @@ void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& p
     collection_->morph(a, b, weight, pool, vertices_);
 
     bvh::Builder_SAH builder(16, 64);
-    builder.build(tree_, collection_->triangles(), vertices_, 4, pool);
+    builder.build(tree_, collection_->triangles(), static_cast<uint32_t>(vertices_.size()), vertices_.data(), 4, pool);
 
     init();
 }
