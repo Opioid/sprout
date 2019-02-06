@@ -1,29 +1,17 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_MESH_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_MESH_HPP
 
-#include "bvh/triangle_bvh_tree.hpp"
-#include "scene/shape/shape.hpp"
-#include "triangle_type.hpp"
-// #include "bvh/triangle_bvh_data.hpp"
-#include "bvh/triangle_bvh_indexed_data.hpp"
-// #include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
+#include "scene/shape/shape.hpp"
+#include "triangle_mesh_bvh.hpp"
 
 namespace scene::shape::triangle {
 
 class Mesh : public Shape {
   public:
+    Mesh() noexcept;
+
     ~Mesh() noexcept override;
-
-    //	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_type>>;
-
-    //	using Tree = bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>>;
-
-    using Tree = bvh::Tree<bvh::Indexed_data<Shading_vertex_type>>;
-
-    //	using Tree = bvh::Tree<bvh::Indexed_data_interleaved<Vertex_type>>;
-
-    //	using Tree = bvh::Tree<bvh::Hybrid_data<float3, Shading_vertex_type>>;
 
     bool init() noexcept;
 
@@ -101,6 +89,8 @@ class Mesh : public Shape {
     struct Distribution {
         using Distribution_1D = math::Distribution_implicit_pdf_lut_lin_1D;
 
+        ~Distribution();
+
         void init(uint32_t part, const Tree& tree) noexcept;
 
         bool empty() const noexcept;
@@ -109,12 +99,13 @@ class Mesh : public Shape {
 
         size_t num_bytes() const noexcept;
 
-        std::vector<uint32_t> triangle_mapping;
+        uint32_t  num_triangles    = 0;
+        uint32_t* triangle_mapping = nullptr;
 
         Distribution_1D distribution;
     };
 
-    std::vector<Distribution> distributions_;
+    Distribution* distributions_;
 };
 
 }  // namespace scene::shape::triangle

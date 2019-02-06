@@ -20,8 +20,8 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_indexed_data.hpp"
+#include "scene/shape/triangle/triangle_mesh_bvh.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
-#include "scene/shape/triangle/triangle_type.hpp"
 
 namespace testing {
 

@@ -1,12 +1,10 @@
 #include "triangle_mesh.hpp"
-#include "triangle_intersection.hpp"
-// #include "bvh/triangle_bvh_data.inl"
-#include "bvh/triangle_bvh_indexed_data.inl"
-// #include "bvh/triangle_bvh_data_interleaved.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/sampling.inl"
 #include "base/math/simd_matrix.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/align.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
@@ -14,21 +12,26 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
+#include "triangle_intersection.hpp"
 
 namespace scene::shape::triangle {
 
-Mesh::~Mesh() noexcept {}
+Mesh::Mesh() noexcept : distributions_(nullptr) {}
+
+Mesh::~Mesh() noexcept {
+    memory::destroy_aligned(distributions_, tree_.num_parts());
+}
 
 bool Mesh::init() noexcept {
     aabb_       = tree_.aabb();
     inv_extent_ = 1.f / aabb_.extent();
 
-    distributions_.resize(tree_.num_parts());
+    distributions_ = memory::construct_aligned<Distribution>(tree_.num_parts());
 
     return 0 != tree_.num_parts();
 }
 
-Mesh::Tree& Mesh::tree() noexcept {
+Tree& Mesh::tree() noexcept {
     return tree_;
 }
 
@@ -348,7 +351,7 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     auto const [x, y] = orthonormal_basis(wn);
 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, wn);
+    float3 const dir = sample_oriented_hemisphere_cosine(r1, x, y, wn);
 
     sample.p       = ws;
     sample.dir     = dir;
@@ -432,19 +435,25 @@ void Mesh::prepare_sampling(uint32_t part) noexcept {
 size_t Mesh::num_bytes() const noexcept {
     size_t num_bytes = 0;
 
-    for (auto& d : distributions_) {
-        num_bytes += d.num_bytes();
+    for (uint32_t i = 0, len = tree_.num_parts(); i < len; ++i) {
+        num_bytes += distributions_[i].num_bytes();
     }
 
     return sizeof(*this) + tree_.num_bytes() + num_bytes;
 }
 
+Mesh::Distribution::~Distribution() {
+    memory::free_aligned(triangle_mapping);
+}
+
 void Mesh::Distribution::init(uint32_t part, const Tree& tree) noexcept {
-    uint32_t const num_triangles = tree.num_triangles(part);
+    uint32_t const num = tree.num_triangles(part);
 
-    std::vector<float> areas(num_triangles);
+    float* areas = memory::allocate_aligned<float>(num);
 
-    triangle_mapping.resize(num_triangles);
+    num_triangles = num;
+
+    triangle_mapping = memory::allocate_aligned<uint32_t>(num);
 
     for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_material_index(t) == part) {
@@ -454,11 +463,13 @@ void Mesh::Distribution::init(uint32_t part, const Tree& tree) noexcept {
         }
     }
 
-    distribution.init(areas.data(), num_triangles);
+    distribution.init(areas, num_triangles);
+
+    memory::free_aligned(areas);
 }
 
 bool Mesh::Distribution::empty() const noexcept {
-    return triangle_mapping.empty();
+    return nullptr == triangle_mapping;
 }
 
 Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r) const noexcept {
@@ -467,7 +478,7 @@ Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r
 }
 
 size_t Mesh::Distribution::num_bytes() const noexcept {
-    return sizeof(*this) + triangle_mapping.size() * sizeof(uint32_t) + distribution.num_bytes();
+    return sizeof(*this) + num_triangles * sizeof(uint32_t) + distribution.num_bytes();
 }
 
 }  // namespace scene::shape::triangle

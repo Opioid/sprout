@@ -5,9 +5,6 @@
 #include "base/math/vector3.inl"
 #include "base/memory/variant_map.inl"
 #include "bvh/triangle_bvh_builder_sah.inl"
-#include "bvh/triangle_bvh_data.inl"
-#include "bvh/triangle_bvh_data_interleaved.inl"
-#include "bvh/triangle_bvh_indexed_data.inl"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
 #include "logging/logging.hpp"
@@ -20,7 +17,6 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_morphable_mesh.hpp"
 #include "triangle_primitive.hpp"
-#include "triangle_type.hpp"
 
 #include "base/debug/assert.hpp"
 #ifdef SU_DEBUG

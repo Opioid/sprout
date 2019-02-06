@@ -1,19 +1,15 @@
 #include "triangle_morphable_mesh.hpp"
-#include "bvh/triangle_bvh_builder_sah.inl"
-#include "bvh/triangle_bvh_indexed_data.inl"
-#include "triangle_intersection.hpp"
-#include "triangle_morph_target_collection.hpp"
-#include "triangle_primitive_mt.hpp"
-//#include "bvh/triangle_bvh_data_interleaved.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
-#include "bvh/triangle_bvh_tree.inl"
+#include "bvh/triangle_bvh_builder_sah.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
+#include "triangle_intersection.hpp"
+#include "triangle_morph_target_collection.hpp"
 
 namespace scene::shape::triangle {
 

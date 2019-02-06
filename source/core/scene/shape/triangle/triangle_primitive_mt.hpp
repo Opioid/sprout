@@ -5,7 +5,7 @@
 #include "scene/shape/shape_vertex.hpp"
 
 namespace math {
-struct Ray;
+struct ray;
 }
 
 namespace scene::shape::triangle {

@@ -521,21 +521,21 @@ float Tree<Data>::triangle_area(uint32_t index, float3 const& scale) const noexc
     return data_.area(index, scale);
 }
 
-template <typename Data>
-void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const
-    noexcept {
-    data_.sample(index, r2, p, n, tc);
-}
+// template <typename Data>
+// void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const
+//    noexcept {
+//    data_.sample(index, r2, p, n, tc);
+//}
 
 template <typename Data>
 void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept {
     data_.sample(index, r2, p, tc);
 }
 
-template <typename Data>
-void Tree<Data>::sample(uint32_t index, float2 r2, float3& p) const noexcept {
-    data_.sample(index, r2, p);
-}
+// template <typename Data>
+// void Tree<Data>::sample(uint32_t index, float2 r2, float3& p) const noexcept {
+//    data_.sample(index, r2, p);
+//}
 
 template <typename Data>
 void Tree<Data>::allocate_parts(uint32_t num_parts) noexcept {
