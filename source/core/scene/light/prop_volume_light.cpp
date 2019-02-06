@@ -1,4 +1,5 @@
 #include "prop_volume_light.hpp"
+#include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/scene_ray.hpp"
