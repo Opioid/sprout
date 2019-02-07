@@ -33,9 +33,9 @@ void Map::init(uint32_t num_workers) noexcept {
 }
 
 void Map::start() noexcept {
-    red_num_fine_ = 0;
+    red_num_fine_   = 0;
     red_num_coarse_ = 0;
-    caustic_only_ = false;
+    caustic_only_   = false;
 }
 
 void Map::insert(Photon const& photon, uint32_t index) noexcept {

@@ -45,6 +45,8 @@ void Lighttracer::start_pixel() noexcept {
 
 float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
                        Interface_stack const& initial_stack) noexcept {
+    static uint32_t constexpr Max_bounces = 16;
+
     worker.reset_interface_stack(initial_stack);
 
     Filter filter = Filter::Undefined;
@@ -57,7 +59,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     bool const avoid_caustics = true;
 
-    for (uint32_t i = 16; i > 0; --i) {
+    for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
@@ -71,13 +73,17 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
             return result;
         }
 
-        material_sample.sample(sampler_, sample_result);
+        material_sample.sample(material_sampler(ray.depth), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
 
         if (!sample_result.type.test(Bxdf_type::Caustic)) {
             result += throughput * worker.photon_li(intersection, material_sample);
+            break;
+        }
+
+        if (ray.depth >= Max_bounces - 1) {
             break;
         }
 
