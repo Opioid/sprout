@@ -39,6 +39,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
 
     bool const infinite_world = worker.scene().is_infinite();
 
+    bool const caustics_only = map.caustics_only();
+
     uint32_t num_paths = 0;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -46,8 +48,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
                                               static_cast<uint32_t>(end - i));
 
         uint32_t       num_photons;
-        uint32_t const num_iterations = trace_photon(frame, bounds, infinite_world, worker,
-                                                     max_photons, photons_, num_photons);
+        uint32_t const num_iterations = trace_photon(frame, bounds, infinite_world, caustics_only,
+                                                     worker, max_photons, photons_, num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -70,8 +72,8 @@ size_t Mapper::num_bytes() const noexcept {
 }
 
 uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
-                              Worker& worker, uint32_t max_photons, Photon* photons,
-                              uint32_t& num_photons) noexcept {
+                              bool caustics_only, Worker& worker, uint32_t max_photons,
+                              Photon* photons, uint32_t& num_photons) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -153,7 +155,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
                         ++num_photons;
 
-                        if (max_photons == num_photons) {
+                        if (max_photons == num_photons || caustics_only) {
                             return iteration;
                         }
                     }
