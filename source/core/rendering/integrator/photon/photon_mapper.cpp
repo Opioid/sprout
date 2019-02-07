@@ -15,8 +15,6 @@
 
 namespace rendering::integrator::photon {
 
-using namespace scene;
-
 Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings,
                Settings const& settings) noexcept
     : Integrator(rng, take_settings),
@@ -97,9 +95,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
         bool caustic_ray = false;
 
-        Ray                ray;
-        Light const*       light;
-        shape::Sample_from light_sample;
+        Ray          ray;
+        Light const* light;
+        Sample_from  light_sample;
         if (!generate_light_ray(frame, bounds, worker, ray, &light, light_sample)) {
             continue;
         }
@@ -222,8 +220,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 }
 
 bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                                Light const**       light_out,
-                                shape::Sample_from& light_sample) noexcept {
+                                Light const** light_out, Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
