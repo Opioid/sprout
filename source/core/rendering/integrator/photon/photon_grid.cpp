@@ -12,6 +12,9 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 
+
+#include <iostream>
+
 namespace rendering::integrator::photon {
 
 using namespace scene;
@@ -287,7 +290,7 @@ static inline float kernel(float squared_distance, float inv_squared_radius) {
     return (3.f * Pi_inv) * (s * s);
 }
 
-float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
+float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths, Photon_ref* photon_refs,
                 scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
         return float3(0.f);
@@ -333,6 +336,8 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
         float const radius_2     = search_radius_ * search_radius_;
         float const inv_radius_2 = 1.f / radius_2;
 
+
+/*
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];
 
@@ -355,11 +360,72 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
                         result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
                     }
+
+
                 }
             }
         }
 
         result /= static_cast<float>(num_paths) * radius_2;
+    }
+*/
+
+        uint32_t count = 0;
+
+        for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
+            int2 const cell = adjacency.cells[c];
+
+            for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
+                auto const& photon = photons_[i];
+
+                if (photon.properties.test(Photon::Property::Volumetric)) {
+                    continue;
+                }
+
+                if (float const distance_2 = squared_distance(photon.p, position);
+                    distance_2 <= radius_2) {
+
+                photon_refs[count] = Photon_ref{i, distance_2};
+
+                ++count;
+
+                }
+            }
+        }
+
+    uint32_t const len = std::min(count, 16u);
+
+
+
+    if (len > 0) {
+
+         std::partial_sort(photon_refs, photon_refs + len, photon_refs + count);
+
+    float const max_radius_2 = photon_refs[len - 1].sd;
+
+        float const inv_max_radius_2 = 1.f / max_radius_2;
+
+        for (uint32_t i = 0; i < len; ++i) {
+            auto const& photon = photons_[photon_refs[i].id];
+
+
+                if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
+                    n_dot_wi > 0.f) {
+                    float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
+
+                    float const k = kernel(photon_refs[i].sd, inv_max_radius_2);
+
+                    auto const bxdf = sample.evaluate(photon.wi, true);
+
+                    result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
+                }
+
+
+        }
+
+
+        result /= static_cast<float>(num_paths) * max_radius_2;
+    }
     }
 
     return result;

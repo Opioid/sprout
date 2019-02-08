@@ -36,6 +36,17 @@ struct Photon {
     flags::Flags<Property> properties;
 };
 
+struct Photon_ref {
+    int32_t id;
+    float sd;
+
+    bool operator<(Photon_ref other) const noexcept {
+        return sd < other.sd;
+    }
+};
+
+static uint32_t constexpr Num_refs = 4 * 4096;
+
 class Grid {
   public:
     using Intersection    = scene::prop::Intersection;
@@ -52,7 +63,7 @@ class Grid {
     uint32_t reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
                              thread::Pool& pool) noexcept;
 
-    float3 li(Intersection const& intersection, const Material_sample& sample, uint32_t num_paths,
+    float3 li(Intersection const& intersection, const Material_sample& sample, uint32_t num_paths, Photon_ref* photon_refs,
               scene::Worker const& worker) const noexcept;
 
     size_t num_bytes() const noexcept;

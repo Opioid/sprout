@@ -3,6 +3,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "scene/scene_worker.hpp"
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -21,6 +22,7 @@ Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float co
       coarse_grid_(coarse_search_radius, 1.1f) {}
 
 Map::~Map() noexcept {
+    memory::free_aligned(photon_refs_);
     memory::free_aligned(num_reduced_);
     memory::free_aligned(aabbs_);
     memory::free_aligned(photons_);
@@ -30,6 +32,7 @@ void Map::init(uint32_t num_workers) noexcept {
     photons_     = memory::allocate_aligned<Photon>(num_photons_);
     aabbs_       = memory::allocate_aligned<AABB>(num_photons_);
     num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
+    photon_refs_ = memory::allocate_aligned<Photon_ref>(num_workers * Num_refs);
 }
 
 void Map::start() noexcept {
@@ -132,8 +135,10 @@ void Map::compile_finalize() noexcept {
 
 float3 Map::li(Intersection const& intersection, Material_sample const& sample,
                scene::Worker const& worker) const noexcept {
-    return fine_grid_.li(intersection, sample, num_caustic_paths_, worker) +
-           coarse_grid_.li(intersection, sample, num_indirect_paths_, worker);
+    Photon_ref* photon_refs = &photon_refs_[worker.id() * Num_refs];
+
+    return fine_grid_.li(intersection, sample, num_caustic_paths_, photon_refs, worker) +
+           coarse_grid_.li(intersection, sample, num_indirect_paths_, photon_refs, worker);
 }
 
 bool Map::caustics_only() const noexcept {

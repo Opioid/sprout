@@ -59,6 +59,8 @@ class Map {
 
     Grid fine_grid_;
     Grid coarse_grid_;
+
+    Photon_ref* photon_refs_;
 };
 
 }  // namespace rendering::integrator::photon
