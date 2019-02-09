@@ -275,9 +275,9 @@ inline constexpr Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02, flo
                                             float m12, float m20, float m21, float m22) noexcept
     : r{{m00, m01, m02}, {m10, m11, m12}, {m20, m21, m22}} {}
 
-
-inline constexpr Matrix3x3f_a::Matrix3x3f_a(Vector3f_a const& x, Vector3f_a const& y, Vector3f_a const& z) noexcept :
-    r{x, y, z} {}
+inline constexpr Matrix3x3f_a::Matrix3x3f_a(Vector3f_a const& x, Vector3f_a const& y,
+                                            Vector3f_a const& z) noexcept
+    : r{x, y, z} {}
 
 inline Matrix3x3f_a constexpr Matrix3x3f_a::identity() noexcept {
     return Matrix3x3f_a(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);

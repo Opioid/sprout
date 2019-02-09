@@ -196,7 +196,6 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float2 const ls_rect = ls_bounds.max().xy() - ls_bounds.min().xy();
 
-
     float3 const photon_rect = transform_vector(transformation.rotation,
                                                 float3((r0 - 0.5f) * ls_rect, 0.f));
 
@@ -212,7 +211,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
     sample.dir = dir;
     sample.p   = pli;
     //       sample.pdf     = 1.f / ((1.f * Pi) * (area * bounds_radius_2));
-    sample.pdf = 1.f / (area * ls_rect[0] * ls_rect[1]);
+    sample.pdf     = 1.f / (area * ls_rect[0] * ls_rect[1]);
     sample.epsilon = 5e-4f;
 
     return true;

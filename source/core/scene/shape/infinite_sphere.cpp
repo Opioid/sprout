@@ -236,21 +236,18 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     float const radius = std::sqrt(radius_2);
 
-            float3x3 const rotation(t, b, ws);
+    float3x3 const rotation(t, b, ws);
 
-            AABB const ls_bounds = bounds.transform(affine_inverted(float4x4(rotation)));
+    AABB const ls_bounds = bounds.transform(affine_inverted(float4x4(rotation)));
 
-            float3 const origin = ls_bounds.min();
-            float3 const pe = float3(ls_bounds.max().xy(), origin[2]) - origin;
+    float3 const origin = ls_bounds.min();
+    float3 const pe     = float3(ls_bounds.max().xy(), origin[2]) - origin;
 
-            float3 const receiver_rect = float3(r0 - 0.5f, 0.f) * pe;
+    float3 const receiver_rect = float3(r0 - 0.5f, 0.f) * pe;
 
-            float3 const photon_rect = transform_vector(rotation, receiver_rect);
+    float3 const photon_rect = transform_vector(rotation, receiver_rect);
 
-            float3 const pli = bounds.position() - radius * ws + photon_rect;
-
-
-
+    float3 const pli = bounds.position() - radius * ws + photon_rect;
 
     float3 const disk = sample_oriented_disk_concentric(r0, t, b);
 
@@ -260,7 +257,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     sample.p   = pli;
     sample.uv  = uv;
     // sin_theta because of the uv weight
-  //  sample.pdf     = 1.f / ((4.f * Pi) * (1.f * Pi) * (sin_theta * radius_2));
+    //  sample.pdf     = 1.f / ((4.f * Pi) * (1.f * Pi) * (sin_theta * radius_2));
     sample.pdf     = 1.f / ((4.f * Pi) * (sin_theta * pe[0] * pe[1]));
     sample.epsilon = 5e-4f;
 
