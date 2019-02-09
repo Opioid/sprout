@@ -9,11 +9,11 @@
 namespace scene::entity {
 
 inline void Composed_transformation::set(math::Transformation const& t) noexcept {
-    float3x3 const rot = math::quaternion::create_matrix3x3(t.rotation);
+    float3x3 const rot = quaternion::create_matrix3x3(t.rotation);
 
-    float4x4 const otw = math::compose(rot, t.scale, t.position);
+    float4x4 const otw = compose(rot, t.scale, t.position);
 
-    world_to_object = math::affine_inverted(otw);
+    world_to_object = affine_inverted(otw);
     object_to_world = otw;
 
     rotation = rot;
