@@ -422,72 +422,36 @@ origin.z;			   m.m33 = T(1);
  *
  ****************************************************************************/
 
+inline Matrix4x4f_a::Matrix4x4f_a() noexcept = default;
+
 inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03, float m10, float m11,
                                   float m12, float m13, float m20, float m21, float m22, float m23,
                                   float m30, float m31, float m32, float m33) noexcept
-    : r{Vector4f_a(m00, m01, m02, m03), Vector4f_a(m10, m11, m12, m13),
-        Vector4f_a(m20, m21, m22, m23), Vector4f_a(m30, m31, m32, m33)} {}
+    : r{{m00, m01, m02, m03}, {m10, m11, m12, m13}, {m20, m21, m22, m23}, {m30, m31, m32, m33}} {}
 
-inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m) noexcept : r{Vector4f_a(m.r[0]), Vector4f_a(m.r[1]),
-        Vector4f_a(m.r[2]), Vector4f_a(0.f, 0.f, 0.f, 1.f)} {}
+inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m) noexcept
+    : r{Vector4f_a(m.r[0]), Vector4f_a(m.r[1]), Vector4f_a(m.r[2]), {0.f, 0.f, 0.f, 1.f}} {}
 
 static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a const& scale,
                                    Vector3f_a const& origin) noexcept {
-    Matrix4x4f_a m;
-
-    m.r[0][0] = basis.r[0][0] * scale[0];
-    m.r[0][1] = basis.r[0][1] * scale[0];
-    m.r[0][2] = basis.r[0][2] * scale[0];
-    m.r[0][3] = 0.f;
-
-    m.r[1][0] = basis.r[1][0] * scale[1];
-    m.r[1][1] = basis.r[1][1] * scale[1];
-    m.r[1][2] = basis.r[1][2] * scale[1];
-    m.r[1][3] = 0.f;
-
-    m.r[2][0] = basis.r[2][0] * scale[2];
-    m.r[2][1] = basis.r[2][1] * scale[2];
-    m.r[2][2] = basis.r[2][2] * scale[2];
-    m.r[2][3] = 0.f;
-
-    m.r[3][0] = origin[0];
-    m.r[3][1] = origin[1];
-    m.r[3][2] = origin[2];
-    m.r[3][3] = 1.f;
-
-    return m;
+    return Matrix4x4f_a(basis.r[0][0] * scale[0], basis.r[0][1] * scale[0],
+                        basis.r[0][2] * scale[0], 0.f, basis.r[1][0] * scale[1],
+                        basis.r[1][1] * scale[1], basis.r[1][2] * scale[1], 0.f,
+                        basis.r[2][0] * scale[2], basis.r[2][1] * scale[2],
+                        basis.r[2][2] * scale[2], 0.f, origin[0], origin[1], origin[2], 1.f);
 }
 
 static inline Matrix4x4f_a compose(Matrix4x4f_a const& basis, Vector3f_a const& scale,
                                    Vector3f_a const& origin) noexcept {
-    Matrix4x4f_a m;
-
-    m.r[0][0] = basis.r[0][0] * scale[0];
-    m.r[0][1] = basis.r[0][1] * scale[0];
-    m.r[0][2] = basis.r[0][2] * scale[0];
-    m.r[0][3] = 0.f;
-
-    m.r[1][0] = basis.r[1][0] * scale[1];
-    m.r[1][1] = basis.r[1][1] * scale[1];
-    m.r[1][2] = basis.r[1][2] * scale[1];
-    m.r[1][3] = 0.f;
-
-    m.r[2][0] = basis.r[2][0] * scale[2];
-    m.r[2][1] = basis.r[2][1] * scale[2];
-    m.r[2][2] = basis.r[2][2] * scale[2];
-    m.r[2][3] = 0.f;
-
-    m.r[3][0] = origin[0];
-    m.r[3][1] = origin[1];
-    m.r[3][2] = origin[2];
-    m.r[3][3] = 1.f;
-
-    return m;
+    return Matrix4x4f_a(basis.r[0][0] * scale[0], basis.r[0][1] * scale[0],
+                        basis.r[0][2] * scale[0], 0.f, basis.r[1][0] * scale[1],
+                        basis.r[1][1] * scale[1], basis.r[1][2] * scale[1], 0.f,
+                        basis.r[2][0] * scale[2], basis.r[2][1] * scale[2],
+                        basis.r[2][2] * scale[2], 0.f, origin[0], origin[1], origin[2], 1.f);
 }
 
-inline Matrix4x4f_a::Matrix4x4f_a(Transformation const& t) noexcept {
-    *this = compose(quaternion::create_matrix3x3(t.rotation), t.scale, t.position);
-}
+inline Matrix4x4f_a::Matrix4x4f_a(Transformation const& t) noexcept
+    : Matrix4x4f_a(compose(quaternion::create_matrix3x3(t.rotation), t.scale, t.position)) {}
 
 inline Vector3f_a Matrix4x4f_a::x() const noexcept {
     return r[0].xyz();
@@ -505,7 +469,7 @@ inline Vector3f_a Matrix4x4f_a::w() const noexcept {
     return r[3].xyz();
 }
 
-static inline Matrix4x4f_a operator*(Matrix4x4f_a const& a, const Matrix4x4f_a& b) noexcept {
+static inline Matrix4x4f_a operator*(Matrix4x4f_a const& a, Matrix4x4f_a const& b) noexcept {
     return Matrix4x4f_a((a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0]) +
                             (a.r[0][2] * b.r[2][0] + a.r[0][3] * b.r[3][0]),
                         (a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1]) +

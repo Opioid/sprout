@@ -269,9 +269,11 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
 // Aligned 3x3 float matrix
 //==============================================================================
 
+inline Matrix3x3f_a::Matrix3x3f_a() noexcept = default;
+
 inline constexpr Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02, float m10, float m11,
                                             float m12, float m20, float m21, float m22) noexcept
-    : r{Vector3f_a(m00, m01, m02), Vector3f_a(m10, m11, m12), Vector3f_a(m20, m21, m22)} {}
+    : r{{m00, m01, m02}, {m10, m11, m12}, {m20, m21, m22}} {}
 
 
 inline constexpr Matrix3x3f_a::Matrix3x3f_a(Vector3f_a const& x, Vector3f_a const& y, Vector3f_a const& z) noexcept :
@@ -282,18 +284,18 @@ inline Matrix3x3f_a constexpr Matrix3x3f_a::identity() noexcept {
 }
 
 static inline Matrix3x3f_a constexpr operator+(Matrix3x3f_a const& a,
-                                               const Matrix3x3f_a& b) noexcept {
+                                               Matrix3x3f_a const& b) noexcept {
     return Matrix3x3f_a(a.r[0][0] + b.r[0][0], a.r[0][1] + b.r[0][1], a.r[0][2] + b.r[0][2],
                         a.r[1][0] + b.r[1][0], a.r[1][1] + b.r[1][1], a.r[1][2] + b.r[1][2],
                         a.r[2][0] + b.r[2][0], a.r[2][1] + b.r[2][1], a.r[2][2] + b.r[2][2]);
 }
 
-static inline Matrix3x3f_a constexpr operator*(float s, const Matrix3x3f_a& b) noexcept {
+static inline Matrix3x3f_a constexpr operator*(float s, Matrix3x3f_a const& b) noexcept {
     return Matrix3x3f_a(s * b.r[0][0], s * b.r[0][1], s * b.r[0][2], s * b.r[1][0], s * b.r[1][1],
                         s * b.r[1][2], s * b.r[2][0], s * b.r[2][1], s * b.r[2][2]);
 }
 
-static inline Matrix3x3f_a operator*(Matrix3x3f_a const& a, const Matrix3x3f_a& b) noexcept {
+static inline Matrix3x3f_a operator*(Matrix3x3f_a const& a, Matrix3x3f_a const& b) noexcept {
     return Matrix3x3f_a(a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0] + a.r[0][2] * b.r[2][0],
                         a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1] + a.r[0][2] * b.r[2][1],
                         a.r[0][0] * b.r[0][2] + a.r[0][1] * b.r[1][2] + a.r[0][2] * b.r[2][2],

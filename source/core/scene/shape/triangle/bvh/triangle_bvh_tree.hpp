@@ -107,16 +107,17 @@ class Tree {
     float triangle_area(uint32_t index) const noexcept;
     float triangle_area(uint32_t index, float3 const& scale) const noexcept;
 
-    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const noexcept;
+    //    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const noexcept;
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
-    void sample(uint32_t index, float2 r2, float3& p) const noexcept;
+    //    void sample(uint32_t index, float2 r2, float3& p) const noexcept;
 
     void allocate_parts(uint32_t num_parts) noexcept;
 
-    void allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices) noexcept;
+    void allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
+                            Vertex const* const vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      const std::vector<Vertex>& vertices) noexcept;
+                      Vertex const* const vertices) noexcept;
 
     size_t num_bytes() const noexcept;
 

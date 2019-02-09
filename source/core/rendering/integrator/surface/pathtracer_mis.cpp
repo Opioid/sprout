@@ -185,7 +185,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                 filter      = Filter::Nearest;
 
                 if (integrate_photons || 0 != ray.depth) {
-                    result.photon_li    = worker.photon_li(intersection, material_sample);
+                    result.photon_li = throughput * worker.photon_li(intersection, material_sample);
                     result.split_photon = 0 != ray.depth;
                 }
             }

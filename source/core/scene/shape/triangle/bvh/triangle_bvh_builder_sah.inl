@@ -19,8 +19,9 @@
 namespace scene::shape::triangle::bvh {
 
 template <typename Data>
-void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, Vertices const& vertices,
-                        uint32_t max_primitives, thread::Pool& thread_pool) {
+void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, uint32_t num_vertices,
+                        Vertex const* const vertices, uint32_t max_primitives,
+                        thread::Pool& thread_pool) {
     Build_node root;
 
     {
@@ -63,7 +64,7 @@ void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, Vertices c
         split(&root, references, AABB(aabb.min, aabb.max), max_primitives, 0, thread_pool);
     }
 
-    tree.allocate_triangles(num_references_, vertices);
+    tree.allocate_triangles(num_references_, num_vertices, vertices);
 
     nodes_ = tree.allocate_nodes(num_nodes_);
 
@@ -72,8 +73,8 @@ void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, Vertices c
 }
 
 template <typename Data>
-void Builder_SAH::serialize(Build_node* node, Triangles const& triangles, Vertices const& vertices,
-                            Tree<Data>& tree) {
+void Builder_SAH::serialize(Build_node* node, Triangles const& triangles,
+                            Vertex const* const vertices, Tree<Data>& tree) {
     auto& n = new_node();
     n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 

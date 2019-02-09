@@ -31,10 +31,10 @@ void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread
     pool.run_range(
         [&va, &vb, weight, &vertices](uint32_t /*id*/, int32_t begin, int32_t end) {
             for (int32_t i = begin; i < end; ++i) {
-                vertices[i].p  = math::lerp(va[i].p, vb[i].p, weight);
-                vertices[i].n  = normalize(math::lerp(va[i].n, vb[i].n, weight));
-                vertices[i].t  = normalize(math::lerp(va[i].t, vb[i].t, weight));
-                vertices[i].uv = math::lerp(va[i].uv, vb[i].uv, weight);
+                vertices[i].p  = lerp(va[i].p, vb[i].p, weight);
+                vertices[i].n  = normalize(lerp(va[i].n, vb[i].n, weight));
+                vertices[i].t  = normalize(lerp(va[i].t, vb[i].t, weight));
+                vertices[i].uv = lerp(va[i].uv, vb[i].uv, weight);
             }
         },
         0, static_cast<int32_t>(va.size()));

@@ -15,8 +15,6 @@
 
 namespace rendering::integrator::photon {
 
-using namespace scene;
-
 Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings,
                Settings const& settings) noexcept
     : Integrator(rng, take_settings),
@@ -41,6 +39,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
 
     bool const infinite_world = worker.scene().is_infinite();
 
+    bool const caustics_only = map.caustics_only();
+
     uint32_t num_paths = 0;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -48,8 +48,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
                                               static_cast<uint32_t>(end - i));
 
         uint32_t       num_photons;
-        uint32_t const num_iterations = trace_photon(frame, bounds, infinite_world, worker,
-                                                     max_photons, photons_, num_photons);
+        uint32_t const num_iterations = trace_photon(frame, bounds, infinite_world, caustics_only,
+                                                     worker, max_photons, photons_, num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -72,8 +72,8 @@ size_t Mapper::num_bytes() const noexcept {
 }
 
 uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
-                              Worker& worker, uint32_t max_photons, Photon* photons,
-                              uint32_t& num_photons) noexcept {
+                              bool caustics_only, Worker& worker, uint32_t max_photons,
+                              Photon* photons, uint32_t& num_photons) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -97,9 +97,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
         bool caustic_ray = false;
 
-        Ray                ray;
-        Light const*       light;
-        shape::Sample_from light_sample;
+        Ray          ray;
+        Light const* light;
+        Sample_from  light_sample;
         if (!generate_light_ray(frame, bounds, worker, ray, &light, light_sample)) {
             continue;
         }
@@ -155,7 +155,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
                         ++num_photons;
 
-                        if (max_photons == num_photons) {
+                        if (max_photons == num_photons || caustics_only) {
                             return iteration;
                         }
                     }
@@ -222,8 +222,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 }
 
 bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                                Light const**       light_out,
-                                shape::Sample_from& light_sample) noexcept {
+                                Light const** light_out, Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);

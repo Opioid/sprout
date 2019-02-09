@@ -1,13 +1,10 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_MORPHABLE_MESH_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_MORPHABLE_MESH_HPP
 
-#include "bvh/triangle_bvh_indexed_data.hpp"
-#include "bvh/triangle_bvh_tree.hpp"
+#include "base/math/distribution/distribution_1d.hpp"
 #include "scene/shape/morphable_shape.hpp"
 #include "scene/shape/shape.hpp"
-#include "triangle_type.hpp"
-//#include "bvh/triangle_bvh_data_interleaved.hpp"
-#include "base/math/distribution/distribution_1d.hpp"
+#include "triangle_mesh_bvh.hpp"
 
 namespace scene::shape::triangle {
 
@@ -98,10 +95,6 @@ class Morphable_mesh : public Shape, public Morphable_shape {
     size_t num_bytes() const noexcept override final;
 
   private:
-    //	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_MT>>;
-
-    using Tree = bvh::Tree<bvh::Indexed_data<Shading_vertex_type>>;
-
     Tree tree_;
 
     Morph_target_collection* collection_;

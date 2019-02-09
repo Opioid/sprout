@@ -19,6 +19,8 @@ class Map {
 
     void init(uint32_t num_workers) noexcept;
 
+    void start() noexcept;
+
     void insert(Photon const& photon, uint32_t index) noexcept;
 
     uint32_t compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept;
@@ -28,12 +30,15 @@ class Map {
     float3 li(Intersection const& intersection, Material_sample const& sample,
               scene::Worker const& worker) const noexcept;
 
+    bool caustics_only() const noexcept;
+
     size_t num_bytes() const noexcept;
 
   private:
     AABB calculate_aabb(thread::Pool& pool) const noexcept;
 
-    uint32_t num_paths_;
+    uint32_t num_caustic_paths_;
+    uint32_t num_indirect_paths_;
 
     uint32_t num_photons_;
 
@@ -44,6 +49,8 @@ class Map {
 
     bool separate_indirect_;
 
+    bool caustic_only_;
+
     float merge_radius_;
 
     AABB* aabbs_;
@@ -52,6 +59,8 @@ class Map {
 
     Grid fine_grid_;
     Grid coarse_grid_;
+
+    Photon_ref* photon_refs_;
 };
 
 }  // namespace rendering::integrator::photon

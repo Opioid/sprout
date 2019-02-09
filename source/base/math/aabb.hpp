@@ -51,6 +51,8 @@ struct AABB {
 
     AABB transform(float4x4 const& m) const noexcept;
 
+    AABB transform_transposed(float3x3 const& m) const noexcept;
+
     AABB merge(AABB const& other) const noexcept;
 
     void merge_assign(AABB const& other) noexcept;
