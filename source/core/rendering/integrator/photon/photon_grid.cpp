@@ -370,7 +370,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                 result /= static_cast<float>(num_paths) * radius_2;
             }
         */
-        static uint32_t constexpr Max_photons      = 1024;
+        static uint32_t constexpr Max_photons      = 16;
         static uint32_t constexpr Photon_heap_back = Max_photons - 1;
 
         float max_radius_2 = radius_2;
