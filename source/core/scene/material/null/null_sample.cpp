@@ -9,7 +9,11 @@ const material::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+    return {float3(0.f), 0.f};
+}
+
+bxdf::Result Sample::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
     return {float3(0.f), 0.f};
 }
 

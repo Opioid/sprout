@@ -8,7 +8,9 @@ class Sample_thin : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 

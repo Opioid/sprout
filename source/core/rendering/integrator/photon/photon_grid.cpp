@@ -327,7 +327,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                 }
 
                 if (squared_distance(photon.p, position) <= radius_2) {
-                    auto const bxdf = sample.evaluate(photon.wi, true);
+                    auto const bxdf = sample.evaluate_f(photon.wi, true);
 
                     result += float3(photon.alpha) * bxdf.reflection;
                 }
@@ -362,16 +362,13 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                         continue;
                     }
 
-                    if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
-                        n_dot_wi > 0.f) {
-                        float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
-
+                    if (sample.base_layer().n_dot(photon.wi) > 0.f) {
                         float const k = /*check_disk_ ? 1.f / Pi :*/ kernel(distance_2,
                                                                             inv_radius_2);
 
-                        auto const bxdf = sample.evaluate(photon.wi, true);
+                        auto const bxdf = sample.evaluate_b(photon.wi, true);
 
-                        result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
+                        result += k * float3(photon.alpha) * bxdf.reflection;
                     }
                 }
             }
@@ -425,14 +422,12 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     for (uint32_t i = 0; i < len; ++i) {
         auto const& photon = photons_[photon_refs[i].id];
 
-        if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi); n_dot_wi > 0.f) {
-            float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
-
+        if (sample.base_layer().n_dot(photon.wi) > 0.f) {
             float const k = kernel(photon_refs[i].sd, inv_max_radius_2);
 
             auto const bxdf = sample.evaluate(photon.wi, true);
 
-            result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
+            result += k * float3(photon.alpha) * bxdf.reflection;
         }
     }
 

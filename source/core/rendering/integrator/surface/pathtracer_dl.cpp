@@ -200,7 +200,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         shadow_ray.max_t   = light_sample.t - offset;
 
         if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
-            auto const bxdf = material_sample.evaluate(light_sample.wi, evaluate_back);
+            auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
 
             float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 

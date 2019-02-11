@@ -13,7 +13,7 @@ const material::Layer& Sample::base_layer() const noexcept {
     return base_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -22,12 +22,35 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
     float3     flakes_fresnel;
-    auto const flakes = flakes_.evaluate(wi, wo_, h, wo_dot_h, flakes_fresnel);
+    auto const flakes = flakes_.evaluate<true>(wi, wo_, h, wo_dot_h, flakes_fresnel);
 
-    auto const base = base_.evaluate(wi, wo_, h, wo_dot_h);
+    auto const base = base_.evaluate<true>(wi, wo_, h, wo_dot_h);
+
+    float3 const bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
+
+    float const pdf = (coating.pdf + flakes.pdf + base.pdf) / 3.f;
+
+    return {coating.reflection + coating.attenuation * bottom, pdf};
+}
+
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
+    if (!same_hemisphere(wo_)) {
+        return {float3(0.f), 0.f};
+    }
+
+    float3 const h = normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
+
+    auto const coating = coating_.evaluate_b(wi, wo_, h, wo_dot_h, avoid_caustics_);
+
+    float3     flakes_fresnel;
+    auto const flakes = flakes_.evaluate<false>(wi, wo_, h, wo_dot_h, flakes_fresnel);
+
+    auto const base = base_.evaluate<false>(wi, wo_, h, wo_dot_h);
 
     float3 const bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
@@ -49,10 +72,10 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         coating_.sample(wo_, sampler, coating_attenuation, result);
 
         float3     flakes_fresnel;
-        auto const flakes = flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                             flakes_fresnel);
+        auto const flakes = flakes_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
+                                                   flakes_fresnel);
 
-        auto const base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
+        auto const base = base_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi);
 
         float3 const bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
@@ -61,12 +84,12 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     } else if (p < 0.8f) {
         base_.sample(wo_, sampler, result);
 
-        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                               avoid_caustics_);
+        auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
+                                                 avoid_caustics_);
 
         float3     flakes_fresnel;
-        auto const flakes = flakes_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                             flakes_fresnel);
+        auto const flakes = flakes_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
+                                                   flakes_fresnel);
 
         float3 const bottom = (1.f - flakes_fresnel) * result.reflection + flakes.reflection;
 
@@ -76,10 +99,10 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
         float3 flakes_fresnel;
         flakes_.sample(wo_, sampler, flakes_fresnel, result);
 
-        auto const coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-                                               avoid_caustics_);
+        auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
+                                                 avoid_caustics_);
 
-        auto const base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
+        auto const base = base_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi);
 
         float3 const bottom = (1.f - flakes_fresnel) * base.reflection + result.reflection;
 
@@ -94,6 +117,7 @@ void Sample::Base_layer::set(float3 const& color_a, float3 const& color_b, float
     alpha_   = alpha;
 }
 
+template <bool Forward>
 bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                           float wo_dot_h) const noexcept {
     float const n_dot_wi = clamp_n_dot(wi);
@@ -110,7 +134,11 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 fresnel);
 
-    return {n_dot_wi * ggx.reflection, ggx.pdf};
+    if constexpr (Forward) {
+        return {n_dot_wi * ggx.reflection, ggx.pdf};
+    } else {
+        return ggx;
+    }
 }
 
 void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, bxdf::Sample& result) const
@@ -136,6 +164,7 @@ void Sample::Flakes_layer::set(float3 const& ior, float3 const& absorption, floa
     weight_     = weight;
 }
 
+template <bool Forward>
 bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                             float wo_dot_h, float3& fresnel_result) const noexcept {
     float const n_dot_wi = clamp_n_dot(wi);
@@ -150,7 +179,11 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
 
     fresnel_result *= weight_;
 
-    return {n_dot_wi * weight_ * ggx.reflection, ggx.pdf};
+    if constexpr (Forward) {
+        return {n_dot_wi * weight_ * ggx.reflection, ggx.pdf};
+    } else {
+        return {weight_ * ggx.reflection, ggx.pdf};
+    }
 }
 
 void Sample::Flakes_layer::sample(float3 const& wo, Sampler& sampler, float3& fresnel_result,

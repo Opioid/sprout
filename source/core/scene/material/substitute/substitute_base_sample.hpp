@@ -15,9 +15,11 @@ class Sample_base : public material::Sample {
     void set(float3 const& color, float3 const& radiance, float f0, float alpha, float metallic,
              bool avoid_caustics) noexcept;
 
+    template <bool Forward>
     bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                                bool avoid_caustics) const noexcept;
 
+    template <bool Forward>
     bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                      float wo_dot_h, bool avoid_caustics) const noexcept;
 

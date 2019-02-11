@@ -16,7 +16,11 @@ const material::Layer& Sample_thin::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_thin::evaluate(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_thin::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+    return {float3(0.f), 0.f};
+}
+
+bxdf::Result Sample_thin::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
     return {float3(0.f), 0.f};
 }
 

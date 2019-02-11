@@ -13,7 +13,7 @@ const material::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
     float3 const n = cross(layer_.t_, layer_.b_);
 
     bool const same_side = dot(n, layer_.n_) > 0.f;
@@ -27,6 +27,22 @@ bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
     float3 const lambert = Pi_inv * color;
 
     return {n_dot_wi * lambert, pdf};
+}
+
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
+    float3 const n = cross(layer_.t_, layer_.b_);
+
+    bool const same_side = dot(n, layer_.n_) > 0.f;
+
+    float const n_dot_wi = layer_.clamp_n_dot(wi);
+
+    float3 const color = same_side ? color_front : color_back;
+
+    float const pdf = n_dot_wi * Pi_inv;
+
+    float3 const lambert = Pi_inv * color;
+
+    return {lambert, pdf};
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {

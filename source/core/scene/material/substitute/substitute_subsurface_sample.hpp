@@ -9,7 +9,9 @@ namespace scene::material::substitute {
 
 class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert> {
   public:
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
@@ -18,6 +20,9 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
     void set_volumetric(float anisotropy, float ior, float ior_outside) noexcept;
 
   private:
+    template <bool Forward>
+    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept;
+
     void refract(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
 
     float anisotropy_;
@@ -27,7 +32,9 @@ class Sample_subsurface final : public Sample_base<disney::Isotropic_no_lambert>
 
 class Sample_subsurface_volumetric final : public volumetric::Sample {
   public:
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
 
     bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
 

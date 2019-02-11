@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_DISPLAY_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_DISPLAY_SAMPLE_HPP
 
 #include "scene/material/material_sample.hpp"
 
@@ -8,7 +9,9 @@ class Sample : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
 
     float3 radiance() const noexcept override final;
 
@@ -25,3 +28,5 @@ class Sample : public material::Sample {
 };
 
 }  // namespace scene::material::display
+
+#endif

@@ -19,8 +19,11 @@ class Clearcoat {
              float alpha, float weight) noexcept;
 
   protected:
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    Layer const& layer, bool avoid_caustics) const noexcept;
+    Result evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                      Layer const& layer, bool avoid_caustics) const noexcept;
+
+    Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                      Layer const& layer, bool avoid_caustics) const noexcept;
 
     void sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
                 bxdf::Sample& result) const noexcept;
@@ -42,8 +45,11 @@ class Thinfilm {
     void set(float ior, float ior_internal, float alpha, float thickness) noexcept;
 
   protected:
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    Layer const& layer, bool avoid_caustics) const noexcept;
+    Result evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                      Layer const& layer, bool avoid_caustics) const noexcept;
+
+    Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                      Layer const& layer, bool avoid_caustics) const noexcept;
 
     void sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
                 bxdf::Sample& result) const noexcept;
@@ -60,8 +66,11 @@ class Coating_layer : public Layer, public Coating {
   public:
     using Sampler = sampler::Sampler;
 
-    Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                    bool avoid_caustics) const noexcept;
+    Result evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                      bool avoid_caustics) const noexcept;
+
+    Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                      bool avoid_caustics) const noexcept;
 
     void sample(float3 const& wo, Sampler& sampler, float3& attenuation, bxdf::Sample& result) const
         noexcept;

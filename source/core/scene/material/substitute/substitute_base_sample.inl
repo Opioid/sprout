@@ -38,6 +38,7 @@ void Sample_base<Diffuse>::set(float3 const& color, float3 const& radiance, floa
 }
 
 template <typename Diffuse>
+template <bool Forward>
 bxdf::Result Sample_base<Diffuse>::base_evaluate(float3 const& wi, float3 const& wo,
                                                  float3 const& h, float wo_dot_h,
                                                  bool avoid_caustics) const noexcept {
@@ -47,7 +48,11 @@ bxdf::Result Sample_base<Diffuse>::base_evaluate(float3 const& wi, float3 const&
     auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
 
     if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
-        return {n_dot_wi * d.reflection, d.pdf};
+        if constexpr (Forward) {
+            return {n_dot_wi * d.reflection, d.pdf};
+        } else {
+            return d;
+        }
     }
 
     float const n_dot_h = math::saturate(layer_.n_dot(h));
@@ -62,10 +67,15 @@ bxdf::Result Sample_base<Diffuse>::base_evaluate(float3 const& wi, float3 const&
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
 
-    return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
+    if constexpr (Forward) {
+        return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
+    } else {
+        return {d.reflection + ggx.reflection, pdf};
+    }
 }
 
 template <typename Diffuse>
+template <bool Forward>
 bxdf::Result Sample_base<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 const& wo,
                                                        float3 const& h, float wo_dot_h,
                                                        bool avoid_caustics) const noexcept {
@@ -86,7 +96,11 @@ bxdf::Result Sample_base<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
 
-    return {n_dot_wi * ggx.reflection, ggx.pdf};
+    if constexpr (Forward) {
+        return {n_dot_wi * ggx.reflection, ggx.pdf};
+    } else {
+        return ggx;
+    }
 }
 
 template <typename Diffuse>

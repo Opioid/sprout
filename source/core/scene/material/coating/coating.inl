@@ -6,9 +6,15 @@
 namespace scene::material::coating {
 
 template <typename Coating>
-Result Coating_layer<Coating>::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                                        float wo_dot_h, bool avoid_caustics) const noexcept {
-    return Coating::evaluate(wi, wo, h, wo_dot_h, *this, avoid_caustics);
+Result Coating_layer<Coating>::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h,
+                                          float wo_dot_h, bool avoid_caustics) const noexcept {
+    return Coating::evaluate_f(wi, wo, h, wo_dot_h, *this, avoid_caustics);
+}
+
+template <typename Coating>
+Result Coating_layer<Coating>::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h,
+                                          float wo_dot_h, bool avoid_caustics) const noexcept {
+    return Coating::evaluate_b(wi, wo, h, wo_dot_h, *this, avoid_caustics);
 }
 
 template <typename Coating>

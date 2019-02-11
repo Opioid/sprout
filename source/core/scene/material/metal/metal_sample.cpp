@@ -11,26 +11,12 @@ const material::Layer& Sample_isotropic::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_isotropic::evaluate(float3 const& wi, bool) const noexcept {
-    if (!same_hemisphere(wo_) || (avoid_caustics_ && alpha_ <= ggx::Min_alpha)) {
-        return {float3(0.f), 0.f};
-    }
+bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi, bool include_back) const noexcept {
+    return evaluate<true>(wi, include_back);
+}
 
-    float const n_dot_wi = layer_.clamp_n_dot(wi);
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
-
-    float3 const h = normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_dot(wo_, h);
-
-    float const n_dot_h = math::saturate(dot(layer_.n_, h));
-
-    const fresnel::Conductor conductor(ior_, absorption_);
-
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                conductor);
-
-    return {n_dot_wi * ggx.reflection, ggx.pdf};
+bxdf::Result Sample_isotropic::evaluate_b(float3 const& wi, bool include_back) const noexcept {
+    return evaluate<false>(wi, include_back);
 }
 
 void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
@@ -58,12 +44,9 @@ void Sample_isotropic::set(float3 const& ior, float3 const& absorption, float al
     avoid_caustics_ = avoid_caustics;
 }
 
-const material::Layer& Sample_anisotropic::base_layer() const noexcept {
-    return layer_;
-}
-
-bxdf::Result Sample_anisotropic::evaluate(float3 const& wi, bool) const noexcept {
-    if (!same_hemisphere(wo_)) {
+template <bool Forward>
+bxdf::Result Sample_isotropic::evaluate(float3 const& wi, bool include_back) const noexcept {
+    if (!same_hemisphere(wo_) || (avoid_caustics_ && alpha_ <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
 
@@ -74,12 +57,30 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi, bool) const noexcept
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
+    float const n_dot_h = math::saturate(dot(layer_.n_, h));
 
-    auto const ggx = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, layer_,
-                                                  conductor);
+    const fresnel::Conductor conductor(ior_, absorption_);
 
-    return {n_dot_wi * ggx.reflection, ggx.pdf};
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                                conductor);
+
+    if constexpr (Forward) {
+        return {n_dot_wi * ggx.reflection, ggx.pdf};
+    } else {
+        return {ggx.reflection, ggx.pdf};
+    }
+}
+
+const material::Layer& Sample_anisotropic::base_layer() const noexcept {
+    return layer_;
+}
+
+bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi, bool include_back) const noexcept {
+    return evaluate<true>(wi, include_back);
+}
+
+bxdf::Result Sample_anisotropic::evaluate_b(float3 const& wi, bool include_back) const noexcept {
+    return evaluate<false>(wi, include_back);
 }
 
 void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
@@ -97,6 +98,31 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
+}
+
+template <bool Forward>
+bxdf::Result Sample_anisotropic::evaluate(float3 const& wi, bool) const noexcept {
+    if (!same_hemisphere(wo_)) {
+        return {float3(0.f), 0.f};
+    }
+
+    float const n_dot_wi = layer_.clamp_n_dot(wi);
+    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+
+    float3 const h = normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
+
+    const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
+
+    auto const ggx = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, layer_,
+                                                  conductor);
+
+    if constexpr (Forward) {
+        return {n_dot_wi * ggx.reflection, ggx.pdf};
+    } else {
+        return ggx;
+    }
 }
 
 void Sample_anisotropic::PLayer::set(float3 const& ior, float3 const& absorption,

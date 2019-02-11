@@ -10,11 +10,16 @@ namespace scene::material::substitute {
 template <typename Coating_layer>
 class Sample_coating : public Sample_base<disney::Isotropic> {
   public:
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
   private:
+    template <bool Forward>
+    bxdf::Result evaluate(float3 const& wi) const noexcept;
+
     void diffuse_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
 
     void gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
