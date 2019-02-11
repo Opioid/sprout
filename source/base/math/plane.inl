@@ -5,8 +5,7 @@
 #include "vector3.inl"
 #include "vector4.inl"
 
-namespace math {
-namespace plane {
+namespace math::plane {
 
 static inline Plane create(Vector3f_a const& normal, float d) noexcept {
     return Plane(normal, d);
@@ -18,20 +17,19 @@ static inline Plane create(Vector3f_a const& normal, Vector3f_a const& point) no
 
 static inline Plane create(Vector3f_a const& v0, Vector3f_a const& v1,
                            Vector3f_a const& v2) noexcept {
-    const Vector3f_a n = normalize(cross(v2 - v1, v0 - v1));
+    Vector3f_a const n = normalize(cross(v2 - v1, v0 - v1));
 
     return create(n, v0);
 }
 
-static inline float dot(const Vector4f_a& p, Vector3f_a const& v) noexcept {
+static inline float dot(Vector4f_a const& p, Vector3f_a const& v) noexcept {
     return (p[0] * v[0] + p[1] * v[1]) + (p[2] * v[2] + p[3]);
 }
 
-static inline bool behind(const Vector4f_a& p, Vector3f_a const& point) noexcept {
+static inline bool behind(Vector4f_a const& p, Vector3f_a const& point) noexcept {
     return dot(p, point) < 0.f;
 }
 
-}  // namespace plane
-}  // namespace math
+}  // namespace math::plane
 
 #endif

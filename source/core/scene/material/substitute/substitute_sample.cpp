@@ -7,7 +7,7 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample::evaluate(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate(float3 const& wi, bool /*include_back*/) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }

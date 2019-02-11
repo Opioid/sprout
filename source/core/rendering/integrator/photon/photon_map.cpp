@@ -18,8 +18,8 @@ Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float co
       merge_radius_(merge_radius),
       aabbs_(nullptr),
       num_reduced_(nullptr),
-      fine_grid_(search_radius, 1.5f),
-      coarse_grid_(coarse_search_radius, 1.1f) {}
+      fine_grid_(search_radius, 1.5f, false),
+      coarse_grid_(coarse_search_radius, 1.1f, true) {}
 
 Map::~Map() noexcept {
     memory::free_aligned(photon_refs_);

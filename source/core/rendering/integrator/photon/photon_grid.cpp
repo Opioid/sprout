@@ -1,6 +1,7 @@
 #include "photon_grid.hpp"
 #include <algorithm>
 #include "base/math/aabb.inl"
+#include "base/math/plane.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -29,7 +30,7 @@ static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
         return Negative;
     }
 
-    if (s >= cell_bound[1]) {
+    if (s > cell_bound[1]) {
         return Positive;
     }
 
@@ -39,14 +40,15 @@ static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
 static float3 scattering_coefficient(prop::Intersection const& intersection,
                                      Worker const&             worker) noexcept;
 
-Grid::Grid(float search_radius, float grid_cell_factor) noexcept
+Grid::Grid(float search_radius, float grid_cell_factor, bool check_disk) noexcept
     : num_photons_(0),
       photons_(nullptr),
       search_radius_(search_radius),
       grid_cell_factor_(grid_cell_factor),
       cell_bound_(0.5f / grid_cell_factor, 1.f - (0.5f / grid_cell_factor)),
       dimensions_(0),
-      grid_(nullptr) {}
+      grid_(nullptr),
+      check_disk_(check_disk) {}
 
 Grid::~Grid() noexcept {
     memory::free_aligned(grid_);
@@ -337,45 +339,12 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
         result /= (((4.f / 3.f) * Pi) * (radius_3 * static_cast<float>(num_paths))) * mu_s;
     } else {
         float const radius_2 = search_radius_ * search_radius_;
-        /*
-                float const inv_radius_2 = 1.f / radius_2;
 
-                for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
-                    int2 const cell = adjacency.cells[c];
+        float const inv_radius_2 = 1.f / radius_2;
 
-                    for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
-                        auto const& photon = photons_[i];
+        Plane const disk = plane::create(intersection.geo.n, position);
 
-                        if (photon.properties.test(Photon::Property::Volumetric)) {
-                            continue;
-                        }
-
-                        if (float const distance_2 = squared_distance(photon.p, position);
-                            distance_2 < radius_2) {
-                            if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
-                                n_dot_wi > 0.f) {
-                                float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
-
-                                float const k = kernel(distance_2, inv_radius_2);
-
-                                auto const bxdf = sample.evaluate(photon.wi, true);
-
-                                result += (k / clamped_n_dot_wi) * (float3(photon.alpha) *
-           bxdf.reflection);
-                            }
-                        }
-                    }
-                }
-
-                result /= static_cast<float>(num_paths) * radius_2;
-            }
-        */
-        static uint32_t constexpr Max_photons      = 16;
-        static uint32_t constexpr Photon_heap_back = Max_photons - 1;
-
-        float max_radius_2 = radius_2;
-
-        uint32_t num_found = 0;
+        float const disk_thickness = search_radius_ * 0.25f;
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];
@@ -388,45 +357,89 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                 }
 
                 if (float const distance_2 = squared_distance(photon.p, position);
-                    distance_2 < max_radius_2) {
-                    if (Max_photons <= num_found) {
-                        if (Max_photons == num_found) {
-                            std::make_heap(photon_refs, photon_refs + Max_photons);
-                        }
-
-                        std::pop_heap(photon_refs, photon_refs + Max_photons);
-                        photon_refs[Photon_heap_back] = Photon_ref{i, distance_2};
-                        std::push_heap(photon_refs, photon_refs + Max_photons);
-                        max_radius_2 = photon_refs[0].sd;
-                    } else {
-                        photon_refs[num_found] = Photon_ref{i, distance_2};
+                    distance_2 < radius_2) {
+                    if (check_disk_ && std::abs(plane::dot(disk, photon.p)) > disk_thickness) {
+                        continue;
                     }
 
-                    ++num_found;
+                    if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi);
+                        n_dot_wi > 0.f) {
+                        float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
+
+                        float const k = /*check_disk_ ? 1.f / Pi :*/ kernel(distance_2,
+                                                                            inv_radius_2);
+
+                        auto const bxdf = sample.evaluate(photon.wi, true);
+
+                        result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
+                    }
                 }
             }
         }
 
-        uint32_t const len = std::min(num_found, Max_photons);
+        result /= static_cast<float>(num_paths) * radius_2;
+    }
 
-        float const inv_max_radius_2 = 1.f / max_radius_2;
+    /*
+    static uint32_t constexpr Max_photons      = 16;
+    static uint32_t constexpr Photon_heap_back = Max_photons - 1;
 
-        for (uint32_t i = 0; i < len; ++i) {
-            auto const& photon = photons_[photon_refs[i].id];
+    float max_radius_2 = radius_2;
 
-            if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi); n_dot_wi > 0.f) {
-                float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
+    uint32_t num_found = 0;
 
-                float const k = kernel(photon_refs[i].sd, inv_max_radius_2);
+    for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
+        int2 const cell = adjacency.cells[c];
 
-                auto const bxdf = sample.evaluate(photon.wi, true);
+        for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
+            auto const& photon = photons_[i];
 
-                result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
+            if (photon.properties.test(Photon::Property::Volumetric)) {
+                continue;
+            }
+
+            if (float const distance_2 = squared_distance(photon.p, position);
+                distance_2 < max_radius_2) {
+                if (Max_photons <= num_found) {
+                    if (Max_photons == num_found) {
+                        std::make_heap(photon_refs, photon_refs + Max_photons);
+                    }
+
+                    std::pop_heap(photon_refs, photon_refs + Max_photons);
+                    photon_refs[Photon_heap_back] = Photon_ref{i, distance_2};
+                    std::push_heap(photon_refs, photon_refs + Max_photons);
+                    max_radius_2 = photon_refs[0].sd;
+                } else {
+                    photon_refs[num_found] = Photon_ref{i, distance_2};
+                }
+
+                ++num_found;
             }
         }
-
-        result /= static_cast<float>(num_paths) * max_radius_2;
     }
+
+    uint32_t const len = std::min(num_found, Max_photons);
+
+    float const inv_max_radius_2 = 1.f / max_radius_2;
+
+    for (uint32_t i = 0; i < len; ++i) {
+        auto const& photon = photons_[photon_refs[i].id];
+
+        if (float const n_dot_wi = sample.base_layer().abs_n_dot(photon.wi); n_dot_wi > 0.f) {
+            float const clamped_n_dot_wi = scene::material::clamp(n_dot_wi);
+
+            float const k = kernel(photon_refs[i].sd, inv_max_radius_2);
+
+            auto const bxdf = sample.evaluate(photon.wi, true);
+
+            result += (k / clamped_n_dot_wi) * (float3(photon.alpha) * bxdf.reflection);
+        }
+    }
+
+    result /= static_cast<float>(num_paths) * max_radius_2;
+}
+
+*/
 
     return result;
 }

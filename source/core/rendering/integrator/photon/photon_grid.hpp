@@ -49,7 +49,7 @@ class Grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Grid(float search_radius, float grid_radius_factor) noexcept;
+    Grid(float search_radius, float grid_radius_factor, bool check_disk) noexcept;
 
     ~Grid() noexcept;
 
@@ -97,6 +97,8 @@ class Grid {
     int32_t* grid_;
 
     Adjacency adjacencies_[43];
+
+    bool check_disk_;
 };
 
 }  // namespace rendering::integrator::photon
