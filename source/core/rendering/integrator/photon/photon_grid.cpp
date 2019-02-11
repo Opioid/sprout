@@ -290,9 +290,10 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
     return comp_num_photons;
 }
 
-static inline float kernel(float squared_distance, float inv_squared_radius) noexcept {
+static inline float cone_filter(float squared_distance, float inv_squared_radius) noexcept {
     float const s = 1.f - squared_distance * inv_squared_radius;
-    return (3.f * Pi_inv) * (s * s);
+
+    return s * s;
 }
 
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
@@ -363,8 +364,12 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                     }
 
                     if (sample.base_layer().n_dot(photon.wi) > 0.f) {
-                        float const k = /*check_disk_ ? 1.f / Pi :*/ kernel(distance_2,
-                                                                            inv_radius_2);
+                        //      float const k = check_disk_ ? 1.f / Pi : kernel(distance_2,
+                        //      inv_radius_2);
+
+                        //     float const k = 1.f / Pi;
+
+                        float const k = cone_filter(distance_2, inv_radius_2);
 
                         auto const bxdf = sample.evaluate_b(photon.wi, true);
 
@@ -374,7 +379,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
             }
         }
 
-        result /= static_cast<float>(num_paths) * radius_2;
+        result /= ((1.f / 3.f) * Pi) * static_cast<float>(num_paths) * radius_2;
     }
 
     /*
