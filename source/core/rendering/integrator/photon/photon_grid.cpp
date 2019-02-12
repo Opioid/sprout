@@ -296,6 +296,12 @@ static inline float cone_filter(float squared_distance, float inv_squared_radius
     return s * s;
 }
 
+static inline float conely_filter(float squared_distance, float inv_squared_radius) noexcept {
+    float const s = 1.f - squared_distance * inv_squared_radius;
+
+    return s;
+}
+
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
                 Photon_ref* photon_refs, scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
@@ -345,7 +351,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
         Plane const disk = plane::create(intersection.geo.n, position);
 
-        float const disk_thickness = search_radius_ * 0.25f;
+        float const disk_thickness = search_radius_ * 0.125f;
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];
@@ -364,12 +370,11 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                     }
 
                     if (sample.base_layer().n_dot(photon.wi) > 0.f) {
-                        //      float const k = check_disk_ ? 1.f / Pi : kernel(distance_2,
-                        //      inv_radius_2);
+                        // float const k = 1.f;
 
-                        //     float const k = 1.f / Pi;
+                        // float const k = cone_filter(distance_2, inv_radius_2);
 
-                        float const k = cone_filter(distance_2, inv_radius_2);
+                        float const k = conely_filter(distance_2, inv_radius_2);
 
                         auto const bxdf = sample.evaluate_b(photon.wi, true);
 
@@ -379,7 +384,14 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
             }
         }
 
-        result /= ((1.f / 3.f) * Pi) * static_cast<float>(num_paths) * radius_2;
+        // cone_filter
+        //  result /= ((1.f / 3.f) * Pi) * static_cast<float>(num_paths) * radius_2;
+
+        // conely_filter
+        result /= ((1.f / 2.f) * Pi) * static_cast<float>(num_paths) * radius_2;
+
+        // unfiltered
+        //   result /= Pi * static_cast<float>(num_paths) * radius_2;
     }
 
     /*
