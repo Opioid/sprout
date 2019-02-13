@@ -95,6 +95,17 @@ bool Indexed_data<SV>::intersect_p(FVector origin, FVector direction, FVector mi
 }
 
 template <typename SV>
+Vector Indexed_data<SV>::interpolate_p(FVector u, FVector v, uint32_t index) const noexcept {
+    auto const tri = triangles_[index];
+
+    Vector const ap = simd::load_float4(intersection_vertices_[tri.a].v);
+    Vector const bp = simd::load_float4(intersection_vertices_[tri.b].v);
+    Vector const cp = simd::load_float4(intersection_vertices_[tri.c].v);
+
+    return triangle::interpolate_p(ap, bp, cp, u, v);
+}
+
+template <typename SV>
 void Indexed_data<SV>::interpolate_data(uint32_t index, float2 uv, float3& n, float3& t,
                                         float2& tc) const noexcept {
     auto const tri = triangles_[index];

@@ -464,6 +464,11 @@ float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filt
 }
 
 template <typename Data>
+Vector Tree<Data>::interpolate_p(FVector u, FVector v, uint32_t index) const noexcept {
+    return data_.interpolate_p(u, v, index);
+}
+
+template <typename Data>
 void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
                                            float2& tc) const noexcept {
     data_.interpolate_data(index, uv, n, t, tc);

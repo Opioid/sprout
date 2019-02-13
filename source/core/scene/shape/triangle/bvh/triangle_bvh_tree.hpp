@@ -84,6 +84,8 @@ class Tree {
     float3 absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
                       Worker const& worker) const noexcept;
 
+    Vector interpolate_p(FVector u, FVector v, uint32_t index) const noexcept;
+
     void interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
                                    float2& tc) const noexcept;
 

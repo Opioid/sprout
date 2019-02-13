@@ -41,51 +41,7 @@ uint32_t Mesh::num_parts() const noexcept {
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                      shape::Intersection& intersection) const noexcept {
-    /*	ray tray;
-            tray.origin = transform_point(ray.origin, transformation.world_to_object);
-            tray.set_direction(transform_vector(ray.direction,
-       transformation.world_to_object)); tray.min_t = ray.min_t; tray.max_t = ray.max_t;
-
-            Intersection pi;
-            if (tree_.intersect(tray, node_stack, pi)) {
-                    ray.max_t = tray.max_t;
-
-                    float epsilon = 3e-3f * tray.max_t;
-
-                    float3 p_w = ray.point(tray.max_t);
-
-                    Vector n;
-                    Vector t;
-                    float2 uv;
-                    tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
-
-                    Vector	 geo_n			= tree_.triangle_normal_v(pi.index);
-                    Vector	 bitangent_sign =
-       simd::set_float4(tree_.triangle_bitangent_sign(pi.index)); uint32_t material_index =
-       tree_.triangle_material_index(pi.index);
-
-                    Matrix3 rotation = math::load_float3x3(transformation.rotation);
-
-                    Vector geo_n_w = transform_vector(rotation, geo_n);
-                    Vector n_w	   = transform_vector(rotation, n);
-                    Vector t_w	   = transform_vector(rotation, t);
-                    Vector b_w	   = math::mul(bitangent_sign, cross3(n_w, t_w));
-
-                    intersection.p = p_w;
-                    simd::store_float4(intersection.t.v, t_w);
-                    simd::store_float4(intersection.b.v, b_w);
-                    simd::store_float4(intersection.n.v, n_w);
-                    simd::store_float4(intersection.geo_n.v, geo_n_w);
-                    intersection.uv = uv;
-                    intersection.epsilon = epsilon;
-                    intersection.part = material_index;
-
-                    return true;
-            }
-
-            return false;*/
-
-    Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
+    Matrix4 world_to_object = load_float4x4(transformation.world_to_object);
 
     Vector ray_origin = simd::load_float4(ray.origin.v);
     ray_origin        = transform_point(world_to_object, ray_origin);
@@ -109,7 +65,11 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         float epsilon = 3e-3f * tray_max_t;
 
-        float3 p_w = ray.point(tray_max_t);
+        Vector p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+
+        Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
+
+        Vector p_w = transform_point(object_to_world, p);
 
         Vector n;
         Vector t;
@@ -122,14 +82,14 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        Matrix3 rotation = math::load_float3x3(transformation.rotation);
+        Matrix3 rotation = load_float3x3(transformation.rotation);
 
         Vector geo_n_w = transform_vector(rotation, geo_n);
         Vector n_w     = transform_vector(rotation, n);
         Vector t_w     = transform_vector(rotation, t);
-        Vector b_w     = math::mul(bitangent_sign, cross3(n_w, t_w));
+        Vector b_w     = mul(bitangent_sign, cross3(n_w, t_w));
 
-        intersection.p = p_w;
+        simd::store_float4(intersection.p.v, p_w);
         simd::store_float4(intersection.t.v, t_w);
         simd::store_float4(intersection.b.v, b_w);
         simd::store_float4(intersection.n.v, n_w);

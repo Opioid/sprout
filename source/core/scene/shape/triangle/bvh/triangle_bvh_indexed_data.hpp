@@ -41,6 +41,8 @@ class Indexed_data {
     bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
                      uint32_t index) const noexcept;
 
+    Vector interpolate_p(FVector u, FVector v, uint32_t index) const noexcept;
+
     void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const
         noexcept;
 
