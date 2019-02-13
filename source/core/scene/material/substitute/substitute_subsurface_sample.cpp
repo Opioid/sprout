@@ -8,11 +8,11 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_subsurface::evaluate_f(float3 const& wi, bool include_back) const noexcept {
     return evaluate<true>(wi, include_back);
 }
 
-bxdf::Result Sample_subsurface::evaluate_f(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi, bool include_back) const noexcept {
     return evaluate<false>(wi, include_back);
 }
 
