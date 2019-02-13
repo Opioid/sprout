@@ -130,7 +130,11 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 
         float epsilon = 3e-3f * tray_max_t;
 
-        float3 p_w = ray.point(tray_max_t);
+        Vector p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+
+        Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
+
+        Vector p_w = transform_point(object_to_world, p);
 
         float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
 
@@ -141,7 +145,7 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
         Matrix3 rotation = math::load_float3x3(transformation.rotation);
         Vector  geo_n_w  = transform_vector(rotation, geo_n);
 
-        intersection.p = p_w;
+        simd::store_float4(intersection.p.v, p_w);
         simd::store_float4(intersection.geo_n.v, geo_n_w);
         intersection.uv      = uv;
         intersection.epsilon = epsilon;
