@@ -30,6 +30,7 @@ struct Vertex;
 namespace triangle {
 
 struct Intersection;
+struct Intersectioni;
 struct Index_triangle;
 struct Triangle;
 struct Position_triangle;
@@ -60,6 +61,8 @@ class Tree {
 
     uint32_t current_triangle() const noexcept;
 
+    bool intersect(ray& ray, Node_stack& node_stack, Intersectioni& intersection) const noexcept;
+
     bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const noexcept;
 
     bool intersect(ray& ray, Node_stack& node_stack) const noexcept;
@@ -83,6 +86,8 @@ class Tree {
 
     float3 absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
                       Worker const& worker) const noexcept;
+
+    float3 interpolate_p(float2 uv, uint32_t index) const noexcept;
 
     Vector interpolate_p(FVector u, FVector v, uint32_t index) const noexcept;
 

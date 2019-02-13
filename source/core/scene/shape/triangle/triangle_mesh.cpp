@@ -41,6 +41,54 @@ uint32_t Mesh::num_parts() const noexcept {
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                      shape::Intersection& intersection) const noexcept {
+    /*
+    math::ray tray(
+        transform_point(transformation.world_to_object, ray.origin),
+        transform_vector(transformation.world_to_object, ray.direction),
+        ray.min_t,
+        ray.max_t);
+
+    Intersectioni pi;
+    if (tree_.intersect(tray, node_stack, pi)) {
+        ray.max_t        = tray.max_t;
+
+        float epsilon = 3e-3f * tray.max_t;
+
+        float3 p = tree_.interpolate_p(pi.uv, pi.index);
+
+        float3 p_w = transform_point(transformation.object_to_world, p);
+
+        float3 n;
+        float3 t;
+        float2 uv;
+        tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
+
+        float3 geo_n = tree_.triangle_normal(pi.index);
+
+        float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
+
+        uint32_t material_index = tree_.triangle_material_index(pi.index);
+
+        float3 geo_n_w = transform_vector(transformation.rotation, geo_n);
+        float3 n_w     = transform_vector(transformation.rotation, n);
+        float3 t_w     = transform_vector(transformation.rotation, t);
+        float3 b_w     = bitangent_sign * cross(n_w, t_w);
+
+        intersection.p = p_w;
+        intersection.t = t_w;
+        intersection.b = b_w;
+        intersection.n = n_w;
+        intersection.geo_n = geo_n_w;
+        intersection.uv      = uv;
+        intersection.epsilon = epsilon;
+        intersection.part    = material_index;
+
+        return true;
+    }
+
+    return false;
+    */
+
     Matrix4 world_to_object = load_float4x4(transformation.world_to_object);
 
     Vector ray_origin = simd::load_float4(ray.origin.v);

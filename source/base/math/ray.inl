@@ -6,6 +6,8 @@
 
 namespace math {
 
+inline ray::ray() noexcept = default;
+
 inline ray::ray(float3 const& origin, float3 const& direction, float min_t, float max_t) noexcept
     : origin(origin),
       direction(direction),

@@ -15,6 +15,11 @@ struct Intersection {
     uint32_t index;
 };
 
+struct Intersectioni {
+    float2   uv;
+    uint32_t index;
+};
+
 }  // namespace scene::shape::triangle
 
 #endif

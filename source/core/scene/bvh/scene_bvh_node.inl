@@ -1,11 +1,42 @@
 #ifndef SU_CORE_SCENE_BVH_NODE_INL
 #define SU_CORE_SCENE_BVH_NODE_INL
 
+#include "base/math/ray.hpp"
 #include "base/math/simd_vector.inl"
 #include "base/math/vector3.inl"
 #include "scene_bvh_node.hpp"
 
 namespace scene::bvh {
+
+inline Node::Node() noexcept = default;
+
+inline float3 Node::min() const noexcept {
+    return float3(min_.v);
+}
+
+inline float3 Node::max() const noexcept {
+    return float3(max_.v);
+}
+
+inline uint32_t Node::next() const noexcept {
+    return min_.next_or_data;
+}
+
+inline uint8_t Node::axis() const noexcept {
+    return max_.axis;
+}
+
+inline uint8_t Node::num_primitives() const noexcept {
+    return max_.num_primitives;
+}
+
+inline uint32_t Node::indices_start() const noexcept {
+    return min_.next_or_data;
+}
+
+inline uint32_t Node::indices_end() const noexcept {
+    return min_.next_or_data + static_cast<uint32_t>(max_.num_primitives);
+}
 
 inline void Node::set_aabb(float const* min, float const* max) noexcept {
     min_.v[0] = min[0];
@@ -31,8 +62,9 @@ inline void Node::set_leaf_node(uint32_t start_primitive, uint8_t num_primitives
 // This test is presented in the paper
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
+
 /*
-inline bool Node::intersect_p(ray const& ray) const {
+inline bool Node::intersect_p(math::ray const& ray) const {
         int8_t sign_0 = ray.signs[0];
         float min_t = (bounds[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
         float max_t = (bounds[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
@@ -70,7 +102,45 @@ inline bool Node::intersect_p(ray const& ray) const {
         }
 
         return min_t < ray.max_t && max_t > ray.min_t;
-}*/
+}
+*/
+
+inline bool Node::intersect_p(math::ray const& ray) const {
+    Vector const ray_origin        = simd::load_float4(ray.origin.v);
+    Vector const ray_direction     = simd::load_float4(ray.direction.v);
+    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+    Vector const ray_min_t         = simd::load_float(&ray.min_t);
+    Vector const ray_max_t         = simd::load_float(&ray.max_t);
+
+    Vector const bb_min = simd::load_float3(min_.v);
+    Vector const bb_max = simd::load_float3(max_.v);
+
+    Vector const l1 = math::mul(math::sub(bb_min, ray_origin), ray_inv_direction);
+    Vector const l2 = math::mul(math::sub(bb_max, ray_origin), ray_inv_direction);
+
+    // the order we use for those min/max is vital to filter out
+    // NaNs that happens when an inv_dir is +/- inf and
+    // (box_min - pos) is 0. inf * 0 = NaN
+    Vector const filtered_l1a = math::min(l1, simd::Infinity);
+    Vector const filtered_l2a = math::min(l2, simd::Infinity);
+
+    Vector const filtered_l1b = math::max(l1, simd::Neg_infinity);
+    Vector const filtered_l2b = math::max(l2, simd::Neg_infinity);
+
+    // now that we're back on our feet, test those slabs.
+    Vector max_t = math::max(filtered_l1a, filtered_l2a);
+    Vector min_t = math::min(filtered_l1b, filtered_l2b);
+
+    // unfold back. try to hide the latency of the shufps & co.
+    max_t = math::min1(max_t, SU_ROTATE_LEFT(max_t));
+    min_t = math::max1(min_t, SU_ROTATE_LEFT(min_t));
+
+    max_t = math::min1(max_t, SU_MUX_HIGH(max_t, max_t));
+    min_t = math::max1(min_t, SU_MUX_HIGH(min_t, min_t));
+
+    return 0 != (_mm_comige_ss(max_t, ray_min_t) & _mm_comige_ss(ray_max_t, min_t) &
+                 _mm_comige_ss(max_t, min_t));
+}
 
 // I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml

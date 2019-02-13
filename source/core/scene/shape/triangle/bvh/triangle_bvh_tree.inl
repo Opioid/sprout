@@ -67,6 +67,51 @@ uint32_t Tree<Data>::current_triangle() const noexcept {
 }
 
 template <typename Data>
+bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersectioni& intersection) const
+    noexcept {
+    node_stack.push(0xFFFFFFFF);
+    uint32_t n = 0;
+
+    uint32_t index = 0xFFFFFFFF;
+
+    float2 uv;
+
+    while (0xFFFFFFFF != n) {
+        auto const& node = nodes_[n];
+
+        if (node.intersect_p(ray)) {
+            if (0 == node.num_primitives()) {
+                if (0 == ray.signs[node.axis()]) {
+                    node_stack.push(node.next());
+                    ++n;
+                } else {
+                    node_stack.push(n + 1);
+                    n = node.next();
+                }
+
+                continue;
+            }
+
+            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+                if (data_.intersect(i, ray, uv)) {
+                    index = i;
+                }
+            }
+        }
+
+        n = node_stack.pop();
+    }
+
+    if (index != 0xFFFFFFFF) {
+        intersection.uv    = uv;
+        intersection.index = index;
+        return true;
+    }
+
+    return false;
+}
+
+template <typename Data>
 bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const
     noexcept {
     node_stack.push(0xFFFFFFFF);
@@ -461,6 +506,11 @@ float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filt
     }
 
     return absorption;
+}
+
+template <typename Data>
+float3 Tree<Data>::interpolate_p(float2 uv, uint32_t index) const noexcept {
+    return data_.interpolate_p(uv, index);
 }
 
 template <typename Data>
