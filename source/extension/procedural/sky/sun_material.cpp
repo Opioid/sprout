@@ -26,7 +26,7 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
     noexcept {
     auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs, wo);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
@@ -61,7 +61,7 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
     noexcept {
     auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs, wo);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

@@ -119,7 +119,7 @@ void Setup::test(float3 const& wi, float3 const& wo, float3 const& t, float3 con
 
     sample.set(color, radiance, constant_f0, roughness, metallic, false);
 
-    sample.set_basis(n, wo);
+ //   sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);
 
     {

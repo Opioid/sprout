@@ -87,10 +87,10 @@ void rough_refraction() {
 
     float3 wo = normalize(float3(0.2f, -0.2f, 0.9f));
 
-    sample.set_basis(n, wo);
+//    sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);
 
-    sample_rough.set_basis(n, wo);
+ //   sample_rough.set_basis(n, wo);
     sample_rough.layer_.set_tangent_frame(t, b, n);
 
     float3 refraction_color(1.f, 1.f, 1.f);

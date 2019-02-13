@@ -107,7 +107,6 @@ inline bool Node::intersect_p(math::ray const& ray) const {
 
 inline bool Node::intersect_p(math::ray const& ray) const {
     Vector const ray_origin        = simd::load_float4(ray.origin.v);
-    Vector const ray_direction     = simd::load_float4(ray.direction.v);
     Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector const ray_max_t         = simd::load_float(&ray.max_t);

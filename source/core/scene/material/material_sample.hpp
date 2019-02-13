@@ -9,6 +9,7 @@ class Sampler;
 
 namespace scene {
 
+struct Renderstate;
 class Worker;
 
 namespace material {
@@ -67,6 +68,9 @@ class Sample {
 
     virtual bool do_evaluate_back(bool previously, bool same_side) const noexcept;
 
+    float3 p() const noexcept;
+    float3 p(float3 const& wi) const noexcept;
+
     float3 const& wo() const noexcept;
 
     float clamp_geo_n_dot(float3 const& v) const noexcept;
@@ -76,9 +80,10 @@ class Sample {
 
     bool same_hemisphere(float3 const& v) const noexcept;
 
-    void set_basis(float3 const& geo_n, float3 const& wo) noexcept;
+    void set_basis(Renderstate const& rs, float3 const& wo) noexcept;
 
   protected:
+    float3 p_;
     float3 geo_n_;
     float3 wo_;
 };

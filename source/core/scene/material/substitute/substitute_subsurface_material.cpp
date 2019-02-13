@@ -50,7 +50,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
 
         auto& sample = worker.sample<Sample_subsurface_volumetric>(rs.sample_level);
 
-        sample.set_basis(rs.geo_n, wo);
+        sample.set_basis(rs, wo);
 
         sample.set(anisotropy_, fresnel::schlick_f0(ior_, rs.ior));
 

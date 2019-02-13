@@ -14,7 +14,37 @@
 #include "scene/shape/shape_sample.hpp"
 #include "triangle_intersection.hpp"
 
+#include <cstring>
+
 namespace scene::shape::triangle {
+
+static inline float int_as_float(int32_t x) noexcept {
+    float f;
+    std::memcpy(&f, &x, sizeof(float));
+    return f;
+}
+
+static inline int32_t float_as_int(float x) noexcept {
+    int32_t i;
+    std::memcpy(&i, &x, sizeof(int32_t));
+    return i;
+}
+
+static float constexpr origin = 1.f / 32.f;
+static float constexpr float_scale = 1.f / 65536.f;
+static float constexpr int_scale = 256.f;
+
+static inline float3 offset_ray(float3 const& p, float3 const& n) noexcept {
+    int3 const of_i(int_scale * n);
+
+    float3 const p_i(int_as_float(float_as_int(p[0]) + ((p[0] < 0.f) ? -of_i[0] : of_i[0] )),
+                     int_as_float(float_as_int(p[1]) + ((p[1] < 0.f) ? -of_i[1] : of_i[1] )),
+                     int_as_float(float_as_int(p[2]) + ((p[2] < 0.f) ? -of_i[2] : of_i[2] )));
+
+    return float3(std::abs(p[0]) < origin ? p[0] + float_scale * n[0] : p_i[0],
+                  std::abs(p[1]) < origin ? p[1] + float_scale * n[1] : p_i[1],
+                  std::abs(p[2]) < origin ? p[2] + float_scale * n[2] : p_i[2]);
+}
 
 Mesh::Mesh() noexcept : distributions_(nullptr) {}
 
@@ -108,10 +138,10 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Intersection pi;
     if (tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t, ray_max_t,
                         ray_signs, node_stack, pi)) {
-        float tray_max_t = simd::get_x(ray_max_t);
+        float const tray_max_t = simd::get_x(ray_max_t);
         ray.max_t        = tray_max_t;
 
-        float epsilon = 3e-3f * tray_max_t;
+        float const epsilon = /*0.f;//*/3e-3f * tray_max_t;
 
         Vector p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
@@ -142,6 +172,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         simd::store_float4(intersection.b.v, b_w);
         simd::store_float4(intersection.n.v, n_w);
         simd::store_float4(intersection.geo_n.v, geo_n_w);
+
         intersection.uv      = uv;
         intersection.epsilon = epsilon;
         intersection.part    = material_index;
@@ -310,7 +341,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
     float const  r  = sampler.generate_sample_1D(sampler_dimension);
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     auto const   s  = distributions_[part].sample(r);
-
+/*
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r2, sv, tc);
@@ -318,6 +349,20 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
 
     float3 const sn = tree_.triangle_normal(s.offset);
     float3 const wn = transform_vector(transformation.rotation, sn);
+*/
+
+    float3 sv;
+    float2 tc;
+    tree_.sample(s.offset, r2, sv, tc);
+
+
+    float3 const sn = tree_.triangle_normal(s.offset);
+
+    float3 const svo = offset_ray(sv, sn);
+
+    float3 const wn = transform_vector(transformation.rotation, sn);
+    float3 const v = transform_point(transformation.object_to_world, svo);
+
 
     float3 const axis = v - p;
     float const  sl   = squared_length(axis);
@@ -338,7 +383,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
     sample.uvw     = float3(tc);
     sample.pdf     = sl / (c * area);
     sample.t       = d;
-    sample.epsilon = 3e-3f * d;
+    sample.epsilon = 0.f;//3e-3f * d;
 
     return true;
 }

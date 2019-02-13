@@ -20,7 +20,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
                                             Worker const& worker) const noexcept {
     auto& sample = worker.sample<Sample_rough>(rs.sample_level);
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs, wo);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

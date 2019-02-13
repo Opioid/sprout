@@ -16,7 +16,7 @@ namespace scene::material::substitute {
 template <typename Sample>
 void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
                                Texture_sampler_2D const& sampler, Sample& sample) const noexcept {
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs, wo);
 
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler);

@@ -198,6 +198,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         if (material_sample.ior_greater_one()) {
             throughput *= sample_result.reflection / sample_result.pdf;
 
+        //    ray.origin = material_sample.p(sample_result.wi);
             ray.origin = intersection.geo.p;
             ray.set_direction(sample_result.wi);
             ray.min_t = ray_offset;
@@ -321,9 +322,12 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
                                       bool evaluate_back, Intersection const& intersection,
                                       const Material_sample& material_sample, Filter filter,
                                       Worker& worker) noexcept {
+ //   float3 const p = material_sample.p();
+    float3 const p = intersection.geo.p;
+
     // Light source importance sample
     shape::Sample_to light_sample;
-    if (!light.sample(intersection.geo.p, material_sample.geometric_normal(), history.time,
+    if (!light.sample(p, material_sample.geometric_normal(), history.time,
                       material_sample.is_translucent(), light_sampler(history.depth),
                       sampler_dimension, worker, light_sample)) {
         return float3(0.f);
@@ -331,7 +335,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
 
     float const shadow_offset = take_settings_.ray_offset_factor * light_sample.epsilon;
 
-    Ray shadow_ray(intersection.geo.p, light_sample.wi, ray_offset, light_sample.t - shadow_offset,
+    Ray shadow_ray(p, light_sample.wi, ray_offset, light_sample.t - shadow_offset,
                    history.depth, history.time, history.wavelength);
 
     float3 tv;

@@ -16,7 +16,7 @@ material::Sample const& Material_overcast::sample(float3 const&      wo, Ray con
                                                   Worker const& worker) const noexcept {
     auto& sample = worker.sample<light::Sample>(rs.sample_level);
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs, wo);
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     sample.set(overcast(-wo));
