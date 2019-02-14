@@ -15,6 +15,13 @@
 #include "base/debug/assert.hpp"
 #include "shape_test.hpp"
 
+// Hearn and Baker sphere intersection test as seen
+// in "Precision Improvements for Ray/Sphere Intersection"
+// and
+// https://github.com/NVIDIAGameWorks/GettingStartedWithRTXRayTracing/blob/master/DXR-Sphereflake/Data/Sphereflake/sphereIntersect.hlsli
+// Note that the ray direction is not necessarily normalized, which might make problems,
+// but so far I didn't encounter any.
+
 namespace scene::shape {
 
 Sphere::Sphere() noexcept {
@@ -33,14 +40,17 @@ AABB Sphere::transformed_aabb(math::Transformation const& t) const noexcept {
 
 bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        Intersection& intersection) const noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
+    float3 const v = transformation.position - ray.origin;
+    float const  b = dot(ray.direction, v);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
-        float t0   = b - dist;
+    float3 const remedy_term = v - b * ray.direction;
+
+    float const radius       = transformation.scale[0];
+    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
+
+    if (discriminant >= 0.0f) {
+        float const dist = std::sqrt(discriminant);
+        float const t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
             float3 p = ray.point(t0);
@@ -74,7 +84,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             return true;
         }
 
-        float t1 = b + dist;
+        float const t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
             float3 p = ray.point(t1);
@@ -114,13 +124,16 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
 bool Sphere::intersect_fast(Ray& ray, Transformation const&           transformation,
                             Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
+    float3 const v = transformation.position - ray.origin;
+    float const  b = dot(ray.direction, v);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
+    float3 const remedy_term = v - b * ray.direction;
+
+    float const radius       = transformation.scale[0];
+    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
+
+    if (discriminant > 0.f) {
+        float dist = std::sqrt(discriminant);
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
@@ -173,13 +186,16 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
 
 bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        float& epsilon) const noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
+    float3 const v = transformation.position - ray.origin;
+    float const  b = dot(ray.direction, v);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
+    float3 const remedy_term = v - b * ray.direction;
+
+    float const radius       = transformation.scale[0];
+    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
+
+    if (discriminant > 0.f) {
+        float dist = std::sqrt(discriminant);
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
@@ -202,13 +218,16 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
 bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
                          Node_stack& /*node_stack*/) const noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
+    float3 const v = transformation.position - ray.origin;
+    float const  b = dot(ray.direction, v);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
+    float3 const remedy_term = v - b * ray.direction;
+
+    float const radius       = transformation.scale[0];
+    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
+
+    if (discriminant > 0.f) {
+        float dist = std::sqrt(discriminant);
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
@@ -227,13 +246,16 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
 
 float Sphere::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
                       Filter filter, Worker const& worker) const noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
+    float3 const v = transformation.position - ray.origin;
+    float const  b = dot(ray.direction, v);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
+    float3 const remedy_term = v - b * ray.direction;
+
+    float const radius       = transformation.scale[0];
+    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
+
+    if (discriminant > 0.f) {
+        float dist = std::sqrt(discriminant);
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
@@ -269,13 +291,16 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, Mate
 float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformation,
                                Materials materials, Filter filter, Worker const& worker) const
     noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
+    float3 const v = transformation.position - ray.origin;
+    float const  b = dot(ray.direction, v);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
+    float3 const remedy_term = v - b * ray.direction;
+
+    float const radius       = transformation.scale[0];
+    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
+
+    if (discriminant > 0.f) {
+        float dist = std::sqrt(discriminant);
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
