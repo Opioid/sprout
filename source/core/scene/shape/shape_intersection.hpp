@@ -16,7 +16,6 @@ struct Intersection {
     float3 t, b, n;  // interpolated tangent frame in world space
     float2 uv;       // texture coordinates
 
-    float    epsilon;
     uint32_t part;
 };
 

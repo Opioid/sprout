@@ -24,8 +24,6 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
                                 Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     if (ray.max_t >= Ray_max_t) {
-        intersection.epsilon = 5e-4f;
-
         // This is nonsense
         intersection.t = transformation.rotation.r[0];
         intersection.b = transformation.rotation.r[1];
@@ -55,8 +53,6 @@ bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           t
                                      Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     if (ray.max_t >= Ray_max_t) {
-        intersection.epsilon = 5e-4f;
-
         float3 xyz         = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz                = normalize(xyz);
         intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
@@ -127,8 +123,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 
     sample.pdf = 1.f / (2.f * Pi);
 
-    sample.t       = Ray_max_t;
-    sample.epsilon = 5e-4f;
+    sample.t = Ray_max_t;
 
     SOFT_ASSERT(testing::check(sample));
 
@@ -151,8 +146,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
 
     sample.pdf = 1.f / (4.f * Pi);
 
-    sample.t       = Ray_max_t;
-    sample.epsilon = 5e-4f;
+    sample.t = Ray_max_t;
 
     SOFT_ASSERT(testing::check(sample));
 
@@ -199,8 +193,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     // sin_theta because of the uv weight
     sample.pdf = 1.f / ((4.f * Pi) * sin_theta);
 
-    sample.t       = Ray_max_t;
-    sample.epsilon = 5e-4f;
+    sample.t = Ray_max_t;
 
     SOFT_ASSERT(testing::check(sample));
 
@@ -258,8 +251,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     sample.uv  = uv;
     // sin_theta because of the uv weight
     //  sample.pdf     = 1.f / ((4.f * Pi) * (1.f * Pi) * (sin_theta * radius_2));
-    sample.pdf     = 1.f / ((4.f * Pi) * (sin_theta * pe[0] * pe[1]));
-    sample.epsilon = 5e-4f;
+    sample.pdf = 1.f / ((4.f * Pi) * (sin_theta * pe[0] * pe[1]));
 
     return true;
 }

@@ -44,8 +44,6 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
     if (tree_.intersect(tray, node_stack, pi)) {
         ray.max_t = tray.max_t;
 
-        float epsilon = 3e-3f * tray.max_t;
-
         float3 p_w = ray.point(tray.max_t);
 
         float3 n;
@@ -63,14 +61,13 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
         float3 t_w     = transform_vector(transformation.rotation, t);
         float3 b_w     = bitangent_sign * cross(n_w, t_w);
 
-        intersection.p       = p_w;
-        intersection.t       = t_w;
-        intersection.b       = b_w;
-        intersection.n       = n_w;
-        intersection.geo_n   = geo_n_w;
-        intersection.uv      = uv;
-        intersection.epsilon = epsilon;
-        intersection.part    = material_index;
+        intersection.p     = p_w;
+        intersection.t     = t_w;
+        intersection.b     = b_w;
+        intersection.n     = n_w;
+        intersection.geo_n = geo_n_w;
+        intersection.uv    = uv;
+        intersection.part  = material_index;
 
         return true;
     }
@@ -91,8 +88,6 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
     if (tree_.intersect(tray, node_stack, pi)) {
         ray.max_t = tray.max_t;
 
-        float epsilon = 3e-3f * tray.max_t;
-
         float3 p_w = ray.point(tray.max_t);
 
         float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
@@ -103,11 +98,10 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
 
         float3 geo_n_w = transform_vector(transformation.rotation, geo_n);
 
-        intersection.p       = p_w;
-        intersection.geo_n   = geo_n_w;
-        intersection.uv      = uv;
-        intersection.epsilon = epsilon;
-        intersection.part    = material_index;
+        intersection.p     = p_w;
+        intersection.geo_n = geo_n_w;
+        intersection.uv    = uv;
+        intersection.part  = material_index;
 
         return true;
     }

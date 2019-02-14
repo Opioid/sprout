@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -43,8 +44,6 @@ bool Rectangle::intersect(Ray& ray, Transformation const&           transformati
         if (v > 1.f || v < -1.f) {
             return false;
         }
-
-        intersection.epsilon = 5e-4f * hit_t;
 
         intersection.p     = p;
         intersection.t     = t;
@@ -89,8 +88,6 @@ bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transfo
         if (v > 1.f || v < -1.f) {
             return false;
         }
-
-        intersection.epsilon = 5e-4f * hit_t;
 
         intersection.p     = p;
         intersection.geo_n = normal;
@@ -251,6 +248,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const&
     float3 const scale(transformation.scale.xy(), 1.f);
 
     float3 const ls = float3(xy, 0.f);
+
     float3 const ws = transformation.position +
                       transform_vector(transformation.rotation, scale * ls);
 
@@ -271,10 +269,9 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const&
         return false;
     }
 
-    sample.wi      = wi;
-    sample.pdf     = sl / (c * area);
-    sample.t       = t;
-    sample.epsilon = 5e-4f * t;
+    sample.wi  = wi;
+    sample.pdf = sl / (c * area);
+    sample.t   = offset_b(t);
 
     return true;
 }
@@ -295,10 +292,9 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, transformation.rotation);
 
-    sample.p       = ws;
-    sample.dir     = dir;
-    sample.pdf     = 1.f / (Pi * area);
-    sample.epsilon = 5e-4f;
+    sample.p   = ws;
+    sample.dir = dir;
+    sample.pdf = 1.f / (Pi * area);
 
     return true;
 }

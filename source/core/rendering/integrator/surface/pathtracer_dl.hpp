@@ -33,7 +33,7 @@ class alignas(64) Pathtracer_DL final : public Integrator {
 
   private:
     float3 direct_light(Ray const& ray, Intersection const& intersection,
-                        const Material_sample& material_sample, bool evaluate_back, Filter filter,
+                        Material_sample const& material_sample, bool evaluate_back, Filter filter,
                         Worker& worker) noexcept;
 
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;

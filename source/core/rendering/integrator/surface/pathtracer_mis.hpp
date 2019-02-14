@@ -44,13 +44,13 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     Result integrate(Ray& ray, Intersection& intersection, Worker& worker,
                      bool integrate_photons) noexcept;
 
-    float3 sample_lights(Ray const& ray, float ray_offset, Intersection& intersection,
-                         const Material_sample& material_sample, bool evaluate_back, Filter filter,
+    float3 sample_lights(Ray const& ray, Intersection& intersection,
+                         Material_sample const& material_sample, bool evaluate_back, Filter filter,
                          Worker& worker) noexcept;
 
     float3 evaluate_light(const Light& light, float light_weight, Ray const& history,
-                          float ray_offset, uint32_t sampler_dimension, bool evaluate_back,
-                          Intersection const& intersection, const Material_sample& material_sample,
+                          float3 const& p, uint32_t sampler_dimension, bool evaluate_back,
+                          Intersection const& intersection, Material_sample const& material_sample,
                           Filter filter, Worker& worker) noexcept;
 
     float3 evaluate_light(Ray const& ray, Intersection const& intersection,

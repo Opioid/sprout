@@ -262,7 +262,7 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
 
     Ray shadow_ray;
     shadow_ray.origin = position;
-    shadow_ray.min_t  = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+    shadow_ray.min_t  = 0.f;
     shadow_ray.depth  = ray.depth + 1;
     shadow_ray.time   = ray.time;
 
@@ -271,8 +271,7 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
     scene::shape::Sample_to light_sample;
     if (light.ref.sample(position, ray.time, sampler_, 0, worker, light_sample)) {
         shadow_ray.set_direction(light_sample.wi);
-        float const offset = take_settings_.ray_offset_factor * light_sample.epsilon;
-        shadow_ray.max_t   = light_sample.t - offset;
+        shadow_ray.max_t = light_sample.t;
 
         //	float3 const tv = worker.tinted_visibility(shadow_ray, Filter::Nearest);
 

@@ -26,9 +26,9 @@ float3 Vorton::accumulate_velocity(float3 const& query_position, float radius) c
 
 void Vorton::assign_by_velocity(float3 const& query_position, float3 const& velocity,
                                 float radius) noexcept {
-    const float3 relative = query_position - position;
+    float3 const relative = query_position - position;
 
-    const float dist = length(relative);
+    float const dist = length(relative);
 
     vorticity = (4.f * Pi) * dist * cross(relative, velocity) / (8.f * radius * radius * radius);
 }

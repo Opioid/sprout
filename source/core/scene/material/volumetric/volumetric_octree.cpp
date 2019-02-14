@@ -59,7 +59,7 @@ bool Gridtree::intersect(ray& ray, CM& data) const noexcept {
 
     uint3 const uv = uint3(v);
 
-    if (math::any_greater_equal(uv, num_cells_)) {
+    if (any_greater_equal(uv, num_cells_)) {
         return false;
     }
 

@@ -11,7 +11,6 @@ struct Sample_to {
     float3 uvw;
     float  pdf;
     float  t;
-    float  epsilon;
 };
 
 struct Sample_from {
@@ -19,7 +18,6 @@ struct Sample_from {
     float3 dir;
     float2 uv;
     float  pdf;
-    float  epsilon;
 };
 
 }  // namespace scene::shape

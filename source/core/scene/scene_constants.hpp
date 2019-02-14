@@ -2,6 +2,8 @@
 #define SU_CORE_SCENE_CONSTANTS_HPP
 
 #include <cstdint>
+#include <cstring>
+#include "base/math/vector3.inl"
 
 namespace scene {
 
@@ -17,6 +19,44 @@ uint64_t constexpr Static_time = 0xffffffffffffffff;
 
 uint64_t constexpr time(double dtime) {
     return static_cast<uint64_t>(static_cast<double>(Units_per_second) * dtime);
+}
+
+static inline float int_as_float(int32_t x) noexcept {
+    float f;
+    std::memcpy(&f, &x, sizeof(float));
+    return f;
+}
+
+static inline int32_t float_as_int(float x) noexcept {
+    int32_t i;
+    std::memcpy(&i, &x, sizeof(int32_t));
+    return i;
+}
+
+static float constexpr origin      = 1.f / 32.f;
+static float constexpr float_scale = 1.f / 65536.f;
+static float constexpr int_scale   = 256.f;
+
+static inline float3 offset_ray(float3 const& p, float3 const& n) noexcept {
+    int3 const of_i(int_scale * n);
+
+    float3 const p_i(int_as_float(float_as_int(p[0]) + ((p[0] < 0.f) ? -of_i[0] : of_i[0])),
+                     int_as_float(float_as_int(p[1]) + ((p[1] < 0.f) ? -of_i[1] : of_i[1])),
+                     int_as_float(float_as_int(p[2]) + ((p[2] < 0.f) ? -of_i[2] : of_i[2])));
+
+    return float3(std::abs(p[0]) < origin ? p[0] + float_scale * n[0] : p_i[0],
+                  std::abs(p[1]) < origin ? p[1] + float_scale * n[1] : p_i[1],
+                  std::abs(p[2]) < origin ? p[2] + float_scale * n[2] : p_i[2]);
+}
+
+static inline float offset_f(float t) noexcept {
+    return t < origin ? t + float_scale
+                      : int_as_float(float_as_int(t) + static_cast<int32_t>(int_scale));
+}
+
+static inline float offset_b(float t) noexcept {
+    return t < origin ? t - float_scale
+                      : int_as_float(float_as_int(t) - static_cast<int32_t>(int_scale));
 }
 
 }  // namespace scene

@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -42,8 +43,6 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t0;
-
             float3 p = ray.point(t0);
             float3 n = normalize(p - transformation.position);
 
@@ -78,8 +77,6 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t1;
-
             float3 p = ray.point(t1);
             float3 n = normalize(p - transformation.position);
 
@@ -127,8 +124,6 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
         float t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t0;
-
             float3 p = ray.point(t0);
             float3 n = normalize(p - transformation.position);
 
@@ -152,8 +147,6 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
         float t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            intersection.epsilon = 5e-4f * t1;
-
             float3 p = ray.point(t1);
             float3 n = normalize(p - transformation.position);
 
@@ -343,12 +336,11 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     if (det > 0.f) {
         float const dist = std::sqrt(det);
-        float const t    = b - dist;
+        float const t    = offset_b(b - dist);
 
-        sample.wi      = dir;
-        sample.pdf     = cone_pdf_uniform(cos_theta_max);
-        sample.t       = t;
-        sample.epsilon = 5e-4f * t;
+        sample.wi  = dir;
+        sample.pdf = cone_pdf_uniform(cos_theta_max);
+        sample.t   = t;
 
         return true;
     }
@@ -370,10 +362,9 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, ls);
 
-    sample.p       = ws;
-    sample.dir     = dir;
-    sample.pdf     = 1.f / ((1.f * Pi) * area);
-    sample.epsilon = 5e-4f;
+    sample.p   = ws;
+    sample.dir = dir;
+    sample.pdf = 1.f / ((1.f * Pi) * area);
 
     return true;
 }
@@ -428,10 +419,9 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
 
     sample.wi  = dir;
     sample.uvw = float3(uv);
-    sample.t   = d;
+    sample.t   = offset_b(d);
     // sin_theta because of the uv weight
-    sample.pdf     = sl / (c * area * sin_theta);
-    sample.epsilon = 5e-4f * d;
+    sample.pdf = sl / (c * area * sin_theta);
 
     return true;
 }

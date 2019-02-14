@@ -86,15 +86,13 @@ float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& 
 }
 
 float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                      const Material_sample& material_sample,
+                                      Material_sample const& material_sample,
                                       Worker&                worker) noexcept {
     float3 result(0.f);
 
-    float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-
     Ray shadow_ray;
-    shadow_ray.origin = intersection.geo.p;
-    shadow_ray.min_t  = ray_offset;
+    shadow_ray.origin = material_sample.offset_p(intersection.geo.p);
+    shadow_ray.min_t  = 0.f;
     shadow_ray.depth  = ray.depth;
     shadow_ray.time   = ray.time;
 
@@ -106,7 +104,7 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                     intersection.geo.p, material_sample.geometric_normal(), ray.time,
                     material_sample.is_translucent(), sampler_, l, worker, light_sample)) {
                 shadow_ray.set_direction(light_sample.wi);
-                shadow_ray.max_t = light_sample.t - ray_offset;
+                shadow_ray.max_t = light_sample.t;
 
                 if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection,
                                                              Filter::Undefined, tv)) {

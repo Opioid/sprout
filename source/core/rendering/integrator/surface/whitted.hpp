@@ -34,7 +34,7 @@ class alignas(64) Whitted final : public Integrator {
     float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept;
 
     float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                 const Material_sample& material_sample, Worker& worker) noexcept;
+                                 Material_sample const& material_sample, Worker& worker) noexcept;
 
     const Settings settings_;
 

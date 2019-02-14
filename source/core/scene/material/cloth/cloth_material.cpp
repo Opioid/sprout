@@ -19,7 +19,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
         float3 nm = normal_map_.sample_3(sampler, rs.uv);

@@ -46,8 +46,6 @@ bool Worker::intersect(Ray& ray, float& epsilon) const noexcept {
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept {
-    float const ray_offset_factor = settings_.ray_offset_factor;
-
     float const start_min_t = ray.min_t;
 
     float opacity = intersection.opacity(ray.time, filter, *this);
@@ -59,7 +57,7 @@ bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) n
         }
 
         // Slide along ray until opaque surface is found
-        ray.min_t = ray.max_t + ray_offset_factor * intersection.geo.epsilon;
+        ray.min_t = offset_f(ray.max_t);
         ray.max_t = scene::Ray_max_t;
         if (!intersect(ray, intersection)) {
             ray.min_t = start_min_t;

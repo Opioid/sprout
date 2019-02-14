@@ -19,7 +19,7 @@ material::Sample const& Glass_dispersion::sample(float3 const& wo, Ray const& ra
                                                  Worker const& worker) const noexcept {
     auto& sample = worker.sample<Sample_dispersion>(rs.sample_level);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);

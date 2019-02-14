@@ -76,7 +76,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
         math::ray local_ray(origin, dir, ray.min_t, d);
 
-        const float ray_offset = Tracking::Ray_epsilon / length(dir);
+        float const ray_offset = Tracking::Ray_epsilon / length(dir);
 
         auto const& tree = *material.volume_tree();
 
@@ -133,7 +133,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         }
 
         transmittance = w;
-        return math::any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Undefined;
+        return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Undefined;
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
@@ -231,8 +231,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     return Event::Absorb;
                 }
 
-                return math::any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
-                                                                           : Event::Undefined;
+                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
+                                                                     : Event::Undefined;
             } else {
                 auto const mu = material.collision_coefficients();
 
@@ -242,8 +242,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 li            = float3(0.f);
                 transmittance = w;
-                return math::any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
-                                                                           : Event::Undefined;
+                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
+                                                                     : Event::Undefined;
             }
         }
     }

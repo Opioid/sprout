@@ -791,12 +791,9 @@ static std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_
     return exporters;
 }
 
-static void load_settings(json::Value const& settings_value, Settings& settings) {
-    for (auto& n : settings_value.GetObject()) {
-        if ("ray_offset_factor" == n.name) {
-            settings.ray_offset_factor = json::read_float(n.value);
-        }
-    }
+static void load_settings(json::Value const& /*settings_value*/, Settings& /*settings*/) {
+    //    for (auto& n : settings_value.GetObject()) {
+    //    }
 }
 
 static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) {

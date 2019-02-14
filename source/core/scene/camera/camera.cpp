@@ -48,7 +48,7 @@ void Camera::update(Scene const& scene, uint64_t time, Worker& worker) noexcept 
                 interfaces_.push(intersection);
             }
 
-            ray.min_t = ray.max_t + intersection.geo.epsilon;  // * settings_.ray_offset_factor;
+            ray.min_t = offset_f(ray.max_t);
             ray.max_t = Ray_max_t;
         }
     }

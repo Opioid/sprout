@@ -20,7 +20,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
                                             Worker const& worker) const noexcept {
     auto& sample = worker.sample<Sample_rough>(rs.sample_level);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -81,7 +81,7 @@ void Glass_rough::set_ior(float ior) noexcept {
 }
 
 void Glass_rough::set_roughness(float roughness) noexcept {
-    const float r = ggx::clamp_roughness(roughness);
+    float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
 }

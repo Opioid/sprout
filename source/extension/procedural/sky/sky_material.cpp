@@ -32,7 +32,7 @@ material::Sample const& Sky_material::sample(float3 const&      wo, Ray const& /
     noexcept {
     auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
@@ -77,7 +77,7 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, Ray co
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

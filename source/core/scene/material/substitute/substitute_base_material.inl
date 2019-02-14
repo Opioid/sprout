@@ -16,7 +16,7 @@ namespace scene::material::substitute {
 template <typename Sample>
 void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
                                Texture_sampler_2D const& sampler, Sample& sample) const noexcept {
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler);
@@ -36,7 +36,7 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
     if (surface_map_.is_valid()) {
         surface = surface_map_.sample_2(sampler, rs.uv);
 
-        const float r = ggx::map_roughness(surface[0]);
+        float const r = ggx::map_roughness(surface[0]);
 
         surface[0] = r * r;
     } else {

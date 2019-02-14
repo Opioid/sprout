@@ -20,7 +20,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>(rs.sample_level);
 
-        sample.set_basis(rs, wo);
+        sample.set_basis(rs.geo_n, wo);
 
         float const gs = van_de_hulst_anisotropy(ray.depth);
 
@@ -31,7 +31,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
 
     auto& sample = worker.sample<null::Sample>(rs.sample_level);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     return sample;
 }

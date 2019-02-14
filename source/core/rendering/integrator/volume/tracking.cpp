@@ -163,7 +163,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         math::ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
-        const float ray_offset = Ray_epsilon / length(dir);
+        float const ray_offset = Ray_epsilon / length(dir);
 
         auto const& tree = *material.volume_tree();
 

@@ -72,7 +72,7 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     static float constexpr wl_end           = 700.f;
     static int32_t constexpr wl_num_samples = 64;
     static float constexpr wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
-    const float wl_norm            = 1.f / CIE_Y.integrate(wl_start, wl_end);
+    float const wl_norm            = 1.f / CIE_Y.integrate(wl_start, wl_end);
 
     struct F {
         float  a;

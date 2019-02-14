@@ -20,7 +20,7 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
                                                      Worker const& worker) const noexcept {
     auto& sample = worker.sample<Sample>(rs.sample_level);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
@@ -38,7 +38,7 @@ float Emissionmap_animated::ior() const noexcept {
 }
 
 void Emissionmap_animated::set_roughness(float roughness) noexcept {
-    const float r = ggx::clamp_roughness(roughness);
+    float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
 }

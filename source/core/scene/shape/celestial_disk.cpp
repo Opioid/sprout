@@ -47,8 +47,7 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&           transfo
         intersection.uv[0] = (dot(intersection.t, sk) + 1.f) * 0.5f;
         intersection.uv[1] = (dot(intersection.b, sk) + 1.f) * 0.5f;
 
-        intersection.epsilon = 5e-4f;
-        intersection.part    = 0;
+        intersection.part = 0;
 
         return true;
     }
@@ -84,8 +83,7 @@ bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           tr
         intersection.uv[0] = (dot(intersection.t, sk) + 1.f) * 0.5f;
         intersection.uv[1] = (dot(intersection.b, sk) + 1.f) * 0.5f;
 
-        intersection.epsilon = 5e-4f;
-        intersection.part    = 0;
+        intersection.part = 0;
 
         return true;
     }
@@ -164,9 +162,8 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
 
     sample.wi = normalize(ws - transformation.rotation.r[2]);
 
-    sample.pdf     = 1.f / area;
-    sample.t       = Almost_ray_max_t;
-    sample.epsilon = 5e-4f;
+    sample.pdf = 1.f / area;
+    sample.t   = Almost_ray_max_t;
 
     return true;
 }
@@ -211,8 +208,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
     sample.dir = dir;
     sample.p   = pli;
     //       sample.pdf     = 1.f / ((1.f * Pi) * (area * bounds_radius_2));
-    sample.pdf     = 1.f / (area * ls_rect[0] * ls_rect[1]);
-    sample.epsilon = 5e-4f;
+    sample.pdf = 1.f / (area * ls_rect[0] * ls_rect[1]);
 
     return true;
 }

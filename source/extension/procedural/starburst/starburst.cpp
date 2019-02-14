@@ -46,7 +46,7 @@ void squared_magnitude_transposed(float* result, float2 const* source, int32_t d
 
 void diffraction(Spectrum* result, float const* source, int32_t bin, int32_t resolution);
 
-void write_signal(std::string const& name, const Float1& signal);
+void write_signal(std::string const& name, Float1 const& signal);
 
 void create(thread::Pool& pool) {
     std::cout << "Starburst experiment" << std::endl;
@@ -444,7 +444,7 @@ void diffraction(Spectrum* result, float const* squared_magnitude, int32_t bin,
     }
 }
 
-void write_signal(std::string const& name, const Float1& signal) {
+void write_signal(std::string const& name, Float1 const& signal) {
     auto const d = signal.description().dimensions;
 
     Byte1 image(Image::Description(Image::Type::Byte1, d));

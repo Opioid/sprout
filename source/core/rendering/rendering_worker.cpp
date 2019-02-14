@@ -190,7 +190,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
             interface_stack_.push(intersection);
         }
 
-        tray.min_t = tray.max_t + intersection.geo.epsilon * settings_.ray_offset_factor;
+        tray.min_t = scene::offset_f(tray.max_t);
         tray.max_t = ray_max_t;
 
         if (tray.min_t > tray.max_t) {
@@ -213,7 +213,7 @@ bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Filte
             if (float3 tr; volume_integrator_->transmittance(ray, *this, tr)) {
                 SOFT_ASSERT(all_finite_and_positive(tr));
 
-                ray.min_t = ray.max_t + epsilon * settings_.ray_offset_factor;
+                ray.min_t = scene::offset_f(ray.max_t);
                 ray.max_t = ray_max_t;
 
                 bool const visible = rendering::tinted_visibility(ray, filter, scene_, *this, tv);

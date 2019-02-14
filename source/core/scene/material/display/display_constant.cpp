@@ -22,7 +22,7 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
     noexcept {
     auto& sample = worker.sample<Sample>(rs.sample_level);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
@@ -53,7 +53,7 @@ void Constant::set_emission(float3 const& radiance) noexcept {
 }
 
 void Constant::set_roughness(float roughness) noexcept {
-    const float r = ggx::clamp_roughness(roughness);
+    float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
 }

@@ -126,8 +126,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
                 break;
             }
 
-            float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-
             if (material_sample.ior_greater_one()) {
                 if (sample_result.type.test(Bxdf_type::Caustic)) {
                     caustic_ray = true;
@@ -176,13 +174,13 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
                 radiance = nr / continue_prob;
 
-                ray.origin = intersection.geo.p;
                 ray.set_direction(sample_result.wi);
-                ray.min_t = ray_offset;
                 ++ray.depth;
-            } else {
-                ray.min_t = ray.max_t + ray_offset;
             }
+
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t  = 0.f;
+            ray.max_t  = scene::Ray_max_t;
 
             if (0.f == ray.wavelength) {
                 ray.wavelength = sample_result.wavelength;
@@ -233,9 +231,9 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
         return false;
     }
 
-    ray.origin = light_sample.p;
+    ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);
     ray.set_direction(light_sample.dir);
-    ray.min_t      = take_settings_.ray_offset_factor * light_sample.epsilon;
+    ray.min_t      = 0.f;
     ray.max_t      = scene::Ray_max_t;
     ray.depth      = 0;
     ray.time       = time;

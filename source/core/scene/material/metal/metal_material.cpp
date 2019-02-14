@@ -20,7 +20,7 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
                                                    Worker const& worker) const noexcept {
     auto& sample = worker.sample<Sample_isotropic>(rs.sample_level);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -78,7 +78,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs, wo);
+    sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
         float3 nm = normal_map_.sample_3(sampler, rs.uv);

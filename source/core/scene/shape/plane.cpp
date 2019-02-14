@@ -24,8 +24,6 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
-        intersection.epsilon = 5e-4f * hit_t;
-
         float3 p = ray.point(hit_t);
         float3 t = -transformation.rotation.r[0];
         float3 b = -transformation.rotation.r[1];
@@ -57,8 +55,6 @@ bool Plane::intersect_fast(Ray& ray, Transformation const&           transformat
     float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
-        intersection.epsilon = 5e-4f * hit_t;
-
         float3 p = ray.point(hit_t);
         float3 t = -transformation.rotation.r[0];
         float3 b = -transformation.rotation.r[1];

@@ -11,12 +11,12 @@ const material::Layer& Sample_isotropic::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi, bool include_back) const noexcept {
-    return evaluate<true>(wi, include_back);
+bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
+    return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_isotropic::evaluate_b(float3 const& wi, bool include_back) const noexcept {
-    return evaluate<false>(wi, include_back);
+bxdf::Result Sample_isotropic::evaluate_b(float3 const& wi, bool /*include_back*/) const noexcept {
+    return evaluate<false>(wi);
 }
 
 void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
@@ -45,7 +45,7 @@ void Sample_isotropic::set(float3 const& ior, float3 const& absorption, float al
 }
 
 template <bool Forward>
-bxdf::Result Sample_isotropic::evaluate(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_) || (avoid_caustics_ && alpha_ <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
@@ -75,12 +75,14 @@ const material::Layer& Sample_anisotropic::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi, bool include_back) const noexcept {
-    return evaluate<true>(wi, include_back);
+bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const
+    noexcept {
+    return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_anisotropic::evaluate_b(float3 const& wi, bool include_back) const noexcept {
-    return evaluate<false>(wi, include_back);
+bxdf::Result Sample_anisotropic::evaluate_b(float3 const& wi, bool /*include_back*/) const
+    noexcept {
+    return evaluate<false>(wi);
 }
 
 void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
@@ -101,7 +103,7 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
 }
 
 template <bool Forward>
-bxdf::Result Sample_anisotropic::evaluate(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }

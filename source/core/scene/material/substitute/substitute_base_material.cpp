@@ -68,7 +68,7 @@ void Material_base::set_color(float3 const& color) noexcept {
 }
 
 void Material_base::set_roughness(float roughness) noexcept {
-    const float r = ggx::clamp_roughness(roughness);
+    float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
 }

@@ -29,8 +29,6 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
             return false;
         }
 
-        intersection.epsilon = 5e-4f;
-
         intersection.p = ray.point(Ray_max_t);
         intersection.t = transformation.rotation.r[0];
         intersection.b = transformation.rotation.r[1];
@@ -64,8 +62,6 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
-
-        intersection.epsilon = 5e-4f;
 
         intersection.p = ray.point(Ray_max_t);
 
@@ -137,12 +133,11 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
     float3 const xyz  = normalize(transform_vector_transposed(transformation.rotation, dir));
     float2 const disk = hemisphere_to_disk_equidistant(xyz);
 
-    sample.wi      = dir;
-    sample.uvw[0]  = 0.5f * disk[0] + 0.5f;
-    sample.uvw[1]  = 0.5f * disk[1] + 0.5f;
-    sample.pdf     = 1.f / (2.f * Pi);
-    sample.t       = Ray_max_t;
-    sample.epsilon = 5e-4f;
+    sample.wi     = dir;
+    sample.uvw[0] = 0.5f * disk[0] + 0.5f;
+    sample.uvw[1] = 0.5f * disk[1] + 0.5f;
+    sample.pdf    = 1.f / (2.f * Pi);
+    sample.t      = Ray_max_t;
 
     SOFT_ASSERT(testing::check(sample));
 
@@ -179,11 +174,10 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
 
     float3 const dir = math::disk_to_hemisphere_equidistant(disk);
 
-    sample.wi      = transform_vector(transformation.rotation, dir);
-    sample.uvw     = float3(uv);
-    sample.t       = Ray_max_t;
-    sample.pdf     = 1.f / (2.f * Pi);
-    sample.epsilon = 5e-4f;
+    sample.wi  = transform_vector(transformation.rotation, dir);
+    sample.uvw = float3(uv);
+    sample.t   = Ray_max_t;
+    sample.pdf = 1.f / (2.f * Pi);
 
     return true;
 }
@@ -221,11 +215,10 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 
     float3 const p = bounds.position() + bounds_radius * (receciver_disk - ws);
 
-    sample.dir     = ws;
-    sample.p       = p;
-    sample.uv      = uv;
-    sample.pdf     = 1.f / ((2.f * Pi) * (1.f * Pi) * bounds_radius_2);
-    sample.epsilon = 5e-4f;
+    sample.dir = ws;
+    sample.p   = p;
+    sample.uv  = uv;
+    sample.pdf = 1.f / ((2.f * Pi) * (1.f * Pi) * bounds_radius_2);
 
     return true;
 }

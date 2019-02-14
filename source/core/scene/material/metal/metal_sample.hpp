@@ -22,7 +22,7 @@ class Sample_isotropic : public material::Sample {
 
   private:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept;
+    bxdf::Result evaluate(float3 const& wi) const noexcept;
 
     float3 ior_;
     float3 absorption_;
@@ -44,7 +44,7 @@ class Sample_anisotropic : public material::Sample {
 
   private:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const noexcept;
+    bxdf::Result evaluate(float3 const& wi) const noexcept;
 
   public:
     struct PLayer : material::Layer {

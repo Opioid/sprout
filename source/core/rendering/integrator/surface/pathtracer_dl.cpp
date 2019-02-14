@@ -126,20 +126,16 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             ray.wavelength = sample_result.wavelength;
         }
 
-        float const ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-
         if (material_sample.ior_greater_one()) {
             throughput *= sample_result.reflection / sample_result.pdf;
 
-            ray.origin = intersection.geo.p;
             ray.set_direction(sample_result.wi);
-            ray.min_t = ray_offset;
             ++ray.depth;
-        } else {
-            ray.min_t = ray.max_t + ray_offset;
         }
 
-        ray.max_t = Ray_max_t;
+        ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+        ray.min_t  = 0.f;
+        ray.max_t  = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
@@ -167,7 +163,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 }
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
-                                   const Material_sample& material_sample, bool evaluate_back,
+                                   Material_sample const& material_sample, bool evaluate_back,
                                    Filter filter, Worker& worker) noexcept {
     float3 result(0.f);
 
@@ -176,8 +172,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     }
 
     Ray shadow_ray;
-    shadow_ray.origin     = intersection.geo.p;
-    shadow_ray.min_t      = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+    shadow_ray.origin     = material_sample.offset_p(intersection.geo.p);
+    shadow_ray.min_t      = 0.f;
     shadow_ray.depth      = ray.depth;
     shadow_ray.time       = ray.time;
     shadow_ray.wavelength = ray.wavelength;
@@ -195,9 +191,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         }
 
         shadow_ray.set_direction(light_sample.wi);
-
-        float const offset = take_settings_.ray_offset_factor * light_sample.epsilon;
-        shadow_ray.max_t   = light_sample.t - offset;
+        shadow_ray.max_t = light_sample.t;
 
         if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
             auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);

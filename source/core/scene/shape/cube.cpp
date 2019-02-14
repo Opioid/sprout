@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/material.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -66,8 +67,7 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
 
     intersection.geo_n = transform_vector(transformation.rotation, normal);
 
-    intersection.epsilon = 3e-3f * hit_t;
-    intersection.part    = 0;
+    intersection.part = 0;
 
     return true;
 }
@@ -190,10 +190,9 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 
     sample.wi = dir;
 
-    sample.pdf     = math::cone_pdf_uniform(cos_theta_max);
-    float const d  = axis_length - radius;  // this is not accurate
-    sample.t       = d;
-    sample.epsilon = 5e-4f * d;
+    sample.pdf    = math::cone_pdf_uniform(cos_theta_max);
+    float const d = axis_length - radius;  // this is not accurate
+    sample.t      = offset_b(d);
 
     return true;
 }
@@ -219,11 +218,10 @@ bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation cons
     float const sl = squared_length(axis);
     float const t  = std::sqrt(sl);
 
-    sample.wi      = axis / t;
-    sample.uvw     = r3;
-    sample.pdf     = sl / volume;
-    sample.t       = t;
-    sample.epsilon = 0.f;
+    sample.wi  = axis / t;
+    sample.uvw = r3;
+    sample.pdf = sl / volume;
+    sample.t   = t;
 
     return true;
 }
@@ -263,11 +261,10 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, float3 const& uvw,
     float const sl = squared_length(axis);
     float const t  = std::sqrt(sl);
 
-    sample.wi      = axis / t;
-    sample.uvw     = uvw;
-    sample.pdf     = sl / volume;
-    sample.t       = t;
-    sample.epsilon = 0.f;
+    sample.wi  = axis / t;
+    sample.uvw = uvw;
+    sample.pdf = sl / volume;
+    sample.t   = t;
 
     return true;
 }

@@ -60,7 +60,7 @@ class Grid {
     uint32_t reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
                              thread::Pool& pool) noexcept;
 
-    float3 li(Intersection const& intersection, const Material_sample& sample, uint32_t num_paths,
+    float3 li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
               Photon_ref* photon_refs, scene::Worker const& worker) const noexcept;
 
     size_t num_bytes() const noexcept;

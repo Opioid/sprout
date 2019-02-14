@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -50,8 +51,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
             intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
             intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
 
-            intersection.epsilon = 5e-4f * hit_t;
-            intersection.part    = 0;
+            intersection.part = 0;
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -91,8 +91,7 @@ bool Disk::intersect_fast(Ray& ray, Transformation const&           transformati
             intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
             intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
 
-            intersection.epsilon = 5e-4f * hit_t;
-            intersection.part    = 0;
+            intersection.part = 0;
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -248,10 +247,9 @@ bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
         return false;
     }
 
-    sample.wi      = wi;
-    sample.pdf     = pdf;
-    sample.t       = t;
-    sample.epsilon = 5e-4f * t;
+    sample.wi  = wi;
+    sample.pdf = pdf;
+    sample.t   = offset_b(t);
 
     return true;
 }
@@ -270,10 +268,9 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
     float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_oriented_hemisphere_cosine(r1, transformation.rotation);
 
-    sample.p       = ws;
-    sample.dir     = dir;
-    sample.pdf     = 1.f / (Pi * area);
-    sample.epsilon = 5e-4f;
+    sample.p   = ws;
+    sample.dir = dir;
+    sample.pdf = 1.f / (Pi * area);
 
     return true;
 }
