@@ -203,7 +203,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
                 //   radiance += throughput * vli;
                 radiance *= vtr;
 
-                if (Event::Undefined == hit) {
+                if (Event::Abort == hit) {
                     break;
                 }
             } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

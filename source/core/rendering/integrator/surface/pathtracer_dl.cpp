@@ -151,7 +151,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
             throughput *= vtr;
 
-            if (Event::Undefined == hit || Event::Absorb == hit) {
+            if (Event::Abort == hit || Event::Absorb == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

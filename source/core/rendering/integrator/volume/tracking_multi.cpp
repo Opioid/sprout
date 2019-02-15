@@ -36,13 +36,12 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        return Event::Undefined;
+        return Event::Abort;
     }
 
-    float const d     = ray.max_t;
-    float const range = d - ray.min_t;
+    float const d = ray.max_t;
 
-    if (range < Tracking::Ray_epsilon) {
+    if (scene::offset_f(ray.min_t) >= d) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         return Event::Pass;
@@ -59,7 +58,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
         li            = float3(0.f);
-        transmittance = attenuation(range, mu_a);
+        transmittance = attenuation(d - ray.min_t, mu_a);
         return Event::Pass;
     }
 
@@ -75,8 +74,6 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         float3 const dir    = shape->object_to_texture_vector(local_dir);
 
         math::ray local_ray(origin, dir, ray.min_t, d);
-
-        float const ray_offset = Tracking::Ray_epsilon / length(dir);
 
         auto const& tree = *material.volume_tree();
 
@@ -107,9 +104,9 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     }
                 }
 
-                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
+                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t);
 
-                local_ray.min_t = local_ray.max_t + ray_offset;
+                local_ray.min_t = scene::offset_f(local_ray.max_t);
                 local_ray.max_t = d;
             }
         } else {
@@ -125,15 +122,15 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     }
                 }
 
-                SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
+                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t);
 
-                local_ray.min_t = local_ray.max_t + ray_offset;
+                local_ray.min_t = scene::offset_f(local_ray.max_t);
                 local_ray.max_t = d;
             }
         }
 
         transmittance = w;
-        return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Undefined;
+        return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Abort;
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
@@ -231,8 +228,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     return Event::Absorb;
                 }
 
-                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
-                                                                     : Event::Undefined;
+                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Abort;
             } else {
                 auto const mu = material.collision_coefficients();
 
@@ -242,8 +238,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 li            = float3(0.f);
                 transmittance = w;
-                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass
-                                                                     : Event::Undefined;
+                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Abort;
             }
         }
     }

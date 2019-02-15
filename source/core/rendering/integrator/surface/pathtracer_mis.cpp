@@ -229,7 +229,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
             throughput *= vtr;
 
-            if (Event::Undefined == hit) {
+            if (Event::Abort == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

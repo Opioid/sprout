@@ -9,6 +9,7 @@
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape.hpp"
 
@@ -145,7 +146,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
     float const d = ray.max_t;
 
-    if (d - ray.min_t < Ray_epsilon) {
+    if (scene::offset_f(ray.min_t) >= d) {
         transmittance = float3(1.f);
         return true;
     }
@@ -163,8 +164,6 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         math::ray local_ray(origin, dir, ray.min_t, ray.max_t);
 
-        float const ray_offset = Ray_epsilon / length(dir);
-
         auto const& tree = *material.volume_tree();
 
         float const srs = material.similarity_relation_scale(ray.depth);
@@ -181,9 +180,9 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
                 }
             }
 
-            SOFT_ASSERT(local_ray.max_t + ray_offset > local_ray.min_t);
+            SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t);
 
-            local_ray.min_t = local_ray.max_t + ray_offset;
+            local_ray.min_t = scene::offset_f(local_ray.max_t);
             local_ray.max_t = d;
         }
 

@@ -139,7 +139,7 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             result += throughput * vli;
             throughput *= vtr;
 
-            if (Event::Undefined == hit || Event::Absorb == hit) {
+            if (Event::Abort == hit || Event::Absorb == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

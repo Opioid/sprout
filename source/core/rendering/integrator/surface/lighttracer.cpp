@@ -113,7 +113,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
             // result += throughput * vli;
             throughput *= vtr;
 
-            if (Event::Undefined == hit) {
+            if (Event::Abort == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

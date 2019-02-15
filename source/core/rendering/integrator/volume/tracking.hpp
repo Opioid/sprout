@@ -70,7 +70,6 @@ class Tracking {
                           float3& w, float3& li);
 
     static float constexpr Min_mt        = 1e-10f;
-    static float constexpr Ray_epsilon   = 2e-4f;
     static float constexpr Abort_epsilon = 7.5e-4f;
 };
 

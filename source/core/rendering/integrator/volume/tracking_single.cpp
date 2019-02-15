@@ -145,13 +145,12 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     if (!hit) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        return Event::Undefined;
+        return Event::Abort;
     }
 
-    float const d     = ray.max_t;
-    float const range = d - ray.min_t;
+    float const d = ray.max_t;
 
-    if (range < Tracking::Ray_epsilon) {
+    if (scene::offset_f(ray.min_t) >= d) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         //	weight = float3(1.f);
@@ -169,7 +168,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
         li            = float3(0.f);
-        transmittance = attenuation(range, mu_a);
+        transmittance = attenuation(d - ray.min_t, mu_a);
         //	weight = float3(1.f);
         return Event::Pass;
     }
