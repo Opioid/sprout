@@ -74,10 +74,9 @@ bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           t
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& /*transformation*/,
-                                Node_stack& /*node_stack*/, float& epsilon) const noexcept {
+                                Node_stack& /*node_stack*/) const noexcept {
     if (ray.max_t >= Ray_max_t) {
         ray.max_t = Ray_max_t;
-        epsilon   = 5e-4f;
         return true;
     }
 
@@ -182,9 +181,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     float const phi   = (uv[0] - 0.5f) * (2.f * Pi);
     float const theta = uv[1] * Pi;
 
-    auto const [sin_phi, cos_phi] = math::sincos(phi);
+    auto const [sin_phi, cos_phi] = sincos(phi);
 
-    auto const [sin_theta, cos_theta] = math::sincos(theta);
+    auto const [sin_theta, cos_theta] = sincos(theta);
 
     float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
@@ -213,9 +212,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     float const phi   = (uv[0] - 0.5f) * (2.f * Pi);
     float const theta = uv[1] * Pi;
 
-    auto const [sin_phi, cos_phi] = math::sincos(phi);
+    auto const [sin_phi, cos_phi] = sincos(phi);
 
-    auto const [sin_theta, cos_theta] = math::sincos(theta);
+    auto const [sin_theta, cos_theta] = sincos(theta);
 
     float3 const ls(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 

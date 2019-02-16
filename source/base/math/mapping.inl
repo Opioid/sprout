@@ -22,9 +22,9 @@ static inline float3 disk_to_hemisphere_equidistant(float2 uv) {
     // float colatitude = 2.f * std::atan(r);
 
     // spherical to cartesian
-    auto const [sin_col, cos_col] = math::sincos(colatitude);
+    auto const [sin_col, cos_col] = sincos(colatitude);
 
-    auto const [sin_lon, cos_lon] = math::sincos(longitude);
+    auto const [sin_lon, cos_lon] = sincos(longitude);
 
     return float3(sin_col * cos_lon, sin_col * sin_lon, cos_col);
 }
@@ -37,7 +37,7 @@ static inline float2 hemisphere_to_disk_equidistant(float3 const& dir) {
 
     float const r = colatitude * (Pi_inv * 2.f);
 
-    auto const [sin_lon, cos_lon] = math::sincos(longitude);
+    auto const [sin_lon, cos_lon] = sincos(longitude);
 
     return float2(r * cos_lon, r * sin_lon);
 }

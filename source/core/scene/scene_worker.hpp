@@ -47,7 +47,7 @@ class Worker {
     uint32_t id() const noexcept;
 
     bool intersect(Ray& ray, Intersection& intersection) const noexcept;
-    bool intersect(Ray& ray, float& epsilon) const noexcept;
+    bool intersect(Ray& ray) const noexcept;
 
     bool resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept;
 

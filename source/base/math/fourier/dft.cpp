@@ -36,7 +36,7 @@ void dft_1d(float2* result, float const* source, int32_t num) {
             Vector const b  = math::mul(a, xv);
             Vector       sin_b;
             Vector       cos_b;
-            math::sincos(b, sin_b, cos_b);
+            sincos(b, sin_b, cos_b);
             Vector const sv = simd::load_unaligned_float4(&source[x]);
             sum_x           = math::add(sum_x, mul(sv, cos_b));
             sum_y           = math::add(sum_y, mul(sv, sin_b));
@@ -48,7 +48,7 @@ void dft_1d(float2* result, float const* source, int32_t num) {
         for (int32_t x = m4; x < num; ++x) {
             float const b = as * static_cast<float>(x);
 
-            auto const [sin_b, cos_b] = math::sincos(b);
+            auto const [sin_b, cos_b] = sincos(b);
 
             sum[0] += source[x] * cos_b;
             sum[1] += source[x] * sin_b;
@@ -70,14 +70,14 @@ void idft_1d(float* result, float2 const* source, int32_t num) {
         for (int32_t k = 1; k < len; ++k) {
             float const b = a * static_cast<float>(k);
 
-            auto const [sin_b, cos_b] = math::sincos(b);
+            auto const [sin_b, cos_b] = sincos(b);
 
             sum += 2.f * (source[k][0] * cos_b + source[k][1] * sin_b);
         }
 
         float const b = a * static_cast<float>(len);
 
-        auto const [sin_b, cos_b] = math::sincos(b);
+        auto const [sin_b, cos_b] = sincos(b);
 
         sum += source[len][0] * cos_b + source[len][1] * sin_b;
 
@@ -122,7 +122,7 @@ void dft_2d(float2* result, float const* source, float2* tmp, int32_t width, int
                     for (int32_t t = 0; t < height; ++t) {
                         float const angle = a * static_cast<float>(t);
 
-                        auto const [sin_a, cos_a] = math::sincos(angle);
+                        auto const [sin_a, cos_a] = sincos(angle);
 
                         int32_t const g = t * row_size + x;
                         sum[0] += tmp[g][0] * cos_a + tmp[g][1] * sin_a;
@@ -153,7 +153,7 @@ void idft_2d(float* result, float2 const* source, float2* tmp, int32_t width, in
                     for (int32_t t = 0; t < height; ++t) {
                         float const angle = a * static_cast<float>(t);
 
-                        auto const [sin_a, cos_a] = math::sincos(angle);
+                        auto const [sin_a, cos_a] = sincos(angle);
 
                         int32_t const g = t * row_size + x;
                         sum[0] += source[g][0] * cos_a + source[g][1] * sin_a;

@@ -87,15 +87,14 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
     return false;
 }
 
-bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       float& epsilon) const noexcept {
+bool Canopy::intersect(Ray& ray, Transformation const& transformation,
+                       Node_stack& /*node_stack*/) const noexcept {
     if (ray.max_t >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
         ray.max_t = Ray_max_t;
-        epsilon   = 5e-4f;
 
         return true;
     }

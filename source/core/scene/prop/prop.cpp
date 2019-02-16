@@ -86,7 +86,7 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack, shape::Intersection&
     return shape_->intersect_fast(ray, transformation, node_stack, intersection);
 }
 
-bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const noexcept {
+bool Prop::intersect(Ray& ray, Node_stack& node_stack) const noexcept {
     //	if (!visible(ray.depth)) {
     //		return false;
     //	}
@@ -102,7 +102,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const noe
     Transformation temp;
     auto const&    transformation = transformation_at(ray.time, temp);
 
-    return shape_->intersect(ray, transformation, node_stack, epsilon);
+    return shape_->intersect(ray, transformation, node_stack);
 }
 
 bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {

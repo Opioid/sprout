@@ -330,7 +330,7 @@ inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alph
     float const r   = std::sqrt(xi[0]);
     float const phi = (xi[1] < a) ? (xi[1] / a * Pi) : (Pi + (xi[1] - a) / (1.f - a) * Pi);
 
-    auto const [sin_phi, cos_phi] = math::sincos(phi);
+    auto const [sin_phi, cos_phi] = sincos(phi);
 
     float const p1 = r * cos_phi;
     float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);

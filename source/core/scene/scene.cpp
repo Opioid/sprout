@@ -120,8 +120,8 @@ bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& inte
     return prop_bvh_.intersect(ray, node_stack, intersection);
 }
 
-bool Scene::intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const noexcept {
-    return prop_bvh_.intersect(ray, node_stack, epsilon);
+bool Scene::intersect(Ray& ray, Node_stack& node_stack) const noexcept {
+    return prop_bvh_.intersect(ray, node_stack);
 }
 
 bool Scene::intersect_volume(Ray& ray, Node_stack& node_stack,

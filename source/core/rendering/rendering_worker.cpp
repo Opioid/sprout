@@ -209,7 +209,7 @@ bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Filte
     if (intersection.subsurface && intersection.material()->ior() > 1.f) {
         float const ray_max_t = ray.max_t;
 
-        if (float epsilon; intersect(ray, epsilon)) {
+        if (intersect(ray)) {
             if (float3 tr; volume_integrator_->transmittance(ray, *this, tr)) {
                 SOFT_ASSERT(all_finite_and_positive(tr));
 

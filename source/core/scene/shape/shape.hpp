@@ -61,8 +61,8 @@ class Shape {
                                 Node_stack& node_stack, Intersection& intersection) const
         noexcept = 0;
 
-    virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                           float& epsilon) const noexcept = 0;
+    virtual bool intersect(Ray& ray, Transformation const& transformation,
+                           Node_stack& node_stack) const noexcept = 0;
 
     virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
                              Node_stack& node_stack) const noexcept = 0;

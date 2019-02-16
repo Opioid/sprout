@@ -27,8 +27,8 @@ class Morphable_mesh : public Shape, public Morphable_shape {
     bool intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                         shape::Intersection& intersection) const noexcept override final;
 
-    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                   float& epsilon) const noexcept override final;
+    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack) const
+        noexcept override final;
 
     bool intersect_p(Ray const& ray, Transformation const& transformation,
                      Node_stack& node_stack) const noexcept override final;

@@ -84,7 +84,7 @@ class Scene {
     bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
         noexcept;
 
-    bool intersect(Ray& ray, Node_stack& node_stack, float& epsilon) const noexcept;
+    bool intersect(Ray& ray, Node_stack& node_stack) const noexcept;
 
     bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
         noexcept;

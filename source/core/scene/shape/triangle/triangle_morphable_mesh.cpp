@@ -110,7 +110,7 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
 }
 
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack, float& epsilon) const noexcept {
+                               Node_stack& node_stack) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
@@ -119,7 +119,6 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 
     if (tree_.intersect(tray, node_stack)) {
         ray.max_t = tray.max_t;
-        epsilon   = 3e-3f * tray.max_t;
         return true;
     }
 

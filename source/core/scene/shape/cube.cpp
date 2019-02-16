@@ -72,8 +72,8 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
     return true;
 }
 
-bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                     float& epsilon) const noexcept {
+bool Cube::intersect(Ray& ray, Transformation const& transformation,
+                     Node_stack& /*node_stack*/) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = dot(v, ray.direction);
     float  radius = transformation.scale[0];
@@ -85,7 +85,6 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
             ray.max_t = t0;
-            epsilon   = 5e-4f * t0;
             return true;
         }
 
@@ -93,7 +92,6 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
             ray.max_t = t1;
-            epsilon   = 5e-4f * t1;
             return true;
         }
     }

@@ -38,6 +38,33 @@ AABB Sphere::transformed_aabb(math::Transformation const& t) const noexcept {
     return AABB(t.position - halfsize, t.position + halfsize);
 }
 
+static inline void intersect(float hit_t, Ray const& ray,
+                             Shape::Transformation const& transformation,
+                             Intersection&                intersection) {
+    float3 const p = ray.point(hit_t);
+    float3 const n = normalize(p - transformation.position);
+
+    float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, n));
+
+    float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
+    float const theta = std::acos(xyz[1]);
+
+    // avoid singularity at poles
+    float const sin_theta         = std::max(std::sin(theta), 0.00001f);
+    auto const [sin_phi, cos_phi] = sincos(phi);
+
+    float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
+    t = normalize(transform_vector(transformation.rotation, t));
+
+    intersection.p     = p;
+    intersection.t     = t;
+    intersection.b     = -cross(t, n);
+    intersection.n     = n;
+    intersection.geo_n = n;
+    intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
+    intersection.part  = 0;
+}
+
 bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        Intersection& intersection) const noexcept {
     float3 const v = transformation.position - ray.origin;
@@ -53,30 +80,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            float3 p = ray.point(t0);
-            float3 n = normalize(p - transformation.position);
-
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
-            xyz        = normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
-            float theta = std::acos(xyz[1]);
-
-            // avoid singularity at poles
-            float sin_theta = std::max(std::sin(theta), 0.00001f);
-            float sin_phi   = std::sin(phi);
-            float cos_phi   = std::cos(phi);
-
-            float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-            t = normalize(transform_vector(transformation.rotation, t));
-
-            intersection.p     = p;
-            intersection.t     = t;
-            intersection.b     = -cross(t, n);
-            intersection.n     = n;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-            intersection.part  = 0;
+            shape::intersect(t0, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -87,30 +91,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            float3 p = ray.point(t1);
-            float3 n = normalize(p - transformation.position);
-
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
-            xyz        = normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
-            float theta = std::acos(xyz[1]);
-
-            // avoid singularity at poles
-            float sin_theta = std::max(std::sin(theta), 0.00001f);
-            float sin_phi   = std::sin(phi);
-            float cos_phi   = std::cos(phi);
-
-            float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-            t = normalize(transform_vector(transformation.rotation, t));
-
-            intersection.p     = p;
-            intersection.t     = t;
-            intersection.b     = -cross(t, n);
-            intersection.n     = n;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-            intersection.part  = 0;
+            shape::intersect(t1, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -120,6 +101,23 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
     }
 
     return false;
+}
+
+static inline void intersect_fast(float hit_t, Ray const& ray,
+                                  Shape::Transformation const& transformation,
+                                  Intersection&                intersection) {
+    float3 const p = ray.point(hit_t);
+    float3 const n = normalize(p - transformation.position);
+
+    float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, n));
+
+    float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
+    float const theta = std::acos(xyz[1]);
+
+    intersection.p     = p;
+    intersection.geo_n = n;
+    intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
+    intersection.part  = 0;
 }
 
 bool Sphere::intersect_fast(Ray& ray, Transformation const&           transformation,
@@ -133,23 +131,11 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
-        float dist = std::sqrt(discriminant);
-        float t0   = b - dist;
+        float const dist = std::sqrt(discriminant);
+        float const t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
-            float3 p = ray.point(t0);
-            float3 n = normalize(p - transformation.position);
-
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
-            xyz        = normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
-            float theta = std::acos(xyz[1]);
-
-            intersection.p     = p;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-            intersection.part  = 0;
+            shape::intersect_fast(t0, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -157,22 +143,10 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
             return true;
         }
 
-        float t1 = b + dist;
+        float const t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
-            float3 p = ray.point(t1);
-            float3 n = normalize(p - transformation.position);
-
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
-            xyz        = normalize(xyz);
-
-            float phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
-            float theta = std::acos(xyz[1]);
-
-            intersection.p     = p;
-            intersection.geo_n = n;
-            intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-            intersection.part  = 0;
+            shape::intersect_fast(t1, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -184,8 +158,8 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
     return false;
 }
 
-bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       float& epsilon) const noexcept {
+bool Sphere::intersect(Ray& ray, Transformation const& transformation,
+                       Node_stack& /*node_stack*/) const noexcept {
     float3 const v = transformation.position - ray.origin;
     float const  b = dot(ray.direction, v);
 
@@ -195,20 +169,18 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
-        float dist = std::sqrt(discriminant);
-        float t0   = b - dist;
+        float const dist = std::sqrt(discriminant);
+        float const t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
             ray.max_t = t0;
-            epsilon   = 5e-4f * t0;
             return true;
         }
 
-        float t1 = b + dist;
+        float const t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
             ray.max_t = t1;
-            epsilon   = 5e-4f * t1;
             return true;
         }
     }
@@ -227,14 +199,14 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
-        float dist = std::sqrt(discriminant);
-        float t0   = b - dist;
+        float const dist = std::sqrt(discriminant);
+        float const t0   = b - dist;
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
             return true;
         }
 
-        float t1 = b + dist;
+        float const t1 = b + dist;
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
             return true;

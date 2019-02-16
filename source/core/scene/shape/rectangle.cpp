@@ -66,10 +66,11 @@ bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transfo
                                Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
-    float         d      = dot(normal, transformation.position);
-    float         denom  = -dot(normal, ray.direction);
-    float         numer  = dot(normal, ray.origin) - d;
-    float         hit_t  = numer / denom;
+
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
+    float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
@@ -103,13 +104,14 @@ bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transfo
     return false;
 }
 
-bool Rectangle::intersect(Ray& ray, Transformation const&    transformation,
-                          Node_stack& /*node_stack*/, float& epsilon) const noexcept {
+bool Rectangle::intersect(Ray& ray, Transformation const& transformation,
+                          Node_stack& /*node_stack*/) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
-    float         d      = dot(normal, transformation.position);
-    float         denom  = -dot(normal, ray.direction);
-    float         numer  = dot(normal, ray.origin) - d;
-    float         hit_t  = numer / denom;
+
+    float d     = dot(normal, transformation.position);
+    float denom = -dot(normal, ray.direction);
+    float numer = dot(normal, ray.origin) - d;
+    float hit_t = numer / denom;
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         float3 p = ray.point(hit_t);
@@ -130,7 +132,6 @@ bool Rectangle::intersect(Ray& ray, Transformation const&    transformation,
         }
 
         ray.max_t = hit_t;
-        epsilon   = 5e-4f * hit_t;
         return true;
     }
 
