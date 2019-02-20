@@ -16,7 +16,7 @@ void trim(std::string& text) noexcept {
     text.assign(begin, end);
 }
 
-std::string_view parent_directory(std::string_view const& filename) noexcept {
+std::string_view parent_directory(std::string_view filename) noexcept {
     size_t const i = filename.find_last_of('/');
     return filename.substr(0, i + 1);
 }
@@ -32,7 +32,7 @@ std::string_view presuffix(std::string_view filename) noexcept {
     return filename.substr(j, i - j);
 }
 
-std::string extract_filename(std::string filename) noexcept {
+std::string extract_filename(std::string const& filename) noexcept {
     size_t const i = filename.find_last_of('/') + 1;
     return filename.substr(i, filename.find_first_of('.') - i);
 }

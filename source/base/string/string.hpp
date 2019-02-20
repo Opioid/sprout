@@ -24,13 +24,13 @@ bool is_space(char c) noexcept;
 
 void trim(std::string& text) noexcept;
 
-std::string_view parent_directory(std::string_view const& filename) noexcept;
+std::string_view parent_directory(std::string_view filename) noexcept;
 
 std::string_view suffix(std::string_view filename) noexcept;
 
 std::string_view presuffix(std::string_view filename) noexcept;
 
-std::string extract_filename(std::string filename) noexcept;
+std::string extract_filename(std::string const& filename) noexcept;
 
 std::string print_bytes(size_t num_bytes) noexcept;
 
