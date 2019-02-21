@@ -36,30 +36,30 @@ static inline int32_t float_as_int(float x) noexcept {
     return i;
 }
 
-static float constexpr origin      = 1.f / 32.f;
-static float constexpr float_scale = 1.f / 65536.f;
-static float constexpr int_scale   = 256.f;
+static float constexpr Origin      = 1.f / 32.f;
+static float constexpr Float_scale = 1.f / 65536.f;
+static float constexpr Int_scale   = 256.f;
 
 static inline float3 offset_ray(float3 const& p, float3 const& n) noexcept {
-    int3 const of_i(int_scale * n);
+    int3 const of_i(Int_scale * n);
 
     float3 const p_i(int_as_float(float_as_int(p[0]) + ((p[0] < 0.f) ? -of_i[0] : of_i[0])),
                      int_as_float(float_as_int(p[1]) + ((p[1] < 0.f) ? -of_i[1] : of_i[1])),
                      int_as_float(float_as_int(p[2]) + ((p[2] < 0.f) ? -of_i[2] : of_i[2])));
 
-    return float3(std::abs(p[0]) < origin ? p[0] + float_scale * n[0] : p_i[0],
-                  std::abs(p[1]) < origin ? p[1] + float_scale * n[1] : p_i[1],
-                  std::abs(p[2]) < origin ? p[2] + float_scale * n[2] : p_i[2]);
+    return float3(std::abs(p[0]) < Origin ? p[0] + Float_scale * n[0] : p_i[0],
+                  std::abs(p[1]) < Origin ? p[1] + Float_scale * n[1] : p_i[1],
+                  std::abs(p[2]) < Origin ? p[2] + Float_scale * n[2] : p_i[2]);
 }
 
 static inline float offset_f(float t) noexcept {
-    return t < origin ? t + float_scale
-                      : int_as_float(float_as_int(t) + static_cast<int32_t>(int_scale));
+    return t < Origin ? t + Float_scale
+                      : int_as_float(float_as_int(t) + static_cast<int32_t>(Int_scale));
 }
 
 static inline float offset_b(float t) noexcept {
-    return t < origin ? t - float_scale
-                      : int_as_float(float_as_int(t) - static_cast<int32_t>(int_scale));
+    return t < Origin ? t - Float_scale
+                      : int_as_float(float_as_int(t) - static_cast<int32_t>(Int_scale));
 }
 
 }  // namespace scene
