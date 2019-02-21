@@ -17,6 +17,12 @@ bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi, bool include_back) 
 }
 
 void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+    if (1.f == metallic_) {
+        pure_gloss_sample(wo_, sampler, result);
+        result.wavelength = 0.f;
+        return;
+    }
+
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = float3(1.f);
         result.wi         = -wo_;
@@ -153,6 +159,10 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
     float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
+
+    if (1.f == metallic_) {
+        return pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    }
 
     auto result = base_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
     result.pdf *= 0.5f;
