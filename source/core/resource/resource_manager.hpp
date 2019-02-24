@@ -41,7 +41,7 @@ class Manager {
     T* load(std::string const& filename, Variant_map const& options = Variant_map());
 
     template <typename T>
-    T* load(std::string const& name, void const* data, std::string const& mount_folder,
+    T* load(std::string const& name, void const* data, std::string_view mount_folder,
             Variant_map const& options = Variant_map());
 
     template <typename T>

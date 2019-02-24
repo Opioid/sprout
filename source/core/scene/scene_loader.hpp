@@ -83,13 +83,22 @@ class Loader {
     size_t num_bytes() const;
 
   private:
-    void read_materials(json::Value const& materials_value);
+    using Local_materials = std::map<std::string, json::Value const*>;
 
-    void load_entities(json::Value const& entities_value, entity::Entity* parent, Scene& scene);
+    void load(std::string const& filename, std::string_view take_mount_folder,
+              entity::Entity* parent, Scene& scene);
 
-    void set_visibility(entity::Entity* entity, json::Value const& visibility_value);
+    void read_materials(json::Value const& materials_value, Local_materials& local_materials) const;
 
-    prop::Prop* load_prop(json::Value const& prop_value, std::string const& name, Scene& scene);
+    void load_entities(json::Value const& entities_value, entity::Entity* parent,
+                       std::string_view mount_folder, Local_materials const& local_materials,
+                       Scene& scene);
+
+    static void set_visibility(entity::Entity* entity, json::Value const& visibility_value);
+
+    prop::Prop* load_prop(json::Value const& prop_value, std::string const& name,
+                          std::string_view mount_folder, Local_materials const& local_materials,
+                          Scene& scene);
 
     entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
                                    std::string const& name, Scene& scene);
@@ -98,9 +107,12 @@ class Loader {
 
     Shape* shape(std::string const& type, json::Value const& shape_value) const;
 
-    void load_materials(json::Value const& materials_value, Scene& scene, Materials& materials);
+    void load_materials(json::Value const& materials_value, std::string_view mount_folder,
+                        Local_materials const& local_materials, Scene& scene,
+                        Materials& materials) const;
 
-    Material* load_material(std::string const& name, Scene& scene);
+    Material* load_material(std::string const& name, std::string_view mount_folder,
+                            Local_materials const& local_materials, Scene& scene) const;
 
     resource::Manager& resource_manager_;
 
@@ -114,10 +126,6 @@ class Loader {
     Shape* sphere_;
 
     Material& fallback_material_;
-
-    std::map<std::string, json::Value const*> local_materials_;
-
-    std::string mount_folder_;
 
     std::map<std::string, entity::Extension_provider*> extension_providers_;
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;

@@ -37,7 +37,7 @@ T* Manager::load(std::string const& filename, Variant_map const& options) {
 }
 
 template <typename T>
-T* Manager::load(std::string const& name, void const* data, std::string const& mount_folder,
+T* Manager::load(std::string const& name, void const* data, std::string_view mount_folder,
                  Variant_map const& options) {
     if (name.empty()) {
         return nullptr;
