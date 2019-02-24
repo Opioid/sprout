@@ -450,6 +450,15 @@ static inline Matrix4x4f_a compose(Matrix4x4f_a const& basis, Vector3f_a const& 
                         basis.r[2][2] * scale[2], 0.f, origin[0], origin[1], origin[2], 1.f);
 }
 
+static inline void decompose(Matrix4x4f_a const& m, Matrix3x3f_a& basis, Vector3f_a& scale,
+                             Vector3f_a& origin) {
+    float3 const s(length(m.x()), length(m.y()), length(m.z()));
+
+    basis  = Matrix3x3f_a(m.x() / s[0], m.y() / s[1], m.z() / s[2]);
+    scale  = s;
+    origin = m.w();
+}
+
 inline Matrix4x4f_a::Matrix4x4f_a(Transformation const& t) noexcept
     : Matrix4x4f_a(compose(quaternion::create_matrix3x3(t.rotation), t.scale, t.position)) {}
 

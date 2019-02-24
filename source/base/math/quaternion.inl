@@ -224,30 +224,34 @@ static inline float3x3 create_matrix3x3(Quaternion const& q) noexcept {
         float const xx = q[0] * xs;
         float const yy = q[1] * ys;
         float const zz = q[2] * zs;
-        m.r[0][0]      = 1.f - (yy + zz);
-        m.r[1][1]      = 1.f - (xx + zz);
-        m.r[2][2]      = 1.f - (xx + yy);
+
+        m.r[0][0] = 1.f - (yy + zz);
+        m.r[1][1] = 1.f - (xx + zz);
+        m.r[2][2] = 1.f - (xx + yy);
     }
 
     {
         float const xy = q[0] * ys;
         float const wz = q[3] * zs;
-        m.r[0][1]      = xy - wz;
-        m.r[1][0]      = xy + wz;
+
+        m.r[0][1] = xy - wz;
+        m.r[1][0] = xy + wz;
     }
 
     {
         float const xz = q[0] * zs;
         float const wy = q[3] * ys;
-        m.r[0][2]      = xz + wy;
-        m.r[2][0]      = xz - wy;
+
+        m.r[0][2] = xz + wy;
+        m.r[2][0] = xz - wy;
     }
 
     {
         float const yz = q[1] * zs;
         float const wx = q[3] * xs;
-        m.r[1][2]      = yz - wx;
-        m.r[2][1]      = yz + wx;
+
+        m.r[1][2] = yz - wx;
+        m.r[2][1] = yz + wx;
     }
 
     return m;

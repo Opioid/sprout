@@ -1,6 +1,7 @@
 #include "json.hpp"
 #include "math/math.hpp"
 #include "math/matrix3x3.inl"
+#include "math/matrix4x4.inl"
 #include "math/quaternion.inl"
 #include "math/vector4.inl"
 #include "memory/unique.inl"
@@ -224,13 +225,13 @@ uint3 read_uint3(rapidjson::Value const& value) noexcept {
 
 float3x3 create_rotation_matrix(float3 const& xyz) noexcept {
     float3x3 rot_x;
-    math::set_rotation_x(rot_x, math::degrees_to_radians(xyz[0]));
+    set_rotation_x(rot_x, degrees_to_radians(xyz[0]));
 
     float3x3 rot_y;
-    math::set_rotation_y(rot_y, math::degrees_to_radians(xyz[1]));
+    set_rotation_y(rot_y, degrees_to_radians(xyz[1]));
 
     float3x3 rot_z;
-    math::set_rotation_z(rot_z, math::degrees_to_radians(xyz[2]));
+    set_rotation_z(rot_z, degrees_to_radians(xyz[2]));
 
     return rot_z * rot_x * rot_y;
 }
@@ -260,15 +261,29 @@ std::string read_string(rapidjson::Value const& value, std::string_view name,
 
 void read_transformation(rapidjson::Value const& value,
                          math::Transformation&   transformation) noexcept {
-    for (auto& n : value.GetObject()) {
-        std::string_view const node_name(n.name.GetString(), n.name.GetStringLength());
+    if (value.IsArray()) {
+        float4x4 m(
+            value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat(), value[3].GetFloat(),
+            value[4].GetFloat(), value[5].GetFloat(), value[6].GetFloat(), value[7].GetFloat(),
+            value[8].GetFloat(), value[9].GetFloat(), value[10].GetFloat(), value[11].GetFloat(),
+            value[12].GetFloat(), value[13].GetFloat(), value[14].GetFloat(), value[15].GetFloat());
 
-        if ("position" == node_name) {
-            transformation.position = json::read_float3(n.value);
-        } else if ("scale" == node_name) {
-            transformation.scale = json::read_float3(n.value);
-        } else if ("rotation" == node_name) {
-            transformation.rotation = json::read_local_rotation(n.value);
+        float3x3 r;
+
+        decompose(m, r, transformation.scale, transformation.position);
+
+        transformation.rotation = quaternion::create(r);
+    } else {
+        for (auto& n : value.GetObject()) {
+            std::string_view const node_name(n.name.GetString(), n.name.GetStringLength());
+
+            if ("position" == node_name) {
+                transformation.position = json::read_float3(n.value);
+            } else if ("scale" == node_name) {
+                transformation.scale = json::read_float3(n.value);
+            } else if ("rotation" == node_name) {
+                transformation.rotation = json::read_local_rotation(n.value);
+            }
         }
     }
 }
