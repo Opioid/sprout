@@ -125,8 +125,8 @@ void Perspective::on_update(uint64_t time, Worker& worker) noexcept {
 
 void Perspective::update_focus(uint64_t time, Worker& worker) noexcept {
     if (focus_.use_point && lens_radius_ > 0.f) {
-        float3 direction = left_top_ + focus_.point[0] * d_x_ + focus_.point[1] * d_y_;
-        direction        = normalize(direction);
+        float3 const direction = normalize(left_top_ + focus_.point[0] * d_x_ +
+                                           focus_.point[1] * d_y_);
 
         Transformation temp;
         auto const&    transformation = transformation_at(time, temp);

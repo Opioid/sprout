@@ -183,6 +183,13 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
     }
 
     for (auto const& e : entities_value.GetArray()) {
+        auto const file_node = e.FindMember("file");
+        if (e.MemberEnd() != file_node) {
+            std::string const filename = file_node->value.GetString();
+            load(filename, "", parent, scene);
+            continue;
+        }
+
         auto const type_node = e.FindMember("type");
         if (e.MemberEnd() == type_node) {
             continue;
