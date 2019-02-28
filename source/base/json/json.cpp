@@ -274,6 +274,11 @@ void read_transformation(rapidjson::Value const& value,
 
         transformation.rotation = quaternion::create(r);
     } else {
+        float3 up(0.f, 1.f, 0.f);
+        float3 look_at(0.f, 0.f, 1.f);
+
+        bool look = false;
+
         for (auto& n : value.GetObject()) {
             std::string_view const node_name(n.name.GetString(), n.name.GetStringLength());
 
@@ -283,7 +288,21 @@ void read_transformation(rapidjson::Value const& value,
                 transformation.scale = json::read_float3(n.value);
             } else if ("rotation" == node_name) {
                 transformation.rotation = json::read_local_rotation(n.value);
+            } else if ("up" == node_name) {
+                up = json::read_float3(n.value);
+            } else if ("look_at" == node_name) {
+                look_at = json::read_float3(n.value);
+                look    = true;
             }
+        }
+
+        if (look) {
+            float3 const dir   = normalize(look_at - transformation.position);
+            float3 const right = -cross(dir, up);
+
+            float3x3 r(right, up, dir);
+
+            transformation.rotation = quaternion::create(r);
         }
     }
 }
