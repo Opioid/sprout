@@ -21,7 +21,6 @@ static inline float2 sample_disk_concentric(float2 uv) {
     if (std::abs(s[0]) > std::abs(s[1])) {
         r     = s[0];
         theta = (Pi / 4.f) * (s[1] / s[0]);
-
     } else {
         r     = s[1];
         theta = (Pi / 2.f) - (Pi / 4.f) * (s[0] / s[1]);
@@ -40,6 +39,7 @@ static inline float3 sample_oriented_disk_concentric(float2 uv, float3 const& x,
 
 static inline float2 sample_triangle_uniform(float2 uv) {
     float const su = std::sqrt(uv[0]);
+
     return float2(1.f - su, uv[1] * su);
 }
 
