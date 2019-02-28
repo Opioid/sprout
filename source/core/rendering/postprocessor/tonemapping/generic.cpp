@@ -2,9 +2,7 @@
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
 
-namespace rendering {
-namespace postprocessor {
-namespace tonemapping {
+namespace rendering::postprocessor::tonemapping {
 
 Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max)
     : a_(contrast), d_(shoulder), hdr_max_(hdr_max) {
@@ -38,6 +36,4 @@ float Generic::tonemap_function(float x) const {
     return z / (std::pow(z, d_) * b_ + c_);
 }
 
-}  // namespace tonemapping
-}  // namespace postprocessor
-}  // namespace rendering
+}  // namespace rendering::postprocessor::tonemapping

@@ -1,23 +1,22 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_POSTPROCESSOR_TONEMAPPING_TONEMAPPER_HPP
+#define SU_CORE_RENDERING_POSTPROCESSOR_TONEMAPPING_TONEMAPPER_HPP
 
 #include "rendering/postprocessor/postprocessor.hpp"
 
-namespace rendering {
-namespace postprocessor {
-namespace tonemapping {
+namespace rendering::postprocessor::tonemapping {
 
 class Tonemapper : public Postprocessor {
   public:
-    virtual ~Tonemapper();
+    ~Tonemapper() override;
 
-    virtual void init(scene::camera::Camera const& camera, thread::Pool& pool) override final;
+    void init(scene::camera::Camera const& camera, thread::Pool& pool) override final;
 
-    virtual size_t num_bytes() const override final;
+    size_t num_bytes() const override final;
 
   protected:
     static float normalization_factor(float hdr_max, float tonemapped_max);
 };
 
-}  // namespace tonemapping
-}  // namespace postprocessor
-}  // namespace rendering
+}  // namespace rendering::postprocessor::tonemapping
+
+#endif

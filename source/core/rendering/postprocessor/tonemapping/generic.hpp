@@ -1,18 +1,17 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_POSTPROCESSOR_TONEMAPPING_GENERIC_HPP
+#define SU_CORE_RENDERING_POSTPROCESSOR_TONEMAPPING_GENERIC_HPP
 
 #include "tonemapper.hpp"
 
-namespace rendering {
-namespace postprocessor {
-namespace tonemapping {
+namespace rendering::postprocessor::tonemapping {
 
 class Generic : public Tonemapper {
   public:
     Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max);
 
   private:
-    virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
-                       image::Float4 const& source, image::Float4& destination) override final;
+    void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
+               image::Float4& destination) override final;
 
     float tonemap_function(float x) const;
 
@@ -24,6 +23,6 @@ class Generic : public Tonemapper {
     float hdr_max_;
 };
 
-}  // namespace tonemapping
-}  // namespace postprocessor
-}  // namespace rendering
+}  // namespace rendering::postprocessor::tonemapping
+
+#endif

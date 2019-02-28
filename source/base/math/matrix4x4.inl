@@ -642,6 +642,28 @@ static inline void set_rotation_x(Matrix4x4f_a& m, float a) noexcept {
     m.r[3][3] = 1.f;
 }
 
+static inline void set_rotation_y(Matrix4x4f_a& m, float a) noexcept {
+    float const c = std::cos(a);
+    float const s = std::sin(a);
+
+    m.r[0][0] = c;
+    m.r[0][1] = 0.f;
+    m.r[0][2] = s;
+    m.r[0][3] = 0.f;
+    m.r[1][0] = 0.f;
+    m.r[1][1] = 1.f;
+    m.r[1][2] = 0.f;
+    m.r[1][3] = 0.f;
+    m.r[2][0] = -s;
+    m.r[2][1] = 0.f;
+    m.r[2][2] = c;
+    m.r[2][3] = 0.f;
+    m.r[3][0] = 0.f;
+    m.r[3][1] = 0.f;
+    m.r[3][2] = 0.f;
+    m.r[3][3] = 1.f;
+}
+
 }  // namespace math
 
 #endif

@@ -323,8 +323,8 @@ static inline Vector3f_a transform_vector_transposed(Matrix3x3f_a const& m,
 }
 
 static inline void set_rotation_x(Matrix3x3f_a& m, float a) noexcept {
-    float c = std::cos(a);
-    float s = std::sin(a);
+    float const c = std::cos(a);
+    float const s = std::sin(a);
 
     m.r[0][0] = 1.f;
     m.r[0][1] = 0.f;
@@ -338,8 +338,8 @@ static inline void set_rotation_x(Matrix3x3f_a& m, float a) noexcept {
 }
 
 static inline void set_rotation_y(Matrix3x3f_a& m, float a) noexcept {
-    float c = std::cos(a);
-    float s = std::sin(a);
+    float const c = std::cos(a);
+    float const s = std::sin(a);
 
     m.r[0][0] = c;
     m.r[0][1] = 0.f;
@@ -353,8 +353,8 @@ static inline void set_rotation_y(Matrix3x3f_a& m, float a) noexcept {
 }
 
 static inline void set_rotation_z(Matrix3x3f_a& m, float a) noexcept {
-    float c = std::cos(a);
-    float s = std::sin(a);
+    float const c = std::cos(a);
+    float const s = std::sin(a);
 
     m.r[0][0] = c;
     m.r[0][1] = -s;
@@ -368,9 +368,9 @@ static inline void set_rotation_z(Matrix3x3f_a& m, float a) noexcept {
 }
 
 static inline void set_rotation(Matrix3x3f_a& m, Vector3f_a const& v, float a) noexcept {
-    float c = std::cos(a);
-    float s = std::sin(a);
-    float t = 1.f - c;
+    float const c = std::cos(a);
+    float const s = std::sin(a);
+    float const t = 1.f - c;
 
     m.r[0][0] = c + v[0] * v[0] * t;
     m.r[1][1] = c + v[1] * v[1] * t;

@@ -39,4 +39,6 @@ std::ostream& operator<<(std::ostream& stream, const math::Matrix3x3<T>& m) noex
 
 std::ostream& operator<<(std::ostream& stream, float3x3 const& m) noexcept;
 
+std::ostream& operator<<(std::ostream& stream, float4x4 const& m) noexcept;
+
 #endif

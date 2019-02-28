@@ -13,6 +13,7 @@ namespace rendering::postprocessor {
 class Postprocessor {
   public:
     Postprocessor(uint32_t num_passes = 1);
+
     virtual ~Postprocessor();
 
     virtual void init(scene::camera::Camera const& camera, thread::Pool& pool) = 0;
