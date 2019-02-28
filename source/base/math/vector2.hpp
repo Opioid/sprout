@@ -12,7 +12,7 @@ struct Vector2 {
 
     Vector2() = default;
 
-    constexpr Vector2(T s);
+    explicit constexpr Vector2(T s);
 
     constexpr Vector2(T x, T y);
 
