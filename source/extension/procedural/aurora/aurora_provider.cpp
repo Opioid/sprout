@@ -255,7 +255,7 @@ void Provider::simulate_particle(float3 const& start, float peak_height, rnd::Ge
         renderer.splat(world_to_grid(position), color);
 
         float2 const r2(rng.random_float(), rng.random_float());
-        float2 const uv = math::sample_disk_concentric(r2);
+        float2 const uv = sample_disk_concentric(r2);
 
         position[0] += uv[0] * spread;
         position[2] += uv[1] * spread;

@@ -43,7 +43,7 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint
     float3 origin;
 
     if (lens_radius_ > 0.f) {
-        float2 const lens = math::sample_disk_concentric(sample.lens_uv);
+        float2 const lens = sample_disk_concentric(sample.lens_uv);
 
         origin = float3(lens_radius_ * lens, 0.f);
 

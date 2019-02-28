@@ -57,7 +57,7 @@ scene::shape::Shape* Grass::create_mesh(json::Value const& /*mesh_value*/,
         float2 s = math::ems(i, 3, 4);
 
         //	float2 p = start + s * range;
-        float2 p = 4.f * math::sample_disk_concentric(s);
+        float2 p = 4.f * sample_disk_concentric(s);
 
         float randomness = 1.f;  // sampler.sample_1(*mask, s);
 
