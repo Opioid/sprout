@@ -5,6 +5,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/vector.hpp"
 #include "base/math/vector3.inl"
+#include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink_ffmpeg.hpp"
 #include "exporting/exporting_sink_image_sequence.hpp"
@@ -110,7 +111,8 @@ static void load_settings(json::Value const& settings_value, Settings& settings)
 
 static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling);
 
-void Loader::load(Take& take, std::istream& stream, Scene& scene, resource::Manager& manager) {
+void Loader::load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
+                  resource::Manager& manager) {
     uint32_t const num_threads = manager.thread_pool().num_threads();
 
     auto root = json::parse(stream);
@@ -147,7 +149,15 @@ void Loader::load(Take& take, std::istream& stream, Scene& scene, resource::Mana
 
     if (take.view.camera) {
         if (postprocessors_value) {
+            std::string_view const take_mount_folder = string::parent_directory(take_name);
+
+            auto& filesystem = manager.filesystem();
+
+            filesystem.push_mount(take_mount_folder);
+
             load_postprocessors(*postprocessors_value, manager, take);
+
+            filesystem.pop_mount();
         }
 
         if (exporter_value) {
@@ -632,6 +642,10 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
 
             auto backplate = manager.load<image::texture::Texture>(name);
 
+            if (!backplate) {
+                continue;
+            }
+
             if (take.view.camera &&
                 backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {
                 logging::warning("Not using backplate \"" + name +
@@ -696,6 +710,8 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
             float const intensity = json::read_float(n->value, "intensity", 1.f);
 
             pipeline.add(new Glare3(adaption, threshold, intensity));
+        } else {
+            logging::warning("Unknown postprocessor \"" + std::string(n->name.GetString()) + "\"");
         }
     }
 }
@@ -749,23 +765,23 @@ static std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_
 
     for (auto& n : exporter_value.GetObject()) {
         if ("Image" == n.name) {
+            using namespace image::encoding;
+
             std::string const format = json::read_string(n.value, "format", "PNG");
 
             image::Writer* writer;
 
             if ("RGBE" == format) {
-                writer = new image::encoding::rgbe::Writer();
+                writer = new rgbe::Writer();
             } else {
                 bool const transparent_sensor = camera.sensor().has_alpha_transparency();
 
                 bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
 
                 if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
-                    writer = new image::encoding::png::Writer_alpha(camera.sensor().dimensions(),
-                                                                    error_diffusion);
+                    writer = new png::Writer_alpha(camera.sensor().dimensions(), error_diffusion);
                 } else {
-                    writer = new image::encoding::png::Writer(camera.sensor().dimensions(),
-                                                              error_diffusion);
+                    writer = new png::Writer(camera.sensor().dimensions(), error_diffusion);
                 }
             }
 

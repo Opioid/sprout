@@ -2,6 +2,7 @@
 #define SU_CORE_TAKE_LOADER_HPP
 
 #include <iosfwd>
+#include <string_view>
 
 namespace resource {
 class Manager;
@@ -19,7 +20,8 @@ class Loader {
   public:
     using Scene = scene::Scene;
 
-    static void load(Take& take, std::istream& stream, Scene& scene, resource::Manager& manager);
+    static void load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
+                     resource::Manager& manager);
 };
 
 }  // namespace take
