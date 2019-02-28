@@ -9,43 +9,23 @@
 namespace math {
 
 static inline float2 sample_disk_concentric(float2 uv) {
-    float const sx = 2.f * uv[0] - 1.f;
-    float const sy = 2.f * uv[1] - 1.f;
+    float2 const s = 2.f * uv - 1.f;
 
-    if (0.f == sx && 0.f == sy) {
+    if (0.f == s[0] && 0.f == s[1]) {
         return float2(0.f);
     }
 
     float r;
     float theta;
 
-    if (sx >= -sy) {
-        if (sx > sy) {
-            // handle first region of disk
-            r = sx;
-            if (sy > 0.f) {
-                theta = sy / r;
-            } else {
-                theta = 8.f + sy / r;
-            }
-        } else {
-            // handle second region of disk
-            r     = sy;
-            theta = 2.f - sx / r;
-        }
-    } else {
-        if (sx <= sy) {
-            // handle third region of disk
-            r     = -sx;
-            theta = 4.f - sy / r;
-        } else {
-            // handle fourth region of disk
-            r     = -sy;
-            theta = 6.f + sx / r;
-        }
-    }
+    if (std::abs(s[0]) > std::abs(s[1])) {
+        r     = s[0];
+        theta = (Pi / 4.f) * (s[1] / s[0]);
 
-    theta *= Pi / 4.f;
+    } else {
+        r     = s[1];
+        theta = (Pi / 2.f) - (Pi / 4.f) * (s[0] / s[1]);
+    }
 
     auto const [sin_theta, cos_theta] = sincos(theta);
 
@@ -53,47 +33,9 @@ static inline float2 sample_disk_concentric(float2 uv) {
 }
 
 static inline float3 sample_oriented_disk_concentric(float2 uv, float3 const& x, float3 const& y) {
-    float const sx = 2.f * uv[0] - 1.f;
-    float const sy = 2.f * uv[1] - 1.f;
+    float2 const d = sample_disk_concentric(uv);
 
-    if (0.f == sx && 0.f == sy) {
-        return float3(0.f);
-    }
-
-    float r;
-    float theta;
-
-    if (sx >= -sy) {
-        if (sx > sy) {
-            // handle first region of disk
-            r = sx;
-            if (sy > 0.f) {
-                theta = sy / r;
-            } else {
-                theta = 8.f + sy / r;
-            }
-        } else {
-            // handle second region of disk
-            r     = sy;
-            theta = 2.f - sx / r;
-        }
-    } else {
-        if (sx <= sy) {
-            // handle third region of disk
-            r     = -sx;
-            theta = 4.f - sy / r;
-        } else {
-            // handle fourth region of disk
-            r     = -sy;
-            theta = 6.f + sx / r;
-        }
-    }
-
-    theta *= Pi / 4.f;
-
-    auto const [sin_theta, cos_theta] = sincos(theta);
-
-    return (cos_theta * r) * x + (sin_theta * r) * y;
+    return d[0] * x + d[1] * y;
 }
 
 static inline float2 sample_triangle_uniform(float2 uv) {
