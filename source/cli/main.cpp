@@ -38,7 +38,7 @@
 //#include "core/testing/testing_simd.hpp"
 //#include "core/testing/testing_size.hpp"
 //#include "core/testing/testing_spectrum.hpp"
-#include "core/sampler/sampler_test.hpp"
+//#include "core/sampler/sampler_test.hpp"
 
 //#include <iostream>
 
@@ -63,9 +63,9 @@ int main(int argc, char* argv[]) {
     //	testing::simd::basis();
     //	testing::spectrum();
     //	testing::cdf::test_1D();
-    sampler::testing::test();
+    //  sampler::testing::test();
 
-    return 1;
+    //  return 1;
 
     logging::init(logging::Type::Std_out);
 

@@ -364,7 +364,7 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     return true;
 }
 
-float Mesh::pdf(Ray const& ray, const shape::Intersection&      intersection,
+float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
                 Transformation const& /*transformation*/, float area, bool two_sided,
                 bool /*total_sphere*/) const noexcept {
     float c = -dot(intersection.geo_n, ray.direction);

@@ -85,7 +85,7 @@ float Data<Intersection_triangle, Shading_triangle>::area(uint32_t      index,
 template <typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, float2 r2, float3& p,
                                                            float2& tc) const {
-    float2 uv = math::sample_triangle_uniform(r2);
+    float2 const uv = sample_triangle_uniform(r2);
     intersection_triangles_[index].interpolate(uv, p);
     tc = shading_triangles_[index].interpolate_uv(uv);
 }

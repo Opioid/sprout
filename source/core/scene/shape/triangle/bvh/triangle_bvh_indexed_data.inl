@@ -241,7 +241,7 @@ template <typename SV>
 void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept {
     SOFT_ASSERT(index < num_triangles_);
 
-    float2 const uv = math::sample_triangle_uniform(r2);
+    float2 const uv = sample_triangle_uniform(r2);
 
     auto const tri = triangles_[index];
 
@@ -430,7 +430,7 @@ template <typename V>
 void Indexed_data_interleaved<V>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
     SOFT_ASSERT(index < num_triangles_);
 
-    float2 const uv = math::sample_triangle_uniform(r2);
+    float2 const uv = sample_triangle_uniform(r2);
 
     auto const& tri = triangles_[index];
 
@@ -700,7 +700,7 @@ template <typename IV, typename SV>
 void Hybrid_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
     SOFT_ASSERT(index < num_triangles_);
 
-    float2 const uv = math::sample_triangle_uniform(r2);
+    float2 const uv = sample_triangle_uniform(r2);
 
     uint32_t const vi = index * 3;
 
