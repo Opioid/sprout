@@ -413,7 +413,7 @@ float Mesh::uv_weight(float2 /*uv*/) const noexcept {
 
 float Mesh::area(uint32_t part, float3 const& scale) const noexcept {
     // HACK: This only really works for uniform scales!
-    return distributions_[part].distribution.integral() * scale[0] * scale[1];
+    return distributions_[part].distribution.integral() * (scale[0] * scale[1]);
 }
 
 float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
