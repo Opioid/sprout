@@ -37,9 +37,9 @@ float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     Ray occlusion_ray;
     occlusion_ray.origin = material_sample.offset_p(intersection.geo.p);
-    occlusion_ray.min_t = 0.f;
-    occlusion_ray.max_t = settings_.radius;
-    occlusion_ray.time  = ray.time;
+    occlusion_ray.min_t  = 0.f;
+    occlusion_ray.max_t  = settings_.radius;
+    occlusion_ray.time   = ray.time;
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         float2 const sample = sampler_.generate_sample_2D();

@@ -9,7 +9,7 @@ namespace rnd {
 
 class Generator {
   public:
-    Generator() noexcept = default;
+    Generator() noexcept;
 
     Generator(uint64_t state, uint64_t sequence) noexcept;
 

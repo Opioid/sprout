@@ -23,8 +23,8 @@ Worker::Worker() noexcept : node_stack_(128 + 16) {}
 void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scene,
                   Camera const& camera, uint32_t max_material_sample_size,
                   uint32_t max_material_sample_depth) noexcept {
-    id_       = id;
-    rng_      = rnd::Generator(0, id);
+    id_ = id;
+    rng_.start(0, id);
     settings_ = settings;
     scene_    = &scene;
     camera_   = &camera;

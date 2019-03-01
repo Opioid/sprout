@@ -142,7 +142,7 @@ class Scene {
   private:
     void add_named_entity(Entity* entity, std::string const& name) noexcept;
 
-    uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
+    uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept;
 
     uint64_t const tick_duration_ = Units_per_second / 60;
 

@@ -417,14 +417,14 @@ void Scene::add_named_entity(Entity* entity, std::string const& name) noexcept {
         return;
     }
 
-    named_entities_[name] = entity;
+    named_entities_.insert_or_assign(name, entity);
 }
 
-static inline bool matching(uint64_t a, uint64_t b) {
+static inline bool matching(uint64_t a, uint64_t b) noexcept {
     return 0 == (a > b ? a % b : (0 == a ? 0 : b % a));
 }
 
-uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const {
+uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept {
     uint32_t const a = std::max(static_cast<uint32_t>(frame_duration / tick_duration_), 1u);
     uint32_t const b = matching(frame_step, tick_duration_) ? 0 : 1;
     uint32_t const c = matching(frame_duration, tick_duration_) ? 0 : 1;

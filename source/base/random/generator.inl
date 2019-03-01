@@ -5,6 +5,8 @@
 
 namespace rnd {
 
+inline Generator::Generator() noexcept = default;
+
 inline Generator::Generator(uint64_t state, uint64_t sequence) noexcept {
     start(state, sequence);
 }

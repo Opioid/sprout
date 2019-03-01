@@ -37,8 +37,10 @@ class Image {
         int32_t num_elements;
     };
 
+  protected:
     Image(Description const& description) noexcept;
 
+  public:
     virtual ~Image() noexcept;
 
     Description const& description() const noexcept;
