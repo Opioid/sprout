@@ -10,7 +10,7 @@ template <typename T>
 struct Vector2 {
     T v[2];
 
-    Vector2() = default;
+    Vector2();
 
     explicit constexpr Vector2(T s);
 

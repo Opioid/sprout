@@ -22,7 +22,7 @@ class Image {
     };
 
     struct Description {
-        Description() noexcept;
+        Description(Type type) noexcept;
         Description(Type type, int2 dimensions, int32_t num_elements = 1) noexcept;
         Description(Type type, int3 const& dimensions, int32_t num_elements = 1) noexcept;
 
@@ -30,14 +30,13 @@ class Image {
 
         int32_t num_channels() const noexcept;
 
-        Type type = Type::Undefined;
+        Type type;
 
-        int3 dimensions = int3(0, 0, 0);
+        int3 dimensions;
 
-        int32_t num_elements = 0;
+        int32_t num_elements;
     };
 
-    Image() noexcept;
     Image(Description const& description) noexcept;
 
     virtual ~Image() noexcept;
@@ -56,7 +55,7 @@ class Image {
     virtual size_t num_bytes() const noexcept = 0;
 
   protected:
-    void resize(Description const& description) noexcept;
+    void resize(int3 const& dimensions, int32_t num_elements = 1) noexcept;
 
     Description description_;
 };

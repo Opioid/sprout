@@ -6,7 +6,7 @@
 
 namespace rendering::postprocessor {
 
-Pipeline::Pipeline() = default;
+Pipeline::Pipeline() : scratch_(image::Image::Description(image::Image::Type::Float4)) {}
 
 Pipeline::~Pipeline() {
     for (auto pp : postprocessors_) {
@@ -29,9 +29,7 @@ void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) {
         return;
     }
 
-    image::Image::Description const description(image::Image::Type::Float4,
-                                                camera.sensor_dimensions());
-    scratch_.resize(description);
+    scratch_.resize(camera.sensor_dimensions());
 
     for (auto pp : postprocessors_) {
         pp->init(camera, pool);

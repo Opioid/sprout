@@ -3,7 +3,7 @@
 
 namespace image {
 
-Image::Description::Description() noexcept = default;
+Image::Description::Description(Type type) noexcept : type(type), dimensions(0), num_elements(0) {}
 
 Image::Description::Description(Type type, int2 dimensions, int32_t num_elements) noexcept
     : type(type), dimensions(dimensions, 1), num_elements(num_elements) {}
@@ -34,8 +34,6 @@ int32_t Image::Description::num_channels() const noexcept {
             return 0;
     }
 }
-
-Image::Image() noexcept = default;
 
 Image::Image(Description const& description) noexcept : description_(description) {}
 
@@ -77,8 +75,9 @@ int3 Image::coordinates_3(int64_t index) const noexcept {
     return int3(index - (t + c1 * static_cast<int64_t>(description_.dimensions[0])), c1, c2);
 }
 
-void Image::resize(Description const& description) noexcept {
-    description_ = description;
+void Image::resize(int3 const& dimensions, int32_t num_elements) noexcept {
+    description_.dimensions   = dimensions;
+    description_.num_elements = num_elements;
 }
 
 }  // namespace image

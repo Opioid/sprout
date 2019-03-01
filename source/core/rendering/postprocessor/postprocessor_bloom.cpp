@@ -4,19 +4,18 @@
 #include "base/spectrum/rgb.hpp"
 #include "image/typed_image.hpp"
 
-namespace rendering {
-namespace postprocessor {
+namespace rendering::postprocessor {
 
 Bloom::Bloom(float angle, float alpha, float threshold, float intensity)
     : Postprocessor(2),
       angle_(angle),
       alpha_(alpha),
       threshold_(threshold),
-      intensity_(intensity) {}
+      intensity_(intensity),
+      scratch_(image::Image::Description(image::Image::Type::Float4)) {}
 
 void Bloom::init(scene::camera::Camera const& camera, thread::Pool& /*pool*/) {
-    image::Image::Description description(image::Image::Type::Float4, camera.sensor_dimensions());
-    scratch_.resize(description);
+    scratch_.resize(camera.sensor_dimensions());
 
     float solid_angle = camera.pixel_solid_angle();
 
@@ -106,5 +105,4 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
     }
 }
 
-}  // namespace postprocessor
-}  // namespace rendering
+}  // namespace rendering::postprocessor

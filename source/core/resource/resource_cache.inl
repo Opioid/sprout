@@ -36,7 +36,7 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
         return nullptr;
     }
 
-    resources_[key] = resource;
+    resources_.insert_or_assign(key, resource);
 
     if (logging::is_verbose()) {
         std::stringstream stream;
@@ -57,7 +57,7 @@ T* Typed_cache<T>::load(std::string const& name, void const* data, std::string_v
         return nullptr;
     }
 
-    resources_[key] = resource;
+    resources_.insert_or_assign(key, resource);
 
     return resource;
 }
@@ -78,7 +78,7 @@ void Typed_cache<T>::store(std::string const& name, memory::Variant_map const& o
                            T* resource) noexcept {
     auto const key = std::make_pair(name, options);
 
-    resources_[key] = resource;
+    resources_.insert_or_assign(key, resource);
 }
 
 template <typename T>

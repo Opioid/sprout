@@ -8,7 +8,8 @@
 namespace image::filter {
 
 template <typename T>
-Gaussian<T>::Gaussian(float radius, float alpha) noexcept {
+Gaussian<T>::Gaussian(float radius, float alpha) noexcept
+    : scratch_(image::Image::Description(image::Image::Type::Undefined)) {
     int32_t const width = 2 * static_cast<int32_t>(radius + 0.5f) + 1;
 
     kernel_.resize(width);
@@ -31,9 +32,9 @@ Gaussian<T>::Gaussian(float radius, float alpha) noexcept {
 
 template <typename T>
 void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) noexcept {
-    scratch_.resize(target.description());
-
     auto const d = target.description().dimensions;
+
+    scratch_.resize(d);
 
     // vertical
 
