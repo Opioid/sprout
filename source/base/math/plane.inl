@@ -22,12 +22,18 @@ static inline Plane create(Vector3f_a const& v0, Vector3f_a const& v1,
     return create(n, v0);
 }
 
-static inline float dot(Vector4f_a const& p, Vector3f_a const& v) noexcept {
+static inline float dot(Plane const& p, Vector3f_a const& v) noexcept {
     return (p[0] * v[0] + p[1] * v[1]) + (p[2] * v[2] + p[3]);
 }
 
-static inline bool behind(Vector4f_a const& p, Vector3f_a const& point) noexcept {
+static inline bool behind(Plane const& p, Vector3f_a const& point) noexcept {
     return dot(p, point) < 0.f;
+}
+
+static inline Plane normalize(Plane const& p) noexcept {
+    float const t = 1.f / length(p.xyz());
+
+    return t * p;
 }
 
 }  // namespace math::plane

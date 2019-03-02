@@ -7,6 +7,8 @@ target_sources(base
     "${CMAKE_CURRENT_LIST_DIR}/aabb.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/aabb.inl"
     "${CMAKE_CURRENT_LIST_DIR}/exp.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/frustum.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/frustum.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/interpolated_function.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/interpolated_function.inl"
     "${CMAKE_CURRENT_LIST_DIR}/mapping.hpp"

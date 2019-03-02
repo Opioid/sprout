@@ -1,0 +1,73 @@
+#include "frustum.hpp"
+#include "plane.inl"
+
+namespace math {
+
+Frustum::Frustum() noexcept = default;
+
+Frustum::Frustum(float4x4 const& combo_matrix) noexcept {
+    set_from_matrix(combo_matrix);
+}
+
+void Frustum::set_from_matrix(float4x4 const& combo_matrix) noexcept {
+    // Left clipping plane
+    planes_[0][0] = combo_matrix.r[0][3] + combo_matrix.r[0][0];
+    planes_[0][1] = combo_matrix.r[1][3] + combo_matrix.r[1][0];
+    planes_[0][2] = combo_matrix.r[2][3] + combo_matrix.r[2][0];
+    planes_[0][3] = combo_matrix.r[3][3] + combo_matrix.r[3][0];
+    planes_[0]    = plane::normalize(planes_[0]);
+
+    // Right clipping plane
+    planes_[1][0] = combo_matrix.r[0][3] - combo_matrix.r[0][0];
+    planes_[1][1] = combo_matrix.r[1][3] - combo_matrix.r[1][0];
+    planes_[1][2] = combo_matrix.r[2][3] - combo_matrix.r[2][0];
+    planes_[1][3] = combo_matrix.r[3][3] - combo_matrix.r[3][0];
+    planes_[1]    = plane::normalize(planes_[1]);
+
+    // Top clipping plane
+    planes_[2][0] = combo_matrix.r[0][3] - combo_matrix.r[0][1];
+    planes_[2][1] = combo_matrix.r[1][3] - combo_matrix.r[1][1];
+    planes_[2][2] = combo_matrix.r[2][3] - combo_matrix.r[2][1];
+    planes_[2][3] = combo_matrix.r[3][3] - combo_matrix.r[3][1];
+    planes_[2]    = plane::normalize(planes_[2]);
+
+    // Bottom clipping plane
+    planes_[3][0] = combo_matrix.r[0][3] + combo_matrix.r[0][1];
+    planes_[3][1] = combo_matrix.r[1][3] + combo_matrix.r[1][1];
+    planes_[3][2] = combo_matrix.r[2][3] + combo_matrix.r[2][1];
+    planes_[3][3] = combo_matrix.r[3][3] + combo_matrix.r[3][1];
+    planes_[3]    = plane::normalize(planes_[3]);
+
+    // Near clipping plane
+#ifdef CLIP_NEAR_Z_MINUS_ONE
+    planes_[4].a = combo_matrix.r[0][3] + combo_matrix.r[0][2];
+    planes_[4].b = combo_matrix.r[1][3] + combo_matrix.r[12;
+    planes_[4].c = combo_matrix.r[2][3] + combo_matrix.r[22;
+    planes_[4].d = combo_matrix.r[3][3] + combo_matrix.r[32;
+#else
+    planes_[4][0] = combo_matrix.r[0][2];
+    planes_[4][1] = combo_matrix.r[1][2];
+    planes_[4][2] = combo_matrix.r[2][2];
+    planes_[4][3] = combo_matrix.r[3][2];
+#endif
+    planes_[4] = plane::normalize(planes_[4]);
+
+    // Far clipping plane
+    planes_[5][0] = combo_matrix.r[0][3] - combo_matrix.r[0][2];
+    planes_[5][1] = combo_matrix.r[1][3] - combo_matrix.r[1][2];
+    planes_[5][2] = combo_matrix.r[2][3] - combo_matrix.r[2][2];
+    planes_[5][3] = combo_matrix.r[3][3] - combo_matrix.r[3][2];
+    planes_[5] = plane::normalize(planes_[5]);
+}
+
+bool Frustum::intersect(float3 const& p, float radius) const noexcept {
+    for (uint32_t i = 0; i < 4; ++i) {
+        if (plane::dot(planes_[i], p) < -radius) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+}  // namespace math

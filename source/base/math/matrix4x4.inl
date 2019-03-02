@@ -664,6 +664,65 @@ static inline void set_rotation_y(Matrix4x4f_a& m, float a) noexcept {
     m.r[3][3] = 1.f;
 }
 
+static inline void set_view(Matrix4x4f_a& m, Matrix3x3f_a const& basis,
+                            Vector3f_a const& eye) noexcept {
+    m.r[0][0] = basis.r[0][0];
+    m.r[0][1] = basis.r[1][0];
+    m.r[0][2] = basis.r[2][0];
+    m.r[0][3] = 0.f;
+
+    m.r[1][0] = basis.r[0][1];
+    m.r[1][1] = basis.r[1][1];
+    m.r[1][2] = basis.r[2][1];
+    m.r[1][3] = 0.f;
+
+    m.r[2][0] = basis.r[0][2];
+    m.r[2][1] = basis.r[1][2];
+    m.r[2][2] = basis.r[2][2];
+    m.r[2][3] = 0.f;
+
+    m.r[3][0] = -dot(basis.r[0], eye);
+    m.r[3][1] = -dot(basis.r[1], eye);
+    m.r[3][2] = -dot(basis.r[2], eye);
+    m.r[3][3] = 1.f;
+}
+
+static inline void set_perspective(Matrix4x4f_a& m, float fov, float ratio) noexcept {
+    /*
+    xScale     0          0               0
+    0        yScale       0               0
+    0          0       zf/(zf-zn)         1
+    0          0       -zn*zf/(zf-zn)     0
+    where:
+    yScale = cot(fovY/2)
+    xScale = aspect ratio * yScale
+    */
+
+    float const t = fov * 0.5f;
+    float const y = std::cos(t) / std::sin(t);
+    float const x = y / ratio;
+
+    m.r[0][0] = x;
+    m.r[0][1] = 0.f;
+    m.r[0][2] = 0.f;
+    m.r[0][3] = 0.f;
+
+    m.r[1][0] = 0.f;
+    m.r[1][1] = y;
+    m.r[1][2] = 0.f;
+    m.r[1][3] = 0.f;
+
+    m.r[2][0] = 0.f;
+    m.r[2][1] = 0.f;
+    m.r[2][2] = 1.f;
+    m.r[2][3] = 1.f;
+
+    m.r[3][0] = 0.f;
+    m.r[3][1] = 0.f;
+    m.r[3][2] = 0.f;
+    m.r[3][3] = 0.f;
+}
+
 }  // namespace math
 
 #endif
