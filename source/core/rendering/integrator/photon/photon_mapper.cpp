@@ -134,27 +134,25 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
                         ((caustic_ray &&
                           worker.interface_stack().top_is_vacuum_or_not_scattering()) ||
                          settings_.full_light_path)) {
-                        if (infinite_world && !unnatural_limit.intersect(intersection.geo.p)) {
-                            break;
-                        }
+                        if (!infinite_world || unnatural_limit.intersect(intersection.geo.p)) {
+                            auto& photon = photons[num_photons];
 
-                        auto& photon = photons[num_photons];
+                            photon.p        = intersection.geo.p;
+                            photon.wi       = wo;
+                            photon.alpha[0] = radiance[0];
+                            photon.alpha[1] = radiance[1];
+                            photon.alpha[2] = radiance[2];
+                            photon.properties.set(Photon::Property::First_hit, 0 == num_photons);
+                            photon.properties.set(Photon::Property::Volumetric,
+                                                  intersection.subsurface);
 
-                        photon.p        = intersection.geo.p;
-                        photon.wi       = wo;
-                        photon.alpha[0] = radiance[0];
-                        photon.alpha[1] = radiance[1];
-                        photon.alpha[2] = radiance[2];
-                        photon.properties.set(Photon::Property::First_hit, 0 == num_photons);
-                        photon.properties.set(Photon::Property::Volumetric,
-                                              intersection.subsurface);
+                            iteration = i + 1;
 
-                        iteration = i + 1;
+                            ++num_photons;
 
-                        ++num_photons;
-
-                        if (max_photons == num_photons || caustics_only) {
-                            return iteration;
+                            if (max_photons == num_photons || caustics_only) {
+                                return iteration;
+                            }
                         }
                     }
 
