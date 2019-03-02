@@ -401,7 +401,7 @@ bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tran
     return false;
 }
 
-float Mesh::pdf_uv(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
+float Mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
                    Transformation const& /*transformation*/, float /*area*/,
                    bool /*two_sided*/) const noexcept {
     return 0.f;

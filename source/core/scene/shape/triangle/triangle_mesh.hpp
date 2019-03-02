@@ -46,7 +46,7 @@ class Mesh : public Shape {
                 Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                 Node_stack& node_stack, Sample_from& sample) const noexcept override final;
 
-    float pdf(Ray const& ray, const shape::Intersection& intersection,
+    float pdf(Ray const& ray, shape::Intersection const& intersection,
               Transformation const& transformation, float area, bool two_sided,
               bool total_sphere) const noexcept override final;
 
@@ -65,7 +65,7 @@ class Mesh : public Shape {
                 bool two_sided, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                 Sample_from& sample) const noexcept override final;
 
-    float pdf_uv(Ray const& ray, const shape::Intersection& intersection,
+    float pdf_uv(Ray const& ray, shape::Intersection const& intersection,
                  Transformation const& transformation, float area, bool two_sided) const
         noexcept override final;
 

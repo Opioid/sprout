@@ -273,7 +273,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
     return true;
 }
 
-float Disk::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
+float Disk::pdf(Ray const&            ray, Intersection const& /*intersection*/,
                 Transformation const& transformation, float area, bool two_sided,
                 bool /*total_sphere*/) const noexcept {
     float3 const normal = transformation.rotation.r[2];

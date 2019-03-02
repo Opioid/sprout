@@ -150,7 +150,7 @@ bool Canopy::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
     return false;
 }
 
-float Canopy::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
+float Canopy::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const noexcept {
     return 1.f / (2.f * Pi);

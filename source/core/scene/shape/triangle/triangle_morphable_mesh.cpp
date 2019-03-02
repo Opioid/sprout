@@ -183,7 +183,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*transform
     return false;
 }
 
-float Morphable_mesh::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
+float Morphable_mesh::pdf(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
                           Transformation const& /*transformation*/, float /*area*/,
                           bool /*two_sided*/, bool /*total_sphere*/) const noexcept {
     return 0.f;
@@ -215,7 +215,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
     return false;
 }
 
-float Morphable_mesh::pdf_uv(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
+float Morphable_mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
                              Transformation const& /*transformation*/, float /*area*/,
                              bool /*two_sided*/) const noexcept {
     return 0.f;

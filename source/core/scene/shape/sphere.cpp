@@ -366,7 +366,7 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
     return true;
 }
 
-float Sphere::pdf(Ray const&            ray, const shape::Intersection& /*intersection*/,
+float Sphere::pdf(Ray const&            ray, Intersection const& /*intersection*/,
                   Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const noexcept {
     float3 const axis = transformation.position - ray.origin;

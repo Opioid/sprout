@@ -159,7 +159,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*transfor
     return false;
 }
 
-float Infinite_sphere::pdf(Ray const& /*ray*/, const shape::Intersection& /*intersection*/,
+float Infinite_sphere::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
                            Transformation const& /*transformation*/, float /*area*/,
                            bool /*two_sided*/, bool total_sphere) const noexcept {
     if (total_sphere) {
