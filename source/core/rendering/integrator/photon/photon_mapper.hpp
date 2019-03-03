@@ -47,19 +47,24 @@ class Mapper : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    uint32_t bake(Map& map, int32_t begin, int32_t end, uint32_t frame, Worker& worker) noexcept;
+    uint32_t bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t iteration,
+                  Worker& worker) noexcept;
+
+    void export_importances() const noexcept;
 
     size_t num_bytes() const noexcept override final;
 
   private:
     uint32_t trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
                           bool caustics_only, Worker& worker, uint32_t max_photons, Photon* photons,
-                          uint32_t& num_photons) noexcept;
+                          uint32_t& num_photons, uint32_t& light_id,
+                          Sample_from& light_sample) noexcept;
 
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                            Light const** light, Sample_from& light_sample) noexcept;
+                            Light const*& light, uint32_t& light_id,
+                            Sample_from& light_sample) noexcept;
 
-    const Settings settings_;
+    Settings const settings_;
 
     sampler::Random sampler_;
 

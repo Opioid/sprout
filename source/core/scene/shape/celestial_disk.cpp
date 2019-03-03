@@ -207,6 +207,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
     sample.dir = dir;
     sample.p   = pli;
     //       sample.pdf     = 1.f / ((1.f * Pi) * (area * bounds_radius_2));
+    sample.xy  = r0;
     sample.pdf = 1.f / (area * ls_rect[0] * ls_rect[1]);
 
     return true;

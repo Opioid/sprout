@@ -105,9 +105,10 @@ bool Worker::transmitted_visibility(Ray& ray, Intersection const& intersection, 
     return false;
 }
 
-uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame) noexcept {
+uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame,
+                              uint32_t iteration) noexcept {
     if (photon_mapper_) {
-        return photon_mapper_->bake(*photon_map_, begin, end, frame, *this);
+        return photon_mapper_->bake(*photon_map_, begin, end, frame, iteration, *this);
     }
 
     return 0;

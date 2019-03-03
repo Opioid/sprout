@@ -188,7 +188,7 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
     id = light::Light::strip_mask(id);
 
     float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
-    return {*lights_[id], pdf};
+    return {*lights_[id], pdf, id};
 }
 
 Scene::Light Scene::random_light(float random) const noexcept {
@@ -198,7 +198,7 @@ Scene::Light Scene::random_light(float random) const noexcept {
 
     SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
 
-    return {*lights_[l.offset], l.pdf};
+    return {*lights_[l.offset], l.pdf, l.offset};
 }
 
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {

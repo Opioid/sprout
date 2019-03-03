@@ -99,14 +99,14 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
     photon_map_.start();
 
-    for (;;) {
-        thread_pool_.run_range([ this, frame ](uint32_t id, int32_t begin, int32_t end) noexcept {
-            auto& worker = workers_[id];
+    for (uint32_t i = 0;; ++i) {
+        thread_pool_.run_range(
+            [ this, frame, i ](uint32_t id, int32_t begin, int32_t end) noexcept {
+                auto& worker = workers_[id];
 
-            photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame);
-        },
-                               static_cast<int32_t>(begin),
-                               static_cast<int32_t>(photon_settings_.num_photons));
+                photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame, i);
+            },
+            static_cast<int32_t>(begin), static_cast<int32_t>(photon_settings_.num_photons));
 
         for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
             num_paths += photon_infos_[i].num_paths;
@@ -130,6 +130,8 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     }
 
     photon_map_.compile_finalize();
+
+    photon_map_.export_importances();
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");

@@ -10,7 +10,7 @@ static float unorm_float[256];
 
 void init() noexcept {
     for (uint32_t i = 0; i < 256; ++i) {
-        srgb_float[i] = spectrum::sRGB_to_linear(static_cast<float>(i) * (1.f / 255.f));
+        srgb_float[i] = spectrum::gamma_to_linear_sRGB(static_cast<float>(i) * (1.f / 255.f));
     }
 
     for (uint32_t i = 0; i < 256; ++i) {

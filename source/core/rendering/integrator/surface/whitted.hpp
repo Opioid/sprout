@@ -36,7 +36,7 @@ class alignas(64) Whitted final : public Integrator {
     float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
                                  Material_sample const& material_sample, Worker& worker) noexcept;
 
-    const Settings settings_;
+    Settings const settings_;
 
     sampler::Random sampler_;
 };

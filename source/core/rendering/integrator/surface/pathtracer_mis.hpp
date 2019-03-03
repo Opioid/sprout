@@ -65,7 +65,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
     sampler::Sampler& light_sampler(uint32_t bounce) noexcept;
 
-    const Settings settings_;
+    Settings const settings_;
 
     sampler::Random sampler_;
 

@@ -1,7 +1,10 @@
 #include "png_writer.hpp"
 #include <fstream>
 #include <vector>
+#include "base/encoding/encoding.inl"
 #include "base/math/vector4.inl"
+#include "base/spectrum/heatmap.hpp"
+#include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"
 #include "miniz/miniz.hpp"
@@ -150,6 +153,44 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
         bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
                          static_cast<uint8_t>(scale * data[i][1]),
                          static_cast<uint8_t>(scale * data[i][2]));
+    }
+
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
+                                                               dimensions[1], 3, &buffer_len);
+
+    if (!png_buffer) {
+        return false;
+    }
+
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
+
+    mz_free(png_buffer);
+
+    return true;
+}
+
+bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions) {
+    std::ofstream stream(name.data(), std::ios::binary);
+    if (!stream) {
+        return false;
+    }
+
+    uint32_t const     area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    std::vector<byte3> bytes(area);
+
+    float max_value = 0.f;
+    for (uint32_t i = 0; i < area; ++i) {
+        max_value = std::max(data[i], max_value);
+    }
+
+    float im = 1.f / max_value;
+    for (uint32_t i = 0; i < area; ++i) {
+        float const n = data[i] * im;
+
+        float3 const hm = spectrum::heatmap(n);
+
+        bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
     }
 
     size_t buffer_len = 0;

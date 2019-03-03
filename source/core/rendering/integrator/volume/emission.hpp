@@ -27,7 +27,7 @@ class alignas(64) Emission final : public Integrator {
 
     virtual size_t num_bytes() const noexcept override final;
 
-    const Settings settings_;
+    Settings const settings_;
 };
 
 class Emission_factory final : public Factory {

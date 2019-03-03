@@ -30,7 +30,7 @@ class alignas(64) AO final : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    const Settings settings_;
+    Settings const settings_;
 
     sampler::Golden_ratio sampler_;
 };

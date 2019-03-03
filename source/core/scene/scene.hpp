@@ -103,7 +103,9 @@ class Scene {
 
     struct Light {
         light::Light const& ref;
-        float               pdf;
+
+        float    pdf;
+        uint32_t id;
     };
     Light light(uint32_t id, bool calculate_pdf = true) const noexcept;
 

@@ -1,6 +1,9 @@
 #include "photon_mapper.hpp"
 #include "base/math/aabb.inl"
+#include "base/memory/align.hpp"
 #include "photon_map.hpp"
+
+#include "image/encoding/png/png_writer.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
@@ -32,7 +35,7 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) noexcept 
 
 void Mapper::start_pixel() noexcept {}
 
-uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
+uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t /*iteration*/,
                       Worker& worker) noexcept {
     AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
                                                    : worker.scene().caustic_aabb();
@@ -48,8 +51,11 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
                                               static_cast<uint32_t>(end - i));
 
         uint32_t       num_photons;
+        uint32_t       light_id;
+        Sample_from    light_sample;
         uint32_t const num_iterations = trace_photon(frame, bounds, infinite_world, caustics_only,
-                                                     worker, max_photons, photons_, num_photons);
+                                                     worker, max_photons, photons_, num_photons,
+                                                     light_id, light_sample);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -59,6 +65,10 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame,
             i += num_photons - 1;
 
             num_paths += num_iterations;
+
+            if (num_photons > 1) {
+                map.increment_importance(light_id, light_sample.xy);
+            }
         } else {
             return 0;
         }
@@ -73,7 +83,8 @@ size_t Mapper::num_bytes() const noexcept {
 
 uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
                               bool caustics_only, Worker& worker, uint32_t max_photons,
-                              Photon* photons, uint32_t& num_photons) noexcept {
+                              Photon* photons, uint32_t& num_photons, uint32_t& light_id,
+                              Sample_from& light_sample) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -99,8 +110,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
         Ray          ray;
         Light const* light;
-        Sample_from  light_sample;
-        if (!generate_light_ray(frame, bounds, worker, ray, &light, light_sample)) {
+        if (!generate_light_ray(frame, bounds, worker, ray, light, light_id, light_sample)) {
             continue;
         }
 
@@ -218,7 +228,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 }
 
 bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                                Light const** light_out, Sample_from& light_sample) noexcept {
+                                Light const*& light_out, uint32_t& light_id,
+                                Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
@@ -237,7 +248,8 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    *light_out = &light.ref;
+    light_out = &light.ref;
+    light_id  = light.id;
 
     light_sample.pdf *= light.pdf;
 

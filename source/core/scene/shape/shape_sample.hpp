@@ -17,6 +17,7 @@ struct Sample_from {
     float3 p;
     float3 dir;
     float2 uv;
+    float2 xy;
     float  pdf;
 };
 

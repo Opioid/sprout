@@ -35,7 +35,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
     if (num_photons) {
         uint32_t const num_workers = thread_pool.num_threads();
 
-        photon_map_.init(num_workers);
+        photon_map_.init(scene, num_workers);
 
         uint32_t range = num_photons / num_workers;
         if (num_photons % num_workers) {

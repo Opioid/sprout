@@ -217,6 +217,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
     sample.dir = ws;
     sample.p   = p;
     sample.uv  = uv;
+    sample.xy  = r0;
     sample.pdf = 1.f / ((2.f * Pi) * (1.f * Pi) * bounds_radius_2);
 
     return true;

@@ -37,7 +37,7 @@ class alignas(64) Lighttracer final : public Integrator {
 
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 
-    const Settings settings_;
+    Settings const settings_;
 
     sampler::Random sampler_;
 
