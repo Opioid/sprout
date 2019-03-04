@@ -316,6 +316,7 @@ inline AABB AABB::transform(float4x4 const& m) const noexcept {
 }
 
 inline AABB AABB::transform_transposed(float3x3 const& m) const noexcept {
+    /*
     float3 const mx(m.r[0][0], m.r[1][0], m.r[2][0]);
     float3 const xa = bounds[0][0] * mx;
     float3 const xb = bounds[1][0] * mx;
@@ -330,6 +331,30 @@ inline AABB AABB::transform_transposed(float3x3 const& m) const noexcept {
 
     return AABB(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb),
                 math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb));
+    */
+
+
+
+    float3 const mx(m.r[0][0], m.r[1][0], m.r[2][0]);
+    float3 const xa = bounds[0][0] * mx;
+    float3 const xb = bounds[1][0] * mx;
+
+    float3 const my(m.r[0][1], m.r[1][1], m.r[2][1]);
+    float3 const ya = bounds[0][1] * my;
+    float3 const yb = bounds[1][1] * my;
+
+    float3 const mz(m.r[0][2], m.r[1][2], m.r[2][2]);
+    float3 const za = bounds[0][2] * mz;
+    float3 const zb = bounds[1][2] * mz;
+
+    float3 const min = math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb);
+    float3 const max = math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb);
+
+    float3 const halfsize = 0.5f * (max - min);
+
+    float3 const p = position();
+
+    return AABB(p - halfsize, p + halfsize);
 }
 
 inline AABB AABB::merge(AABB const& other) const noexcept {

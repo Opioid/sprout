@@ -76,6 +76,7 @@ class Scene {
     AABB const& aabb() const noexcept;
 
     AABB caustic_aabb() const noexcept;
+    AABB caustic_aabb(float3x3 const& rotation) const noexcept;
 
     bool is_infinite() const noexcept;
 

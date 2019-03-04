@@ -236,7 +236,17 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
 
     uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
 
-    if (!light.ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
+    Transformation temp;
+    Transformation transformation = light.ref.transformation_at(time, temp);
+
+    AABB const boundly = worker.scene().caustic_aabb(transformation.rotation);
+
+    AABB comp = bounds.transform_transposed(transformation.rotation);
+
+    float3 const a = bounds.position();
+    float3 const b = boundly.position();
+
+    if (!light.ref.sample(time, sampler_, 0, boundly, worker, light_sample)) {
         return false;
     }
 

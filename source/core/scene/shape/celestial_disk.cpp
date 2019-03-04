@@ -184,29 +184,27 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    float const bounds_radius_2 = squared_length(bounds.halfsize());
+    AABB const ls_bounds = bounds;//.transform_transposed(transformation.rotation);
 
-    float const bounds_radius = std::sqrt(bounds_radius_2);
+    float3 const a = bounds.position();
+    float3 const b = ls_bounds.position();
 
-    AABB const ls_bounds = bounds.transform_transposed(transformation.rotation);
 
-    float2 const ls_rect = ls_bounds.max().xy() - ls_bounds.min().xy();
+    float3 const ls_extent = ls_bounds.max() - ls_bounds.min();
+
+    float2 const ls_rect = float2(ls_extent[0], ls_extent[1]);
 
     float3 const photon_rect = transform_vector(transformation.rotation,
                                                 float3((r0 - 0.5f) * ls_rect, 0.f));
 
-    float3 const pli = bounds.position() - bounds_radius * transformation.rotation.r[2] +
-                       photon_rect;
+    float const bounds_radius = 0.5f * ls_extent[2];
 
-    float3 const photon_disk = sample_oriented_disk_concentric(r0, transformation.rotation.r[0],
-                                                               transformation.rotation.r[1]);
+    //   float3 const offset = bounds_radius * dir;
 
-    float3 const p = bounds.position() -
-                     bounds_radius * (transformation.rotation.r[2] + photon_disk);
+    float3 const p = ls_bounds.position() - bounds_radius * transformation.rotation.r[2] + photon_rect;
 
     sample.dir = dir;
-    sample.p   = pli;
-    //       sample.pdf     = 1.f / ((1.f * Pi) * (area * bounds_radius_2));
+    sample.p   = p;
     sample.xy  = r0;
     sample.pdf = 1.f / (area * ls_rect[0] * ls_rect[1]);
 

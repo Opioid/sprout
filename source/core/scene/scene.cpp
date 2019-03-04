@@ -107,6 +107,18 @@ AABB Scene::caustic_aabb() const noexcept {
     return aabb;
 }
 
+AABB Scene::caustic_aabb(float3x3 const& rotation) const noexcept {
+    AABB aabb = AABB::empty();
+
+    for (auto const p : finite_props_) {
+        if (p->has_caustic_material()) {
+            aabb.merge_assign(p->aabb().transform_transposed(rotation));
+        }
+    }
+
+    return aabb;
+}
+
 bool Scene::is_infinite() const noexcept {
     return !infinite_props_.empty() || !infinite_volumes_.empty();
 }
