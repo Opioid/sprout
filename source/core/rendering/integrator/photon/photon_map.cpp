@@ -1,4 +1,5 @@
 #include "photon_map.hpp"
+#include <string>
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
@@ -6,7 +7,6 @@
 #include "photon_importance.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_worker.hpp"
-#include <string>
 
 #include <iostream>
 #include "base/math/print.hpp"

@@ -99,12 +99,12 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
     photon_map_.start();
 
-    for (uint32_t i = 0;; ++i) {
+    for (uint32_t iteration = 0;; ++iteration) {
         thread_pool_.run_range(
-            [ this, frame, i ](uint32_t id, int32_t begin, int32_t end) noexcept {
+            [ this, frame, iteration ](uint32_t id, int32_t begin, int32_t end) noexcept {
                 auto& worker = workers_[id];
 
-                photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame, i);
+                photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame, iteration);
             },
             static_cast<int32_t>(begin), static_cast<int32_t>(photon_settings_.num_photons));
 
