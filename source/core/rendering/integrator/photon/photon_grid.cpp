@@ -274,8 +274,9 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
         comp_num_photons -= num_reduced[i];
     }
 
-    std::partition(photons_, photons_ + num_photons_,
-                   [](Photon const& p) noexcept { return p.alpha[0] >= 0.f; });
+    std::partition(photons_, photons_ + num_photons_, [](Photon const& p) noexcept {
+        return p.alpha[0] >= 0.f;
+    });
 
     if (photons != photons_) {
         Photon* old_photons = photons_;
@@ -541,13 +542,18 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
         }
 
         if (local_reduced > 0) {
-            a.p = position / total_weight;
+            if (total_weight < 1.e-10f) {
+                a.alpha[0] = -1.f;
+                ++local_reduced;
+            } else {
+                a.p = position / total_weight;
 
-            a.wi = wi;
+                a.wi = wi;
 
-            a.alpha[0] = a_alpha[0];
-            a.alpha[1] = a_alpha[1];
-            a.alpha[2] = a_alpha[2];
+                a.alpha[0] = a_alpha[0];
+                a.alpha[1] = a_alpha[1];
+                a.alpha[2] = a_alpha[2];
+            }
         }
 
         num_reduced += local_reduced;
