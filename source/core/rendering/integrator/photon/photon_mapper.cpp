@@ -46,7 +46,7 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
 
     uint32_t num_paths = 0;
 
-    for (int32_t i = begin; i < end; ++i) {
+    for (int32_t i = begin; i < end;) {
         uint32_t const max_photons = std::min(settings_.max_bounces,
                                               static_cast<uint32_t>(end - i));
 
@@ -62,13 +62,11 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
                 map.insert(photons_[j], static_cast<uint32_t>(i) + j);
             }
 
-            i += num_photons - 1;
+            i += num_photons;
 
             num_paths += num_iterations;
 
-            if (num_photons > 1) {
-                map.increment_importance(light_id, light_sample.xy);
-            }
+            map.increment_importance(light_id, light_sample.xy);
         } else {
             return 0;
         }
