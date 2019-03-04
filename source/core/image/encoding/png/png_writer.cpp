@@ -184,7 +184,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         max_value = std::max(data[i], max_value);
     }
 
-    float im = 1.f / max_value;
+    float const im = max_value > 0.f ? 1.f / max_value : 1.f;
     for (uint32_t i = 0; i < area; ++i) {
         float const n = data[i] * im;
 

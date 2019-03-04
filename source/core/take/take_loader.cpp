@@ -615,8 +615,8 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
     settings.search_radius        = json::read_float(value, "search_radius", 0.002f);
     settings.merge_radius         = json::read_float(value, "merge_radius", 0.001f);
     settings.coarse_search_radius = json::read_float(value, "coarse_search_radius", 0.02f);
-    settings.indirect_photons     = json::read_bool(value, "indirect_photons", false);
-    settings.separate_indirect    = json::read_bool(value, "separate_indirect", true);
+    settings.indirect_photons     = json::read_bool(value, "indirect_photons", true);
+    settings.separate_indirect    = json::read_bool(value, "separate_indirect", false);
     settings.full_light_path      = json::read_bool(value, "full_light_path", false);
 }
 

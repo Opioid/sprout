@@ -6,6 +6,7 @@
 #include "photon_importance.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_worker.hpp"
+#include <string>
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -149,7 +150,7 @@ void Map::compile_finalize() noexcept {
 
 void Map::export_importances() const noexcept {
     for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-        importances_[i].export_heatmap("photon_importance" + std::to_string(i));
+        importances_[i].export_heatmap("photon_importance_" + std::to_string(i) + ".png");
     }
 }
 
