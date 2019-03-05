@@ -67,7 +67,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
     float3 throughput(1.f);
     float3 result(0.f);
 
-    for (uint32_t i = ray.depth;; ++i) {
+    for (;;) {
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
