@@ -184,11 +184,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
 
-    AABB const ls_bounds = bounds;//.transform_transposed(transformation.rotation);
-
-    float3 const a = bounds.position();
-    float3 const b = ls_bounds.position();
-
+    AABB const ls_bounds = bounds.transform_transposed(transformation.rotation);
 
     float3 const ls_extent = ls_bounds.max() - ls_bounds.min();
 
@@ -199,9 +195,9 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float const bounds_radius = 0.5f * ls_extent[2];
 
-    //   float3 const offset = bounds_radius * dir;
+    float3 const offset = bounds_radius * dir;
 
-    float3 const p = ls_bounds.position() - bounds_radius * transformation.rotation.r[2] + photon_rect;
+    float3 const p = ls_bounds.position() - offset + photon_rect;
 
     sample.dir = dir;
     sample.p   = p;
