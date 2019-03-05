@@ -10,11 +10,11 @@ static uint32_t constexpr Dimensions = 256;
 
 Importance::Importance() noexcept
     : dimensions_(Dimensions),
-      importance_(memory::allocate_aligned<float>(Dimensions * Dimensions)),
+      importance_(memory::allocate_aligned<uint32_t>(Dimensions * Dimensions)),
       dimensions_back_(Dimensions - 1),
       dimensions_float_(float2(Dimensions)) {
     for (int32_t i = 0, len = dimensions_[i] * dimensions_[1]; i < len; ++i) {
-        importance_[i] = 0.f;
+        importance_[i] = 0;
     }
 }
 
@@ -30,7 +30,7 @@ void Importance::increment(float2 uv) noexcept {
 
     int32_t const id = y * dimensions_[0] + x;
 
-    atomic::add_assign(importance_[id], 1.f);
+    atomic::add_assign(importance_[id], 1);
 }
 
 void Importance::export_heatmap(std::string_view name) const noexcept {

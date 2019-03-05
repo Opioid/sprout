@@ -1,9 +1,8 @@
 #include "photon_mapper.hpp"
 #include "base/math/aabb.inl"
 #include "base/memory/align.hpp"
-#include "photon_map.hpp"
-
 #include "image/encoding/png/png_writer.hpp"
+#include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
@@ -46,7 +45,7 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
 
     uint32_t num_paths = 0;
 
-    for (int32_t i = begin; i < end; ++i) {
+    for (int32_t i = begin; i < end;) {
         uint32_t const max_photons = std::min(settings_.max_bounces,
                                               static_cast<uint32_t>(end - i));
 
@@ -62,13 +61,11 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
                 map.insert(photons_[j], static_cast<uint32_t>(i) + j);
             }
 
-            i += num_photons - 1;
+            i += num_photons;
 
             num_paths += num_iterations;
 
-            if (num_photons > 1) {
-                map.increment_importance(light_id, light_sample.xy);
-            }
+            map.increment_importance(light_id, light_sample.xy);
         } else {
             return 0;
         }
@@ -236,17 +233,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
 
     uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
 
-    Transformation temp;
-    Transformation transformation = light.ref.transformation_at(time, temp);
-
-    AABB const boundly = worker.scene().caustic_aabb(transformation.rotation);
-
-    AABB comp = bounds.transform_transposed(transformation.rotation);
-
-    float3 const a = bounds.position();
-    float3 const b = boundly.position();
-
-    if (!light.ref.sample(time, sampler_, 0, boundly, worker, light_sample)) {
+    if (!light.ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
         return false;
     }
 

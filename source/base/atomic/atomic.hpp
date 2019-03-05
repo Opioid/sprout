@@ -12,7 +12,30 @@
 
 namespace atomic {
 
-static inline void add_assign(volatile float& a, float b) noexcept {
+static inline void add_assign(uint32_t volatile& a, uint32_t b) noexcept {
+    uint32_t old_value;
+    uint32_t new_value;
+
+    uint32_t volatile* target = &a;
+
+#ifdef _WIN32
+
+    do {
+        old_value = a;
+        new_value = old_value + b;
+    } while (InterlockedCompareExchange(target, new_value, old_value) != old_value);
+
+#else
+
+    do {
+        old_value = a;
+        new_value = old_value + b;
+    } while (__sync_val_compare_and_swap(target, old_value, new_value) != old_value);
+
+#endif
+}
+
+static inline void add_assign(float volatile& a, float b) noexcept {
     union bits {
         float    f;
         uint32_t i;
@@ -21,7 +44,7 @@ static inline void add_assign(volatile float& a, float b) noexcept {
     bits old_value;
     bits new_value;
 
-    volatile uint32_t* target = reinterpret_cast<volatile uint32_t*>(&a);
+    uint32_t volatile* target = reinterpret_cast<uint32_t volatile*>(&a);
 
 #ifdef _WIN32
 
