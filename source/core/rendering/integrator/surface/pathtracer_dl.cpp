@@ -189,8 +189,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
         shape::Sample_to light_sample;
         if (!light.ref.sample(p, material_sample.geometric_normal(), ray.time,
-                              material_sample.is_translucent(), sampler, 0, worker,
-                              light_sample)) {
+                              material_sample.is_translucent(), sampler, 0, worker, light_sample)) {
             continue;
         }
 
