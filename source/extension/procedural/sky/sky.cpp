@@ -61,10 +61,11 @@ float3 Sky::sun_wi(float v) const noexcept {
 }
 
 float Sky::sun_v(float3 const& wi) const noexcept {
-    float3 const k  = wi - sun_rotation_.r[2];
-    float3 const sk = k / Model::radius();
+    float3 const k = wi - sun_rotation_.r[2];
 
-    return std::max((dot(sun_rotation_.r[1], sk) + 1.f) * 0.5f, 0.f);
+    float const c = dot(sun_rotation_.r[1], k) / Model::radius();
+
+    return std::max((c + 1.f) * 0.5f, 0.f);
 }
 
 bool Sky::sky_changed_since_last_check() noexcept {
