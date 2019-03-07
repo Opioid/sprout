@@ -33,13 +33,7 @@ void Sky::set_parameters(json::Value const& parameters) noexcept {
         if ("sun" == n.name) {
             float3 const angles = json::read_float3(n.value, "rotation", float3(0.f));
             sun_rotation_       = json::create_rotation_matrix(angles);
-
-            // Supposedly the sun direction in the disney cloud scene
-            //            sun_rotation_.r[2] = float3(-0.5826f, -0.7660f, -0.2717f);
-            //            orthonormal_basis(sun_rotation_.r[2], sun_rotation_.r[0],
-            //            sun_rotation_.r[1]);
-
-            implicit_rotation_ = false;
+            implicit_rotation_  = false;
         } else if ("ground_albedo" == n.name) {
             ground_albedo_ = json::read_float3(n.value);
         } else if ("turbidity" == n.name) {
@@ -57,20 +51,19 @@ Model& Sky::model() noexcept {
 float3 Sky::sun_wi(float v) const noexcept {
     float const y = (2.f * v) - 1.f;
 
-    float3 const ls = float3(0.5f, y, 0.f);
+    float3 const ls = float3(0.f, y * Model::radius(), 0.f);
 
-    float const radius = math::degrees_to_radians(model_.degrees());
-
-    float3 const ws = radius * transform_vector(sun_rotation_, ls);
+    float3 const ws = transform_vector(sun_rotation_, ls);
 
     return normalize(ws - sun_rotation_.r[2]);
 }
 
 float Sky::sun_v(float3 const& wi) const noexcept {
-    float3 const k  = wi - sun_rotation_.r[2];
-    float3 const sk = k / math::degrees_to_radians(model_.degrees());
+    float3 const k = wi - sun_rotation_.r[2];
 
-    return std::max((dot(sun_rotation_.r[1], sk) + 1.f) * 0.5f, 0.f);
+    float const c = dot(sun_rotation_.r[1], k) / Model::radius();
+
+    return std::max((c + 1.f) * 0.5f, 0.f);
 }
 
 bool Sky::sky_changed_since_last_check() noexcept {
@@ -94,8 +87,7 @@ void Sky::update() noexcept {
     model_.set_ground_albedo(ground_albedo_);
     model_.set_turbidity(turbidity_);
 
-    math::Transformation transformation{float3(0.f),
-                                        float3(math::degrees_to_radians(model_.degrees())),
+    math::Transformation transformation{float3(0.f), float3(Model::radius()),
                                         math::quaternion::create(sun_rotation_)};
 
     sun_->set_transformation(transformation);

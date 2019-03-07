@@ -141,8 +141,7 @@ bool Tracking_single::transmittance(Ray const& ray, Worker& worker,
 
 Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter,
                                  Worker& worker, float3& li, float3& transmittance) noexcept {
-    bool const hit = worker.intersect_and_resolve_mask(ray, intersection, filter);
-    if (!hit) {
+    if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         return Event::Abort;
@@ -150,10 +149,14 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
     float const d = ray.max_t;
 
-    if (scene::offset_f(ray.min_t) >= d) {
+    // Not sure wether the first test still makes sense.
+    // The second test avoids falsely reporting very long volume sections,
+    // when in fact a very short intersection was missed.
+    // However, this might cause problems if we ever want to support "infinite" volumes.
+
+    if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t_minus_epsilon <= d) {
         li            = float3(0.f);
         transmittance = float3(1.f);
-        //	weight = float3(1.f);
         return Event::Pass;
     }
 

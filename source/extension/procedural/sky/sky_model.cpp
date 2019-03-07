@@ -4,6 +4,8 @@
 #include "base/spectrum/xyz.hpp"
 #include "hosek/ArHosekSkyModel.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace procedural::sky {
 
 Model::Model() noexcept {
@@ -51,28 +53,19 @@ float3 Model::evaluate_sky(float3 const& wi) const noexcept {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
     float const wi_dot_s = std::min(-dot(wi, sun_direction_), 0.99999f);
 
-    //	float const theta = std::acos(wi_dot_z);
     float const gamma = std::acos(wi_dot_s);
-
-    /*
-    float3 radiance;
-    for (uint32_t i = 0; i < 3; ++i) {
-            radiance.v[i] =
-    static_cast<float>(arhosek_tristim_skymodel_radiance(skymodel_states_[i], theta, gamma, i));
-    }
-    */
 
     float const sqrt_cos_theta = std::sqrt(wi_dot_z);
 
     Spectrum radiance;
     for (int32_t i = 0; i < Num_bands; ++i) {
         float const wl_center = Spectrum::wavelength_center(i);
-        radiance.set_bin(i, static_cast<float>(arhosekskymodel_radiance(
-                                skymodel_states_[i],
-                                /*theta,*/ wi_dot_z, sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
+        radiance.set_bin(
+            i, static_cast<float>(arhosekskymodel_radiance(
+                   skymodel_states_[i], wi_dot_z, sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
     }
 
-    return spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ());
+    return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
 }
 
 float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
@@ -97,7 +90,7 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
                                 wi_dot_s, wl_center)));
     }
 
-    return spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ());
+    return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
 }
 
 void Model::release() noexcept {
@@ -105,7 +98,5 @@ void Model::release() noexcept {
         arhosekskymodelstate_free(skymodel_states_[i]);
     }
 }
-
-// float3 const Model::zenith_ = float3(0.f, 1.f, 0.f);
 
 }  // namespace procedural::sky

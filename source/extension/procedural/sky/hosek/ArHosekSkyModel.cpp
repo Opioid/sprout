@@ -130,7 +130,7 @@ All instructions on how to use this code are in the accompanying header file.
 #endif
 
 #ifndef TERRESTRIAL_SOLAR_RADIUS
-#define TERRESTRIAL_SOLAR_RADIUS ((0.51 DEGREES) / 2.0)
+#define TERRESTRIAL_SOLAR_RADIUS ((0.5334 DEGREES) / 2.0)
 #endif
 
 #ifndef ALLOC
@@ -306,7 +306,7 @@ ArHosekSkyModelState* arhosekskymodelstate_alloc_init(const hk_real solar_elevat
     ArHosekSkyModelState* state = ALLOC(ArHosekSkyModelState);
 
     //	state->solar_radius = (hk_real(0.51 DEGREES)) / hk_real(2);
-    const hk_real solar_radius = (hk_real(0.51 DEGREES)) / hk_real(2);
+    const hk_real solar_radius = hk_real(TERRESTRIAL_SOLAR_RADIUS);
     const hk_real sol_rad_sin  = std::sin(solar_radius);
     state->ar2                 = hk_real(1) / (sol_rad_sin * sol_rad_sin);
     state->turbidity           = atmospheric_turbidity;

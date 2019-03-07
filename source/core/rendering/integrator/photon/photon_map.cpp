@@ -60,7 +60,7 @@ void Map::increment_importance(uint32_t light_id, float2 uv) noexcept {
     importances_[light_id].increment(uv);
 }
 
-uint32_t Map::compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept {
+uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept {
     AABB const aabb = calculate_aabb(pool);
 
     fine_grid_.resize(aabb);
@@ -142,9 +142,11 @@ uint32_t Map::compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept
 
 void Map::compile_finalize() noexcept {
     fine_grid_.init_cells(red_num_fine_, photons_);
+    fine_grid_.set_num_paths(num_caustic_paths_);
 
     if (separate_indirect_) {
         coarse_grid_.init_cells(red_num_coarse_, photons_ + red_num_fine_);
+        coarse_grid_.set_num_paths(num_indirect_paths_);
     }
 }
 
@@ -158,8 +160,8 @@ float3 Map::li(Intersection const& intersection, Material_sample const& sample,
                scene::Worker const& worker) const noexcept {
     Photon_ref* photon_refs = &photon_refs_[worker.id() * Num_refs];
 
-    return fine_grid_.li(intersection, sample, num_caustic_paths_, photon_refs, worker) +
-           coarse_grid_.li(intersection, sample, num_indirect_paths_, photon_refs, worker);
+    return fine_grid_.li(intersection, sample, photon_refs, worker) +
+           coarse_grid_.li(intersection, sample, photon_refs, worker);
 }
 
 bool Map::caustics_only() const noexcept {

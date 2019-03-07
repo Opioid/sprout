@@ -1,9 +1,8 @@
 #include "photon_mapper.hpp"
 #include "base/math/aabb.inl"
 #include "base/memory/align.hpp"
-#include "photon_map.hpp"
-
 #include "image/encoding/png/png_writer.hpp"
+#include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
@@ -234,17 +233,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
 
     uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
 
-    Transformation temp;
-    Transformation transformation = light.ref.transformation_at(time, temp);
-
-    AABB const boundly = worker.scene().caustic_aabb(transformation.rotation);
-
-    AABB comp = bounds.transform_transposed(transformation.rotation);
-
-    float3 const a = bounds.position();
-    float3 const b = boundly.position();
-
-    if (!light.ref.sample(time, sampler_, 0, boundly, worker, light_sample)) {
+    if (!light.ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
         return false;
     }
 

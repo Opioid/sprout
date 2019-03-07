@@ -89,6 +89,8 @@ inline bool Interface_stack::top_is_vacuum_or_not_scattering() const noexcept {
 }
 
 inline void Interface_stack::push(Intersection const& intersection) noexcept {
+    SOFT_ASSERT(index_ < Num_entries - 1);
+
     if (index_ < Num_entries - 1) {
         stack_[index_] = {intersection.prop, intersection.geo.uv, intersection.geo.part};
         ++index_;

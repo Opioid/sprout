@@ -302,7 +302,15 @@ static inline float conely_filter(float squared_distance, float inv_squared_radi
     return s;
 }
 
-float3 Grid::li(Intersection const& intersection, Material_sample const& sample, uint32_t num_paths,
+void Grid::set_num_paths(uint64_t num_paths) noexcept {
+    float const radius_2   = search_radius_ * search_radius_;
+    surface_normalization_ = 1.f / (((1.f / 2.f) * Pi) * static_cast<float>(num_paths) * radius_2);
+
+    float const radius_3  = search_radius_ * radius_2;
+    volume_normalization_ = 1.f / (((4.f / 3.f) * Pi) * (radius_3 * static_cast<float>(num_paths)));
+}
+
+float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                 Photon_ref* photon_refs, scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
         return float3(0.f);
@@ -343,7 +351,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
         float3 const mu_s = scattering_coefficient(intersection, worker);
 
-        result /= (((4.f / 3.f) * Pi) * (radius_3 * static_cast<float>(num_paths))) * mu_s;
+        result *= volume_normalization_ / mu_s;
     } else {
         float const radius_2 = search_radius_ * search_radius_;
 
@@ -388,70 +396,11 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
         //  result /= ((1.f / 3.f) * Pi) * static_cast<float>(num_paths) * radius_2;
 
         // conely_filter
-        result /= ((1.f / 2.f) * Pi) * static_cast<float>(num_paths) * radius_2;
+        result *= surface_normalization_;
 
         // unfiltered
         //   result /= Pi * static_cast<float>(num_paths) * radius_2;
     }
-
-    /*
-    static uint32_t constexpr Max_photons      = 16;
-    static uint32_t constexpr Photon_heap_back = Max_photons - 1;
-
-    float max_radius_2 = radius_2;
-
-    uint32_t num_found = 0;
-
-    for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
-        int2 const cell = adjacency.cells[c];
-
-        for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
-            auto const& photon = photons_[i];
-
-            if (photon.properties.test(Photon::Property::Volumetric)) {
-                continue;
-            }
-
-            if (float const distance_2 = squared_distance(photon.p, position);
-                distance_2 < max_radius_2) {
-                if (Max_photons <= num_found) {
-                    if (Max_photons == num_found) {
-                        std::make_heap(photon_refs, photon_refs + Max_photons);
-                    }
-
-                    std::pop_heap(photon_refs, photon_refs + Max_photons);
-                    photon_refs[Photon_heap_back] = Photon_ref{i, distance_2};
-                    std::push_heap(photon_refs, photon_refs + Max_photons);
-                    max_radius_2 = photon_refs[0].sd;
-                } else {
-                    photon_refs[num_found] = Photon_ref{i, distance_2};
-                }
-
-                ++num_found;
-            }
-        }
-    }
-
-    uint32_t const len = std::min(num_found, Max_photons);
-
-    float const inv_max_radius_2 = 1.f / max_radius_2;
-
-    for (uint32_t i = 0; i < len; ++i) {
-        auto const& photon = photons_[photon_refs[i].id];
-
-        if (sample.base_layer().n_dot(photon.wi) > 0.f) {
-            float const k = kernel(photon_refs[i].sd, inv_max_radius_2);
-
-            auto const bxdf = sample.evaluate(photon.wi, true);
-
-            result += k * float3(photon.alpha) * bxdf.reflection;
-        }
-    }
-
-    result /= static_cast<float>(num_paths) * max_radius_2;
-}
-
-*/
 
     return result;
 }

@@ -31,7 +31,7 @@ class Map {
 
     void increment_importance(uint32_t light_id, float2 uv) noexcept;
 
-    uint32_t compile_iteration(uint32_t num_paths, thread::Pool& pool) noexcept;
+    uint32_t compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept;
 
     void compile_finalize() noexcept;
 
@@ -47,8 +47,8 @@ class Map {
   private:
     AABB calculate_aabb(thread::Pool& pool) const noexcept;
 
-    uint32_t num_caustic_paths_;
-    uint32_t num_indirect_paths_;
+    uint64_t num_caustic_paths_;
+    uint64_t num_indirect_paths_;
 
     uint32_t num_photons_;
 

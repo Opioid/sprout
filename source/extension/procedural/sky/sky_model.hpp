@@ -1,5 +1,7 @@
-#pragma once
+#ifndef SU_EXTENSION_PROCEDURAL_SKY_MODEL_HPP
+#define SU_EXTENSION_PROCEDURAL_SKY_MODEL_HPP
 
+#include "base/math/math.hpp"
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
 
@@ -27,9 +29,15 @@ class Model {
 
     float3 evaluate_sky_and_sun(float3 const& wi) const noexcept;
 
-    static float constexpr degrees() noexcept {
-        // 0.255 should match hosek
-        return 0.255f;
+    static float constexpr angular_radius() noexcept {
+        // 0.5 * 0.51 degrees should match hosek
+        // ... but we changed hosek ...
+        // return degrees_to_radians(0.5f * 0.51f);
+        return degrees_to_radians(0.5f * 0.5334f);
+    }
+
+    static float radius() noexcept {
+        return std::tan(angular_radius());
     }
 
     static float3 constexpr zenith() noexcept {
@@ -53,3 +61,5 @@ class Model {
 };
 
 }  // namespace procedural::sky
+
+#endif
