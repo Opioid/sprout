@@ -51,11 +51,9 @@ Model& Sky::model() noexcept {
 float3 Sky::sun_wi(float v) const noexcept {
     float const y = (2.f * v) - 1.f;
 
-    float3 const ls = float3(0.5f, y, 0.f);
+    float3 const ls = float3(0.f, y * Model::radius(), 0.f);
 
-    float const radius = Model::radius();
-
-    float3 const ws = radius * transform_vector(sun_rotation_, ls);
+    float3 const ws = transform_vector(sun_rotation_, ls);
 
     return normalize(ws - sun_rotation_.r[2]);
 }
