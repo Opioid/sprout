@@ -7,7 +7,6 @@
 #include <array>
 #include <cstdint>
 #include <iosfwd>
-#include <vector>
 #include "image/channels.hpp"
 #include "miniz/miniz.hpp"
 
@@ -24,10 +23,13 @@ class Reader {
 
   private:
     struct Chunk {
-        uint32_t             length;
-        std::vector<uint8_t> type;
-        uint8_t*             data;
-        uint32_t             crc;
+        ~Chunk() noexcept;
+
+        uint32_t length   = 0;
+        uint32_t capacity = 0;
+        uint8_t* type     = nullptr;
+        uint8_t* data;
+        uint32_t crc;
     };
 
     enum class Color_type {
@@ -41,6 +43,8 @@ class Reader {
     enum class Filter { None, Sub, Up, Average, Paeth };
 
     struct Info {
+        ~Info() noexcept;
+
         // header
         int32_t width  = 0;
         int32_t height = 0;
@@ -48,7 +52,7 @@ class Reader {
         int32_t num_channels    = 0;
         int32_t bytes_per_pixel = 0;
 
-        std::vector<uint8_t> buffer;
+        uint8_t* buffer = nullptr;
 
         // parsing state
         Filter   current_filter;
@@ -56,8 +60,8 @@ class Reader {
         uint32_t current_byte;
         uint32_t current_byte_total;
 
-        std::vector<uint8_t> current_row_data;
-        std::vector<uint8_t> previous_row_data;
+        uint8_t* current_row_data  = nullptr;
+        uint8_t* previous_row_data = nullptr;
 
         // miniz
         mz_stream stream;

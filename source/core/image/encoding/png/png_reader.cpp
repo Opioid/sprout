@@ -2,14 +2,23 @@
 #include <cstring>
 #include <istream>
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/string/string.hpp"
 #include "image/tiled_image.inl"
 #include "image/typed_image.hpp"
 
-namespace image {
-namespace encoding {
-namespace png {
+namespace image::encoding::png {
+
+Reader::Chunk::~Chunk() noexcept {
+    memory::free_aligned(type);
+}
+
+Reader::Info::~Info() noexcept {
+    memory::free_aligned(previous_row_data);
+    memory::free_aligned(current_row_data);
+    memory::free_aligned(buffer);
+}
 
 Image* Reader::read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
                     bool invert) {
@@ -162,10 +171,15 @@ void Reader::read_chunk(std::istream& stream, Chunk& chunk) {
     stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
     chunk.length = byteswap(length);
 
-    chunk.type.resize(chunk.length + 4);
-    chunk.data = chunk.type.data() + 4;
+    if (chunk.capacity < chunk.length) {
+        memory::free_aligned(chunk.type);
+        chunk.capacity = chunk.length;
+        chunk.type     = memory::allocate_aligned<uint8_t>(chunk.length + 4);
+    }
 
-    stream.read(reinterpret_cast<char*>(chunk.type.data()), chunk.length + 4);
+    chunk.data = chunk.type + 4;
+
+    stream.read(reinterpret_cast<char*>(chunk.type), chunk.length + 4);
 
     uint32_t crc = 0;
     stream.read(reinterpret_cast<char*>(&crc), sizeof(uint32_t));
@@ -173,7 +187,7 @@ void Reader::read_chunk(std::istream& stream, Chunk& chunk) {
 }
 
 bool Reader::handle_chunk(const Chunk& chunk, Info& info) {
-    char const* type = reinterpret_cast<char const*>(chunk.type.data());
+    char const* type = reinterpret_cast<char const*>(chunk.type);
 
     if (!strncmp("IHDR", type, 4)) {
         return parse_header(chunk, info);
@@ -225,15 +239,16 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
         throw std::runtime_error("Interlaced PNG not supported");
     }
 
-    info.buffer.resize(info.width * info.height * info.num_channels);
+    info.buffer = memory::allocate_aligned<uint8_t>(info.width * info.height * info.num_channels);
 
     info.current_filter     = Filter::None;
     info.filter_byte        = true;
     info.current_byte       = 0;
     info.current_byte_total = 0;
 
-    info.current_row_data.resize(info.width * info.num_channels);
-    info.previous_row_data.resize(info.current_row_data.size());
+    uint32_t const row_size = info.width * info.num_channels;
+    info.current_row_data   = memory::allocate_aligned<uint8_t>(row_size);
+    info.previous_row_data  = memory::allocate_aligned<uint8_t>(row_size);
 
     if (MZ_OK != mz_inflateInit(&info.stream)) {
         return false;
@@ -247,11 +262,13 @@ bool Reader::parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
 }
 
 bool Reader::parse_data(const Chunk& chunk, Info& info) {
-    uint32_t const buffer_size = 8192;
-    uint8_t        buffer[buffer_size];
+    static uint32_t constexpr buffer_size = 8192;
+    uint8_t buffer[buffer_size];
 
     info.stream.next_in  = chunk.data;
     info.stream.avail_in = chunk.length;
+
+    uint32_t const row_size = info.width * info.num_channels;
 
     do {
         info.stream.next_out  = buffer;
@@ -270,11 +287,11 @@ bool Reader::parse_data(const Chunk& chunk, Info& info) {
                 info.current_filter = static_cast<Filter>(buffer[i]);
                 info.filter_byte    = false;
             } else {
-                uint8_t raw = filter(buffer[i], info.current_filter, info);
+                uint8_t const raw = filter(buffer[i], info.current_filter, info);
                 info.current_row_data[info.current_byte] = raw;
                 info.buffer[info.current_byte_total++]   = raw;
 
-                if (info.current_row_data.size() - 1 == info.current_byte) {
+                if (row_size - 1 == info.current_byte) {
                     info.current_byte = 0;
                     std::swap(info.current_row_data, info.previous_row_data);
                     info.filter_byte = true;
@@ -325,17 +342,17 @@ uint8_t Reader::prior(int column, const Info& info) {
 }
 
 uint8_t Reader::average(uint8_t a, uint8_t b) {
-    return (static_cast<uint32_t>(a) + static_cast<uint32_t>(b)) >> 1;
+    return static_cast<uint8_t>((static_cast<uint32_t>(a) + static_cast<uint32_t>(b)) >> 1);
 }
 
 uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
-    const int A  = static_cast<int>(a);
-    const int B  = static_cast<int>(b);
-    const int C  = static_cast<int>(c);
-    const int p  = A + B - C;
-    const int pa = std::abs(p - A);
-    const int pb = std::abs(p - B);
-    const int pc = std::abs(p - C);
+    int32_t const A  = static_cast<int32_t>(a);
+    int32_t const B  = static_cast<int32_t>(b);
+    int32_t const C  = static_cast<int32_t>(c);
+    int32_t const p  = A + B - C;
+    int32_t const pa = std::abs(p - A);
+    int32_t const pb = std::abs(p - B);
+    int32_t const pc = std::abs(p - C);
 
     if (pa <= pb && pa <= pc) {
         return a;
@@ -356,6 +373,4 @@ uint32_t Reader::byteswap(uint32_t v) {
 const std::array<uint8_t, Reader::Signature_size> Reader::Signature = {
     {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}};
 
-}  // namespace png
-}  // namespace encoding
-}  // namespace image
+}  // namespace image::encoding::png
