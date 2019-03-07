@@ -274,9 +274,8 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
         comp_num_photons -= num_reduced[i];
     }
 
-    std::partition(photons_, photons_ + num_photons_, [](Photon const& p) noexcept {
-        return p.alpha[0] >= 0.f;
-    });
+    std::partition(photons_, photons_ + num_photons_,
+                   [](Photon const& p) noexcept { return p.alpha[0] >= 0.f; });
 
     if (photons != photons_) {
         Photon* old_photons = photons_;
@@ -329,7 +328,6 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
     if (intersection.subsurface) {
         float const radius_2 = search_radius_ * search_radius_;
-        float const radius_3 = search_radius_ * radius_2;
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];

@@ -3,15 +3,14 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <vector>
 
 namespace spectrum {
 
 class Interpolated {
   public:
-    Interpolated() noexcept = default;
+    Interpolated(uint32_t len, float const* wavelengths, float const* intensities) noexcept;
 
-    Interpolated(float const* wavelengths, float const* intensities, size_t len) noexcept;
+    ~Interpolated() noexcept;
 
     float start_wavelength() const noexcept;
     float end_wavelength() const noexcept;
@@ -21,8 +20,10 @@ class Interpolated {
     float integrate(float a, float b) const noexcept;
 
   private:
-    std::vector<float> wavelengths_;
-    std::vector<float> intensities_;
+    uint32_t num_elements_;
+
+    float* wavelengths_;
+    float* intensities_;
 };
 
 uint32_t constexpr RGB_to_spectrum_num = 64;

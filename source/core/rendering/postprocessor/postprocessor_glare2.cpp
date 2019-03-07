@@ -69,18 +69,20 @@ void Glare2::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     // This seems a bit arbitrary
     float const solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
-    spectrum::Interpolated const CIE_X(spectrum::CIE_Wavelengths_360_830_1nm,
-                                       spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
-    spectrum::Interpolated const CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm,
-                                       spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
-    spectrum::Interpolated const CIE_Z(spectrum::CIE_Wavelengths_360_830_1nm,
-                                       spectrum::CIE_Z_360_830_1nm, spectrum::CIE_XYZ_Num);
+    spectrum::Interpolated const CIE_X(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
+                                       spectrum::CIE_X_360_830_1nm);
+    spectrum::Interpolated const CIE_Y(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
+                                       spectrum::CIE_Y_360_830_1nm);
+    spectrum::Interpolated const CIE_Z(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
+                                       spectrum::CIE_Z_360_830_1nm);
 
-    static float constexpr wl_start         = 400.f;
-    static float constexpr wl_end           = 700.f;
+    static float constexpr wl_start = 400.f;
+    static float constexpr wl_end   = 700.f;
+
     static int32_t constexpr wl_num_samples = 64;
     static float constexpr wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
-    float const wl_norm            = 1.f / CIE_Y.integrate(wl_start, wl_end);
+
+    float const wl_norm = 1.f / CIE_Y.integrate(wl_start, wl_end);
 
     struct F {
         float  a;

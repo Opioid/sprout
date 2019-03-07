@@ -101,20 +101,23 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
         return;
     }
 
-    static int32_t constexpr num_samples = 1024;
-    std::vector<float3> cache(num_samples);
+    static uint32_t constexpr num_samples = 1024;
 
-    for (int32_t i = 0; i < num_samples; ++i) {
+    float3* cache = memory::allocate_aligned<float3>(num_samples);
+
+    for (uint32_t i = 0; i < num_samples; ++i) {
         float const v = static_cast<float>(i) / static_cast<float>(num_samples - 1);
 
         float3 const radiance = sky_.model().evaluate_sky_and_sun(sky_.sun_wi(v));
 
         SOFT_ASSERT(all_finite_and_positive(radiance));
 
-        cache[static_cast<uint32_t>(i)] = radiance;
+        cache[i] = radiance;
     }
 
-    emission_.from_array(0.f, 1.f, cache.size(), cache.data());
+    emission_.from_array(0.f, 1.f, num_samples, cache);
+
+    memory::free_aligned(cache);
 }
 
 size_t Sun_baked_material::num_bytes() const noexcept {

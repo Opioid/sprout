@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include "base/json/json_types.hpp"
 #include "material/material.hpp"
 

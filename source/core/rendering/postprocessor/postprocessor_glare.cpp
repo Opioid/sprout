@@ -61,12 +61,12 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
     kernel_             = memory::allocate_aligned<float3>(kernel_size);
 
-    spectrum::Interpolated const CIE_X(spectrum::CIE_Wavelengths_360_830_1nm,
-                                       spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
-    spectrum::Interpolated const CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm,
-                                       spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
-    spectrum::Interpolated const CIE_Z(spectrum::CIE_Wavelengths_360_830_1nm,
-                                       spectrum::CIE_Z_360_830_1nm, spectrum::CIE_XYZ_Num);
+    spectrum::Interpolated const CIE_X(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
+                                       spectrum::CIE_X_360_830_1nm);
+    spectrum::Interpolated const CIE_Y(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
+                                       spectrum::CIE_Y_360_830_1nm);
+    spectrum::Interpolated const CIE_Z(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
+                                       spectrum::CIE_Z_360_830_1nm);
 
     static float constexpr wl_start         = 400.f;
     static float constexpr wl_end           = 700.f;

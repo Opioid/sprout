@@ -116,9 +116,9 @@ void Discrete_spectral_power_distribution<N>::init(float start_wavelength,
 
     step_ = step;
 
-    Interpolated const CIE_X(CIE_Wavelengths_360_830_1nm, CIE_X_360_830_1nm, CIE_XYZ_Num);
-    Interpolated const CIE_Y(CIE_Wavelengths_360_830_1nm, CIE_Y_360_830_1nm, CIE_XYZ_Num);
-    Interpolated const CIE_Z(CIE_Wavelengths_360_830_1nm, CIE_Z_360_830_1nm, CIE_XYZ_Num);
+    Interpolated const CIE_X(CIE_XYZ_Num, CIE_Wavelengths_360_830_1nm, CIE_X_360_830_1nm);
+    Interpolated const CIE_Y(CIE_XYZ_Num, CIE_Wavelengths_360_830_1nm, CIE_Y_360_830_1nm);
+    Interpolated const CIE_Z(CIE_XYZ_Num, CIE_Wavelengths_360_830_1nm, CIE_Z_360_830_1nm);
 
     Discrete_spectral_power_distribution<N> const cie_x(CIE_X);
     Discrete_spectral_power_distribution<N> const cie_y(CIE_Y);
@@ -131,19 +131,19 @@ void Discrete_spectral_power_distribution<N>::init(float start_wavelength,
     }
 
     rgb_reflector_to_spectrum_white_ = Interpolated(
-        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_white, RGB_to_spectrum_num);
-    rgb_reflector_to_spectrum_cyan_ = Interpolated(
-        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_cyan, RGB_to_spectrum_num);
+        RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_white);
+    rgb_reflector_to_spectrum_cyan_ = Interpolated(RGB_to_spectrum_num, RGB_to_spectrum_wavelengths,
+                                                   RGB_reflector_to_spectrum_cyan);
     rgb_reflector_to_spectrum_magenta_ = Interpolated(
-        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_magenta, RGB_to_spectrum_num);
+        RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_magenta);
     rgb_reflector_to_spectrum_yellow_ = Interpolated(
-        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_yellow, RGB_to_spectrum_num);
-    rgb_reflector_to_spectrum_red_ = Interpolated(
-        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_red, RGB_to_spectrum_num);
+        RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_yellow);
+    rgb_reflector_to_spectrum_red_ = Interpolated(RGB_to_spectrum_num, RGB_to_spectrum_wavelengths,
+                                                  RGB_reflector_to_spectrum_red);
     rgb_reflector_to_spectrum_green_ = Interpolated(
-        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_green, RGB_to_spectrum_num);
-    rgb_reflector_to_spectrum_blue_ = Interpolated(
-        RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_blue, RGB_to_spectrum_num);
+        RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_green);
+    rgb_reflector_to_spectrum_blue_ = Interpolated(RGB_to_spectrum_num, RGB_to_spectrum_wavelengths,
+                                                   RGB_reflector_to_spectrum_blue);
 }
 
 template <int32_t N>
