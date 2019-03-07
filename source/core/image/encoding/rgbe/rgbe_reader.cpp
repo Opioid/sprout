@@ -2,8 +2,8 @@
 #include <cmath>
 #include <istream>
 #include <string>
-#include <vector>
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "image/typed_image.hpp"
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
@@ -13,7 +13,7 @@ namespace encoding {
 namespace rgbe {
 
 Image* Reader::read(std::istream& stream) {
-    const Header header = read_header(stream);
+    Header const header = read_header(stream);
 
     int2 const dimensions(header.width, header.height);
 
@@ -65,10 +65,11 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
         return read_pixels(stream, scanline_width * num_scanlines, image, 0);
     }
 
-    uint32_t             offset = 0;
-    uint8_t              rgbe[4];
-    std::vector<uint8_t> scanline_buffer(4 * scanline_width);
-    uint8_t              buf[2];
+    uint32_t offset = 0;
+    uint8_t  rgbe[4];
+    uint8_t  buf[2];
+
+    uint8_t* scanline_buffer = memory::allocate_aligned<uint8_t>(4 * scanline_width);
 
     for (; num_scanlines > 0; --num_scanlines) {
         stream.read(reinterpret_cast<char*>(rgbe), sizeof(rgbe));
@@ -85,6 +86,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 
         if ((static_cast<uint32_t>(rgbe[2]) << 8 | static_cast<uint32_t>(rgbe[3])) !=
             scanline_width) {
+            memory::free_aligned(scanline_buffer);
             throw std::runtime_error("Wrong scanline width");
         }
 
@@ -100,6 +102,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
                     uint32_t count = static_cast<uint32_t>(buf[0]) - 128;
 
                     if (count == 0 || count > end - index) {
+                        memory::free_aligned(scanline_buffer);
                         throw std::runtime_error("Bad scanline data");
                     }
 
@@ -111,6 +114,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
                     uint32_t count = static_cast<uint32_t>(buf[0]);
 
                     if (count == 0 || count > end - index) {
+                        memory::free_aligned(scanline_buffer);
                         throw std::runtime_error("Bad scanline data");
                     }
 
@@ -135,6 +139,8 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
             image.store(offset++, rgbe_to_float3(rgbe));
         }
     }
+
+    memory::free_aligned(scanline_buffer);
 }
 
 void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
@@ -144,7 +150,7 @@ void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& imag
     for (; num_pixels > 0; --num_pixels) {
         stream.read(reinterpret_cast<char*>(rgbe), sizeof(rgbe));
 
-        image_float3 color = rgbe_to_float3(rgbe);
+        image_float3 const color = rgbe_to_float3(rgbe);
 
         image.store(offset++, color);
     }
@@ -153,7 +159,7 @@ void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& imag
 Reader::image_float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
     if (rgbe[3] > 0) {
         // nonzero pixel
-        float f = std::ldexp(1.f, static_cast<int>(rgbe[3]) - (128 + 8));
+        float const f = std::ldexp(1.f, static_cast<int>(rgbe[3]) - (128 + 8));
         return image_float3(static_cast<float>(rgbe[0]) * f, static_cast<float>(rgbe[1]) * f,
                             static_cast<float>(rgbe[2]) * f);
     } else {

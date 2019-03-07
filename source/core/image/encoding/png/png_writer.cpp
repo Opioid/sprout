@@ -1,8 +1,8 @@
 #include "png_writer.hpp"
 #include <fstream>
-#include <vector>
 #include "base/encoding/encoding.inl"
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/spectrum/heatmap.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -89,16 +89,18 @@ bool Writer::write(std::string_view name, float const* data, int2 dimensions, fl
         return false;
     }
 
-    uint32_t const       area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
-    std::vector<uint8_t> bytes(area);
+    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    uint8_t*       bytes = memory::allocate_aligned<uint8_t>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = static_cast<uint8_t>(scale * data[i]);
     }
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
-                                                               dimensions[1], 1, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
+                                                               1, &buffer_len);
+
+    memory::free_aligned(bytes);
 
     if (!png_buffer) {
         return false;
@@ -117,8 +119,8 @@ bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, f
         return false;
     }
 
-    uint32_t const     area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
-    std::vector<byte3> bytes(area);
+    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    byte3*         bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
@@ -126,8 +128,10 @@ bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, f
     }
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
-                                                               dimensions[1], 3, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
+                                                               3, &buffer_len);
+
+    memory::free_aligned(bytes);
 
     if (!png_buffer) {
         return false;
@@ -146,8 +150,8 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
         return false;
     }
 
-    uint32_t const     area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
-    std::vector<byte3> bytes(area);
+    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    byte3*         bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
@@ -156,8 +160,10 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
     }
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
-                                                               dimensions[1], 3, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
+                                                               3, &buffer_len);
+
+    memory::free_aligned(bytes);
 
     if (!png_buffer) {
         return false;
@@ -176,8 +182,8 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
         return false;
     }
 
-    uint32_t const     area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
-    std::vector<byte3> bytes(area);
+    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    byte3*         bytes = memory::allocate_aligned<byte3>(area);
 
     uint32_t max_value = 0;
     for (uint32_t i = 0; i < area; ++i) {
@@ -194,8 +200,10 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
     }
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
-                                                               dimensions[1], 3, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
+                                                               3, &buffer_len);
+
+    memory::free_aligned(bytes);
 
     if (!png_buffer) {
         return false;
@@ -214,8 +222,8 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         return false;
     }
 
-    uint32_t const     area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
-    std::vector<byte3> bytes(area);
+    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    byte3*         bytes = memory::allocate_aligned<byte3>(area);
 
     float max_value = 0.f;
     for (uint32_t i = 0; i < area; ++i) {
@@ -232,8 +240,10 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     }
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes.data(), dimensions[0],
-                                                               dimensions[1], 3, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
+                                                               3, &buffer_len);
+
+    memory::free_aligned(bytes);
 
     if (!png_buffer) {
         return false;
