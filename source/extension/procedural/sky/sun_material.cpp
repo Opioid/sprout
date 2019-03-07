@@ -14,6 +14,8 @@
 #include "sky.hpp"
 #include "sky_model.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace procedural::sky {
 
 using namespace scene;
@@ -67,6 +69,8 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
 
     float3 const radiance = emission_(sky_.sun_v(-wo));
 
+    SOFT_ASSERT(all_finite_and_positive(radiance));
+
     sample.set(radiance);
 
     return sample;
@@ -75,7 +79,11 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
 float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
                                              Filter /*filter*/, const Worker& /*worker*/) const
     noexcept {
-    return emission_(sky_.sun_v(wi));
+    float3 const radiance = emission_(sky_.sun_v(wi));
+
+    SOFT_ASSERT(all_finite_and_positive(radiance));
+
+    return radiance;
 }
 
 float3 Sun_baked_material::average_radiance(float /*area*/) const noexcept {
@@ -100,6 +108,8 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
         float const v = static_cast<float>(i) / static_cast<float>(num_samples - 1);
 
         float3 const radiance = sky_.model().evaluate_sky_and_sun(sky_.sun_wi(v));
+
+        SOFT_ASSERT(all_finite_and_positive(radiance));
 
         cache[static_cast<uint32_t>(i)] = radiance;
     }
