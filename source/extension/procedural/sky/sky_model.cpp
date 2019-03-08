@@ -75,12 +75,12 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
     float const theta = std::acos(wi_dot_z);
     float const gamma = std::acos(wi_dot_s);
 
-    float const sin_gamma = std::sqrt(1.f - wi_dot_s * wi_dot_s);
+    float const sin_gamma_squared = 1.f - wi_dot_s * wi_dot_s;
 
     float const sqrt_cos_theta = std::sqrt(wi_dot_z);
 
     ArHosekSkyModelSolarTemp temp;
-    arhosekskymodel_solar_radiance_temp(&temp, theta, sin_gamma);
+    arhosekskymodel_solar_radiance_temp(&temp, theta, sin_gamma_squared);
 
     Spectrum radiance;
     for (int32_t i = 0; i < Num_bands; ++i) {

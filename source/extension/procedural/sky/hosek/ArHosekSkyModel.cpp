@@ -569,7 +569,7 @@ hk_real pow3(hk_real x) {
 }
 
 void arhosekskymodel_solar_radiance_temp(ArHosekSkyModelSolarTemp* temp, hk_real theta,
-                                         hk_real sin_gamma) {
+                                         hk_real sin_gamma_squared) {
     hk_real elevation = ((hk_real(MATH_PI) / hk_real(2)) - theta);
 
     int pos = (int)(std::cbrt(hk_real(2) * elevation / hk_real(MATH_PI)) * pieces);  // floor
@@ -578,8 +578,6 @@ void arhosekskymodel_solar_radiance_temp(ArHosekSkyModelSolarTemp* temp, hk_real
 
     const hk_real break_x = pow3(((hk_real)pos / (hk_real)pieces)) *
                             (hk_real(MATH_PI) * hk_real(0.5));
-
-    const hk_real sin_gamma_squared = sin_gamma * sin_gamma;
 
     temp->elevation_minus_break_x = elevation - break_x;
     temp->sin_gamma_squared       = sin_gamma_squared;
