@@ -1,4 +1,5 @@
 #include "png_reader.hpp"
+#include <array>
 #include <cstring>
 #include <istream>
 #include "base/math/vector4.inl"
@@ -7,18 +8,91 @@
 #include "base/string/string.hpp"
 #include "image/tiled_image.inl"
 #include "image/typed_image.hpp"
+#include "miniz/miniz.hpp"
+
+// based on
+// https://github.com/jansol/LuPng
 
 namespace image::encoding::png {
 
-Reader::Chunk::~Chunk() noexcept {
-    memory::free_aligned(type);
-}
+struct Chunk {
+    ~Chunk() noexcept {
+        memory::free_aligned(type);
+    }
 
-Reader::Info::~Info() noexcept {
-    memory::free_aligned(previous_row_data);
-    memory::free_aligned(current_row_data);
-    memory::free_aligned(buffer);
-}
+    uint32_t length   = 0;
+    uint32_t capacity = 0;
+    uint8_t* type     = nullptr;
+    uint8_t* data;
+    uint32_t crc;
+};
+
+enum class Color_type {
+    Grayscale       = 0,
+    Truecolor       = 2,
+    Palleted        = 3,
+    Grayscale_alpha = 4,
+    Truecolor_alpha = 6
+};
+
+enum class Filter { None, Sub, Up, Average, Paeth };
+
+struct Info {
+    ~Info() noexcept {
+        memory::free_aligned(previous_row_data);
+        memory::free_aligned(current_row_data);
+        memory::free_aligned(buffer);
+    }
+
+    // header
+    int32_t width  = 0;
+    int32_t height = 0;
+
+    int32_t num_channels    = 0;
+    int32_t bytes_per_pixel = 0;
+
+    uint8_t* buffer = nullptr;
+
+    // parsing state
+    Filter   current_filter;
+    bool     filter_byte;
+    uint32_t current_byte;
+    uint32_t current_byte_total;
+
+    uint8_t* current_row_data  = nullptr;
+    uint8_t* previous_row_data = nullptr;
+
+    // miniz
+    mz_stream stream;
+};
+
+static Image* create_image(const Info& info, Channels channels, int32_t num_elements, bool swap_xy,
+                           bool invert);
+
+static void read_chunk(std::istream& stream, Chunk& chunk);
+
+static bool handle_chunk(const Chunk& chunk, Info& info);
+
+static bool parse_header(const Chunk& chunk, Info& info);
+
+static bool parse_lte(const Chunk& chunk, Info& info);
+
+static bool parse_data(const Chunk& chunk, Info& info);
+
+static uint8_t filter(uint8_t byte, Filter filter, const Info& info) noexcept;
+
+static uint8_t raw(int column, const Info& info) noexcept;
+static uint8_t prior(int column, const Info& info) noexcept;
+
+static uint8_t average(uint8_t a, uint8_t b) noexcept;
+static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) noexcept;
+
+static uint32_t byteswap(uint32_t v) noexcept;
+
+static uint32_t constexpr Signature_size = 8;
+
+static constexpr std::array<uint8_t, Signature_size> Signature = {
+    {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}};
 
 Image* Reader::read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
                     bool invert) {
@@ -51,8 +125,8 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
     return create_image(info, channels, num_elements, swap_xy, invert);
 }
 
-Image* Reader::create_image(const Info& info, Channels channels, int32_t num_elements, bool swap_xy,
-                            bool invert) {
+Image* create_image(const Info& info, Channels channels, int32_t num_elements, bool swap_xy,
+                    bool invert) {
     if (0 == info.num_channels || Channels::None == channels) {
         return nullptr;
     }
@@ -166,7 +240,7 @@ Image* Reader::create_image(const Info& info, Channels channels, int32_t num_ele
     return nullptr;
 }
 
-void Reader::read_chunk(std::istream& stream, Chunk& chunk) {
+void read_chunk(std::istream& stream, Chunk& chunk) {
     uint32_t length = 0;
     stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
     chunk.length = byteswap(length);
@@ -186,7 +260,7 @@ void Reader::read_chunk(std::istream& stream, Chunk& chunk) {
     chunk.crc = byteswap(crc);
 }
 
-bool Reader::handle_chunk(const Chunk& chunk, Info& info) {
+bool handle_chunk(const Chunk& chunk, Info& info) {
     char const* type = reinterpret_cast<char const*>(chunk.type);
 
     if (!strncmp("IHDR", type, 4)) {
@@ -202,7 +276,7 @@ bool Reader::handle_chunk(const Chunk& chunk, Info& info) {
     return true;
 }
 
-bool Reader::parse_header(const Chunk& chunk, Info& info) {
+bool parse_header(const Chunk& chunk, Info& info) {
     info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
     info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
@@ -257,11 +331,11 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
     return true;
 }
 
-bool Reader::parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
+bool parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
     return true;
 }
 
-bool Reader::parse_data(const Chunk& chunk, Info& info) {
+bool parse_data(const Chunk& chunk, Info& info) {
     static uint32_t constexpr buffer_size = 8192;
     uint8_t buffer[buffer_size];
 
@@ -305,7 +379,7 @@ bool Reader::parse_data(const Chunk& chunk, Info& info) {
     return true;
 }
 
-uint8_t Reader::filter(uint8_t byte, Filter filter, const Info& info) {
+uint8_t filter(uint8_t byte, Filter filter, const Info& info) noexcept {
     switch (filter) {
         case Filter::None:
             return byte;
@@ -325,7 +399,7 @@ uint8_t Reader::filter(uint8_t byte, Filter filter, const Info& info) {
     }
 }
 
-uint8_t Reader::raw(int column, const Info& info) {
+uint8_t raw(int column, const Info& info) noexcept {
     if (column < 0) {
         return 0;
     }
@@ -333,7 +407,7 @@ uint8_t Reader::raw(int column, const Info& info) {
     return info.current_row_data[column];
 }
 
-uint8_t Reader::prior(int column, const Info& info) {
+uint8_t prior(int column, const Info& info) noexcept {
     if (column < 0) {
         return 0;
     }
@@ -341,11 +415,11 @@ uint8_t Reader::prior(int column, const Info& info) {
     return info.previous_row_data[column];
 }
 
-uint8_t Reader::average(uint8_t a, uint8_t b) {
+uint8_t average(uint8_t a, uint8_t b) noexcept {
     return static_cast<uint8_t>((static_cast<uint32_t>(a) + static_cast<uint32_t>(b)) >> 1);
 }
 
-uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
+uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) noexcept {
     int32_t const A  = static_cast<int32_t>(a);
     int32_t const B  = static_cast<int32_t>(b);
     int32_t const C  = static_cast<int32_t>(c);
@@ -365,12 +439,9 @@ uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
     return c;
 }
 
-uint32_t Reader::byteswap(uint32_t v) {
+uint32_t byteswap(uint32_t v) noexcept {
     return ((v & 0xFF) << 24) | ((v & 0xFF00) << 8) | ((v & 0xFF0000) >> 8) |
            ((v & 0xFF000000) >> 24);
 }
-
-const std::array<uint8_t, Reader::Signature_size> Reader::Signature = {
-    {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}};
 
 }  // namespace image::encoding::png

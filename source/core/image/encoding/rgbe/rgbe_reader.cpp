@@ -8,9 +8,24 @@
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 
-namespace image {
-namespace encoding {
-namespace rgbe {
+namespace image::encoding::rgbe {
+
+struct Header {
+    uint32_t width;
+    uint32_t height;
+};
+
+static Header read_header(std::istream& stream);
+
+static void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+                            Float3& image);
+
+static void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
+                        uint32_t offset) noexcept;
+
+using image_float3 = packed_float3;
+
+static image_float3 rgbe_to_float3(uint8_t rgbe[4]) noexcept;
 
 Image* Reader::read(std::istream& stream) {
     Header const header = read_header(stream);
@@ -24,7 +39,7 @@ Image* Reader::read(std::istream& stream) {
     return image;
 }
 
-Reader::Header Reader::read_header(std::istream& stream) {
+Header read_header(std::istream& stream) {
     std::string line;
     std::getline(stream, line);
     if ("#?" != line.substr(0, 2)) {
@@ -59,8 +74,8 @@ Reader::Header Reader::read_header(std::istream& stream) {
     return header;
 }
 
-void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-                             Float3& image) {
+void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+                     Float3& image) {
     if (scanline_width < 8 || scanline_width > 0x7fff) {
         return read_pixels(stream, scanline_width * num_scanlines, image, 0);
     }
@@ -143,8 +158,8 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
     memory::free_aligned(scanline_buffer);
 }
 
-void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
-                         uint32_t offset) {
+void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
+                 uint32_t offset) noexcept {
     uint8_t rgbe[4];
 
     for (; num_pixels > 0; --num_pixels) {
@@ -156,7 +171,7 @@ void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Float3& imag
     }
 }
 
-Reader::image_float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
+image_float3 rgbe_to_float3(uint8_t rgbe[4]) noexcept {
     if (rgbe[3] > 0) {
         // nonzero pixel
         float const f = std::ldexp(1.f, static_cast<int>(rgbe[3]) - (128 + 8));
@@ -167,6 +182,4 @@ Reader::image_float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
     }
 }
 
-}  // namespace rgbe
-}  // namespace encoding
-}  // namespace image
+}  // namespace image::encoding::rgbe
