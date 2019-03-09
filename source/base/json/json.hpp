@@ -2,6 +2,7 @@
 #define SU_BASE_JSON_JSON_HPP
 
 #include <iosfwd>
+#include <string>
 #include "json_types.hpp"
 #include "math/matrix.hpp"
 #include "math/quaternion.hpp"

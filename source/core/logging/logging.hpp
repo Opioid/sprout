@@ -1,7 +1,7 @@
 #ifndef SU_CORE_LOGGING_LOGGING_HPP
 #define SU_CORE_LOGGING_LOGGING_HPP
 
-#include <string_view>
+#include <string>
 
 namespace logging {
 
@@ -11,7 +11,9 @@ void init(Type type, bool verbose = false);
 
 void info(std::string_view text);
 void warning(std::string_view text);
+void warning(std::string const& text, std::string const& a);
 void error(std::string_view text);
+void error(std::string const& text, std::string const& a);
 void verbose(std::string_view text);
 
 void set_verbose(bool verbose);

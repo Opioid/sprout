@@ -31,8 +31,16 @@ void warning(std::string_view text) {
     log->post(Log::Type::Warning, text);
 }
 
+void warning(std::string const& text, std::string const& a) {
+    log->post(Log::Type::Warning, text, a);
+}
+
 void error(std::string_view text) {
     log->post(Log::Type::Error, text);
+}
+
+void error(std::string const& text, std::string const& a) {
+    log->post(Log::Type::Error, text, a);
 }
 
 void verbose(std::string_view text) {

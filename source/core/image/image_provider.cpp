@@ -64,7 +64,7 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
         }
     }
 
-    logging::error("Image type for \"" + filename + "\" not recognized");
+    logging::error("Image type for %S not recognized.", filename);
     return nullptr;
 }
 

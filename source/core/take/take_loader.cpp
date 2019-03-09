@@ -656,16 +656,16 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
             std::string const name = json::read_string(n->value, "file");
 
             auto backplate = manager.load<image::texture::Texture>(name);
-
             if (!backplate) {
                 continue;
             }
 
             if (take.view.camera &&
                 backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {
-                logging::warning("Not using backplate \"" + name +
-                                 "\", "
-                                 "because resolution doesn't match sensor resolution.");
+                logging::warning(
+                    "Not using backplate %S, "
+                    "because resolution doesn't match sensor resolution.",
+                    name);
                 continue;
             }
 

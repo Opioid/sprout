@@ -58,6 +58,7 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
 
     auto const image = manager.load<Image>(filename, image_options);
     if (!image) {
+        logging::error("Loading texture %S.", filename);
         return nullptr;
     }
 
@@ -86,7 +87,8 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
     } else if (Image::Type::Float3 == image->description().type) {
         return new Float3(*image);
     }
-    logging::error("Loading texture \"" + filename + "\": Image is of unknown type.");
+
+    // We should never come here...
 
     return nullptr;
 }

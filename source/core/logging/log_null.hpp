@@ -7,7 +7,9 @@ namespace logging {
 
 class Null : public Log {
   public:
-    virtual void post(Type type, std::string_view text) override final;
+    void post(Type type, std::string_view text) override final;
+
+    void post(Type type, std::string const& text, std::string const& a) override final;
 };
 
 }  // namespace logging
