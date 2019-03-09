@@ -14,10 +14,10 @@
 namespace controller {
 
 Message_handler::Message_handler(rendering::Driver_progressive& driver,
-                                 resource::Manager& resource_manager, Camera& camera)
+                                 resource::Manager& resource_manager, Camera& camera) noexcept
     : driver_(driver), resource_manager_(resource_manager), camera_(camera) {}
 
-void Message_handler::handle(std::string const& message) {
+void Message_handler::handle(std::string const& message) noexcept {
     if ("restart" == message) {
         driver_.schedule_restart(false);
     } else if ("md:[" == message.substr(0, 4)) {
@@ -74,13 +74,10 @@ void Message_handler::handle(std::string const& message) {
                 scene::entity::Entity* entity = driver_.scene().entity(index_string);
                 handle_entity(entity, value, parameters, true);
             } else {
-                try {
-                    uint32_t index_number = std::stoul(index);
+                uint32_t const index_number = std::stoul(index);
 
-                    scene::entity::Entity* entity = driver_.scene().entity(index_number);
-                    handle_entity(entity, value, parameters, true);
-                } catch (...) {
-                }
+                scene::entity::Entity* entity = driver_.scene().entity(index_number);
+                handle_entity(entity, value, parameters, true);
             }
         } else if ("materials" == assignee.substr(0, 9)) {
             if ('\"' == index.front() && '\"' == index.back()) {
@@ -97,7 +94,7 @@ void Message_handler::handle(std::string const& message) {
     }
 }
 
-std::string Message_handler::introduction() const {
+std::string Message_handler::introduction() const noexcept {
     std::ostringstream stream;
     stream << "{";
 
@@ -110,7 +107,7 @@ std::string Message_handler::introduction() const {
     return stream.str();
 }
 
-std::string Message_handler::iteration() const {
+std::string Message_handler::iteration() const noexcept {
     std::ostringstream stream;
     stream << "{";
     stream << "\"iteration\":" << driver_.iteration();
@@ -119,32 +116,33 @@ std::string Message_handler::iteration() const {
 }
 
 void Message_handler::handle_entity(scene::entity::Entity* entity, std::string const& value,
-                                    std::string const& parameters, bool recompile) {
+                                    std::string const& parameters, bool recompile) noexcept {
     if (!entity) {
         return;
     }
 
-    try {
-        auto root = json::parse(parameters);
-
-        if ("parameters" == value) {
-            entity->set_parameters(*root);
-        } else if ("transformation" == value) {
-            math::Transformation t = entity->local_frame_0();
-            json::read_transformation(*root, t);
-            entity->set_transformation(t);
-        } else {
-            return;
-        }
-
-        driver_.schedule_restart(recompile);
-    } catch (const std::exception& e) {
-        logging::error(e.what());
+    std::string error;
+    auto const  root = json::parse(parameters, error);
+    if (!root) {
+        logging::error(error);
+        return;
     }
+
+    if ("parameters" == value) {
+        entity->set_parameters(*root);
+    } else if ("transformation" == value) {
+        math::Transformation t = entity->local_frame_0();
+        json::read_transformation(*root, t);
+        entity->set_transformation(t);
+    } else {
+        return;
+    }
+
+    driver_.schedule_restart(recompile);
 }
 
 void Message_handler::handle_material(scene::material::Material* /*material*/,
                                       std::string const& /*value*/,
-                                      std::string const& /*parameters*/) {}
+                                      std::string const& /*parameters*/) noexcept {}
 
 }  // namespace controller

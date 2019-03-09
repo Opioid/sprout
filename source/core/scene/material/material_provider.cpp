@@ -49,17 +49,29 @@ Provider::Provider() noexcept
 Provider::~Provider() noexcept {}
 
 Material* Provider::load(std::string const& filename, Variant_map const& /*options*/,
-                         resource::Manager& manager) {
+                         resource::Manager& manager) noexcept {
     std::string resolved_name;
     auto        stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
+    if (!stream_pointer) {
+        return nullptr;
+    }
 
-    auto root = json::parse(*stream_pointer);
+    std::string error;
+    auto        root = json::parse(*stream_pointer, error);
+    if (!root) {
+        logging::error("Material \"" + filename + "\"" + error);
+    }
 
-    return load(*root, string::parent_directory(resolved_name), manager);
+    auto material = load(*root, string::parent_directory(resolved_name), manager);
+    if (!material) {
+        logging::error("Material \"" + filename + "\" could not be loaded.");
+    }
+
+    return material;
 }
 
 Material* Provider::load(void const* data, std::string_view                 mount_folder,
-                         Variant_map const& /*options*/, resource::Manager& manager) {
+                         Variant_map const& /*options*/, resource::Manager& manager) noexcept {
     json::Value const* value = reinterpret_cast<json::Value const*>(data);
 
     return load(*value, mount_folder, manager);
@@ -74,10 +86,11 @@ Material& Provider::fallback_material() noexcept {
 }
 
 Material* Provider::load(json::Value const& value, std::string_view mount_folder,
-                         resource::Manager& manager) {
+                         resource::Manager& manager) noexcept {
     json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
     if (value.MemberEnd() == rendering_node) {
-        throw std::runtime_error("Material has no render node");
+        logging::error("Material has no render node");
+        return nullptr;
     }
 
     manager.filesystem().push_mount(mount_folder);
@@ -117,7 +130,8 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
     manager.filesystem().pop_mount();
 
     if (!material) {
-        throw std::runtime_error("Material is of unknown type");
+        logging::error("Material is of unknown type");
+        return nullptr;
     }
 
     material->compile(manager.thread_pool());
@@ -125,7 +139,8 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
     return material;
 }
 
-Material* Provider::load_cloth(json::Value const& cloth_value, resource::Manager& manager) {
+Material* Provider::load_cloth(json::Value const& cloth_value,
+                               resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
@@ -176,7 +191,8 @@ Material* Provider::load_cloth(json::Value const& cloth_value, resource::Manager
     return material;
 }
 
-Material* Provider::load_debug(json::Value const& debug_value, resource::Manager& manager) {
+Material* Provider::load_debug(json::Value const& debug_value,
+                               resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -209,7 +225,8 @@ Material* Provider::load_debug(json::Value const& debug_value, resource::Manager
     return material;
 }
 
-Material* Provider::load_display(json::Value const& display_value, resource::Manager& manager) {
+Material* Provider::load_display(json::Value const& display_value,
+                                 resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -289,7 +306,8 @@ Material* Provider::load_display(json::Value const& display_value, resource::Man
     return material;
 }
 
-Material* Provider::load_glass(json::Value const& glass_value, resource::Manager& manager) {
+Material* Provider::load_glass(json::Value const& glass_value,
+                               resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter normal_map;
@@ -379,7 +397,8 @@ Material* Provider::load_glass(json::Value const& glass_value, resource::Manager
     }
 }
 
-Material* Provider::load_light(json::Value const& light_value, resource::Manager& manager) {
+Material* Provider::load_light(json::Value const& light_value,
+                               resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     std::string quantity;
@@ -473,7 +492,8 @@ Material* Provider::load_light(json::Value const& light_value, resource::Manager
     return material;
 }
 
-Material* Provider::load_matte(json::Value const& matte_value, resource::Manager& manager) {
+Material* Provider::load_matte(json::Value const& matte_value,
+                               resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     //	Texture_ptr normal_map;
@@ -520,7 +540,8 @@ Material* Provider::load_matte(json::Value const& matte_value, resource::Manager
     return material;
 }
 
-Material* Provider::load_metal(json::Value const& metal_value, resource::Manager& manager) {
+Material* Provider::load_metal(json::Value const& metal_value,
+                               resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter normal_map;
@@ -607,7 +628,7 @@ Material* Provider::load_metal(json::Value const& metal_value, resource::Manager
 }
 
 Material* Provider::load_metallic_paint(json::Value const& paint_value,
-                                        resource::Manager& manager) {
+                                        resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -709,7 +730,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
     return material;
 }
 
-Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& manager) {
+Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -750,7 +771,8 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
     }
 
     if (materials.size() < 2) {
-        throw std::runtime_error("Mix material needs 2 child materials");
+        logging::error("Mix material needs 2 child materials");
+        return nullptr;
     }
 
     //    if (!mask.is_valid()) {
@@ -766,7 +788,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
     return material;
 }
 
-Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& manager) {
+Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -809,7 +831,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
 }
 
 Material* Provider::load_substitute(json::Value const& substitute_value,
-                                    resource::Manager& manager) {
+                                    resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
@@ -1024,7 +1046,7 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
 }
 
 Material* Provider::load_volumetric(json::Value const& volumetric_value,
-                                    resource::Manager& manager) {
+                                    resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings(Sampler_settings::Filter::Linear,
                                       Sampler_settings::Address::Clamp,
                                       Sampler_settings::Address::Clamp);
@@ -1136,7 +1158,7 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
     return material;
 }
 
-Sampler_settings::Address read_address(json::Value const& address_value) {
+Sampler_settings::Address read_address(json::Value const& address_value) noexcept {
     std::string address = json::read_string(address_value);
 
     if ("Clamp" == address) {
@@ -1148,7 +1170,8 @@ Sampler_settings::Address read_address(json::Value const& address_value) {
     return Sampler_settings::Address::Undefined;
 }
 
-void Provider::read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings) {
+void Provider::read_sampler_settings(json::Value const& sampler_value,
+                                     Sampler_settings&  settings) noexcept {
     for (auto& n : sampler_value.GetObject()) {
         if ("filter" == n.name) {
             std::string const filter = json::read_string(n.value);
@@ -1176,7 +1199,7 @@ void Provider::read_sampler_settings(json::Value const& sampler_value, Sampler_s
 }
 
 void Provider::read_texture_description(json::Value const&   texture_value,
-                                        Texture_description& description) {
+                                        Texture_description& description) noexcept {
     description.filename     = "";
     description.usage        = "Color";
     description.swizzle      = image::Swizzle::XYZW;
@@ -1202,7 +1225,8 @@ void Provider::read_texture_description(json::Value const&   texture_value,
 }
 
 Texture_adapter Provider::create_texture(const Texture_description& description,
-                                         Variant_map& options, resource::Manager& manager) {
+                                         Variant_map&               options,
+                                         resource::Manager&         manager) noexcept {
     if (description.num_elements > 1) {
         options.set("num_elements", description.num_elements);
     }
@@ -1216,7 +1240,7 @@ Texture_adapter Provider::create_texture(const Texture_description& description,
 }
 
 void Provider::read_coating_description(json::Value const&   coating_value,
-                                        Coating_description& description) {
+                                        Coating_description& description) noexcept {
     if (!coating_value.IsObject()) {
         return;
     }
@@ -1253,7 +1277,7 @@ void Provider::read_coating_description(json::Value const&   coating_value,
     }
 }
 
-float3 Provider::read_hex_RGB(std::string const& text) {
+float3 Provider::read_hex_RGB(std::string const& text) noexcept {
     if (7 != text.length() || '#' != text[0]) {
         return float3(0.f);
     }
@@ -1282,7 +1306,7 @@ float3 Provider::read_hex_RGB(std::string const& text) {
                   static_cast<float>(elements[2]) / 255.f);
 }
 
-float3 Provider::read_color(json::Value const& color_value) {
+float3 Provider::read_color(json::Value const& color_value) noexcept {
     if (color_value.IsArray()) {
         return json::read_float3(color_value);
     }
@@ -1295,7 +1319,7 @@ float3 Provider::read_color(json::Value const& color_value) {
     return read_hex_RGB(hex_string);
 }
 
-float3 Provider::read_spectrum(json::Value const& spectrum_value) {
+float3 Provider::read_spectrum(json::Value const& spectrum_value) noexcept {
     if (!spectrum_value.IsObject()) {
         return float3(0.f);
     }
@@ -1315,7 +1339,7 @@ float3 Provider::read_spectrum(json::Value const& spectrum_value) {
     return float3(0.f);
 }
 
-uint32_t Provider::max_sample_size() {
+uint32_t Provider::max_sample_size() noexcept {
     size_t num_bytes = 0;
 
     num_bytes = std::max(cloth::Material::sample_size(), num_bytes);

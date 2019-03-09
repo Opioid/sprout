@@ -18,7 +18,7 @@ struct Options {
     bool verbose     = false;
 };
 
-Options parse(int argc, char* argv[]);
+Options parse(int argc, char* argv[]) noexcept;
 
 }  // namespace options
 

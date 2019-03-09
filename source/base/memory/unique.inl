@@ -23,12 +23,22 @@ Unique_ptr<T>::~Unique_ptr() noexcept {
 }
 
 template <class T>
+bool Unique_ptr<T>::operator!() const noexcept {
+    return nullptr == value_;
+}
+
+template <class T>
 Unique_ptr<T>& Unique_ptr<T>::operator=(Unique_ptr other) noexcept {
     T* value     = value_;
     value_       = other.value_;
     other.value_ = value;
 
     return *this;
+}
+
+template <class T>
+T const& Unique_ptr<T>::operator*() const noexcept {
+    return *value_;
 }
 
 template <class T>

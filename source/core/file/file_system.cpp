@@ -5,18 +5,20 @@
 #include "base/memory/unique.inl"
 #include "file.hpp"
 #include "gzip/gzip_read_stream.hpp"
+#include "logging/logging.hpp"
 
 namespace file {
 
-Stream_ptr System::read_stream(std::string_view name) const {
+Stream_ptr System::read_stream(std::string_view name) const noexcept {
     std::string resolved_name;
     return read_stream(name, resolved_name);
 }
 
-Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const {
+Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const noexcept {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
-        throw std::runtime_error("Stream \"" + std::string(name) + "\" could not be opened");
+        logging::error("Stream \"" + std::string(name) + "\" could not be opened");
+        return Stream_ptr();
     }
 
     const Type type = query_type(*stream);

@@ -20,8 +20,8 @@ class Loader {
   public:
     using Scene = scene::Scene;
 
-    static void load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
-                     resource::Manager& manager);
+    static bool load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
+                     resource::Manager& manager) noexcept;
 };
 
 }  // namespace take

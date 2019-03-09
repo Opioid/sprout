@@ -22,16 +22,16 @@ class Grass : public scene::shape::triangle::Generator {
     using Shape = scene::shape::Shape;
 
     virtual Shape* create_mesh(json::Value const& mesh_value,
-                               resource::Manager& manager) override final;
+                               resource::Manager& manager) noexcept override final;
 
   private:
     void add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,
                    float height, uint32_t vertex_offset,
                    std::vector<scene::shape::triangle::Index_triangle>& triangles,
-                   std::vector<scene::shape::Vertex>&                   vertices) const;
+                   std::vector<scene::shape::Vertex>&                   vertices) const noexcept;
 
     static void calculate_normals(std::vector<scene::shape::triangle::Index_triangle>& triangles,
-                                  std::vector<scene::shape::Vertex>&                   vertices);
+                                  std::vector<scene::shape::Vertex>& vertices) noexcept;
 };
 
 }  // namespace procedural::mesh

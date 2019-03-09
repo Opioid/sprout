@@ -30,7 +30,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, Material& fallback_material)
+Loader::Loader(resource::Manager& manager, Material& fallback_material) noexcept
     : resource_manager_(manager),
       canopy_(new shape::Canopy()),
       celestial_disk_(new shape::Celestial_disk()),
@@ -42,7 +42,7 @@ Loader::Loader(resource::Manager& manager, Material& fallback_material)
       sphere_(new shape::Sphere()),
       fallback_material_(fallback_material) {}
 
-Loader::~Loader() {
+Loader::~Loader() noexcept {
     delete sphere_;
     delete rectangle_;
     delete plane_;
@@ -54,19 +54,14 @@ Loader::~Loader() {
 }
 
 bool Loader::load(std::string const& filename, std::string_view take_name, take::Take const& take,
-                  Scene& scene) {
-    bool success = true;
+                  Scene& scene) noexcept {
+    std::string_view const take_mount_folder = string::parent_directory(take_name);
 
-    try {
-        std::string_view const take_mount_folder = string::parent_directory(take_name);
+    bool const success = load(filename, take_mount_folder, nullptr, scene);
 
-        load(filename, take_mount_folder, nullptr, scene);
-
+    if (success) {
         scene.finish(take.view.camera ? take.view.camera->frame_step() : 0,
                      take.view.camera ? take.view.camera->frame_duration() : 0);
-    } catch (std::exception& e) {
-        success = false;
-        logging::error("Scene \"" + filename + "\" could not be loaded: " + e.what() + ".");
     }
 
     resource_manager_.thread_pool().wait_async();
@@ -75,28 +70,28 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 }
 
 void Loader::register_extension_provider(std::string const&          name,
-                                         entity::Extension_provider* provider) {
+                                         entity::Extension_provider* provider) noexcept {
     extension_providers_[name] = provider;
 }
 
 void Loader::register_mesh_generator(std::string const&          name,
-                                     shape::triangle::Generator* generator) {
+                                     shape::triangle::Generator* generator) noexcept {
     mesh_generators_[name] = generator;
 }
 
-Scene::Shape* Loader::canopy() {
+Scene::Shape* Loader::canopy() noexcept {
     return canopy_;
 }
 
-Scene::Shape* Loader::celestial_disk() {
+Scene::Shape* Loader::celestial_disk() noexcept {
     return celestial_disk_;
 }
 
-Scene::Shape* Loader::cube() {
+Scene::Shape* Loader::cube() noexcept {
     return cube_;
 }
 
-void Loader::create_light(prop::Prop* prop, Scene& scene) {
+void Loader::create_light(prop::Prop* prop, Scene& scene) noexcept {
     for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
         if (auto const material = prop->material(i); material->is_emissive()) {
             if (material->is_scattering_volume()) {
@@ -116,12 +111,12 @@ void Loader::create_light(prop::Prop* prop, Scene& scene) {
     }
 }
 
-size_t Loader::num_bytes() const {
+size_t Loader::num_bytes() const noexcept {
     return 0;
 }
 
-void Loader::load(std::string const& filename, std::string_view take_mount_folder,
-                  entity::Entity* parent, Scene& scene) {
+bool Loader::load(std::string const& filename, std::string_view take_mount_folder,
+                  entity::Entity* parent, Scene& scene) noexcept {
     auto& filesystem = resource_manager_.filesystem();
 
     if (!take_mount_folder.empty()) {
@@ -135,9 +130,18 @@ void Loader::load(std::string const& filename, std::string_view take_mount_folde
         filesystem.pop_mount();
     }
 
+    if (!stream_pointer) {
+        return false;
+    }
+
     std::string const mount_folder(string::parent_directory(resolved_name));
 
-    auto const root = json::parse(*stream_pointer);
+    std::string error;
+    auto const  root = json::parse(*stream_pointer, error);
+    if (!root) {
+        logging::error("Scene \"" + filename + "\":" + error);
+        return false;
+    }
 
     Local_materials local_materials;
 
@@ -155,10 +159,12 @@ void Loader::load(std::string const& filename, std::string_view take_mount_folde
     }
 
     filesystem.pop_mount();
+
+    return true;
 }
 
 void Loader::read_materials(json::Value const& materials_value,
-                            Local_materials&   local_materials) const {
+                            Local_materials&   local_materials) const noexcept {
     if (!materials_value.IsArray()) {
         return;
     }
@@ -177,7 +183,7 @@ void Loader::read_materials(json::Value const& materials_value,
 
 void Loader::load_entities(json::Value const& entities_value, entity::Entity* parent,
                            std::string_view mount_folder, Local_materials const& local_materials,
-                           Scene& scene) {
+                           Scene& scene) noexcept {
     if (!entities_value.IsArray()) {
         return;
     }
@@ -201,25 +207,20 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
 
         entity::Entity* entity = nullptr;
 
-        try {
-            if ("Light" == type_name) {
-                prop::Prop* prop = load_prop(e, name, mount_folder, local_materials, scene);
+        if ("Light" == type_name) {
+            prop::Prop* prop = load_prop(e, name, mount_folder, local_materials, scene);
 
-                if (prop && prop->visible_in_reflection()) {
-                    create_light(prop, scene);
-                }
-
-                entity = prop;
-            } else if ("Prop" == type_name) {
-                entity = load_prop(e, name, mount_folder, local_materials, scene);
-            } else if ("Dummy" == type_name) {
-                entity = scene.create_dummy();
-            } else {
-                entity = load_extension(type_name, e, name, scene);
+            if (prop && prop->visible_in_reflection()) {
+                create_light(prop, scene);
             }
-        } catch (const std::exception& e) {
-            logging::error("Cannot create entity \"" + type_name + "\": " + e.what() + ".");
-            continue;
+
+            entity = prop;
+        } else if ("Prop" == type_name) {
+            entity = load_prop(e, name, mount_folder, local_materials, scene);
+        } else if ("Dummy" == type_name) {
+            entity = scene.create_dummy();
+        } else {
+            entity = load_extension(type_name, e, name, scene);
         }
 
         if (!entity) {
@@ -274,7 +275,7 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
     }
 }
 
-void Loader::set_visibility(entity::Entity* entity, json::Value const& visibility_value) {
+void Loader::set_visibility(entity::Entity* entity, json::Value const& visibility_value) noexcept {
     bool in_camera     = true;
     bool in_reflection = true;
     bool in_shadow     = true;
@@ -294,7 +295,7 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
 
 prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& name,
                               std::string_view mount_folder, Local_materials const& local_materials,
-                              Scene& scene) {
+                              Scene& scene) noexcept {
     Shape*    shape = nullptr;
     Materials materials;
 
@@ -334,7 +335,7 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
 }
 
 entity::Entity* Loader::load_extension(std::string const& type, json::Value const& extension_value,
-                                       std::string const& name, Scene& scene) {
+                                       std::string const& name, Scene& scene) noexcept {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
         entity::Entity* entity = p->second->create_extension(extension_value, scene,
                                                              resource_manager_);
@@ -348,7 +349,7 @@ entity::Entity* Loader::load_extension(std::string const& type, json::Value cons
     return nullptr;
 }
 
-Scene::Shape* Loader::load_shape(json::Value const& shape_value) {
+Scene::Shape* Loader::load_shape(json::Value const& shape_value) noexcept {
     if (std::string const type = json::read_string(shape_value, "type"); !type.empty()) {
         return shape(type, shape_value);
     }
@@ -357,12 +358,13 @@ Scene::Shape* Loader::load_shape(json::Value const& shape_value) {
         return resource_manager_.load<shape::Shape>(file);
     }
 
-    logging::error("Cannot create shape: Neither shape nor type.");
+    logging::error("Cannot create Shape: Neither shape nor type.");
 
     return nullptr;
 }
 
-Scene::Shape* Loader::shape(std::string const& type, json::Value const& shape_value) const {
+Scene::Shape* Loader::shape(std::string const& type, json::Value const& shape_value) const
+    noexcept {
     if ("Canopy" == type) {
         return canopy_;
     } else if ("Celestial_disk" == type) {
@@ -381,11 +383,13 @@ Scene::Shape* Loader::shape(std::string const& type, json::Value const& shape_va
         return sphere_;
     } else {
         if (auto g = mesh_generators_.find(type); mesh_generators_.end() != g) {
-            try {
-                return g->second->create_mesh(shape_value, resource_manager_);
-            } catch (const std::exception& e) {
-                logging::error("Cannot create shape of type \"" + type + "\": " + e.what() + ".");
+            auto shape = g->second->create_mesh(shape_value, resource_manager_);
+            if (!shape) {
+                logging::error("Cannot create shape of type \"" + type + "\".");
             }
+
+            return shape;
+
         } else {
             logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
         }
@@ -396,7 +400,7 @@ Scene::Shape* Loader::shape(std::string const& type, json::Value const& shape_va
 
 void Loader::load_materials(json::Value const& materials_value, std::string_view mount_folder,
                             Local_materials const& local_materials, Scene& scene,
-                            Materials& materials) const {
+                            Materials& materials) const noexcept {
     if (!materials_value.IsArray()) {
         return;
     }
@@ -410,38 +414,37 @@ void Loader::load_materials(json::Value const& materials_value, std::string_view
 
 material::Material* Loader::load_material(std::string const& name, std::string_view mount_folder,
                                           Local_materials const& local_materials,
-                                          Scene&                 scene) const {
+                                          Scene&                 scene) const noexcept {
     // First, check if we maybe already have cached the material.
     if (auto material = resource_manager_.get<material::Material>(name); material) {
         return material;
     }
 
-    try {
-        // Otherwise, see if it is among the locally defined materials.
-        if (auto const material_node = local_materials.find(name);
-            local_materials.end() != material_node) {
-            void const* data = reinterpret_cast<void const*>(material_node->second);
+    // Otherwise, see if it is among the locally defined materials.
+    if (auto const material_node = local_materials.find(name);
+        local_materials.end() != material_node) {
+        void const* data = reinterpret_cast<void const*>(material_node->second);
 
-            auto material = resource_manager_.load<material::Material>(name, data, mount_folder);
-
+        if (auto material = resource_manager_.load<material::Material>(name, data, mount_folder);
+            material) {
             if (material->is_animated()) {
                 scene.add_material(material);
             }
 
             return material;
         }
+    }
 
-        // Lastly, try loading the material from the filesystem.
-        auto material = resource_manager_.load<material::Material>(name);
-
+    // Lastly, try loading the material from the filesystem.
+    if (auto material = resource_manager_.load<material::Material>(name); material) {
         if (material->is_animated()) {
             scene.add_material(material);
         }
 
         return material;
-    } catch (const std::exception& e) {
-        logging::error("Loading \"" + name + "\": " + e.what() + ". Using fallback material.");
     }
+
+    logging::error("Loading \"" + name + "\": " /*+ e.what()*/ + ". Using fallback material.");
 
     return &fallback_material_;
 }

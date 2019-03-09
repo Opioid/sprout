@@ -1,12 +1,11 @@
 #include "json.hpp"
+#include <sstream>
 #include "math/math.hpp"
 #include "math/matrix3x3.inl"
 #include "math/matrix4x4.inl"
 #include "math/quaternion.inl"
 #include "math/vector4.inl"
 #include "memory/unique.inl"
-//#include "rapidjson/document.h"
-#include <sstream>
 #include "rapidjson/error/en.h"
 #include "rapidjson/istreamwrapper.h"
 
@@ -54,39 +53,43 @@ static std::string read_error(rapidjson::Document const& document, std::istream&
     return sstream.str();
 }
 
-memory::Unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
-    memory::Unique_ptr<rapidjson::Document> document(new rapidjson::Document);
+memory::Unique_ptr<rapidjson::Document> parse_insitu(char* buffer, std::string& error) noexcept {
+    Document_ptr document(new rapidjson::Document);
 
     document->ParseInsitu(buffer);
 
     if (document->HasParseError()) {
-        throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+        error = rapidjson::GetParseError_En(document->GetParseError());
+        return Document_ptr(nullptr);
     }
 
     return document;
 }
 
-memory::Unique_ptr<rapidjson::Document> parse(std::string_view buffer) {
-    memory::Unique_ptr<rapidjson::Document> document(new rapidjson::Document);
+memory::Unique_ptr<rapidjson::Document> parse(std::string_view buffer,
+                                              std::string&     error) noexcept {
+    Document_ptr document(new rapidjson::Document);
 
     document->Parse(buffer.data());
 
     if (document->HasParseError()) {
-        throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+        error = rapidjson::GetParseError_En(document->GetParseError());
+        return Document_ptr(nullptr);
     }
 
     return document;
 }
 
-memory::Unique_ptr<rapidjson::Document> parse(std::istream& stream) {
+memory::Unique_ptr<rapidjson::Document> parse(std::istream& stream, std::string& error) noexcept {
     rapidjson::IStreamWrapper json_stream(stream);
 
-    memory::Unique_ptr<rapidjson::Document> document(new rapidjson::Document);
+    Document_ptr document(new rapidjson::Document);
 
     document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
 
     if (document->HasParseError()) {
-        throw std::runtime_error(read_error(*document, stream));
+        error = read_error(*document, stream);
+        return Document_ptr(nullptr);
     }
 
     return document;

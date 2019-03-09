@@ -133,13 +133,16 @@ int main(int argc, char* argv[]) {
 
     take::Take take;
 
-    try {
-        auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
-                                         : file_system.read_stream(args.take, take_name);
+    auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
+                                     : file_system.read_stream(args.take, take_name);
 
-        take::Loader::load(take, *stream, take_name, scene, resource_manager);
-    } catch (const std::exception& e) {
-        logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
+    if (!stream) {
+        //    logging::error("Take \"" + args.take + "\" could not be loaded: " + stream.error() +
+        //    ".");
+        return 1;
+    }
+
+    if (!take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
         return 1;
     }
 

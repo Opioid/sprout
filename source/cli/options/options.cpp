@@ -5,7 +5,7 @@
 
 namespace options {
 
-Options parse(int argc, char* argv[]) {
+Options parse(int argc, char* argv[]) noexcept {
     Options result;
 
     try {
@@ -46,7 +46,7 @@ Options parse(int argc, char* argv[]) {
             stream << options.help({"", "Group"});
             logging::info(stream.str());
         }
-    } catch (const cxxopts::OptionException& e) {
+    } catch (cxxopts::OptionException const& e) {
         std::stringstream stream;
         stream << "Parsing options: " << e.what();
         logging::error(stream.str());

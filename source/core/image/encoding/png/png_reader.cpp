@@ -8,6 +8,7 @@
 #include "base/string/string.hpp"
 #include "image/tiled_image.inl"
 #include "image/typed_image.hpp"
+#include "logging/logging.hpp"
 #include "miniz/miniz.hpp"
 
 // based on
@@ -66,18 +67,18 @@ struct Info {
     mz_stream stream;
 };
 
-static Image* create_image(const Info& info, Channels channels, int32_t num_elements, bool swap_xy,
-                           bool invert);
+static Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
+                           bool invert) noexcept;
 
-static void read_chunk(std::istream& stream, Chunk& chunk);
+static void read_chunk(std::istream& stream, Chunk& chunk) noexcept;
 
-static bool handle_chunk(const Chunk& chunk, Info& info);
+static bool handle_chunk(const Chunk& chunk, Info& info) noexcept;
 
-static bool parse_header(const Chunk& chunk, Info& info);
+static bool parse_header(const Chunk& chunk, Info& info) noexcept;
 
-static bool parse_lte(const Chunk& chunk, Info& info);
+static bool parse_lte(const Chunk& chunk, Info& info) noexcept;
 
-static bool parse_data(const Chunk& chunk, Info& info);
+static bool parse_data(const Chunk& chunk, Info& info) noexcept;
 
 static uint8_t filter(uint8_t byte, Filter filter, const Info& info) noexcept;
 
@@ -95,13 +96,14 @@ static constexpr std::array<uint8_t, Signature_size> Signature = {
     {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}};
 
 Image* Reader::read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
-                    bool invert) {
+                    bool invert) noexcept {
     std::array<uint8_t, Signature_size> signature;
 
     stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
 
     if (Signature != signature) {
-        throw std::runtime_error("Bad PNG signature");
+        logging::error("PNG: Bad PNG signature");
+        return nullptr;
     }
 
     Chunk chunk;
@@ -125,8 +127,8 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
     return create_image(info, channels, num_elements, swap_xy, invert);
 }
 
-Image* create_image(const Info& info, Channels channels, int32_t num_elements, bool swap_xy,
-                    bool invert) {
+Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
+                    bool invert) noexcept {
     if (0 == info.num_channels || Channels::None == channels) {
         return nullptr;
     }
@@ -240,7 +242,7 @@ Image* create_image(const Info& info, Channels channels, int32_t num_elements, b
     return nullptr;
 }
 
-void read_chunk(std::istream& stream, Chunk& chunk) {
+void read_chunk(std::istream& stream, Chunk& chunk) noexcept {
     uint32_t length = 0;
     stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
     chunk.length = byteswap(length);
@@ -260,7 +262,7 @@ void read_chunk(std::istream& stream, Chunk& chunk) {
     chunk.crc = byteswap(crc);
 }
 
-bool handle_chunk(const Chunk& chunk, Info& info) {
+bool handle_chunk(const Chunk& chunk, Info& info) noexcept {
     char const* type = reinterpret_cast<char const*>(chunk.type);
 
     if (!strncmp("IHDR", type, 4)) {
@@ -276,13 +278,15 @@ bool handle_chunk(const Chunk& chunk, Info& info) {
     return true;
 }
 
-bool parse_header(const Chunk& chunk, Info& info) {
+bool parse_header(const Chunk& chunk, Info& info) noexcept {
     info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
     info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
     uint32_t const depth = static_cast<uint32_t>(chunk.data[8]);
     if (8 != depth) {
-        throw std::runtime_error(string::to_string(depth) + " bit depth PNG not supported");
+        logging::error("PNG: " + string::to_string(depth) + " bit depth not supported.");
+        info.num_channels = 0;
+        return false;
     }
 
     const Color_type color_type = static_cast<Color_type>(chunk.data[9]);
@@ -303,14 +307,18 @@ bool parse_header(const Chunk& chunk, Info& info) {
     }
 
     if (0 == info.num_channels) {
-        throw std::runtime_error("Indexed PNG not supported");
+        logging::error("PNG: Indexed image not supported.");
+        info.num_channels = 0;
+        return false;
     }
 
     info.bytes_per_pixel = info.num_channels;
 
     uint8_t const interlace = chunk.data[12];
     if (interlace) {
-        throw std::runtime_error("Interlaced PNG not supported");
+        logging::error("PNG: Interlaced image not supported.");
+        info.num_channels = 0;
+        return false;
     }
 
     info.buffer = memory::allocate_aligned<uint8_t>(info.width * info.height * info.num_channels);
@@ -325,17 +333,18 @@ bool parse_header(const Chunk& chunk, Info& info) {
     info.previous_row_data  = memory::allocate_aligned<uint8_t>(row_size);
 
     if (MZ_OK != mz_inflateInit(&info.stream)) {
+        logging::error("PNG: Could not deflate stream.");
         return false;
     }
 
     return true;
 }
 
-bool parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
+bool parse_lte(const Chunk& /*chunk*/, Info& /*info*/) noexcept {
     return true;
 }
 
-bool parse_data(const Chunk& chunk, Info& info) {
+bool parse_data(const Chunk& chunk, Info& info) noexcept {
     static uint32_t constexpr buffer_size = 8192;
     uint8_t buffer[buffer_size];
 

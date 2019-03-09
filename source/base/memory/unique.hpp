@@ -14,9 +14,12 @@ class Unique_ptr {
 
     ~Unique_ptr() noexcept;
 
+    bool operator!() const noexcept;
+
     Unique_ptr<T>& operator=(Unique_ptr other) noexcept;
 
-    T& operator*() noexcept;
+    T const& operator*() const noexcept;
+    T&       operator*() noexcept;
 
     T const* operator->() const noexcept;
 

@@ -65,55 +65,59 @@ class Loader {
 
     using Materials = std::vector<material::Material*>;
 
-    Loader(resource::Manager& manager, Material& fallback_material);
+    Loader(resource::Manager& manager, Material& fallback_material) noexcept;
 
-    ~Loader();
+    ~Loader() noexcept;
 
     bool load(std::string const& filename, std::string_view take_name, take::Take const& take,
-              Scene& scene);
+              Scene& scene) noexcept;
 
-    void register_extension_provider(std::string const& name, entity::Extension_provider* provider);
-    void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
+    void register_extension_provider(std::string const&          name,
+                                     entity::Extension_provider* provider) noexcept;
+    void register_mesh_generator(std::string const&          name,
+                                 shape::triangle::Generator* generator) noexcept;
 
-    Shape* canopy();
-    Shape* celestial_disk();
-    Shape* cube();
+    Shape* canopy() noexcept;
+    Shape* celestial_disk() noexcept;
+    Shape* cube() noexcept;
 
-    void create_light(prop::Prop* prop, Scene& scene);
+    void create_light(prop::Prop* prop, Scene& scene) noexcept;
 
-    size_t num_bytes() const;
+    size_t num_bytes() const noexcept;
 
   private:
     using Local_materials = std::map<std::string, json::Value const*>;
 
-    void load(std::string const& filename, std::string_view take_mount_folder,
-              entity::Entity* parent, Scene& scene);
+    bool load(std::string const& filename, std::string_view take_mount_folder,
+              entity::Entity* parent, Scene& scene) noexcept;
 
-    void read_materials(json::Value const& materials_value, Local_materials& local_materials) const;
+    void read_materials(json::Value const& materials_value, Local_materials& local_materials) const
+        noexcept;
 
     void load_entities(json::Value const& entities_value, entity::Entity* parent,
                        std::string_view mount_folder, Local_materials const& local_materials,
-                       Scene& scene);
+                       Scene& scene) noexcept;
 
-    static void set_visibility(entity::Entity* entity, json::Value const& visibility_value);
+    static void set_visibility(entity::Entity*    entity,
+                               json::Value const& visibility_value) noexcept;
 
     prop::Prop* load_prop(json::Value const& prop_value, std::string const& name,
                           std::string_view mount_folder, Local_materials const& local_materials,
-                          Scene& scene);
+                          Scene& scene) noexcept;
 
     entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
-                                   std::string const& name, Scene& scene);
+                                   std::string const& name, Scene& scene) noexcept;
 
-    Shape* load_shape(json::Value const& shape_value);
+    Shape* load_shape(json::Value const& shape_value) noexcept;
 
-    Shape* shape(std::string const& type, json::Value const& shape_value) const;
+    Shape* shape(std::string const& type, json::Value const& shape_value) const noexcept;
 
     void load_materials(json::Value const& materials_value, std::string_view mount_folder,
                         Local_materials const& local_materials, Scene& scene,
-                        Materials& materials) const;
+                        Materials& materials) const noexcept;
 
     Material* load_material(std::string const& name, std::string_view mount_folder,
-                            Local_materials const& local_materials, Scene& scene) const;
+                            Local_materials const& local_materials, Scene& scene) const noexcept;
 
     resource::Manager& resource_manager_;
 

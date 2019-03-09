@@ -8,7 +8,7 @@ namespace image::encoding::raw {
 
 class Reader {
   public:
-    Image* read(std::istream& stream) const;
+    static Image* read(std::istream& stream) noexcept;
 
   private:
 };

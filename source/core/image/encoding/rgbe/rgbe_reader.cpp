@@ -5,20 +5,23 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "image/typed_image.hpp"
+#include "logging/logging.hpp"
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 
 namespace image::encoding::rgbe {
+
+static uint32_t constexpr Invalid = 0xFFFFFFFF;
 
 struct Header {
     uint32_t width;
     uint32_t height;
 };
 
-static Header read_header(std::istream& stream);
+static Header read_header(std::istream& stream) noexcept;
 
-static void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-                            Float3& image);
+static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+                            Float3& image) noexcept;
 
 static void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
                         uint32_t offset) noexcept;
@@ -27,23 +30,31 @@ using image_float3 = packed_float3;
 
 static image_float3 rgbe_to_float3(uint8_t rgbe[4]) noexcept;
 
-Image* Reader::read(std::istream& stream) {
+Image* Reader::read(std::istream& stream) noexcept {
     Header const header = read_header(stream);
+
+    if (Invalid == header.width) {
+        return nullptr;
+    }
 
     int2 const dimensions(header.width, header.height);
 
     auto image = new Float3(Image::Description(Image::Type::Float3, dimensions));
 
-    read_pixels_RLE(stream, header.width, header.height, *image);
+    if (!read_pixels_RLE(stream, header.width, header.height, *image)) {
+        delete image;
+        return nullptr;
+    }
 
     return image;
 }
 
-Header read_header(std::istream& stream) {
+Header read_header(std::istream& stream) noexcept {
     std::string line;
     std::getline(stream, line);
     if ("#?" != line.substr(0, 2)) {
-        throw std::runtime_error("Bad initial token");
+        logging::error("RGBE: Bad initial token");
+        return {Invalid, Invalid};
     }
 
     bool format_specifier = false;
@@ -60,7 +71,8 @@ Header read_header(std::istream& stream) {
     }
 
     if (!format_specifier) {
-        throw std::runtime_error("No FORMAT specifier found");
+        logging::error("RGBE: No FORMAT specifier found");
+        return {Invalid, Invalid};
     }
 
     Header header;
@@ -68,16 +80,18 @@ Header read_header(std::istream& stream) {
     std::getline(stream, line);
 
     if (std::sscanf(line.c_str(), "-Y %d +X %d", &header.height, &header.width) < 2) {
-        throw std::runtime_error("Missing image size specifier");
+        logging::error("RGBE: Missing image size specifier");
+        return {Invalid, Invalid};
     }
 
     return header;
 }
 
-void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-                     Float3& image) {
+bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+                     Float3& image) noexcept {
     if (scanline_width < 8 || scanline_width > 0x7fff) {
-        return read_pixels(stream, scanline_width * num_scanlines, image, 0);
+        read_pixels(stream, scanline_width * num_scanlines, image, 0);
+        return true;
     }
 
     uint32_t offset = 0;
@@ -96,13 +110,14 @@ void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
             image.store(0, color);
 
             read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
-            return;
+            break;
         }
 
         if ((static_cast<uint32_t>(rgbe[2]) << 8 | static_cast<uint32_t>(rgbe[3])) !=
             scanline_width) {
             memory::free_aligned(scanline_buffer);
-            throw std::runtime_error("Wrong scanline width");
+            logging::error("RGBE: Wrong scanline width");
+            return false;
         }
 
         // read each of the four channels for the scanline into the buffer
@@ -118,7 +133,8 @@ void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
                     if (count == 0 || count > end - index) {
                         memory::free_aligned(scanline_buffer);
-                        throw std::runtime_error("Bad scanline data");
+                        logging::error("RGBE: Bad scanline data");
+                        return false;
                     }
 
                     for (; count > 0; --count) {
@@ -130,7 +146,8 @@ void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
                     if (count == 0 || count > end - index) {
                         memory::free_aligned(scanline_buffer);
-                        throw std::runtime_error("Bad scanline data");
+                        logging::error("RGBE: Bad scanline data");
+                        return false;
                     }
 
                     scanline_buffer[index++] = buf[1];
@@ -156,6 +173,8 @@ void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
     }
 
     memory::free_aligned(scanline_buffer);
+
+    return true;
 }
 
 void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,

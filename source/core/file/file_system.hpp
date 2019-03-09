@@ -12,9 +12,9 @@ using Stream_ptr = memory::Unique_ptr<std::istream>;
 
 class System {
   public:
-    Stream_ptr read_stream(std::string_view name) const;
+    Stream_ptr read_stream(std::string_view name) const noexcept;
 
-    Stream_ptr read_stream(std::string_view name, std::string& resolved_name) const;
+    Stream_ptr read_stream(std::string_view name, std::string& resolved_name) const noexcept;
 
     void push_mount(std::string_view folder) noexcept;
 

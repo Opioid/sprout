@@ -15,10 +15,10 @@ class Provider final : public resource::Provider<Image> {
     ~Provider() noexcept override final;
 
     Image* load(std::string const& filename, Variant_map const& options,
-                resource::Manager& manager) override final;
+                resource::Manager& manager) noexcept override final;
 
     Image* load(void const* data, std::string_view mount_folder, Variant_map const& options,
-                resource::Manager& manager) override final;
+                resource::Manager& manager) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

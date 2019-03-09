@@ -7,7 +7,7 @@
 
 namespace image::encoding::raw {
 
-Image* Reader::read(std::istream& stream) const {
+Image* Reader::read(std::istream& stream) noexcept {
     /*
     int3 const dimensions(512, 512, 32);
 

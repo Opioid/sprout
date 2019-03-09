@@ -6,10 +6,11 @@
 #include "image/image.hpp"
 #include "image/typed_image.hpp"
 #include "json/json.hpp"
+#include "logging/logging.hpp"
 
 namespace image::encoding::sub {
 
-static Image::Type read_image_type(json::Value const& value) {
+static Image::Type read_image_type(json::Value const& value) noexcept {
     if (auto const node = value.FindMember("type"); value.MemberEnd() != node) {
         if ("Byte1" == node->value) {
             return Image::Type::Byte1;
@@ -21,7 +22,7 @@ static Image::Type read_image_type(json::Value const& value) {
     return Image::Type::Undefined;
 }
 
-Image* Reader::read(std::istream& stream) {
+Image* Reader::read(std::istream& stream) noexcept {
     stream.seekg(4);
 
     uint64_t json_size = 0;
@@ -31,35 +32,45 @@ Image* Reader::read(std::istream& stream) {
     stream.read(json_string.data(), static_cast<std::streamsize>(json_size * sizeof(char)));
     json_string[json_size] = 0;
 
-    auto const root = json::parse_insitu(json_string.data());
+    std::string error;
+    auto const  root = json::parse_insitu(json_string.data(), error);
+    if (!root) {
+        logging::error("SUB Image: " + error);
+        return nullptr;
+    }
 
     auto const image_node = root->FindMember("image");
     if (root->MemberEnd() == image_node) {
-        throw std::runtime_error("No image declaration");
+        logging::error("SUB Image: No image declaration");
+        return nullptr;
     }
 
     auto const description_node = image_node->value.FindMember("description");
     if (image_node->value.MemberEnd() == description_node) {
-        throw std::runtime_error("No image description");
+        logging::error("SUB Image: No image description");
+        return nullptr;
     }
 
     int3 const dimensions = ::json::read_int3(description_node->value, "dimensions", int3(-1));
 
     if (-1 == dimensions[0]) {
-        throw std::runtime_error("Invalid dimensions");
+        logging::error("SUB Image: Invalid dimensions");
+        return nullptr;
     }
 
     Image::Type const type = read_image_type(description_node->value);
 
     if (Image::Type::Undefined == type) {
-        throw std::runtime_error("Undefined image type");
+        logging::error("SUB Image: Undefined image type");
+        return nullptr;
     }
 
     auto const topology_node = image_node->value.FindMember("topology");
 
     auto const pixels_node = image_node->value.FindMember("pixels");
     if (image_node->value.MemberEnd() == pixels_node) {
-        throw std::runtime_error("No pixels");
+        logging::error("SUB Image: No pixels");
+        return nullptr;
     }
 
     uint64_t pixels_offset = 0;
@@ -93,7 +104,8 @@ Image* Reader::read(std::istream& stream) {
         }
 
         if (0 == topology_size) {
-            throw std::runtime_error("Empty topology");
+            logging::error("SUB Image: Empty topology");
+            return nullptr;
         }
 
         if (Image::Type::Byte1 == type) {

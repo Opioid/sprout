@@ -1,4 +1,5 @@
 #include "json_reader.hpp"
+#include <fstream>
 #include <istream>
 #include <string>
 #include "base/encoding/encoding.inl"
@@ -9,11 +10,9 @@
 #include "image_json_handler.hpp"
 #include "rapidjson/istreamwrapper.h"
 
-#include <fstream>
-
 namespace image::encoding::json {
 
-Image* Reader::read(std::istream& stream, std::string const& filename) {
+Image* Reader::read(std::istream& stream, std::string const& filename) noexcept {
     Json_handler handler;
 
     rapidjson::IStreamWrapper json_stream(stream);

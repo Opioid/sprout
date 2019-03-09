@@ -28,24 +28,26 @@ class Camera;
 class Message_handler : public server::Message_handler {
   public:
     Message_handler(rendering::Driver_progressive& driver, resource::Manager& resource_manager,
-                    Camera& camera);
+                    Camera& camera) noexcept;
 
-    virtual void handle(std::string const& message) override final;
+    void handle(std::string const& message) noexcept override final;
 
-    virtual std::string introduction() const override final;
+    std::string introduction() const noexcept override final;
 
-    virtual std::string iteration() const override final;
+    std::string iteration() const noexcept override final;
 
   private:
     void handle_entity(scene::entity::Entity* entity, std::string const& value,
-                       std::string const& parameters, bool recompile);
+                       std::string const& parameters, bool recompile) noexcept;
 
     void handle_material(scene::material::Material* material, std::string const& value,
-                         std::string const& parameters);
+                         std::string const& parameters) noexcept;
 
     rendering::Driver_progressive& driver_;
-    resource::Manager&             resource_manager_;
-    Camera&                        camera_;
+
+    resource::Manager& resource_manager_;
+
+    Camera& camera_;
 };
 
 }  // namespace controller

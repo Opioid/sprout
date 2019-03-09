@@ -16,7 +16,7 @@
 namespace procedural::mesh {
 
 scene::shape::Shape* Grass::create_mesh(json::Value const& /*mesh_value*/,
-                                        resource::Manager& manager) {
+                                        resource::Manager& manager) noexcept {
     std::vector<scene::shape::triangle::Index_triangle> triangles;
     std::vector<scene::shape::Vertex>                   vertices;
     uint32_t                                            num_parts = 1;
@@ -82,7 +82,7 @@ scene::shape::Shape* Grass::create_mesh(json::Value const& /*mesh_value*/,
 void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,
                       float height, uint32_t vertex_offset,
                       std::vector<scene::shape::triangle::Index_triangle>& triangles,
-                      std::vector<scene::shape::Vertex>&                   vertices) const {
+                      std::vector<scene::shape::Vertex>& vertices) const noexcept {
     scene::shape::triangle::Index_triangle tri;
     tri.material_index = 0;
 
@@ -221,7 +221,7 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
 }
 
 void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle>& triangles,
-                              std::vector<scene::shape::Vertex>&                   vertices) {
+                              std::vector<scene::shape::Vertex>& vertices) noexcept {
     std::vector<packed_float3> triangle_normals(triangles.size());
 
     for (size_t i = 0, len = triangles.size(); i < len; ++i) {

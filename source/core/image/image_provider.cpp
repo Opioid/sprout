@@ -9,6 +9,7 @@
 #include "encoding/sub/sub_image_reader.hpp"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
+#include "logging/logging.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/resource_provider.inl"
 #include "string/string.hpp"
@@ -20,7 +21,7 @@ Provider::Provider() noexcept : resource::Provider<Image>("Image") {}
 Provider::~Provider() noexcept {}
 
 Image* Provider::load(std::string const& filename, Variant_map const& options,
-                      resource::Manager& manager) {
+                      resource::Manager& manager) noexcept {
     if ("proc:flakes" == filename) {
         return flakes_provider_.create_normal_map(options);
     } else if ("proc:flakes_mask" == filename) {
@@ -28,6 +29,9 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
     }
 
     auto stream_pointer = manager.filesystem().read_stream(filename);
+    if (!stream_pointer) {
+        return nullptr;
+    }
 
     auto& stream = *stream_pointer;
 
@@ -54,18 +58,18 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
         return encoding::sub::Reader::read(stream);
     } else if (file::Type::Undefined == type) {
         if ("raw" == string::suffix(filename) || "raw" == string::presuffix(filename)) {
-            encoding::raw::Reader reader;
-            return reader.read(stream);
+            return encoding::raw::Reader::read(stream);
         } else if ("json" == string::suffix(filename) || "json" == string::presuffix(filename)) {
             return encoding::json::Reader::read(stream, filename);
         }
     }
 
-    throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
+    logging::error("Image type for \"" + filename + "\" not recognized");
+    return nullptr;
 }
 
 Image* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                      Variant_map const& /*options*/, resource::Manager& /*manager*/) {
+                      Variant_map const& /*options*/, resource::Manager& /*manager*/) noexcept {
     return nullptr;
 }
 

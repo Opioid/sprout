@@ -8,7 +8,7 @@ namespace image::encoding::rgbe {
 
 class Reader {
   public:
-    static Image* read(std::istream& stream);
+    static Image* read(std::istream& stream) noexcept;
 };
 
 }  // namespace image::encoding::rgbe

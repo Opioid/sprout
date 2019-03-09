@@ -17,7 +17,8 @@ class Provider;
 
 class Generator {
   public:
-    virtual Shape* create_mesh(json::Value const& mesh_value, resource::Manager& manager) = 0;
+    virtual Shape* create_mesh(json::Value const& mesh_value,
+                               resource::Manager& manager) noexcept = 0;
 };
 
 }  // namespace triangle

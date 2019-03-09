@@ -27,7 +27,7 @@ Provider::Provider() noexcept : resource::Provider<Texture>("Texture") {
 }
 
 Texture* Provider::load(std::string const& filename, Variant_map const& options,
-                        resource::Manager& manager) {
+                        resource::Manager& manager) noexcept {
     Channels channels = Channels::XYZ;
 
     Usage usage = Usage::Undefined;
@@ -56,49 +56,43 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         image_options.set("invert", invert);
     }
 
-    try {
-        auto image = manager.load<Image>(filename, image_options);
-        if (!image) {
-            logging::error("Loading texture \"" + filename + "\": Undefined error.");
-            return nullptr;
-        }
-
-        if (Image::Type::Byte1 == image->description().type) {
-            return new Byte1_unorm(*image);
-        } else if (Image::Type::Byte2 == image->description().type) {
-            if (Usage::Anisotropy == usage) {
-                return new Byte2_snorm(*image);
-            } else {
-                return new Byte2_unorm(*image);
-            }
-        } else if (Image::Type::Byte3 == image->description().type) {
-            if (Usage::Normal == usage) {
-                SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
-
-                return new Byte3_snorm(*image);
-            } else if (Usage::Surface == usage) {
-                return new Byte3_unorm(*image);
-            } else {
-                return new Byte3_sRGB(*image);
-            }
-        } else if (Image::Type::Float1 == image->description().type) {
-            return new Float1(*image);
-        } else if (Image::Type::Float1_sparse == image->description().type) {
-            return new Float1_sparse(*image);
-        } else if (Image::Type::Float3 == image->description().type) {
-            return new Float3(*image);
-        } else {
-            logging::error("Loading texture \"" + filename + "\": Image is of unknown type.");
-        }
-    } catch (const std::exception& e) {
-        logging::error("Loading texture \"" + filename + "\": " + e.what() + ".");
+    auto const image = manager.load<Image>(filename, image_options);
+    if (!image) {
+        return nullptr;
     }
+
+    if (Image::Type::Byte1 == image->description().type) {
+        return new Byte1_unorm(*image);
+    } else if (Image::Type::Byte2 == image->description().type) {
+        if (Usage::Anisotropy == usage) {
+            return new Byte2_snorm(*image);
+        } else {
+            return new Byte2_unorm(*image);
+        }
+    } else if (Image::Type::Byte3 == image->description().type) {
+        if (Usage::Normal == usage) {
+            SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
+
+            return new Byte3_snorm(*image);
+        } else if (Usage::Surface == usage) {
+            return new Byte3_unorm(*image);
+        } else {
+            return new Byte3_sRGB(*image);
+        }
+    } else if (Image::Type::Float1 == image->description().type) {
+        return new Float1(*image);
+    } else if (Image::Type::Float1_sparse == image->description().type) {
+        return new Float1_sparse(*image);
+    } else if (Image::Type::Float3 == image->description().type) {
+        return new Float3(*image);
+    }
+    logging::error("Loading texture \"" + filename + "\": Image is of unknown type.");
 
     return nullptr;
 }
 
 Texture* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                        Variant_map const& /*options*/, resource::Manager& /*manager*/) {
+                        Variant_map const& /*options*/, resource::Manager& /*manager*/) noexcept {
     return nullptr;
 }
 

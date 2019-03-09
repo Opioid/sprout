@@ -23,10 +23,10 @@ class Provider final : public resource::Provider<Material> {
     ~Provider() noexcept override final;
 
     Material* load(std::string const& filename, Variant_map const& options,
-                   resource::Manager& manager) override final;
+                   resource::Manager& manager) noexcept override final;
 
     Material* load(void const* data, std::string_view mount_folder, Variant_map const& options,
-                   resource::Manager& manager) override final;
+                   resource::Manager& manager) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
@@ -34,31 +34,34 @@ class Provider final : public resource::Provider<Material> {
 
   private:
     Material* load(json::Value const& value, std::string_view mount_folder,
-                   resource::Manager& manager);
+                   resource::Manager& manager) noexcept;
 
-    Material* load_cloth(json::Value const& cloth_value, resource::Manager& manager);
+    Material* load_cloth(json::Value const& cloth_value, resource::Manager& manager) noexcept;
 
-    Material* load_debug(json::Value const& debug_value, resource::Manager& manager);
+    Material* load_debug(json::Value const& debug_value, resource::Manager& manager) noexcept;
 
-    Material* load_display(json::Value const& display_value, resource::Manager& manager);
+    Material* load_display(json::Value const& display_value, resource::Manager& manager) noexcept;
 
-    Material* load_glass(json::Value const& glass_value, resource::Manager& manager);
+    Material* load_glass(json::Value const& glass_value, resource::Manager& manager) noexcept;
 
-    Material* load_light(json::Value const& light_value, resource::Manager& manager);
+    Material* load_light(json::Value const& light_value, resource::Manager& manager) noexcept;
 
-    Material* load_matte(json::Value const& matte_value, resource::Manager& manager);
+    Material* load_matte(json::Value const& matte_value, resource::Manager& manager) noexcept;
 
-    Material* load_metal(json::Value const& metal_value, resource::Manager& manager);
+    Material* load_metal(json::Value const& metal_value, resource::Manager& manager) noexcept;
 
-    Material* load_metallic_paint(json::Value const& paint_value, resource::Manager& manager);
+    Material* load_metallic_paint(json::Value const& paint_value,
+                                  resource::Manager& manager) noexcept;
 
-    Material* load_mix(json::Value const& mix_value, resource::Manager& manager);
+    Material* load_mix(json::Value const& mix_value, resource::Manager& manager) noexcept;
 
-    Material* load_sky(json::Value const& sky_value, resource::Manager& manager);
+    Material* load_sky(json::Value const& sky_value, resource::Manager& manager) noexcept;
 
-    Material* load_substitute(json::Value const& substitute_value, resource::Manager& manager);
+    Material* load_substitute(json::Value const& substitute_value,
+                              resource::Manager& manager) noexcept;
 
-    Material* load_volumetric(json::Value const& volumetric_value, resource::Manager& manager);
+    Material* load_volumetric(json::Value const& volumetric_value,
+                              resource::Manager& manager) noexcept;
 
     struct Texture_description {
         std::string filename;
@@ -71,13 +74,15 @@ class Provider final : public resource::Provider<Material> {
         int32_t num_elements;
     };
 
-    static void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings);
+    static void read_sampler_settings(json::Value const& sampler_value,
+                                      Sampler_settings&  settings) noexcept;
 
     static void read_texture_description(json::Value const&   texture_value,
-                                         Texture_description& description);
+                                         Texture_description& description) noexcept;
 
     static Texture_adapter create_texture(const Texture_description& description,
-                                          Variant_map& options, resource::Manager& manager);
+                                          Variant_map&               options,
+                                          resource::Manager&         manager) noexcept;
 
     struct Coating_description {
         float3 color = float3(1.f);
@@ -94,18 +99,18 @@ class Provider final : public resource::Provider<Material> {
     };
 
     static void read_coating_description(json::Value const&   clearcoat_value,
-                                         Coating_description& description);
+                                         Coating_description& description) noexcept;
 
-    static float3 read_hex_RGB(std::string const& text);
+    static float3 read_hex_RGB(std::string const& text) noexcept;
 
-    static float3 read_color(json::Value const& color_value);
+    static float3 read_color(json::Value const& color_value) noexcept;
 
-    static float3 read_spectrum(json::Value const& spectrum_value);
+    static float3 read_spectrum(json::Value const& spectrum_value) noexcept;
 
     debug::Material fallback_material_;
 
   public:
-    static uint32_t max_sample_size();
+    static uint32_t max_sample_size() noexcept;
 };
 
 }  // namespace scene::material
