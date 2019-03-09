@@ -102,7 +102,7 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
     stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
 
     if (Signature != signature) {
-        logging::error("PNG: Bad PNG signature");
+        logging::push_error("Bad PNG signature");
         return nullptr;
     }
 
@@ -284,7 +284,7 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
 
     uint32_t const depth = static_cast<uint32_t>(chunk.data[8]);
     if (8 != depth) {
-        logging::error("PNG: " + string::to_string(depth) + " bit depth not supported.");
+        logging::push_error(string::to_string(depth) + " PNG bit depth not supported.");
         info.num_channels = 0;
         return false;
     }
@@ -307,7 +307,7 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
     }
 
     if (0 == info.num_channels) {
-        logging::error("PNG: Indexed image not supported.");
+        logging::push_error("Indexed PNG image not supported.");
         info.num_channels = 0;
         return false;
     }
@@ -316,7 +316,7 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
 
     uint8_t const interlace = chunk.data[12];
     if (interlace) {
-        logging::error("PNG: Interlaced image not supported.");
+        logging::push_error("Interlaced PNG image not supported.");
         info.num_channels = 0;
         return false;
     }
@@ -333,7 +333,7 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
     info.previous_row_data  = memory::allocate_aligned<uint8_t>(row_size);
 
     if (MZ_OK != mz_inflateInit(&info.stream)) {
-        logging::error("PNG: Could not deflate stream.");
+        logging::push_error("Could not deflate PNG stream.");
         return false;
     }
 

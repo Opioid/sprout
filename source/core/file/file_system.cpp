@@ -17,7 +17,7 @@ Stream_ptr System::read_stream(std::string_view name) const noexcept {
 Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const noexcept {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
-        logging::error("Stream %S could not be opened", std::string(name));
+        logging::push_error("Stream %S could not be opened", std::string(name));
         return Stream_ptr();
     }
 

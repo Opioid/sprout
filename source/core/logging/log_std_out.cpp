@@ -1,10 +1,9 @@
 #include "log_std_out.hpp"
 #include <iostream>
-#include <string_view>
 
 namespace logging {
 
-void Std_out::post(Type type, std::string_view text) {
+void Std_out::internal_post(Type type, std::string const& text) {
     switch (type) {
         case Type::Info:
         default:

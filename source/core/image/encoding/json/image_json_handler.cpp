@@ -41,6 +41,8 @@ class Float1_handler : public Json_handler::Image_handler {
     int32_t current_texel_ = 0;
 };
 
+Json_handler::Image_handler::~Image_handler() {}
+
 Json_handler::Json_handler() {
     clear();
 }

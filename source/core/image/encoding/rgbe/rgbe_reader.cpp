@@ -53,7 +53,7 @@ Header read_header(std::istream& stream) noexcept {
     std::string line;
     std::getline(stream, line);
     if ("#?" != line.substr(0, 2)) {
-        logging::error("RGBE: Bad initial token");
+        logging::push_error("Bad initial token.");
         return {Invalid, Invalid};
     }
 
@@ -71,7 +71,7 @@ Header read_header(std::istream& stream) noexcept {
     }
 
     if (!format_specifier) {
-        logging::error("RGBE: No FORMAT specifier found");
+        logging::push_error("No FORMAT specifier found.");
         return {Invalid, Invalid};
     }
 
@@ -80,7 +80,7 @@ Header read_header(std::istream& stream) noexcept {
     std::getline(stream, line);
 
     if (std::sscanf(line.c_str(), "-Y %d +X %d", &header.height, &header.width) < 2) {
-        logging::error("RGBE: Missing image size specifier");
+        logging::push_error("Missing image size specifier.");
         return {Invalid, Invalid};
     }
 
@@ -116,7 +116,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
         if ((static_cast<uint32_t>(rgbe[2]) << 8 | static_cast<uint32_t>(rgbe[3])) !=
             scanline_width) {
             memory::free_aligned(scanline_buffer);
-            logging::error("RGBE: Wrong scanline width");
+            logging::push_error("Wrong scanline width.");
             return false;
         }
 
@@ -133,7 +133,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
                     if (count == 0 || count > end - index) {
                         memory::free_aligned(scanline_buffer);
-                        logging::error("RGBE: Bad scanline data");
+                        logging::push_error("Bad scanline data.");
                         return false;
                     }
 
@@ -146,7 +146,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
                     if (count == 0 || count > end - index) {
                         memory::free_aligned(scanline_buffer);
-                        logging::error("RGBE: Bad scanline data");
+                        logging::push_error("Bad scanline data.");
                         return false;
                     }
 

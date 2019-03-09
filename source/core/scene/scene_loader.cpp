@@ -139,7 +139,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     std::string error;
     auto const  root = json::parse(*stream_pointer, error);
     if (!root) {
-        logging::error("Scene \"" + filename + "\":" + error);
+        logging::push_error(error);
         return false;
     }
 

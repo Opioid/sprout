@@ -58,7 +58,7 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
 
     auto const image = manager.load<Image>(filename, image_options);
     if (!image) {
-        logging::error("Loading texture %S.", filename);
+        logging::error("Loading texture %S: ", filename);
         return nullptr;
     }
 

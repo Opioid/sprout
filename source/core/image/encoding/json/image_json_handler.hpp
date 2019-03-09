@@ -61,7 +61,7 @@ class Json_handler {
   public:
     class Image_handler {
       public:
-        virtual ~Image_handler() {}
+        virtual ~Image_handler();
 
         virtual void add(uint32_t value) = 0;
         virtual void add(float value)    = 0;

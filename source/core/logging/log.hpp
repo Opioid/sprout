@@ -11,9 +11,29 @@ class Log {
 
     virtual ~Log();
 
-    virtual void post(Type type, std::string_view text) = 0;
+    virtual void post(Type type, std::string const& text = "");
 
     virtual void post(Type type, std::string const& text, std::string const& a);
+
+    virtual void push(Type type, std::string const& text);
+
+    virtual void push(Type type, std::string const& text, std::string const& a);
+
+  protected:
+    virtual void internal_post(Type type, std::string const& text) = 0;
+
+  private:
+    struct Entry {
+        Type type;
+
+        std::string text;
+    };
+
+    static int32_t constexpr Num_entries = 1;
+
+    int32_t current_entry_ = 0;
+
+    Entry entries_[Num_entries];
 };
 
 }  // namespace logging

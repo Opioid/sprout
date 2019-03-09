@@ -118,7 +118,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     std::string error;
     auto const  root = json::parse(stream, error);
     if (!root) {
-        logging::error("Take: " + error);
+        logging::push_error(error);
+        return false;
     }
 
     json::Value const* postprocessors_value = nullptr;
@@ -150,7 +151,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     }
 
     if (take.scene_filename.empty()) {
-        logging::error("Take: No reference to scene included.");
+        logging::push_error("No reference to scene included.");
         return false;
     }
 

@@ -136,13 +136,8 @@ int main(int argc, char* argv[]) {
     auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
                                      : file_system.read_stream(args.take, take_name);
 
-    if (!stream) {
-        //    logging::error("Take \"" + args.take + "\" could not be loaded: " + stream.error() +
-        //    ".");
-        return 1;
-    }
-
-    if (!take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
+    if (!stream || !take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
+        logging::error("Loading take %S: ", args.take);
         return 1;
     }
 
@@ -164,6 +159,7 @@ int main(int argc, char* argv[]) {
     procedural::sky::init(scene_loader, material_provider);
 
     if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
+        logging::error("Loading scene %S: ", take.scene_filename);
         return 1;
     }
 

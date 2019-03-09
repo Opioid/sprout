@@ -23,11 +23,11 @@ void init(Type type, bool verbose) {
     log_verbose = verbose;
 }
 
-void info(std::string_view text) {
+void info(std::string const& text) {
     log->post(Log::Type::Info, text);
 }
 
-void warning(std::string_view text) {
+void warning(std::string const& text) {
     log->post(Log::Type::Warning, text);
 }
 
@@ -35,7 +35,7 @@ void warning(std::string const& text, std::string const& a) {
     log->post(Log::Type::Warning, text, a);
 }
 
-void error(std::string_view text) {
+void error(std::string const& text) {
     log->post(Log::Type::Error, text);
 }
 
@@ -43,7 +43,15 @@ void error(std::string const& text, std::string const& a) {
     log->post(Log::Type::Error, text, a);
 }
 
-void verbose(std::string_view text) {
+void push_error(std::string const& text) {
+    log->push(Log::Type::Error, text);
+}
+
+void push_error(std::string const& text, std::string const& a) {
+    log->push(Log::Type::Error, text, a);
+}
+
+void verbose(std::string const& text) {
     if (log_verbose) {
         log->post(Log::Type::Verbose, text);
     }
