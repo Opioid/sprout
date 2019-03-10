@@ -39,7 +39,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
                       resource::Manager& manager) {
     auto stream_pointer = manager.filesystem().read_stream(filename);
     if (!stream_pointer) {
-        return nullptr;
+        logging::error("Loading mesh %S: ", filename);
     }
 
     file::Type type = file::query_type(*stream_pointer);
@@ -64,17 +64,17 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
     }
 
     if (handler.vertices().empty()) {
-        logging::error("Mesh \"" + filename + "\" does not contain vertices");
+        logging::error("Mesh %S does not contain vertices.", filename);
         return nullptr;
     }
 
     if (!handler.has_positions()) {
-        logging::error("Mesh \"" + filename + "\" does not contain vertex positions");
+        logging::error("Mesh %S does not contain vertex positions.", filename);
         return nullptr;
     }
 
     if (handler.triangles().empty()) {
-        logging::error("Mesh \"" + filename + "\" does not contain indices");
+        logging::error("Mesh %S does not contain indices.", filename);
         return nullptr;
     }
 

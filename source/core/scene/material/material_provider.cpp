@@ -53,18 +53,19 @@ Material* Provider::load(std::string const& filename, Variant_map const& /*optio
     std::string resolved_name;
     auto        stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
+        logging::error("Loading material %S: ", filename);
         return nullptr;
     }
 
     std::string error;
     auto        root = json::parse(*stream_pointer, error);
     if (!root) {
-        logging::error("Material \"" + filename + "\"" + error);
+        logging::error("Loading material %S: " + error, filename);
     }
 
     auto material = load(*root, string::parent_directory(resolved_name), manager);
     if (!material) {
-        logging::error("Material \"" + filename + "\" could not be loaded.");
+        logging::error("Loading material %S: ", filename);
     }
 
     return material;
@@ -89,7 +90,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
                          resource::Manager& manager) noexcept {
     json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
     if (value.MemberEnd() == rendering_node) {
-        logging::error("Material has no render node");
+        logging::push_error("Material has no render node.");
         return nullptr;
     }
 
@@ -125,12 +126,16 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
         } else if ("Volumetric" == n.name) {
             material = load_volumetric(n.value, manager);
         }
+
+        if (material) {
+            break;
+        }
     }
 
     manager.filesystem().pop_mount();
 
     if (!material) {
-        logging::error("Material is of unknown type");
+        logging::push_error("Material is of unknown type.");
         return nullptr;
     }
 
@@ -582,10 +587,6 @@ Material* Provider::load_metal(json::Value const& metal_value,
                 if ("Normal" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Normal);
                     normal_map = create_texture(texture_description, options, manager);
-                    /*	} else if ("Surface" == usage) {
-                                    surface_map = texture_cache_.load(filename,
-                                                                                                      static_cast<uint32_t(
-                                                                                                             image::texture::Provider::Flags::Use_as_surface));*/
                 } else if ("Anisotropy" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Anisotropy);
                     direction_map = create_texture(texture_description, options, manager);
@@ -771,7 +772,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
     }
 
     if (materials.size() < 2) {
-        logging::error("Mix material needs 2 child materials");
+        logging::push_error("Mix material needs 2 child materials.");
         return nullptr;
     }
 
