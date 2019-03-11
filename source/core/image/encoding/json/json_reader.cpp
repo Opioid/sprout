@@ -19,7 +19,11 @@ Image* Reader::read(std::istream& stream, std::string const& filename) noexcept 
 
     rapidjson::Reader reader;
 
-    reader.Parse(json_stream, handler);
+    auto const result = reader.Parse(json_stream, handler);
+
+    if (!result) {
+        return nullptr;
+    }
 
     sub::Writer::write(filename, *handler.image());
 
