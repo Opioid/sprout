@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
     logging::info("Welcome to sprout (" + platform::build() + ")!");
 
     if (args.take.empty()) {
+        logging::error("No take specified.");
         return 1;
     }
 

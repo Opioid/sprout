@@ -1,6 +1,5 @@
 #include "options.hpp"
 #include <cctype>
-#include <sstream>
 #include <string_view>
 #include "core/logging/logging.hpp"
 
@@ -27,25 +26,20 @@ Options parse(int argc, char* argv[]) noexcept {
     for (int32_t i = 1; i < argc;) {
         std::string_view const command = std::string_view(argv[i]).substr(1);
 
-        if (i < argc - 1) {
-            int32_t j = i + 1;
-            for (; j < argc; ++j) {
-                if (is_parameter(argv[j])) {
-                    handle_all(command, argv[j], result);
-                } else {
-                    if (j == i + 1) {
-                        handle_all(command, "", result);
-                    }
-
-                    break;
+        int32_t j = i + 1;
+        for (;; ++j) {
+            if (j < argc && is_parameter(argv[j])) {
+                handle_all(command, argv[j], result);
+            } else {
+                if (j == i + 1) {
+                    handle_all(command, "", result);
                 }
-            }
 
-            i = j;
-        } else {
-            handle_all(command, "", result);
-            ++i;
+                break;
+            }
         }
+
+        i = j;
     }
 
     return result;
