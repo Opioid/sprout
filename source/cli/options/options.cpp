@@ -1,58 +1,133 @@
 #include "options.hpp"
+#include <cctype>
 #include <sstream>
+#include <string_view>
 #include "core/logging/logging.hpp"
-#include "cxxopts/cxxopts.hpp"
 
 namespace options {
+
+static bool handle_all(std::string_view command, std::string const& parameter,
+                       Options& result) noexcept;
+
+static bool handle(std::string_view command, std::string const& parameter,
+                   Options& result) noexcept;
+
+static bool is_parameter(std::string_view text) noexcept;
+
+static void help() noexcept;
 
 Options parse(int argc, char* argv[]) noexcept {
     Options result;
 
-    try {
-        cxxopts::Options options("sprout", "sprout is a global illumination renderer experiment");
+    if (1 == argc) {
+        help();
+        return result;
+    }
 
-        options.add_options()("h, help", "Print help.")
+    for (int32_t i = 1; i < argc;) {
+        std::string_view const command = std::string_view(argv[i]).substr(1);
 
-            ("i, input", "Path of the take file to render or json string describing the take.",
-             cxxopts::value<std::string>(result.take), "json file/string")
+        if (i < argc - 1) {
+            int32_t j = i + 1;
+            for (; j < argc; ++j) {
+                if (is_parameter(argv[j])) {
+                    handle_all(command, argv[j], result);
+                } else {
+                    if (j == i + 1) {
+                        handle_all(command, "", result);
+                    }
 
-                ("m, mount",
-                 "Specifies a mount point for the data directory. "
-                 "The default value is \"../data/\"",
-                 cxxopts::value<std::vector<std::string>>(result.mounts), "directory path")
+                    break;
+                }
+            }
 
-                    ("t, threads",
-                     "Specifies the number of threads used by sprout. "
-                     "0 creates one thread for each logical CPU. "
-                     "-x creates a number of threads equal to the number of logical CPUs minus x. "
-                     "The default value is 0.",
-                     cxxopts::value<int>(result.threads), "integer")
-
-                        ("p, progressive", "Starts sprout in progressive mode.",
-                         cxxopts::value<bool>(result.progressive))
-
-                            ("no-textures", "Disables loading of all textures.",
-                             cxxopts::value<bool>(result.no_textures))
-
-                                ("v, verbose", "Enables verbose logging.",
-                                 cxxopts::value<bool>(result.verbose));
-
-        const int initial_argc = argc;
-
-        auto const parsed = options.parse(argc, argv);
-
-        if (1 == initial_argc || parsed.count("help")) {
-            std::stringstream stream;
-            stream << options.help({"", "Group"});
-            logging::info(stream.str());
+            i = j;
+        } else {
+            handle_all(command, "", result);
+            ++i;
         }
-    } catch (cxxopts::OptionException const& e) {
-        std::stringstream stream;
-        stream << "Parsing options: " << e.what();
-        logging::error(stream.str());
     }
 
     return result;
+}
+
+static bool handle_all(std::string_view command, std::string const& parameter,
+                       Options& result) noexcept {
+    if (command[0] == '-') {
+        return handle(command.substr(1), parameter, result);
+    }
+
+    for (size_t i = 0, len = command.size(); i < len; ++i) {
+        if (!handle(command.substr(i, i + 1), parameter, result)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool handle(std::string_view command, std::string const& parameter,
+                   Options& result) noexcept {
+    if ("help" == command || "h" == command) {
+        help();
+    } else if ("input" == command || "i" == command) {
+        result.take = parameter;
+    } else if ("mount" == command || "m" == command) {
+        result.mounts.push_back(parameter);
+    } else if ("threads" == command || "t" == command) {
+        result.threads = std::atoi(parameter.data());
+    } else if ("progressive" == command || "p" == command) {
+        result.progressive = true;
+    } else if ("no-textures" == command) {
+        result.no_textures = true;
+    } else if ("verbose" == command || "v" == command) {
+        result.verbose = true;
+    }
+
+    return true;
+}
+
+static bool is_parameter(std::string_view text) noexcept {
+    if (text.size() <= 1) {
+        return true;
+    }
+
+    if (text[0] == '-') {
+        if (text[1] == '-') {
+            return false;
+        }
+
+        for (size_t i = 1, len = text.size(); i < len; ++i) {
+            if (!std::isdigit(text[i])) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+static void help() noexcept {
+    static std::string const text =
+        R"(sprout is a global illumination renderer experiment
+Usage:
+  sprout [OPTION...]
+
+  -h, --help                    Print help.
+  -i, --input json file/string  Path of the take file to render or json
+                                string describing the take.
+  -m, --mount directory path    Specifies a mount point for the data
+                                directory. The default value is "../data/"
+  -t, --threads integer         Specifies the number of threads used by
+                                sprout. 0 creates one thread for each logical CPU.
+                                -x creates a number of threads equal to the
+                                number of logical CPUs minus x. The default
+                                value is 0.
+  -p, --progressive             Starts sprout in progressive mode.
+      --no-textures             Disables loading of all textures.
+  -v, --verbose                 Enables verbose logging.)";
+
+    logging::info(text);
 }
 
 }  // namespace options

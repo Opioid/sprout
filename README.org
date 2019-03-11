@@ -60,12 +60,11 @@ On Windows it should work with Visual Studio 2017 preview or a newer version.
 ** Dependencies
 
 I try to keep the number of required dependencies reasonably low in this project.
-At the moment there are three.
+At the moment there are two.
 All of them are header-only libraries and included in the repository.
 
 1. [[https://github.com/richgel999/miniz][Miniz]] for encoding/decoding PNG images and decompressing gz archives
 2. [[https://github.com/miloyip/rapidjson][RapidJSON]] for parsing json files
-3. [[https://github.com/jarro2783/cxxopts][cxxopts]] for parsing command line arguments
 
 If you have [[https://www.ffmpeg.org/][FFmpeg]] installed you can export animations to mp4, 
 but it is neither required to build nor to run.
@@ -73,5 +72,4 @@ but it is neither required to build nor to run.
 Additionally, the repository includes a slightly modified copy of the [[http://cgg.mff.cuni.cz/projects/SkylightModelling/][Hosek]] sky model.
 I list this code separately from the other third-party dependencies,
 because it can easily be removed without impairing the overall functionality of the renderer. 
-The main changes are a conversion from ~double~ to ~float~ type 
-and optimizations of pow() with a constant exponent.
+The main changes are a conversion from ~double~ to ~float~ type, optimizations of pow() with a constant exponent, and modifying the solar radius.
