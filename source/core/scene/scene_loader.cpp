@@ -4,6 +4,7 @@
 #include "base/json/json.hpp"
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "base/memory/variant_map.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -296,16 +297,17 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
 prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& name,
                               std::string_view mount_folder, Local_materials const& local_materials,
                               Scene& scene) noexcept {
-    Shape*    shape = nullptr;
-    Materials materials;
+    Shape* shape = nullptr;
 
-    json::Value const* visibility = nullptr;
+    json::Value const* visibility      = nullptr;
+    json::Value const* materials_value = nullptr;
 
     for (auto& n : prop_value.GetObject()) {
         if ("shape" == n.name) {
             shape = load_shape(n.value);
         } else if ("materials" == n.name) {
-            load_materials(n.value, mount_folder, local_materials, scene, materials);
+            //   load_materials(n.value, mount_folder, local_materials, scene, materials);
+            materials_value = &n.value;
         } else if ("visibility" == n.name) {
             visibility = &n.value;
         }
@@ -314,6 +316,10 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
     if (!shape) {
         return nullptr;
     }
+
+    Materials materials(shape->num_parts(), 0);
+
+    load_materials(*materials_value, mount_folder, local_materials, scene, materials);
 
     if (1 == materials.size() && 1.f == materials[0]->ior()) {
     } else {
@@ -405,10 +411,12 @@ void Loader::load_materials(json::Value const& materials_value, std::string_view
         return;
     }
 
-    materials.reserve(materials_value.Size());
-
     for (auto const& m : materials_value.GetArray()) {
         materials.push_back(load_material(m.GetString(), mount_folder, local_materials, scene));
+
+        if (materials.full()) {
+            break;
+        }
     }
 }
 

@@ -2,7 +2,6 @@
 #define SU_CORE_TAKE_TAKE_HPP
 
 #include <string>
-#include <vector>
 #include "base/memory/array.hpp"
 #include "take_settings.hpp"
 #include "take_view.hpp"

@@ -2,6 +2,7 @@
 #define SU_BASE_MEMORY_ARRAY_HPP
 
 #include <cstdint>
+#include <initializer_list>
 
 namespace memory {
 
@@ -12,15 +13,20 @@ class Array {
 
     Array(uint64_t capacity, uint64_t size = ~0x0) noexcept;
 
+    Array(std::initializer_list<T> list) noexcept;
+
     Array(Array&& other) noexcept;
 
     ~Array() noexcept;
 
     bool empty() const noexcept;
 
+    bool full() const noexcept;
+
     uint64_t size() const noexcept;
 
-    T* data() noexcept;
+    T const* data() const noexcept;
+    T*       data() noexcept;
 
     void operator=(Array&& other) noexcept;
 
@@ -31,8 +37,7 @@ class Array {
     T& operator[](uint64_t i) noexcept;
 
     T const* begin() const noexcept;
-
-    T* begin() noexcept;
+    T*       begin() noexcept;
 
     T const* end() const noexcept;
     T*       end() noexcept;

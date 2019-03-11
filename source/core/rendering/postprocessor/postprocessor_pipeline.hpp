@@ -1,7 +1,6 @@
 #ifndef SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 #define SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 
-#include <vector>
 #include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"

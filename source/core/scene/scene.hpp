@@ -66,7 +66,7 @@ class Scene {
     using Material   = material::Material;
     using Shape      = shape::Shape;
 
-    using Materials = std::vector<material::Material*>;
+    using Materials = memory::Array<material::Material*>;
 
     Scene() noexcept;
 

@@ -1,5 +1,6 @@
 #include "fluid_provider.hpp"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "core/resource/resource_manager.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"

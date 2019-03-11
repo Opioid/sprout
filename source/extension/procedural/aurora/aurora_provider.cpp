@@ -7,6 +7,7 @@
 #include "base/math/sample_distribution.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture_adapter.inl"

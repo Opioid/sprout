@@ -3,6 +3,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "core/resource/resource_manager.inl"
 #include "core/scene/material/light/light_constant.hpp"
 #include "core/scene/material/material_provider.hpp"

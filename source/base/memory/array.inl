@@ -17,6 +17,14 @@ Array<T>::Array(uint64_t capacity, uint64_t size) noexcept
       data_(allocate_aligned<T>(capacity)) {}
 
 template <typename T>
+Array<T>::Array(std::initializer_list<T> list) noexcept
+    : capacity_(list.size()), size_(0), data_(allocate_aligned<T>(list.size())) {
+    for (auto e : list) {
+        push_back(e);
+    }
+}
+
+template <typename T>
 Array<T>::Array(Array&& other) noexcept
     : capacity_(other.capacity_), size_(other.size_), data_(other.data_) {
     other.capacity_ = 0;
@@ -35,8 +43,18 @@ bool Array<T>::empty() const noexcept {
 }
 
 template <typename T>
+bool Array<T>::full() const noexcept {
+    return capacity_ == size_;
+}
+
+template <typename T>
 uint64_t Array<T>::size() const noexcept {
     return size_;
+}
+
+template <typename T>
+T const* Array<T>::data() const noexcept {
+    return data_;
 }
 
 template <typename T>

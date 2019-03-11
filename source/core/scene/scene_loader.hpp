@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "base/json/json_types.hpp"
+#include "base/memory/array.hpp"
 #include "material/material.hpp"
 
 namespace file {
@@ -63,7 +64,7 @@ class Loader {
     using Shape    = shape::Shape;
     using Material = material::Material;
 
-    using Materials = std::vector<material::Material*>;
+    using Materials = memory::Array<material::Material*>;
 
     Loader(resource::Manager& manager, Material& fallback_material) noexcept;
 
