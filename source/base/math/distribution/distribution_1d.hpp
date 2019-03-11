@@ -3,10 +3,10 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <vector>
+//#include <vector>
 
 namespace math {
-
+/*
 class Distribution_1D {
   public:
     void init(float const* data, size_t len) noexcept;
@@ -136,7 +136,7 @@ class Distribution_implicit_pdf_lut_1D {
 
     float lut_range_;
 };
-
+*/
 class Distribution_implicit_pdf_lut_lin_1D {
   public:
     Distribution_implicit_pdf_lut_lin_1D() noexcept;

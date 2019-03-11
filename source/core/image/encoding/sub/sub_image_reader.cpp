@@ -1,6 +1,6 @@
 #include "sub_image_reader.hpp"
 #include <fstream>
-#include <vector>
+#include "base/memory/array.inl"
 #include "base/memory/bitfield.inl"
 #include "base/string/string.hpp"
 #include "image/image.hpp"
@@ -28,7 +28,7 @@ Image* Reader::read(std::istream& stream) noexcept {
     uint64_t json_size = 0;
     stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
 
-    std::vector<char> json_string(json_size + 1);
+    memory::Array<char> json_string(json_size + 1);
     stream.read(json_string.data(), static_cast<std::streamsize>(json_size * sizeof(char)));
     json_string[json_size] = 0;
 

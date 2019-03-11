@@ -6,6 +6,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "bvh/scene_bvh_builder.inl"
 #include "entity/dummy.hpp"
@@ -34,7 +35,6 @@ Scene::Scene() noexcept {
     lights_.reserve(16);
     extensions_.reserve(16);
     entities_.reserve(16);
-    light_powers_.reserve(16);
     materials_.reserve(16);
     animations_.reserve(16);
     animation_stages_.reserve(16);
@@ -75,6 +75,8 @@ void Scene::finish(uint64_t frame_step, uint64_t frame_duration) noexcept {
     if (lights_.empty()) {
         lights_.push_back(&null_light_);
     }
+
+    light_powers_.reserve(lights_.size());
 
     uint32_t const num_frames = count_frames(frame_step, frame_duration) + 1;
 
@@ -275,15 +277,13 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     volume_bvh_.set_infinite_props(infinite_volumes_);
 
     // re-sort lights PDF
-    light_powers_.clear();
-
     for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
         auto l = lights_[i];
         l->prepare_sampling(i, time, pool);
-        light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(prop_bvh_.aabb()))));
+        light_powers_[i] = std::sqrt(spectrum::luminance(l->power(prop_bvh_.aabb())));
     }
 
-    light_distribution_.init(light_powers_.data(), light_powers_.size());
+    light_distribution_.init(light_powers_.data(), static_cast<uint32_t>(light_powers_.size()));
 
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }

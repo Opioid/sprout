@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include "base/math/distribution/distribution_1d.hpp"
+#include "base/memory/array.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "light/null_light.hpp"
 #include "material/material.hpp"
@@ -176,9 +177,9 @@ class Scene {
 
     std::map<std::string, entity::Entity*, std::less<>> named_entities_;
 
-    std::vector<float> light_powers_;
+    memory::Array<float> light_powers_;
 
-    math::Distribution_1D light_distribution_;
+    math::Distribution_implicit_pdf_lut_lin_1D light_distribution_;
 
     std::vector<Material*> materials_;
 

@@ -8,7 +8,7 @@
 #include "debug/assert.hpp"
 
 namespace math {
-
+/*
 inline void Distribution_1D::init(float const* data, size_t len) noexcept {
     precompute_1D_pdf_cdf(data, len);
 }
@@ -384,7 +384,7 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) noexce
         lut_[i] = last;
     }
 }
-
+*/
 //==================================================================================================
 
 // The initial motivation for this version comes from the following article:
