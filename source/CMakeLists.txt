@@ -56,6 +56,12 @@ elseif (MSVC)
 		string(REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     endif()
 
+    # Disable exceptions
+    if (CMAKE_CXX_FLAGS MATCHES "/EHsc")
+        string(REGEX REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    endif()
+    add_definitions(-D_HAS_EXCEPTIONS=0)
+
 	# Force to always compile with W4
 	if (CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
 		string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
