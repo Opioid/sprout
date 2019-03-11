@@ -3,6 +3,7 @@
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"
+#include "base/memory/array.inl"
 
 namespace take {
 

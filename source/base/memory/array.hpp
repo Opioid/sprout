@@ -38,8 +38,8 @@ class Array {
     T*       end() noexcept;
 
   private:
-    uint64_t size_;
     uint64_t capacity_;
+    uint64_t size_;
 
     T* data_;
 };
