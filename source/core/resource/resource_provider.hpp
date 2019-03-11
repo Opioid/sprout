@@ -20,10 +20,11 @@ class Provider : public Identifiable<T> {
 
     virtual ~Provider() noexcept;
 
-    virtual T* load(std::string const& filename, Variant_map const& options, Manager& manager) = 0;
+    virtual T* load(std::string const& filename, Variant_map const& options,
+                    Manager& manager) noexcept = 0;
 
     virtual T* load(void const* data, std::string_view mount_folder, Variant_map const& options,
-                    Manager& manager) = 0;
+                    Manager& manager) noexcept = 0;
 
     virtual size_t num_bytes() const noexcept = 0;
 };

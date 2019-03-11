@@ -36,7 +36,7 @@ Provider::Provider() noexcept : resource::Provider<Shape>("Mesh") {}
 Provider::~Provider() noexcept {}
 
 Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
-                      resource::Manager& manager) {
+                      resource::Manager& manager) noexcept {
     auto stream_pointer = manager.filesystem().read_stream(filename);
     if (!stream_pointer) {
         logging::error("Loading mesh %S: ", filename);
@@ -132,7 +132,8 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 }
 
 Shape* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
-                      memory::Variant_map const& /*options*/, resource::Manager& /*manager*/) {
+                      memory::Variant_map const& /*options*/,
+                      resource::Manager& /*manager*/) noexcept {
     return nullptr;
 }
 
@@ -141,7 +142,7 @@ size_t Provider::num_bytes() const noexcept {
 }
 
 Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
-                             uint32_t num_parts, thread::Pool& thread_pool) {
+                             uint32_t num_parts, thread::Pool& thread_pool) noexcept {
     if (triangles.empty() || vertices.empty() || !num_parts) {
         logging::error("No mesh data.");
         return nullptr;
@@ -163,7 +164,7 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
 }
 
 Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
-                                     resource::Manager& manager) {
+                                     resource::Manager& manager) noexcept {
     auto collection = new Morph_target_collection;
 
     Json_handler handler;
@@ -239,7 +240,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 }
 
 void Provider::build_bvh(Mesh& mesh, Triangles const& triangles, uint32_t num_vertices,
-                         Vertex const* const vertices, thread::Pool& thread_pool) {
+                         Vertex const* const vertices, thread::Pool& thread_pool) noexcept {
     bvh::Builder_SAH builder(16, 64);
     builder.build(mesh.tree(), triangles, num_vertices, vertices, 4, thread_pool);
 
@@ -248,7 +249,7 @@ void Provider::build_bvh(Mesh& mesh, Triangles const& triangles, uint32_t num_ve
 
 template <typename Index>
 void fill_triangles(const std::vector<Part>& parts, Index const* indices,
-                    std::vector<Index_triangle>& triangles) {
+                    std::vector<Index_triangle>& triangles) noexcept {
     for (auto const& p : parts) {
         uint32_t const triangles_start = p.start_index / 3;
         uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
@@ -263,7 +264,7 @@ void fill_triangles(const std::vector<Part>& parts, Index const* indices,
     }
 }
 
-Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) {
+Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) noexcept {
     stream.seekg(4);
 
     uint64_t json_size = 0;

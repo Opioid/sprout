@@ -30,27 +30,27 @@ class Provider : public resource::Provider<Shape> {
     ~Provider() noexcept override;
 
     Shape* load(std::string const& filename, memory::Variant_map const& options,
-                resource::Manager& manager) override final;
+                resource::Manager& manager) noexcept override final;
 
     Shape* load(void const* data, std::string_view mount_folder, memory::Variant_map const& options,
-                resource::Manager& manager) override final;
+                resource::Manager& manager) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
     static Shape* create_mesh(Triangles const& triangles, Vertices const& vertices,
-                              uint32_t num_parts, thread::Pool& thread_pool);
+                              uint32_t num_parts, thread::Pool& thread_pool) noexcept;
 
   private:
     Shape* load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
-                               resource::Manager& manager);
+                               resource::Manager& manager) noexcept;
 
     static void build_bvh(Mesh& mesh, Triangles const& triangles, uint32_t num_vertices,
-                          Vertex const* const vertices, thread::Pool& thread_pool);
+                          Vertex const* const vertices, thread::Pool& thread_pool) noexcept;
 
     //	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
     //						  BVH_preset bvh_preset, thread::Pool& thread_pool);
 
-    static Shape* load_binary(std::istream& stream, thread::Pool& thread_pool);
+    static Shape* load_binary(std::istream& stream, thread::Pool& thread_pool) noexcept;
 };
 
 }  // namespace triangle

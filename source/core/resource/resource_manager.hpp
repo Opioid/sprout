@@ -38,11 +38,11 @@ class Manager {
     void register_provider(Provider<T>& provider) noexcept;
 
     template <typename T>
-    T* load(std::string const& filename, Variant_map const& options = Variant_map());
+    T* load(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>
     T* load(std::string const& name, void const* data, std::string_view mount_folder,
-            Variant_map const& options = Variant_map());
+            Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>
     T* get(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;
@@ -56,7 +56,7 @@ class Manager {
 
   private:
     template <typename T>
-    const Typed_cache<T>* typed_cache() const noexcept;
+    Typed_cache<T> const* typed_cache() const noexcept;
 
     template <typename T>
     Typed_cache<T>* typed_cache() noexcept;

@@ -21,7 +21,7 @@ void Manager::register_provider(Provider<T>& provider) noexcept {
 }
 
 template <typename T>
-T* Manager::load(std::string const& filename, Variant_map const& options) {
+T* Manager::load(std::string const& filename, Variant_map const& options) noexcept {
     if (filename.empty()) {
         return nullptr;
     }
@@ -38,7 +38,7 @@ T* Manager::load(std::string const& filename, Variant_map const& options) {
 
 template <typename T>
 T* Manager::load(std::string const& name, void const* data, std::string_view mount_folder,
-                 Variant_map const& options) {
+                 Variant_map const& options) noexcept {
     if (name.empty()) {
         return nullptr;
     }
@@ -96,14 +96,14 @@ size_t Manager::num_bytes() const noexcept {
 }
 
 template <typename T>
-const Typed_cache<T>* Manager::typed_cache() const noexcept {
-    auto cache = caches_.find(Provider<T>::id());
+Typed_cache<T> const* Manager::typed_cache() const noexcept {
+    auto const cache = caches_.find(Provider<T>::id());
 
     if (caches_.end() == cache) {
         return nullptr;
     }
 
-    return static_cast<const Typed_cache<T>*>(cache->second);
+    return static_cast<Typed_cache<T> const*>(cache->second);
 }
 
 template <typename T>
