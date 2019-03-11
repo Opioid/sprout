@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "base/memory/array.hpp"
 #include "take_settings.hpp"
 #include "take_view.hpp"
 
@@ -45,7 +46,7 @@ struct Take {
 
     sampler::Factory* sampler_factory = nullptr;
 
-    std::vector<exporting::Sink*> exporters;
+    memory::Array<exporting::Sink*> exporters;
 };
 
 }  // namespace take

@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 
 #include <vector>
+#include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"
 
@@ -44,7 +45,7 @@ class Pipeline {
   private:
     image::Float4 scratch_;
 
-    std::vector<Postprocessor*> postprocessors_;
+    memory::Array<Postprocessor*> postprocessors_;
 };
 
 }  // namespace postprocessor

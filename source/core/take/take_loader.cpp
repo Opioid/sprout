@@ -5,6 +5,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/vector.hpp"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink_ffmpeg.hpp"
@@ -104,8 +105,8 @@ static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) no
 
 static bool peek_stereoscopic(json::Value const& parameters_value) noexcept;
 
-static std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value,
-                                                    View const&        view) noexcept;
+static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporter_value,
+                                                      View const&        view) noexcept;
 
 static void load_settings(json::Value const& settings_value, Settings& settings) noexcept;
 
@@ -769,15 +770,15 @@ static bool peek_stereoscopic(json::Value const& parameters_value) noexcept {
     return true;
 }
 
-static std::vector<exporting::Sink*> load_exporters(json::Value const& exporter_value,
-                                                    View const&        view) noexcept {
+static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporter_value,
+                                                      View const&        view) noexcept {
     if (!view.camera) {
         return {};
     }
 
     auto const& camera = *view.camera;
 
-    std::vector<exporting::Sink*> exporters;
+    memory::Array<exporting::Sink*> exporters(exporter_value.GetObject().MemberCount(), 0);
 
     for (auto& n : exporter_value.GetObject()) {
         if ("Image" == n.name) {

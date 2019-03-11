@@ -12,17 +12,30 @@ class Array {
 
     Array(uint64_t capacity, uint64_t size = ~0x0) noexcept;
 
+    Array(Array&& other) noexcept;
+
     ~Array() noexcept;
+
+    bool empty() const noexcept;
 
     uint64_t size() const noexcept;
 
     T* data() noexcept;
+
+    void operator=(Array&& other) noexcept;
 
     void reserve(uint64_t capacity) noexcept;
 
     void push_back(T const& v) noexcept;
 
     T& operator[](uint64_t i) noexcept;
+
+    T const* begin() const noexcept;
+
+    T* begin() noexcept;
+
+    T const* end() const noexcept;
+    T*       end() noexcept;
 
   private:
     uint64_t size_;

@@ -1,6 +1,7 @@
 #include "rendering_driver_finalframe.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector4.inl"
+#include "base/memory/array.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink.hpp"

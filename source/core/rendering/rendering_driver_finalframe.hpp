@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
 #define SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
 
-#include <vector>
+#include "base/memory/array.hpp"
 #include "rendering_driver.hpp"
 
 namespace scene::camera {
@@ -23,7 +23,7 @@ class Driver_finalframe : public Driver {
     Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                       uint32_t max_sample_size) noexcept;
 
-    using Exporters = std::vector<exporting::Sink*>;
+    using Exporters = memory::Array<exporting::Sink*>;
 
     void render(Exporters& exporters, progress::Sink& progressor) noexcept;
 
