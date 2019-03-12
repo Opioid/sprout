@@ -5,11 +5,9 @@
 
 namespace options {
 
-static bool handle_all(std::string_view command, std::string const& parameter,
-                       Options& result) noexcept;
+static bool handle_all(std::string const&, std::string const& parameter, Options& result) noexcept;
 
-static bool handle(std::string_view command, std::string const& parameter,
-                   Options& result) noexcept;
+static bool handle(std::string const&, std::string const& parameter, Options& result) noexcept;
 
 static bool is_parameter(std::string_view text) noexcept;
 
@@ -24,7 +22,7 @@ Options parse(int argc, char* argv[]) noexcept {
     }
 
     for (int32_t i = 1; i < argc;) {
-        std::string_view const command = std::string_view(argv[i]).substr(1);
+        std::string const command = std::string(argv[i]).substr(1);
 
         int32_t j = i + 1;
         for (;; ++j) {
@@ -45,8 +43,8 @@ Options parse(int argc, char* argv[]) noexcept {
     return result;
 }
 
-static bool handle_all(std::string_view command, std::string const& parameter,
-                       Options& result) noexcept {
+bool handle_all(std::string const& command, std::string const& parameter,
+                Options& result) noexcept {
     if (command[0] == '-') {
         return handle(command.substr(1), parameter, result);
     }
@@ -60,8 +58,7 @@ static bool handle_all(std::string_view command, std::string const& parameter,
     return true;
 }
 
-static bool handle(std::string_view command, std::string const& parameter,
-                   Options& result) noexcept {
+bool handle(std::string const& command, std::string const& parameter, Options& result) noexcept {
     if ("help" == command || "h" == command) {
         help();
     } else if ("input" == command || "i" == command) {
@@ -76,12 +73,14 @@ static bool handle(std::string_view command, std::string const& parameter,
         result.no_textures = true;
     } else if ("verbose" == command || "v" == command) {
         result.verbose = true;
+    } else {
+        logging::warning("Option %S does not exist.", command);
     }
 
     return true;
 }
 
-static bool is_parameter(std::string_view text) noexcept {
+bool is_parameter(std::string_view text) noexcept {
     if (text.size() <= 1) {
         return true;
     }
@@ -101,7 +100,7 @@ static bool is_parameter(std::string_view text) noexcept {
     return true;
 }
 
-static void help() noexcept {
+void help() noexcept {
     static std::string const text =
         R"(sprout is a global illumination renderer experiment
 Usage:

@@ -69,10 +69,11 @@ int main(int argc, char* argv[]) {
 
     logging::init(logging::Type::Std_out);
 
+    logging::info("Welcome to sprout (" + platform::build() + ")!");
+
     auto const args = options::parse(argc, argv);
 
     logging::set_verbose(args.verbose);
-    logging::info("Welcome to sprout (" + platform::build() + ")!");
 
     if (args.take.empty()) {
         logging::error("No take specified.");
