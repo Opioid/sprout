@@ -1,5 +1,5 @@
 #include "image_json_handler.hpp"
-#include <stdexcept>
+#include <string_view>
 #include "base/math/vector3.inl"
 #include "image/typed_image.hpp"
 
@@ -163,7 +163,7 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
             expected_number_ = Number::Dimensions;
         } else if ("data" == name) {
             if (!image_handler_) {
-            //    throw std::runtime_error("Image description could not be parsed");
+                //    throw std::runtime_error("Image description could not be parsed");
                 return false;
             }
 

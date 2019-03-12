@@ -2,8 +2,6 @@
 #define SU_CORE_IMAGE_ENCODING_JSON_HANDLER_HPP
 
 #include <cstdint>
-#include <string>
-#include <vector>
 #include "image/image.hpp"
 #include "rapidjson/reader.h"
 
