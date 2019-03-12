@@ -3,7 +3,7 @@
 #include <istream>
 #include <string>
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
+#include "base/memory/array.inl"
 #include "image/typed_image.hpp"
 #include "logging/logging.hpp"
 
@@ -98,7 +98,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
     uint8_t  rgbe[4];
     uint8_t  buf[2];
 
-    uint8_t* scanline_buffer = memory::allocate_aligned<uint8_t>(4 * scanline_width);
+    memory::Array<uint8_t> scanline_buffer(4 * scanline_width);
 
     for (; num_scanlines > 0; --num_scanlines) {
         stream.read(reinterpret_cast<char*>(rgbe), sizeof(rgbe));
@@ -115,7 +115,6 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
         if ((static_cast<uint32_t>(rgbe[2]) << 8 | static_cast<uint32_t>(rgbe[3])) !=
             scanline_width) {
-            memory::free_aligned(scanline_buffer);
             logging::push_error("Wrong scanline width.");
             return false;
         }
@@ -132,7 +131,6 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
                     uint32_t count = static_cast<uint32_t>(buf[0]) - 128;
 
                     if (count == 0 || count > end - index) {
-                        memory::free_aligned(scanline_buffer);
                         logging::push_error("Bad scanline data.");
                         return false;
                     }
@@ -145,7 +143,6 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
                     uint32_t count = static_cast<uint32_t>(buf[0]);
 
                     if (count == 0 || count > end - index) {
-                        memory::free_aligned(scanline_buffer);
                         logging::push_error("Bad scanline data.");
                         return false;
                     }
@@ -171,8 +168,6 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
             image.store(offset++, rgbe_to_float3(rgbe));
         }
     }
-
-    memory::free_aligned(scanline_buffer);
 
     return true;
 }

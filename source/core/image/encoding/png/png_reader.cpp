@@ -278,15 +278,19 @@ bool handle_chunk(const Chunk& chunk, Info& info) noexcept {
     return true;
 }
 
+static bool header_error(std::string const& text, Info& info) noexcept {
+    logging::push_error(text);
+    info.num_channels = 0;
+    return false;
+}
+
 bool parse_header(const Chunk& chunk, Info& info) noexcept {
     info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
     info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
     uint32_t const depth = static_cast<uint32_t>(chunk.data[8]);
     if (8 != depth) {
-        logging::push_error(string::to_string(depth) + " PNG bit depth not supported.");
-        info.num_channels = 0;
-        return false;
+        return header_error(string::to_string(depth) + " PNG bit depth not supported.", info);
     }
 
     const Color_type color_type = static_cast<Color_type>(chunk.data[9]);
@@ -307,18 +311,14 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
     }
 
     if (0 == info.num_channels) {
-        logging::push_error("Indexed PNG image not supported.");
-        info.num_channels = 0;
-        return false;
+        return header_error("Indexed PNG image not supported.", info);
     }
 
     info.bytes_per_pixel = info.num_channels;
 
     uint8_t const interlace = chunk.data[12];
     if (interlace) {
-        logging::push_error("Interlaced PNG image not supported.");
-        info.num_channels = 0;
-        return false;
+        return header_error("Interlaced PNG image not supported.", info);
     }
 
     info.buffer = memory::allocate_aligned<uint8_t>(info.width * info.height * info.num_channels);
@@ -333,8 +333,7 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
     info.previous_row_data  = memory::allocate_aligned<uint8_t>(row_size);
 
     if (MZ_OK != mz_inflateInit(&info.stream)) {
-        logging::push_error("Could not deflate PNG stream.");
-        return false;
+        return header_error("Could not deflate PNG stream.", info);
     }
 
     return true;
