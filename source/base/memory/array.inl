@@ -48,6 +48,11 @@ bool Array<T>::full() const noexcept {
 }
 
 template <typename T>
+uint64_t Array<T>::capacity() const noexcept {
+    return capacity_;
+}
+
+template <typename T>
 uint64_t Array<T>::size() const noexcept {
     return size_;
 }

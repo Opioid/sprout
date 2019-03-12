@@ -23,6 +23,7 @@ class Array {
 
     bool full() const noexcept;
 
+    uint64_t capacity() const noexcept;
     uint64_t size() const noexcept;
 
     T const* data() const noexcept;
