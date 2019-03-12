@@ -44,47 +44,6 @@ static inline float2 sample_triangle_uniform(float2 uv) noexcept {
     return float2(1.f - su, uv[1] * su);
 }
 
-static inline float2 sample_triangle_uniform(float u) noexcept {
-    uint32_t const ui = static_cast<uint32_t>(u * (1ull << 32));
-
-    float2 a(1.f, 0.f);
-    float2 b(0.f, 1.f);
-    float2 c(0.f, 0.f);
-
-    for (int32_t i = 0; i < 16; ++i) {
-        int32_t d = (ui >> (2 * (15 - i))) & 0x3ull;
-
-        float2 An, Bn, Cn;
-        switch (d) {
-            case 0:
-                An = (b + c) / 2.f;
-                Bn = (a + c) / 2.f;
-                Cn = (a + b) / 2.f;
-                break;
-            case 1:
-                An = a;
-                Bn = (a + b) / 2.f;
-                Cn = (a + c) / 2.f;
-                break;
-            case 2:
-                An = (b + a) / 2.f;
-                Bn = b;
-                Cn = (b + c) / 2.f;
-                break;
-            case 3:
-                An = (c + a) / 2.f;
-                Bn = (c + b) / 2.f;
-                Cn = c;
-                break;
-        }
-        a = An;
-        b = Bn;
-        c = Cn;
-    }
-
-    return (a + b + c) / 3.f;
-}
-
 static inline float3 sample_hemisphere_uniform(float2 uv) noexcept {
     float const z   = 1.f - uv[0];
     float const r   = std::sqrt(1.f - z * z);

@@ -1,8 +1,10 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_TEST_HPP
+#define SU_CORE_SAMPLER_TEST_HPP
 
-namespace sampler {
-namespace testing {
+namespace sampler::testing {
 
 void test();
-}
-}  // namespace sampler
+
+}  // namespace sampler::testing
+
+#endif
