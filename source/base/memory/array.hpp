@@ -11,7 +11,9 @@ class Array {
   public:
     Array() noexcept;
 
-    Array(uint64_t capacity, uint64_t size = ~0x0) noexcept;
+    Array(uint64_t size) noexcept;
+
+    Array(uint64_t size, T const& def) noexcept;
 
     Array(std::initializer_list<T> list) noexcept;
 

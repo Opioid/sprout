@@ -11,10 +11,15 @@ template <typename T>
 Array<T>::Array() noexcept : capacity_(0), size_(0), data_(nullptr) {}
 
 template <typename T>
-Array<T>::Array(uint64_t capacity, uint64_t size) noexcept
-    : capacity_(capacity),
-      size_(size > capacity ? capacity : size),
-      data_(allocate_aligned<T>(capacity)) {}
+Array<T>::Array(uint64_t size) noexcept
+    : capacity_(size), size_(size), data_(allocate_aligned<T>(size)) {}
+
+template <typename T>
+Array<T>::Array(uint64_t size, T const& def) noexcept : Array<T>(size) {
+    for (uint64_t i = 0; i < size; ++i) {
+        data_[i] = def;
+    }
+}
 
 template <typename T>
 Array<T>::Array(std::initializer_list<T> list) noexcept

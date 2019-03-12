@@ -321,7 +321,8 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
         return nullptr;
     }
 
-    Materials materials(shape->num_parts(), 0);
+    Materials materials;
+    materials.reserve(shape->num_parts());
 
     if (materials_value) {
         load_materials(*materials_value, mount_folder, local_materials, scene, materials);

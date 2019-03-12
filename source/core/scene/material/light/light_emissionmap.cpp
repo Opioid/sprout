@@ -2,6 +2,7 @@
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
+#include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture_adapter.inl"
@@ -101,7 +102,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(d[1]);
 
-        std::vector<float4> artws(pool.num_threads(), float4(0.f));
+        memory::Array<float4> artws(pool.num_threads(), float4(0.f));
 
         float2 const idf = 1.f / float2(d);
 

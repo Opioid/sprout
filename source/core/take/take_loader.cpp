@@ -778,7 +778,8 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
 
     auto const& camera = *view.camera;
 
-    memory::Array<exporting::Sink*> exporters(exporter_value.GetObject().MemberCount(), 0);
+    memory::Array<exporting::Sink*> exporters;
+    exporters.reserve(exporter_value.GetObject().MemberCount());
 
     for (auto& n : exporter_value.GetObject()) {
         if ("Image" == n.name) {
