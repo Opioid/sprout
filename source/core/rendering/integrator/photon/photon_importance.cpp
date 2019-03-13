@@ -1,7 +1,9 @@
 #include "photon_importance.hpp"
 #include "base/atomic/atomic.hpp"
+#include "base/math/distribution/distribution_1d.inl"
 #include "base/math/vector2.inl"
 #include "base/memory/align.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "image/encoding/png/png_writer.hpp"
 
 namespace rendering::integrator::photon {
@@ -35,6 +37,55 @@ void Importance::increment(float2 uv) noexcept {
 
 void Importance::export_heatmap(std::string_view name) const noexcept {
     image::encoding::png::Writer::write_heatmap(name, importance_, dimensions_);
+}
+
+void Importance::prepare_sampling(thread::Pool& pool) noexcept {
+    Distribution_2D::Distribution_impl* conditional = distribution_.allocate(Dimensions);
+    /*
+            pool.run_range(
+                    [&conditional](
+                            uint32_t id, int32_t begin, int32_t end) {
+                            float* luminance = memory::allocate_aligned<float>(d[0]);
+
+                            float4 artw(0.f);
+
+                            for (int32_t y = begin; y < end; ++y) {
+                                    float const v = idf[1] * (static_cast<float>(y) + 0.5f);
+
+                                    for (int32_t x = 0; x < d[0]; ++x) {
+                                            float const u = idf[0] * (static_cast<float>(x) + 0.5f);
+
+                                            float const uv_weight = shape.uv_weight(float2(u, v));
+
+                                            float3 const radiance = ef * texture.at_element_3(x, y,
+       element);
+
+                                            float3 const wr = uv_weight * radiance;
+
+                                            artw += float4(wr, uv_weight);
+
+                                            luminance[x] = spectrum::luminance(wr);
+                                    }
+
+                                    conditional[y].init(luminance, d[0]);
+                            }
+
+                            artws[id] += artw;
+
+                            memory::free_aligned(luminance);
+                    },
+                    0, d[1]);
+
+            float4 artw(0.f);
+            for (auto const& a : artws) {
+                    artw += a;
+            }
+
+            average_emission_ = artw.xyz() / artw[3];
+
+            total_weight_ = artw[3];
+    */
+    distribution_.init();
 }
 
 }  // namespace rendering::integrator::photon

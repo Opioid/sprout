@@ -138,6 +138,10 @@ uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept
 
         return red_num_caustics;
     }
+
+    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
+        importances_[i].prepare_sampling(pool);
+    }
 }
 
 void Map::compile_finalize() noexcept {
