@@ -125,9 +125,11 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
                         float3 const radiance = ef * texture.at_element_3(x, y, element);
 
-                        luminance[x] = uv_weight * spectrum::luminance(radiance);
+                        float3 const wr = uv_weight * radiance;
 
-                        artw += float4(uv_weight * radiance, uv_weight);
+                        artw += float4(wr, uv_weight);
+
+                        luminance[x] = spectrum::luminance(wr);
                     }
 
                     conditional[y].init(luminance, d[0]);
