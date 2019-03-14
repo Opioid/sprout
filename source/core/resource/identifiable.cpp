@@ -1,30 +1,26 @@
 #include "identifiable.hpp"
+#include <vector>
 
 namespace resource {
 
-ID_manager id_manager;
+static std::vector<std::string> type_names;
 
-uint32_t ID_manager::id(std::string const& type_name) {
-    auto& n = names();
+uint32_t id(std::string const& type_name) {
+    uint32_t const len = static_cast<uint32_t>(type_names.size());
 
-    for (uint32_t i = 0, len = static_cast<uint32_t>(n.size()); i < len; ++i) {
-        if (n[i] == type_name) {
+    for (uint32_t i = 0; i < len; ++i) {
+        if (type_names[i] == type_name) {
             return i;
         }
     }
 
-    n.push_back(type_name);
+    type_names.push_back(type_name);
 
-    return static_cast<uint32_t>(n.size() - 1);
+    return len;
 }
 
-std::string_view ID_manager::name(uint32_t id) const {
-    return names()[id];
-}
-
-std::vector<std::string>& ID_manager::names() const {
-    static std::vector<std::string> type_names;
-    return type_names;
+std::string_view name(uint32_t id) {
+    return type_names[id];
 }
 
 }  // namespace resource

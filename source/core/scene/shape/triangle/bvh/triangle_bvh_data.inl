@@ -107,9 +107,9 @@ template <typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
                                                                  uint32_t            material_index,
                                                                  Vertex const* const vertices) {
-    const Vertex& va                           = vertices[a];
-    const Vertex& vb                           = vertices[b];
-    const Vertex& vc                           = vertices[c];
+    const Vertex& va = vertices[a];
+    const Vertex& vb = vertices[b];
+    const Vertex& vc = vertices[c];
 
     intersection_triangles_[current_triangle_] = Intersection_triangle(va, vb, vc);
     shading_triangles_[current_triangle_]      = Shading_triangle(va, vb, vc, material_index);
