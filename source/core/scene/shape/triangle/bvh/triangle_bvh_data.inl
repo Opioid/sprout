@@ -92,7 +92,7 @@ void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, float
 
 template <typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(
-    uint32_t num_triangles, const std::vector<Vertex>& /*vertices*/) {
+    uint32_t num_triangles, uint32_t /*num_vertices*/, Vertex const* const /*vertices*/) {
     num_triangles_    = num_triangles;
     current_triangle_ = 0;
 
@@ -104,12 +104,13 @@ void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(
 }
 
 template <typename Intersection_triangle, typename Shading_triangle>
-void Data<Intersection_triangle, Shading_triangle>::add_triangle(
-    uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-    const std::vector<Vertex>& vertices) {
+void Data<Intersection_triangle, Shading_triangle>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
+                                                                 uint32_t            material_index,
+                                                                 Vertex const* const vertices) {
     const Vertex& va                           = vertices[a];
     const Vertex& vb                           = vertices[b];
     const Vertex& vc                           = vertices[c];
+
     intersection_triangles_[current_triangle_] = Intersection_triangle(va, vb, vc);
     shading_triangles_[current_triangle_]      = Shading_triangle(va, vb, vc, material_index);
     ++current_triangle_;
