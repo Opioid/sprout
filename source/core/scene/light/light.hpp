@@ -1,6 +1,7 @@
 #ifndef SU_SCENE_LIGHT_LIGHT_HPP
 #define SU_SCENE_LIGHT_LIGHT_HPP
 
+#include "base/math/distribution/distribution_2d.hpp"
 #include "base/math/vector.hpp"
 #include "scene/material/sampler_settings.hpp"
 
@@ -70,6 +71,11 @@ class Light {
                         uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
                         Sample_from& result) const noexcept = 0;
 
+    virtual bool sample(Transformation const& transformation, Sampler& sampler,
+                        uint32_t sampler_dimension, Distribution_2D const& importance,
+                        AABB const& bounds, Worker const& worker, Sample_from& result) const
+        noexcept = 0;
+
     virtual float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
         noexcept = 0;
 
@@ -82,6 +88,10 @@ class Light {
 
     bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                 Worker const& worker, Sample_from& result) const noexcept;
+
+    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+                Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+                Sample_from& result) const noexcept;
 
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                       Filter filter, Worker const& worker) const noexcept = 0;

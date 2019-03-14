@@ -15,6 +15,10 @@ class Prop_image_light final : public Prop_light {
                 AABB const& bounds, Worker const& worker, Sample_from& result) const
         noexcept override final;
 
+    bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
+                Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+                Sample_from& result) const noexcept override final;
+
     float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
               Worker const& worker) const noexcept override final;
 

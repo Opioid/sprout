@@ -154,8 +154,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
 
 bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
                              float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                             uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
-                             Node_stack& /*node_stack*/, Sample_from& /*sample*/) const noexcept {
+                             uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
+                             AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                             Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
@@ -207,8 +208,8 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
                              float /*area*/, bool /*two_sided*/, Sampler&        sampler,
-                             uint32_t sampler_dimension, AABB const& bounds,
-                             Sample_from& sample) const noexcept {
+                             uint32_t sampler_dimension, float2 const& importance_uv,
+                             AABB const& bounds, Sample_from& sample) const noexcept {
     float const phi   = (uv[0] - 0.5f) * (2.f * Pi);
     float const theta = uv[1] * Pi;
 

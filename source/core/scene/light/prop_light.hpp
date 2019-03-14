@@ -29,6 +29,10 @@ class Prop_light : public Light {
                 AABB const& bounds, Worker const& worker, Sample_from& result) const
         noexcept override;
 
+    bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
+                Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+                Sample_from& result) const noexcept override;
+
     float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
         noexcept override final;
 

@@ -337,8 +337,8 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
 
 bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
                   bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                  AABB const& /*bounds*/, Node_stack& /*node_stack*/, Sample_from& sample) const
-    noexcept {
+                  float2 const& importance_uv, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                  Sample_from&  sample) const noexcept {
     float const r = sampler.generate_sample_1D(sampler_dimension);
     auto const  s = distributions_[part].sample(r);
 
@@ -354,11 +354,11 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
 
     auto const [x, y] = orthonormal_basis(wn);
 
-    float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = sample_oriented_hemisphere_cosine(r1, x, y, wn);
+    float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, x, y, wn);
 
     sample.p   = ws;
     sample.dir = dir;
+    sample.xy  = importance_uv;
     sample.pdf = 1.f / ((1.f * Pi) * area);
 
     return true;
@@ -396,8 +396,8 @@ bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
 
 bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                   float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
-                  Sample_from& /*sample*/) const noexcept {
+                  uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
+                  AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

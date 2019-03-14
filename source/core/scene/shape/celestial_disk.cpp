@@ -169,8 +169,8 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
 
 bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                             bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                            AABB const&  bounds, Node_stack& /*node_stack*/,
-                            Sample_from& sample) const noexcept {
+                            float2 const& importance_uv, AABB const& bounds,
+                            Node_stack& /*node_stack*/, Sample_from& sample) const noexcept {
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = sample_disk_concentric(r2);
 
@@ -182,8 +182,6 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float3 const dir = normalize(transformation.rotation.r[2] - ws);
 
-    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
-
     AABB const ls_bounds = bounds.transform_transposed(transformation.rotation);
 
     float3 const ls_extent = ls_bounds.max() - ls_bounds.min();
@@ -191,7 +189,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
     float2 const ls_rect = float2(ls_extent[0], ls_extent[1]);
 
     float3 const photon_rect = transform_vector(transformation.rotation,
-                                                float3((r0 - 0.5f) * ls_rect, 0.f));
+                                                float3((importance_uv - 0.5f) * ls_rect, 0.f));
 
     float const bounds_radius = 0.5f * ls_extent[2];
 
@@ -201,7 +199,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     sample.dir = dir;
     sample.p   = p;
-    sample.xy  = r0;
+    sample.xy  = importance_uv;
     sample.pdf = 1.f / (area * ls_rect[0] * ls_rect[1]);
 
     return true;
@@ -234,8 +232,8 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const
 bool Celestial_disk::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, Sampler& /*sampler*/,
-                            uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
-                            Sample_from& /*sample*/) const noexcept {
+                            uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
+                            AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

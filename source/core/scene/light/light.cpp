@@ -32,6 +32,15 @@ bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension, 
     return sample(transformation, sampler, sampler_dimension, bounds, worker, result);
 }
 
+bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+                   Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+                   Sample_from& result) const noexcept {
+    Transformation temp;
+    auto const&    transformation = transformation_at(time, temp);
+
+    return sample(transformation, sampler, sampler_dimension, importance, bounds, worker, result);
+}
+
 bool Light::is_light(uint32_t id) noexcept {
     return 0xFFFFFFFF != id;
 }

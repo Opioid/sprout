@@ -347,20 +347,20 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
 bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                     bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                    AABB const& /*bounds*/, Node_stack& /*node_stack*/, Sample_from& sample) const
-    noexcept {
+                    float2 const& importance_uv, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                    Sample_from&  sample) const noexcept {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
-    float3 const ls = math::sample_sphere_uniform(r0);
+    float3 const ls = sample_sphere_uniform(r0);
 
     float3 const ws = transformation.position + (transformation.scale[0] * ls);
 
     auto const [x, y] = orthonormal_basis(ls);
 
-    float2 const r1  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = math::sample_oriented_hemisphere_cosine(r1, x, y, ls);
+    float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, x, y, ls);
 
     sample.p   = ws;
     sample.dir = dir;
+    sample.xy  = importance_uv;
     sample.pdf = 1.f / ((1.f * Pi) * area);
 
     return true;
@@ -431,8 +431,8 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*
 
 bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                     float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                    uint32_t /*sampler_dimension*/, AABB const& /*bounds*/,
-                    Sample_from& /*sample*/) const noexcept {
+                    uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
+                    AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

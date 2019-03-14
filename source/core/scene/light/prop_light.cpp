@@ -1,6 +1,7 @@
 #include "prop_light.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
+#include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/scene_ray.hpp"
@@ -67,10 +68,36 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
 
     bool const two_sided = material->is_two_sided();
 
+    float2 const importance_uv = sampler.generate_sample_2D();
+
     if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
-                                bounds, worker.node_stack(), result)) {
+                                importance_uv, bounds, worker.node_stack(), result)) {
         return false;
     }
+
+    return true;
+}
+
+bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
+                        uint32_t sampler_dimension, Distribution_2D const& importance,
+                        AABB const& bounds, Worker const& worker, Sample_from& result) const
+    noexcept {
+    auto const material = prop_->material(part_);
+
+    float const area = prop_->area(part_);
+
+    bool const two_sided = material->is_two_sided();
+
+    float2 const s2d = sampler.generate_sample_2D();
+
+    auto const importance_uv = importance.sample_continuous(s2d);
+
+    if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
+                                importance_uv.uv, bounds, worker.node_stack(), result)) {
+        return false;
+    }
+
+    result.pdf *= importance_uv.pdf;
 
     return true;
 }

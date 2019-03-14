@@ -27,6 +27,12 @@ bool Null_light::sample(Transformation const& /*transformation*/, Sampler& /*sam
     return false;
 }
 
+bool Null_light::sample(Transformation const& /*transformation*/, Sampler& /*sampler*/,
+                        uint32_t /*sampler_dimension*/, Distribution_2D const& /*importance*/,
+                        AABB const& /*bounds*/, Worker const& /*worker*/,
+                        Sample_from& /*result*/) const noexcept {
+    return false;
+}
 float3 Null_light::evaluate(Sample_from const& /*sample*/, Filter /*filter*/,
                             Worker const& /*worker*/) const noexcept {
     return float3(0.f);

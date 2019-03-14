@@ -42,6 +42,13 @@ bool Prop_volume_light::sample(Transformation const& /*transformation*/, Sampler
     return false;
 }
 
+bool Prop_volume_light::sample(Transformation const& /*transformation*/, Sampler& /*sampler*/,
+                               uint32_t /*sampler_dimension*/,
+                               Distribution_2D const& /*importance*/, AABB const& /*bounds*/,
+                               Worker const& /*worker*/, Sample_from& /*result*/) const noexcept {
+    return false;
+}
+
 float Prop_volume_light::pdf(Ray const& ray, Intersection const& intersection,
                              bool /*total_sphere*/, Filter /*filter*/,
                              Worker const& /*worker*/) const noexcept {

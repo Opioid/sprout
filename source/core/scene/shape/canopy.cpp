@@ -145,8 +145,8 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
 
 bool Canopy::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
                     bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                    AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                    Sample_from& /*sample*/) const noexcept {
+                    float2 const& /*importance_uv*/, AABB const& /*bounds*/,
+                    Node_stack& /*node_stack*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
@@ -188,9 +188,9 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*
 }
 
 bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, Sampler&        sampler,
-                    uint32_t sampler_dimension, AABB const& bounds, Sample_from& sample) const
-    noexcept {
+                    float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
+                    uint32_t /*sampler_dimension*/, float2 const& importance_uv, AABB const& bounds,
+                    Sample_from& sample) const noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     if (float const z = dot(disk, disk); z > 1.f) {
@@ -204,20 +204,18 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 
     auto const [t, b] = orthonormal_basis(ws);
 
-    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
-
     float const bounds_radius_2 = squared_length(bounds.halfsize());
 
     float const bounds_radius = std::sqrt(bounds_radius_2);
 
-    float3 const receciver_disk = sample_oriented_disk_concentric(r0, t, b);
+    float3 const receciver_disk = sample_oriented_disk_concentric(importance_uv, t, b);
 
     float3 const p = bounds.position() + bounds_radius * (receciver_disk - ws);
 
     sample.dir = ws;
     sample.p   = p;
     sample.uv  = uv;
-    sample.xy  = r0;
+    sample.xy  = importance_uv;
     sample.pdf = 1.f / ((2.f * Pi) * (1.f * Pi) * bounds_radius_2);
 
     return true;
