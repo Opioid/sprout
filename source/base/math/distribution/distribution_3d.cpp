@@ -4,15 +4,20 @@
 
 namespace math {
 
-Distribution_3D::Distribution_3D() noexcept : conditional_(nullptr), conditional_size_(0) {}
+Distribution_3D::Distribution_3D() noexcept : conditional_size_(0), conditional_(nullptr) {}
 
 Distribution_3D::~Distribution_3D() noexcept {
-    memory::free_aligned(conditional_);
+    memory::destroy_aligned(conditional_, conditional_size_);
 }
 
 Distribution_2D* Distribution_3D::allocate(uint32_t num) noexcept {
-    conditional_      = memory::allocate_aligned<Distribution_2D>(num);
-    conditional_size_ = num;
+    if (conditional_size_ != num) {
+        memory::destroy_aligned(conditional_, conditional_size_);
+
+        conditional_size_ = num;
+        conditional_      = memory::construct_aligned<Distribution_2D>(num);
+    }
+
     return conditional_;
 }
 

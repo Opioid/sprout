@@ -33,8 +33,8 @@ class Distribution_3D {
   private:
     Distribution_impl marginal_;
 
-    Distribution_2D* conditional_;
     uint32_t         conditional_size_;
+    Distribution_2D* conditional_;
 
     float    conditional_sizef_;
     uint32_t conditional_max_;
