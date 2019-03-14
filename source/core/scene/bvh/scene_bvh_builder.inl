@@ -73,7 +73,8 @@ void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_sh
         assign(node, begin, end, out_data);
     } else {
         Split_candidate<T> sp = splitting_plane(node->aabb, begin, end);
-        node->axis            = sp.axis();
+
+        node->axis = sp.axis();
 
         index props1_begin = std::partition(begin, end, [&sp](T* b) {
             bool const mib = math::plane::behind(sp.plane(), b->aabb().min());
@@ -109,15 +110,13 @@ Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin
 
     average /= static_cast<float>(std::distance(begin, end));
 
-    split_candidates_.push_back(Split_candidate<T>(0, average, begin, end));
-
-    split_candidates_.push_back(Split_candidate<T>(1, average, begin, end));
-
-    split_candidates_.push_back(Split_candidate<T>(2, average, begin, end));
+    split_candidates_.emplace_back(uint8_t(0), average, begin, end);
+    split_candidates_.emplace_back(uint8_t(1), average, begin, end);
+    split_candidates_.emplace_back(uint8_t(2), average, begin, end);
 
     std::sort(
         split_candidates_.begin(), split_candidates_.end(),
-        [](const Split_candidate<T>& a, const Split_candidate<T>& b) { return a.key() < b.key(); });
+        [](Split_candidate<T> const& a, Split_candidate<T> const& b) { return a.key() < b.key(); });
 
     return split_candidates_[0];
 }

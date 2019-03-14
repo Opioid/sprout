@@ -1,6 +1,7 @@
 #include "material_provider.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
+#include "base/memory/array.inl"
 #include "base/memory/variant_map.inl"
 #include "base/spectrum/blackbody.hpp"
 #include "base/spectrum/rgb.hpp"
@@ -738,11 +739,16 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
 
     bool two_sided = false;
 
-    std::vector<material::Material*> materials;
+    memory::Array<material::Material*> materials;
+    materials.reserve(2);
 
     for (auto& n : mix_value.GetObject()) {
         if ("materials" == n.name) {
             for (auto& m : n.value.GetArray()) {
+                if (materials.full()) {
+                    continue;
+                }
+
                 std::string const filename = json::read_string(m, "file");
 
                 if (!filename.empty()) {

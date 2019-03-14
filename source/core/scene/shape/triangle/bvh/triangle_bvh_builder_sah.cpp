@@ -49,7 +49,7 @@ Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, float3 const& 
       axis_(split_axis),
       spatial_(spatial) {}
 
-void Builder_SAH::Split_candidate::evaluate(const References& references, float aabb_surface_area) {
+void Builder_SAH::Split_candidate::evaluate(References const& references, float aabb_surface_area) {
     uint32_t num_side_0 = 0;
     uint32_t num_side_1 = 0;
 
@@ -114,7 +114,7 @@ void Builder_SAH::Split_candidate::evaluate(const References& references, float 
     num_side_1_ = num_side_1;
 }
 
-void Builder_SAH::Split_candidate::distribute(const References& references, References& references0,
+void Builder_SAH::Split_candidate::distribute(References const& references, References& references0,
                                               References& references1) const {
     references0.reserve(num_side_0_);
     references1.reserve(num_side_1_);
@@ -191,7 +191,7 @@ void Builder_SAH::split(Build_node* node, References& references, AABB const& aa
         assign(node, references);
     } else {
         bool                  exhausted;
-        const Split_candidate sp = splitting_plane(references, aabb, depth, exhausted, thread_pool);
+        Split_candidate const sp = splitting_plane(references, aabb, depth, exhausted, thread_pool);
 
         if (num_primitives <= 0xFF &&
             (static_cast<float>(num_primitives) <= sp.cost() || exhausted)) {
@@ -236,7 +236,7 @@ void Builder_SAH::split(Build_node* node, References& references, AABB const& aa
     }
 }
 
-Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const References& references,
+Builder_SAH::Split_candidate Builder_SAH::splitting_plane(References const& references,
                                                           AABB const& aabb, uint32_t depth,
                                                           bool&         exhausted,
                                                           thread::Pool& thread_pool) {
@@ -332,7 +332,7 @@ uint32_t Builder_SAH::current_node_index() const {
     return current_node_;
 }
 
-void Builder_SAH::assign(Build_node* node, const References& references) {
+void Builder_SAH::assign(Build_node* node, References const& references) {
     size_t const num_references = references.size();
     node->primitives.resize(num_references);
     for (size_t i = 0; i < num_references; ++i) {

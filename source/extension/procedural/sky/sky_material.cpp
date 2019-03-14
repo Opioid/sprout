@@ -3,6 +3,7 @@
 #include "base/math/mapping.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture_adapter.inl"
@@ -134,7 +135,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(
             Bake_dimensions[1]);
 
-        std::vector<float4> artws(pool.num_threads(), float4(0.f));
+        memory::Array<float4> artws(pool.num_threads(), float4(0.f));
 
         pool.run_range(
             [this, &transformation, &conditional, &artws, &shape](uint32_t id, int32_t begin,
@@ -161,9 +162,11 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        luminance[x] = uv_weight * spectrum::luminance(li);
+                        float3 const wli = uv_weight * li;
 
-                        artw += float4(uv_weight * li, uv_weight);
+                        luminance[x] = spectrum::luminance(wli);
+
+                        artw += float4(wli, uv_weight);
                     }
 
                     conditional[y].init(luminance, Bake_dimensions[0]);

@@ -8,6 +8,7 @@
 #include "base/math/plane.inl"
 #include "base/math/simd_aabb.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/shape/node_stack.hpp"
@@ -30,7 +31,7 @@ void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, uint32_t n
 
         References references(triangles.size());
 
-        std::vector<math::Simd_AABB> aabbs(thread_pool.num_threads());
+        memory::Array<math::Simd_AABB> aabbs(thread_pool.num_threads());
 
         thread_pool.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin, int32_t end) {

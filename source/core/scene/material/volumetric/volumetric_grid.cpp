@@ -2,6 +2,7 @@
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"
+#include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/heatmap.hpp"
 #include "base/spectrum/rgb.hpp"
@@ -115,7 +116,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         Distribution_2D* conditional_2d = distribution_.allocate(d[2]);
 
-        std::vector<float3> ars(pool.num_threads());
+        memory::Array<float3> ars(pool.num_threads());
 
         pool.run_range(
             [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,

@@ -66,9 +66,9 @@ class Builder_SAH /*: private Builder_base*/ {
       public:
         Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
 
-        void evaluate(const References& references, float aabb_surface_area);
+        void evaluate(References const& references, float aabb_surface_area);
 
-        void distribute(const References& references, References& references0,
+        void distribute(References const& references, References& references0,
                         References& references1) const;
 
         float cost() const;
@@ -119,7 +119,7 @@ class Builder_SAH /*: private Builder_base*/ {
     void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
                uint32_t depth, thread::Pool& thread_pool);
 
-    Split_candidate splitting_plane(const References& references, AABB const& aabb, uint32_t depth,
+    Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
                                     bool& exhausted, thread::Pool& thread_pool);
 
     template <typename Data>
@@ -132,7 +132,7 @@ class Builder_SAH /*: private Builder_base*/ {
 
     uint32_t current_node_index() const;
 
-    void assign(Build_node* node, const References& references);
+    void assign(Build_node* node, References const& references);
 
     std::vector<Split_candidate> split_candidates_;
 
