@@ -33,6 +33,8 @@ class Array {
 
     void operator=(Array&& other) noexcept;
 
+    void resize(uint64_t capacity) noexcept;
+
     void reserve(uint64_t capacity) noexcept;
 
     void push_back(T const& v) noexcept;
@@ -46,6 +48,8 @@ class Array {
     T*       end() noexcept;
 
   private:
+    void allocate(uint64_t capacity) noexcept;
+
     uint64_t capacity_;
     uint64_t size_;
 

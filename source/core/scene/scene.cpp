@@ -76,7 +76,7 @@ void Scene::finish(uint64_t frame_step, uint64_t frame_duration) noexcept {
         lights_.push_back(&null_light_);
     }
 
-    light_powers_.reserve(lights_.size());
+    light_powers_.resize(lights_.size());
 
     uint32_t const num_frames = count_frames(frame_step, frame_duration) + 1;
 

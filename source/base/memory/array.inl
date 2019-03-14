@@ -80,18 +80,17 @@ void Array<T>::operator=(Array&& other) noexcept {
 }
 
 template <typename T>
+void Array<T>::resize(uint64_t size) noexcept {
+    size_ = size;
+
+    allocate(size);
+}
+
+template <typename T>
 void Array<T>::reserve(uint64_t capacity) noexcept {
     size_ = 0;
 
-    if (capacity_ >= capacity) {
-        return;
-    }
-
-    free_aligned(data_);
-
-    capacity_ = capacity;
-
-    data_ = allocate_aligned<T>(capacity);
+    allocate(capacity);
 }
 
 template <typename T>
@@ -124,6 +123,19 @@ T const* Array<T>::end() const noexcept {
 template <typename T>
 T* Array<T>::end() noexcept {
     return &data_[size_];
+}
+
+template <typename T>
+void Array<T>::allocate(uint64_t capacity) noexcept {
+    if (capacity_ >= capacity) {
+        return;
+    }
+
+    free_aligned(data_);
+
+    capacity_ = capacity;
+
+    data_ = allocate_aligned<T>(capacity);
 }
 
 }  // namespace memory
