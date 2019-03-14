@@ -8,7 +8,7 @@
 
 namespace rendering::integrator::photon {
 
-static uint32_t constexpr Dimensions = 256;
+static int32_t constexpr Dimensions = 256;
 
 Importance::Importance() noexcept
     : dimensions_(Dimensions),
@@ -35,56 +35,54 @@ void Importance::increment(float2 uv) noexcept {
     atomic::add_assign(importance_[id], 1);
 }
 
+Distribution_2D const& Importance::distribution() const noexcept {
+    return distribution_;
+}
+
 void Importance::export_heatmap(std::string_view name) const noexcept {
     image::encoding::png::Writer::write_heatmap(name, importance_, dimensions_);
 }
 
 void Importance::prepare_sampling(thread::Pool& pool) noexcept {
+    // return;
+
+    if (!distribution_.empty()) {
+        return;
+    }
+
     Distribution_2D::Distribution_impl* conditional = distribution_.allocate(Dimensions);
-    /*
-            pool.run_range(
-                    [&conditional](
-                            uint32_t id, int32_t begin, int32_t end) {
-                            float* luminance = memory::allocate_aligned<float>(d[0]);
 
-                            float4 artw(0.f);
+    uint32_t maxi = 0;
+    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
+        maxi = std::max(importance_[i], maxi);
+    }
 
-                            for (int32_t y = begin; y < end; ++y) {
-                                    float const v = idf[1] * (static_cast<float>(y) + 0.5f);
+    uint32_t mini = maxi / 32 + 1;
 
-                                    for (int32_t x = 0; x < d[0]; ++x) {
-                                            float const u = idf[0] * (static_cast<float>(x) + 0.5f);
+    float const max = static_cast<float>(maxi);
 
-                                            float const uv_weight = shape.uv_weight(float2(u, v));
+    pool.run_range(
+        [this, &conditional, max, mini](uint32_t /*id*/, int32_t begin, int32_t end) {
+            float* weights = memory::allocate_aligned<float>(Dimensions);
 
-                                            float3 const radiance = ef * texture.at_element_3(x, y,
-       element);
+            for (int32_t y = begin; y < end; ++y) {
+                int32_t const row = y * Dimensions;
 
-                                            float3 const wr = uv_weight * radiance;
+                for (int32_t x = 0; x < Dimensions; ++x) {
+                    int32_t const i = row + x;
 
-                                            artw += float4(wr, uv_weight);
+                    float const weight = static_cast<float>(std::max(importance_[i], mini)) / max;
 
-                                            luminance[x] = spectrum::luminance(wr);
-                                    }
+                    weights[x] = weight;
+                }
 
-                                    conditional[y].init(luminance, d[0]);
-                            }
-
-                            artws[id] += artw;
-
-                            memory::free_aligned(luminance);
-                    },
-                    0, d[1]);
-
-            float4 artw(0.f);
-            for (auto const& a : artws) {
-                    artw += a;
+                conditional[y].init(weights, Dimensions);
             }
 
-            average_emission_ = artw.xyz() / artw[3];
+            memory::free_aligned(weights);
+        },
+        0, Dimensions);
 
-            total_weight_ = artw[3];
-    */
     distribution_.init();
 }
 

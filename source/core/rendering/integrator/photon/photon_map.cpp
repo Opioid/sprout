@@ -60,6 +60,10 @@ void Map::increment_importance(uint32_t light_id, float2 uv) noexcept {
     importances_[light_id].increment(uv);
 }
 
+Distribution_2D const& Map::importance(uint32_t light_id) const noexcept {
+    return importances_[light_id].distribution();
+}
+
 uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept {
     AABB const aabb = calculate_aabb(pool);
 
@@ -71,6 +75,8 @@ uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept
         num_caustic_paths_  = num_paths;
         num_indirect_paths_ = num_paths;
     }
+
+    uint32_t num_reduced;
 
     if (separate_indirect_) {
         coarse_grid_.resize(aabb);
@@ -121,7 +127,7 @@ uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept
 
         red_num_coarse_ = red_num_indirect;
 
-        return red_num_caustics + red_num_indirect;
+        num_reduced = red_num_caustics + red_num_indirect;
     } else {
         fine_grid_.init_cells(num_photons_, photons_);
 
@@ -136,12 +142,14 @@ uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept
 
         red_num_fine_ = red_num_caustics;
 
-        return red_num_caustics;
+        num_reduced = red_num_caustics;
     }
 
     for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
         importances_[i].prepare_sampling(pool);
     }
+
+    return num_reduced;
 }
 
 void Map::compile_finalize() noexcept {
