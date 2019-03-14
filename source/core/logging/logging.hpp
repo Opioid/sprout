@@ -21,6 +21,7 @@ void push_error(std::string const& text);
 void push_error(std::string const& text, std::string const& a);
 
 void verbose(std::string const& text);
+void verbose(std::string const& text, std::string const& a);
 
 void set_verbose(bool verbose);
 bool is_verbose();

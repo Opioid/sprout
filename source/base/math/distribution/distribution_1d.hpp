@@ -175,11 +175,11 @@ class Distribution_implicit_pdf_lut_lin_1D {
 
     void init_lut(uint32_t lut_size) noexcept;
 
-    uint32_t* lut_;
     uint32_t  lut_size_;
+    uint32_t* lut_;
 
-    float*   cdf_;
     uint32_t cdf_size_;
+    float*   cdf_;
 
     float integral_;
     float size_;

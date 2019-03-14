@@ -6,18 +6,23 @@
 namespace math {
 
 template <typename T>
-Distribution_t_2D<T>::Distribution_t_2D() noexcept : conditional_(nullptr), conditional_size_(0) {}
+Distribution_t_2D<T>::Distribution_t_2D() noexcept : conditional_size_(0), conditional_(nullptr) {}
 
 template <typename T>
 Distribution_t_2D<T>::~Distribution_t_2D() noexcept {
-    memory::free_aligned(conditional_);
+    memory::destroy_aligned(conditional_, conditional_size_);
 }
 
 template <typename T>
 typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::allocate(
     uint32_t num) noexcept {
-    conditional_      = memory::allocate_aligned<Distribution_impl>(num);
-    conditional_size_ = num;
+    if (conditional_size_ != num) {
+        memory::destroy_aligned(conditional_, conditional_size_);
+
+        conditional_size_ = num;
+        conditional_      = memory::construct_aligned<Distribution_impl>(num);
+    }
+
     return conditional_;
 }
 

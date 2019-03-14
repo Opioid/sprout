@@ -391,7 +391,7 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) noexce
 // https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
 
 inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1D() noexcept
-    : lut_(nullptr), lut_size_(0), cdf_(nullptr), cdf_size_(0) {}
+    : lut_size_(0), lut_(nullptr), cdf_size_(0), cdf_(nullptr), integral_(-1.f) {}
 
 inline Distribution_implicit_pdf_lut_lin_1D::~Distribution_implicit_pdf_lut_lin_1D() noexcept {
     memory::free_aligned(cdf_);
@@ -496,7 +496,9 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
         integral += data[i];
     }
 
-    if (0.f == integral) {
+    if (0.f == integral && 0.f != integral_) {
+        memory::free_aligned(cdf_);
+
         cdf_size_ = 3;
         cdf_      = memory::allocate_aligned<float>(cdf_size_);
 
@@ -510,8 +512,12 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
         return;
     }
 
-    cdf_size_ = len + 2;
-    cdf_      = memory::allocate_aligned<float>(cdf_size_);
+    if (uint32_t const cdf_size = len + 2; cdf_size_ != cdf_size) {
+        memory::free_aligned(cdf_);
+
+        cdf_size_ = cdf_size;
+        cdf_      = memory::allocate_aligned<float>(cdf_size);
+    }
 
     cdf_[0] = 0.f;
     for (uint32_t i = 1; i < len; ++i) {
@@ -527,9 +533,15 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
 }
 
 inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) noexcept {
-    lut_size_  = lut_size + 2;
-    lut_       = memory::allocate_aligned<uint32_t>(lut_size_);
-    lut_range_ = static_cast<float>(lut_size);
+    uint32_t const padded_lut_size = lut_size + 2;
+
+    if (padded_lut_size != lut_size_) {
+        memory::free_aligned(lut_);
+
+        lut_size_  = padded_lut_size;
+        lut_       = memory::allocate_aligned<uint32_t>(padded_lut_size);
+        lut_range_ = static_cast<float>(lut_size);
+    }
 
     lut_[0] = 0;
 
@@ -548,7 +560,7 @@ inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) no
         }
     }
 
-    for (uint32_t i = border + 1, len = lut_size_; i < len; ++i) {
+    for (uint32_t i = border + 1; i < padded_lut_size; ++i) {
         lut_[i] = last;
     }
 }
