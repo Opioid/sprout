@@ -1,0 +1,10 @@
+target_sources(cli
+  PRIVATE
+  "client.cpp"
+  "client.hpp"
+  "message_handler.hpp"
+  "server.cpp"
+  "server.hpp"
+  "websocket.cpp"
+  "websocket.hpp"
+) 

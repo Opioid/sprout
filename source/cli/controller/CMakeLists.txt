@@ -1,0 +1,9 @@
+target_sources(cli
+  PRIVATE
+  "camera_controller.cpp"
+  "camera_controller.hpp"
+  "controller_progressive.cpp"
+  "controller_progressive.hpp"
+  "message_handler.cpp"
+  "message_handler.hpp"
+) 

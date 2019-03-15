@@ -1,7 +1,7 @@
 add_library(base "") 
 
 target_include_directories(base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_include_directories(base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}../../thirdparty/include/>)
+target_include_directories(base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/include/>)
 
 add_subdirectory(atomic)
 add_subdirectory(chrono)
