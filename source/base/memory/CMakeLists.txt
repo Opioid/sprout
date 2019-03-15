@@ -1,0 +1,17 @@
+target_sources(base
+    PRIVATE
+    "align.hpp"
+    "align.cpp"
+    "array.hpp"
+    "array.inl"
+    "bitfield.hpp"
+    "bitfield.inl"
+    "const.hpp"
+    "tiled_array.hpp"
+    "tiled_array.inl"
+    "unique.hpp"
+    "unique.inl"
+    "variant_map.cpp"
+    "variant_map.hpp"
+    "variant_map.inl"
+    )

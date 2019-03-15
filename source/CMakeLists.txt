@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.13)
 project(sprout)
 
 if (CMAKE_VERSION VERSION_LESS 3.3)
@@ -89,7 +89,7 @@ elseif (MSVC)
     add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
 endif ()
 
-include(base/base.cmake)
+add_subdirectory(base)
 include(core/core.cmake)
 include(extension/extension.cmake)
 include(cli/cli.cmake)  
