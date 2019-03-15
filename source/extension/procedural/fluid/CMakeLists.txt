@@ -1,0 +1,16 @@
+target_sources(extension
+	PRIVATE
+    "fluid_grid.cpp"
+    "fluid_grid.hpp"
+    "fluid_material.cpp"
+    "fluid_material.hpp"	
+	"fluid_particle.hpp"
+    "fluid_provider.cpp"
+    "fluid_provider.hpp"
+    "fluid_simulation.cpp"
+    "fluid_simulation.hpp"
+    "fluid_vorton.hpp"
+    "fluid_vorton.inl"
+    "volume_renderer.cpp"
+    "volume_renderer.hpp"
+	)

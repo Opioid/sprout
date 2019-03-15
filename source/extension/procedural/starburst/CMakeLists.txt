@@ -1,0 +1,10 @@
+target_sources(extension
+  PRIVATE
+  "aperture.cpp"
+  "aperture.hpp"
+  "dirt.cpp"
+  "dirt.hpp"
+  "fdft.hpp"
+  "starburst.cpp"
+  "starburst.hpp"
+) 

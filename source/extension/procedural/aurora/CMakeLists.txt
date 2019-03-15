@@ -1,0 +1,13 @@
+target_sources(extension
+	PRIVATE
+	"aurora.cpp"
+	"aurora.hpp"
+	"aurora_provider.cpp"
+	"aurora_provider.hpp"
+	"aurora_spectrum.cpp"
+	"aurora_spectrum.hpp"
+	"volume_filter.cpp"
+	"volume_filter.hpp"
+	"volume_rasterizer.cpp"
+	"volume_rasterizer.hpp"
+	)

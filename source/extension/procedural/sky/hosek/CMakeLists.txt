@@ -1,0 +1,9 @@
+target_sources(extension
+  PRIVATE
+  "ArHosekSkyModel.cpp"
+  "ArHosekSkyModel.hpp"
+  "ArHosekSkyModelData_CIEXYZ.hpp"
+  "ArHosekSkyModelData_RGB.hpp"
+  "ArHosekSkyModelData_Spectral.hpp"
+  "ArHosekSkyModelReal.hpp"
+) 
