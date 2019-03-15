@@ -100,7 +100,7 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
         return false;
     }
 
-    result.pdf *= 256.f * 256.f * importance_uv.pdf;
+    result.pdf *= importance_uv.pdf;
 
     return true;
 }

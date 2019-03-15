@@ -39,12 +39,16 @@ Distribution_2D const& Importance::distribution() const noexcept {
     return distribution_;
 }
 
+float Importance::denormalization_factor() const noexcept {
+    return static_cast<float>(Dimensions * Dimensions);
+}
+
 void Importance::export_heatmap(std::string_view name) const noexcept {
     image::encoding::png::Writer::write_heatmap(name, importance_, dimensions_);
 }
 
 void Importance::prepare_sampling(thread::Pool& pool) noexcept {
-    // return;
+ //    return;
 
     if (!distribution_.empty()) {
         return;
@@ -57,7 +61,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
         maxi = std::max(importance_[i], maxi);
     }
 
-    uint32_t mini = maxi / 32 + 1;
+    uint32_t mini = maxi / 128 + 1;
 
     float const max = static_cast<float>(maxi);
 

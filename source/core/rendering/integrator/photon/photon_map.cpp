@@ -60,12 +60,12 @@ void Map::increment_importance(uint32_t light_id, float2 uv) noexcept {
     importances_[light_id].increment(uv);
 }
 
-Distribution_2D const& Map::importance(uint32_t light_id) const noexcept {
-    return importances_[light_id].distribution();
+Importance const& Map::importance(uint32_t light_id) const noexcept {
+    return importances_[light_id];
 }
 
-uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept {
-    AABB const aabb = calculate_aabb(pool);
+uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& pool) noexcept {
+    AABB const aabb = calculate_aabb(num_photons, pool);
 
     fine_grid_.resize(aabb);
 
@@ -129,7 +129,7 @@ uint32_t Map::compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept
 
         num_reduced = red_num_caustics + red_num_indirect;
     } else {
-        fine_grid_.init_cells(num_photons_, photons_);
+        fine_grid_.init_cells(num_photons, photons_);
 
         uint32_t const red_num_caustics = fine_grid_.reduce_and_move(photons_, merge_radius_,
                                                                      num_reduced_, pool);
@@ -188,7 +188,7 @@ size_t Map::num_bytes() const noexcept {
     return num_bytes;
 }
 
-AABB Map::calculate_aabb(thread::Pool& pool) const noexcept {
+AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& pool) const noexcept {
     pool.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {
             AABB aabb = AABB::empty();
@@ -199,7 +199,7 @@ AABB Map::calculate_aabb(thread::Pool& pool) const noexcept {
 
             aabbs_[id] = aabb;
         },
-        0, static_cast<int32_t>(num_photons_));
+        0, static_cast<int32_t>(num_photons));
 
     AABB aabb = AABB::empty();
 

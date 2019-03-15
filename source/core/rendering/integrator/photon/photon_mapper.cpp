@@ -3,6 +3,7 @@
 #include "base/memory/align.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "photon_map.hpp"
+#include "photon_importance.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
@@ -233,16 +234,18 @@ bool Mapper::generate_light_ray(Map const& map, uint32_t frame, AABB const& boun
 
     uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
 
-    Distribution_2D const& importance = map.importance(light.id);
+    Importance const& importance = map.importance(light.id);
 
-    if (importance.empty()) {
+    if (importance.distribution().empty()) {
         if (!light.ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
             return false;
         }
     } else {
-        if (!light.ref.sample(time, sampler_, 0, importance, bounds, worker, light_sample)) {
+        if (!light.ref.sample(time, sampler_, 0, importance.distribution(), bounds, worker, light_sample)) {
             return false;
         }
+
+        light_sample.pdf *= importance.denormalization_factor();
     }
 
     ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);

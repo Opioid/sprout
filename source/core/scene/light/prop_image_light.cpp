@@ -101,7 +101,7 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
         return false;
     }
 
-    result.pdf *= rs.pdf * (256.f * 256.f * importance_uv.pdf);
+    result.pdf *= rs.pdf * importance_uv.pdf;
 
     return true;
 }

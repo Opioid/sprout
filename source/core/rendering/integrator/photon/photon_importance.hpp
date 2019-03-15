@@ -21,6 +21,8 @@ class Importance {
 
     Distribution_2D const& distribution() const noexcept;
 
+    float denormalization_factor() const noexcept;
+
     void export_heatmap(std::string_view name) const noexcept;
 
     void prepare_sampling(thread::Pool& pool) noexcept;
