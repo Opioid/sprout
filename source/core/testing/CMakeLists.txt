@@ -1,0 +1,11 @@
+target_sources(core
+	PRIVATE
+	"testing_cdf.cpp"
+	"testing_cdf.hpp"
+	"testing_simd.cpp"
+	"testing_simd.hpp"
+	"testing_size.cpp"
+	"testing_size.hpp"
+	"testing_spectrum.cpp"
+	"testing_spectrum.hpp"
+	)     

@@ -1,0 +1,17 @@
+target_sources(core
+    PRIVATE
+    "emittance.cpp"
+    "emittance.hpp"
+    "light.cpp"
+    "light.hpp"
+    "null_light.cpp"
+    "null_light.hpp"
+    "prop_image_light.cpp"
+    "prop_image_light.hpp"
+    "prop_light.cpp"
+    "prop_light.hpp"
+	"prop_volume_image_light.cpp"
+	"prop_volume_image_light.hpp"
+	"prop_volume_light.cpp"
+    "prop_volume_light.hpp"
+    ) 

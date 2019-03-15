@@ -1,0 +1,21 @@
+target_sources(core
+  PRIVATE
+  "camera_cubic_stereoscopic.cpp"
+  "camera_cubic_stereoscopic.hpp"
+  "camera_cubic.cpp"
+  "camera_cubic.hpp"
+  "camera_hemispherical.cpp"
+  "camera_hemispherical.hpp"
+  "camera_perspective_stereoscopic.cpp"
+  "camera_perspective_stereoscopic.hpp"
+  "camera_perspective.cpp"
+  "camera_perspective.hpp"
+  "camera_spherical_stereoscopic.cpp"
+  "camera_spherical_stereoscopic.hpp"
+  "camera_spherical.cpp"
+  "camera_spherical.hpp"
+  "camera_stereoscopic.cpp"
+  "camera_stereoscopic.hpp"
+  "camera.cpp"
+  "camera.hpp"
+) 

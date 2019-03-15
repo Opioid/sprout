@@ -1,0 +1,23 @@
+add_subdirectory("encoding")
+add_subdirectory("filter")
+add_subdirectory("procedural")
+add_subdirectory("testing")
+add_subdirectory("texture")
+
+target_sources(core
+    PRIVATE
+    "channels.hpp"
+    "image_helper.cpp"
+    "image_helper.hpp"
+    "image_provider.cpp"
+    "image_provider.hpp"
+    "image_writer.cpp"
+    "image_writer.hpp"
+    "image.cpp"
+    "image.hpp"
+    "tiled_image.hpp"
+    "tiled_image.inl"
+    "typed_image.cpp"
+    "typed_image.hpp"
+    "typed_image_fwd.hpp"
+    ) 

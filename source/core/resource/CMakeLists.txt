@@ -1,0 +1,12 @@
+target_sources(core
+    PRIVATE
+    "identifiable.cpp"
+    "identifiable.hpp"
+    "resource_cache.hpp"
+    "resource_cache.inl"
+    "resource_manager.cpp"
+    "resource_manager.hpp"
+    "resource_manager.inl"
+    "resource_provider.hpp"
+    "resource_provider.inl"
+)   

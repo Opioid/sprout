@@ -1,0 +1,11 @@
+target_sources(core
+	PRIVATE
+	"interface_stack.hpp"
+	"interface_stack.inl"
+	"prop.cpp"
+	"prop.hpp"
+	"prop_bvh_wrapper.cpp"
+	"prop_bvh_wrapper.hpp"
+	"prop_intersection.hpp"
+	"prop_intersection.inl"
+	)  

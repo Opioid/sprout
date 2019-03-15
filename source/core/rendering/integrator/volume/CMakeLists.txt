@@ -1,0 +1,13 @@
+target_sources(core
+    PRIVATE
+    "emission.cpp"
+    "emission.hpp"
+    "tracking_multi.cpp"
+    "tracking_multi.hpp"
+    "tracking_single.cpp"
+    "tracking_single.hpp"
+    "tracking.cpp"
+    "tracking.hpp"
+    "volume_integrator.cpp"
+    "volume_integrator.hpp"
+    )

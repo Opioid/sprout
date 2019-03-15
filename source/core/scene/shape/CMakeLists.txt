@@ -1,0 +1,31 @@
+add_subdirectory(triangle)
+
+target_sources(core
+    PRIVATE
+    "canopy.cpp"
+    "canopy.hpp"
+    "celestial_disk.cpp"
+    "celestial_disk.hpp"
+    "cube.cpp"
+    "cube.hpp"
+    "disk.cpp"
+    "disk.hpp"
+    "infinite_sphere.cpp"
+    "infinite_sphere.hpp"
+    "morphable_shape.hpp"
+    "node_stack.hpp"
+    "node_stack.inl"
+    "plane.cpp"
+    "plane.hpp"
+    "rectangle.cpp"
+    "rectangle.hpp"
+    "shape_intersection.hpp"
+    "shape_sample.hpp"
+    "shape_test.cpp"
+    "shape_test.hpp"
+    "shape_vertex.hpp"
+    "shape.cpp"
+    "shape.hpp"
+    "sphere.cpp"
+    "sphere.hpp"
+    )  

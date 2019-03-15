@@ -1,0 +1,23 @@
+add_subdirectory(animation)
+add_subdirectory(bvh)
+add_subdirectory(camera)
+add_subdirectory(entity)
+add_subdirectory(light)
+add_subdirectory(material)
+add_subdirectory(prop)
+add_subdirectory(shape)
+
+target_sources(core
+    PRIVATE
+    "scene.cpp"
+    "scene.hpp"
+    "scene_constants.hpp"
+    "scene_loader.cpp"
+    "scene_loader.hpp"
+    "scene_ray.hpp"
+    "scene_ray.inl"
+    "scene_renderstate.hpp"
+    "scene_worker.cpp"
+    "scene_worker.hpp"
+    "scene_worker.inl"
+    )  

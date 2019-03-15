@@ -1,0 +1,11 @@
+target_sources(core
+  PRIVATE
+  "metal_material.cpp"
+  "metal_material.hpp"
+  "metal_presets.cpp"
+  "metal_presets.hpp"
+  "metal_sample.cpp"
+  "metal_sample.hpp"
+  "metal_test.cpp"
+  "metal_test.hpp"
+) 

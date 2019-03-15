@@ -1,0 +1,15 @@
+target_sources(core
+  PRIVATE
+  "address_mode.hpp"
+  "bilinear.hpp"
+  "sampler_2d.hpp"
+  "sampler_3d.hpp"
+  "sampler_linear_2d.hpp"
+  "sampler_linear_2d.inl"
+  "sampler_linear_3d.hpp"
+  "sampler_linear_3d.inl"
+  "sampler_nearest_2d.hpp"
+  "sampler_nearest_2d.inl"
+  "sampler_nearest_3d.hpp"
+  "sampler_nearest_3d.inl"
+) 

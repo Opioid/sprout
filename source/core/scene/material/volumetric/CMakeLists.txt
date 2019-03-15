@@ -1,0 +1,19 @@
+target_sources(core
+    PRIVATE
+    "volumetric_atmosphere.cpp"
+    "volumetric_atmosphere.hpp"
+    "volumetric_grid.cpp"
+    "volumetric_grid.hpp"
+    "volumetric_height.cpp"
+    "volumetric_height.hpp"
+    "volumetric_homogeneous.cpp"
+    "volumetric_homogeneous.hpp"
+    "volumetric_material.cpp"
+    "volumetric_material.hpp"
+    "volumetric_octree.cpp"
+    "volumetric_octree.hpp"
+    "volumetric_octree_builder.cpp"
+    "volumetric_octree_builder.hpp"
+    "volumetric_sample.cpp"
+    "volumetric_sample.hpp"
+    )

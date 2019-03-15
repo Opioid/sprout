@@ -1,0 +1,21 @@
+target_sources(core
+	PRIVATE
+	"glass_dispersion_material.cpp"
+	"glass_dispersion_material.hpp"
+	"glass_dispersion_sample.cpp"
+	"glass_dispersion_sample.hpp"
+	"glass_material.cpp"
+	"glass_material.hpp"
+	"glass_rough_material.cpp"
+	"glass_rough_material.hpp"
+	"glass_rough_sample.cpp"
+	"glass_rough_sample.hpp"
+	"glass_sample.cpp"
+	"glass_sample.hpp"
+	"glass_test.cpp"
+	"glass_test.hpp"
+	"glass_thin_material.cpp"
+	"glass_thin_material.hpp"
+	"glass_thin_sample.cpp"
+	"glass_thin_sample.hpp"
+	) 

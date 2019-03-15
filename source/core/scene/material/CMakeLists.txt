@@ -1,0 +1,43 @@
+add_subdirectory(cloth)
+add_subdirectory(coating)
+add_subdirectory(debug)
+add_subdirectory(disney)
+add_subdirectory(display)
+add_subdirectory(fresnel)
+add_subdirectory(ggx)
+add_subdirectory(glass)
+add_subdirectory(lambert)
+add_subdirectory(light)
+add_subdirectory(matte)
+add_subdirectory(metal)
+add_subdirectory(metallic_paint)
+add_subdirectory(mix)
+add_subdirectory(null)
+add_subdirectory(sky)
+add_subdirectory(substitute)
+add_subdirectory(volumetric)
+
+target_sources(core
+    PRIVATE
+    "bxdf.hpp"
+    "collision_coefficients.hpp"
+    "collision_coefficients.inl"
+    "material_helper.hpp"
+    "material_print.hpp"
+    "material_provider.cpp"
+    "material_provider.hpp"
+    "material_sample_cache.cpp"
+    "material_sample_cache.hpp"
+    "material_sample_cache.inl"
+    "material_sample_helper.hpp"
+    "material_sample.hpp"
+    "material_sample.inl"
+    "material_test.cpp"
+    "material_test.hpp"
+    "material.cpp"
+    "material.hpp"
+    "sampler_cache.cpp"
+    "sampler_cache.hpp"
+    "sampler_settings.cpp"
+    "sampler_settings.hpp"
+    ) 

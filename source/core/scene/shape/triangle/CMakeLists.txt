@@ -1,0 +1,28 @@
+add_subdirectory(bvh)
+
+target_sources(core
+    PRIVATE
+    "triangle_intersection.hpp"
+    "triangle_json_handler.cpp"
+    "triangle_json_handler.hpp"
+    "triangle_mesh_exporter.cpp"
+    "triangle_mesh_exporter.hpp"
+    "triangle_mesh_generator.hpp"
+    "triangle_mesh_provider.cpp"
+    "triangle_mesh_provider.hpp"
+    "triangle_mesh.cpp"
+    "triangle_mesh.hpp"
+    "triangle_mesh_bvh.cpp"
+    "triangle_mesh_bvh.hpp"
+    "triangle_morph_target_collection.cpp"
+    "triangle_morph_target_collection.hpp"
+    "triangle_morphable_mesh.cpp"
+    "triangle_morphable_mesh.hpp"
+    "triangle_primitive_mt.hpp"
+    "triangle_primitive_mt.inl"
+    "triangle_primitive.hpp"
+    "vertex_encoding.hpp"
+    "vertex_encoding.inl"
+    "vertex_layout_description.cpp"
+    "vertex_layout_description.hpp"
+    )

@@ -1,0 +1,19 @@
+target_sources(core
+    PRIVATE
+    "ao.cpp"
+	"ao.hpp"
+	"debug.cpp"
+	"debug.hpp"
+	"lighttracer.cpp"
+	"lighttracer.hpp"
+	"pathtracer_dl.cpp"
+	"pathtracer_dl.hpp"
+	"pathtracer_mis.cpp"
+	"pathtracer_mis.hpp"
+	"pathtracer.cpp"
+	"pathtracer.hpp"
+	"surface_integrator.cpp"
+	"surface_integrator.hpp"
+	"whitted.cpp"
+	"whitted.hpp"
+	) 

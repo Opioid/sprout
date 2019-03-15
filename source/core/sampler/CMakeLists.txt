@@ -1,0 +1,20 @@
+target_sources(core
+    PRIVATE
+    "camera_sample.hpp"
+    "sampler_golden_ratio.cpp"
+    "sampler_golden_ratio.hpp"
+    "sampler_hammersley.cpp"
+    "sampler_hammersley.hpp"
+    "sampler_ld.cpp"
+    "sampler_ld.hpp"
+    "sampler_random.cpp"
+    "sampler_random.hpp"
+    "sampler_rd.cpp"
+    "sampler_rd.hpp"
+    "sampler_test.cpp"
+    "sampler_test.hpp"
+    "sampler_uniform.cpp"
+    "sampler_uniform.hpp"
+    "sampler.cpp"
+    "sampler.hpp"
+) 

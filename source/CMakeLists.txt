@@ -83,6 +83,6 @@ elseif (MSVC)
 endif ()
 
 add_subdirectory(base)
-include(core/core.cmake)
+add_subdirectory(core)
 add_subdirectory(extension)
 add_subdirectory(cli)
