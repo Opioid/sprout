@@ -19,6 +19,8 @@ class Importance {
 
     void increment(float2 uv) noexcept;
 
+    Distribution_2D const& distribution() const noexcept;
+
     void export_heatmap(std::string_view name) const noexcept;
 
     void prepare_sampling(thread::Pool& pool) noexcept;

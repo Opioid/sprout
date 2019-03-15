@@ -91,6 +91,9 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
     float2 const s2d1 = sampler.generate_sample_2D();
 
     auto const importance_uv = importance.sample_continuous(s2d1);
+    if (0.f == importance_uv.pdf) {
+        return false;
+    }
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
     if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, sampler,
@@ -98,7 +101,7 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
         return false;
     }
 
-    result.pdf *= rs.pdf * importance_uv.pdf;
+    result.pdf *= rs.pdf * (256.f * 256.f * importance_uv.pdf);
 
     return true;
 }

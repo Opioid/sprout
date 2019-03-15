@@ -2,6 +2,7 @@
 #define SU_RENDERING_INTEGRATOR_PHOTON_MAP_HPP
 
 #include "base/math/aabb.hpp"
+#include "base/math/distribution/distribution_2d.hpp"
 #include "base/math/vector3.hpp"
 #include "photon_grid.hpp"
 
@@ -30,6 +31,8 @@ class Map {
     void insert(Photon const& photon, uint32_t index) noexcept;
 
     void increment_importance(uint32_t light_id, float2 uv) noexcept;
+
+    Distribution_2D const& importance(uint32_t light_id) const noexcept;
 
     uint32_t compile_iteration(uint64_t num_paths, thread::Pool& pool) noexcept;
 

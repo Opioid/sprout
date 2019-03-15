@@ -91,13 +91,16 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
     float2 const s2d = sampler.generate_sample_2D();
 
     auto const importance_uv = importance.sample_continuous(s2d);
+    if (0.f == importance_uv.pdf) {
+        return false;
+    }
 
     if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
                                 importance_uv.uv, bounds, worker.node_stack(), result)) {
         return false;
     }
 
-    result.pdf *= importance_uv.pdf;
+    result.pdf *= 256.f * 256.f * importance_uv.pdf;
 
     return true;
 }
