@@ -48,7 +48,7 @@ void Importance::export_heatmap(std::string_view name) const noexcept {
 }
 
 void Importance::prepare_sampling(thread::Pool& pool) noexcept {
- //    return;
+  //   return;
 
     if (!distribution_.empty()) {
         return;
@@ -61,7 +61,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
         maxi = std::max(importance_[i], maxi);
     }
 
-    uint32_t mini = maxi / 128 + 1;
+    uint32_t mini = maxi / 16 + 1;
 
     float const max = static_cast<float>(maxi);
 

@@ -131,8 +131,8 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths, thread
     } else {
         fine_grid_.init_cells(num_photons, photons_);
 
-        uint32_t const red_num_caustics = fine_grid_.reduce_and_move(photons_, merge_radius_,
-                                                                     num_reduced_, pool);
+        uint32_t const red_num_caustics = num_photons == num_photons_ ? fine_grid_.reduce_and_move(photons_, merge_radius_,
+                                                                     num_reduced_, pool) : num_photons;
 
         float const percentage_caustics = static_cast<float>(red_num_caustics) /
                                           static_cast<float>(num_photons_);
