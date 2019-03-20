@@ -1,5 +1,6 @@
 target_sources(core
     PRIVATE
+    "photon.hpp"
     "photon_grid.hpp"
     "photon_grid.cpp"
     "photon_importance.hpp"

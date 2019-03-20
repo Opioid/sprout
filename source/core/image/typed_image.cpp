@@ -169,11 +169,11 @@ Typed_sparse_image<T>::Typed_sparse_image(Description const& description) noexce
 
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
-    cells_ = memory::allocate_aligned<Cell>(static_cast<uint64_t>(cell_len));
+    cells_ = memory::allocate_aligned<Cell>(cell_len);
 
     for (int32_t i = 0; i < cell_len; ++i) {
-        cells_[i].homogeneous = true;
-        cells_[i].value       = T(0);
+        cells_[i].value = T(0);
+        cells_[i].data  = nullptr;
     }
 }
 
@@ -182,9 +182,7 @@ Typed_sparse_image<T>::~Typed_sparse_image() noexcept {
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
     for (int32_t i = 0; i < cell_len; ++i) {
-        if (!cells_[i].homogeneous) {
-            memory::free_aligned(cells_[i].data);
-        }
+        memory::free_aligned(cells_[i].data);
     }
 
     memory::free_aligned(cells_);
@@ -199,7 +197,7 @@ T Typed_sparse_image<T>::load(int64_t index) const noexcept {
 
     Cell const& cell = cells_[cell_index];
 
-    if (cell.homogeneous) {
+    if (!cell.data) {
         return cell.value;
     }
 
@@ -223,9 +221,8 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
 
     Cell& cell = cells_[cell_index];
 
-    if (cell.homogeneous) {
-        cell.homogeneous = false;
-        cell.data        = memory::allocate_aligned<T>(len);
+    if (!cell.data) {
+        cell.data = memory::allocate_aligned<T>(len);
 
         std::memset(cell.data, 0, len * sizeof(T));
     }
@@ -252,8 +249,8 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
         if (homogeneous) {
             memory::free_aligned(cell.data);
 
-            cell.homogeneous = true;
-            cell.value       = value;
+            cell.data  = nullptr;
+            cell.value = value;
         }
     }
 }
@@ -267,7 +264,7 @@ T const& Typed_sparse_image<T>::at(int64_t index) const noexcept {
 
     Cell const& cell = cells_[cell_index];
 
-    if (cell.homogeneous) {
+    if (!cell.data) {
         return cell.value;
     }
 
@@ -328,7 +325,7 @@ T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
 
     Cell const& cell = cells_[cell_index];
 
-    if (cell.homogeneous) {
+    if (!cell.data) {
         return cell.value;
     }
 
@@ -350,7 +347,7 @@ T const& Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const noexce
 
     Cell const& cell = cells_[cell_index];
 
-    if (cell.homogeneous) {
+    if (!cell.data) {
         return cell.value;
     }
 
@@ -400,7 +397,7 @@ size_t Typed_sparse_image<T>::num_bytes() const noexcept {
     size_t num_bytes = cell_len * sizeof(Cell);
 
     for (uint32_t i = 0; i < cell_len; ++i) {
-        if (!cells_[i].homogeneous && cells_[i].data) {
+        if (cells_[i].data) {
             num_bytes += Cell_dim * Cell_dim * Cell_dim * sizeof(T);
         }
     }

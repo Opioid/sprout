@@ -99,12 +99,8 @@ class Typed_sparse_image final : public Image {
     int3 num_cells_;
 
     struct Cell {
-        bool homogeneous;
-
-        union {
-            T  value;
-            T* data;
-        };
+        T  value;
+        T* data;
     };
 
     Cell* cells_ = nullptr;

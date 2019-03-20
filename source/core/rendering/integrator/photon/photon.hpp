@@ -1,8 +1,8 @@
 #ifndef SU_RENDERING_INTEGRATOR_PHOTON_HPP
 #define SU_RENDERING_INTEGRATOR_PHOTON_HPP
 
-#include "base/math/vector3.hpp"
 #include "base/flags/flags.hpp"
+#include "base/math/vector3.hpp"
 
 namespace rendering::integrator::photon {
 
@@ -21,6 +21,6 @@ struct Photon_ref {
     float   sd;
 };
 
-}
+}  // namespace rendering::integrator::photon
 
 #endif

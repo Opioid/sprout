@@ -1,11 +1,11 @@
 #include "photon_grid.hpp"
-#include "photon.hpp"
 #include <algorithm>
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "photon.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
