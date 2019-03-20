@@ -1,4 +1,5 @@
 #include "photon_grid.hpp"
+#include "photon.hpp"
 #include <algorithm>
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"

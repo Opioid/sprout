@@ -1,4 +1,5 @@
 #include "photon_map.hpp"
+#include "photon.hpp"
 #include <string>
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"

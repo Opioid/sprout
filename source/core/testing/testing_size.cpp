@@ -3,7 +3,7 @@
 #include <string>
 #include "base/math/vector3.inl"
 #include "image/texture/texture_adapter.hpp"
-#include "rendering/integrator/photon/photon_grid.hpp"
+#include "rendering/integrator/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/rendering_camera_worker.hpp"

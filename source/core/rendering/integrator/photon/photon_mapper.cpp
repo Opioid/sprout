@@ -2,6 +2,7 @@
 #include "base/math/aabb.inl"
 #include "base/memory/align.hpp"
 #include "image/encoding/png/png_writer.hpp"
+#include "photon.hpp"
 #include "photon_map.hpp"
 #include "photon_importance.hpp"
 #include "rendering/integrator/integrator_helper.hpp"

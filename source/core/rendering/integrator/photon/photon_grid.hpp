@@ -1,7 +1,6 @@
 #ifndef SU_RENDERING_INTEGRATOR_PHOTON_GRID_HPP
 #define SU_RENDERING_INTEGRATOR_PHOTON_GRID_HPP
 
-#include "base/flags/flags.hpp"
 #include "base/math/aabb.hpp"
 #include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
@@ -26,20 +25,8 @@ class Worker;
 
 namespace rendering::integrator::photon {
 
-struct Photon {
-    float3 p;
-    float3 wi;
-    float  alpha[3];
-
-    enum class Property { First_hit = 1 << 0, Volumetric = 1 << 1 };
-
-    flags::Flags<Property> properties;
-};
-
-struct Photon_ref {
-    int32_t id;
-    float   sd;
-};
+struct Photon;
+struct Photon_ref;
 
 static uint32_t constexpr Num_refs = 4 * 4096;
 // static uint32_t constexpr Num_refs = 1024;
