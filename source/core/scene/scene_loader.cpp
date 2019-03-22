@@ -280,11 +280,6 @@ void Loader::load_entities(json::Value const& entities_value, Scene::Entity_ref 
             load_entities(*children, entity, mount_folder, local_materials, scene);
         }
 
-        //        if (!animation) {
-        //            entity.ref->allocate_local_frame();
-        //            entity.ref->set_transformation(transformation);
-        //        }
-
         if (visibility) {
             set_visibility(entity.ref, *visibility);
         }
