@@ -9,4 +9,6 @@ target_sources(core
     "photon_map.cpp"
     "photon_mapper.hpp"
     "photon_mapper.cpp"
-    ) 
+    "photon_sparse_grid.hpp"
+    "photon_sparse_grid.cpp"
+    )

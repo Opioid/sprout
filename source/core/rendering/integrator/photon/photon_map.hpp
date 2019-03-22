@@ -4,6 +4,7 @@
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
 #include "photon_grid.hpp"
+#include "photon_sparse_grid.hpp"
 
 namespace scene {
 class Scene;
@@ -33,7 +34,8 @@ class Map {
 
     Importance const& importance(uint32_t light_id) const noexcept;
 
-    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& pool) noexcept;
+    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths,
+                               thread::Pool& pool) noexcept;
 
     void compile_finalize() noexcept;
 

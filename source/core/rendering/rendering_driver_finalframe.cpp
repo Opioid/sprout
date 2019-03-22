@@ -100,7 +100,7 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
     photon_map_.start();
 
-    uint32_t num_photons = photon_settings_.num_photons / 10 + 1;
+    uint32_t num_photons = photon_settings_.num_photons;  // / 10 + 1;
 
     for (uint32_t iteration = 0;; ++iteration) {
         thread_pool_.run_range(
@@ -109,7 +109,8 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
                 photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame, iteration);
             },
-            static_cast<int32_t>(begin), num_photons/*static_cast<int32_t>(photon_settings_.num_photons)*/);
+            static_cast<int32_t>(begin),
+            num_photons /*static_cast<int32_t>(photon_settings_.num_photons)*/);
 
         for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
             num_paths += static_cast<uint64_t>(photon_infos_[i].num_paths);
@@ -120,7 +121,8 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
             break;
         }
 
-        uint32_t const new_begin = photon_map_.compile_iteration(num_photons, num_paths, thread_pool_);
+        uint32_t const new_begin = photon_map_.compile_iteration(num_photons, num_paths,
+                                                                 thread_pool_);
 
         if (0 == new_begin || photon_settings_.num_photons == new_begin ||
             1.f <= iteration_threshold ||

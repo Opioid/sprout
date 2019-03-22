@@ -1,5 +1,5 @@
-#ifndef SU_RENDERING_INTEGRATOR_PHOTON_GRID_HPP
-#define SU_RENDERING_INTEGRATOR_PHOTON_GRID_HPP
+#ifndef SU_RENDERING_INTEGRATOR_PHOTON_SPARSE_GRID_HPP
+#define SU_RENDERING_INTEGRATOR_PHOTON_SPARSE_GRID_HPP
 
 #include "base/math/aabb.hpp"
 #include "base/math/vector2.hpp"
@@ -28,14 +28,14 @@ namespace rendering::integrator::photon {
 struct Photon;
 struct Photon_ref;
 
-class Grid {
+class Sparse_grid {
   public:
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Grid(float search_radius, float grid_radius_factor, bool check_disk) noexcept;
+    Sparse_grid(float search_radius, float grid_radius_factor, bool check_disk) noexcept;
 
-    ~Grid() noexcept;
+    ~Sparse_grid() noexcept;
 
     void resize(AABB const& aabb) noexcept;
 
@@ -52,9 +52,15 @@ class Grid {
     size_t num_bytes() const noexcept;
 
   private:
+    void release() noexcept;
+
+    void set(int3 const& c, int32_t value) noexcept;
+
     uint32_t reduce(float merge_radius, int32_t begin, int32_t end) noexcept;
 
     int32_t map1(float3 const& v) const noexcept;
+
+    int3 map3(float3 const& v) const noexcept;
 
     int3 map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const noexcept;
 
@@ -64,6 +70,9 @@ class Grid {
     };
 
     void adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const noexcept;
+
+    static int32_t constexpr Log2_cell_dim = 5;
+    static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;
 
     uint32_t num_photons_;
     Photon*  photons_;
@@ -81,9 +90,16 @@ class Grid {
 
     int3 dimensions_;
 
+    int3 num_cells_;
+
     float3 local_to_texture_;
 
-    int32_t* grid_;
+    struct Cell {
+        int32_t* data;
+        int32_t  value;
+    };
+
+    Cell* cells_;
 
     Adjacency adjacencies_[43];
 

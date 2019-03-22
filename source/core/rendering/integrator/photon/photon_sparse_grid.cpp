@@ -1,4 +1,4 @@
-#include "photon_grid.hpp"
+#include "photon_sparse_grid.hpp"
 #include <algorithm>
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
@@ -41,21 +41,21 @@ static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
 static float3 scattering_coefficient(prop::Intersection const& intersection,
                                      Worker const&             worker) noexcept;
 
-Grid::Grid(float search_radius, float grid_cell_factor, bool check_disk) noexcept
+Sparse_grid::Sparse_grid(float search_radius, float grid_cell_factor, bool check_disk) noexcept
     : num_photons_(0),
       photons_(nullptr),
       search_radius_(search_radius),
       grid_cell_factor_(grid_cell_factor),
       cell_bound_(0.5f / grid_cell_factor, 1.f - (0.5f / grid_cell_factor)),
       dimensions_(0),
-      grid_(nullptr),
+      cells_(nullptr),
       check_disk_(check_disk) {}
 
-Grid::~Grid() noexcept {
-    memory::free_aligned(grid_);
+Sparse_grid::~Sparse_grid() noexcept {
+    release();
 }
 
-void Grid::resize(AABB const& aabb) noexcept {
+void Sparse_grid::resize(AABB const& aabb) noexcept {
     aabb_ = aabb;
 
     float const diameter = 2.f * search_radius_;
@@ -63,14 +63,28 @@ void Grid::resize(AABB const& aabb) noexcept {
     int3 const dimensions = int3(ceil(aabb.extent() / (diameter * grid_cell_factor_))) + int(2);
 
     if (dimensions_ != dimensions) {
+        release();
+
         dimensions_ = dimensions;
 
         local_to_texture_ = 1.f / aabb_.extent() * float3(dimensions - int3(2));
 
-        int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2] + 1;
+        num_cells_ = dimensions >> Log2_cell_dim;
 
-        memory::free_aligned(grid_);
-        grid_ = memory::allocate_aligned<int32_t>(static_cast<uint32_t>(num_cells));
+        num_cells_ += math::min(dimensions - (num_cells_ << Log2_cell_dim), 1);
+
+        int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
+
+        cells_ = memory::allocate_aligned<Cell>(cell_len);
+
+        for (int32_t i = 0; i < cell_len; ++i) {
+            cells_[i].data  = nullptr;
+            cells_[i].value = -1;
+        }
+
+        //        int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2] + 1;
+
+        //        grid_ = memory::allocate_aligned<int32_t>(static_cast<uint32_t>(num_cells));
 
         int32_t const area = dimensions[0] * dimensions[1];
 
@@ -231,7 +245,7 @@ void Grid::resize(AABB const& aabb) noexcept {
     }
 }
 
-void Grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
+void Sparse_grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
     num_photons_ = num_photons;
     photons_     = photons;
 
@@ -246,23 +260,41 @@ void Grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
         return ida < idb;
     });
 
-    int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
+    //   int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
 
     int32_t const len = static_cast<int32_t>(num_photons);
 
     int32_t current = 0;
-    for (int32_t c = 0; c < num_cells; ++c) {
-        grid_[c] = current;
-        for (; current < len; ++current) {
-            if (map1(photons[current].p) != c) {
-                break;
+    for (int32_t z = 0, zlen = dimensions_[2]; z < zlen; ++z) {
+        for (int32_t y = 0, ylen = dimensions_[1]; y < ylen; ++y) {
+            for (int32_t x = 0, xlen = dimensions_[0]; x < xlen; ++x) {
+                int3 const c(x, y, z);
+                set(c, current);
+
+                for (; current < len; ++current) {
+                    if (map3(photons[current].p) != c) {
+                        break;
+                    }
+                }
             }
         }
     }
+
+    /*
+        int32_t current = 0;
+        for (int32_t c = 0; c < num_cells; ++c) {
+            grid_[c] = current;
+            for (; current < len; ++current) {
+                if (map1(photons[current].p) != c) {
+                    break;
+                }
+            }
+        }
+    */
 }
 
-uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                               thread::Pool& pool) noexcept {
+uint32_t Sparse_grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
+                                      thread::Pool& pool) noexcept {
     pool.run_range(
         [ this, merge_radius, num_reduced ](uint32_t id, int32_t begin, int32_t end) noexcept {
             num_reduced[id] = reduce(merge_radius, begin, end);
@@ -303,7 +335,7 @@ static inline float conely_filter(float squared_distance, float inv_squared_radi
     return s;
 }
 
-void Grid::set_num_paths(uint64_t num_paths) noexcept {
+void Sparse_grid::set_num_paths(uint64_t num_paths) noexcept {
     float const radius_2   = search_radius_ * search_radius_;
     surface_normalization_ = 1.f / (((1.f / 2.f) * Pi) * static_cast<float>(num_paths) * radius_2);
 
@@ -311,8 +343,8 @@ void Grid::set_num_paths(uint64_t num_paths) noexcept {
     volume_normalization_ = 1.f / (((4.f / 3.f) * Pi) * (radius_3 * static_cast<float>(num_paths)));
 }
 
-float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
-                Photon_ref* photon_refs, scene::Worker const& worker) const noexcept {
+float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& sample,
+                       Photon_ref* photon_refs, scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
         return float3(0.f);
     }
@@ -405,7 +437,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     return result;
 }
 
-size_t Grid::num_bytes() const noexcept {
+size_t Sparse_grid::num_bytes() const noexcept {
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
 
     size_t const num_bytes = static_cast<size_t>(num_cells) * sizeof(int32_t);
@@ -413,7 +445,42 @@ size_t Grid::num_bytes() const noexcept {
     return num_bytes;
 }
 
-uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
+void Sparse_grid::release() noexcept {
+    int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
+
+    for (int32_t i = 0; i < cell_len; ++i) {
+        memory::free_aligned(cells_[i].data);
+    }
+
+    memory::free_aligned(cells_);
+}
+
+void Sparse_grid::set(int3 const& c, int32_t value) noexcept {
+    int3 const cc = c >> Log2_cell_dim;
+
+    int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
+
+    Cell& cell = cells_[cell_index];
+
+    if (cell.data) {
+        int3 const cs = cc << Log2_cell_dim;
+
+        int3 const cxyz = c - cs;
+
+        int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
+
+        cell.data[ci] = value;
+    } else if (cell.value >= 0 && cell.value != value) {
+        cell.data = memory::allocate_aligned<int32_t>(Cell_dim * Cell_dim * Cell_dim);
+
+        cell.data[0] = cell.value;
+        cell.data[1] = value;
+    } else {
+        cell.value = value;
+    }
+}
+
+uint32_t Sparse_grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
     float const merge_grid_cell_factor = (search_radius_ * grid_cell_factor_) / merge_radius;
 
     float2 const cell_bound(0.5f / merge_grid_cell_factor, 1.f - (0.5f / merge_grid_cell_factor));
@@ -511,13 +578,21 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
     return num_reduced;
 }
 
-int32_t Grid::map1(float3 const& v) const noexcept {
+int32_t Sparse_grid::map1(float3 const& v) const noexcept {
     int3 const c = static_cast<int3>((v - aabb_.min()) * local_to_texture_) + 1;
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
-int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const noexcept {
+int3 Sparse_grid::map3(float3 const& v) const noexcept {
+    float3 const r = (v - aabb_.min()) * local_to_texture_;
+
+    int3 const c = static_cast<int3>(r);
+
+    return c + 1;
+}
+
+int3 Sparse_grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const noexcept {
     float3 const r = (v - aabb_.min()) * local_to_texture_;
 
     int3 const c = static_cast<int3>(r);
@@ -531,7 +606,8 @@ int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const no
     return c + 1;
 }
 
-void Grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const noexcept {
+void Sparse_grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const
+    noexcept {
     uint8_t    adjacents;
     int3 const c = map3(v, cell_bound, adjacents);
 
@@ -542,8 +618,11 @@ void Grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacen
     for (uint32_t i = 0; i < adjacency.num_cells; ++i) {
         int2 const cells = adjacency.cells[i];
 
-        adjacency.cells[i][0] = grid_[cells[0] + ic];
-        adjacency.cells[i][1] = grid_[cells[1] + ic + 1];
+        adjacency.cells[i][0] = 0;
+        adjacency.cells[i][1] = 0;
+
+        //    adjacency.cells[i][0] = grid_[cells[0] + ic];
+        //    adjacency.cells[i][1] = grid_[cells[1] + ic + 1];
     }
 }
 

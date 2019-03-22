@@ -21,6 +21,8 @@ struct Photon_ref {
     float   sd;
 };
 
+static uint32_t constexpr Num_refs = 4 * 4096;
+
 }  // namespace rendering::integrator::photon
 
 #endif

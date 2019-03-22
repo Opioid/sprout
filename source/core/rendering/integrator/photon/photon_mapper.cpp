@@ -3,8 +3,8 @@
 #include "base/memory/align.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "photon.hpp"
-#include "photon_map.hpp"
 #include "photon_importance.hpp"
+#include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.hpp"
@@ -242,7 +242,8 @@ bool Mapper::generate_light_ray(Map const& map, uint32_t frame, AABB const& boun
             return false;
         }
     } else {
-        if (!light.ref.sample(time, sampler_, 0, importance.distribution(), bounds, worker, light_sample)) {
+        if (!light.ref.sample(time, sampler_, 0, importance.distribution(), bounds, worker,
+                              light_sample)) {
             return false;
         }
 

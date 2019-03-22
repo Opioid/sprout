@@ -48,7 +48,7 @@ void Importance::export_heatmap(std::string_view name) const noexcept {
 }
 
 void Importance::prepare_sampling(thread::Pool& pool) noexcept {
-  //   return;
+    return;
 
     if (!distribution_.empty()) {
         return;

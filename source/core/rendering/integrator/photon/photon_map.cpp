@@ -65,7 +65,8 @@ Importance const& Map::importance(uint32_t light_id) const noexcept {
     return importances_[light_id];
 }
 
-uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& pool) noexcept {
+uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
+                                thread::Pool& pool) noexcept {
     AABB const aabb = calculate_aabb(num_photons, pool);
 
     fine_grid_.resize(aabb);
@@ -132,8 +133,10 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths, thread
     } else {
         fine_grid_.init_cells(num_photons, photons_);
 
-        uint32_t const red_num_caustics = num_photons == num_photons_ ? fine_grid_.reduce_and_move(photons_, merge_radius_,
-                                                                     num_reduced_, pool) : num_photons;
+        uint32_t const red_num_caustics = num_photons == num_photons_
+                                              ? fine_grid_.reduce_and_move(photons_, merge_radius_,
+                                                                           num_reduced_, pool)
+                                              : num_photons;
 
         float const percentage_caustics = static_cast<float>(red_num_caustics) /
                                           static_cast<float>(num_photons_);
