@@ -22,7 +22,7 @@ Camera::~Camera() noexcept {
 }
 
 void Camera::update(Scene const& scene, uint64_t time, Worker& worker) noexcept {
-    calculate_world_transformation();
+    calculate_world_transformation(scene.entities());
 
     interface_stack_.clear();
     interfaces_.clear();

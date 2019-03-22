@@ -89,7 +89,7 @@ void Scene::finish(uint64_t frame_step, uint64_t frame_duration) noexcept {
     }
 
     for (auto e : entities_) {
-        e->propagate_frame_allocation();
+        e->propagate_frame_allocation(entities_.data());
     }
 }
 
@@ -173,6 +173,10 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
     return visible;
 }
 
+entity::Entity* const* Scene::entities() const noexcept {
+    return entities_.data();
+}
+
 entity::Entity* Scene::entity(size_t index) const noexcept {
     if (index >= entities_.size()) {
         return nullptr;
@@ -245,21 +249,21 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
 
     // handle changed transformations
     for (auto const d : dummies_) {
-        d->calculate_world_transformation();
+        d->calculate_world_transformation(entities_.data());
     }
 
     for (auto e : extensions_) {
-        e->calculate_world_transformation();
+        e->calculate_world_transformation(entities_.data());
     }
 
     for (auto p : finite_props_) {
-        p->calculate_world_transformation();
+        p->calculate_world_transformation(entities_.data());
         has_masked_material_ = has_masked_material_ || p->has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p->has_tinted_shadow();
     }
 
     for (auto p : infinite_props_) {
-        p->calculate_world_transformation();
+        p->calculate_world_transformation(entities_.data());
         has_masked_material_ = has_masked_material_ || p->has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p->has_tinted_shadow();
     }
@@ -288,24 +292,24 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }
 
-entity::Dummy* Scene::create_dummy() noexcept {
+Scene::Entity_ref Scene::create_dummy() noexcept {
     entity::Dummy* dummy = new entity::Dummy;
     dummies_.push_back(dummy);
 
     entities_.push_back(dummy);
 
+    return {dummy, static_cast<uint32_t>(entities_.size()) - 1};
+}
+
+Scene::Entity_ref Scene::create_dummy(std::string const& name) noexcept {
+    Entity_ref dummy = create_dummy();
+
+    add_named_entity(dummy.ref, name);
+
     return dummy;
 }
 
-entity::Dummy* Scene::create_dummy(std::string const& name) noexcept {
-    entity::Dummy* dummy = create_dummy();
-
-    add_named_entity(dummy, name);
-
-    return dummy;
-}
-
-Prop* Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
+Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     prop::Prop* prop = new prop::Prop;
 
     prop->set_shape_and_materials(shape, materials.data());
@@ -326,14 +330,14 @@ Prop* Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
 
     entities_.push_back(prop);
 
-    return prop;
+    return {prop, static_cast<uint32_t>(entities_.size()) - 1};
 }
 
-prop::Prop* Scene::create_prop(Shape* shape, Materials const& materials,
-                               std::string const& name) noexcept {
-    prop::Prop* prop = create_prop(shape, materials);
+Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials,
+                                   std::string const& name) noexcept {
+    Prop_ref prop = create_prop(shape, materials);
 
-    add_named_entity(prop, name);
+    add_named_entity(prop.ref, name);
 
     return prop;
 }
@@ -378,16 +382,20 @@ light::Light* Scene::create_prop_volume_image_light(Prop* prop, uint32_t part) n
     return light;
 }
 
-void Scene::add_extension(Entity* extension) noexcept {
+uint32_t Scene::add_extension(Entity* extension) noexcept {
     extensions_.push_back(extension);
 
     entities_.push_back(extension);
+
+    return static_cast<uint32_t>(entities_.size()) - 1;
 }
 
-void Scene::add_extension(Entity* extension, std::string const& name) noexcept {
-    add_extension(extension);
+uint32_t Scene::add_extension(Entity* extension, std::string const& name) noexcept {
+    uint32_t const id = add_extension(extension);
 
     add_named_entity(extension, name);
+
+    return id;
 }
 
 void Scene::add_material(Material* material) noexcept {

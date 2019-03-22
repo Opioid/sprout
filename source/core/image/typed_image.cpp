@@ -253,7 +253,6 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
             cell.value = value;
         }
     }
-
 }
 
 template <typename T>

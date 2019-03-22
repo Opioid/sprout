@@ -24,8 +24,9 @@ class Provider : public scene::entity::Extension_provider {
     void set_scene_loader(scene::Loader& loader) noexcept;
     void set_material_provider(scene::material::Provider& provider) noexcept;
 
-    scene::entity::Entity* create_extension(json::Value const& extension_value, scene::Scene& scene,
-                                            resource::Manager& manager) noexcept override final;
+    scene::entity::Entity_ref create_extension(json::Value const& extension_value,
+                                               std::string const& name, scene::Scene& scene,
+                                               resource::Manager& manager) noexcept override final;
 
   private:
     scene::Loader*             scene_loader_      = nullptr;

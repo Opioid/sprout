@@ -44,8 +44,9 @@ void Provider::set_scene_loader(Loader& loader) noexcept {
     scene_loader_ = &loader;
 }
 
-entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
-                                           resource::Manager& manager) noexcept {
+entity::Entity_ref Provider::create_extension(json::Value const& /*extension_value*/,
+                                              std::string const& name, Scene& scene,
+                                              resource::Manager& manager) noexcept {
     spectrum::init();
 
     using namespace image;
@@ -101,7 +102,7 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     material->compile(manager.thread_pool());
 
-    prop::Prop* volume = scene.create_prop(scene_loader_->cube(), {material});
+    Scene::Prop_ref volume = scene.create_prop(scene_loader_->cube(), {material});
 
     math::Transformation transformation{float3(0.f),
                                         //	float3(1000000.f, 100000.f, 50000.f),
@@ -109,16 +110,18 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
                                         //	float3(10.f, 1.f, 1.f),
                                         math::quaternion::identity()};
 
-    volume->allocate_local_frame();
-    volume->propagate_frame_allocation();
+    volume.ref->allocate_local_frame();
+    volume.ref->propagate_frame_allocation(scene.entities());
 
-    volume->set_transformation(transformation);
+    volume.ref->set_transformation(transformation);
 
     Aurora* aurora = new Aurora();
 
-    aurora->attach(volume);
+    uint32_t const aurora_id = scene.add_extension(aurora, name);
 
-    return aurora;
+    aurora->attach(aurora_id, volume.id, scene.entities());
+
+    return entity::Entity_ref{aurora, aurora_id};
 }
 
 void Provider::render(image::Byte3& target, thread::Pool& /*thread_pool*/) {

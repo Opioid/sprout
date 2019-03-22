@@ -60,7 +60,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
     std::string_view const take_mount_folder = string::parent_directory(take_name);
 
-    bool const success = load(filename, take_mount_folder, nullptr, scene);
+    bool const success = load(filename, take_mount_folder, Scene::Entity_ref::Null(), scene);
 
     if (success) {
         scene.finish(take.view.camera ? take.view.camera->frame_step() : 0,
@@ -119,7 +119,7 @@ size_t Loader::num_bytes() const noexcept {
 }
 
 bool Loader::load(std::string const& filename, std::string_view take_mount_folder,
-                  entity::Entity* parent, Scene& scene) noexcept {
+                  Scene::Entity_ref parent, Scene& scene) noexcept {
     auto& filesystem = resource_manager_.filesystem();
 
     if (!take_mount_folder.empty()) {
@@ -184,7 +184,7 @@ void Loader::read_materials(json::Value const& materials_value,
     }
 }
 
-void Loader::load_entities(json::Value const& entities_value, entity::Entity* parent,
+void Loader::load_entities(json::Value const& entities_value, Scene::Entity_ref parent,
                            std::string_view mount_folder, Local_materials const& local_materials,
                            Scene& scene) noexcept {
     if (!entities_value.IsArray()) {
@@ -208,25 +208,26 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
 
         std::string const name = json::read_string(e, "name");
 
-        entity::Entity* entity = nullptr;
+        entity::Entity_ref entity = entity::Entity_ref::Null();
 
         if ("Light" == type_name) {
-            prop::Prop* prop = load_prop(e, name, mount_folder, local_materials, scene);
+            prop::Prop_ref prop = load_prop(e, name, mount_folder, local_materials, scene);
 
-            if (prop && prop->visible_in_reflection()) {
-                create_light(prop, scene);
+            if (prop.ref && prop.ref->visible_in_reflection()) {
+                create_light(prop.ref, scene);
             }
 
-            entity = prop;
+            entity = Scene::Entity_ref{prop.ref, prop.id};
         } else if ("Prop" == type_name) {
-            entity = load_prop(e, name, mount_folder, local_materials, scene);
+            prop::Prop_ref prop = load_prop(e, name, mount_folder, local_materials, scene);
+            entity              = Scene::Entity_ref{prop.ref, prop.id};
         } else if ("Dummy" == type_name) {
             entity = scene.create_dummy();
         } else {
             entity = load_extension(type_name, e, name, scene);
         }
 
-        if (!entity) {
+        if (!entity.ref) {
             continue;
         }
 
@@ -254,8 +255,8 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
             load_entities(*children, entity, mount_folder, local_materials, scene);
         }
 
-        if (parent) {
-            parent->attach(entity);
+        if (parent.ref) {
+            parent.ref->attach(parent.id, entity.id, scene.entities());
         }
 
         animation::Animation* animation = nullptr;
@@ -263,17 +264,17 @@ void Loader::load_entities(json::Value const& entities_value, entity::Entity* pa
         if (animation_value) {
             animation = animation::load(*animation_value, transformation, scene);
             if (animation) {
-                scene.create_animation_stage(entity, animation);
+                scene.create_animation_stage(entity.ref, animation);
             }
         }
 
         if (!animation) {
-            entity->allocate_local_frame();
-            entity->set_transformation(transformation);
+            entity.ref->allocate_local_frame();
+            entity.ref->set_transformation(transformation);
         }
 
         if (visibility) {
-            set_visibility(entity, *visibility);
+            set_visibility(entity.ref, *visibility);
         }
     }
 }
@@ -296,9 +297,9 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
     entity->set_visibility(in_camera, in_reflection, in_shadow);
 }
 
-prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& name,
-                              std::string_view mount_folder, Local_materials const& local_materials,
-                              Scene& scene) noexcept {
+prop::Prop_ref Loader::load_prop(json::Value const& prop_value, std::string const& name,
+                                 std::string_view       mount_folder,
+                                 Local_materials const& local_materials, Scene& scene) noexcept {
     logging::verbose("Loading prop...");
 
     Shape* shape = nullptr;
@@ -318,7 +319,7 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
     }
 
     if (!shape) {
-        return nullptr;
+        return prop::Prop_ref::Null();
     }
 
     Materials materials;
@@ -335,31 +336,29 @@ prop::Prop* Loader::load_prop(json::Value const& prop_value, std::string const& 
         }
     }
 
-    prop::Prop* prop = scene.create_prop(shape, materials, name);
+    Scene::Prop_ref prop = scene.create_prop(shape, materials, name);
 
     // It is a annoying that this is done again in load_entities(),
     // but visibility information is already used when creating lights.
     // Should be improved at some point.
     if (visibility) {
-        set_visibility(prop, *visibility);
+        set_visibility(prop.ref, *visibility);
     }
 
     return prop;
 }
 
-entity::Entity* Loader::load_extension(std::string const& type, json::Value const& extension_value,
-                                       std::string const& name, Scene& scene) noexcept {
+entity::Entity_ref Loader::load_extension(std::string const& type,
+                                          json::Value const& extension_value,
+                                          std::string const& name, Scene& scene) noexcept {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
-        entity::Entity* entity = p->second->create_extension(extension_value, scene,
-                                                             resource_manager_);
-        if (entity->is_extension()) {
-            scene.add_extension(entity, name);
-        }
+        entity::Entity_ref entity = p->second->create_extension(extension_value, name, scene,
+                                                                resource_manager_);
 
         return entity;
     }
 
-    return nullptr;
+    return Scene::Entity_ref::Null();
 }
 
 Scene::Shape* Loader::load_shape(json::Value const& shape_value) noexcept {

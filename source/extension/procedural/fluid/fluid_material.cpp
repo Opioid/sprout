@@ -103,7 +103,7 @@ void Material::set_prop(scene::prop::Prop* prop) noexcept {
 void Material::simulate(uint64_t      start, uint64_t /*end*/, uint64_t /*frame_length*/,
                         thread::Pool& pool) noexcept {
     // Hacky, but "moving" fluid props are not supported at the moment
-    prop_->calculate_world_transformation();
+    prop_->calculate_world_transformation(nullptr);
     sim_.set_aabb(prop_->aabb());
 
     uint32_t const sim_frame = static_cast<uint32_t>(start / Simulation::Frame_length);

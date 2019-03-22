@@ -12,10 +12,6 @@ Entity::~Entity() noexcept {
     delete[] world_frames_;
 }
 
-bool Entity::is_extension() const noexcept {
-    return false;
-}
-
 void Entity::allocate_frames(uint32_t num_frames) noexcept {
     num_world_frames_ = num_frames;
 
@@ -32,8 +28,8 @@ void Entity::allocate_local_frame() noexcept {
     local_frames_ = new Keyframe[1];
 }
 
-void Entity::propagate_frame_allocation() noexcept {
-    if (!parent_) {
+void Entity::propagate_frame_allocation(Entities entities) noexcept {
+    if (Null == parent_) {
         if (0 == num_world_frames_) {
             num_world_frames_ = num_local_frames_;
 
@@ -41,8 +37,8 @@ void Entity::propagate_frame_allocation() noexcept {
         }
     }
 
-    if (child_) {
-        child_->inherit_frame_allocation(num_local_frames_);
+    if (Null != child_) {
+        entities[child_]->inherit_frame_allocation(num_local_frames_, entities);
     }
 }
 
@@ -87,13 +83,13 @@ void Entity::set_frames(Keyframe const* frames, uint32_t num_frames) noexcept {
     }
 }
 
-void Entity::calculate_world_transformation() noexcept {
-    if (!parent_) {
+void Entity::calculate_world_transformation(Entities entities) noexcept {
+    if (Null == parent_) {
         for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
             world_frames_[i] = local_frames_[i];
         }
 
-        propagate_transformation();
+        propagate_transformation(entities);
     }
 }
 
@@ -119,43 +115,42 @@ void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) 
     properties_.set(Property::Visible_in_shadow, in_shadow);
 }
 
-void Entity::attach(Entity* node) noexcept {
-    node->detach();
+void Entity::attach(uint32_t self, uint32_t node, Entities entities) noexcept {
+    Entity* n = entities[node];
 
-    node->parent_ = this;
+    n->detach_self(self, entities);
 
-    if (!child_) {
+    n->parent_ = self;
+
+    if (Null == child_) {
         child_ = node;
     } else {
-        child_->add_sibling(node);
+        entities[child_]->add_sibling(node, entities);
     }
 }
 
-void Entity::detach() noexcept {
-    if (parent_) {
-        parent_->detach(this);
+void Entity::detach_self(uint32_t self, Entities entities) noexcept {
+    if (Null != parent_) {
+        entities[parent_]->detach(self, entities);
     }
 }
 
-Entity const* Entity::parent() const noexcept {
-    return parent_;
-}
-
-void Entity::propagate_transformation() noexcept {
+void Entity::propagate_transformation(Entities entities) noexcept {
     if (1 == num_world_frames_) {
         world_transformation_.set(world_frames_[0].transformation);
     }
 
     on_set_transformation();
 
-    if (child_) {
-        child_->inherit_transformation(world_frames_, num_world_frames_);
+    if (Null != child_) {
+        entities[child_]->inherit_transformation(world_frames_, num_world_frames_, entities);
     }
 }
 
-void Entity::inherit_transformation(Keyframe const* frames, uint32_t num_frames) noexcept {
-    if (next_) {
-        next_->inherit_transformation(frames, num_frames);
+void Entity::inherit_transformation(Keyframe const* frames, uint32_t num_frames,
+                                    Entities entities) noexcept {
+    if (Null != next_) {
+        entities[next_]->inherit_transformation(frames, num_frames, entities);
     }
 
     for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
@@ -164,12 +159,12 @@ void Entity::inherit_transformation(Keyframe const* frames, uint32_t num_frames)
         local_frames_[lf].transform(world_frames_[i], frames[of]);
     }
 
-    propagate_transformation();
+    propagate_transformation(entities);
 }
 
-void Entity::inherit_frame_allocation(uint32_t num_frames) noexcept {
-    if (next_) {
-        next_->inherit_frame_allocation(num_frames);
+void Entity::inherit_frame_allocation(uint32_t num_frames, Entities entities) noexcept {
+    if (Null != next_) {
+        entities[next_]->inherit_frame_allocation(num_frames, entities);
     }
 
     if (0 == num_world_frames_) {
@@ -178,37 +173,41 @@ void Entity::inherit_frame_allocation(uint32_t num_frames) noexcept {
         world_frames_ = new Keyframe[num_world_frames_];
     }
 
-    propagate_frame_allocation();
+    propagate_frame_allocation(entities);
 }
 
-void Entity::add_sibling(Entity* node) noexcept {
-    if (!next_) {
+void Entity::add_sibling(uint32_t node, Entities entities) noexcept {
+    if (Null == next_) {
         next_ = node;
     } else {
-        next_->add_sibling(node);
+        entities[next_]->add_sibling(node, entities);
     }
 }
 
-void Entity::detach(Entity* node) noexcept {
+void Entity::detach(uint32_t node, Entities entities) noexcept {
     // we can assume this to be true because of detach()
     // assert(node->parent_ == this);
 
-    node->parent_ = nullptr;
+    Entity* n = entities[node];
+
+    n->parent_ = Null;
 
     if (child_ == node) {
-        child_      = node->next_;
-        node->next_ = nullptr;
+        child_   = n->next_;
+        n->next_ = Null;
     } else {
-        child_->remove_sibling(node);
+        entities[child_]->remove_sibling(node, entities);
     }
 }
 
-void Entity::remove_sibling(Entity* node) noexcept {
+void Entity::remove_sibling(uint32_t node, Entities entities) noexcept {
+    Entity* n = entities[node];
+
     if (next_ == node) {
-        next_       = node->next_;
-        node->next_ = nullptr;
+        next_    = n->next_;
+        n->next_ = Null;
     } else {
-        next_->remove_sibling(node);
+        n->remove_sibling(node, entities);
     }
 }
 

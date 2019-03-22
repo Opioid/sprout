@@ -37,9 +37,12 @@ void Provider::set_material_provider(material::Provider& material_provider) noex
     material_provider_ = &material_provider;
 }
 
-entity::Entity* Provider::create_extension(json::Value const& extension_value, Scene& scene,
-                                           resource::Manager& manager) noexcept {
+entity::Entity_ref Provider::create_extension(json::Value const& extension_value,
+                                              std::string const& name, Scene& scene,
+                                              resource::Manager& manager) noexcept {
     Sky* sky = new Sky;
+
+    uint32_t const sky_id = scene.add_extension(sky, name);
 
     static bool constexpr bake = true;
 
@@ -58,17 +61,17 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
 
     manager.store<material::Material>("proc:sun", sun_material);
 
-    prop::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
+    Scene::Prop_ref sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
 
-    sky_prop->allocate_local_frame();
-    sky_prop->propagate_frame_allocation();
+    sky_prop.ref->allocate_local_frame();
+    sky_prop.ref->propagate_frame_allocation(scene.entities());
 
-    prop::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
+    Scene::Prop_ref sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
 
-    sun_prop->allocate_local_frame();
-    sun_prop->propagate_frame_allocation();
+    sun_prop.ref->allocate_local_frame();
+    sun_prop.ref->propagate_frame_allocation(scene.entities());
 
-    sky->init(sky_prop, sun_prop);
+    sky->init(sky_prop.ref, sun_prop.ref);
 
     if (auto const p = extension_value.FindMember("parameters"); extension_value.MemberEnd() != p) {
         sky->set_parameters(p->value);
@@ -77,14 +80,14 @@ entity::Entity* Provider::create_extension(json::Value const& extension_value, S
     }
 
     if (bake) {
-        scene.create_prop_image_light(sky_prop, 0);
+        scene.create_prop_image_light(sky_prop.ref, 0);
     } else {
-        scene.create_prop_light(sky_prop, 0);
+        scene.create_prop_light(sky_prop.ref, 0);
     }
 
-    scene.create_prop_light(sun_prop, 0);
+    scene.create_prop_light(sun_prop.ref, 0);
 
-    return sky;
+    return entity::Entity_ref{sky, sky_id};
 }
 
 }  // namespace procedural::sky

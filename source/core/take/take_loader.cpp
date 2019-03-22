@@ -340,7 +340,7 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
         }
     } else {
         camera->allocate_local_frame();
-        camera->propagate_frame_allocation();
+        camera->propagate_frame_allocation(scene.entities());
         camera->set_transformation(transformation);
     }
 

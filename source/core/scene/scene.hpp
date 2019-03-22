@@ -32,6 +32,7 @@ class Stage;
 namespace entity {
 
 class Entity;
+struct Entity_ref;
 class Dummy;
 
 }  // namespace entity
@@ -50,6 +51,7 @@ namespace prop {
 
 struct Intersection;
 class Prop;
+struct Prop_ref;
 
 }  // namespace prop
 
@@ -62,7 +64,9 @@ class Scene {
     using Node_stack = shape::Node_stack;
     using Filter     = material::Sampler_settings::Filter;
     using Entity     = entity::Entity;
+    using Entity_ref = entity::Entity_ref;
     using Prop       = prop::Prop;
+    using Prop_ref   = prop::Prop_ref;
     using Material   = material::Material;
     using Shape      = shape::Shape;
 
@@ -98,6 +102,8 @@ class Scene {
     bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
         noexcept;
 
+    Entity* const* entities() const noexcept;
+
     Entity* entity(size_t index) const noexcept;
     Entity* entity(std::string_view name) const noexcept;
 
@@ -117,12 +123,13 @@ class Scene {
 
     void compile(uint64_t time, thread::Pool& pool) noexcept;
 
-    entity::Dummy* create_dummy() noexcept;
-    entity::Dummy* create_dummy(std::string const& name) noexcept;
+    Entity_ref create_dummy() noexcept;
+    Entity_ref create_dummy(std::string const& name) noexcept;
 
-    Prop* create_prop(Shape* shape, Materials const& materials) noexcept;
+    Prop_ref create_prop(Shape* shape, Materials const& materials) noexcept;
 
-    Prop* create_prop(Shape* shape, Materials const& materials, std::string const& name) noexcept;
+    Prop_ref create_prop(Shape* shape, Materials const& materials,
+                         std::string const& name) noexcept;
 
     light::Light* create_prop_light(Prop* prop, uint32_t part) noexcept;
 
@@ -132,8 +139,8 @@ class Scene {
 
     light::Light* create_prop_volume_image_light(Prop* prop, uint32_t part) noexcept;
 
-    void add_extension(Entity* extension) noexcept;
-    void add_extension(Entity* extension, std::string const& name) noexcept;
+    uint32_t add_extension(Entity* extension) noexcept;
+    uint32_t add_extension(Entity* extension, std::string const& name) noexcept;
 
     void add_material(Material* material) noexcept;
 

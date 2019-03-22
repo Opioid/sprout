@@ -111,9 +111,19 @@ class Prop : public entity::Entity {
     Material** materials_ = nullptr;
 };
 
+struct Prop_ref {
+    Prop*    ref;
+    uint32_t id;
+
+    static Prop_ref constexpr Null() noexcept {
+        return {nullptr, 0xFFFFFFFF};
+    }
+};
+
 }  // namespace prop
 
-using Prop = prop::Prop;
+using Prop     = prop::Prop;
+using Prop_ref = prop::Prop_ref;
 
 }  // namespace scene
 

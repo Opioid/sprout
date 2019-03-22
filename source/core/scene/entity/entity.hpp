@@ -13,17 +13,17 @@ class Entity {
   public:
     using Transformation = Composed_transformation;
 
+    using Entities = Entity* const*;
+
     Entity() noexcept;
 
     virtual ~Entity() noexcept;
-
-    virtual bool is_extension() const noexcept;
 
     virtual void set_parameters(json::Value const& parameters) noexcept = 0;
 
     void allocate_frames(uint32_t num_frames) noexcept;
     void allocate_local_frame() noexcept;
-    void propagate_frame_allocation() noexcept;
+    void propagate_frame_allocation(Entities entities) noexcept;
 
     math::Transformation const& local_frame_0() const noexcept;
 
@@ -39,7 +39,7 @@ class Entity {
 
     void set_frames(Keyframe const* frames, uint32_t num_frames) noexcept;
 
-    void calculate_world_transformation() noexcept;
+    void calculate_world_transformation(Entities entities) noexcept;
 
     bool visible_in_camera() const noexcept;
     bool visible_in_reflection() const noexcept;
@@ -49,21 +49,20 @@ class Entity {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
-    void attach(Entity* node) noexcept;
-    void detach() noexcept;
-
-    Entity const* parent() const noexcept;
+    void attach(uint32_t self, uint32_t node, Entities entities) noexcept;
+    void detach_self(uint32_t self, Entities entities) noexcept;
 
   protected:
-    void propagate_transformation() noexcept;
+    void propagate_transformation(Entities entities) noexcept;
 
-    void inherit_transformation(Keyframe const* frames, uint32_t num_frames) noexcept;
+    void inherit_transformation(Keyframe const* frames, uint32_t num_frames,
+                                Entities entities) noexcept;
 
-    void inherit_frame_allocation(uint32_t num_frames) noexcept;
+    void inherit_frame_allocation(uint32_t num_frames, Entities entities) noexcept;
 
-    void add_sibling(Entity* node) noexcept;
-    void detach(Entity* node) noexcept;
-    void remove_sibling(Entity* node) noexcept;
+    void add_sibling(uint32_t node, Entities entities) noexcept;
+    void detach(uint32_t node, Entities entities) noexcept;
+    void remove_sibling(uint32_t node, Entities entities) noexcept;
 
     virtual void on_set_transformation() noexcept = 0;
 
@@ -87,9 +86,20 @@ class Entity {
 
     Keyframe* local_frames_ = nullptr;
 
-    Entity* parent_ = nullptr;
-    Entity* next_   = nullptr;
-    Entity* child_  = nullptr;
+    static uint32_t constexpr Null = 0xFFFFFFFF;
+
+    uint32_t parent_ = Null;
+    uint32_t next_   = Null;
+    uint32_t child_  = Null;
+};
+
+struct Entity_ref {
+    Entity*  ref;
+    uint32_t id;
+
+    static Entity_ref constexpr Null() noexcept {
+        return {nullptr, 0xFFFFFFFF};
+    }
 };
 
 }  // namespace scene::entity

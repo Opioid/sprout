@@ -26,8 +26,9 @@ void Provider::set_scene_loader(Loader& loader) noexcept {
     scene_loader_ = &loader;
 }
 
-entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
-                                           resource::Manager& manager) noexcept {
+entity::Entity_ref Provider::create_extension(json::Value const& /*extension_value*/,
+                                              std::string const& name, Scene& scene,
+                                              resource::Manager& manager) noexcept {
     //    Flame* flame = new Flame();
 
     //    return flame;
@@ -44,13 +45,13 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
 
     material->compile(manager.thread_pool());
 
-    prop::Prop* prop = scene.create_prop(scene_loader_->cube(), {material});
+    Scene::Prop_ref prop = scene.create_prop(scene_loader_->cube(), {material}, name);
 
-    prop->set_visibility(true, true, true);
+    prop.ref->set_visibility(true, true, true);
 
-    scene_loader_->create_light(prop, scene);
+    scene_loader_->create_light(prop.ref, scene);
 
-    return prop;
+    return entity::Entity_ref{prop.ref, prop.id};
 }
 
 }  // namespace procedural::flame

@@ -17,8 +17,6 @@ class Sky : public scene::entity::Entity {
 
     ~Sky() noexcept override;
 
-    bool is_extension() const noexcept final override;
-
     void set_parameters(json::Value const& parameters) noexcept override final;
 
     void init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept;

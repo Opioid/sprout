@@ -28,8 +28,9 @@ void Provider::set_scene_loader(Loader& loader) noexcept {
     scene_loader_ = &loader;
 }
 
-entity::Entity* Provider::create_extension(json::Value const& /*extension_value*/, Scene& scene,
-                                           resource::Manager& /*manager*/) noexcept {
+entity::Entity_ref Provider::create_extension(json::Value const& /*extension_value*/,
+                                              std::string const& name, Scene& scene,
+                                              resource::Manager& /*manager*/) noexcept {
     if (!material_) {
         Material* material = new Material(Sampler_settings(Sampler_settings::Filter::Linear,
                                                            Sampler_settings::Address::Clamp,
@@ -44,13 +45,13 @@ entity::Entity* Provider::create_extension(json::Value const& /*extension_value*
         material_ = material;
     }
 
-    prop::Prop* prop = scene.create_prop(scene_loader_->cube(), {material_});
+    Scene::Prop_ref prop = scene.create_prop(scene_loader_->cube(), {material_}, name);
 
-    prop->set_visibility(true, true, true);
+    prop.ref->set_visibility(true, true, true);
 
-    material_->set_prop(prop);
+    material_->set_prop(prop.ref);
 
-    return prop;
+    return entity::Entity_ref{prop.ref, prop.id};
 }
 
 }  // namespace procedural::fluid

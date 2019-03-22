@@ -25,6 +25,7 @@ namespace scene {
 namespace entity {
 
 class Entity;
+struct Entity_ref;
 class Extension_provider;
 
 }  // namespace entity
@@ -43,7 +44,8 @@ class Volume;
 
 namespace prop {
 class Prop;
-}
+struct Prop_ref;
+}  // namespace prop
 
 namespace shape {
 
@@ -75,6 +77,7 @@ class Loader {
 
     void register_extension_provider(std::string const&          name,
                                      entity::Extension_provider* provider) noexcept;
+
     void register_mesh_generator(std::string const&          name,
                                  shape::triangle::Generator* generator) noexcept;
 
@@ -90,24 +93,24 @@ class Loader {
     using Local_materials = std::map<std::string, json::Value const*>;
 
     bool load(std::string const& filename, std::string_view take_mount_folder,
-              entity::Entity* parent, Scene& scene) noexcept;
+              entity::Entity_ref parent, Scene& scene) noexcept;
 
     void read_materials(json::Value const& materials_value, Local_materials& local_materials) const
         noexcept;
 
-    void load_entities(json::Value const& entities_value, entity::Entity* parent,
+    void load_entities(json::Value const& entities_value, entity::Entity_ref parent,
                        std::string_view mount_folder, Local_materials const& local_materials,
                        Scene& scene) noexcept;
 
     static void set_visibility(entity::Entity*    entity,
                                json::Value const& visibility_value) noexcept;
 
-    prop::Prop* load_prop(json::Value const& prop_value, std::string const& name,
-                          std::string_view mount_folder, Local_materials const& local_materials,
-                          Scene& scene) noexcept;
+    prop::Prop_ref load_prop(json::Value const& prop_value, std::string const& name,
+                             std::string_view mount_folder, Local_materials const& local_materials,
+                             Scene& scene) noexcept;
 
-    entity::Entity* load_extension(std::string const& type, json::Value const& extension_value,
-                                   std::string const& name, Scene& scene) noexcept;
+    entity::Entity_ref load_extension(std::string const& type, json::Value const& extension_value,
+                                      std::string const& name, Scene& scene) noexcept;
 
     Shape* load_shape(json::Value const& shape_value) noexcept;
 
