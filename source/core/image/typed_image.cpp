@@ -172,8 +172,8 @@ Typed_sparse_image<T>::Typed_sparse_image(Description const& description) noexce
     cells_ = memory::allocate_aligned<Cell>(cell_len);
 
     for (int32_t i = 0; i < cell_len; ++i) {
-        cells_[i].value = T(0);
         cells_[i].data  = nullptr;
+        cells_[i].value = T(0);
     }
 }
 
@@ -217,7 +217,7 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
 
-    int32_t const len = Cell_dim * Cell_dim * Cell_dim;
+    int32_t constexpr len = Cell_dim * Cell_dim * Cell_dim;
 
     Cell& cell = cells_[cell_index];
 
@@ -253,6 +253,7 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
             cell.value = value;
         }
     }
+
 }
 
 template <typename T>

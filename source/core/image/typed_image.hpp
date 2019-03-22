@@ -99,8 +99,8 @@ class Typed_sparse_image final : public Image {
     int3 num_cells_;
 
     struct Cell {
-        T  value;
         T* data;
+        T  value;
     };
 
     Cell* cells_ = nullptr;
