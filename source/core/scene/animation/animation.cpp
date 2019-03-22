@@ -2,22 +2,20 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/align.hpp"
 #include "scene/entity/keyframe.hpp"
 
 namespace scene::animation {
 
-Animation::Animation(uint32_t count) noexcept
-    : num_keyframes_(count), keyframes_(new entity::Keyframe[count]) {}
-
-Animation::~Animation() noexcept {
-    delete[] interpolated_frames_;
-    delete[] keyframes_;
+Animation::Animation(uint32_t num_frames, uint32_t num_interpolated_frames) noexcept
+    : last_frame_(0),
+      num_keyframes_(num_frames),
+      num_interpolated_frames_(num_interpolated_frames),
+      keyframes_(memory::allocate_aligned<entity::Keyframe>(num_frames + num_interpolated_frames)) {
 }
 
-void Animation::allocate_interpolated_frames(uint32_t num_frames) noexcept {
-    num_interpolated_frames_ = num_frames;
-
-    interpolated_frames_ = new entity::Keyframe[num_frames];
+Animation::~Animation() noexcept {
+    memory::free_aligned(keyframes_);
 }
 
 void Animation::set(uint32_t index, entity::Keyframe const& keyframe) noexcept {
@@ -31,6 +29,8 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) no
 
     uint32_t last_frame = last_frame_ > 2 ? last_frame_ - 2 : 0;
 
+    entity::Keyframe* interpolated_frames = &keyframes_[num_keyframes_];
+
     for (uint32_t i = 0; time <= end; ++i, time += frame_length) {
         for (uint32_t j = last_frame; j < keyframes_back; ++j) {
             auto const& a = keyframes_[j];
@@ -42,13 +42,13 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) no
 
                 float const t = static_cast<float>(delta) / static_cast<float>(range);
 
-                a.interpolate(interpolated_frames_[i], b, t);
-                interpolated_frames_[i].time = time;
+                a.interpolate(interpolated_frames[i], b, t);
+                interpolated_frames[i].time = time;
 
                 break;
             } else if (j + 1 == keyframes_back) {
-                interpolated_frames_[i]      = b;
-                interpolated_frames_[i].time = time;
+                interpolated_frames[i]      = b;
+                interpolated_frames[i].time = time;
 
                 break;
             } else {
@@ -65,7 +65,7 @@ uint32_t Animation::num_interpolated_frames() const noexcept {
 }
 
 entity::Keyframe const* Animation::interpolated_frames() const noexcept {
-    return interpolated_frames_;
+    return &keyframes_[num_keyframes_];
 }
 
 }  // namespace scene::animation

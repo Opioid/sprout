@@ -21,9 +21,7 @@ class Entity {
 
     virtual void set_parameters(json::Value const& parameters) noexcept = 0;
 
-    void allocate_frames(uint32_t num_frames) noexcept;
-    void allocate_local_frame() noexcept;
-    void propagate_frame_allocation(Entities entities) noexcept;
+    void allocate_frames(uint32_t num_world_frames, uint32_t num_local_frames) noexcept;
 
     math::Transformation const& local_frame_0() const noexcept;
 
@@ -50,6 +48,7 @@ class Entity {
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
     void attach(uint32_t self, uint32_t node, Entities entities) noexcept;
+
     void detach_self(uint32_t self, Entities entities) noexcept;
 
   protected:
@@ -58,10 +57,10 @@ class Entity {
     void inherit_transformation(Keyframe const* frames, uint32_t num_frames,
                                 Entities entities) noexcept;
 
-    void inherit_frame_allocation(uint32_t num_frames, Entities entities) noexcept;
-
     void add_sibling(uint32_t node, Entities entities) noexcept;
+
     void detach(uint32_t node, Entities entities) noexcept;
+
     void remove_sibling(uint32_t node, Entities entities) noexcept;
 
     virtual void on_set_transformation() noexcept = 0;
@@ -80,11 +79,9 @@ class Entity {
 
     uint32_t num_world_frames_ = 0;
 
-    Keyframe* world_frames_ = nullptr;
-
     uint32_t num_local_frames_ = 0;
 
-    Keyframe* local_frames_ = nullptr;
+    Keyframe* frames_ = nullptr;
 
     static uint32_t constexpr Null = 0xFFFFFFFF;
 

@@ -339,8 +339,7 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
             scene.create_animation_stage(camera, animation);
         }
     } else {
-        camera->allocate_local_frame();
-        camera->propagate_frame_allocation(scene.entities());
+        camera->allocate_frames(1, 1);
         camera->set_transformation(transformation);
     }
 

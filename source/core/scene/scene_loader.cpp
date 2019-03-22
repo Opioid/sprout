@@ -60,11 +60,15 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
     std::string_view const take_mount_folder = string::parent_directory(take_name);
 
+    auto const camera = take.view.camera;
+
+    scene.calculate_num_interpolation_frames(camera ? camera->frame_step() : 0,
+                                             camera ? camera->frame_duration() : 0);
+
     bool const success = load(filename, take_mount_folder, Scene::Entity_ref::Null(), scene);
 
     if (success) {
-        scene.finish(take.view.camera ? take.view.camera->frame_step() : 0,
-                     take.view.camera ? take.view.camera->frame_duration() : 0);
+        scene.finish();
     }
 
     resource_manager_.thread_pool().wait_async();
@@ -251,14 +255,6 @@ void Loader::load_entities(json::Value const& entities_value, Scene::Entity_ref 
             }
         }
 
-        if (children) {
-            load_entities(*children, entity, mount_folder, local_materials, scene);
-        }
-
-        if (parent.ref) {
-            parent.ref->attach(parent.id, entity.id, scene.entities());
-        }
-
         animation::Animation* animation = nullptr;
 
         if (animation_value) {
@@ -268,10 +264,26 @@ void Loader::load_entities(json::Value const& entities_value, Scene::Entity_ref 
             }
         }
 
+        if (parent.ref) {
+            parent.ref->attach(parent.id, entity.id, scene.entities());
+        }
+
         if (!animation) {
-            entity.ref->allocate_local_frame();
+            if (!parent.ref) {
+                entity.ref->allocate_frames(1, 1);
+            }
+
             entity.ref->set_transformation(transformation);
         }
+
+        if (children) {
+            load_entities(*children, entity, mount_folder, local_materials, scene);
+        }
+
+        //        if (!animation) {
+        //            entity.ref->allocate_local_frame();
+        //            entity.ref->set_transformation(transformation);
+        //        }
 
         if (visibility) {
             set_visibility(entity.ref, *visibility);

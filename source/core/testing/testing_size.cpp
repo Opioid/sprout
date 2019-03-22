@@ -63,9 +63,9 @@ void size() {
 
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
-    print_size<scene::prop::Prop>("prop::Prop", 352);
+    print_size<scene::prop::Prop>("prop::Prop", 320);
 
-    print_size<scene::entity::Entity>("Entity", 288);
+    print_size<scene::entity::Entity>("Entity", 256);
 
     print_size<scene::Renderstate>("Renderstate", 112);
 

@@ -9,7 +9,8 @@ Stage::Stage(entity::Entity* entity, Animation* animation) noexcept
     : entity_(entity), animation_(animation) {}
 
 void Stage::allocate_enitity_frames() const noexcept {
-    entity_->allocate_frames(animation_->num_interpolated_frames());
+    uint32_t const num_frames = animation_->num_interpolated_frames();
+    entity_->allocate_frames(num_frames, num_frames);
 }
 
 void Stage::update() const noexcept {

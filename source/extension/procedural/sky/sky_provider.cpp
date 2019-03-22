@@ -63,13 +63,11 @@ entity::Entity_ref Provider::create_extension(json::Value const& extension_value
 
     Scene::Prop_ref sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
 
-    sky_prop.ref->allocate_local_frame();
-    sky_prop.ref->propagate_frame_allocation(scene.entities());
+    sky_prop.ref->allocate_frames(1, 1);
 
     Scene::Prop_ref sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
 
-    sun_prop.ref->allocate_local_frame();
-    sun_prop.ref->propagate_frame_allocation(scene.entities());
+    sun_prop.ref->allocate_frames(1, 1);
 
     sky->init(sky_prop.ref, sun_prop.ref);
 

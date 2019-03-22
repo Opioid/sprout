@@ -104,22 +104,21 @@ entity::Entity_ref Provider::create_extension(json::Value const& /*extension_val
 
     Scene::Prop_ref volume = scene.create_prop(scene_loader_->cube(), {material});
 
+    Aurora* aurora = new Aurora();
+
+    aurora->allocate_frames(1, 1);
+
+    uint32_t const aurora_id = scene.add_extension(aurora, name);
+
+    aurora->attach(aurora_id, volume.id, scene.entities());
+
     math::Transformation transformation{float3(0.f),
                                         //	float3(1000000.f, 100000.f, 50000.f),
                                         float3(1250000.f, 100000.f, 80000.f),
                                         //	float3(10.f, 1.f, 1.f),
                                         math::quaternion::identity()};
 
-    volume.ref->allocate_local_frame();
-    volume.ref->propagate_frame_allocation(scene.entities());
-
     volume.ref->set_transformation(transformation);
-
-    Aurora* aurora = new Aurora();
-
-    uint32_t const aurora_id = scene.add_extension(aurora, name);
-
-    aurora->attach(aurora_id, volume.id, scene.entities());
 
     return entity::Entity_ref{aurora, aurora_id};
 }

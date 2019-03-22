@@ -71,26 +71,12 @@ Scene::~Scene() noexcept {
     }
 }
 
-void Scene::finish(uint64_t frame_step, uint64_t frame_duration) noexcept {
+void Scene::finish() noexcept {
     if (lights_.empty()) {
         lights_.push_back(&null_light_);
     }
 
     light_powers_.resize(lights_.size());
-
-    uint32_t const num_frames = count_frames(frame_step, frame_duration) + 1;
-
-    for (auto a : animations_) {
-        a->allocate_interpolated_frames(num_frames);
-    }
-
-    for (auto& s : animation_stages_) {
-        s.allocate_enitity_frames();
-    }
-
-    for (auto e : entities_) {
-        e->propagate_frame_allocation(entities_.data());
-    }
 }
 
 AABB const& Scene::aabb() const noexcept {
@@ -292,6 +278,11 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }
 
+void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
+                                               uint64_t frame_duration) noexcept {
+    num_interpolation_frames_ = count_frames(frame_step, frame_duration) + 1;
+}
+
 Scene::Entity_ref Scene::create_dummy() noexcept {
     entity::Dummy* dummy = new entity::Dummy;
     dummies_.push_back(dummy);
@@ -403,7 +394,7 @@ void Scene::add_material(Material* material) noexcept {
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) noexcept {
-    animation::Animation* animation = new animation::Animation(count);
+    animation::Animation* animation = new animation::Animation(count, num_interpolation_frames_);
 
     animations_.push_back(animation);
 
@@ -411,7 +402,8 @@ animation::Animation* Scene::create_animation(uint32_t count) noexcept {
 }
 
 void Scene::create_animation_stage(Entity* entity, animation::Animation* animation) noexcept {
-    animation_stages_.push_back(animation::Stage(entity, animation));
+    animation_stages_.emplace_back(entity, animation);
+    animation_stages_.back().allocate_enitity_frames();
 }
 
 size_t Scene::num_bytes() const noexcept {

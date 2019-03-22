@@ -76,7 +76,7 @@ class Scene {
 
     ~Scene() noexcept;
 
-    void finish(uint64_t frame_step, uint64_t frame_duration) noexcept;
+    void finish() noexcept;
 
     AABB const& aabb() const noexcept;
 
@@ -123,6 +123,8 @@ class Scene {
 
     void compile(uint64_t time, thread::Pool& pool) noexcept;
 
+    void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) noexcept;
+
     Entity_ref create_dummy() noexcept;
     Entity_ref create_dummy(std::string const& name) noexcept;
 
@@ -156,6 +158,8 @@ class Scene {
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept;
 
     uint64_t const tick_duration_ = Units_per_second / 60;
+
+    uint32_t num_interpolation_frames_ = 0;
 
     bvh::Builder<prop::Prop> bvh_builder_;
 

@@ -1,5 +1,6 @@
 #include "entity.hpp"
 #include "base/math/transformation.inl"
+#include "base/memory/align.hpp"
 #include "composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 
@@ -8,42 +9,18 @@ namespace scene::entity {
 Entity::Entity() noexcept = default;
 
 Entity::~Entity() noexcept {
-    delete[] local_frames_;
-    delete[] world_frames_;
+    memory::free_aligned(frames_);
 }
 
-void Entity::allocate_frames(uint32_t num_frames) noexcept {
-    num_world_frames_ = num_frames;
+void Entity::allocate_frames(uint32_t num_world_frames, uint32_t num_local_frames) noexcept {
+    num_world_frames_ = num_world_frames;
+    num_local_frames_ = num_local_frames;
 
-    world_frames_ = new Keyframe[num_frames];
-
-    num_local_frames_ = num_frames;
-
-    local_frames_ = new Keyframe[num_frames];
-}
-
-void Entity::allocate_local_frame() noexcept {
-    num_local_frames_ = 1;
-
-    local_frames_ = new Keyframe[1];
-}
-
-void Entity::propagate_frame_allocation(Entities entities) noexcept {
-    if (Null == parent_) {
-        if (0 == num_world_frames_) {
-            num_world_frames_ = num_local_frames_;
-
-            world_frames_ = new Keyframe[num_world_frames_];
-        }
-    }
-
-    if (Null != child_) {
-        entities[child_]->inherit_frame_allocation(num_local_frames_, entities);
-    }
+    frames_ = memory::allocate_aligned<Keyframe>(num_world_frames + num_local_frames);
 }
 
 math::Transformation const& Entity::local_frame_0() const noexcept {
-    return local_frames_[0].transformation;
+    return frames_[num_world_frames_].transformation;
 }
 
 Composed_transformation const& Entity::transformation_at(uint64_t        time,
@@ -54,8 +31,8 @@ Composed_transformation const& Entity::transformation_at(uint64_t        time,
     }
 
     for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
-        auto const& a = world_frames_[i];
-        auto const& b = world_frames_[i + 1];
+        auto const& a = frames_[i];
+        auto const& b = frames_[i + 1];
 
         if (time >= a.time && time < b.time) {
             uint64_t const range = b.time - a.time;
@@ -73,20 +50,23 @@ Composed_transformation const& Entity::transformation_at(uint64_t        time,
 }
 
 void Entity::set_transformation(math::Transformation const& t) noexcept {
-    local_frames_[0].transformation = t;
-    local_frames_[0].time           = scene::Static_time;
+    Keyframe& local_frame = frames_[num_world_frames_];
+
+    local_frame.transformation = t;
+    local_frame.time           = scene::Static_time;
 }
 
 void Entity::set_frames(Keyframe const* frames, uint32_t num_frames) noexcept {
+    Keyframe* local_frames = &frames_[num_world_frames_];
     for (uint32_t i = 0; i < num_frames; ++i) {
-        local_frames_[i] = frames[i];
+        local_frames[i] = frames[i];
     }
 }
 
 void Entity::calculate_world_transformation(Entities entities) noexcept {
     if (Null == parent_) {
         for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
-            world_frames_[i] = local_frames_[i];
+            frames_[i] = frames_[len + i];
         }
 
         propagate_transformation(entities);
@@ -122,6 +102,11 @@ void Entity::attach(uint32_t self, uint32_t node, Entities entities) noexcept {
 
     n->parent_ = self;
 
+    if (0 == n->num_local_frames_) {
+        // This is the case if n has no animation attached to it directly
+        n->allocate_frames(num_world_frames_, 1);
+    }
+
     if (Null == child_) {
         child_ = node;
     } else {
@@ -137,13 +122,13 @@ void Entity::detach_self(uint32_t self, Entities entities) noexcept {
 
 void Entity::propagate_transformation(Entities entities) noexcept {
     if (1 == num_world_frames_) {
-        world_transformation_.set(world_frames_[0].transformation);
+        world_transformation_.set(frames_[0].transformation);
     }
 
     on_set_transformation();
 
     if (Null != child_) {
-        entities[child_]->inherit_transformation(world_frames_, num_world_frames_, entities);
+        entities[child_]->inherit_transformation(frames_, num_world_frames_, entities);
     }
 }
 
@@ -156,24 +141,10 @@ void Entity::inherit_transformation(Keyframe const* frames, uint32_t num_frames,
     for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
         uint32_t const lf = num_local_frames_ > 1 ? i : 0;
         uint32_t const of = num_frames > 1 ? i : 0;
-        local_frames_[lf].transform(world_frames_[i], frames[of]);
+        frames_[len + lf].transform(frames_[i], frames[of]);
     }
 
     propagate_transformation(entities);
-}
-
-void Entity::inherit_frame_allocation(uint32_t num_frames, Entities entities) noexcept {
-    if (Null != next_) {
-        entities[next_]->inherit_frame_allocation(num_frames, entities);
-    }
-
-    if (0 == num_world_frames_) {
-        num_world_frames_ = num_frames;
-
-        world_frames_ = new Keyframe[num_world_frames_];
-    }
-
-    propagate_frame_allocation(entities);
 }
 
 void Entity::add_sibling(uint32_t node, Entities entities) noexcept {

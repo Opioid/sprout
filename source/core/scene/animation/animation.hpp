@@ -13,11 +13,9 @@ namespace animation {
 
 class Animation {
   public:
-    Animation(uint32_t count) noexcept;
+    Animation(uint32_t num_frames, uint32_t num_interpolated_frames) noexcept;
 
     ~Animation() noexcept;
-
-    void allocate_interpolated_frames(uint32_t num_frames) noexcept;
 
     void set(uint32_t index, entity::Keyframe const& keyframe) noexcept;
 
@@ -30,15 +28,11 @@ class Animation {
     entity::Keyframe const* interpolated_frames() const noexcept;
 
   private:
-    uint32_t last_frame_ = 0;
+    uint32_t last_frame_;
+    uint32_t num_keyframes_;
+    uint32_t num_interpolated_frames_;
 
-    uint32_t num_keyframes_ = 0;
-
-    entity::Keyframe* keyframes_ = nullptr;
-
-    uint32_t num_interpolated_frames_ = 0;
-
-    entity::Keyframe* interpolated_frames_ = nullptr;
+    entity::Keyframe* keyframes_;
 };
 
 }  // namespace animation

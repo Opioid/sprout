@@ -49,7 +49,7 @@ void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noe
 
 void Prop::morph(thread::Pool& pool) noexcept {
     if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
-        auto const& m = local_frames_[0].morphing;
+        auto const& m = frames_[num_world_frames_].morphing;
         morphable->morph(m.targets[0], m.targets[1], m.weight, pool);
     }
 }
@@ -176,17 +176,17 @@ bool Prop::visible(uint32_t ray_depth) const noexcept {
 void Prop::on_set_transformation() noexcept {
     if (1 == num_world_frames_) {
         aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world,
-                                         world_frames_[0].transformation);
+                                         frames_[0].transformation);
     } else {
         static uint32_t constexpr num_steps = 4;
 
         static float constexpr interval = 1.f / static_cast<float>(num_steps);
 
-        AABB aabb = shape_->transformed_aabb(world_frames_[0].transformation);
+        AABB aabb = shape_->transformed_aabb(frames_[0].transformation);
 
         for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
-            auto const& a = world_frames_[i].transformation;
-            auto const& b = world_frames_[i + 1].transformation;
+            auto const& a = frames_[i].transformation;
+            auto const& b = frames_[i + 1].transformation;
 
             float t = interval;
             for (uint32_t j = num_steps - 1; j > 0; --j, t += interval) {
