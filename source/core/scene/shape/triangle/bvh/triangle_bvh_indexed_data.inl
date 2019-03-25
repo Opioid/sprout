@@ -155,25 +155,37 @@ void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index, Ve
 }
 
 template <typename SV>
+Vector Indexed_data<SV>::interpolate_shading_normal(FVector u, FVector v, uint32_t index) const
+    noexcept {
+    auto const tri = triangles_[index];
+
+    SV const& a = shading_vertices_[tri.a];
+    SV const& b = shading_vertices_[tri.b];
+    SV const& c = shading_vertices_[tri.c];
+
+    return triangle::interpolate_normal(u, v, a, b, c);
+}
+
+template <typename SV>
 float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const noexcept {
     auto const tri = triangles_[index];
 
-    SV const& sa = shading_vertices_[tri.a];
-    SV const& sb = shading_vertices_[tri.b];
-    SV const& sc = shading_vertices_[tri.c];
+    SV const& a = shading_vertices_[tri.a];
+    SV const& b = shading_vertices_[tri.b];
+    SV const& c = shading_vertices_[tri.c];
 
-    return triangle::interpolate_uv(sa, sb, sc, uv);
+    return triangle::interpolate_uv(a, b, c, uv);
 }
 
 template <typename SV>
 float2 Indexed_data<SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const noexcept {
     auto const tri = triangles_[index];
 
-    SV const& sa = shading_vertices_[tri.a];
-    SV const& sb = shading_vertices_[tri.b];
-    SV const& sc = shading_vertices_[tri.c];
+    SV const& a = shading_vertices_[tri.a];
+    SV const& b = shading_vertices_[tri.b];
+    SV const& c = shading_vertices_[tri.c];
 
-    return triangle::interpolate_uv(u, v, sa, sb, sc);
+    return triangle::interpolate_uv(u, v, a, b, c);
 }
 
 template <typename SV>

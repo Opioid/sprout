@@ -15,8 +15,8 @@ class Canopy final : public Shape {
     bool intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                         Intersection& intersection) const noexcept override final;
 
-    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack) const
-        noexcept override final;
+    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+                   Normals& normals) const noexcept override final;
 
     bool intersect_p(Ray const& ray, Transformation const& transformation,
                      Node_stack& node_stack) const noexcept override final;

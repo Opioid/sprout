@@ -73,8 +73,8 @@ bool Plane::intersect_fast(Ray& ray, Transformation const&           transformat
     return false;
 }
 
-bool Plane::intersect(Ray& ray, Transformation const& transformation,
-                      Node_stack& /*node_stack*/) const noexcept {
+bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+                      Normals& normals) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -84,6 +84,10 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation,
 
     if (hit_t > ray.min_t && hit_t < ray.max_t) {
         ray.max_t = hit_t;
+
+        normals.geo_n = normal;
+        normals.n     = normal;
+
         return true;
     }
 

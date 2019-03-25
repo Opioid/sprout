@@ -330,7 +330,8 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
                    history.wavelength);
 
     float3 tv;
-    if (!worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
+    if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
+                                       tv)) {
         return float3(0.f);
     }
 

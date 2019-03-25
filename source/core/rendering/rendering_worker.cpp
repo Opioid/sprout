@@ -19,6 +19,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace rendering {
 
 Worker::~Worker() noexcept {
@@ -93,9 +95,9 @@ Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3
     return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
 }
 
-bool Worker::transmitted_visibility(Ray& ray, Intersection const& intersection, Filter filter,
-                                    float3& v) noexcept {
-    if (float3 tv; tinted_visibility(ray, intersection, filter, tv)) {
+bool Worker::transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                                    Filter filter, float3& v) noexcept {
+    if (float3 tv; tinted_visibility(ray, wo, intersection, filter, tv)) {
         if (float3 tr; transmittance(ray, tr)) {
             v = tv * tr;
             return true;
@@ -205,23 +207,36 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
     return true;
 }
 
-bool Worker::tinted_visibility(Ray& ray, Intersection const& intersection, Filter filter,
-                               float3& tv) noexcept {
+bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                               Filter filter, float3& tv) noexcept {
     if (intersection.subsurface && intersection.material()->ior() > 1.f) {
         float const ray_max_t = ray.max_t;
 
-        if (intersect(ray)) {
+        if (scene::shape::Normals normals; intersect(ray, normals)) {
             if (float3 tr; volume_integrator_->transmittance(ray, *this, tr)) {
                 SOFT_ASSERT(all_finite_and_positive(tr));
 
                 ray.min_t = scene::offset_f(ray.max_t);
                 ray.max_t = ray_max_t;
 
-                bool const visible = rendering::tinted_visibility(ray, filter, scene_, *this, tv);
+                if (rendering::tinted_visibility(ray, filter, scene_, *this, tv)) {
+                    // Veach's compensation for "Non-symmetry due to shading normals".
+                    // See e.g. CorrectShadingNormal() at:
+                    // https://github.com/mmp/pbrt-v3/blob/master/src/integrators/bdpt.cpp#L55
 
-                tv *= tr;
+                    float3 const wi = ray.direction;
 
-                return visible;
+                    float const numer = dot(wo, normals.geo_n) * dot(wi, normals.n);
+                    float const denom = dot(wo, normals.n) * dot(wi, normals.geo_n);
+
+                    if (0.f == denom) {
+                        return false;
+                    }
+
+                    tv *= std::abs(numer / denom) * tr;
+
+                    return true;
+                }
             }
 
             return false;

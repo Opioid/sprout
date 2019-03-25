@@ -7,8 +7,9 @@
 namespace scene {
 
 namespace shape {
+struct Normals;
 class Node_stack;
-}
+}  // namespace shape
 
 class Worker;
 struct Ray;
@@ -34,7 +35,7 @@ class BVH_wrapper {
     bool intersect_fast(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const
         noexcept;
 
-    bool intersect(Ray& ray, shape::Node_stack& node_stack) const noexcept;
+    bool intersect(Ray& ray, shape::Node_stack& node_stack, shape::Normals& normals) const noexcept;
 
     bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const noexcept;
 

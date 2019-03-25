@@ -554,11 +554,12 @@ Material* Provider::load_metal(json::Value const& metal_value,
     //	Texture_ptr surface_map;
     Texture_adapter direction_map;
     Texture_adapter mask;
-    bool            two_sided = false;
-    float3          ior(1.f, 1.f, 1.f);
-    float3          absorption(0.75f, 0.75f, 0.75f);
-    float           roughness = 0.9f;
-    float2          roughness_aniso(0.f, 0.f);
+
+    bool   two_sided = false;
+    float3 ior(1.f, 1.f, 1.f);
+    float3 absorption(0.75f, 0.75f, 0.75f);
+    float  roughness = 0.9f;
+    float2 roughness_aniso(0.f, 0.f);
 
     for (auto& n : metal_value.GetObject()) {
         if ("ior" == n.name) {

@@ -65,7 +65,8 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
 
         intersection.p = ray.point(Ray_max_t);
 
-        float3 const n     = -ray.direction;
+        float3 const n = -ray.direction;
+
         intersection.geo_n = n;
         intersection.part  = 0;
 
@@ -87,14 +88,19 @@ bool Canopy::intersect_fast(Ray& ray, Transformation const&           transforma
     return false;
 }
 
-bool Canopy::intersect(Ray& ray, Transformation const& transformation,
-                       Node_stack& /*node_stack*/) const noexcept {
+bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+                       Normals& normals) const noexcept {
     if (ray.max_t >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
         ray.max_t = Ray_max_t;
+
+        float3 const n = -ray.direction;
+
+        normals.geo_n = n;
+        normals.n     = n;
 
         return true;
     }

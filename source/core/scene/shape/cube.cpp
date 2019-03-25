@@ -72,31 +72,41 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
     return true;
 }
 
-bool Cube::intersect(Ray& ray, Transformation const& transformation,
-                     Node_stack& /*node_stack*/) const noexcept {
-    float3 v      = transformation.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
+bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+                     Normals& normals) const noexcept {
+    float3 const local_origin = transformation.world_to_object_point(ray.origin);
+    float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
-        float t0   = b - dist;
+    math::ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
-            ray.max_t = t0;
-            return true;
-        }
+    AABB const aabb(float3(-1.f), float3(1.f));
 
-        float t1 = b + dist;
-
-        if (t1 > ray.min_t && t1 < ray.max_t) {
-            ray.max_t = t1;
-            return true;
-        }
+    float hit_t;
+    if (!aabb.intersect_p(local_ray, hit_t)) {
+        return false;
     }
 
-    return false;
+    if (hit_t > ray.max_t) {
+        return false;
+    }
+
+    ray.max_t = hit_t;
+
+    float3 const local_p = local_ray.point(hit_t);
+
+    float3 const distance = math::abs(1.f - math::abs(local_p));
+
+    uint32_t const i = math::index_min_component(distance);
+
+    float3 normal(0.f);
+    normal[i] = math::copysign1(local_p[i]);
+
+    float3 const wn = transform_vector(transformation.rotation, normal);
+
+    normals.geo_n = wn;
+    normals.n     = wn;
+
+    return true;
 }
 
 bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,

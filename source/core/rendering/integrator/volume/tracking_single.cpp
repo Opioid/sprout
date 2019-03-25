@@ -280,8 +280,8 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
         Intersection tintersection = intersection;
         tintersection.subsurface   = true;
 
-        if (float3 tv;
-            worker.transmitted_visibility(shadow_ray, tintersection, Filter::Nearest, tv)) {
+        if (float3 tv; worker.transmitted_visibility(shadow_ray, float3(0.f), tintersection,
+                                                     Filter::Nearest, tv)) {
             float const phase = 1.f / (4.f * Pi);
 
             float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
