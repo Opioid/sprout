@@ -226,14 +226,10 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
 
                     float3 const wi = ray.direction;
 
-                    float const numer = dot(wo, normals.geo_n) * dot(wi, normals.n);
-                    float const denom = dot(wo, normals.n) * dot(wi, normals.geo_n);
+                    float const numer = std::abs(dot(wo, normals.geo_n) * dot(wi, normals.n));
+                    float const denom = std::abs(dot(wo, normals.n) * dot(wi, normals.geo_n));
 
-                    if (0.f == denom) {
-                        return false;
-                    }
-
-                    tv *= std::abs(numer / denom) * tr;
+                    tv *= (numer / std::max(denom, 0.01f)) * tr;
 
                     return true;
                 }

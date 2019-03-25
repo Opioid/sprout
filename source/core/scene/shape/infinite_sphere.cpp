@@ -28,13 +28,16 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
         intersection.t = transformation.rotation.r[0];
         intersection.b = transformation.rotation.r[1];
 
-        float3 xyz         = transform_vector_transposed(transformation.rotation, ray.direction);
-        xyz                = normalize(xyz);
+        float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
+        xyz        = normalize(xyz);
+
         intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
         intersection.uv[1] = std::acos(xyz[1]) * Pi_inv;
 
-        intersection.p     = ray.point(Ray_max_t);
-        float3 const n     = -ray.direction;
+        intersection.p = ray.point(Ray_max_t);
+
+        float3 const n = -ray.direction;
+
         intersection.n     = n;
         intersection.geo_n = n;
         intersection.part  = 0;
@@ -53,13 +56,16 @@ bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           t
                                      Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     if (ray.max_t >= Ray_max_t) {
-        float3 xyz         = transform_vector_transposed(transformation.rotation, ray.direction);
-        xyz                = normalize(xyz);
+        float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
+        xyz        = normalize(xyz);
+
         intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
         intersection.uv[1] = std::acos(xyz[1]) * Pi_inv;
 
-        intersection.p     = ray.point(Ray_max_t);
-        float3 const n     = -ray.direction;
+        intersection.p = ray.point(Ray_max_t);
+
+        float3 const n = -ray.direction;
+
         intersection.geo_n = n;
         intersection.part  = 0;
 
@@ -74,9 +80,15 @@ bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           t
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& /*transformation*/,
-                                Node_stack& /*node_stack*/, Normals& /*normals*/) const noexcept {
+                                Node_stack& /*node_stack*/, Normals& normals) const noexcept {
     if (ray.max_t >= Ray_max_t) {
         ray.max_t = Ray_max_t;
+
+        float3 const n = -ray.direction;
+
+        normals.geo_n = n;
+        normals.n     = n;
+
         return true;
     }
 
