@@ -113,7 +113,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
                                      vertices = std::move(handler.vertices()), &manager]() mutable {
         logging::verbose("Started asynchronously building triangle mesh BVH.");
 
-        for (auto& p : parts) {
+        for (auto const& p : parts) {
             uint32_t const triangles_start = p.start_index / 3;
             uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
 
