@@ -190,7 +190,8 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
     result.type.set(bxdf::Type::Caustic);
 }
 
-bxdf::Result Sample_subsurface_volumetric::evaluate_f(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample_subsurface_volumetric::evaluate_f(float3 const& wi, bool /*include_back*/) const
+    noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_f(wi, true);
 
     // Fresnel is only part of evaluate() because it tries to compensate for the fact,
@@ -206,7 +207,8 @@ bxdf::Result Sample_subsurface_volumetric::evaluate_f(float3 const& wi, bool) co
     return result;
 }
 
-bxdf::Result Sample_subsurface_volumetric::evaluate_b(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample_subsurface_volumetric::evaluate_b(float3 const& wi, bool /*include_back*/) const
+    noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_b(wi, true);
 
     // Fresnel is only part of evaluate() because it tries to compensate for the fact,

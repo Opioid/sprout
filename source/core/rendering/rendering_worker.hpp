@@ -65,8 +65,8 @@ class Worker : public scene::Worker {
     Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
                  float3& transmittance) noexcept;
 
-    bool transmitted_visibility(Ray& ray, Intersection const& intersection, Filter filter,
-                                float3& tv) noexcept;
+    bool transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                                Filter filter, float3& tv) noexcept;
 
     uint32_t bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration) noexcept;
 
@@ -78,8 +78,8 @@ class Worker : public scene::Worker {
   protected:
     bool transmittance(Ray const& ray, float3& transmittance) noexcept;
 
-    bool tinted_visibility(Ray& ray, Intersection const& intersection, Filter filter,
-                           float3& tv) noexcept;
+    bool tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                           Filter filter, float3& tv) noexcept;
 
     integrator::surface::Integrator* surface_integrator_ = nullptr;
     integrator::volume::Integrator*  volume_integrator_  = nullptr;

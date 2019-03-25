@@ -150,7 +150,8 @@ bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
     return hit;
 }
 
-bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack) const noexcept {
+bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, shape::Normals& normals) const
+    noexcept {
     bool hit = false;
 
     node_stack.clear();
@@ -187,7 +188,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack) const noexc
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 auto const p = props[i];
-                if (p->intersect(ray, node_stack)) {
+                if (p->intersect(ray, node_stack, normals)) {
                     hit       = true;
                     ray_max_t = simd::load_float(&ray.max_t);
                 }
@@ -199,7 +200,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack) const noexc
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         auto const p = infinite_props_[i];
-        if (p->intersect(ray, node_stack)) {
+        if (p->intersect(ray, node_stack, normals)) {
             hit = true;
         }
     }

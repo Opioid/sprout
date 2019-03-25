@@ -110,7 +110,7 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
 }
 
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack) const noexcept {
+                               Node_stack& node_stack, Normals& /*normals*/) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));

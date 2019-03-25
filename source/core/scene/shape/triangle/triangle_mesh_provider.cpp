@@ -102,7 +102,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     SOFT_ASSERT(check_and_fix(handler.vertices(), filename));
 
-    // Exporter::write(filename, handler);
+    //    Exporter::write(filename, handler);
 
     auto mesh = new Mesh;
 

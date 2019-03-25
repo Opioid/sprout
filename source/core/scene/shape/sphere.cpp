@@ -158,8 +158,8 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
     return false;
 }
 
-bool Sphere::intersect(Ray& ray, Transformation const& transformation,
-                       Node_stack& /*node_stack*/) const noexcept {
+bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+                       Normals& normals) const noexcept {
     float3 const v = transformation.position - ray.origin;
     float const  b = dot(ray.direction, v);
 
@@ -174,6 +174,13 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation,
 
         if (t0 > ray.min_t && t0 < ray.max_t) {
             ray.max_t = t0;
+
+            float3 const p = ray.point(t0);
+            float3 const n = normalize(p - transformation.position);
+
+            normals.geo_n = n;
+            normals.n     = n;
+
             return true;
         }
 
@@ -181,6 +188,13 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation,
 
         if (t1 > ray.min_t && t1 < ray.max_t) {
             ray.max_t = t1;
+
+            float3 const p = ray.point(t1);
+            float3 const n = normalize(p - transformation.position);
+
+            normals.geo_n = n;
+            normals.n     = n;
+
             return true;
         }
     }

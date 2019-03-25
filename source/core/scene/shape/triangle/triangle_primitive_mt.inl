@@ -520,6 +520,20 @@ static inline void interpolate_data(FVector u, FVector v, const Shading_vertex_M
     tc[1] = r[1];
 }
 
+static inline Vector interpolate_normal(FVector u, FVector v, const Shading_vertex_MTC& a,
+                                        const Shading_vertex_MTC& b,
+                                        const Shading_vertex_MTC& c) noexcept {
+    Vector const w = math::sub(math::sub(simd::One, u), v);
+
+    Vector va = math::mul(w, simd::load_float4(a.n_u.v));
+    Vector vb = math::mul(u, simd::load_float4(b.n_u.v));
+    va        = math::add(va, vb);
+    Vector vc = math::mul(v, simd::load_float4(c.n_u.v));
+    Vector v0 = math::add(va, vc);
+
+    return math::normalized3(v0);
+}
+
 inline float xnorm_to_float(int16_t xnorm) noexcept {
     return static_cast<float>(xnorm) / 511.f;
 }

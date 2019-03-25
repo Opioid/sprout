@@ -168,9 +168,8 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
     Vector ray_min_t = simd::load_float(&ray.min_t);
     Vector ray_max_t = simd::load_float(&ray.max_t);
 
-    Intersection pi;
-    if (tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t, ray_max_t,
-                        ray_signs, node_stack, pi)) {
+    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
+                                         ray_max_t, ray_signs, node_stack, pi)) {
         float tray_max_t = simd::get_x(ray_max_t);
         ray.max_t        = tray_max_t;
 
@@ -200,8 +199,8 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
     return false;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack) const
-    noexcept {
+bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+                     Normals& normals) const noexcept {
     const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
     Vector ray_origin = simd::load_float4(ray.origin.v);
@@ -218,9 +217,22 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Vector const ray_min_t = simd::load_float(&ray.min_t);
     Vector       ray_max_t = simd::load_float(&ray.max_t);
 
-    if (tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t, ray_max_t,
-                        ray_signs, node_stack)) {
+    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
+                                         ray_max_t, ray_signs, node_stack, pi)) {
         ray.max_t = simd::get_x(ray_max_t);
+
+        Vector n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
+
+        Vector geo_n = tree_.triangle_normal_v(pi.index);
+
+        Matrix3 rotation = load_float3x3(transformation.rotation);
+
+        Vector geo_n_w = transform_vector(rotation, geo_n);
+        Vector n_w     = transform_vector(rotation, n);
+
+        simd::store_float4(normals.geo_n.v, geo_n_w);
+        simd::store_float4(normals.n.v, n_w);
+
         return true;
     }
 

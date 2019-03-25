@@ -29,6 +29,7 @@ struct Composed_transformation;
 namespace shape {
 
 struct Intersection;
+struct Normals;
 struct Sample_to;
 struct Sample_from;
 class Node_stack;
@@ -61,8 +62,8 @@ class Shape {
                                 Node_stack& node_stack, Intersection& intersection) const
         noexcept = 0;
 
-    virtual bool intersect(Ray& ray, Transformation const& transformation,
-                           Node_stack& node_stack) const noexcept = 0;
+    virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+                           Normals& normals) const noexcept = 0;
 
     virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
                              Node_stack& node_stack) const noexcept = 0;

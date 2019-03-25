@@ -91,8 +91,8 @@ bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           tr
     return false;
 }
 
-bool Celestial_disk::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& /*node_stack*/) const noexcept {
+bool Celestial_disk::intersect(Ray& ray, Transformation const&      transformation,
+                               Node_stack& /*node_stack*/, Normals& normals) const noexcept {
     float3 const n = transformation.rotation.r[2];
 
     float const b = dot(n, ray.direction);
@@ -106,6 +106,10 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const& transformation,
 
     if (det > 0.f) {
         ray.max_t = Almost_ray_max_t;
+
+        normals.geo_n = n;
+        normals.n     = n;
+
         return true;
     }
 

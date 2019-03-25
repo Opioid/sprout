@@ -103,8 +103,8 @@ bool Disk::intersect_fast(Ray& ray, Transformation const&           transformati
     return false;
 }
 
-bool Disk::intersect(Ray& ray, Transformation const& transformation,
-                     Node_stack& /*node_stack*/) const noexcept {
+bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+                     Normals& normals) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -121,6 +121,10 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation,
 
         if (l <= radius * radius) {
             ray.max_t = hit_t;
+
+            normals.geo_n = normal;
+            normals.n     = normal;
+
             return true;
         }
     }

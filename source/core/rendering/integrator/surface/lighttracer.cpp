@@ -174,7 +174,8 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
             shadow_ray.set_direction(light_sample.wi);
             shadow_ray.max_t = light_sample.t;
 
-            if (float3 tv; worker.transmitted_visibility(shadow_ray, intersection, filter, tv)) {
+            if (float3 tv; worker.transmitted_visibility(shadow_ray, material_sample.wo(),
+                                                         intersection, filter, tv)) {
                 auto const bxdf = material_sample.evaluate_f(light_sample.wi, true);
 
                 float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);

@@ -41,8 +41,8 @@ bool Worker::intersect(Ray& ray, Intersection& intersection) const noexcept {
     return scene_->intersect(ray, node_stack_, intersection);
 }
 
-bool Worker::intersect(Ray& ray) const noexcept {
-    return scene_->intersect(ray, node_stack_);
+bool Worker::intersect(Ray& ray, shape::Normals& normals) const noexcept {
+    return scene_->intersect(ray, node_stack_, normals);
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept {

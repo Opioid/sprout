@@ -104,8 +104,8 @@ bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transfo
     return false;
 }
 
-bool Rectangle::intersect(Ray& ray, Transformation const& transformation,
-                          Node_stack& /*node_stack*/) const noexcept {
+bool Rectangle::intersect(Ray& ray, Transformation const&      transformation,
+                          Node_stack& /*node_stack*/, Normals& normals) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -132,6 +132,10 @@ bool Rectangle::intersect(Ray& ray, Transformation const& transformation,
         }
 
         ray.max_t = hit_t;
+
+        normals.geo_n = normal;
+        normals.n     = normal;
+
         return true;
     }
 

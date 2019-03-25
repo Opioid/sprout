@@ -19,6 +19,11 @@ struct Intersection {
     uint32_t part;
 };
 
+struct Normals {
+    float3 geo_n;  // geometry normal in world space
+    float3 n;      // interpolated tangent frame in world space
+};
+
 }  // namespace scene::shape
 
 #endif

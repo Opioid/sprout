@@ -537,6 +537,11 @@ void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index,
 }
 
 template <typename Data>
+Vector Tree<Data>::interpolate_shading_normal(FVector u, FVector v, uint32_t index) const noexcept {
+    return data_.interpolate_shading_normal(u, v, index);
+}
+
+template <typename Data>
 float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const noexcept {
     return data_.interpolate_uv(index, uv);
 }

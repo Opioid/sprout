@@ -74,7 +74,7 @@ bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           t
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& /*transformation*/,
-                                Node_stack& /*node_stack*/) const noexcept {
+                                Node_stack& /*node_stack*/, Normals& /*normals*/) const noexcept {
     if (ray.max_t >= Ray_max_t) {
         ray.max_t = Ray_max_t;
         return true;

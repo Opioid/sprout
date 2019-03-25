@@ -17,12 +17,13 @@ const material::Layer& Sample::base_layer() const noexcept {
     return layer_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
 }
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
+
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const noexcept {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};

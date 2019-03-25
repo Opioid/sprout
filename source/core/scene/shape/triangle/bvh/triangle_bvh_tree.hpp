@@ -100,6 +100,8 @@ class Tree {
     void interpolate_triangle_data(FVector u, FVector v, uint32_t index, Vector& n, Vector& t,
                                    float2& tc) const noexcept;
 
+    Vector interpolate_shading_normal(FVector u, FVector v, uint32_t index) const noexcept;
+
     float2 interpolate_triangle_uv(uint32_t index, float2 uv) const noexcept;
 
     float2 interpolate_triangle_uv(FVector u, FVector v, uint32_t index) const noexcept;
