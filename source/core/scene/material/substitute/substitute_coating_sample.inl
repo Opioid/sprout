@@ -40,13 +40,13 @@ void Sample_coating<Coating>::sample(sampler::Sampler& sampler, bxdf::Sample& re
                                                         avoid_caustics_);
 
             result.reflection = result.reflection + coating_attenuation * base.reflection;
-            result.pdf        = (result.pdf + base.pdf) * 0.5f;
+            result.pdf        = 0.5f * (result.pdf + base.pdf);
         } else {
             auto const base = base_evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
                                                   avoid_caustics_);
 
             result.reflection = result.reflection + coating_attenuation * base.reflection;
-            result.pdf        = (result.pdf + 2.f * base.pdf) * 0.5f;
+            result.pdf        = 0.5f * (result.pdf + base.pdf);
         }
     } else {
         if (1.f == metallic_) {
@@ -79,13 +79,13 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
     if (1.f == metallic_) {
         auto const base = pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
-        float const pdf = (coating.pdf + base.pdf) * 0.5f;
+        float const pdf = 0.5f * (coating.pdf + base.pdf);
         return {coating.reflection + coating.attenuation * base.reflection, pdf};
     }
 
     auto const base = base_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
-    float const pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
+    float const pdf = 0.5f * (coating.pdf + base.pdf);
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
 }
 
@@ -98,7 +98,7 @@ void Sample_coating<Coating>::diffuse_sample_and_coating(sampler::Sampler& sampl
                                              avoid_caustics_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
-    result.pdf        = (2.f * result.pdf + coating.pdf) * 0.25f;
+    result.pdf        = 0.5f * (result.pdf + coating.pdf);
 }
 
 template <typename Coating>
@@ -110,7 +110,7 @@ void Sample_coating<Coating>::gloss_sample_and_coating(sampler::Sampler& sampler
                                              avoid_caustics_);
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
-    result.pdf        = (2.f * result.pdf + coating.pdf) * 0.25f;
+    result.pdf        = 0.5f * (result.pdf + coating.pdf);
 }
 
 template <typename Coating>
