@@ -465,7 +465,7 @@ material::Material* Loader::load_material(std::string const& name, std::string_v
         return material;
     }
 
-    logging::error("Loading \"" + name + "\": " /*+ e.what()*/ + ". Using fallback material.");
+    logging::error("Using fallback for material %S: ", name);
 
     return &fallback_material_;
 }

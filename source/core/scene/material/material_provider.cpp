@@ -54,22 +54,17 @@ Material* Provider::load(std::string const& filename, Variant_map const& /*optio
     std::string resolved_name;
     auto        stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
-        logging::error("Loading material %S: ", filename);
         return nullptr;
     }
 
     std::string error;
     auto        root = json::parse(*stream_pointer, error);
     if (!root) {
-        logging::error("Loading material %S: " + error, filename);
+        logging::push_error(error);
+        return nullptr;
     }
 
-    auto material = load(*root, string::parent_directory(resolved_name), manager);
-    if (!material) {
-        logging::error("Loading material %S: ", filename);
-    }
-
-    return material;
+    return load(*root, string::parent_directory(resolved_name), manager);
 }
 
 Material* Provider::load(void const* data, std::string_view                 mount_folder,
