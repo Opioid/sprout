@@ -75,8 +75,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 
             float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
-            fresnel::Schlick1 const schlick(f0_[0]);
-            f = schlick(cos_x);
+            f = fresnel::schlick(cos_x, f0_[0]);
         }
 
         if (p < f) {
@@ -142,7 +141,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
 
         float const n_dot_wi = layer_.clamp_n_dot(wi);
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
-        float const n_dot_h  = math::saturate(dot(layer_.n_, h));
+        float const n_dot_h  = saturate(dot(layer_.n_, h));
 
         fresnel::Schlick1 const schlick(f0_[0]);
 

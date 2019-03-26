@@ -270,7 +270,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, f
 
     float const factor = (wi_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
+    float const denom = pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
 
     float const sqr_eta_t = ior.eta_t * ior.eta_t;
 
@@ -423,7 +423,7 @@ template <typename Layer, typename Fresnel>
 bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_dot_wo,
                                      float wo_dot_h, Layer const& layer,
                                      Fresnel const& fresnel) noexcept {
-    float const n_dot_h = math::saturate(dot(layer.n_, h));
+    float const n_dot_h = saturate(dot(layer.n_, h));
 
     float const x_dot_h = dot(layer.t_, h);
     float const y_dot_h = dot(layer.b_, h);
