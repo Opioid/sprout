@@ -26,7 +26,7 @@ static inline float3 sample_normal(float3 const& wo, Renderstate const& rs,
     // "Microfacet-based Normal Mapping for Robust Monte Carlo Path Tracing"
     // https://drive.google.com/file/d/0BzvWIdpUpRx_ZHI1X2Z4czhqclk/view
     if (dot(n, wo) < 0.f) {
-        return math::reflect(rs.geo_n, n);
+        return reflect(rs.geo_n, n);
     }
 
     return n;

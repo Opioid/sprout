@@ -81,9 +81,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
     sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
-        float3 nm = normal_map_.sample_3(sampler, rs.uv);
-        float3 n  = normalize(rs.tangent_to_world(nm));
-
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler);
         sample.layer_.set_tangent_frame(n);
     } else if (direction_map_.is_valid()) {
         float2 tm = direction_map_.sample_2(sampler, rs.uv);
