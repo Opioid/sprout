@@ -22,11 +22,7 @@ void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float
     weight_ = weight;
 }
 
-Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                             Layer const& layer, bool avoid_caustics) const noexcept {
-    float const n_dot_wi = layer.clamp_n_dot(wi);
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo);
-
+float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const noexcept {
     float const f = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
     float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
@@ -34,6 +30,16 @@ Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h
     float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
 
     float3 const attenuation = (1.f - f) * absorption;
+
+    return attenuation;
+}
+
+Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                             Layer const& layer, bool avoid_caustics) const noexcept {
+    float const n_dot_wi = layer.clamp_n_dot(wi);
+    float const n_dot_wo = layer.clamp_abs_n_dot(wo);
+
+    float3 const attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
 
     if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
         return {float3(0.f), attenuation, 0.f};
@@ -54,13 +60,7 @@ Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    float const f = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
-
-    float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
-
-    float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
-
-    float3 const attenuation = (1.f - f) * absorption;
+    float3 const attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
 
     if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
         return {float3(0.f), attenuation, 0.f};
@@ -85,13 +85,7 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, f
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
                                                    result);
 
-    float const f = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
-
-    float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
-
-    float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
-
-    attenuation = (1.f - f) * absorption;
+    attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
 
     result.reflection *= weight_ * n_dot_wi;
 }
