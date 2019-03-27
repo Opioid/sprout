@@ -41,6 +41,50 @@
 
 namespace scene::material {
 
+struct Texture_description {
+    std::string filename;
+    std::string usage;
+
+    image::Swizzle swizzle;
+
+    float2 scale;
+
+    int32_t num_elements;
+};
+
+static void read_sampler_settings(json::Value const& sampler_value,
+                                  Sampler_settings&  settings) noexcept;
+
+static void read_texture_description(json::Value const&   texture_value,
+                                     Texture_description& description) noexcept;
+
+static Texture_adapter create_texture(const Texture_description& description,
+                                      memory::Variant_map&       options,
+                                      resource::Manager&         manager) noexcept;
+
+struct Coating_description {
+    float3 color = float3(1.f);
+
+    float attenuation_distance = 1.f;
+    float ior                  = 1.f;
+    float roughness            = 0.f;
+    float thickness            = 0.001f;
+
+    bool in_nm = false;
+
+    Texture_description normal_map_description;
+    Texture_description thickness_map_description;
+};
+
+static void read_coating_description(json::Value const&   clearcoat_value,
+                                     Coating_description& description) noexcept;
+
+static float3 read_hex_RGB(std::string const& text) noexcept;
+
+static float3 read_color(json::Value const& color_value) noexcept;
+
+static float3 read_spectrum(json::Value const& spectrum_value) noexcept;
+
 Provider::Provider() noexcept
     : resource::Provider<Material>("Material"),
       fallback_material_(Sampler_settings(Sampler_settings::Filter::Linear)) {
@@ -1173,8 +1217,7 @@ Sampler_settings::Address read_address(json::Value const& address_value) noexcep
     return Sampler_settings::Address::Undefined;
 }
 
-void Provider::read_sampler_settings(json::Value const& sampler_value,
-                                     Sampler_settings&  settings) noexcept {
+void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings) noexcept {
     for (auto& n : sampler_value.GetObject()) {
         if ("filter" == n.name) {
             std::string const filter = json::read_string(n.value);
@@ -1201,8 +1244,8 @@ void Provider::read_sampler_settings(json::Value const& sampler_value,
     }
 }
 
-void Provider::read_texture_description(json::Value const&   texture_value,
-                                        Texture_description& description) noexcept {
+void read_texture_description(json::Value const&   texture_value,
+                              Texture_description& description) noexcept {
     description.filename     = "";
     description.usage        = "Color";
     description.swizzle      = image::Swizzle::XYZW;
@@ -1227,9 +1270,8 @@ void Provider::read_texture_description(json::Value const&   texture_value,
     }
 }
 
-Texture_adapter Provider::create_texture(const Texture_description& description,
-                                         Variant_map&               options,
-                                         resource::Manager&         manager) noexcept {
+Texture_adapter create_texture(const Texture_description& description, memory::Variant_map& options,
+                               resource::Manager& manager) noexcept {
     if (description.num_elements > 1) {
         options.set("num_elements", description.num_elements);
     }
@@ -1242,8 +1284,8 @@ Texture_adapter Provider::create_texture(const Texture_description& description,
                            description.scale);
 }
 
-void Provider::read_coating_description(json::Value const&   coating_value,
-                                        Coating_description& description) noexcept {
+void read_coating_description(json::Value const&   coating_value,
+                              Coating_description& description) noexcept {
     if (!coating_value.IsObject()) {
         return;
     }
@@ -1280,7 +1322,7 @@ void Provider::read_coating_description(json::Value const&   coating_value,
     }
 }
 
-float3 Provider::read_hex_RGB(std::string const& text) noexcept {
+float3 read_hex_RGB(std::string const& text) noexcept {
     if (7 != text.length() || '#' != text[0]) {
         return float3(0.f);
     }
@@ -1309,7 +1351,7 @@ float3 Provider::read_hex_RGB(std::string const& text) noexcept {
                   static_cast<float>(elements[2]) / 255.f);
 }
 
-float3 Provider::read_color(json::Value const& color_value) noexcept {
+float3 read_color(json::Value const& color_value) noexcept {
     if (color_value.IsArray()) {
         return json::read_float3(color_value);
     }
@@ -1322,7 +1364,7 @@ float3 Provider::read_color(json::Value const& color_value) noexcept {
     return read_hex_RGB(hex_string);
 }
 
-float3 Provider::read_spectrum(json::Value const& spectrum_value) noexcept {
+float3 read_spectrum(json::Value const& spectrum_value) noexcept {
     if (!spectrum_value.IsObject()) {
         return float3(0.f);
     }

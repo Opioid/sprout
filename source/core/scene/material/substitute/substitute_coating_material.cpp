@@ -87,10 +87,10 @@ material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray con
 void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) noexcept {
     coating_.ior = ior;
 
-    float const r     = ggx::clamp_roughness(roughness);
-    float const alpha = r * r;
+    float const r = ggx::clamp_roughness(roughness);
 
-    coating_.alpha     = alpha;
+    coating_.alpha = r * r;
+
     coating_.thickness = thickness;
 }
 

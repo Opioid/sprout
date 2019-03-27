@@ -11,6 +11,7 @@
 #include "scene/scene_worker.inl"
 #include "substitute_base_material.inl"
 #include "substitute_base_sample.inl"
+#include "substitute_subsurface_sample.hpp"
 
 #include "scene/material/null/null_sample.hpp"
 

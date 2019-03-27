@@ -29,25 +29,18 @@ void Sample_coating<Coating>::sample(sampler::Sampler& sampler, bxdf::Sample& re
         return;
     }
 
-    float const p = sampler.generate_sample_1D();
-
-    if (p < 0.5f) {
+    if (float const p = sampler.generate_sample_1D(); p < 0.5f) {
         float3 coating_attenuation;
         coating_.sample(wo_, sampler, coating_attenuation, result);
 
-        if (1.f == metallic_) {
-            auto const base = pure_gloss_evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
-                                                        avoid_caustics_);
+        auto const base = 1.f == metallic_
+                              ? pure_gloss_evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
+                                                          avoid_caustics_)
+                              : base_evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
+                                                    avoid_caustics_);
 
-            result.reflection = result.reflection + coating_attenuation * base.reflection;
-            result.pdf        = 0.5f * (result.pdf + base.pdf);
-        } else {
-            auto const base = base_evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
-                                                  avoid_caustics_);
-
-            result.reflection = result.reflection + coating_attenuation * base.reflection;
-            result.pdf        = 0.5f * (result.pdf + base.pdf);
-        }
+        result.reflection = result.reflection + coating_attenuation * base.reflection;
+        result.pdf        = 0.5f * (result.pdf + base.pdf);
     } else {
         if (1.f == metallic_) {
             pure_gloss_sample_and_coating(sampler, result);
@@ -76,14 +69,9 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
 
     auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
-    if (1.f == metallic_) {
-        auto const base = pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
-
-        float const pdf = 0.5f * (coating.pdf + base.pdf);
-        return {coating.reflection + coating.attenuation * base.reflection, pdf};
-    }
-
-    auto const base = base_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto const base = 1.f == metallic_
+                          ? pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_)
+                          : base_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
     float const pdf = 0.5f * (coating.pdf + base.pdf);
     return {coating.reflection + coating.attenuation * base.reflection, pdf};

@@ -3,7 +3,6 @@
 
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "substitute_base_material.hpp"
-#include "substitute_subsurface_sample.hpp"
 
 namespace scene::material::substitute {
 

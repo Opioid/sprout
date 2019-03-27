@@ -63,50 +63,6 @@ class Provider final : public resource::Provider<Material> {
     Material* load_volumetric(json::Value const& volumetric_value,
                               resource::Manager& manager) noexcept;
 
-    struct Texture_description {
-        std::string filename;
-        std::string usage;
-
-        image::Swizzle swizzle;
-
-        float2 scale;
-
-        int32_t num_elements;
-    };
-
-    static void read_sampler_settings(json::Value const& sampler_value,
-                                      Sampler_settings&  settings) noexcept;
-
-    static void read_texture_description(json::Value const&   texture_value,
-                                         Texture_description& description) noexcept;
-
-    static Texture_adapter create_texture(const Texture_description& description,
-                                          Variant_map&               options,
-                                          resource::Manager&         manager) noexcept;
-
-    struct Coating_description {
-        float3 color = float3(1.f);
-
-        float attenuation_distance = 1.f;
-        float ior                  = 1.f;
-        float roughness            = 0.f;
-        float thickness            = 0.01f;
-
-        bool in_nm = false;
-
-        Texture_description normal_map_description;
-        Texture_description thickness_map_description;
-    };
-
-    static void read_coating_description(json::Value const&   clearcoat_value,
-                                         Coating_description& description) noexcept;
-
-    static float3 read_hex_RGB(std::string const& text) noexcept;
-
-    static float3 read_color(json::Value const& color_value) noexcept;
-
-    static float3 read_spectrum(json::Value const& spectrum_value) noexcept;
-
     debug::Material fallback_material_;
 
   public:
