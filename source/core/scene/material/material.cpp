@@ -192,7 +192,7 @@ void Material::init_rainbow() noexcept {
 
         temp.set_bin(i, 1.f);
 
-        float3 const rgb = math::saturate(spectrum::XYZ_to_linear_sRGB_D65(temp.normalized_XYZ()));
+        float3 const rgb = saturate(spectrum::XYZ_to_linear_sRGB_D65(temp.normalized_XYZ()));
 
         rainbow_[i] = rgb;
 

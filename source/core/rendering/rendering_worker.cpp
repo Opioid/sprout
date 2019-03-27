@@ -177,7 +177,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
 
         if (!interface_stack_.empty()) {
             if (float3 tr; volume_integrator_->transmittance(tray, *this, tr)) {
-                w *= math::saturate(tr);
+                w *= saturate(tr);
             } else {
                 return false;
             }

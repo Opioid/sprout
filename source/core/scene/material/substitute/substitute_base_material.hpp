@@ -10,7 +10,7 @@ class Material_base : public material::Material {
     Material_base(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             Worker const& worker) const noexcept override final;
+                             Worker const& worker) const noexcept override;
 
     float3 average_radiance(float area) const noexcept override final;
 

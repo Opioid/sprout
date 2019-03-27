@@ -137,7 +137,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 
         float const n_dot_wi = layer_.clamp_n_dot(wi);
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
-        float const n_dot_h  = math::saturate(dot(layer_.n_, h));
+        float const n_dot_h  = saturate(dot(layer_.n_, h));
 
         fresnel::Schlick1 const schlick(f0_);
 
@@ -156,7 +156,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
         float3 const h = normalize(wo_ + wi);
 
         float const wo_dot_h = clamp_dot(wo_, h);
-        float const n_dot_h  = math::saturate(dot(layer_.n_, h));
+        float const n_dot_h  = saturate(dot(layer_.n_, h));
 
         fresnel::Schlick const schlick(f0_);
 

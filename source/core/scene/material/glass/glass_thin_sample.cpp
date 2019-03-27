@@ -61,7 +61,7 @@ float Sample_thin::reflect(sampler::Sampler& /*sampler*/, bxdf::Sample& result) 
         eta_i = ior_;
     }
 
-    float const n_dot_wo = math::saturate(dot(n, wo_));
+    float const n_dot_wo = saturate(dot(n, wo_));
 
     float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -97,7 +97,7 @@ float Sample_thin::refract(sampler::Sampler& /*sampler*/, bxdf::Sample& result) 
         eta_i = ior_;
     }
 
-    float const n_dot_wo = math::saturate(dot(n, wo_));
+    float const n_dot_wo = saturate(dot(n, wo_));
 
     float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 

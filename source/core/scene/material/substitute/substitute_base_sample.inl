@@ -26,7 +26,7 @@ void Sample_base<Diffuse>::set(float3 const& color, float3 const& radiance, floa
                                float metallic, bool avoid_caustics) noexcept {
     diffuse_color_ = (1.f - metallic) * color;
 
-    f0_ = math::lerp(float3(f0), color, metallic);
+    f0_ = lerp(float3(f0), color, metallic);
 
     emission_ = radiance;
 
@@ -55,7 +55,7 @@ bxdf::Result Sample_base<Diffuse>::base_evaluate(float3 const& wi, float3 const&
         }
     }
 
-    float const n_dot_h = math::saturate(layer_.n_dot(h));
+    float const n_dot_h = saturate(layer_.n_dot(h));
 
     fresnel::Schlick const schlick(f0_);
 
@@ -86,7 +86,7 @@ bxdf::Result Sample_base<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo);
 
-    float const n_dot_h = math::saturate(layer_.n_dot(h));
+    float const n_dot_h = saturate(layer_.n_dot(h));
 
     fresnel::Schlick const schlick(f0_);
 
@@ -115,7 +115,7 @@ void Sample_base<Diffuse>::diffuse_sample(float3 const& wo, Sampler& sampler, bo
         return;
     }
 
-    float const n_dot_h = math::saturate(layer_.n_dot(result.h));
+    float const n_dot_h = saturate(layer_.n_dot(result.h));
 
     fresnel::Schlick const schlick(f0_);
 

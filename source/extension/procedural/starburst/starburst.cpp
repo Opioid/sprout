@@ -422,7 +422,7 @@ void diffraction(Spectrum* result, float const* squared_magnitude, int32_t bin,
             q[0] = 0.5f * (q[0] + 1.f);
             q[1] = -0.5f * (q[1] - 1.f);
 
-            //	q = math::saturate(q);
+            //	q = saturate(q);
 
             float r;
 

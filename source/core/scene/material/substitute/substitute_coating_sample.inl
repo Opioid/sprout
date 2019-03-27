@@ -10,6 +10,13 @@
 namespace scene::material::substitute {
 
 template <typename Coating>
+float3 Sample_coating<Coating>::radiance() const noexcept {
+    float const n_dot_wo = coating_.clamp_abs_n_dot(wo_);
+
+    return coating_.attenuation(n_dot_wo) * emission_;
+}
+
+template <typename Coating>
 bxdf::Result Sample_coating<Coating>::evaluate_f(float3 const& wi, bool /*include_back*/) const
     noexcept {
     return evaluate<true>(wi);

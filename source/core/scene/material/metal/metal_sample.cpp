@@ -57,7 +57,7 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    float const n_dot_h = math::saturate(dot(layer_.n_, h));
+    float const n_dot_h = saturate(dot(layer_.n_, h));
 
     const fresnel::Conductor conductor(ior_, absorption_);
 

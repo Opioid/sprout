@@ -12,6 +12,31 @@ Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings,
                                        bool                    two_sided) noexcept
     : Material_coating<Clearcoat_data>(sampler_settings, two_sided) {}
 
+float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
+                                             Filter filter, Worker const& worker) const noexcept {
+    if (emission_map_.is_valid()) {
+        auto const&  sampler  = worker.sampler_2D(sampler_key(), filter);
+        float3 const radiance = emission_factor_ * emission_map_.sample_3(sampler, uv);
+
+        float thickness;
+        if (coating_thickness_map_.is_valid()) {
+            float const relative_thickness = coating_thickness_map_.sample_1(sampler, uv);
+
+            thickness = coating_.thickness * relative_thickness;
+        } else {
+            thickness = coating_.thickness;
+        }
+
+        coating::Clearcoat clearcoat;
+
+        clearcoat.set(coating_.absorption_coefficient, thickness, 1.f, 1.f, coating_.alpha, 1.f);
+
+        return clearcoat.attenuation(1.f) * radiance;
+    } else {
+        return float3(0.f);
+    }
+}
+
 material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    sampler::Sampler& /*sampler*/,

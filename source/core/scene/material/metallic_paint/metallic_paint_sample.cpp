@@ -127,7 +127,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
 
     float3 const color = math::lerp(color_b_, color_a_, f);
 
-    float const n_dot_h = math::saturate(dot(n_, h));
+    float const n_dot_h = saturate(dot(n_, h));
 
     fresnel::Schlick const fresnel(color);
 
@@ -170,7 +170,7 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
-    float const n_dot_h = math::saturate(dot(n_, h));
+    float const n_dot_h = saturate(dot(n_, h));
 
     fresnel::Conductor const conductor(ior_, absorption_);
 

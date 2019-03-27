@@ -10,7 +10,7 @@ class Sample_base : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
-    float3 radiance() const noexcept override final;
+    float3 radiance() const noexcept override;
 
     void set(float3 const& color, float3 const& radiance, float f0, float alpha, float metallic,
              bool avoid_caustics) noexcept;

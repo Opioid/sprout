@@ -378,7 +378,7 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
 
     float3 const wo = -sample_result.wi;
 
-    // This will invalidate the contents of previous previous material samples.
+    // This will invalidate the contents of previous material samples.
     auto const& light_material_sample = intersection.sample(wo, ray, filter, false, sampler_,
                                                             worker);
 
