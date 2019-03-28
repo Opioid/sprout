@@ -52,7 +52,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
 
     float2 const s2d = sampler.generate_sample_2D();
 
-    float3 const is = math::sample_hemisphere_cosine(s2d);
+    float3 const is = sample_hemisphere_cosine(s2d);
 
     float3 const wi = normalize(layer_.tangent_to_world(is));
 

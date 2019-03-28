@@ -35,7 +35,7 @@ inline float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& l
                                 float3 const& color, Sampler& sampler,
                                 bxdf::Sample& result) noexcept {
     float2 const s2d = sampler.generate_sample_2D();
-    float3 const is  = math::sample_hemisphere_cosine(s2d);
+    float3 const is  = sample_hemisphere_cosine(s2d);
     float3 const wi  = normalize(layer.tangent_to_world(is));
 
     float3 const h = normalize(wo + wi);
@@ -96,7 +96,7 @@ inline float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Lay
                                            sampler::Sampler& sampler,
                                            bxdf::Sample&     result) noexcept {
     float2 const s2d = sampler.generate_sample_2D();
-    float3 const is  = math::sample_hemisphere_cosine(s2d);
+    float3 const is  = sample_hemisphere_cosine(s2d);
     float3 const wi  = normalize(layer.tangent_to_world(is));
 
     float3 const h = normalize(wo + wi);

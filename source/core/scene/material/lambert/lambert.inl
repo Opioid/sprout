@@ -29,7 +29,7 @@ inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler
                                 bxdf::Sample& result) noexcept {
     float2 const s2d = sampler.generate_sample_2D();
 
-    float3 const is = math::sample_hemisphere_cosine(s2d);
+    float3 const is = sample_hemisphere_cosine(s2d);
 
     float3 const wi = normalize(layer.tangent_to_world(is));
 
