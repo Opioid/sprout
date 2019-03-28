@@ -28,14 +28,7 @@ void Material_subsurface::compile(thread::Pool& pool) noexcept {
         builder.build(tree_, texture, cm_, pool);
     }
 
-    //	attenuation(float3(0.25f), attenuation_distance_,
-    //				absorption_coefficient_, scattering_coefficient_);
-
-    //	float3 const extinction_coefficient = absorption_coefficient_ + scattering_coefficient_;
-
-    //	float const max_extinction = max_component(extinction_coefficient);
-
-    //	majorant_mu_t_ = max_extinction;
+    is_scattering_ = color_map_.is_valid() || any_greater_zero(cc_.s);
 }
 
 material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray const& /*ray*/,
@@ -79,7 +72,12 @@ void Material_subsurface::set_density_map(Texture_adapter const& density_map) no
 
 void Material_subsurface::set_attenuation(float3 const& absorption_color,
                                           float3 const& scattering_color, float distance) noexcept {
-    cc_ = attenuation(absorption_color, scattering_color, distance);
+    if (any_greater_zero(scattering_color)) {
+        cc_ = attenuation(absorption_color, scattering_color, distance);
+    } else {
+        cc_.a = extinction_coefficient(absorption_color, distance);
+        cc_.s = float3(0.f);
+    }
 
     cm_ = CM(cc_);
 
@@ -156,7 +154,7 @@ bool Material_subsurface::is_textured_volume() const noexcept {
 }
 
 bool Material_subsurface::is_scattering_volume() const noexcept {
-    return true;
+    return is_scattering_;
 }
 
 bool Material_subsurface::is_caustic() const noexcept {

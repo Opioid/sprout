@@ -62,6 +62,8 @@ class Material_subsurface final : public Material_base {
     float attenuation_distance_;
 
     volumetric::Gridtree tree_;
+
+    bool is_scattering_;
 };
 
 }  // namespace scene::material::substitute
