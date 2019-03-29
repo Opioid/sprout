@@ -49,11 +49,12 @@ void Sample_coating<Coating, Diffuse>::sample(sampler::Sampler& sampler, bxdf::S
         coating_.sample(wo_, sampler, coating_attenuation, result);
 
         auto const base = 1.f == base_.metallic_
-                              ? base_.pure_gloss_evaluate<true>(result.wi, wo_, result.h,
-                                                                result.h_dot_wi, layer_,
-                                                                avoid_caustics_)
-                              : base_.base_evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
-                                                          layer_, avoid_caustics_);
+                              ? base_.template pure_gloss_evaluate<true>(result.wi, wo_, result.h,
+                                                                         result.h_dot_wi, layer_,
+                                                                         avoid_caustics_)
+                              : base_.template base_evaluate<true>(result.wi, wo_, result.h,
+                                                                   result.h_dot_wi, layer_,
+                                                                   avoid_caustics_);
 
         result.reflection = result.reflection + coating_attenuation * base.reflection;
         result.pdf        = 0.5f * (result.pdf + base.pdf);
@@ -81,9 +82,9 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3 const& wi) const 
 
     auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics_);
 
-    auto const base = 1.f == base_.metallic_ ? base_.pure_gloss_evaluate<Forward>(
+    auto const base = 1.f == base_.metallic_ ? base_.template pure_gloss_evaluate<Forward>(
                                                    wi, wo_, h, wo_dot_h, layer_, avoid_caustics_)
-                                             : base_.base_evaluate<Forward>(
+                                             : base_.template base_evaluate<Forward>(
                                                    wi, wo_, h, wo_dot_h, layer_, avoid_caustics_);
 
     float const pdf = 0.5f * (coating.pdf + base.pdf);
