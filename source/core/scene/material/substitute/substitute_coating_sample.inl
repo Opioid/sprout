@@ -45,19 +45,7 @@ void Sample_coating<Coating, Diffuse>::sample(sampler::Sampler& sampler, bxdf::S
     }
 
     if (float const p = sampler.generate_sample_1D(); p < 0.5f) {
-        float3 coating_attenuation;
-        coating_.sample(wo_, sampler, coating_attenuation, result);
-
-        auto const base = 1.f == base_.metallic_
-                              ? base_.template pure_gloss_evaluate<true>(result.wi, wo_, result.h,
-                                                                         result.h_dot_wi, layer_,
-                                                                         avoid_caustics_)
-                              : base_.template base_evaluate<true>(result.wi, wo_, result.h,
-                                                                   result.h_dot_wi, layer_,
-                                                                   avoid_caustics_);
-
-        result.reflection = result.reflection + coating_attenuation * base.reflection;
-        result.pdf        = 0.5f * (result.pdf + base.pdf);
+        coating_sample_and_base(sampler, result);
     } else {
         if (1.f == base_.metallic_) {
             pure_gloss_sample_and_coating(sampler, result);
@@ -89,6 +77,23 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3 const& wi) const 
 
     float const pdf = 0.5f * (coating.pdf + base.pdf);
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
+}
+
+template <typename Coating, typename Diffuse>
+void Sample_coating<Coating, Diffuse>::coating_sample_and_base(sampler::Sampler& sampler,
+                                                               bxdf::Sample&     result) const
+    noexcept {
+    float3 coating_attenuation;
+    coating_.sample(wo_, sampler, coating_attenuation, result);
+
+    auto const base = 1.f == base_.metallic_
+                          ? base_.template pure_gloss_evaluate<true>(
+                                result.wi, wo_, result.h, result.h_dot_wi, layer_, avoid_caustics_)
+                          : base_.template base_evaluate<true>(
+                                result.wi, wo_, result.h, result.h_dot_wi, layer_, avoid_caustics_);
+
+    result.reflection = result.reflection + coating_attenuation * base.reflection;
+    result.pdf        = 0.5f * (result.pdf + base.pdf);
 }
 
 template <typename Coating, typename Diffuse>

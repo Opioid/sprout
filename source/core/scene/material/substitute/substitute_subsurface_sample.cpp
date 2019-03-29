@@ -193,13 +193,7 @@ bxdf::Result Sample_subsurface_volumetric::evaluate_f(float3 const& wi, bool /*i
     noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_f(wi, true);
 
-    // Fresnel is only part of evaluate() because it tries to compensate for the fact,
-    // that direct light calculations for SSS in the integrators are ignoring one surface.
-    float3 const h = normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_abs_dot(wo_, h);
-
-    float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
+    float const f = fresnel(wi);
 
     result.reflection *= f;
 
@@ -210,6 +204,14 @@ bxdf::Result Sample_subsurface_volumetric::evaluate_b(float3 const& wi, bool /*i
     noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_b(wi, true);
 
+    float const f = fresnel(wi);
+
+    result.reflection *= f;
+
+    return result;
+}
+
+float Sample_subsurface_volumetric::fresnel(float3 const& wi) const noexcept {
     // Fresnel is only part of evaluate() because it tries to compensate for the fact,
     // that direct light calculations for SSS in the integrators are ignoring one surface.
     float3 const h = normalize(wo_ + wi);
@@ -218,9 +220,7 @@ bxdf::Result Sample_subsurface_volumetric::evaluate_b(float3 const& wi, bool /*i
 
     float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
 
-    result.reflection *= f;
-
-    return result;
+    return f;
 }
 
 bool Sample_subsurface_volumetric::do_evaluate_back(bool /*previously*/, bool /*same_side*/) const

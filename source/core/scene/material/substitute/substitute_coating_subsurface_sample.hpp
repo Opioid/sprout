@@ -42,6 +42,8 @@ class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
     void set(float anisotropy, float f0) noexcept;
 
   private:
+    float3 fresnel_and_attenuation(float3 const& wi) const noexcept;
+
     float f0_;
 
   public:

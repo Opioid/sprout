@@ -45,19 +45,7 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
             refract(sampler, result);
         } else {
             if (p < 0.75f) {
-                float3 coating_attenuation;
-                coating_.sample(wo_, sampler, coating_attenuation, result);
-
-                auto const base = 1.f == base_.metallic_
-                                      ? base_.pure_gloss_evaluate<true>(result.wi, wo_, result.h,
-                                                                        result.h_dot_wi, layer_,
-                                                                        avoid_caustics_)
-                                      : base_.base_evaluate<true>(result.wi, wo_, result.h,
-                                                                  result.h_dot_wi, layer_,
-                                                                  avoid_caustics_);
-
-                result.reflection = result.reflection + coating_attenuation * base.reflection;
-                result.pdf        = 0.5f * (result.pdf + base.pdf);
+                coating_sample_and_base(sampler, result);
             } else {
                 if (1.f == base_.metallic_) {
                     pure_gloss_sample_and_coating(sampler, result);
@@ -72,7 +60,6 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
         }
 
         result.pdf *= 0.5f;
-
     } else {
         Layer const layer = layer_.swapped();
 
@@ -114,7 +101,11 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
             float const n_dot_wi = ggx::Isotropic::refract(
                 wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h, layer, base_.alpha_, ior, result);
 
-            result.reflection *= n_dot_wi;
+            float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);
+
+            float3 const attenuation = coating_.attenuation(coating_n_dot_wo);
+
+            result.reflection *= n_dot_wi * attenuation;
         }
 
         result.type.set(bxdf::Type::Caustic);
@@ -175,10 +166,14 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
         auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
                                                     base_.alpha_, ior, schlick);
 
+        float const coating_n_dot_wi = coating_.clamp_n_dot(wi);
+
+        float3 const attenuation = coating_.attenuation(coating_n_dot_wi);
+
         if (Forward) {
-            return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf};
+            return {std::min(n_dot_wi, n_dot_wo) * attenuation * ggx.reflection, ggx.pdf};
         } else {
-            return ggx;
+            return {attenuation * ggx.reflection, ggx.pdf};
         }
     }
 
@@ -209,7 +204,11 @@ void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample&
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, base_.alpha_, ior_,
                                                    schlick, sampler, result);
 
-    result.reflection *= n_dot_wi;
+    float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);
+
+    float3 const attenuation = coating_.attenuation(coating_n_dot_wo);
+
+    result.reflection *= n_dot_wi * attenuation;
     result.type.set(bxdf::Type::Caustic);
 }
 
@@ -218,19 +217,7 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,
     noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_f(wi, true);
 
-    // Fresnel is only part of evaluate() because it tries to compensate for the fact,
-    // that direct light calculations for SSS in the integrators are ignoring one surface.
-    float3 const h = normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_abs_dot(wo_, h);
-
-    float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
-
-    result.reflection *= f;
-
-    float const n_dot_wo = coating_.clamp_abs_n_dot(wo_);
-
-    float3 const attenuation = coating_.attenuation(n_dot_wo);
+    float3 const attenuation = fresnel_and_attenuation(wi);
 
     result.reflection *= attenuation;
 
@@ -242,19 +229,7 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
     noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_b(wi, true);
 
-    // Fresnel is only part of evaluate() because it tries to compensate for the fact,
-    // that direct light calculations for SSS in the integrators are ignoring one surface.
-    float3 const h = normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_abs_dot(wo_, h);
-
-    float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
-
-    result.reflection *= f;
-
-    float const n_dot_wo = coating_.clamp_abs_n_dot(wo_);
-
-    float3 const attenuation = coating_.attenuation(n_dot_wo);
+    float3 const attenuation = fresnel_and_attenuation(wi);
 
     result.reflection *= attenuation;
 
@@ -264,6 +239,23 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
 bool Sample_coating_subsurface_volumetric::do_evaluate_back(bool /*previously*/,
                                                             bool /*same_side*/) const noexcept {
     return false;
+}
+
+float3 Sample_coating_subsurface_volumetric::fresnel_and_attenuation(float3 const& wi) const
+    noexcept {
+    // Fresnel is only part of evaluate() because it tries to compensate for the fact,
+    // that direct light calculations for SSS in the integrators are ignoring one surface.
+    float3 const h = normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_abs_dot(wo_, h);
+
+    float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
+
+    float const n_dot_wi = coating_.clamp_n_dot(wi);
+
+    float3 const attenuation = coating_.attenuation(n_dot_wi);
+
+    return f * attenuation;
 }
 
 void Sample_coating_subsurface_volumetric::set(float anisotropy, float f0) noexcept {

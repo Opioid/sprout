@@ -22,6 +22,8 @@ class Sample_coating : public Sample_base {
     template <bool Forward>
     bxdf::Result evaluate(float3 const& wi) const noexcept;
 
+    void coating_sample_and_base(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+
     void diffuse_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
 
     void gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
