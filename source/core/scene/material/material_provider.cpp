@@ -32,6 +32,7 @@
 #include "scene/scene_constants.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_coating_material.inl"
+#include "substitute/substitute_coating_subsurface_material.hpp"
 #include "substitute/substitute_material.hpp"
 #include "substitute/substitute_subsurface_material.hpp"
 #include "substitute/substitute_translucent_material.hpp"
@@ -140,7 +141,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
 
     json::Value const& rendering_value = rendering_node->value;
 
-    for (auto& n : rendering_value.GetObject()) {
+    for (auto const& n : rendering_value.GetObject()) {
         if ("Cloth" == n.name) {
             material = load_cloth(n.value, manager);
         } else if ("Debug" == n.name) {
@@ -191,10 +192,11 @@ Material* Provider::load_cloth(json::Value const& cloth_value,
     Texture_adapter color_map;
     Texture_adapter normal_map;
     Texture_adapter mask;
-    bool            two_sided = false;
-    float3          color(0.75f, 0.75f, 0.75f);
 
-    for (auto& n : cloth_value.GetObject()) {
+    bool   two_sided = false;
+    float3 color(0.75f, 0.75f, 0.75f);
+
+    for (auto const& n : cloth_value.GetObject()) {
         if ("color" == n.name) {
             color = read_color(n.value);
         } else if ("two_sided" == n.name) {
@@ -286,7 +288,7 @@ Material* Provider::load_display(json::Value const& display_value,
 
     uint64_t animation_duration = 0;
 
-    for (auto& n : display_value.GetObject()) {
+    for (auto const& n : display_value.GetObject()) {
         if ("radiance" == n.name) {
             radiance = read_color(n.value);
         } else if ("emission_factor" == n.name) {
@@ -367,7 +369,7 @@ Material* Provider::load_glass(json::Value const& glass_value,
     float roughness            = 0.f;
     float thickness            = 0.f;
 
-    for (auto& n : glass_value.GetObject()) {
+    for (auto const& n : glass_value.GetObject()) {
         if ("color" == n.name || "absorption_color" == n.name) {
             absorption_color = read_color(n.value);
         } else if ("refraction_color" == n.name) {
@@ -459,7 +461,7 @@ Material* Provider::load_light(json::Value const& light_value,
     Texture_adapter mask;
     bool            two_sided = false;
 
-    for (auto& n : light_value.GetObject()) {
+    for (auto const& n : light_value.GetObject()) {
         if ("emission" == n.name) {
             radiance = read_color(n.value);
         } else if ("emittance" == n.name) {
@@ -543,10 +545,11 @@ Material* Provider::load_matte(json::Value const& matte_value,
 
     //	Texture_ptr normal_map;
     Texture_adapter mask;
-    bool            two_sided = false;
-    float3          color(0.6f, 0.6f, 0.6f);
 
-    for (auto& n : matte_value.GetObject()) {
+    bool   two_sided = false;
+    float3 color(0.6f, 0.6f, 0.6f);
+
+    for (auto const& n : matte_value.GetObject()) {
         if ("color" == n.name) {
             color = read_color(n.value);
         } else if ("two_sided" == n.name) {
@@ -600,7 +603,7 @@ Material* Provider::load_metal(json::Value const& metal_value,
     float  roughness = 0.9f;
     float2 roughness_aniso(0.f, 0.f);
 
-    for (auto& n : metal_value.GetObject()) {
+    for (auto const& n : metal_value.GetObject()) {
         if ("ior" == n.name) {
             ior = read_color(n.value);
         } else if ("absorption" == n.name) {
@@ -691,7 +694,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
     Coating_description coating;
     coating.ior = 1.5f;
 
-    for (auto& n : paint_value.GetObject()) {
+    for (auto const& n : paint_value.GetObject()) {
         if ("color_a" == n.name) {
             color_a = read_color(n.value);
         } else if ("color_b" == n.name) {
@@ -782,7 +785,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
     memory::Array<material::Material*> materials;
     materials.reserve(2);
 
-    for (auto& n : mix_value.GetObject()) {
+    for (auto const& n : mix_value.GetObject()) {
         if ("materials" == n.name) {
             for (auto& m : n.value.GetArray()) {
                 if (materials.full()) {
@@ -844,7 +847,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
 
     float3 radiance(0.6f, 0.6f, 0.6f);
 
-    for (auto& n : sky_value.GetObject()) {
+    for (auto const& n : sky_value.GetObject()) {
         if ("radiance" == n.name) {
             radiance = read_color(n.value);
         } else if ("two_sided" == n.name) {
@@ -905,7 +908,7 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
 
     Coating_description coating;
 
-    for (auto& n : substitute_value.GetObject()) {
+    for (auto const& n : substitute_value.GetObject()) {
         if ("color" == n.name) {
             color = read_color(n.value);
         } else if ("absorption_color" == n.name) {
@@ -1029,6 +1032,36 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
 
             return material;
         } else {
+            if (attenuation_distance > 0.f || density_map.is_valid()) {
+                auto material = new substitute::Material_coating_subsurface(sampler_settings);
+
+                material->set_mask(mask);
+                material->set_color_map(color_map);
+                material->set_normal_map(normal_map);
+                material->set_surface_map(surface_map);
+                material->set_emission_map(emission_map);
+                material->set_density_map(density_map);
+
+                material->set_color(color);
+                material->set_attenuation(use_absorption_color ? absorption_color : color,
+                                          use_scattering_color ? scattering_color : color,
+                                          attenuation_distance);
+                material->set_volumetric_anisotropy(volumetric_anisotropy);
+                material->set_ior(ior);
+                material->set_roughness(roughness);
+                material->set_metallic(metallic);
+                material->set_emission_factor(emission_factor);
+
+                material->set_coating_normal_map(coating_normal_map);
+                material->set_coating_thickness_map(coating_thickness_map);
+                material->set_coating_attenuation(coating.color, coating.attenuation_distance);
+                material->set_coating_ior(coating.ior);
+                material->set_coating_roughness(coating.roughness);
+                material->set_coating_thickness(coating.thickness);
+
+                return material;
+            }
+
             auto material = new substitute::Material_clearcoat(sampler_settings, two_sided);
 
             material->set_mask(mask);
@@ -1400,6 +1433,7 @@ uint32_t Provider::max_sample_size() noexcept {
     num_bytes = std::max(metallic_paint::Material::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_clearcoat::sample_size(), num_bytes);
+    num_bytes = std::max(substitute::Material_coating_subsurface::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_subsurface::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_thinfilm::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_translucent::sample_size(), num_bytes);

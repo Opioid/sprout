@@ -7,18 +7,18 @@
 
 namespace scene::material::substitute {
 
-template <typename Coating_layer>
-class Sample_coating : public Sample_base<disney::Isotropic> {
+template <typename Coating_layer, typename Diffuse>
+class Sample_coating : public Sample_base<Diffuse> {
   public:
     float3 radiance() const noexcept override final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override;
 
-  private:
+  protected:
     template <bool Forward>
     bxdf::Result evaluate(float3 const& wi) const noexcept;
 
@@ -33,8 +33,8 @@ class Sample_coating : public Sample_base<disney::Isotropic> {
     Coating_layer coating_;
 };
 
-using Sample_clearcoat = Sample_coating<coating::Clearcoat_layer>;
-using Sample_thinfilm  = Sample_coating<coating::Thinfilm_layer>;
+using Sample_clearcoat = Sample_coating<coating::Clearcoat_layer, disney::Isotropic>;
+using Sample_thinfilm  = Sample_coating<coating::Thinfilm_layer, disney::Isotropic>;
 
 }  // namespace scene::material::substitute
 

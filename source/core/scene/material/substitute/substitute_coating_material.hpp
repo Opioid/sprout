@@ -10,7 +10,7 @@ class Material_coating : public Material_base {
   public:
     Material_coating(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept override;
 
     void set_coating_thickness_map(Texture_adapter const& thickness_map) noexcept;
     void set_coating_normal_map(Texture_adapter const& normal_map) noexcept;
@@ -45,7 +45,7 @@ class Material_clearcoat : public Material_coating<Clearcoat_data> {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept override;
 
     void set_coating_attenuation(float3 const& absorption_color, float distance) noexcept;
 

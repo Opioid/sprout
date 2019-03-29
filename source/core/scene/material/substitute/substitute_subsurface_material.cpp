@@ -36,12 +36,6 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
                                                     sampler::Sampler& /*sampler*/,
                                                     Worker const& worker) const noexcept {
     if (rs.subsurface) {
-        //        auto& sample = worker.sample<volumetric::Sample>(rs.sample_level);
-
-        //        sample.set_basis(rs.geo_n, wo);
-
-        //        sample.set(anisotropy_);
-
         auto& sample = worker.sample<Sample_subsurface_volumetric>(rs.sample_level);
 
         sample.set_basis(rs.geo_n, wo);

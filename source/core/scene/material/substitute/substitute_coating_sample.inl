@@ -9,27 +9,35 @@
 
 namespace scene::material::substitute {
 
-template <typename Coating>
-float3 Sample_coating<Coating>::radiance() const noexcept {
+template <typename Coating, typename Diffuse>
+float3 Sample_coating<Coating, Diffuse>::radiance() const noexcept {
     float const n_dot_wo = coating_.clamp_abs_n_dot(wo_);
 
     return coating_.attenuation(n_dot_wo) * emission_;
 }
 
-template <typename Coating>
-bxdf::Result Sample_coating<Coating>::evaluate_f(float3 const& wi, bool /*include_back*/) const
-    noexcept {
+template <typename Coating, typename Diffuse>
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi,
+                                                          bool /*include_back*/) const noexcept {
+    if (!same_hemisphere(wo_)) {
+        return {float3(0.f), 0.f};
+    }
+
     return evaluate<true>(wi);
 }
 
-template <typename Coating>
-bxdf::Result Sample_coating<Coating>::evaluate_b(float3 const& wi, bool /*include_back*/) const
-    noexcept {
+template <typename Coating, typename Diffuse>
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_b(float3 const& wi,
+                                                          bool /*include_back*/) const noexcept {
+    if (!same_hemisphere(wo_)) {
+        return {float3(0.f), 0.f};
+    }
+
     return evaluate<false>(wi);
 }
 
-template <typename Coating>
-void Sample_coating<Coating>::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
+template <typename Coating, typename Diffuse>
+void Sample_coating<Coating, Diffuse>::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
     noexcept {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
@@ -63,13 +71,9 @@ void Sample_coating<Coating>::sample(sampler::Sampler& sampler, bxdf::Sample& re
     result.wavelength = 0.f;
 }
 
-template <typename Coating>
+template <typename Coating, typename Diffuse>
 template <bool Forward>
-bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept {
-    if (!same_hemisphere(wo_)) {
-        return {float3(0.f), 0.f};
-    }
-
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3 const& wi) const noexcept {
     float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
@@ -84,9 +88,10 @@ bxdf::Result Sample_coating<Coating>::evaluate(float3 const& wi) const noexcept 
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
 }
 
-template <typename Coating>
-void Sample_coating<Coating>::diffuse_sample_and_coating(sampler::Sampler& sampler,
-                                                         bxdf::Sample&     result) const noexcept {
+template <typename Coating, typename Diffuse>
+void Sample_coating<Coating, Diffuse>::diffuse_sample_and_coating(sampler::Sampler& sampler,
+                                                                  bxdf::Sample&     result) const
+    noexcept {
     diffuse_sample(wo_, sampler, avoid_caustics_, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
@@ -96,9 +101,10 @@ void Sample_coating<Coating>::diffuse_sample_and_coating(sampler::Sampler& sampl
     result.pdf        = 0.5f * (result.pdf + coating.pdf);
 }
 
-template <typename Coating>
-void Sample_coating<Coating>::gloss_sample_and_coating(sampler::Sampler& sampler,
-                                                       bxdf::Sample&     result) const noexcept {
+template <typename Coating, typename Diffuse>
+void Sample_coating<Coating, Diffuse>::gloss_sample_and_coating(sampler::Sampler& sampler,
+                                                                bxdf::Sample&     result) const
+    noexcept {
     gloss_sample(wo_, sampler, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
@@ -108,9 +114,10 @@ void Sample_coating<Coating>::gloss_sample_and_coating(sampler::Sampler& sampler
     result.pdf        = 0.5f * (result.pdf + coating.pdf);
 }
 
-template <typename Coating>
-void Sample_coating<Coating>::pure_gloss_sample_and_coating(sampler::Sampler& sampler,
-                                                            bxdf::Sample& result) const noexcept {
+template <typename Coating, typename Diffuse>
+void Sample_coating<Coating, Diffuse>::pure_gloss_sample_and_coating(sampler::Sampler& sampler,
+                                                                     bxdf::Sample&     result) const
+    noexcept {
     pure_gloss_sample(wo_, sampler, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
