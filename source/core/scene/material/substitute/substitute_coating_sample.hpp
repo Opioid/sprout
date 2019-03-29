@@ -8,7 +8,7 @@
 namespace scene::material::substitute {
 
 template <typename Coating_layer, typename Diffuse>
-class Sample_coating : public Sample_base<Diffuse> {
+class Sample_coating : public Sample_base {
   public:
     float3 radiance() const noexcept override final;
 
@@ -30,6 +30,8 @@ class Sample_coating : public Sample_base<Diffuse> {
         noexcept;
 
   public:
+    Base_closure<Diffuse> base_;
+
     Coating_layer coating_;
 };
 

@@ -21,15 +21,15 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
         return;
     }
 
-    if (1.f == metallic_) {
-        pure_gloss_sample(wo_, sampler, result);
+    if (1.f == base_.metallic_) {
+        base_.pure_gloss_sample(wo_, layer_, sampler, result);
     } else {
         float const p = sampler.generate_sample_1D();
 
         if (p < 0.5f) {
-            diffuse_sample(wo_, sampler, avoid_caustics_, result);
+            base_.diffuse_sample(wo_, layer_, sampler, avoid_caustics_, result);
         } else {
-            gloss_sample(wo_, sampler, result);
+            base_.gloss_sample(wo_, layer_, sampler, result);
         }
     }
 
@@ -46,11 +46,11 @@ bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    if (1.f == metallic_) {
-        return pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    if (1.f == base_.metallic_) {
+        return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, avoid_caustics_);
     }
 
-    return base_evaluate<Forward>(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    return base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, avoid_caustics_);
 }
 
 }  // namespace scene::material::substitute

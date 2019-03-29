@@ -5,7 +5,7 @@
 
 namespace scene::material::substitute {
 
-class Sample_translucent : public Sample_base<disney::Isotropic> {
+class Sample_translucent : public Sample_base {
   public:
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
 
@@ -17,6 +17,8 @@ class Sample_translucent : public Sample_base<disney::Isotropic> {
 
     void set_transluceny(float3 const& diffuse_color, float thickness,
                          float attenuation_distance) noexcept;
+
+    Base_closure<disney::Isotropic> base_;
 
   private:
     template <bool Forward>

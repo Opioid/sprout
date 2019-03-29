@@ -51,8 +51,10 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
         radiance = float3(0.f);
     }
 
-    sample.set(color, radiance, fresnel::schlick_f0(ior_, ior_outside), surface[0], surface[1],
-               rs.avoid_caustics);
+    sample.base_.set(color, radiance, fresnel::schlick_f0(ior_, ior_outside), surface[0],
+                     surface[1]);
+
+    sample.avoid_caustics_ = rs.avoid_caustics;
 }
 
 }  // namespace scene::material::substitute

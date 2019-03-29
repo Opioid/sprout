@@ -5,13 +5,15 @@
 
 namespace scene::material::substitute {
 
-class Sample : public Sample_base<disney::Isotropic> {
+class Sample : public Sample_base {
   public:
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
 
     bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
 
     void sample(Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+
+    Base_closure<disney::Isotropic> base_;
 
   private:
     template <bool Forward>

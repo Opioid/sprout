@@ -22,7 +22,7 @@ bxdf::Result Sample_coating_subsurface::evaluate_b(float3 const& wi, bool includ
 
 void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
     noexcept {
-    if (1.f == metallic_) {
+    if (1.f == base_.metallic_) {
         Clearcoat_no_lambert::sample(sampler, result);
         return;
     }
@@ -48,16 +48,18 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
                 float3 coating_attenuation;
                 coating_.sample(wo_, sampler, coating_attenuation, result);
 
-                auto const base = 1.f == metallic_
-                                      ? pure_gloss_evaluate<true>(result.wi, wo_, result.h,
-                                                                  result.h_dot_wi, avoid_caustics_)
-                                      : base_evaluate<true>(result.wi, wo_, result.h,
-                                                            result.h_dot_wi, avoid_caustics_);
+                auto const base = 1.f == base_.metallic_
+                                      ? base_.pure_gloss_evaluate<true>(result.wi, wo_, result.h,
+                                                                        result.h_dot_wi, layer_,
+                                                                        avoid_caustics_)
+                                      : base_.base_evaluate<true>(result.wi, wo_, result.h,
+                                                                  result.h_dot_wi, layer_,
+                                                                  avoid_caustics_);
 
                 result.reflection = result.reflection + coating_attenuation * base.reflection;
                 result.pdf        = 0.5f * (result.pdf + base.pdf);
             } else {
-                if (1.f == metallic_) {
+                if (1.f == base_.metallic_) {
                     pure_gloss_sample_and_coating(sampler, result);
                 } else {
                     if (p < 0.875f) {
@@ -77,7 +79,7 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
         IoR const ior = ior_.swapped();
 
         float        n_dot_h;
-        float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, sampler, n_dot_h);
+        float3 const h = ggx::Isotropic::sample(wo_, layer, base_.alpha_, sampler, n_dot_h);
 
         float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
@@ -98,19 +100,19 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
 
             float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
-            f = fresnel::schlick(cos_x, f0_[0]);
+            f = fresnel::schlick(cos_x, base_.f0_[0]);
         }
 
         if (p < f) {
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, layer, alpha_, result);
+                                                           wo_dot_h, layer, base_.alpha_, result);
 
             result.reflection *= n_dot_wi;
         } else {
             float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
-            float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                           r_wo_dot_h, layer, alpha_, ior, result);
+            float const n_dot_wi = ggx::Isotropic::refract(
+                wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h, layer, base_.alpha_, ior, result);
 
             result.reflection *= n_dot_wi;
         }
@@ -168,10 +170,10 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
         float const n_dot_h  = saturate(dot(layer_.n_, h));
 
-        fresnel::Schlick1 const schlick(f0_[0]);
+        fresnel::Schlick1 const schlick(base_.f0_[0]);
 
         auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
-                                                    alpha_, ior, schlick);
+                                                    base_.alpha_, ior, schlick);
 
         if (Forward) {
             return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf};
@@ -182,7 +184,7 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
 
     auto result = Clearcoat_no_lambert::evaluate<Forward>(wi);
 
-    if (1.f != metallic_) {
+    if (1.f != base_.metallic_) {
         result.pdf *= 0.5f;
     }
 
@@ -202,10 +204,10 @@ void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample&
 
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    fresnel::Schlick1 const schlick(f0_[0]);
+    fresnel::Schlick1 const schlick(base_.f0_[0]);
 
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, alpha_, ior_, schlick,
-                                                   sampler, result);
+    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, base_.alpha_, ior_,
+                                                   schlick, sampler, result);
 
     result.reflection *= n_dot_wi;
     result.type.set(bxdf::Type::Caustic);
