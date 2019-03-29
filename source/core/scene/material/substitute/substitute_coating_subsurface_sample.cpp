@@ -4,7 +4,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/material_sample.inl"
-#include "substitute_base_sample.inl"
+#include "substitute_coating_sample.inl"
 
 namespace scene::material::substitute {
 
