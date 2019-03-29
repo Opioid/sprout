@@ -37,18 +37,6 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
                                                             Renderstate const& rs, Filter filter,
                                                             sampler::Sampler& /*sampler*/,
                                                             Worker const& worker) const noexcept {
-    if (rs.subsurface) {
-        auto& sample = worker.sample<Sample_coating_subsurface_volumetric>(rs.sample_level);
-
-        sample.set_basis(rs.geo_n, wo);
-
-        sample.set(anisotropy_, fresnel::schlick_f0(ior_, rs.ior));
-
-        return sample;
-    }
-
-    auto& sample = worker.sample<Sample_coating_subsurface>(rs.sample_level);
-
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     float thickness;
@@ -64,6 +52,23 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
     }
 
     float const coating_ior = lerp(rs.ior, coating_.ior, weight);
+
+    if (rs.subsurface) {
+        auto& sample = worker.sample<Sample_coating_subsurface_volumetric>(rs.sample_level);
+
+        sample.set_basis(rs.geo_n, wo);
+
+        sample.set(anisotropy_, fresnel::schlick_f0(ior_, rs.ior));
+
+        set_coating_basis(wo, rs, sampler, sample);
+
+        sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
+                            fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
+
+        return sample;
+    }
+
+    auto& sample = worker.sample<Sample_coating_subsurface>(rs.sample_level);
 
     set_sample(wo, rs, coating_ior, sampler, sample);
 

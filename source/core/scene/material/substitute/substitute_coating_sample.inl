@@ -19,7 +19,7 @@ float3 Sample_coating<Coating, Diffuse>::radiance() const noexcept {
 template <typename Coating, typename Diffuse>
 bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi,
                                                           bool /*include_back*/) const noexcept {
-    if (!same_hemisphere(Sample_base<Diffuse>::wo_)) {
+    if (!Sample_base<Diffuse>::same_hemisphere(Sample_base<Diffuse>::wo_)) {
         return {float3(0.f), 0.f};
     }
 
@@ -29,7 +29,7 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi,
 template <typename Coating, typename Diffuse>
 bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_b(float3 const& wi,
                                                           bool /*include_back*/) const noexcept {
-    if (!same_hemisphere(Sample_base<Diffuse>::wo_)) {
+    if (!Sample_base<Diffuse>::same_hemisphere(Sample_base<Diffuse>::wo_)) {
         return {float3(0.f), 0.f};
     }
 
@@ -39,7 +39,7 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_b(float3 const& wi,
 template <typename Coating, typename Diffuse>
 void Sample_coating<Coating, Diffuse>::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
     noexcept {
-    if (!same_hemisphere(Sample_base<Diffuse>::wo_)) {
+    if (!Sample_base<Diffuse>::same_hemisphere(Sample_base<Diffuse>::wo_)) {
         result.pdf = 0.f;
         return;
     }

@@ -26,8 +26,10 @@ class Sample : public material::Sample {
 
     float4 sample(float3 const& wo, float2 r2) const noexcept;
 
+  public:
     Layer layer_;
 
+  private:
     float anisotropy_;
 };
 

@@ -43,6 +43,9 @@ class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
 
   private:
     float f0_;
+
+  public:
+    coating::Clearcoat_layer coating_;
 };
 
 }  // namespace scene::material::substitute

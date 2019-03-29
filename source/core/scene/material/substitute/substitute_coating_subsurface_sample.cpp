@@ -226,6 +226,12 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,
 
     result.reflection *= f;
 
+    float const n_dot_wo = coating_.clamp_abs_n_dot(wo_);
+
+    float3 const attenuation = coating_.attenuation(n_dot_wo);
+
+    result.reflection *= attenuation;
+
     return result;
 }
 
@@ -243,6 +249,12 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
     float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
 
     result.reflection *= f;
+
+    float const n_dot_wo = coating_.clamp_abs_n_dot(wo_);
+
+    float3 const attenuation = coating_.attenuation(n_dot_wo);
+
+    result.reflection *= attenuation;
 
     return result;
 }
