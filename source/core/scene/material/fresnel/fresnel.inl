@@ -13,14 +13,14 @@ static inline float schlick_f0(float n0, float n1) noexcept {
 }
 
 static inline float schlick(float wo_dot_h, float f0) noexcept {
-    return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
+    return f0 + pow5(1.f - wo_dot_h) * (1.f - f0);
 
     // Gaussian approximation
     // return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
 static inline float3 schlick(float wo_dot_h, float3 const& f0) noexcept {
-    return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
+    return f0 + pow5(1.f - wo_dot_h) * (1.f - f0);
 
     // Gaussian approximation
     // return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);

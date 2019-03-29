@@ -125,7 +125,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
 
     float const f = n_dot_wo;
 
-    float3 const color = math::lerp(color_b_, color_a_, f);
+    float3 const color = lerp(color_b_, color_a_, f);
 
     float const n_dot_h = saturate(dot(n_, h));
 
@@ -147,7 +147,7 @@ void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, bxdf::Sample
 
     float const f = n_dot_wo;
 
-    float3 const color = math::lerp(color_b_, color_a_, f);
+    float3 const color = lerp(color_b_, color_a_, f);
 
     fresnel::Schlick const fresnel(color);
 

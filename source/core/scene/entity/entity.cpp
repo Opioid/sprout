@@ -40,7 +40,7 @@ Composed_transformation const& Entity::transformation_at(uint64_t        time,
 
             float const t = static_cast<float>(delta) / static_cast<float>(range);
 
-            transformation.set(math::lerp(a.transformation, b.transformation, t));
+            transformation.set(lerp(a.transformation, b.transformation, t));
 
             break;
         }

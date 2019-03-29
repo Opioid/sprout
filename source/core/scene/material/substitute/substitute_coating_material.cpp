@@ -57,7 +57,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
         weight    = 1.f;
     }
 
-    float const coating_ior = math::lerp(rs.ior, coating_.ior, weight);
+    float const coating_ior = lerp(rs.ior, coating_.ior, weight);
 
     set_sample(wo, rs, coating_ior, sampler, sample);
 

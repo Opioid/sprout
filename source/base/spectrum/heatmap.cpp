@@ -14,7 +14,7 @@ float3 heatmap(float x) {
     int32_t const id = static_cast<int32_t>(x * static_cast<float>(max_color));
     float const   ip = x * static_cast<float>(max_color) - static_cast<float>(id);
 
-    return math::lerp(colors[id], colors[id + 1], ip);
+    return lerp(colors[id], colors[id + 1], ip);
 }
 
 }  // namespace spectrum

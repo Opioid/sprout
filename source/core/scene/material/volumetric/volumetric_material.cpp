@@ -100,7 +100,7 @@ float Material::van_de_hulst_anisotropy(uint32_t depth) const noexcept {
     } else if (depth < SR_high) {
         float const towards_zero = SR_inv_range * static_cast<float>(depth - SR_low);
 
-        return math::lerp(anisotropy_, 0.f, towards_zero);
+        return lerp(anisotropy_, 0.f, towards_zero);
     }
 
     return 0.f;

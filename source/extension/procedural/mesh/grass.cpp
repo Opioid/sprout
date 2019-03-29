@@ -63,7 +63,7 @@ scene::shape::Shape* Grass::create_mesh(json::Value const& /*mesh_value*/,
 
         float rotation_y = rng.random_float() * 2.f * Pi;
 
-        rotation_y = math::lerp(0.25f * Pi, rotation_y, randomness);
+        rotation_y = lerp(0.25f * Pi, rotation_y, randomness);
 
         float l = 0.05f + 0.1f * rng.random_float();  //- (0.15f * randomness);
         float w = 0.1f + 0.05f * rng.random_float();

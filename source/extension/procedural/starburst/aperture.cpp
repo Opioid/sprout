@@ -36,7 +36,7 @@ float Aperture::evaluate(float2 p, float radius) const {
         d = std::max(d, t);
     }
 
-    d = math::lerp(d, length(p), roundness_) / radius;
+    d = lerp(d, length(p), roundness_) / radius;
 
     if (d > 1.f) {
         d = 0.f;

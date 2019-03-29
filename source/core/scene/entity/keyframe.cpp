@@ -7,7 +7,7 @@
 namespace scene::entity {
 
 void Keyframe::interpolate(Keyframe& result, Keyframe const& other, float t) const noexcept {
-    result.transformation = math::lerp(transformation, other.transformation, t);
+    result.transformation = lerp(transformation, other.transformation, t);
 
     if (morphing.targets[0] == morphing.targets[1] &&
         other.morphing.targets[0] == other.morphing.targets[1]) {
@@ -17,7 +17,7 @@ void Keyframe::interpolate(Keyframe& result, Keyframe const& other, float t) con
         result.morphing.targets[1] = other.morphing.targets[0];
 
     } else {
-        result.morphing.weight = math::lerp(morphing.weight, other.morphing.weight, t);
+        result.morphing.weight = lerp(morphing.weight, other.morphing.weight, t);
 
         result.morphing.targets[0] = other.morphing.targets[0];
         result.morphing.targets[1] = other.morphing.targets[1];
