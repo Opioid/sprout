@@ -2,7 +2,7 @@
 #define SU_BASE_RANDOM_GENERATOR_INL
 
 #include "generator.hpp"
-#include <string>
+#include <cstring>
 
 namespace rnd {
 
@@ -40,16 +40,12 @@ static inline float uint_as_float(uint32_t x) noexcept {
 }
 
 inline float Generator::random_float() noexcept {
-    uint32_t const bits = advance_pcg32();
+    uint32_t bits = advance_pcg32();
 
-    uint32_t u = bits;
-    u &= 0x007FFFFFu;
-    u |= 0x3F800000u;
-    float const r0 = uint_as_float(u) - 1.f;
+    bits &= 0x007FFFFFu;
+    bits |= 0x3F800000u;
 
-    float const r1 = 2.3283064365386963e-10f * static_cast<float>(bits);
-
-    return r1;
+    return uint_as_float(bits) - 1.f;
 
  //   return 2.3283064365386963e-10f * static_cast<float>(bits);
 }
