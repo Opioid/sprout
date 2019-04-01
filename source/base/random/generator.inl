@@ -2,6 +2,7 @@
 #define SU_BASE_RANDOM_GENERATOR_INL
 
 #include "generator.hpp"
+#include <string>
 
 namespace rnd {
 
@@ -32,10 +33,25 @@ inline uint32_t Generator::random_uint() noexcept {
     return advance_pcg32();
 }
 
+static inline float uint_as_float(uint32_t x) noexcept {
+    float f;
+    std::memcpy(&f, &x, sizeof(float));
+    return f;
+}
+
 inline float Generator::random_float() noexcept {
     uint32_t const bits = advance_pcg32();
 
-    return 2.3283064365386963e-10f * static_cast<float>(bits);
+    uint32_t u = bits;
+    u &= 0x007FFFFFu;
+    u |= 0x3F800000u;
+    float const r0 = uint_as_float(u) - 1.f;
+
+    float const r1 = 2.3283064365386963e-10f * static_cast<float>(bits);
+
+    return r1;
+
+ //   return 2.3283064365386963e-10f * static_cast<float>(bits);
 }
 
 inline uint32_t Generator::advance_pcg32() noexcept {

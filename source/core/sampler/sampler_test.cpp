@@ -151,8 +151,8 @@ void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, B
     render_triangle(name + "_triangle_0.png", sampler, renderer, target);
     render_triangle(name + "_triangle_1.png", sampler, renderer, target);
 
-    render_triangle_heitz(name + "_triangle_new_0.png", sampler, renderer, target);
-    render_triangle_heitz(name + "_triangle_new_1.png", sampler, renderer, target);
+    render_triangle_heitz(name + "_triangle_heitz_0.png", sampler, renderer, target);
+    render_triangle_heitz(name + "_triangle_heitz_1.png", sampler, renderer, target);
 
     render_triangle_one(name + "_triangle_one_0.png", sampler, renderer, target);
     render_triangle_one(name + "_triangle_one_1.png", sampler, renderer, target);
