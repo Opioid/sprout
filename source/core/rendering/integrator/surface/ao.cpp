@@ -22,7 +22,7 @@ void AO::start_pixel() noexcept {
     sampler_.start_pixel();
 }
 
-float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
+float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) noexcept {
     worker.reset_interface_stack(initial_stack);
 
@@ -54,7 +54,7 @@ float3 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
     }
 
-    return float3(result);
+    return float4(result, result, result, 1.f);
 }
 
 size_t AO::num_bytes() const noexcept {

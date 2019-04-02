@@ -23,7 +23,7 @@ class Srgb {
 
 class Srgb_alpha {
   public:
-    Srgb_alpha(int2 dimensions, bool error_diffusion);
+    Srgb_alpha(int2 dimensions, bool error_diffusion, bool pre_multiplied_alpha);
 
     ~Srgb_alpha();
 
@@ -35,6 +35,8 @@ class Srgb_alpha {
     byte4* rgba_;
 
     bool error_diffusion_;
+
+    bool pre_multiplied_alpha_;
 };
 
 }  // namespace image::encoding

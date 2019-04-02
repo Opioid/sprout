@@ -22,7 +22,7 @@ class Integrator : public integrator::Integrator {
 
     ~Integrator() noexcept override;
 
-    virtual float3 li(Ray& ray, Intersection& intersection, Worker& worker,
+    virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker,
                       Interface_stack const& initial_stack) noexcept = 0;
 };
 

@@ -29,7 +29,7 @@ void Whitted::start_pixel() noexcept {
     sampler_.start_pixel();
 }
 
-float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
+float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
                    Interface_stack const& initial_stack) noexcept {
     worker.reset_interface_stack(initial_stack);
 
@@ -61,7 +61,7 @@ float3 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     //	return float4(result, spectrum::luminance(opacity));
 
-    return shade(ray, intersection, worker);
+    return float4(shade(ray, intersection, worker), 1.f);
 }
 
 float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept {

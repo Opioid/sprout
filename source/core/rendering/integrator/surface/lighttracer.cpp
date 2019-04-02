@@ -43,7 +43,7 @@ void Lighttracer::start_pixel() noexcept {
     }
 }
 
-float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
+float4 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
                        Interface_stack const& initial_stack) noexcept {
     static uint32_t constexpr Max_bounces = 16;
 
@@ -70,7 +70,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (material_sample.is_pure_emissive()) {
-            return result;
+            return float4(result, 1.f);
         }
 
         material_sample.sample(material_sampler(ray.depth), sample_result);
@@ -121,7 +121,7 @@ float3 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
     }
 
-    return result;
+    return float4(result, 1.f);
 }
 
 bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,

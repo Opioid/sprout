@@ -795,8 +795,12 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
 
                 bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
 
+                bool const pre_multiplied_alpha = json::read_bool(n.value, "pre_multiplied_alpha",
+                                                                  true);
+
                 if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
-                    writer = new png::Writer_alpha(camera.sensor().dimensions(), error_diffusion);
+                    writer = new png::Writer_alpha(camera.sensor().dimensions(), error_diffusion,
+                                                   pre_multiplied_alpha);
                 } else {
                     writer = new png::Writer(camera.sensor().dimensions(), error_diffusion);
                 }

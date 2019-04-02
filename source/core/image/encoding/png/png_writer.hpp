@@ -33,7 +33,7 @@ class Writer : public image::Writer, Srgb {
 
 class Writer_alpha : public image::Writer, Srgb_alpha {
   public:
-    Writer_alpha(int2 dimensions, bool error_diffusion);
+    Writer_alpha(int2 dimensions, bool error_diffusion, bool pre_multiplied_alpha);
 
     std::string file_extension() const override final;
 

@@ -26,7 +26,7 @@ Image* Reader::read(std::istream& stream) noexcept {
     // eighth
     // int3 const dimensions(250, 170, 307);
 
-  //  int3 const dimensions(216, 379, 215);
+    //  int3 const dimensions(216, 379, 215);
 
     int3 const dimensions(69, 171, 67);
 
@@ -40,7 +40,7 @@ Image* Reader::read(std::istream& stream) noexcept {
 
     stream.read(reinterpret_cast<char*>(volume->data()), num_voxels * sizeof(float));
 
- //   sub::Writer::write("rocket_111.sub", *volume);
+    //   sub::Writer::write("rocket_111.sub", *volume);
 
     return volume;
 

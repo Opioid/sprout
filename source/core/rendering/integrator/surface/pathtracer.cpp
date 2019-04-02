@@ -43,11 +43,11 @@ void Pathtracer::start_pixel() noexcept {
     }
 }
 
-float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
+float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
                       Interface_stack const& initial_stack) noexcept {
     float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 
-    float3 result = float3(0.f);
+    float4 result = float4(0.f);
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         worker.reset_interface_stack(initial_stack);
@@ -62,12 +62,13 @@ float3 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
     return result;
 }
 
-float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
     Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
 
     bool primary_ray = true;
+    bool transparent = true;
 
     float3 throughput(1.f);
     float3 result(0.f);
@@ -86,7 +87,7 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (material_sample.is_pure_emissive()) {
-            break;
+            return float4(result, 1.f);
         }
 
         if (ray.depth >= settings_.max_bounces) {
@@ -118,6 +119,8 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (material_sample.ior_greater_one()) {
+            transparent = false;
+
             throughput *= sample_result.reflection / sample_result.pdf;
 
             ray.set_direction(sample_result.wi);
@@ -147,7 +150,7 @@ float3 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
     }
 
-    return result;
+    return float4(result, transparent ? 0.f : 1.f);
 }
 
 sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {

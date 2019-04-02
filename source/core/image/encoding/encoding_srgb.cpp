@@ -49,9 +49,10 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
     }
 }
 
-Srgb_alpha::Srgb_alpha(int2 dimensions, bool error_diffusion)
+Srgb_alpha::Srgb_alpha(int2 dimensions, bool error_diffusion, bool pre_multiplied_alpha)
     : rgba_(new byte4[static_cast<size_t>(dimensions[0] * dimensions[1])]),
-      error_diffusion_(error_diffusion) {}
+      error_diffusion_(error_diffusion),
+      pre_multiplied_alpha_(pre_multiplied_alpha) {}
 
 Srgb_alpha::~Srgb_alpha() {
     delete[] rgba_;
@@ -69,7 +70,13 @@ void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
             float4 error(golden_ratio(y) - 0.5f);
 
             for (int32_t x = 0; x < d[0]; ++x, ++i) {
-                float4 const color = spectrum::linear_to_gamma_sRGB(image.at(i));
+                float4 linear = image.at(i);
+
+                if (!pre_multiplied_alpha_ && linear[3] > 0.f) {
+                    linear = float4(linear.xyz() / linear[3], linear[3]);
+                }
+
+                float4 const color = spectrum::linear_to_gamma_sRGB(linear);
 
                 float4 const cf = 255.f * color;
                 byte4 const  ci = byte4(cf + error + 0.5f);
@@ -81,7 +88,13 @@ void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
         }
     } else {
         for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
-            float4 const color = spectrum::linear_to_gamma_sRGB(image.at(i));
+            float4 linear = image.at(i);
+
+            if (!pre_multiplied_alpha_ && linear[3] > 0.f) {
+                linear = float4(linear.xyz() / linear[3], linear[3]);
+            }
+
+            float4 const color = spectrum::linear_to_gamma_sRGB(linear);
 
             rgba_[i] = ::encoding::float_to_unorm(color);
         }

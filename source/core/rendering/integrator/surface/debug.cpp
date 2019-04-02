@@ -18,7 +18,7 @@ void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pi
 
 void Debug::start_pixel() noexcept {}
 
-float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
+float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
                  Interface_stack const& initial_stack) noexcept {
     worker.reset_interface_stack(initial_stack);
 
@@ -41,7 +41,7 @@ float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
                                                         worker);
 
             if (!material_sample.same_hemisphere(wo)) {
-                return float3(0.f);
+                return float4(0.f, 0.f, 0.f, 1.f);
             }
 
             vector = material_sample.base_layer().shading_normal();
@@ -50,10 +50,10 @@ float3 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
             vector = float3(0.5f * intersection.geo.uv, -1.f);
             break;
         default:
-            return float3(0.f);
+            return float4(0.f, 0.f, 0.f, 1.f);
     }
 
-    return float3(0.5f * (vector + float3(1.f)));
+    return float4(0.5f * (vector + float3(1.f)), 1.f);
 }
 
 size_t Debug::num_bytes() const noexcept {

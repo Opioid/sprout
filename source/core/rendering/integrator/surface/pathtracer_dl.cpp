@@ -52,7 +52,7 @@ void Pathtracer_DL::start_pixel() noexcept {
     }
 }
 
-float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
+float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
                          Interface_stack const& initial_stack) noexcept {
     worker.reset_interface_stack(initial_stack);
 
@@ -63,6 +63,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
     bool primary_ray       = true;
     bool treat_as_singular = true;
     bool evaluate_back     = true;
+    bool transparent       = true;
 
     float3 throughput(1.f);
     float3 result(0.f);
@@ -83,7 +84,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (material_sample.is_pure_emissive()) {
-            break;
+            return float4(result, 1.f);
         }
 
         evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
@@ -127,6 +128,8 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (material_sample.ior_greater_one()) {
+            transparent = false;
+
             throughput *= sample_result.reflection / sample_result.pdf;
 
             ray.set_direction(sample_result.wi);
@@ -159,7 +162,7 @@ float3 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
     }
 
-    return result;
+    return float4(result, transparent ? 0.f : 1.f);
 }
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,

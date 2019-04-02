@@ -26,13 +26,13 @@ class alignas(64) Pathtracer final : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    float3 li(Ray& ray, Intersection& intersection, Worker& worker,
+    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
   private:
-    float3 integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept;
+    float4 integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept;
 
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 

@@ -256,8 +256,8 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     return true;
 }
 
-Writer_alpha::Writer_alpha(int2 dimensions, bool error_diffusion)
-    : Srgb_alpha(dimensions, error_diffusion) {}
+Writer_alpha::Writer_alpha(int2 dimensions, bool error_diffusion, bool pre_mulitplied_alpha)
+    : Srgb_alpha(dimensions, error_diffusion, pre_mulitplied_alpha) {}
 
 std::string Writer_alpha::file_extension() const {
     return "png";

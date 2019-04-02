@@ -69,22 +69,22 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
         if (auto const event = volume_integrator_->integrate(ray, intersection, Filter::Undefined,
                                                              *this, vli, vtr);
             Event::Absorb == event) {
-            return float4(vli, spectrum::luminance(vli));
+            return float4(vli, 1.f);
         }
 
         Interface_stack temp_stack = interface_stack_;
 
-        float3 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
+        float4 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
 
         SOFT_ASSERT(all_finite_and_positive(li));
 
-        return float4(vtr * li + vli, 1.f);
+        return float4(vtr * li.xyz() + vli, li[3]);
     } else if (intersect_and_resolve_mask(ray, intersection, Filter::Undefined)) {
-        float3 const li = surface_integrator_->li(ray, intersection, *this, interface_stack);
+        float4 const li = surface_integrator_->li(ray, intersection, *this, interface_stack);
 
         SOFT_ASSERT(all_finite_and_positive(li));
 
-        return float4(li, 1.f);
+        return li;
     } else {
         return float4(0.f);
     }

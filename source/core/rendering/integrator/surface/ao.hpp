@@ -24,7 +24,7 @@ class alignas(64) AO final : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    float3 li(Ray& ray, Intersection& intersection, Worker& worker,
+    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) noexcept override final;
 
     size_t num_bytes() const noexcept override final;

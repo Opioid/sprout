@@ -9,7 +9,7 @@
 namespace server {
 
 Server::Server(int2 dimensions, Message_handler& message_handler) noexcept
-    : srgb_(dimensions, false), message_handler_(message_handler) {}
+    : srgb_(dimensions, false, true), message_handler_(message_handler) {}
 
 Server::~Server() noexcept {
     for (Client* c : clients_) {
