@@ -2,7 +2,7 @@
 #define SU_CORE_RENDERING_INTEGRATOR_HELPER_HPP
 
 #include <cmath>
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 
 namespace rendering {
 
@@ -18,6 +18,17 @@ static inline float3 attenuation(float distance, float3 const& c) noexcept {
 
 static inline float3 attenuation(float3 const& start, float3 const& end, float3 const& c) noexcept {
     return attenuation(math::distance(start, end), c);
+}
+
+static inline float4 compose_alpha(float3 const& radiance, float3 const& throughput,
+                                   bool transparent) noexcept {
+    if (transparent) {
+        float const alpha = std::max(1.f - average(throughput), 0.f);
+
+        return float4(radiance + alpha * throughput, alpha);
+    }
+
+    return float4(radiance, 1.f);
 }
 
 static inline float balance_heuristic(float f_pdf, float g_pdf) noexcept {

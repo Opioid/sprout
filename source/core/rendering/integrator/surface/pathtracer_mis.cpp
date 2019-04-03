@@ -151,7 +151,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (material_sample.is_pure_emissive()) {
-            return Result{float4(result_li, 1.f), photon_li, split_photon};
+            transparent = false;
+            break;
         }
 
         evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
@@ -257,6 +258,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             result_li += throughput * radiance;
 
             if (pure_emissive) {
+                transparent = false;
                 break;
             }
         }
@@ -272,7 +274,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
     }
 
-    return Result{float4(result_li, transparent ? 0.f : 1.f), photon_li, split_photon};
+    return Result{compose_alpha(result_li, throughput, transparent), photon_li, split_photon};
 }
 
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,

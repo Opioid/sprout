@@ -87,7 +87,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (material_sample.is_pure_emissive()) {
-            return float4(result, 1.f);
+            transparent = false;
+            break;
         }
 
         if (ray.depth >= settings_.max_bounces) {
@@ -150,7 +151,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
     }
 
-    return float4(result, transparent ? 0.f : 1.f);
+    return compose_alpha(result, throughput, transparent);
 }
 
 sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {

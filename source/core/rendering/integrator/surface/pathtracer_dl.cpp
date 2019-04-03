@@ -84,7 +84,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (material_sample.is_pure_emissive()) {
-            return float4(result, 1.f);
+            transparent = false;
+            break;
         }
 
         evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
@@ -162,7 +163,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
     }
 
-    return float4(result, transparent ? 0.f : 1.f);
+    return compose_alpha(result, throughput, transparent);
 }
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
