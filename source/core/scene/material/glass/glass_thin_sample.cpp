@@ -99,23 +99,24 @@ float Sample_thin::refract(sampler::Sampler& /*sampler*/, bxdf::Sample& result) 
 
     float const n_dot_wo = saturate(dot(n, wo_));
 
-    float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+    float const sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
     if (sint2 > 1.f) {
         result.pdf = 0.f;
         return 0.f;
     }
 
-    float n_dot_t = std::sqrt(1.f - sint2);
+    float const n_dot_t = std::sqrt(1.f - sint2);
 
     // fresnel has to be the same value that would have been computed by BRDF
-    float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+    float const f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
     float const n_dot_wi = layer_.clamp_n_dot(wo_);
 
     float const approximated_distance = thickness_ / n_dot_wi;
 
-    float3 attenuation = rendering::attenuation(approximated_distance, absorption_coefficient_);
+    float3 const attenuation = rendering::attenuation(approximated_distance,
+                                                      absorption_coefficient_);
 
     result.reflection = (1.f - f) * color_ * attenuation;
     result.wi         = -wo_;
