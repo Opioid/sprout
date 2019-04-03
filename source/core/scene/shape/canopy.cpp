@@ -121,11 +121,12 @@ float Canopy::opacity(Ray const& /*ray*/, Transformation const& /*transformation
     return 0.f;
 }
 
-float3 Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                               Materials /*materials*/, Filter /*filter*/,
-                               Worker const& /*worker*/) const noexcept {
+Visibility Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+                                   Materials /*materials*/, Filter /*filter*/,
+                                   Worker const& /*worker*/, float3& ta) const noexcept {
     // Implementation for this is not really needed, so just skip it
-    return float3(0.f);
+    ta = float3(0.f);
+    return Visibility::Complete;
 }
 
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& transformation,

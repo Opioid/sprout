@@ -9,6 +9,7 @@
 #include "scene/material/material.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/node_stack.inl"
+#include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "triangle_bvh_tree.hpp"
 
@@ -442,15 +443,17 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter f
 }
 
 template <typename Data>
-float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
-                              Worker const& worker) const noexcept {
+shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials,
+                                         Filter filter, Worker const& worker, float3& ta) const
+    noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
-    float3 absorption(0.f);
+    float3     absorption(0.f);
+    Visibility visibility = Visibility::Complete;
 
     Vector const ray_origin        = simd::load_float4(ray.origin.v);
     Vector const ray_direction     = simd::load_float4(ray.direction.v);
@@ -489,15 +492,18 @@ float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filt
 
                     auto const material = materials[data_.material_index(i)];
 
-                    float3 const ta = material->thin_absorption(ray.direction, normal, uv, time,
-                                                                filter, worker);
-                    absorption += (1.f - absorption) * ta;
+                    float3 const tta = material->thin_absorption(ray.direction, normal, uv, time,
+                                                                 filter, worker);
+                    absorption += (1.f - absorption) * tta;
                     if (math::all_greater_equal(absorption, 1.f)) {
-                        return float3(1.f);
+                        ta = float3(1.f);
+                        return Visibility::None;
                     }
 
                     // ray_max_t has changed if intersect() returns true!
                     ray_max_t = max_t;
+
+                    visibility = Visibility::Partial;
                 }
             }
         }
@@ -505,7 +511,8 @@ float3 Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filt
         n = node_stack.pop();
     }
 
-    return absorption;
+    ta = absorption;
+    return visibility;
 }
 
 template <typename Data>

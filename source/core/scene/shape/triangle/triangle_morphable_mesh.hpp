@@ -36,9 +36,9 @@ class Morphable_mesh : public Shape, public Morphable_shape {
     float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
                   Filter filter, Worker const& worker) const noexcept override final;
 
-    float3 thin_absorption(Ray const& ray, Transformation const& transformation,
-                           Materials materials, Filter filter, Worker const& worker) const
-        noexcept override final;
+    Visibility thin_absorption(Ray const& ray, Transformation const& transformation,
+                               Materials materials, Filter filter, Worker const& worker,
+                               float3& ta) const noexcept override final;
 
     bool sample(uint32_t part, float3 const& p, float3 const& n,
                 Transformation const& transformation, float area, bool two_sided,

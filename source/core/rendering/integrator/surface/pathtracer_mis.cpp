@@ -335,9 +335,10 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
     Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t, history.depth, history.time,
                    history.wavelength);
 
-    float3 tv;
-    if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
-                                       tv)) {
+    float3     tv;
+    auto const visibility = worker.transmitted_visibility(shadow_ray, material_sample.wo(),
+                                                          intersection, filter, tv);
+    if (Visibility::None == visibility) {
         return float3(0.f);
     }
 
@@ -348,7 +349,10 @@ float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ra
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
     float const light_pdf = light_sample.pdf * light_weight;
-    float const weight    = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
+
+    bool const mis = evaluate_back && Visibility::Complete == visibility;
+
+    float const weight = mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
     return (weight / light_pdf) * (tv * radiance * bxdf.reflection);
 }

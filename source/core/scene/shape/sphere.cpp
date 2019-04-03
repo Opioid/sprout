@@ -274,9 +274,9 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, Mate
     return 0.f;
 }
 
-float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformation,
-                               Materials materials, Filter filter, Worker const& worker) const
-    noexcept {
+Visibility Sphere::thin_absorption(Ray const& ray, Transformation const& transformation,
+                                   Materials materials, Filter filter, Worker const& worker,
+                                   float3& ta) const noexcept {
     float3 const v = transformation.position - ray.origin;
     float const  b = dot(ray.direction, v);
 
@@ -298,7 +298,8 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
+            ta = materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
+            return Visibility::Partial;
         }
 
         float t1 = b + dist;
@@ -312,11 +313,13 @@ float3 Sphere::thin_absorption(Ray const& ray, Transformation const& transformat
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
+            ta = materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
+            return Visibility::Partial;
         }
     }
 
-    return float3(0.f);
+    ta = float3(0.f);
+    return Visibility::Complete;
 }
 
 bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,

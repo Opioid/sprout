@@ -145,8 +145,8 @@ bool Scene::opacity(Ray const& ray, Filter filter, Worker const& worker, float& 
     return visible;
 }
 
-bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
-    noexcept {
+shape::Visibility Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
+                                         float3& ta) const noexcept {
     if (has_tinted_shadow_) {
         return prop_bvh_.thin_absorption(ray, filter, worker, ta);
     }
@@ -156,7 +156,7 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
 
     ta = float3(o);
 
-    return visible;
+    return visible ? Visibility::Partial : Visibility::None;
 }
 
 entity::Entity* const* Scene::entities() const noexcept {

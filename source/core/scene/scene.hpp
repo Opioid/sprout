@@ -20,7 +20,8 @@ namespace scene {
 
 namespace shape {
 class Shape;
-}
+enum class Visibility;
+}  // namespace shape
 
 namespace animation {
 
@@ -69,6 +70,7 @@ class Scene {
     using Prop_ref   = prop::Prop_ref;
     using Material   = material::Material;
     using Shape      = shape::Shape;
+    using Visibility = shape::Visibility;
 
     using Materials = memory::Array<material::Material*>;
 
@@ -99,8 +101,8 @@ class Scene {
 
     bool opacity(Ray const& ray, Filter filter, Worker const& worker, float& o) const noexcept;
 
-    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
-        noexcept;
+    Visibility thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
+                               float3& ta) const noexcept;
 
     Entity* const* entities() const noexcept;
 

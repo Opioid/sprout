@@ -171,10 +171,11 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation, Materi
     return 0.f;
 }
 
-float3 Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                             Materials /*materials*/, Filter /*filter*/,
-                             Worker const& /*worker*/) const noexcept {
-    return float3(0.f);
+Visibility Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+                                 Materials /*materials*/, Filter /*filter*/,
+                                 Worker const& /*worker*/, float3& ta) const noexcept {
+    ta = float3(0.f);
+    return Visibility::Complete;
 }
 
 bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,

@@ -327,8 +327,8 @@ bool BVH_wrapper::opacity(Ray const& ray, Filter filter, Worker const& worker, f
     return true;
 }
 
-bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                                  float3& ta) const noexcept {
+shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
+                                               float3& ta) const noexcept {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -338,7 +338,8 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
 
     uint32_t n = 0;
 
-    float3 absorption(0.f);
+    float3     absorption(0.f);
+    Visibility visibility = Visibility::Complete;
 
     Vector const ray_origin = simd::load_float4(ray.origin.v);
     //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
@@ -367,9 +368,15 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 auto const p = props[i];
-                absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
-                if (math::all_greater_equal(absorption, 1.f)) {
-                    return false;
+                float3     tta;
+                if (Visibility const v = p->thin_absorption(ray, filter, worker, tta);
+                    Visibility::Complete != v) {
+                    if (Visibility::None == v) {
+                        return Visibility::None;
+                    }
+
+                    absorption += (1.f - absorption) * tta;
+                    visibility = Visibility::Partial;
                 }
             }
         }
@@ -379,14 +386,20 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         auto const p = infinite_props_[i];
-        absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
-        if (math::all_greater_equal(absorption, 1.f)) {
-            return false;
+        float3     tta;
+        if (Visibility const v = p->thin_absorption(ray, filter, worker, tta);
+            Visibility::Complete != v) {
+            if (Visibility::None == v) {
+                return Visibility::None;
+            }
+
+            absorption += (1.f - absorption) * tta;
+            visibility = Visibility::Partial;
         }
     }
 
     ta = absorption;
-    return true;
+    return visibility;
 }
 
 }  // namespace scene::prop

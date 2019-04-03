@@ -10,9 +10,16 @@ class Factory;
 
 }  // namespace sampler
 
-namespace scene::material {
+namespace scene {
+
+namespace material {
 class Sample;
 }
+
+namespace shape {
+enum class Visibility;
+}
+}  // namespace scene
 
 namespace rendering {
 
@@ -51,6 +58,7 @@ class Worker : public scene::Worker {
     using Volume_factory  = integrator::volume::Factory;
     using Photon_map      = integrator::photon::Map;
     using Photon_mapper   = integrator::photon::Mapper;
+    using Visibility      = scene::shape::Visibility;
 
     ~Worker() noexcept;
 
@@ -65,8 +73,8 @@ class Worker : public scene::Worker {
     Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
                  float3& transmittance) noexcept;
 
-    bool transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                                Filter filter, float3& tv) noexcept;
+    Visibility transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                                      Filter filter, float3& tv) noexcept;
 
     uint32_t bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration) noexcept;
 
@@ -78,8 +86,8 @@ class Worker : public scene::Worker {
   protected:
     bool transmittance(Ray const& ray, float3& transmittance) noexcept;
 
-    bool tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                           Filter filter, float3& tv) noexcept;
+    Visibility tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                                 Filter filter, float3& tv) noexcept;
 
     integrator::surface::Integrator* surface_integrator_ = nullptr;
     integrator::volume::Integrator*  volume_integrator_  = nullptr;

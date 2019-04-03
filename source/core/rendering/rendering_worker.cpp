@@ -19,8 +19,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace rendering {
 
 Worker::~Worker() noexcept {
@@ -95,16 +93,19 @@ Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3
     return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
 }
 
-bool Worker::transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                                    Filter filter, float3& v) noexcept {
-    if (float3 tv; tinted_visibility(ray, wo, intersection, filter, tv)) {
+scene::shape::Visibility Worker::transmitted_visibility(Ray& ray, float3 const& wo,
+                                                        Intersection const& intersection,
+                                                        Filter filter, float3& v) noexcept {
+    float3 tv;
+    if (auto const visibility = tinted_visibility(ray, wo, intersection, filter, tv);
+        Visibility::None != visibility) {
         if (float3 tr; transmittance(ray, tr)) {
             v = tv * tr;
-            return true;
+            return visibility;
         }
     }
 
-    return false;
+    return Visibility::None;
 }
 
 uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame,
@@ -137,14 +138,16 @@ size_t Worker::num_bytes() const noexcept {
     return num_bytes;
 }
 
-static inline bool tinted_visibility(scene::Ray const& ray, Worker::Filter filter,
-                                     scene::Scene const* scene, Worker const& worker,
-                                     float3& tv) noexcept {
-    bool const visible = scene->thin_absorption(ray, filter, worker, tv);
+static inline scene::shape::Visibility tinted_visibility(scene::Ray const&   ray,
+                                                         Worker::Filter      filter,
+                                                         scene::Scene const* scene,
+                                                         Worker const&       worker,
+                                                         float3&             tv) noexcept {
+    auto const visibility = scene->thin_absorption(ray, filter, worker, tv);
 
     tv = float3(1.f) - tv;
 
-    return visible;
+    return visibility;
 }
 
 bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
@@ -207,8 +210,9 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
     return true;
 }
 
-bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                               Filter filter, float3& tv) noexcept {
+scene::shape::Visibility Worker::tinted_visibility(Ray& ray, float3 const& wo,
+                                                   Intersection const& intersection, Filter filter,
+                                                   float3& tv) noexcept {
     if (intersection.subsurface && intersection.material()->ior() > 1.f) {
         float const ray_max_t = ray.max_t;
 
@@ -219,7 +223,9 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                 ray.min_t = scene::offset_f(ray.max_t);
                 ray.max_t = ray_max_t;
 
-                if (rendering::tinted_visibility(ray, filter, scene_, *this, tv)) {
+                if (auto const visibility = rendering::tinted_visibility(ray, filter, scene_, *this,
+                                                                         tv);
+                    Visibility::None != visibility) {
                     // Veach's compensation for "Non-symmetry due to shading normals".
                     // See e.g. CorrectShadingNormal() at:
                     // https://github.com/mmp/pbrt-v3/blob/master/src/integrators/bdpt.cpp#L55
@@ -231,11 +237,11 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
 
                     tv *= (numer / std::max(denom, 0.01f)) * tr;
 
-                    return true;
+                    return visibility;
                 }
             }
 
-            return false;
+            return Visibility::None;
         }
     }
 

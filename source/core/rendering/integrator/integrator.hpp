@@ -16,6 +16,10 @@ namespace entity {
 struct Composed_transformation;
 }
 
+namespace shape {
+enum class Visibility;
+}
+
 namespace material {
 
 namespace bxdf {
@@ -64,6 +68,7 @@ class Integrator {
     using Bxdf_type       = scene::material::bxdf::Type;
     using Prop            = scene::prop::Prop;
     using Intersection    = scene::prop::Intersection;
+    using Visibility      = scene::shape::Visibility;
 
     Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept;
 

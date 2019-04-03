@@ -106,14 +106,18 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                 shadow_ray.set_direction(light_sample.wi);
                 shadow_ray.max_t = light_sample.t;
 
-                if (float3 tv; worker.transmitted_visibility(shadow_ray, material_sample.wo(),
-                                                             intersection, Filter::Undefined, tv)) {
-                    auto const bxdf = material_sample.evaluate_f(light_sample.wi, true);
-
-                    float3 const radiance = light->evaluate(light_sample, Filter::Nearest, worker);
-
-                    result += (tv * radiance * bxdf.reflection) / light_sample.pdf;
+                float3 tv;
+                if (Visibility::None ==
+                    worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection,
+                                                  Filter::Undefined, tv)) {
+                    continue;
                 }
+
+                auto const bxdf = material_sample.evaluate_f(light_sample.wi, true);
+
+                float3 const radiance = light->evaluate(light_sample, Filter::Nearest, worker);
+
+                result += (tv * radiance * bxdf.reflection) / light_sample.pdf;
             }
         }
     }

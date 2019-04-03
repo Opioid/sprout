@@ -129,9 +129,9 @@ float Plane::opacity(Ray const& ray, Transformation const& transformation, Mater
     return 0.f;
 }
 
-float3 Plane::thin_absorption(Ray const& ray, Transformation const& transformation,
-                              Materials materials, Filter filter, Worker const& worker) const
-    noexcept {
+Visibility Plane::thin_absorption(Ray const& ray, Transformation const& transformation,
+                                  Materials materials, Filter filter, Worker const& worker,
+                                  float3& ta) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -143,10 +143,12 @@ float3 Plane::thin_absorption(Ray const& ray, Transformation const& transformati
         float3 p = ray.point(hit_t);
         float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 
-        return materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter, worker);
+        ta = materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter, worker);
+        return Visibility::Partial;
     }
 
-    return float3(0.f);
+    ta = float3(0.f);
+    return Visibility::Complete;
 }
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*transformation*/,

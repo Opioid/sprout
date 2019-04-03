@@ -9,6 +9,8 @@ namespace scene {
 namespace shape {
 struct Normals;
 class Node_stack;
+enum class Visibility;
+
 }  // namespace shape
 
 class Worker;
@@ -21,7 +23,8 @@ struct Intersection;
 
 class BVH_wrapper {
   public:
-    using Filter = material::Sampler_settings::Filter;
+    using Filter     = material::Sampler_settings::Filter;
+    using Visibility = shape::Visibility;
 
     bvh::Tree<Prop>& tree() noexcept;
 
@@ -41,8 +44,8 @@ class BVH_wrapper {
 
     bool opacity(Ray const& ray, Filter filter, Worker const& worker, float& o) const noexcept;
 
-    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
-        noexcept;
+    Visibility thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
+                               float3& ta) const noexcept;
 
   private:
     bvh::Tree<Prop> tree_;

@@ -185,9 +185,9 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation, Materi
     return 0.f;
 }
 
-float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
-                             Materials materials, Filter filter, Worker const& worker) const
-    noexcept {
+Visibility Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
+                                 Materials materials, Filter filter, Worker const& worker,
+                                 float3& ta) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -208,12 +208,14 @@ float3 Disk::thin_absorption(Ray const& ray, Transformation const& transformatio
             float2 uv((dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
                       (dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
-            return materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter,
-                                                 worker);
+            ta = materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter, worker);
+
+            return Visibility::Partial;
         }
     }
 
-    return float3(0.f);
+    ta = float3(0.f);
+    return Visibility::Complete;
 }
 
 bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,

@@ -9,6 +9,7 @@
 #include "scene/scene_worker.hpp"
 #include "scene/shape/morphable_shape.hpp"
 #include "scene/shape/shape.hpp"
+#include "scene/shape/shape_intersection.hpp"
 
 namespace scene::prop {
 
@@ -253,23 +254,26 @@ float Prop::opacity(Ray const& ray, Filter filter, Worker const& worker) const n
     return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
 
-float3 Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker) const noexcept {
+shape::Visibility Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
+                                        float3& ta) const noexcept {
     if (!has_tinted_shadow()) {
-        return float3(opacity(ray, filter, worker));
+        float const o = opacity(ray, filter, worker);
+        ta            = float3(o);
+        return 0.f == o ? Visibility::Complete : Visibility::None;
     }
 
     if (!visible_in_shadow()) {
-        return float3(0.f);
+        return Visibility::Complete;
     }
 
     if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
-        return float3(0.f);
+        return Visibility::Complete;
     }
 
     Transformation temp;
     auto const&    transformation = transformation_at(ray.time, temp);
 
-    return shape_->thin_absorption(ray, transformation, materials_, filter, worker);
+    return shape_->thin_absorption(ray, transformation, materials_, filter, worker, ta);
 }
 
 float Prop::area(uint32_t part) const noexcept {
