@@ -48,6 +48,8 @@ class Material : public material::Material {
 
     float anisotropy_;
 
+    bool is_scattering_;
+
   private:
     static uint32_t SR_low;
     static uint32_t SR_high;

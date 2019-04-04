@@ -9,6 +9,8 @@ class Homogeneous : public Material {
   public:
     Homogeneous(Sampler_settings const& sampler_settings) noexcept;
 
+    void compile(thread::Pool& pool) noexcept override final;
+
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const noexcept override final;
 

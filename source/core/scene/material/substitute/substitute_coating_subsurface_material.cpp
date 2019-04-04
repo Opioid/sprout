@@ -96,8 +96,7 @@ void Material_coating_subsurface::set_attenuation(float3 const& absorption_color
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
     } else {
-        cc_.a = extinction_coefficient(absorption_color, distance);
-        cc_.s = float3(0.f);
+        cc_ = {extinction_coefficient(absorption_color, distance), float3(0.f)};
     }
 
     cm_ = CM(cc_);

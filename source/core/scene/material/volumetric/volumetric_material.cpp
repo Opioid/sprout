@@ -10,7 +10,7 @@
 namespace scene::material::volumetric {
 
 Material::Material(Sampler_settings const& sampler_settings) noexcept
-    : material::Material(sampler_settings, true) {}
+    : material::Material(sampler_settings, true), is_scattering_(true) {}
 
 Material::~Material() noexcept {}
 
@@ -51,7 +51,7 @@ float Material::similarity_relation_scale(uint32_t depth) const noexcept {
 }
 
 bool Material::is_scattering_volume() const noexcept {
-    return true;
+    return is_scattering_;
 }
 
 float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
@@ -60,10 +60,10 @@ float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
 
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                                float distance) noexcept {
-    if (all_equal_zero(scattering_color)) {
-        cc_ = {extinction_coefficient(absorption_color, distance), float3(0.f)};
-    } else {
+    if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
+    } else {
+        cc_ = {extinction_coefficient(absorption_color, distance), float3(0.f)};
     }
 
     cm_ = CM(cc_);

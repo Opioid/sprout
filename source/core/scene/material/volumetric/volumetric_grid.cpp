@@ -55,6 +55,8 @@ void Grid::compile(thread::Pool& pool) noexcept {
 
     Octree_builder builder;
     builder.build(tree_, texture, cm_, pool);
+
+    is_scattering_ = any_greater_zero(cc_.s);
 }
 
 Gridtree const* Grid::volume_tree() const noexcept {
