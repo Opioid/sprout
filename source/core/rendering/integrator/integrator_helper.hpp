@@ -25,7 +25,7 @@ static inline float4 compose_alpha(float3 const& radiance, float3 const& through
     if (transparent) {
         float const alpha = std::max(1.f - average(throughput), 0.f);
 
-        return float4(radiance + alpha * throughput, alpha);
+        return float4(radiance /*+ alpha * throughput*/, alpha);
     }
 
     return float4(radiance, 1.f);
