@@ -107,10 +107,10 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (sample_result.type.test(Bxdf_type::Caustic)) {
-            if (avoid_caustics && material_sample.ior_greater_one()) {
+            if (avoid_caustics) {
                 break;
             }
-        } else {
+        } else if (sample_result.type.test_not(Bxdf_type::Pass_through)) {
             primary_ray = false;
             filter      = Filter::Nearest;
         }

@@ -111,14 +111,12 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (sample_result.type.test(Bxdf_type::Caustic)) {
-            if (material_sample.ior_greater_one()) {
                 if (avoid_caustics) {
                     break;
                 }
 
                 treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
-            }
-        } else {
+        } else if (sample_result.type.test_not(Bxdf_type::Pass_through)) {
             primary_ray       = false;
             filter            = Filter::Nearest;
             treat_as_singular = false;

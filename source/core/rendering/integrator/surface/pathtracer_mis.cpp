@@ -171,14 +171,12 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (sample_result.type.test(Bxdf_type::Caustic)) {
-            if (material_sample.ior_greater_one()) {
                 if (avoid_caustics) {
                     break;
                 }
 
                 treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
-            }
-        } else {
+        } else if (sample_result.type.test_not(Bxdf_type::Pass_through)) {
             treat_as_singular = false;
 
             if (primary_ray) {

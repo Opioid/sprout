@@ -13,13 +13,15 @@ enum class Type {
     Glossy       = 1 << 3,
     Specular     = 1 << 4,
     Caustic      = 1 << 5,
+    Pass_through = 1 << 6,
 
     Diffuse_reflection    = Reflection | Diffuse,
     Glossy_reflection     = Reflection | Glossy,
     Specular_reflection   = Reflection | Specular | Caustic,
     Diffuse_transmission  = Transmission | Diffuse,
     Glossy_transmission   = Transmission | Glossy,
-    Specular_transmission = Transmission | Specular | Caustic
+    Specular_transmission = Transmission | Specular | Caustic,
+    Pass_through_transmission = Transmission | Pass_through
 };
 
 struct Result {

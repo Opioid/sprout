@@ -122,7 +122,7 @@ float Sample_thin::refract(sampler::Sampler& /*sampler*/, bxdf::Sample& result) 
     result.wi         = -wo_;
     result.pdf        = 1.f;
     // The integrator should not handle this like a proper transmission.
-    result.type.clear(bxdf::Type::Specular_reflection);
+    result.type.clear(bxdf::Type::Pass_through);
 
     //   SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
