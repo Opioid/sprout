@@ -452,7 +452,8 @@ shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials mate
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
-    float3     absorption(0.f);
+    float3 absorption(1.f);
+
     Visibility visibility = Visibility::Complete;
 
     Vector const ray_origin        = simd::load_float4(ray.origin.v);
@@ -484,8 +485,9 @@ shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials mate
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    u         = math::splat_x(u);
-                    v         = math::splat_x(v);
+                    u = math::splat_x(u);
+                    v = math::splat_x(v);
+
                     float2 uv = data_.interpolate_uv(u, v, i);
 
                     float3 const normal = data_.normal(i);
@@ -494,9 +496,9 @@ shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials mate
 
                     float3 const tta = material->thin_absorption(ray.direction, normal, uv, time,
                                                                  filter, worker);
-                    absorption += (1.f - absorption) * tta;
-                    if (math::all_greater_equal(absorption, 1.f)) {
-                        ta = float3(1.f);
+                    absorption *= tta;
+                    if (all_equal_zero(absorption)) {
+                        ta = float3(0.f);
                         return Visibility::None;
                     }
 

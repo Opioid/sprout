@@ -337,7 +337,8 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
 
     uint32_t n = 0;
 
-    float3     absorption(1.f);
+    float3 absorption(1.f);
+
     Visibility visibility = Visibility::Complete;
 
     Vector const ray_origin = simd::load_float4(ray.origin.v);
@@ -367,7 +368,8 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 auto const p = props[i];
-                float3     tta;
+
+                float3 tta;
                 if (Visibility const v = p->thin_absorption(ray, filter, worker, tta);
                     Visibility::Complete != v) {
                     if (Visibility::None == v) {
@@ -385,7 +387,8 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         auto const p = infinite_props_[i];
-        float3     tta;
+
+        float3 tta;
         if (Visibility const v = p->thin_absorption(ray, filter, worker, tta);
             Visibility::Complete != v) {
             if (Visibility::None == v) {
