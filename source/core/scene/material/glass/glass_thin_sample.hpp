@@ -31,6 +31,12 @@ class Sample_thin : public material::Sample {
     float reflect(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
 
     float refract(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+
+    static void reflect(float3 const& wo, float3 const& n, float n_dot_wo,
+                        bxdf::Sample& result) noexcept;
+
+    static void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
+                        float n_dot_t, float eta, bxdf::Sample& result) noexcept;
 };
 
 }  // namespace scene::material::glass
