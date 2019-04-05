@@ -16,9 +16,6 @@ namespace material {
 class Sample;
 }
 
-namespace shape {
-enum class Visibility;
-}
 }  // namespace scene
 
 namespace rendering {
@@ -58,7 +55,6 @@ class Worker : public scene::Worker {
     using Volume_factory  = integrator::volume::Factory;
     using Photon_map      = integrator::photon::Map;
     using Photon_mapper   = integrator::photon::Mapper;
-    using Visibility      = scene::shape::Visibility;
 
     ~Worker() noexcept;
 

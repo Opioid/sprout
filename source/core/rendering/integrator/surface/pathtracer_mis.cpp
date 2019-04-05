@@ -319,7 +319,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
     return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, Ray const& history,
+float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ray const& history,
                                       float3 const& p, uint32_t sampler_dimension,
                                       bool evaluate_back, Intersection const& intersection,
                                       Material_sample const& material_sample, Filter filter,
