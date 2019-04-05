@@ -264,8 +264,8 @@ bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) con
     return false;
 }
 
-shape::Visibility BVH_wrapper::opacity(Ray const& ray, Filter filter, Worker const& worker,
-                                       float& o) const noexcept {
+shape::Visibility BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker,
+                                          float& v) const noexcept {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -275,7 +275,7 @@ shape::Visibility BVH_wrapper::opacity(Ray const& ray, Filter filter, Worker con
 
     uint32_t n = 0;
 
-    float opacity = 0.f;
+    float visibility = 1.f;
 
     Vector const ray_origin = simd::load_float4(ray.origin.v);
     //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
@@ -304,9 +304,8 @@ shape::Visibility BVH_wrapper::opacity(Ray const& ray, Filter filter, Worker con
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 auto const p = props[i];
-                opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
-
-                if (opacity >= 1.f) {
+                visibility *= 1.f - p->opacity(ray, filter, worker);
+                if (visibility <= 0.f) {
                     return Visibility::None;
                 }
             }
@@ -317,13 +316,13 @@ shape::Visibility BVH_wrapper::opacity(Ray const& ray, Filter filter, Worker con
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         auto const p = infinite_props_[i];
-        opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
-        if (opacity >= 1.f) {
+        visibility *= 1.f - p->opacity(ray, filter, worker);
+        if (visibility <= 0.f) {
             return Visibility::None;
         }
     }
 
-    o = opacity;
+    v = visibility;
     return Visibility::Complete;
 }
 
@@ -338,7 +337,7 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
 
     uint32_t n = 0;
 
-    float3     absorption(0.f);
+    float3     absorption(1.f);
     Visibility visibility = Visibility::Complete;
 
     Vector const ray_origin = simd::load_float4(ray.origin.v);
@@ -375,7 +374,7 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
                         return Visibility::None;
                     }
 
-                    absorption += (1.f - absorption) * tta;
+                    absorption *= tta;
                     visibility = Visibility::Partial;
                 }
             }
@@ -393,7 +392,7 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
                 return Visibility::None;
             }
 
-            absorption += (1.f - absorption) * tta;
+            absorption *= tta;
             visibility = Visibility::Partial;
         }
     }

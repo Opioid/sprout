@@ -133,18 +133,18 @@ bool Scene::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
     return prop_bvh_.intersect_p(ray, node_stack);
 }
 
-shape::Visibility Scene::opacity(Ray const& ray, Filter filter, Worker const& worker,
-                                 float& o) const noexcept {
+shape::Visibility Scene::visibility(Ray const& ray, Filter filter, Worker const& worker,
+                                    float& v) const noexcept {
     if (has_masked_material_) {
-        return prop_bvh_.opacity(ray, filter, worker, o);
+        return prop_bvh_.visibility(ray, filter, worker, v);
     }
 
     if (!prop_bvh_.intersect_p(ray, worker.node_stack())) {
-        o = 0.f;
+        v = 1.f;
         return Visibility::Complete;
     }
 
-    o = 1.f;
+    v = 0.f;
     return Visibility::None;
 }
 
@@ -154,10 +154,10 @@ shape::Visibility Scene::thin_absorption(Ray const& ray, Filter filter, Worker c
         return prop_bvh_.thin_absorption(ray, filter, worker, ta);
     }
 
-    float            o;
-    Visibility const visibility = opacity(ray, filter, worker, o);
+    float            v;
+    Visibility const visibility = Scene::visibility(ray, filter, worker, v);
 
-    ta = float3(o);
+    ta = float3(v);
 
     return visibility;
 }

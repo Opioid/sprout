@@ -85,8 +85,8 @@ bool Worker::visibility(Ray const& ray) const noexcept {
 }
 
 bool Worker::masked_visibility(Ray const& ray, Filter filter, float& mv) const noexcept {
-    if (float o; Visibility::None != scene_->opacity(ray, filter, *this, o)) {
-        mv = 1.f - o;
+    if (float v; Visibility::None != scene_->visibility(ray, filter, *this, v)) {
+        mv = v;
         return true;
     }
 

@@ -258,7 +258,8 @@ shape::Visibility Prop::thin_absorption(Ray const& ray, Filter filter, Worker co
                                         float3& ta) const noexcept {
     if (!has_tinted_shadow()) {
         float const o = opacity(ray, filter, worker);
-        ta            = float3(o);
+
+        ta = float3(1.f - o);
         return 0.f == o ? Visibility::Complete : Visibility::None;
     }
 

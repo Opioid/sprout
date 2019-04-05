@@ -44,7 +44,7 @@ float3 Glass_thin::thin_absorption(float3 const& wo, float3 const& n, float2 uv,
     float3 const attenuation = rendering::attenuation(approximated_distance,
                                                       absorption_coefficient_);
 
-    return opacity(uv, time, filter, worker) * (1.f - refraction_color_ * attenuation);
+    return saturate((1.f - opacity(uv, time, filter, worker)) + (refraction_color_ * attenuation));
 }
 
 float Glass_thin::ior() const noexcept {

@@ -99,7 +99,7 @@ class Scene {
 
     bool intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept;
 
-    Visibility opacity(Ray const& ray, Filter filter, Worker const& worker, float& o) const
+    Visibility visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const
         noexcept;
 
     Visibility thin_absorption(Ray const& ray, Filter filter, Worker const& worker,

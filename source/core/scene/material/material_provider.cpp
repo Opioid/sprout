@@ -357,6 +357,7 @@ Material* Provider::load_glass(json::Value const& glass_value,
                                resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
+    Texture_adapter mask;
     Texture_adapter normal_map;
     Texture_adapter roughness_map;
 
@@ -394,7 +395,11 @@ Material* Provider::load_glass(json::Value const& glass_value,
                 }
 
                 memory::Variant_map options;
-                if ("Normal" == texture_description.usage) {
+
+                if ("Mask" == texture_description.usage) {
+                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    mask = create_texture(texture_description, options, manager);
+                } else if ("Normal" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Normal);
                     normal_map = create_texture(texture_description, options, manager);
                 } else if ("Roughness" == texture_description.usage) {
@@ -419,6 +424,7 @@ Material* Provider::load_glass(json::Value const& glass_value,
     } else {
         if (thickness > 0.f) {
             auto material = new glass::Glass_thin(sampler_settings);
+            material->set_mask(mask);
             material->set_normal_map(normal_map);
             material->set_refraction_color(refraction_color);
             material->set_attenuation(absorption_color, attenuation_distance);

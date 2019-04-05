@@ -145,7 +145,7 @@ static inline scene::shape::Visibility tinted_visibility(scene::Ray const&   ray
                                                          float3&             tv) noexcept {
     auto const visibility = scene->thin_absorption(ray, filter, worker, tv);
 
-    tv = float3(1.f) - tv;
+    // tv = float3(1.f) - tv;
 
     return visibility;
 }
