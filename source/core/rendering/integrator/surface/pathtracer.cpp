@@ -124,13 +124,15 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
             throughput *= sample_result.reflection / sample_result.pdf;
 
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t  = 0.f;
             ray.set_direction(sample_result.wi);
             ++ray.depth;
+        } else {
+            ray.min_t = scene::offset_f(ray.max_t);
         }
 
-        ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-        ray.min_t  = 0.f;
-        ray.max_t  = scene::Ray_max_t;
+        ray.max_t = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);

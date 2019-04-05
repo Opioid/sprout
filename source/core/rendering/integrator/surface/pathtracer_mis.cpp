@@ -171,11 +171,11 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (sample_result.type.test(Bxdf_type::Caustic)) {
-                if (avoid_caustics) {
-                    break;
-                }
+            if (avoid_caustics) {
+                break;
+            }
 
-                treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
+            treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
         } else if (sample_result.type.test_not(Bxdf_type::Pass_through)) {
             treat_as_singular = false;
 
@@ -199,13 +199,15 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
             throughput *= sample_result.reflection / sample_result.pdf;
 
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t  = 0.f;
             ray.set_direction(sample_result.wi);
             ++ray.depth;
+        } else {
+            ray.min_t = scene::offset_f(ray.max_t);
         }
 
-        ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-        ray.min_t  = 0.f;
-        ray.max_t  = scene::Ray_max_t;
+        ray.max_t = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
