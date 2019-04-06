@@ -26,7 +26,6 @@ namespace shape {
 
 class Node_stack;
 struct Vertex;
-enum class Visibility;
 
 namespace triangle {
 
@@ -46,11 +45,10 @@ class Tree {
 
     ~Tree() noexcept;
 
-    using Node       = scene::bvh::Node;
-    using Filter     = material::Sampler_settings::Filter;
-    using Material   = material::Material;
-    using Materials  = Material const* const*;
-    using Visibility = shape::Visibility;
+    using Node      = scene::bvh::Node;
+    using Filter    = material::Sampler_settings::Filter;
+    using Material  = material::Material;
+    using Materials = Material const* const*;
 
     Node* allocate_nodes(uint32_t num_nodes) noexcept;
 
@@ -86,8 +84,8 @@ class Tree {
     float opacity(ray& ray, uint64_t time, Materials materials, Filter filter,
                   Worker const& worker) const noexcept;
 
-    Visibility absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
-                          Worker const& worker, float3& ta) const noexcept;
+    bool absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
+                    Worker const& worker, float3& ta) const noexcept;
 
     float3 interpolate_p(float2 uv, uint32_t index) const noexcept;
 

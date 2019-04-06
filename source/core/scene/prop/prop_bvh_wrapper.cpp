@@ -264,8 +264,8 @@ bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) con
     return false;
 }
 
-shape::Visibility BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker,
-                                          float& v) const noexcept {
+bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const
+    noexcept {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -306,7 +306,7 @@ shape::Visibility BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker 
                 auto const p = props[i];
                 visibility *= 1.f - p->opacity(ray, filter, worker);
                 if (visibility <= 0.f) {
-                    return Visibility::None;
+                    return false;
                 }
             }
         }
@@ -318,16 +318,16 @@ shape::Visibility BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker 
         auto const p = infinite_props_[i];
         visibility *= 1.f - p->opacity(ray, filter, worker);
         if (visibility <= 0.f) {
-            return Visibility::None;
+            return false;
         }
     }
 
     v = visibility;
-    return Visibility::Complete;
+    return true;
 }
 
-shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                                               float3& ta) const noexcept {
+bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
+                                  float3& ta) const noexcept {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -338,8 +338,6 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
     uint32_t n = 0;
 
     float3 absorption(1.f);
-
-    Visibility visibility = Visibility::Complete;
 
     Vector const ray_origin = simd::load_float4(ray.origin.v);
     //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
@@ -370,15 +368,11 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
                 auto const p = props[i];
 
                 float3 tta;
-                if (Visibility const v = p->thin_absorption(ray, filter, worker, tta);
-                    Visibility::Complete != v) {
-                    if (Visibility::None == v) {
-                        return Visibility::None;
-                    }
-
-                    absorption *= tta;
-                    visibility = Visibility::Partial;
+                if (!p->thin_absorption(ray, filter, worker, tta)) {
+                    return false;
                 }
+
+                absorption *= tta;
             }
         }
 
@@ -389,19 +383,15 @@ shape::Visibility BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Wo
         auto const p = infinite_props_[i];
 
         float3 tta;
-        if (Visibility const v = p->thin_absorption(ray, filter, worker, tta);
-            Visibility::Complete != v) {
-            if (Visibility::None == v) {
-                return Visibility::None;
-            }
-
-            absorption *= tta;
-            visibility = Visibility::Partial;
+        if (!p->thin_absorption(ray, filter, worker, tta)) {
+            return false;
         }
+
+        absorption *= tta;
     }
 
     ta = absorption;
-    return visibility;
+    return true;
 }
 
 }  // namespace scene::prop

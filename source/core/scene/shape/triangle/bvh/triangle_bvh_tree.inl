@@ -443,9 +443,8 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter f
 }
 
 template <typename Data>
-shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials,
-                                         Filter filter, Worker const& worker, float3& ta) const
-    noexcept {
+bool Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
+                            Worker const& worker, float3& ta) const noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);
@@ -453,8 +452,6 @@ shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials mate
     uint32_t n = 0;
 
     float3 absorption(1.f);
-
-    Visibility visibility = Visibility::Complete;
 
     Vector const ray_origin        = simd::load_float4(ray.origin.v);
     Vector const ray_direction     = simd::load_float4(ray.direction.v);
@@ -499,13 +496,11 @@ shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials mate
                     absorption *= tta;
                     if (all_equal_zero(absorption)) {
                         ta = float3(0.f);
-                        return Visibility::None;
+                        return false;
                     }
 
                     // ray_max_t has changed if intersect() returns true!
                     ray_max_t = max_t;
-
-                    visibility = Visibility::Partial;
                 }
             }
         }
@@ -514,7 +509,7 @@ shape::Visibility Tree<Data>::absorption(ray& ray, uint64_t time, Materials mate
     }
 
     ta = absorption;
-    return visibility;
+    return true;
 }
 
 template <typename Data>

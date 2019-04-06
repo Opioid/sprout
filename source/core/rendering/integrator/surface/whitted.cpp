@@ -107,9 +107,8 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                 shadow_ray.max_t = light_sample.t;
 
                 float3 tv;
-                if (Visibility::None ==
-                    worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection,
-                                                  Filter::Undefined, tv)) {
+                if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection,
+                                                   Filter::Undefined, tv)) {
                     continue;
                 }
 

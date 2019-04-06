@@ -25,7 +25,6 @@ class Sample;
 
 namespace shape {
 struct Normals;
-enum class Visibility;
 }  // namespace shape
 
 namespace prop {
@@ -41,7 +40,6 @@ class Worker {
     using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
-    using Visibility         = scene::shape::Visibility;
 
     Worker() noexcept;
 

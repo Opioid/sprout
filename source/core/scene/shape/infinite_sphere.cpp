@@ -108,13 +108,12 @@ float Infinite_sphere::opacity(Ray const& /*ray*/, Transformation const& /*trans
     return 0.f;
 }
 
-Visibility Infinite_sphere::thin_absorption(Ray const& /*ray*/,
-                                            Transformation const& /*transformation*/,
-                                            Materials /*materials*/, Filter /*filter*/,
-                                            Worker const& /*worker*/, float3& ta) const noexcept {
+bool Infinite_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+                                      Materials /*materials*/, Filter /*filter*/,
+                                      Worker const& /*worker*/, float3& ta) const noexcept {
     // Implementation for this is not really needed, so just skip it
-    ta = float3(0.f);
-    return Visibility::Complete;
+    ta = float3(1.f);
+    return true;
 }
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& n,

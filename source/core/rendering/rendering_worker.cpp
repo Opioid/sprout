@@ -93,19 +93,17 @@ Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3
     return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
 }
 
-scene::shape::Visibility Worker::transmitted_visibility(Ray& ray, float3 const& wo,
-                                                        Intersection const& intersection,
-                                                        Filter filter, float3& v) noexcept {
+bool Worker::transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                                    Filter filter, float3& v) noexcept {
     float3 tv;
-    if (auto const visibility = tinted_visibility(ray, wo, intersection, filter, tv);
-        Visibility::None != visibility) {
+    if (tinted_visibility(ray, wo, intersection, filter, tv)) {
         if (float3 tr; transmittance(ray, tr)) {
             v = tv * tr;
-            return visibility;
+            return true;
         }
     }
 
-    return Visibility::None;
+    return false;
 }
 
 uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame,
@@ -136,18 +134,6 @@ size_t Worker::num_bytes() const noexcept {
     num_bytes += interface_stack_temp_.num_bytes();
 
     return num_bytes;
-}
-
-static inline scene::shape::Visibility tinted_visibility(scene::Ray const&   ray,
-                                                         Worker::Filter      filter,
-                                                         scene::Scene const* scene,
-                                                         Worker const&       worker,
-                                                         float3&             tv) noexcept {
-    auto const visibility = scene->thin_absorption(ray, filter, worker, tv);
-
-    // tv = float3(1.f) - tv;
-
-    return visibility;
 }
 
 bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
@@ -210,9 +196,8 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
     return true;
 }
 
-scene::shape::Visibility Worker::tinted_visibility(Ray& ray, float3 const& wo,
-                                                   Intersection const& intersection, Filter filter,
-                                                   float3& tv) noexcept {
+bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
+                               Filter filter, float3& tv) noexcept {
     if (intersection.subsurface && intersection.material()->ior() > 1.f) {
         float const ray_max_t = ray.max_t;
 
@@ -223,9 +208,7 @@ scene::shape::Visibility Worker::tinted_visibility(Ray& ray, float3 const& wo,
                 ray.min_t = scene::offset_f(ray.max_t);
                 ray.max_t = ray_max_t;
 
-                if (auto const visibility = rendering::tinted_visibility(ray, filter, scene_, *this,
-                                                                         tv);
-                    Visibility::None != visibility) {
+                if (scene_->thin_absorption(ray, filter, *this, tv)) {
                     // Veach's compensation for "Non-symmetry due to shading normals".
                     // See e.g. CorrectShadingNormal() at:
                     // https://github.com/mmp/pbrt-v3/blob/master/src/integrators/bdpt.cpp#L55
@@ -237,15 +220,15 @@ scene::shape::Visibility Worker::tinted_visibility(Ray& ray, float3 const& wo,
 
                     tv *= (numer / std::max(denom, 0.01f)) * tr;
 
-                    return visibility;
+                    return true;
                 }
             }
 
-            return Visibility::None;
+            return false;
         }
     }
 
-    return rendering::tinted_visibility(ray, filter, scene_, *this, tv);
+    return scene_->thin_absorption(ray, filter, *this, tv);
 }
 
 }  // namespace rendering

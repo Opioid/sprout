@@ -243,7 +243,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         SOFT_ASSERT(all_finite(result_li));
 
-        if (!material_sample.ior_greater_one() && !treat_as_singular) {
+        if (sample_result.type.test(Bxdf_type::Pass_through) && !treat_as_singular) {
             sample_result.pdf = previous_bxdf_pdf;
         } else {
             is_translucent = material_sample.is_translucent();
@@ -335,10 +335,9 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
     Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t, history.depth, history.time,
                    history.wavelength);
 
-    float3     tv;
-    auto const visibility = worker.transmitted_visibility(shadow_ray, material_sample.wo(),
-                                                          intersection, filter, tv);
-    if (Visibility::None == visibility) {
+    float3 tv;
+    if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
+                                       tv)) {
         return float3(0.f);
     }
 
@@ -350,9 +349,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 
     float const light_pdf = light_sample.pdf * light_weight;
 
-    bool const mis = evaluate_back && Visibility::Complete == visibility;
-
-    float const weight = mis ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
+    float const weight = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
     return (weight / light_pdf) * (tv * radiance * bxdf.reflection);
 }

@@ -201,8 +201,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         shadow_ray.max_t = light_sample.t;
 
         float3 tv;
-        if (Visibility::None == worker.transmitted_visibility(shadow_ray, material_sample.wo(),
-                                                              intersection, filter, tv)) {
+        if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
+                                           tv)) {
             continue;
         }
 

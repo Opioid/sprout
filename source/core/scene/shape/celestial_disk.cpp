@@ -143,13 +143,12 @@ float Celestial_disk::opacity(Ray const& /*ray*/, Transformation const& /*transf
     return 0.f;
 }
 
-Visibility Celestial_disk::thin_absorption(Ray const& /*ray*/,
-                                           Transformation const& /*transformation*/,
-                                           Materials /*materials*/, Filter /*filter*/,
-                                           Worker const& /*worker*/, float3& ta) const noexcept {
+bool Celestial_disk::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+                                     Materials /*materials*/, Filter /*filter*/,
+                                     Worker const& /*worker*/, float3& ta) const noexcept {
     // Implementation for this is not really needed, so just skip it
-    ta = float3(0.f);
-    return Visibility::Complete;
+    ta = float3(1.f);
+    return true;
 }
 
 bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,

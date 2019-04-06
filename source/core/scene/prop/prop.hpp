@@ -20,8 +20,6 @@ struct Intersection;
 struct Normals;
 class Shape;
 class Node_stack;
-enum class Visibility;
-
 }  // namespace shape
 
 namespace prop {
@@ -32,7 +30,6 @@ class Prop : public entity::Entity {
     using Filter     = material::Sampler_settings::Filter;
     using Material   = material::Material;
     using Shape      = shape::Shape;
-    using Visibility = shape::Visibility;
 
     ~Prop() noexcept override;
 
@@ -70,8 +67,8 @@ class Prop : public entity::Entity {
 
     float opacity(Ray const& ray, Filter filter, Worker const& worker) const noexcept;
 
-    Visibility thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                               float3& ca) const noexcept;
+    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ca) const
+        noexcept;
 
     float area(uint32_t part) const noexcept;
 

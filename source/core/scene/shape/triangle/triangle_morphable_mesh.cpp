@@ -148,9 +148,9 @@ float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformati
     return tree_.opacity(tray, ray.time, materials, filter, worker);
 }
 
-Visibility Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
-                                           Materials materials, Filter filter, Worker const& worker,
-                                           float3& ta) const noexcept {
+bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
+                                     Materials materials, Filter filter, Worker const& worker,
+                                     float3& ta) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));

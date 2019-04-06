@@ -254,21 +254,23 @@ float Prop::opacity(Ray const& ray, Filter filter, Worker const& worker) const n
     return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
 
-shape::Visibility Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                                        float3& ta) const noexcept {
+bool Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
+    noexcept {
     if (!has_tinted_shadow()) {
         float const o = opacity(ray, filter, worker);
 
         ta = float3(1.f - o);
-        return 0.f == o ? Visibility::Complete : Visibility::None;
+        return 0.f == o;
     }
 
     if (!visible_in_shadow()) {
-        return Visibility::Complete;
+        ta = float3(1.f);
+        return true;
     }
 
     if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
-        return Visibility::Complete;
+        ta = float3(1.f);
+        return true;
     }
 
     Transformation temp;

@@ -34,7 +34,6 @@ struct Sample_to;
 struct Sample_from;
 class Node_stack;
 class Morphable_shape;
-enum class Visibility;
 
 class Shape {
   public:
@@ -72,9 +71,9 @@ class Shape {
     virtual float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
                           Filter filter, Worker const& worker) const noexcept = 0;
 
-    virtual Visibility thin_absorption(Ray const& ray, Transformation const& transformation,
-                                       Materials materials, Filter filter, Worker const& worker,
-                                       float3& ta) const noexcept = 0;
+    virtual bool thin_absorption(Ray const& ray, Transformation const& transformation,
+                                 Materials materials, Filter filter, Worker const& worker,
+                                 float3& ta) const noexcept = 0;
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
                         Transformation const& transformation, float area, bool two_sided,

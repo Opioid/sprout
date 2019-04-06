@@ -29,9 +29,9 @@ class Sphere final : public Shape {
     float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
                   Filter filter, Worker const& worker) const noexcept override final;
 
-    Visibility thin_absorption(Ray const& ray, Transformation const& transformation,
-                               Materials materials, Filter filter, Worker const& worker,
-                               float3& ta) const noexcept override final;
+    bool thin_absorption(Ray const& ray, Transformation const& transformation, Materials materials,
+                         Filter filter, Worker const& worker, float3& ta) const
+        noexcept override final;
 
     bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
                 bool two_sided, Sampler& sampler, uint32_t sampler_dimension,

@@ -209,9 +209,9 @@ float Rectangle::opacity(Ray const& ray, Transformation const& transformation, M
     return 0.f;
 }
 
-Visibility Rectangle::thin_absorption(Ray const& ray, Transformation const& transformation,
-                                      Materials materials, Filter filter, Worker const& worker,
-                                      float3& ta) const noexcept {
+bool Rectangle::thin_absorption(Ray const& ray, Transformation const& transformation,
+                                Materials materials, Filter filter, Worker const& worker,
+                                float3& ta) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -227,25 +227,25 @@ Visibility Rectangle::thin_absorption(Ray const& ray, Transformation const& tran
 
         float u = dot(t, k / transformation.scale[0]);
         if (u > 1.f || u < -1.f) {
-            ta = float3(0.f);
-            return Visibility::Complete;
+            ta = float3(1.f);
+            return true;
         }
 
         float3 b = -transformation.rotation.r[1];
 
         float v = dot(b, k / transformation.scale[1]);
         if (v > 1.f || v < -1.f) {
-            ta = float3(0.f);
-            return Visibility::Complete;
+            ta = float3(1.f);
+            return true;
         }
 
         float2 const uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
         ta = materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter, worker);
-        return Visibility::Partial;
+        return true;
     }
 
-    ta = float3(0.f);
-    return Visibility::Complete;
+    ta = float3(1.f);
+    return true;
 }
 
 bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
