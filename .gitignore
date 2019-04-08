@@ -1,6 +1,7 @@
 build*/
 data/
 system/
+source/base/platform/version.hpp
 *.*.user*
 *.fuse-hidden*
 *.autosave
