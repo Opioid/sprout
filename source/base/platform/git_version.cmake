@@ -28,9 +28,9 @@ else()
     string(STRIP "${GIT_BRANCH}" GIT_BRANCH)
 endif()
 
-set(VERSION "char const* GIT_REV=\"${GIT_REV}${GIT_DIFF}\";
-char const* GIT_TAG=\"${GIT_TAG}\";
-char const* GIT_BRANCH=\"${GIT_BRANCH}\";")
+set(VERSION "static char const* GIT_REV=\"${GIT_REV}${GIT_DIFF}\";
+static char const* GIT_TAG=\"${GIT_TAG}\";
+static char const* GIT_BRANCH=\"${GIT_BRANCH}\";")
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/version.hpp)
     file(READ ${CMAKE_CURRENT_SOURCE_DIR}/version.hpp VERSION_)
