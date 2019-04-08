@@ -10,8 +10,6 @@
 #include "base/debug/assert.hpp"
 #include "scene/material/material_test.hpp"
 
-#include <iostream>
-
 namespace scene::material::glass {
 
 const material::Layer& Sample_thin::base_layer() const noexcept {
@@ -27,8 +25,7 @@ bxdf::Result Sample_thin::evaluate_b(float3 const& /*wi*/, bool /*include_back*/
 }
 
 void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
-    // Thin material is always double sided,
-    // so no need to check hemisphere.
+    // Thin material is always double sided, so no need to check hemisphere.
 
     float3 const n = layer_.n_;
 
@@ -39,14 +36,11 @@ void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const 
     float const eta      = eta_i / eta_t;
     float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
 
-    float n_dot_t;
     float f;
     if (sint2 >= 1.f) {
-        n_dot_t = 0.f;
-
         f = 1.f;
     } else {
-        n_dot_t = std::sqrt(1.f - sint2);
+        float const n_dot_t = std::sqrt(1.f - sint2);
 
         f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
     }

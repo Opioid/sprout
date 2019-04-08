@@ -103,7 +103,7 @@ class Material {
     virtual float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const
         noexcept;
 
-    virtual float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, uint64_t time,
+    virtual float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                                    Filter filter, Worker const& worker) const noexcept;
 
     virtual float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const

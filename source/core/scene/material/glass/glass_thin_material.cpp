@@ -4,6 +4,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
@@ -35,16 +36,35 @@ material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*r
     return sample;
 }
 
-float3 Glass_thin::thin_absorption(float3 const& wo, float3 const& n, float2 uv, uint64_t time,
+float3 Glass_thin::thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                                    Filter filter, Worker const& worker) const noexcept {
-    float const n_dot_wi = clamp_abs_dot(wo, n);
+    float const eta_i = 1.f;
+    float const eta_t = ior_;
+
+    float const n_dot_wo = std::min(std::abs(dot(n, wi)), 1.f);
+    float const eta      = eta_i / eta_t;
+    float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
+
+    if (sint2 >= 1.f) {
+        return float3(0.f);
+    }
+
+    float const n_dot_t = std::sqrt(1.f - sint2);
+
+    float const f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+
+    float const n_dot_wi = clamp(n_dot_wo);
 
     float const approximated_distance = thickness_ / n_dot_wi;
 
     float3 const attenuation = rendering::attenuation(approximated_distance,
                                                       absorption_coefficient_);
 
-    return saturate((1.f - opacity(uv, time, filter, worker)) + (refraction_color_ * attenuation));
+    float const o = opacity(uv, time, filter, worker);
+
+    float3 const ta = min((1.f - o) + (refraction_color_ * attenuation), 1.f);
+
+    return (1.f - f) * ta;
 }
 
 float Glass_thin::ior() const noexcept {

@@ -12,7 +12,7 @@ class Glass_thin : public Material {
                                    Filter filter, Sampler& sampler, Worker const& worker) const
         noexcept override final;
 
-    float3 thin_absorption(float3 const& wo, float3 const& n, float2 uv, uint64_t time,
+    float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                            Filter filter, Worker const& worker) const noexcept override final;
 
     float ior() const noexcept override final;
