@@ -20,16 +20,18 @@
 namespace scene::shape::triangle::bvh {
 
 template <typename Data>
-void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, uint32_t num_vertices,
-                        Vertex const* const vertices, uint32_t max_primitives,
+void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles,
+                        Triangles triangles, uint32_t num_vertices,
+                        Vertices vertices, uint32_t max_primitives,
                         thread::Pool& thread_pool) {
     Build_node root;
 
     {
-        float const log2_num_triangles = std::log2(static_cast<float>(triangles.size()));
-        spatial_split_threshold_       = static_cast<uint32_t>(log2_num_triangles / 2.f + 0.5f);
+        float const log2_num_triangles = std::log2(static_cast<float>(num_triangles));
 
-        References references(triangles.size());
+        spatial_split_threshold_ = static_cast<uint32_t>(log2_num_triangles / 2.f + 0.5f);
+
+        References references(num_triangles);
 
         memory::Array<math::Simd_AABB> aabbs(thread_pool.num_threads());
 
@@ -52,7 +54,7 @@ void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, uint32_t n
 
                 aabbs[id] = aabb;
             },
-            0, static_cast<int32_t>(triangles.size()));
+            0, num_triangles);
 
         math::Simd_AABB aabb(AABB::empty());
         for (auto& b : aabbs) {
@@ -74,8 +76,8 @@ void Builder_SAH::build(Tree<Data>& tree, Triangles const& triangles, uint32_t n
 }
 
 template <typename Data>
-void Builder_SAH::serialize(Build_node* node, Triangles const& triangles,
-                            Vertex const* const vertices, Tree<Data>& tree) {
+void Builder_SAH::serialize(Build_node* node, Triangles triangles,
+                            Vertices vertices, Tree<Data>& tree) {
     auto& n = new_node();
     n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 

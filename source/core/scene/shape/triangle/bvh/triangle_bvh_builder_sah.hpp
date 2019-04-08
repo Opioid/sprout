@@ -50,13 +50,15 @@ class Tree;
 
 class Builder_SAH /*: private Builder_base*/ {
   public:
-    using Triangles = std::vector<Index_triangle>;
-
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
 
+    using Triangles = Index_triangle const* const;
+    using Vertices  = Vertex const* const;
+
     template <typename Data>
-    void build(Tree<Data>& tree, Triangles const& triangles, uint32_t num_vertices,
-               Vertex const* const vertices, uint32_t max_primitives, thread::Pool& thread_pool);
+    void build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles,
+               uint32_t num_vertices, Vertices vertices, uint32_t max_primitives,
+               thread::Pool& thread_pool);
 
   private:
     using References = std::vector<Reference>;
@@ -122,8 +124,8 @@ class Builder_SAH /*: private Builder_base*/ {
                                     bool& exhausted, thread::Pool& thread_pool);
 
     template <typename Data>
-    void serialize(Build_node* node, Triangles const& triangles, Vertex const* const vertices,
-                   Tree<Data>& tree);
+    void serialize(Build_node* node, Triangles triangles,
+                   Vertices vertices, Tree<Data>& tree);
 
     using Node = scene::bvh::Node;
 
