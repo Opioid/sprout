@@ -8,6 +8,6 @@ namespace platform {
 std::string build() noexcept;
 
 std::string revision() noexcept;
-}
+}  // namespace platform
 
 #endif

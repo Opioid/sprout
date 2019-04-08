@@ -42,7 +42,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         logging::error("Loading mesh %S: ", filename);
     }
 
-    file::Type type = file::query_type(*stream_pointer);
+    file::Type const type = file::query_type(*stream_pointer);
     if (file::Type::SUB == type) {
         return load_binary(*stream_pointer, manager.thread_pool());
     }
@@ -102,7 +102,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     SOFT_ASSERT(check_and_fix(handler.vertices(), filename));
 
-    //    Exporter::write(filename, handler);
+    // Exporter::write(filename, handler);
 
     auto mesh = new Mesh;
 
@@ -299,6 +299,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     uint64_t indices_size   = 0;
     uint64_t index_bytes    = 0;
 
+    bool delta_indices = false;
+
     for (auto& n : geometry_value.GetObject()) {
         if ("parts" == n.name) {
             for (auto const& pn : n.value.GetArray()) {
@@ -319,10 +321,18 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
                     indices_offset = json::read_uint(in.value, "offset");
                     indices_size   = json::read_uint(in.value, "size");
                 } else if ("encoding" == in.name) {
-                    if ("UInt16" == json::read_string(in.value)) {
-                        index_bytes = 2;
+                    if ("Int16" == json::read_string(in.value)) {
+                        index_bytes   = 2;
+                        delta_indices = true;
+                    } else if ("UInt16" == json::read_string(in.value)) {
+                        index_bytes   = 2;
+                        delta_indices = false;
+                    } else if ("Int32" == json::read_string(in.value)) {
+                        index_bytes   = 4;
+                        delta_indices = true;
                     } else {
-                        index_bytes = 4;
+                        index_bytes   = 4;
+                        delta_indices = false;
                     }
                 }
             }

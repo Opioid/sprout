@@ -24,7 +24,7 @@ void binary_tag(std::ostream& stream, size_t offset, size_t size) {
     stream << "\"binary\":{\"offset\":" << offset << ",\"size\":" << size << "}";
 }
 
-void Exporter::write(std::string const& filename, const Json_handler& handler) {
+void Exporter::write(std::string const& filename, Json_handler& handler) {
     std::string const out_name = string::extract_filename(filename) + ".sub";
 
     std::cout << "Export " << out_name << std::endl;
@@ -130,9 +130,17 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
     newline(jstream, 2);
     jstream << "\"indices\":{";
 
-    size_t index_bytes = 4;
+    bool   delta_indices = false;
+    size_t index_bytes   = 4;
+
     if (num_vertices <= 0x000000000000FFFF) {
+        if (num_vertices <= 0x0000000000008000) {
+            delta_indices = true;
+        }
+
         index_bytes = 2;
+    } else if (num_vertices <= 0x0000000080000000) {
+        delta_indices = true;
     }
 
     newline(jstream, 3);
@@ -143,13 +151,23 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
     newline(jstream, 3);
     jstream << "\"encoding\":";
 
+    delta_indices = false;
+
     if (4 == index_bytes) {
-        jstream << "\"UInt32\"";
+        if (delta_indices) {
+            stream << "\"Int32\"";
+        } else {
+            jstream << "\"UInt32\"";
+        }
     } else {
-        jstream << "\"UInt16\"";
+        if (delta_indices) {
+            stream << "\"Int16\"";
+        } else {
+            jstream << "\"UInt16\"";
+        }
     }
 
-    // close vertices
+    // close indices
     newline(jstream, 2);
     jstream << "}";
 
@@ -170,38 +188,64 @@ void Exporter::write(std::string const& filename, const Json_handler& handler) {
 
     // binary stuff
 
-    /*
-            Compressed_vertex* cvs = new Compressed_vertex[vertices.size()];
+    if (!handler.has_texture_coordinates()) {
+        // If no tangents were loaded, explicitely set them to zero.
+        // This can potentially help with compression.
+        for (auto& v : handler.vertices()) {
+            v.uv = float2(0.f);
+        }
+    }
 
-            for (size_t i = 0, len = vertices.size(); i < len; ++i) {
-                    auto const& v = vertices[i];
-                    auto& cv = cvs[i];
-
-                    cv.p = v.p;
-                    cv.n.encode(v.n, 0.f);
-                    cv.t.encode(v.t, v.bitangent_sign);
-                    cv.uv = v.uv;
-            }
-
-            stream.write(reinterpret_cast<char const*>(cvs), vertices.size() *
-       sizeof(Compressed_vertex));
-    */
     stream.write(reinterpret_cast<char const*>(vertices.data()), vertices_size);
 
     auto const& triangles = handler.triangles();
 
     if (4 == index_bytes) {
+        int32_t previous_index = 0;
         for (auto const& t : triangles) {
-            stream.write(reinterpret_cast<char const*>(t.i), 3 * sizeof(uint32_t));
+            if (delta_indices) {
+                int32_t delta_index = t.i[0] - previous_index;
+                stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
+
+                delta_index = t.i[1] - t.i[0];
+                stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
+
+                delta_index = t.i[2] - t.i[1];
+                stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
+
+                previous_index = t.i[2];
+            } else {
+                stream.write(reinterpret_cast<char const*>(t.i), 3 * sizeof(uint32_t));
+            }
         }
     } else {
+        int16_t previous_index = 0;
         for (auto const& t : triangles) {
-            uint16_t a = static_cast<uint16_t>(t.i[0]);
-            stream.write(reinterpret_cast<char const*>(&a), sizeof(uint16_t));
-            uint16_t b = static_cast<uint16_t>(t.i[1]);
-            stream.write(reinterpret_cast<char const*>(&b), sizeof(uint16_t));
-            uint16_t c = static_cast<uint16_t>(t.i[2]);
-            stream.write(reinterpret_cast<char const*>(&c), sizeof(uint16_t));
+            if (delta_indices) {
+                int16_t const a           = static_cast<uint16_t>(t.i[0]);
+                int16_t       delta_index = a - previous_index;
+                stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
+
+                uint16_t const b = static_cast<uint16_t>(t.i[1]);
+                delta_index      = b - a;
+                stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
+
+                uint16_t const c = static_cast<uint16_t>(t.i[2]);
+                delta_index      = c - b;
+                stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
+
+                previous_index = c;
+
+            } else {
+                uint16_t const a = static_cast<uint16_t>(t.i[0]);
+                stream.write(reinterpret_cast<char const*>(&a), sizeof(uint16_t));
+
+                uint16_t const b = static_cast<uint16_t>(t.i[1]);
+                stream.write(reinterpret_cast<char const*>(&b), sizeof(uint16_t));
+
+                uint16_t const c = static_cast<uint16_t>(t.i[2]);
+                stream.write(reinterpret_cast<char const*>(&c), sizeof(uint16_t));
+            }
         }
     }
 }
