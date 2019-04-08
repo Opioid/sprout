@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
 
     logging::init(logging::Type::Std_out);
 
-    logging::info("Welcome to sprout (" + platform::build() + ")!");
+    logging::info("Welcome to sprout (" + platform::build() + " - " + platform::revision() +  ")!");
 
     auto const args = options::parse(argc, argv);
 

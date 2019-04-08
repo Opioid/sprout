@@ -3,7 +3,9 @@
 
 namespace platform {
 
-std::string build() {
+#include "version.hpp"
+
+std::string build() noexcept {
     std::stringstream stream;
 
     // Architecture
@@ -36,6 +38,10 @@ std::string build() {
 #endif
 
     return stream.str();
+}
+
+std::string revision() noexcept {
+    return GIT_REV;
 }
 
 }  // namespace platform
