@@ -195,7 +195,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (material_sample.ior_greater_one()) {
-            transparent = false;
+            transparent &= sample_result.type.test(Bxdf_type::Pass_through);
 
             throughput *= sample_result.reflection / sample_result.pdf;
 
@@ -258,7 +258,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             result_li += throughput * radiance;
 
             if (pure_emissive) {
-                transparent = false;
+                transparent &= !intersection.prop->visible_in_camera() &&
+                               ray.max_t >= scene::Ray_max_t;
                 break;
             }
         }

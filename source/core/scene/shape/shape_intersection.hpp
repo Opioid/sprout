@@ -24,8 +24,6 @@ struct Normals {
     float3 n;      // interpolated tangent frame in world space
 };
 
-enum class Visibility { None, Complete, Partial };
-
 }  // namespace scene::shape
 
 #endif

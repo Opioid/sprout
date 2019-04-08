@@ -27,8 +27,6 @@ class Prop;
 struct Intersection {
     using Filter = material::Sampler_settings::Filter;
 
-    bool hit() const noexcept;
-
     material::Material const* material() const noexcept;
 
     bool is_light() const noexcept;

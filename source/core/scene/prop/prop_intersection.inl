@@ -11,10 +11,6 @@
 
 namespace scene::prop {
 
-inline bool Intersection::hit() const noexcept {
-    return nullptr != prop;
-}
-
 inline material::Material const* Intersection::material() const noexcept {
     return prop->material(geo.part);
 }
