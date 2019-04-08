@@ -20,9 +20,8 @@
 namespace scene::shape::triangle::bvh {
 
 template <typename Data>
-void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles,
-                        Triangles triangles, uint32_t num_vertices,
-                        Vertices vertices, uint32_t max_primitives,
+void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles,
+                        uint32_t num_vertices, Vertices vertices, uint32_t max_primitives,
                         thread::Pool& thread_pool) {
     Build_node root;
 
@@ -76,8 +75,8 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles,
 }
 
 template <typename Data>
-void Builder_SAH::serialize(Build_node* node, Triangles triangles,
-                            Vertices vertices, Tree<Data>& tree) {
+void Builder_SAH::serialize(Build_node* node, Triangles triangles, Vertices vertices,
+                            Tree<Data>& tree) {
     auto& n = new_node();
     n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 
