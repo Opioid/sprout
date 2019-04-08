@@ -250,20 +250,20 @@ void Provider::build_bvh(Mesh& mesh, Triangles const& triangles, uint32_t num_ve
 template <typename Index>
 void fill_triangles_delta(const std::vector<Part>& parts, Index const* indices,
                           std::vector<Index_triangle>& triangles) noexcept {
-    Index previous_index(0);
+    int32_t previous_index(0);
     for (auto const& p : parts) {
         uint32_t const triangles_start = p.start_index / 3;
         uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
 
         for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-            Index const a     = previous_index + indices[i * 3 + 0];
-            triangles[i].i[0] = static_cast<uint32_t>(a);
+            int32_t const a   = previous_index + static_cast<int32_t>(indices[i * 3 + 0]);
+            triangles[i].i[0] = a;
 
-            Index const b     = a + indices[i * 3 + 1];
-            triangles[i].i[1] = static_cast<uint32_t>(b);
+            int32_t const b   = a + static_cast<int32_t>(indices[i * 3 + 1]);
+            triangles[i].i[1] = b;
 
-            Index const c     = b + indices[i * 3 + 2];
-            triangles[i].i[2] = static_cast<uint32_t>(c);
+            int32_t const c   = b + static_cast<int32_t>(indices[i * 3 + 2]);
+            triangles[i].i[2] = c;
 
             previous_index = c;
 

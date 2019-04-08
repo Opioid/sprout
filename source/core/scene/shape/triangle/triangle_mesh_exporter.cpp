@@ -78,7 +78,7 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
 
     auto const& vertices = handler.vertices();
 
-    size_t num_vertices  = static_cast<uint32_t>(vertices.size());
+    size_t num_vertices  = vertices.size();
     size_t vertices_size = num_vertices * sizeof(Vertex);
 
     binary_tag(jstream, 0, vertices_size);
@@ -130,16 +130,32 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
     newline(jstream, 2);
     jstream << "\"indices\":{";
 
+    int64_t max_index_delta = 0;
+
+    int64_t previous_index = 0;
+    for (auto const& t : handler.triangles()) {
+        int64_t delta_index = static_cast<int64_t>(t.i[0]) - previous_index;
+        max_index_delta     = std::max(delta_index, max_index_delta);
+
+        delta_index     = static_cast<int64_t>(t.i[1]) - static_cast<int64_t>(t.i[0]);
+        max_index_delta = std::max(delta_index, max_index_delta);
+
+        delta_index     = static_cast<int64_t>(t.i[2]) - static_cast<int64_t>(t.i[1]);
+        max_index_delta = std::max(delta_index, max_index_delta);
+
+        previous_index = static_cast<int64_t>(t.i[2]);
+    }
+
     bool   delta_indices = false;
     size_t index_bytes   = 4;
 
-    if (num_vertices <= 0x000000000000FFFF) {
-        if (num_vertices <= 0x0000000000008000) {
+    if (max_index_delta <= 0x000000000000FFFF) {
+        if (max_index_delta <= 0x0000000000008000) {
             delta_indices = true;
         }
 
         index_bytes = 2;
-    } else if (num_vertices <= 0x0000000080000000) {
+    } else if (max_index_delta <= 0x0000000080000000) {
         delta_indices = true;
     }
 
@@ -196,6 +212,27 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
 
     stream.write(reinterpret_cast<char const*>(vertices.data()), vertices_size);
 
+    /*
+        for (uint32_t i = 0; i < num_vertices; ++i) {
+            stream.write(reinterpret_cast<char const*>(&vertices[i].p), sizeof(packed_float3));
+        }
+
+        for (uint32_t i = 0; i < num_vertices; ++i) {
+            stream.write(reinterpret_cast<char const*>(&vertices[i].n), sizeof(packed_float3));
+        }
+
+        for (uint32_t i = 0; i < num_vertices; ++i) {
+            stream.write(reinterpret_cast<char const*>(&vertices[i].t), sizeof(packed_float3));
+        }
+
+        for (uint32_t i = 0; i < num_vertices; ++i) {
+            stream.write(reinterpret_cast<char const*>(&vertices[i].uv), sizeof(float2));
+        }
+
+        for (uint32_t i = 0; i < num_vertices; ++i) {
+            stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign), sizeof(float));
+        }
+    */
     auto const& triangles = handler.triangles();
 
     if (4 == index_bytes) {
@@ -217,19 +254,19 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
             }
         }
     } else {
-        int16_t previous_index = 0;
+        int32_t previous_index = 0;
         for (auto const& t : triangles) {
             if (delta_indices) {
-                int16_t const a           = static_cast<uint16_t>(t.i[0]);
-                int16_t       delta_index = a - previous_index;
+                int32_t const a           = static_cast<int32_t>(t.i[0]);
+                int16_t       delta_index = static_cast<int16_t>(a - previous_index);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
-                uint16_t const b = static_cast<uint16_t>(t.i[1]);
-                delta_index      = b - a;
+                int32_t const b = static_cast<int32_t>(t.i[1]);
+                delta_index     = static_cast<int16_t>(b - a);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
-                uint16_t const c = static_cast<uint16_t>(t.i[2]);
-                delta_index      = c - b;
+                int32_t const c = static_cast<int32_t>(t.i[2]);
+                delta_index     = static_cast<int16_t>(c - b);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
                 previous_index = c;
