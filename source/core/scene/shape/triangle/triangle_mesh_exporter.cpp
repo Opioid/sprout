@@ -151,17 +151,15 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
     newline(jstream, 3);
     jstream << "\"encoding\":";
 
-    delta_indices = false;
-
     if (4 == index_bytes) {
         if (delta_indices) {
-            stream << "\"Int32\"";
+            jstream << "\"Int32\"";
         } else {
             jstream << "\"UInt32\"";
         }
     } else {
         if (delta_indices) {
-            stream << "\"Int16\"";
+            jstream << "\"Int16\"";
         } else {
             jstream << "\"UInt16\"";
         }

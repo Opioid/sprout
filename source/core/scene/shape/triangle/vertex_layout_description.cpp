@@ -5,27 +5,11 @@ namespace scene::shape::triangle {}
 
 using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
 
-// Why does this not work?
-std::stringstream& operator<<(std::stringstream& stream, Encoding encoding) {
-    switch (encoding) {
-        case Encoding::Float32:
-            stream << "float32";
-            break;
-        case Encoding::Float32x2:
-            stream << "float32x2";
-            break;
-        case Encoding::Float32x3:
-            stream << "float32x3";
-            break;
-        default:
-            stream << "unknown";
-    }
-
-    return stream;
-}
-
 void print(std::stringstream& stream, Encoding encoding) {
     switch (encoding) {
+        case Encoding::UInt8:
+            stream << "UInt8";
+            break;
         case Encoding::Float32:
             stream << "Float32";
             break;

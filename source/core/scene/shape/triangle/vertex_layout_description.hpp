@@ -8,7 +8,7 @@ namespace scene::shape::triangle {
 
 class Vertex_layout_description {
   public:
-    enum class Encoding { UInt16, UInt32, Float32, Float32x2, Float32x3 };
+    enum class Encoding { UInt8, UInt16, UInt32, Float32, Float32x2, Float32x3 };
 
     struct Element {
         std::string semantic_name;
