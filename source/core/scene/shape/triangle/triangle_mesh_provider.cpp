@@ -44,7 +44,12 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     file::Type const type = file::query_type(*stream_pointer);
     if (file::Type::SUB == type) {
-        return load_binary(*stream_pointer, manager.thread_pool());
+        Shape* mesh = load_binary(*stream_pointer, manager.thread_pool());
+        if (!mesh) {
+            logging::error("Loading mesh %S: ", filename);
+        }
+
+        return mesh;
     }
 
     Json_handler handler;
@@ -96,7 +101,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         for (auto& v : handler.vertices()) {
             packed_float3 b;
             orthonormal_basis(v.n, v.t, b);
-            v.bitangent_sign = 1.f;
+            v.bitangent_sign = 0;
         }
     }
 
@@ -200,7 +205,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
             for (auto& v : handler.vertices()) {
                 packed_float3 b;
                 orthonormal_basis(v.n, v.t, b);
-                v.bitangent_sign = 1.f;
+                v.bitangent_sign = 0;
             }
         }
 
@@ -303,14 +308,14 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     std::string error;
     auto const  root = json::parse_insitu(json_string, error);
     if (!root) {
-        logging::error("Shape: " + error);
+        logging::push_error("Shape: " + error);
         return nullptr;
     }
 
     json::Value::ConstMemberIterator const geometry_node = root->FindMember("geometry");
     if (root->MemberEnd() == geometry_node) {
         delete[] json_string;
-        logging::error("Model has no geometry node.");
+        logging::push_error("Model has no geometry node.");
         return nullptr;
     }
 
@@ -339,6 +344,16 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
                 if ("binary" == vn.name) {
                     vertices_offset = json::read_uint(vn.value, "offset");
                     vertices_size   = json::read_uint(vn.value, "size");
+                } else if ("layout" == vn.name) {
+                    for (auto const& ln : vn.value.GetArray()) {
+                        if ("Bitangent_sign" == json::read_string(ln, "semantic_name")) {
+                            if ("UInt8" != json::read_string(ln, "encoding")) {
+                                delete[] json_string;
+                                logging::push_error("Bitangent_sign must be encoded as UInt8.");
+                                return nullptr;
+                            }
+                        }
+                    }
                 }
             }
         } else if ("indices" == n.name) {

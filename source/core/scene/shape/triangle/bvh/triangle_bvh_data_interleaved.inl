@@ -104,12 +104,12 @@ template <typename Triangle>
 void Data_interleaved<Triangle>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
                                               uint32_t                   material_index,
                                               const std::vector<Vertex>& vertices) {
-    float bitanget_sign = 1.f;
+    uint8_t bitanget_sign = 0;
 
-    if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f) ||
-        (vertices[b].bitangent_sign < 0.f && vertices[c].bitangent_sign < 0.f) ||
-        (vertices[c].bitangent_sign < 0.f && vertices[a].bitangent_sign < 0.f)) {
-        bitanget_sign = -1.f;
+    if ((vertices[a].bitangent_sign == 1 && vertices[b].bitangent_sign == 1) ||
+        (vertices[b].bitangent_sign == 1 && vertices[c].bitangent_sign == 1) ||
+        (vertices[c].bitangent_sign == 1 && vertices[a].bitangent_sign == 1)) {
+        bitanget_sign = 1;
     }
 
     triangles_.push_back(

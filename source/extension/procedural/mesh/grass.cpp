@@ -125,7 +125,7 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
 
     scene::shape::Vertex v;
     v.t              = packed_float3(1.f, 0.f, 0.f);
-    v.bitangent_sign = 1.f;
+    v.bitangent_sign = 0;
 
     float3x3 rotation;
     math::set_rotation_y(rotation, rotation_y);

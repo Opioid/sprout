@@ -13,7 +13,9 @@ struct Vertex {
 
     float2 uv;
 
-    float bitangent_sign;
+    uint8_t bitangent_sign;
+
+    uint8_t pad[3];
 };
 
 }  // namespace scene::shape

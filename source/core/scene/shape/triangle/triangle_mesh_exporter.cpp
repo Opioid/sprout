@@ -114,7 +114,7 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
 
     newline(jstream, 4);
     element.semantic_name = "Bitangent_sign";
-    element.encoding      = Encoding::Float32;
+    element.encoding      = Encoding::UInt8;
     element.byte_offset   = 44;
     jstream << element;
 
@@ -238,7 +238,7 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
         }
 
         for (uint32_t i = 0; i < num_vertices; ++i) {
-            stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign), sizeof(float));
+            stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign), sizeof(uint8_t));
         }
     */
     auto const& triangles = handler.triangles();
