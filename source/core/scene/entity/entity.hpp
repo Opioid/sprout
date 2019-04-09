@@ -75,6 +75,12 @@ class Entity {
 
     flags::Flags<Property> properties_;
 
+    static uint32_t constexpr Null = 0xFFFFFFFF;
+
+    uint32_t parent_ = Null;
+    uint32_t next_   = Null;
+    uint32_t child_  = Null;
+
     Transformation world_transformation_;
 
     uint32_t num_world_frames_ = 0;
@@ -82,12 +88,6 @@ class Entity {
     uint32_t num_local_frames_ = 0;
 
     Keyframe* frames_ = nullptr;
-
-    static uint32_t constexpr Null = 0xFFFFFFFF;
-
-    uint32_t parent_ = Null;
-    uint32_t next_   = Null;
-    uint32_t child_  = Null;
 };
 
 struct Entity_ref {
