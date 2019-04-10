@@ -23,6 +23,7 @@ target_sources(core
     "shape_sample.hpp"
     "shape_test.cpp"
     "shape_test.hpp"
+    "shape_vertex.cpp"
     "shape_vertex.hpp"
     "shape.cpp"
     "shape.hpp"

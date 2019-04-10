@@ -13,6 +13,7 @@ namespace scene::shape {
 
 class Shape;
 struct Vertex;
+class Vertex_stream;
 
 namespace triangle {
 
@@ -45,8 +46,7 @@ class Provider : public resource::Provider<Shape> {
                                resource::Manager& manager) noexcept;
 
     static void build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                          uint32_t num_vertices, Vertex const* const vertices,
-                          thread::Pool& thread_pool) noexcept;
+                          Vertex_stream const& vertices, thread::Pool& thread_pool) noexcept;
 
     //	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
     //						  BVH_preset bvh_preset, thread::Pool& thread_pool);

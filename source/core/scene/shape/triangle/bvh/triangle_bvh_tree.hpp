@@ -26,6 +26,7 @@ namespace shape {
 
 class Node_stack;
 struct Vertex;
+class Vertex_stream;
 
 namespace triangle {
 
@@ -122,11 +123,10 @@ class Tree {
 
     void allocate_parts(uint32_t num_parts) noexcept;
 
-    void allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
-                            Vertex const* const vertices) noexcept;
+    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertex const* const vertices) noexcept;
+                      Vertex_stream const& vertices) noexcept;
 
     size_t num_bytes() const noexcept;
 

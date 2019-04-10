@@ -127,8 +127,11 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
             }
         }
 
-        build_bvh(*mesh, static_cast<uint32_t>(triangles.size()), triangles.data(),
-                  static_cast<uint32_t>(vertices.size()), vertices.data(), manager.thread_pool());
+        Vertex_stream_interleaved vertex_stream(static_cast<uint32_t>(vertices.size()),
+                                                vertices.data());
+
+        build_bvh(*mesh, static_cast<uint32_t>(triangles.size()), triangles.data(), vertex_stream,
+                  manager.thread_pool());
 
         logging::verbose("Finished asynchronously building triangle mesh BVH.");
     });
@@ -159,8 +162,11 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
 
     thread_pool.run_async([mesh, triangles_in{std::move(triangles)},
                            vertices_in{std::move(vertices)}, &thread_pool]() {
+        Vertex_stream_interleaved vertex_stream(static_cast<uint32_t>(vertices_in.size()),
+                                                vertices_in.data());
+
         build_bvh(*mesh, static_cast<uint32_t>(triangles_in.size()), triangles_in.data(),
-                  static_cast<uint32_t>(vertices_in.size()), vertices_in.data(), thread_pool);
+                  vertex_stream, thread_pool);
     });
 
     //	build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
@@ -245,10 +251,9 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 }
 
 void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                         uint32_t num_vertices, Vertex const* const vertices,
-                         thread::Pool& thread_pool) noexcept {
+                         Vertex_stream const& vertices, thread::Pool& thread_pool) noexcept {
     bvh::Builder_SAH builder(16, 64);
-    builder.build(mesh.tree(), num_triangles, triangles, num_vertices, vertices, 4, thread_pool);
+    builder.build(mesh.tree(), num_triangles, triangles, vertices, 4, thread_pool);
 
     mesh.init();
 }
@@ -386,10 +391,16 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     uint32_t const num_vertices = static_cast<uint32_t>(vertices_size / sizeof(Vertex));
 
-    Vertex* vertices = new Vertex[num_vertices];
+    Vertex_stream* vertex_stream = nullptr;
 
-    stream.seekg(static_cast<std::streamoff>(binary_start + vertices_offset));
-    stream.read(reinterpret_cast<char*>(vertices), static_cast<std::streamsize>(vertices_size));
+    {
+        Vertex* vertices = new Vertex[num_vertices];
+
+        stream.seekg(static_cast<std::streamoff>(binary_start + vertices_offset));
+        stream.read(reinterpret_cast<char*>(vertices), static_cast<std::streamsize>(vertices_size));
+
+        vertex_stream = new Vertex_stream_interleaved(num_vertices, vertices);
+    }
 
     uint64_t const num_indices = indices_size / index_bytes;
 
@@ -402,8 +413,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     mesh->tree().allocate_parts(static_cast<uint32_t>(parts.size()));
 
-    thread_pool.run_async([mesh, local_parts{std::move(parts)}, num_indices, indices, num_vertices,
-                           vertices, index_bytes, delta_indices, &thread_pool]() {
+    thread_pool.run_async([mesh, local_parts{std::move(parts)}, num_indices, indices, vertex_stream,
+                           index_bytes, delta_indices, &thread_pool]() {
         memory::Array<Index_triangle> triangles(num_indices / 3);
 
         if (4 == index_bytes) {
@@ -426,10 +437,12 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
         delete[] indices;
 
-        build_bvh(*mesh, static_cast<uint32_t>(triangles.size()), triangles.data(), num_vertices,
-                  vertices, thread_pool);
+        build_bvh(*mesh, static_cast<uint32_t>(triangles.size()), triangles.data(), *vertex_stream,
+                  thread_pool);
 
-        delete[] vertices;
+        vertex_stream->release();
+
+        delete vertex_stream;
     });
 
     return mesh;

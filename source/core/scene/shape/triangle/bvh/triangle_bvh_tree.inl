@@ -615,14 +615,14 @@ void Tree<Data>::allocate_parts(uint32_t num_parts) noexcept {
 }
 
 template <typename Data>
-void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
-                                    Vertex const* const vertices) noexcept {
-    data_.allocate_triangles(num_triangles, num_vertices, vertices);
+void Tree<Data>::allocate_triangles(uint32_t             num_triangles,
+                                    Vertex_stream const& vertices) noexcept {
+    data_.allocate_triangles(num_triangles, vertices);
 }
 
 template <typename Data>
 void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                              Vertex const* const vertices) noexcept {
+                              Vertex_stream const& vertices) noexcept {
     ++num_part_triangles_[material_index];
 
     data_.add_triangle(a, b, c, material_index, vertices);

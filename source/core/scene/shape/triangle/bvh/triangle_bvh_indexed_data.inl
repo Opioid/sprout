@@ -271,8 +271,9 @@ void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) 
 }
 
 template <typename SV>
-void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
-                                          Vertex const* vertices) noexcept {
+void Indexed_data<SV>::allocate_triangles(uint32_t             num_triangles,
+                                          Vertex_stream const& vertices) noexcept {
+    uint32_t const num_vertices = vertices.num_vertices();
     if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
         num_triangles_ = num_triangles;
         num_vertices_  = num_vertices;
@@ -287,9 +288,9 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, uint32_t num_v
     }
 
     for (uint32_t i = 0; i < num_vertices; ++i) {
-        intersection_vertices_[i] = float3(vertices[i].p);
+        intersection_vertices_[i] = float3(vertices.p(i));
 
-        shading_vertices_[i] = SV(vertices[i].n, vertices[i].t, vertices[i].uv);
+        shading_vertices_[i] = SV(vertices.n(i), vertices.t(i), vertices.uv(i));
     }
 
     current_triangle_ = 0;
@@ -297,12 +298,14 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, uint32_t num_v
 
 template <typename SV>
 void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                                    Vertex const* vertices) noexcept {
+                                    Vertex_stream const& vertices) noexcept {
     uint8_t bitanget_sign = 0;
 
-    if ((vertices[a].bitangent_sign == 1 && vertices[b].bitangent_sign == 1) ||
-        (vertices[b].bitangent_sign == 1 && vertices[c].bitangent_sign == 1) ||
-        (vertices[c].bitangent_sign == 1 && vertices[a].bitangent_sign == 1)) {
+    uint8_t const abts = vertices.bitangent_sign(a);
+    uint8_t const bbts = vertices.bitangent_sign(b);
+    uint8_t const cbts = vertices.bitangent_sign(c);
+
+    if ((abts == 1 && bbts == 1) || (bbts == 1 && cbts == 1) || (cbts == 1 && abts == 1)) {
         bitanget_sign = 1;
     }
 

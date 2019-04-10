@@ -21,8 +21,7 @@ namespace scene::shape::triangle::bvh {
 
 template <typename Data>
 void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles,
-                        uint32_t num_vertices, Vertices vertices, uint32_t max_primitives,
-                        thread::Pool& thread_pool) {
+                        Vertices vertices, uint32_t max_primitives, thread::Pool& thread_pool) {
     Build_node root;
 
     {
@@ -39,9 +38,9 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
                 math::Simd_AABB aabb(AABB::empty());
 
                 for (int32_t i = begin; i < end; ++i) {
-                    auto const a = simd::load_float3(vertices[triangles[i].i[0]].p);
-                    auto const b = simd::load_float3(vertices[triangles[i].i[1]].p);
-                    auto const c = simd::load_float3(vertices[triangles[i].i[2]].p);
+                    auto const a = simd::load_float3(vertices.p(triangles[i].i[0]));
+                    auto const b = simd::load_float3(vertices.p(triangles[i].i[1]));
+                    auto const c = simd::load_float3(vertices.p(triangles[i].i[2]));
 
                     auto min = triangle_min(a, b, c);
                     auto max = triangle_max(a, b, c);
@@ -66,7 +65,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
         split(&root, references, AABB(aabb.min, aabb.max), max_primitives, 0, thread_pool);
     }
 
-    tree.allocate_triangles(num_references_, num_vertices, vertices);
+    tree.allocate_triangles(num_references_, vertices);
 
     nodes_ = tree.allocate_nodes(num_nodes_);
 

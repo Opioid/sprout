@@ -238,7 +238,8 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
         }
 
         for (uint32_t i = 0; i < num_vertices; ++i) {
-            stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign), sizeof(uint8_t));
+            stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign),
+       sizeof(uint8_t));
         }
     */
     auto const& triangles = handler.triangles();
