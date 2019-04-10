@@ -84,7 +84,7 @@ void Array<T>::release() noexcept {
     free_aligned(data_);
     data_ = nullptr;
 
-    size_ = 0;
+    size_     = 0;
     capacity_ = 0;
 }
 
