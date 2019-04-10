@@ -91,32 +91,63 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
 
     using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
 
-    newline(jstream, 4);
-    element.semantic_name = "Position";
-    element.encoding      = Encoding::Float32x3;
-    jstream << element << ",";
+    static bool constexpr interleaved_vertex_stream = false;
 
-    newline(jstream, 4);
-    element.semantic_name = "Normal";
-    element.byte_offset   = 12;
-    jstream << element << ",";
+    if (interleaved_vertex_stream) {
+        newline(jstream, 4);
+        element.semantic_name = "Position";
+        element.encoding      = Encoding::Float32x3;
+        jstream << element << ",";
 
-    newline(jstream, 4);
-    element.semantic_name = "Tangent";
-    element.byte_offset   = 24;
-    jstream << element << ",";
+        newline(jstream, 4);
+        element.semantic_name = "Normal";
+        element.byte_offset   = 12;
+        jstream << element << ",";
 
-    newline(jstream, 4);
-    element.semantic_name = "Texture_coordinate";
-    element.encoding      = Encoding::Float32x2;
-    element.byte_offset   = 36;
-    jstream << element << ",";
+        newline(jstream, 4);
+        element.semantic_name = "Tangent";
+        element.byte_offset   = 24;
+        jstream << element << ",";
 
-    newline(jstream, 4);
-    element.semantic_name = "Bitangent_sign";
-    element.encoding      = Encoding::UInt8;
-    element.byte_offset   = 44;
-    jstream << element;
+        newline(jstream, 4);
+        element.semantic_name = "Texture_coordinate";
+        element.encoding      = Encoding::Float32x2;
+        element.byte_offset   = 36;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Bitangent_sign";
+        element.encoding      = Encoding::UInt8;
+        element.byte_offset   = 44;
+        jstream << element;
+    } else {
+        newline(jstream, 4);
+        element.semantic_name = "Position";
+        element.encoding      = Encoding::Float32x3;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Normal";
+        element.stream        = 1;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Tangent";
+        element.stream        = 2;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Texture_coordinate";
+        element.encoding      = Encoding::Float32x2;
+        element.stream        = 3;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Bitangent_sign";
+        element.encoding      = Encoding::UInt8;
+        element.stream        = 4;
+        jstream << element;
+    }
 
     // close layout
     newline(jstream, 3);
@@ -218,9 +249,9 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
         }
     }
 
-    stream.write(reinterpret_cast<char const*>(vertices.data()), vertices_size);
-
-    /*
+    if (interleaved_vertex_stream) {
+        stream.write(reinterpret_cast<char const*>(vertices.data()), vertices_size);
+    } else {
         for (uint32_t i = 0; i < num_vertices; ++i) {
             stream.write(reinterpret_cast<char const*>(&vertices[i].p), sizeof(packed_float3));
         }
@@ -239,9 +270,10 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
 
         for (uint32_t i = 0; i < num_vertices; ++i) {
             stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign),
-       sizeof(uint8_t));
+                         sizeof(uint8_t));
         }
-    */
+    }
+
     auto const& triangles = handler.triangles();
 
     if (4 == index_bytes) {

@@ -26,7 +26,7 @@ void print(std::stringstream& stream, Encoding encoding) {
 
 using Element = scene::shape::triangle::Vertex_layout_description::Element;
 
-std::stringstream& operator<<(std::stringstream& stream, const Element& element) {
+std::stringstream& operator<<(std::stringstream& stream, Element const& element) {
     stream << "{";
     stream << "\"semantic_name\":\"" << element.semantic_name << "\",";
     stream << "\"semantic_index\":" << element.semantic_index << ",";

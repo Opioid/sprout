@@ -337,6 +337,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     bool delta_indices = false;
 
+    bool interleaved_vertex_stream = true;
+
     for (auto& n : geometry_value.GetObject()) {
         if ("parts" == n.name) {
             for (auto const& pn : n.value.GetArray()) {
@@ -356,6 +358,10 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
                                 delete[] json_string;
                                 logging::push_error("Bitangent_sign must be encoded as UInt8.");
                                 return nullptr;
+                            }
+
+                            if (0 != json::read_uint(ln, "stream")) {
+                                interleaved_vertex_stream = false;
                             }
                         }
                     }
@@ -393,21 +399,37 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     Vertex_stream* vertex_stream = nullptr;
 
-    {
+    if (interleaved_vertex_stream) {
         Vertex* vertices = new Vertex[num_vertices];
 
-        stream.seekg(static_cast<std::streamoff>(binary_start + vertices_offset));
-        stream.read(reinterpret_cast<char*>(vertices), static_cast<std::streamsize>(vertices_size));
+        stream.seekg(binary_start + vertices_offset);
+        stream.read(reinterpret_cast<char*>(vertices), vertices_size);
 
         vertex_stream = new Vertex_stream_interleaved(num_vertices, vertices);
+    } else {
+        packed_float3* p   = new packed_float3[num_vertices];
+        packed_float3* n   = new packed_float3[num_vertices];
+        packed_float3* t   = new packed_float3[num_vertices];
+        float2*        uv  = new float2[num_vertices];
+        uint8_t*       bts = new uint8_t[num_vertices];
+
+        stream.seekg(binary_start + vertices_offset);
+
+        stream.read(reinterpret_cast<char*>(p), num_vertices * sizeof(packed_float3));
+        stream.read(reinterpret_cast<char*>(n), num_vertices * sizeof(packed_float3));
+        stream.read(reinterpret_cast<char*>(t), num_vertices * sizeof(packed_float3));
+        stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
+        stream.read(reinterpret_cast<char*>(bts), num_vertices * sizeof(uint8_t));
+
+        vertex_stream = new Vertex_stream_separate(num_vertices, p, n, t, uv, bts);
     }
 
     uint64_t const num_indices = indices_size / index_bytes;
 
     char* indices = new char[indices_size];
 
-    stream.seekg(static_cast<std::streamoff>(binary_start + indices_offset));
-    stream.read(indices, static_cast<std::streamsize>(indices_size));
+    stream.seekg(binary_start + indices_offset);
+    stream.read(indices, indices_size);
 
     auto mesh = new Mesh;
 
@@ -418,19 +440,19 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         memory::Array<Index_triangle> triangles(num_indices / 3);
 
         if (4 == index_bytes) {
+            int32_t* indices32 = reinterpret_cast<int32_t*>(indices);
+
             if (delta_indices) {
-                int32_t* indices32 = reinterpret_cast<int32_t*>(indices);
                 fill_triangles_delta(local_parts, indices32, triangles.data());
             } else {
-                uint32_t* indices32 = reinterpret_cast<uint32_t*>(indices);
                 fill_triangles(local_parts, indices32, triangles.data());
             }
         } else {
+            int16_t* indices16 = reinterpret_cast<int16_t*>(indices);
+
             if (delta_indices) {
-                int16_t* indices16 = reinterpret_cast<int16_t*>(indices);
                 fill_triangles_delta(local_parts, indices16, triangles.data());
             } else {
-                uint16_t* indices16 = reinterpret_cast<uint16_t*>(indices);
                 fill_triangles(local_parts, indices16, triangles.data());
             }
         }
