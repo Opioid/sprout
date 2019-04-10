@@ -33,6 +33,8 @@ class Array {
 
     void operator=(Array&& other) noexcept;
 
+    void clear() noexcept;
+
     void resize(uint64_t capacity) noexcept;
 
     void reserve(uint64_t capacity) noexcept;

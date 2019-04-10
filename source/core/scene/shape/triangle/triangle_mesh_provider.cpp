@@ -306,12 +306,12 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     uint64_t json_size = 0;
     stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
 
-    char* json_string = new char[json_size + 1];
-    stream.read(json_string, static_cast<std::streamsize>(json_size * sizeof(char)));
+    memory::Array<char> json_string(json_size + 1);
+    stream.read(json_string.data(), static_cast<std::streamsize>(json_size * sizeof(char)));
     json_string[json_size] = 0;
 
     std::string error;
-    auto const  root = json::parse_insitu(json_string, error);
+    auto const  root = json::parse_insitu(json_string.data(), error);
     if (!root) {
         logging::push_error("Shape: " + error);
         return nullptr;
@@ -319,7 +319,6 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     json::Value::ConstMemberIterator const geometry_node = root->FindMember("geometry");
     if (root->MemberEnd() == geometry_node) {
-        delete[] json_string;
         logging::push_error("Model has no geometry node.");
         return nullptr;
     }
@@ -355,7 +354,6 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
                     for (auto const& ln : vn.value.GetArray()) {
                         if ("Bitangent_sign" == json::read_string(ln, "semantic_name")) {
                             if ("UInt8" != json::read_string(ln, "encoding")) {
-                                delete[] json_string;
                                 logging::push_error("Bitangent_sign must be encoded as UInt8.");
                                 return nullptr;
                             }
@@ -391,7 +389,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         }
     }
 
-    delete[] json_string;
+    json_string.clear();
 
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 

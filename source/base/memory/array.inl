@@ -80,6 +80,15 @@ void Array<T>::operator=(Array&& other) noexcept {
 }
 
 template <typename T>
+void Array<T>::clear() noexcept {
+    free_aligned(data_);
+    data_ = nullptr;
+
+    size_ = 0;
+    capacity_ = 0;
+}
+
+template <typename T>
 void Array<T>::resize(uint64_t size) noexcept {
     size_ = size;
 
