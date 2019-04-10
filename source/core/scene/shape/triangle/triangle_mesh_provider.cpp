@@ -389,7 +389,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         }
     }
 
-    json_string.clear();
+    json_string.release();
 
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 

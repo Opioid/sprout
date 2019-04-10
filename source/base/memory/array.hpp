@@ -33,7 +33,7 @@ class Array {
 
     void operator=(Array&& other) noexcept;
 
-    void clear() noexcept;
+    void release() noexcept;
 
     void resize(uint64_t capacity) noexcept;
 

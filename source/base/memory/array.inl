@@ -80,7 +80,7 @@ void Array<T>::operator=(Array&& other) noexcept {
 }
 
 template <typename T>
-void Array<T>::clear() noexcept {
+void Array<T>::release() noexcept {
     free_aligned(data_);
     data_ = nullptr;
 
