@@ -8,6 +8,7 @@
 namespace scene::shape {
 
 struct Vertex;
+class Vertex_stream;
 
 namespace triangle {
 
@@ -74,16 +75,15 @@ class Indexed_data {
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
 
-    void allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
-                            Vertex const* vertices) noexcept;
+    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertex const* vertices) noexcept;
+                      Vertex_stream const& vertices) noexcept;
 
     size_t num_bytes() const noexcept;
 
     struct alignas(16) Index_triangle {
-        Index_triangle(uint32_t a, uint32_t b, uint32_t c, float bitangent_sign,
+        Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint8_t bitangent_sign,
                        uint32_t material_index) noexcept;
 
         uint32_t a, b, c;
@@ -144,7 +144,7 @@ class Indexed_data_interleaved {
     uint32_t num_vertices_;
 
     struct alignas(16) Index_triangle {
-        Index_triangle(uint32_t a, uint32_t b, uint32_t c, float bitangent_sign,
+        Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint8_t bitangent_sign,
                        uint32_t material_index);
 
         uint32_t a, b, c;
@@ -210,7 +210,7 @@ class Hybrid_data {
     size_t num_bytes() const;
 
     struct alignas(16) Index_triangle {
-        Index_triangle(uint32_t a, uint32_t b, uint32_t c, float bitangent_sign,
+        Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint8_t bitangent_sign,
                        uint32_t material_index);
 
         uint32_t a, b, c;

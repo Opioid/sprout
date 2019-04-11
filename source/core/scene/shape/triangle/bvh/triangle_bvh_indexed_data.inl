@@ -271,8 +271,9 @@ void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) 
 }
 
 template <typename SV>
-void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, uint32_t num_vertices,
-                                          Vertex const* vertices) noexcept {
+void Indexed_data<SV>::allocate_triangles(uint32_t             num_triangles,
+                                          Vertex_stream const& vertices) noexcept {
+    uint32_t const num_vertices = vertices.num_vertices();
     if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
         num_triangles_ = num_triangles;
         num_vertices_  = num_vertices;
@@ -287,9 +288,9 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, uint32_t num_v
     }
 
     for (uint32_t i = 0; i < num_vertices; ++i) {
-        intersection_vertices_[i] = float3(vertices[i].p);
+        intersection_vertices_[i] = float3(vertices.p(i));
 
-        shading_vertices_[i] = SV(vertices[i].n, vertices[i].t, vertices[i].uv);
+        shading_vertices_[i] = SV(vertices.n(i), vertices.t(i), vertices.uv(i));
     }
 
     current_triangle_ = 0;
@@ -297,13 +298,15 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, uint32_t num_v
 
 template <typename SV>
 void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                                    Vertex const* vertices) noexcept {
-    float bitanget_sign = 1.f;
+                                    Vertex_stream const& vertices) noexcept {
+    uint8_t bitanget_sign = 0;
 
-    if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f) ||
-        (vertices[b].bitangent_sign < 0.f && vertices[c].bitangent_sign < 0.f) ||
-        (vertices[c].bitangent_sign < 0.f && vertices[a].bitangent_sign < 0.f)) {
-        bitanget_sign = -1.f;
+    uint8_t const abts = vertices.bitangent_sign(a);
+    uint8_t const bbts = vertices.bitangent_sign(b);
+    uint8_t const cbts = vertices.bitangent_sign(c);
+
+    if ((abts == 1 && bbts == 1) || (bbts == 1 && cbts == 1) || (cbts == 1 && abts == 1)) {
+        bitanget_sign = 1;
     }
 
     triangles_[current_triangle_] = Index_triangle(a, b, c, bitanget_sign, material_index);
@@ -318,9 +321,9 @@ size_t Indexed_data<SV>::num_bytes() const noexcept {
 
 template <typename SV>
 Indexed_data<SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                                 float    bitangent_sign,
+                                                 uint8_t  bitangent_sign,
                                                  uint32_t material_index) noexcept
-    : a(a), b(b), c(c), bts(bitangent_sign < 0.f ? 1 : 0), material_index(material_index) {}
+    : a(a), b(b), c(c), bts(bitangent_sign), material_index(material_index) {}
 
 template <typename V>
 Indexed_data_interleaved<V>::Indexed_data_interleaved()
@@ -493,12 +496,12 @@ size_t Indexed_data_interleaved<V>::num_bytes() const {
 
 template <typename V>
 Indexed_data_interleaved<V>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                                            float    bitangent_sign,
+                                                            uint8_t  bitangent_sign,
                                                             uint32_t material_index)
     : a(a),
       b(b),
       c(c),
-      bts_material_index(bitangent_sign < 0.f ? BTS_mask | material_index : material_index) {}
+      bts_material_index(bitangent_sign == 1 ? BTS_mask | material_index : material_index) {}
 
 template <typename IV, typename SV>
 Hybrid_data<IV, SV>::Hybrid_data()
@@ -767,12 +770,12 @@ void Hybrid_data<IV, SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint3
     intersection_vertices_[v + 1].p = float3(vertices[b].p);
     intersection_vertices_[v + 2].p = float3(vertices[c].p);
 
-    float bitanget_sign = 1.f;
+    uint8_t bitanget_sign = 0;
 
-    if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f) ||
-        (vertices[b].bitangent_sign < 0.f && vertices[c].bitangent_sign < 0.f) ||
-        (vertices[c].bitangent_sign < 0.f && vertices[a].bitangent_sign < 0.f)) {
-        bitanget_sign = -1.f;
+    if ((vertices[a].bitangent_sign == 1 && vertices[b].bitangent_sign == 1) ||
+        (vertices[b].bitangent_sign == 1 && vertices[c].bitangent_sign == 1) ||
+        (vertices[c].bitangent_sign == 1 && vertices[a].bitangent_sign == 1)) {
+        bitanget_sign = 1;
     }
 
     triangles_[current_triangle_] = Index_triangle(a, b, c, bitanget_sign, material_index);
@@ -787,8 +790,8 @@ size_t Hybrid_data<IV, SV>::num_bytes() const {
 
 template <typename IV, typename SV>
 Hybrid_data<IV, SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                                    float bitangent_sign, uint32_t material_index)
-    : a(a), b(b), c(c), bts(bitangent_sign < 0.f ? 1 : 0), material_index(material_index) {}
+                                                    uint8_t bitangent_sign, uint32_t material_index)
+    : a(a), b(b), c(c), bts(bitangent_sign), material_index(material_index) {}
 
 }  // namespace scene::shape::triangle::bvh
 

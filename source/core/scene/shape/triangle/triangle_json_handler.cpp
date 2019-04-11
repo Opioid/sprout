@@ -317,7 +317,10 @@ void Json_handler::add_tangent(float v) {
     if (current_vertex_element_ < 3) {
         vertices_[current_vertex_].t.v[current_vertex_element_] = v;
     } else if (current_vertex_element_ == 3) {
-        vertices_[current_vertex_].bitangent_sign = v;
+        vertices_[current_vertex_].bitangent_sign = v > 0.f ? 0 : 1;
+        vertices_[current_vertex_].pad[0]         = 0;
+        vertices_[current_vertex_].pad[1]         = 0;
+        vertices_[current_vertex_].pad[2]         = 0;
     }
 
     increment_vertex_element(4);

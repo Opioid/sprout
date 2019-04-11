@@ -12,7 +12,7 @@
 
 namespace scene::shape::triangle {
 
-void newline(std::ostream& stream, uint32_t num_tabs) {
+static void newline(std::ostream& stream, uint32_t num_tabs) noexcept {
     stream << std::endl;
 
     for (uint32_t i = 0; i < num_tabs; ++i) {
@@ -20,11 +20,11 @@ void newline(std::ostream& stream, uint32_t num_tabs) {
     }
 }
 
-void binary_tag(std::ostream& stream, size_t offset, size_t size) {
+static void binary_tag(std::ostream& stream, size_t offset, size_t size) noexcept {
     stream << "\"binary\":{\"offset\":" << offset << ",\"size\":" << size << "}";
 }
 
-void Exporter::write(std::string const& filename, Json_handler& handler) {
+void Exporter::write(std::string const& filename, Json_handler& handler) noexcept {
     std::string const out_name = string::extract_filename(filename) + ".sub";
 
     std::cout << "Export " << out_name << std::endl;
@@ -91,32 +91,63 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
 
     using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
 
-    newline(jstream, 4);
-    element.semantic_name = "Position";
-    element.encoding      = Encoding::Float32x3;
-    jstream << element << ",";
+    static bool constexpr interleaved_vertex_stream = false;
 
-    newline(jstream, 4);
-    element.semantic_name = "Normal";
-    element.byte_offset   = 12;
-    jstream << element << ",";
+    if (interleaved_vertex_stream) {
+        newline(jstream, 4);
+        element.semantic_name = "Position";
+        element.encoding      = Encoding::Float32x3;
+        jstream << element << ",";
 
-    newline(jstream, 4);
-    element.semantic_name = "Tangent";
-    element.byte_offset   = 24;
-    jstream << element << ",";
+        newline(jstream, 4);
+        element.semantic_name = "Normal";
+        element.byte_offset   = 12;
+        jstream << element << ",";
 
-    newline(jstream, 4);
-    element.semantic_name = "Texture_coordinate";
-    element.encoding      = Encoding::Float32x2;
-    element.byte_offset   = 36;
-    jstream << element << ",";
+        newline(jstream, 4);
+        element.semantic_name = "Tangent";
+        element.byte_offset   = 24;
+        jstream << element << ",";
 
-    newline(jstream, 4);
-    element.semantic_name = "Bitangent_sign";
-    element.encoding      = Encoding::Float32;
-    element.byte_offset   = 44;
-    jstream << element;
+        newline(jstream, 4);
+        element.semantic_name = "Texture_coordinate";
+        element.encoding      = Encoding::Float32x2;
+        element.byte_offset   = 36;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Bitangent_sign";
+        element.encoding      = Encoding::UInt8;
+        element.byte_offset   = 44;
+        jstream << element;
+    } else {
+        newline(jstream, 4);
+        element.semantic_name = "Position";
+        element.encoding      = Encoding::Float32x3;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Normal";
+        element.stream        = 1;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Tangent";
+        element.stream        = 2;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Texture_coordinate";
+        element.encoding      = Encoding::Float32x2;
+        element.stream        = 3;
+        jstream << element << ",";
+
+        newline(jstream, 4);
+        element.semantic_name = "Bitangent_sign";
+        element.encoding      = Encoding::UInt8;
+        element.stream        = 4;
+        jstream << element;
+    }
 
     // close layout
     newline(jstream, 3);
@@ -132,18 +163,26 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
 
     int64_t max_index_delta = 0;
 
-    int64_t previous_index = 0;
-    for (auto const& t : handler.triangles()) {
-        int64_t delta_index = static_cast<int64_t>(t.i[0]) - previous_index;
-        max_index_delta     = std::max(delta_index, max_index_delta);
+    {
+        int64_t previous_index = 0;
+        for (auto const& t : handler.triangles()) {
+            int64_t const a = static_cast<int64_t>(t.i[0]);
 
-        delta_index     = static_cast<int64_t>(t.i[1]) - static_cast<int64_t>(t.i[0]);
-        max_index_delta = std::max(delta_index, max_index_delta);
+            int64_t delta_index = a - previous_index;
+            max_index_delta     = std::max(delta_index, max_index_delta);
 
-        delta_index     = static_cast<int64_t>(t.i[2]) - static_cast<int64_t>(t.i[1]);
-        max_index_delta = std::max(delta_index, max_index_delta);
+            int64_t const b = static_cast<int64_t>(t.i[1]);
 
-        previous_index = static_cast<int64_t>(t.i[2]);
+            delta_index     = b - a;
+            max_index_delta = std::max(delta_index, max_index_delta);
+
+            int64_t const c = static_cast<int64_t>(t.i[2]);
+
+            delta_index     = c - b;
+            max_index_delta = std::max(delta_index, max_index_delta);
+
+            previous_index = c;
+        }
     }
 
     bool   delta_indices = false;
@@ -210,9 +249,9 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
         }
     }
 
-    stream.write(reinterpret_cast<char const*>(vertices.data()), vertices_size);
-
-    /*
+    if (interleaved_vertex_stream) {
+        stream.write(reinterpret_cast<char const*>(vertices.data()), vertices_size);
+    } else {
         for (uint32_t i = 0; i < num_vertices; ++i) {
             stream.write(reinterpret_cast<char const*>(&vertices[i].p), sizeof(packed_float3));
         }
@@ -230,25 +269,33 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
         }
 
         for (uint32_t i = 0; i < num_vertices; ++i) {
-            stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign), sizeof(float));
+            stream.write(reinterpret_cast<char const*>(&vertices[i].bitangent_sign),
+                         sizeof(uint8_t));
         }
-    */
+    }
+
     auto const& triangles = handler.triangles();
 
     if (4 == index_bytes) {
         int32_t previous_index = 0;
         for (auto const& t : triangles) {
             if (delta_indices) {
-                int32_t delta_index = t.i[0] - previous_index;
+                int32_t const a = static_cast<int32_t>(t.i[0]);
+
+                int32_t delta_index = a - previous_index;
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
 
-                delta_index = t.i[1] - t.i[0];
+                int32_t const b = static_cast<int32_t>(t.i[1]);
+
+                delta_index = b - a;
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
 
-                delta_index = t.i[2] - t.i[1];
+                int32_t const c = static_cast<int32_t>(t.i[2]);
+
+                delta_index = c - b;
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
 
-                previous_index = t.i[2];
+                previous_index = c;
             } else {
                 stream.write(reinterpret_cast<char const*>(t.i), 3 * sizeof(uint32_t));
             }
@@ -257,20 +304,22 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
         int32_t previous_index = 0;
         for (auto const& t : triangles) {
             if (delta_indices) {
-                int32_t const a           = static_cast<int32_t>(t.i[0]);
-                int16_t       delta_index = static_cast<int16_t>(a - previous_index);
+                int32_t const a = static_cast<int32_t>(t.i[0]);
+
+                int16_t delta_index = static_cast<int16_t>(a - previous_index);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
                 int32_t const b = static_cast<int32_t>(t.i[1]);
-                delta_index     = static_cast<int16_t>(b - a);
+
+                delta_index = static_cast<int16_t>(b - a);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
                 int32_t const c = static_cast<int32_t>(t.i[2]);
-                delta_index     = static_cast<int16_t>(c - b);
+
+                delta_index = static_cast<int16_t>(c - b);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
                 previous_index = c;
-
             } else {
                 uint16_t const a = static_cast<uint16_t>(t.i[0]);
                 stream.write(reinterpret_cast<char const*>(&a), sizeof(uint16_t));

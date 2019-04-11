@@ -80,6 +80,8 @@ void size() {
 
     print_size<scene::shape::triangle::Shading_vertex_MTC>("Shading_vertex_MTC", 32);
 
+    print_size<scene::shape::Vertex>("Vertex", 48);
+
     print_size<image::texture::Adapter>("texture::Adapter", 16);
 
     print_size<scene::bvh::Split_candidate<scene::prop::Prop>>("Split_candidate", 32);

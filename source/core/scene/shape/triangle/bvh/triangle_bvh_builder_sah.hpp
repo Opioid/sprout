@@ -19,7 +19,7 @@ class Node;
 
 namespace shape {
 
-struct Vertex;
+class Vertex_stream;
 
 namespace triangle {
 
@@ -53,11 +53,11 @@ class Builder_SAH /*: private Builder_base*/ {
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
 
     using Triangles = Index_triangle const* const;
-    using Vertices  = Vertex const* const;
+    using Vertices  = Vertex_stream const&;
 
     template <typename Data>
-    void build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles, uint32_t num_vertices,
-               Vertices vertices, uint32_t max_primitives, thread::Pool& thread_pool);
+    void build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
+               uint32_t max_primitives, thread::Pool& thread_pool);
 
   private:
     using References = std::vector<Reference>;

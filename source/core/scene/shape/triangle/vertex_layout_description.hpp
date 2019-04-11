@@ -29,6 +29,6 @@ encoding);
 
 std::stringstream& operator<<(
     std::stringstream&                                                stream,
-    const scene::shape::triangle::Vertex_layout_description::Element& element);
+    scene::shape::triangle::Vertex_layout_description::Element const& element);
 
 #endif
