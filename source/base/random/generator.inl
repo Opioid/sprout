@@ -61,7 +61,7 @@ inline uint32_t Generator::advance_pcg32() noexcept {
 
     uint32_t const rot = static_cast<uint32_t>(oldstate >> 59ull);
 
-    return (xorshifted >> rot) | (xorshifted << ((0xFFFFFFFFu - rot) & 31u));
+    return (xorshifted >> rot) | (xorshifted << ((-rot) & 31u));
 }
 
 }  // namespace rnd
