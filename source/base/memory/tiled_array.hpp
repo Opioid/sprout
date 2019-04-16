@@ -20,7 +20,7 @@ class Tiled_array {
     void const* data() const;
 
   private:
-    constexpr uint32_t tile_size() const;
+    uint32_t constexpr tile_size() const;
 
     uint32_t round_up(uint32_t x) const;
 

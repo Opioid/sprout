@@ -83,7 +83,7 @@ void Writer::write_pixels_rle(std::ostream& stream, Float4 const& image) {
 // save some space.  For each scanline, each channel (r,g,b,e) is
 // encoded separately for better compression.
 void Writer::write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes) {
-    constexpr uint32_t min_run_length = 4;
+    uint32_t constexpr min_run_length = 4;
 
     uint8_t  buffer[2];
     uint32_t current = 0;
@@ -157,7 +157,7 @@ byte4 Writer::float_to_rgbe(float4 const& c) {
         v = c[2];
     }
 
-    if (v < 1e-32) {
+    if (v < 1e-32f) {
         return byte4(0, 0, 0, 0);
     } else {
         int   e;

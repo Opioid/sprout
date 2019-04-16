@@ -54,7 +54,7 @@ void const* Tiled_array<T, Log_tile_size>::data() const {
 }
 
 template <typename T, uint32_t Log_tile_size>
-constexpr uint32_t Tiled_array<T, Log_tile_size>::tile_size() const {
+uint32_t constexpr Tiled_array<T, Log_tile_size>::tile_size() const {
     return 1 << Log_tile_size;
 }
 
