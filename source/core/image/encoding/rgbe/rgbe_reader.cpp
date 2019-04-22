@@ -105,12 +105,12 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
         if (rgbe[0] != 2 || rgbe[1] != 2 || (rgbe[2] & 0x80) != 0) {
             // this file is not run length encoded
-            image_float3 color = rgbe_to_float3(rgbe);
+            image_float3 const color = rgbe_to_float3(rgbe);
 
             image.store(0, color);
 
             read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
-            break;
+            return true;
         }
 
         if ((static_cast<uint32_t>(rgbe[2]) << 8 | static_cast<uint32_t>(rgbe[3])) !=
@@ -121,7 +121,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
         // read each of the four channels for the scanline into the buffer
         for (uint32_t i = 0, index = 0; i < 4; ++i) {
-            uint32_t end = (i + 1) * scanline_width;
+            uint32_t const end = (i + 1) * scanline_width;
 
             for (; index < end;) {
                 stream.read(reinterpret_cast<char*>(buf), sizeof(buf));
