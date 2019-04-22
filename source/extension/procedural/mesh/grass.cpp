@@ -86,7 +86,7 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
     scene::shape::triangle::Index_triangle tri;
     tri.material_index = 0;
 
-    constexpr uint32_t num_segments         = 4;
+    uint32_t constexpr num_segments         = 4;
     uint32_t           vertices_per_segment = 3;
 
     for (uint32_t i = 0; i < num_segments; ++i) {
