@@ -65,7 +65,6 @@ class Loader {
   public:
     using Shape    = shape::Shape;
     using Material = material::Material;
-
     using Materials = memory::Array<material::Material*>;
 
     Loader(resource::Manager& manager, Material& fallback_material) noexcept;
