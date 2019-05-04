@@ -1,24 +1,32 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_POSTPROCESSOR_TONEMAPPING_ACES_HPP
+#define SU_CORE_RENDERING_POSTPROCESSOR_TONEMAPPING_ACES_HPP
 
 #include "tonemapper.hpp"
 
-namespace rendering {
-namespace postprocessor {
-namespace tonemapping {
+namespace rendering::postprocessor::tonemapping {
 
 class Aces : public Tonemapper {
   public:
     Aces(float hdr_max);
 
   private:
-    virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
-                       image::Float4 const& source, image::Float4& destination) override final;
+    void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
+               image::Float4& destination) override final;
 
     static float tonemap_function(float x);
 
     float normalization_factor_;
 };
 
-}  // namespace tonemapping
-}  // namespace postprocessor
-}  // namespace rendering
+class Aces_MJP : public Tonemapper {
+  public:
+    Aces_MJP();
+
+  private:
+    void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
+               image::Float4& destination) override final;
+};
+
+}  // namespace rendering::postprocessor::tonemapping
+
+#endif

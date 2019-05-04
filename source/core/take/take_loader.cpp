@@ -740,6 +740,8 @@ static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) no
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
             return new Aces(hdr_max);
+        } else if ("ACES_MJP" == n.name) {
+            return new Aces_MJP();
         } else if ("Generic" == n.name) {
             float const contrast = json::read_float(n.value, "contrast", 1.15f);
             float const shoulder = json::read_float(n.value, "shoulder", 0.99f);

@@ -83,7 +83,8 @@ void Pool::wait_async() noexcept {
 
 void Pool::wake_all() noexcept {
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
-        auto&                        u = uniques_[i];
+        auto& u = uniques_[i];
+
         std::unique_lock<std::mutex> lock(u.mutex);
         u.wake = true;
         lock.unlock();
@@ -115,7 +116,8 @@ void Pool::wake_all(int32_t begin, int32_t end) noexcept {
 
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
         auto& u = uniques_[i];
-        b       = e;
+
+        b = e;
         e += step;
 
         std::unique_lock<std::mutex> lock(u.mutex);
@@ -137,7 +139,8 @@ void Pool::wake_async() noexcept {
 
 void Pool::wait_all() noexcept {
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
-        auto&                        u = uniques_[i];
+        auto& u = uniques_[i];
+
         std::unique_lock<std::mutex> lock(u.mutex);
         u.done_signal.wait(lock, [&u]() noexcept { return !u.wake; });
     }
