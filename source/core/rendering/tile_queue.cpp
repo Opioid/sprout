@@ -17,7 +17,7 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
     int2 current_pixel(0, 0);
     for (;;) {
         int2 start = current_pixel;
-        int2 end   = math::min(current_pixel + tile_dimensions, resolution);
+        int2 end   = min(current_pixel + tile_dimensions, resolution);
 
         if (0 == start[1]) {
             start[1] -= filter_radius;
