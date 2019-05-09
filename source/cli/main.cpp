@@ -67,6 +67,8 @@ int main(int argc, char* argv[]) {
 
     //  return 1;
 
+    auto const total_start = std::chrono::high_resolution_clock::now();
+
     logging::init(logging::Type::Std_out);
 
     logging::info("Welcome to sprout (" + platform::build() + " - " + platform::revision() + ")!");
@@ -89,8 +91,6 @@ int main(int argc, char* argv[]) {
             file_system.push_mount(m);
         }
     }
-
-    auto const total_start = std::chrono::high_resolution_clock::now();
 
     uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 

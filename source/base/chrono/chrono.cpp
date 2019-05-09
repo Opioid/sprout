@@ -3,7 +3,7 @@
 namespace chrono {
 
 float duration_to_seconds(std::chrono::high_resolution_clock::duration duration) {
-    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+    auto const milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
     return static_cast<float>(milliseconds.count()) / 1000.f;
 }
 
