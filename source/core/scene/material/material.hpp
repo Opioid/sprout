@@ -56,6 +56,8 @@ class Material {
     using Transformation = entity::Composed_transformation;
     using Sampler        = sampler::Sampler;
 
+    static std::string identifier() noexcept;
+
     Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
     virtual ~Material() noexcept;

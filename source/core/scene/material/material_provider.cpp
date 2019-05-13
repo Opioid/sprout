@@ -87,8 +87,7 @@ static float3 read_color(json::Value const& color_value) noexcept;
 static float3 read_spectrum(json::Value const& spectrum_value) noexcept;
 
 Provider::Provider() noexcept
-    : resource::Provider<Material>("Material"),
-      fallback_material_(Sampler_settings(Sampler_settings::Filter::Linear)) {
+    : fallback_material_(Sampler_settings(Sampler_settings::Filter::Linear)) {
     Material::init_rainbow();
 }
 

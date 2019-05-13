@@ -16,7 +16,7 @@
 
 namespace image {
 
-Provider::Provider() noexcept : resource::Provider<Image>("Image") {}
+Provider::Provider() noexcept {}
 
 Provider::~Provider() noexcept {}
 

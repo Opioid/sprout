@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RESOURCE_PROVIDER_HPP
 #define SU_CORE_RESOURCE_PROVIDER_HPP
 
-#include "identifiable.hpp"
+#include <string>
 
 namespace memory {
 class Variant_map;
@@ -12,11 +12,11 @@ namespace resource {
 class Manager;
 
 template <typename T>
-class Provider : public Identifiable<T> {
+class Provider {
   public:
     using Variant_map = memory::Variant_map;
 
-    Provider(std::string const& name) noexcept;
+    Provider() noexcept;
 
     virtual ~Provider() noexcept;
 

@@ -35,6 +35,10 @@ int32_t Image::Description::num_channels() const noexcept {
     }
 }
 
+std::string Image::identifier() noexcept {
+    return "Image";
+}
+
 Image::Image(Description const& description) noexcept : description_(description) {}
 
 Image::~Image() noexcept {}

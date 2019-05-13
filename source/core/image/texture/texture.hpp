@@ -1,6 +1,7 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
+#include <string>
 #include "base/math/vector3.hpp"
 
 namespace image {
@@ -11,6 +12,8 @@ namespace texture {
 
 class Texture {
   public:
+    static std::string identifier() noexcept;
+
     Texture(Image const& image) noexcept;
 
     virtual ~Texture() noexcept;

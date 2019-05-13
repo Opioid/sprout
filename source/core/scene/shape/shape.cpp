@@ -5,6 +5,10 @@
 
 namespace scene::shape {
 
+std::string Shape::identifier() noexcept {
+    return "Shape";
+}
+
 Shape::~Shape() noexcept {}
 
 AABB const& Shape::aabb() const noexcept {

@@ -4,6 +4,10 @@
 
 namespace image::texture {
 
+std::string Texture::identifier() noexcept {
+    return "Texture";
+}
+
 Texture::Texture(Image const& image) noexcept
     : untyped_image_(image),
       back_(int3(image.description().dimensions[0] - 1, image.description().dimensions[1] - 1,

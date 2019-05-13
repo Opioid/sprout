@@ -18,6 +18,10 @@
 
 namespace scene::material {
 
+std::string Material::identifier() noexcept {
+    return "Material";
+}
+
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : sampler_key_(sampler_settings.key()), two_sided_(two_sided) {}
 

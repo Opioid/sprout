@@ -9,7 +9,7 @@ namespace resource {
 
 template <typename T>
 void Manager::register_provider(Provider<T>& provider) noexcept {
-    uint32_t const id = Provider<T>::id();
+    std::string const id = T::identifier();
 
     auto old = caches_.find(id);
 
@@ -97,7 +97,7 @@ size_t Manager::num_bytes() const noexcept {
 
 template <typename T>
 Typed_cache<T> const* Manager::typed_cache() const noexcept {
-    auto const cache = caches_.find(Provider<T>::id());
+    auto const cache = caches_.find(T::identifier());
 
     if (caches_.end() == cache) {
         return nullptr;
@@ -108,7 +108,7 @@ Typed_cache<T> const* Manager::typed_cache() const noexcept {
 
 template <typename T>
 Typed_cache<T>* Manager::typed_cache() noexcept {
-    auto cache = caches_.find(Provider<T>::id());
+    auto cache = caches_.find(T::identifier());
 
     if (caches_.end() == cache) {
         return nullptr;
