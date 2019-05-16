@@ -144,6 +144,8 @@ class Scene {
     uint32_t add_extension(Entity* extension) noexcept;
     uint32_t add_extension(Entity* extension, std::string const& name) noexcept;
 
+    void attach(uint32_t parent_id, uint32_t child_id) const noexcept;
+
     void add_material(Material* material) noexcept;
 
     animation::Animation* create_animation(uint32_t count) noexcept;

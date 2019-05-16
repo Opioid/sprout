@@ -405,6 +405,10 @@ uint32_t Scene::add_extension(Entity* extension, std::string const& name) noexce
     return id;
 }
 
+void Scene::attach(uint32_t parent_id, uint32_t child_id) const noexcept {
+    entities_[parent_id]->attach(parent_id, child_id, entities_.data());
+}
+
 void Scene::add_material(Material* material) noexcept {
     materials_.push_back(material);
 }

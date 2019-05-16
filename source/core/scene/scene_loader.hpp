@@ -92,12 +92,12 @@ class Loader {
     using Local_materials = std::map<std::string, json::Value const*>;
 
     bool load(std::string const& filename, std::string_view take_mount_folder,
-              entity::Entity_ref parent, Scene& scene) noexcept;
+              uint32_t parent_id, Scene& scene) noexcept;
 
     void read_materials(json::Value const& materials_value, Local_materials& local_materials) const
         noexcept;
 
-    void load_entities(json::Value const& entities_value, entity::Entity_ref parent,
+    void load_entities(json::Value const& entities_value, uint32_t parent_id,
                        std::string_view mount_folder, Local_materials const& local_materials,
                        Scene& scene) noexcept;
 

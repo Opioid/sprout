@@ -3,6 +3,7 @@
 
 #include "scene/bvh/scene_bvh_tree.hpp"
 #include "scene/material/sampler_settings.hpp"
+#include <vector>
 
 namespace scene {
 

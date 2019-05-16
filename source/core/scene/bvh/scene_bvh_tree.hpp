@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_BVH_TREE_HPP
 #define SU_CORE_SCENE_BVH_TREE_HPP
 
-#include <vector>
 #include "base/math/aabb.hpp"
 
 namespace scene::bvh {
