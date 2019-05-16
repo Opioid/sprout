@@ -8,6 +8,8 @@
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
 
+#include <iostream>
+
 namespace scene::bvh {
 
 template <typename T>
@@ -22,15 +24,11 @@ Builder<T>::~Builder() noexcept {
 
 template <typename T>
 void Builder<T>::build(Tree<T>& tree, std::vector<T*>& finite_props) noexcept {
-    tree.clear();
-
-    tree.data_.reserve(finite_props.size());
-
     if (finite_props.empty()) {
         nodes_ = tree.allocate_nodes(0);
     } else {
         num_nodes_ = 1;
-        split(root_, finite_props.begin(), finite_props.end(), 4, tree.data_);
+        split(root_, finite_props.begin(), finite_props.end(), finite_props.begin(), 4);
 
         nodes_ = tree.allocate_nodes(num_nodes_);
 
@@ -65,12 +63,11 @@ void Builder<T>::Build_node::clear() noexcept {
 }
 
 template <typename T>
-void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_shapes,
-                       std::vector<T*>& out_data) noexcept {
+void Builder<T>::split(Build_node* node, index begin, index end, const_index origin, uint32_t max_shapes) noexcept {
     node->aabb = aabb(begin, end);
 
     if (static_cast<uint32_t>(std::distance(begin, end)) <= max_shapes) {
-        assign(node, begin, end, out_data);
+        assign(node, begin, end, origin);
     } else {
         Split_candidate<T> sp = splitting_plane(node->aabb, begin, end);
 
@@ -84,13 +81,13 @@ void Builder<T>::split(Build_node* node, index begin, index end, uint32_t max_sh
         });
 
         if (begin == props1_begin) {
-            assign(node, props1_begin, end, out_data);
+            assign(node, props1_begin, end, origin);
         } else {
             node->children[0] = new Build_node;
-            split(node->children[0], begin, props1_begin, max_shapes, out_data);
+            split(node->children[0], begin, props1_begin, origin, max_shapes);
 
             node->children[1] = new Build_node;
-            split(node->children[1], props1_begin, end, max_shapes, out_data);
+            split(node->children[1], props1_begin, end, origin, max_shapes);
 
             num_nodes_ += 2;
         }
@@ -149,15 +146,10 @@ uint32_t Builder<T>::current_node_index() const noexcept {
 }
 
 template <typename T>
-void Builder<T>::assign(Build_node* node, index begin, index end,
-                        std::vector<T*>& out_props) noexcept {
-    node->offset = static_cast<uint32_t>(out_props.size());
+void Builder<T>::assign(Build_node* node, const_index begin, const_index end, const_index origin) noexcept {
+    node->offset = static_cast<uint32_t>(std::distance(origin, begin));
 
-    for (index i = begin; i != end; ++i) {
-        out_props.push_back(*i);
-    }
-
-    node->props_end = static_cast<uint32_t>(out_props.size());
+    node->props_end = static_cast<uint32_t>(std::distance(origin, end));
 }
 
 template <typename T>

@@ -2,6 +2,7 @@
 #define SU_CORE_RESOURCE_MANAGER_HPP
 
 #include <map>
+#include <string>
 #include "base/memory/variant_map.hpp"
 
 namespace file {
@@ -65,7 +66,7 @@ class Manager {
 
     thread::Pool& thread_pool_;
 
-    std::map<uint32_t, Cache*> caches_;
+    std::map<std::string, Cache*> caches_;
 };
 
 }  // namespace resource

@@ -40,7 +40,7 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
 
     if (logging::is_verbose()) {
         std::stringstream stream;
-        stream << "Loaded " << provider_.name() << " resource \"" << filename << "\"";
+        stream << "Loaded " << T::identifier() << " resource \"" << filename << "\"";
         logging::verbose(stream.str());
     }
 

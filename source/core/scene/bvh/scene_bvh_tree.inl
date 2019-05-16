@@ -13,11 +13,6 @@ Tree<T>::~Tree() noexcept {
 }
 
 template <typename T>
-void Tree<T>::clear() noexcept {
-    data_.clear();
-}
-
-template <typename T>
 bvh::Node* Tree<T>::allocate_nodes(uint32_t num_nodes) noexcept {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;

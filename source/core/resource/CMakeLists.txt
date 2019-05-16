@@ -1,7 +1,5 @@
 target_sources(core
     PRIVATE
-    "identifiable.cpp"
-    "identifiable.hpp"
     "resource_cache.hpp"
     "resource_cache.inl"
     "resource_manager.cpp"

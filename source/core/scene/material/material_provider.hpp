@@ -57,9 +57,6 @@ class Provider final : public resource::Provider<Material> {
 
     Material* load_sky(json::Value const& sky_value, resource::Manager& manager) noexcept;
 
-    Material* load_substitute(json::Value const& substitute_value,
-                              resource::Manager& manager) noexcept;
-
     Material* load_volumetric(json::Value const& volumetric_value,
                               resource::Manager& manager) noexcept;
 

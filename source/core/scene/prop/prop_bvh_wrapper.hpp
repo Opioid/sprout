@@ -25,7 +25,7 @@ class BVH_wrapper {
 
     bvh::Tree<Prop>& tree() noexcept;
 
-    void set_infinite_props(std::vector<Prop*> const& infite_props) noexcept;
+    void set_props(std::vector<Prop*> const& finite_props, std::vector<Prop*> const& infinite_props) noexcept;
 
     AABB const& aabb() const noexcept;
 
@@ -46,6 +46,8 @@ class BVH_wrapper {
 
   private:
     bvh::Tree<Prop> tree_;
+
+    Prop* const* finite_props_;
 
     uint32_t     num_infinite_props_;
     Prop* const* infinite_props_;

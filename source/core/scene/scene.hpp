@@ -174,6 +174,14 @@ class Scene {
 
     std::vector<entity::Dummy*> dummies_;
 
+    std::vector<prop::Prop*> props_;
+
+    std::vector<uint32_t> finite_iprops_;
+    std::vector<uint32_t> infinite_iprops_;
+
+    std::vector<uint32_t> ivolumes_;
+    std::vector<uint32_t> infinite_ivolumes_;
+
     std::vector<prop::Prop*> finite_props_;
     std::vector<prop::Prop*> infinite_props_;
 

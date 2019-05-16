@@ -28,6 +28,11 @@ namespace scene {
 
 Scene::Scene() noexcept {
     dummies_.reserve(16);
+    props_.reserve(16);
+    finite_iprops_.reserve(16);
+    infinite_iprops_.reserve(2);
+    ivolumes_.reserve(16);
+    infinite_ivolumes_.reserve(1);
     finite_props_.reserve(16);
     infinite_props_.reserve(2);
     volumes_.reserve(16);
@@ -263,11 +268,11 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
 
     // rebuild prop BVH
     bvh_builder_.build(prop_bvh_.tree(), finite_props_);
-    prop_bvh_.set_infinite_props(infinite_props_);
+    prop_bvh_.set_props(finite_props_, infinite_props_);
 
     // rebuild volume BVH
     bvh_builder_.build(volume_bvh_.tree(), volumes_);
-    volume_bvh_.set_infinite_props(infinite_volumes_);
+    volume_bvh_.set_props(volumes_, infinite_volumes_);
 
     // re-sort lights PDF
     for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
@@ -308,17 +313,25 @@ Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noe
 
     prop->set_shape_and_materials(shape, materials.data());
 
+    props_.push_back(prop);
+
+    uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
+
     if (shape->is_finite()) {
         finite_props_.push_back(prop);
+        finite_iprops_.push_back(prop_id);
     } else {
         infinite_props_.push_back(prop);
+        infinite_iprops_.push_back(prop_id);
     }
 
     if (prop->has_no_surface()) {
         if (shape->is_finite()) {
             volumes_.push_back(prop);
+            ivolumes_.push_back(prop_id);
         } else {
             infinite_volumes_.push_back(prop);
+            infinite_ivolumes_.push_back(prop_id);
         }
     }
 

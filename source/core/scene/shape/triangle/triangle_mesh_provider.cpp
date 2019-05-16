@@ -32,7 +32,7 @@ bool check(const std::vector<Vertex>& vertices, std::string const& filename);
 bool check_and_fix(std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
-Provider::Provider() noexcept : resource::Provider<Shape>("Mesh") {}
+Provider::Provider() noexcept {}
 
 Provider::~Provider() noexcept {}
 

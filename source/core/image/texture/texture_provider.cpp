@@ -22,7 +22,7 @@
 
 namespace image::texture {
 
-Provider::Provider() noexcept : resource::Provider<Texture>("Texture") {
+Provider::Provider() noexcept {
     encoding::init();
 }
 

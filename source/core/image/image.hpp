@@ -2,6 +2,7 @@
 #define SU_CORE_IMAGE_IMAGE_HPP
 
 #include <cstddef>
+#include <string>
 #include "base/math/vector3.hpp"
 
 namespace image {
@@ -41,6 +42,8 @@ class Image {
     Image(Description const& description) noexcept;
 
   public:
+    static std::string identifier() noexcept;
+
     virtual ~Image() noexcept;
 
     Description const& description() const noexcept;
