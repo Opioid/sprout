@@ -42,6 +42,9 @@
 
 namespace scene::material {
 
+static Material* load_substitute(json::Value const& substitute_value,
+                          resource::Manager& manager) noexcept;
+
 struct Texture_description {
     std::string filename;
     std::string usage;
@@ -885,7 +888,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
     return material;
 }
 
-Material* Provider::load_substitute(json::Value const& substitute_value,
+Material* load_substitute(json::Value const& substitute_value,
                                     resource::Manager& manager) noexcept {
     Sampler_settings sampler_settings;
 
