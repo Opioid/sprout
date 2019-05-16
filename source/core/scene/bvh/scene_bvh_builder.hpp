@@ -40,10 +40,10 @@ class Builder {
         Build_node* children[2] = {nullptr, nullptr};
     };
 
+    using const_index = typename std::vector<T*>::const_iterator;
     using index = typename std::vector<T*>::iterator;
 
-    void split(Build_node* node, index begin, index end, uint32_t max_shapes,
-               std::vector<T*>& out_props) noexcept;
+    void split(Build_node* node, index begin, index end, const_index origin, uint32_t max_shapes) noexcept;
 
     Split_candidate<T> splitting_plane(AABB const& aabb, index begin, index end) noexcept;
 
@@ -53,8 +53,7 @@ class Builder {
 
     uint32_t current_node_index() const noexcept;
 
-    static void assign(Build_node* node, index begin, index end,
-                       std::vector<T*>& out_data) noexcept;
+    static void assign(Build_node* node, const_index begin, const_index end, const_index origin) noexcept;
 
     static AABB aabb(index begin, index end) noexcept;
 

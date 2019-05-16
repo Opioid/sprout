@@ -14,16 +14,12 @@ struct Tree {
 
     ~Tree() noexcept;
 
-    void clear() noexcept;
-
     using Node = bvh::Node;
 
     Node* allocate_nodes(uint32_t num_nodes) noexcept;
 
     uint32_t num_nodes_ = 0;
     Node*    nodes_     = nullptr;
-
-    std::vector<T*> data_;
 
     AABB aabb_;
 };
