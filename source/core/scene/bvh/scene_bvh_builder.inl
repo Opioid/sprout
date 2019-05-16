@@ -63,7 +63,8 @@ void Builder<T>::Build_node::clear() noexcept {
 }
 
 template <typename T>
-void Builder<T>::split(Build_node* node, index begin, index end, const_index origin, uint32_t max_shapes) noexcept {
+void Builder<T>::split(Build_node* node, index begin, index end, const_index origin,
+                       uint32_t max_shapes) noexcept {
     node->aabb = aabb(begin, end);
 
     if (static_cast<uint32_t>(std::distance(begin, end)) <= max_shapes) {
@@ -146,7 +147,8 @@ uint32_t Builder<T>::current_node_index() const noexcept {
 }
 
 template <typename T>
-void Builder<T>::assign(Build_node* node, const_index begin, const_index end, const_index origin) noexcept {
+void Builder<T>::assign(Build_node* node, const_index begin, const_index end,
+                        const_index origin) noexcept {
     node->offset = static_cast<uint32_t>(std::distance(origin, begin));
 
     node->props_end = static_cast<uint32_t>(std::distance(origin, end));

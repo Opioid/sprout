@@ -19,10 +19,13 @@ void print(Intersection const& intersection);
 
 void print_vector(float3 const& v);
 
-bool check(Intersection const& intersection,
-           const entity::Composed_transformation& /*transformation*/, Ray const& /*ray*/) {
+bool check(Intersection const& intersection, const entity::Composed_transformation& transformation,
+           Ray const& /*ray*/) {
     if (!std::isfinite(length(intersection.b))) {
         print(intersection);
+
+        std::cout << "t.rotation: " << transformation.rotation << std::endl;
+        std::cout << "t.scale: " << transformation.scale << std::endl;
 
         return false;
     }

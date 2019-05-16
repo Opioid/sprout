@@ -63,8 +63,8 @@ class Scene;
 
 class Loader {
   public:
-    using Shape    = shape::Shape;
-    using Material = material::Material;
+    using Shape     = shape::Shape;
+    using Material  = material::Material;
     using Materials = memory::Array<material::Material*>;
 
     Loader(resource::Manager& manager, Material& fallback_material) noexcept;
@@ -91,8 +91,8 @@ class Loader {
   private:
     using Local_materials = std::map<std::string, json::Value const*>;
 
-    bool load(std::string const& filename, std::string_view take_mount_folder,
-              uint32_t parent_id, Scene& scene) noexcept;
+    bool load(std::string const& filename, std::string_view take_mount_folder, uint32_t parent_id,
+              Scene& scene) noexcept;
 
     void read_materials(json::Value const& materials_value, Local_materials& local_materials) const
         noexcept;

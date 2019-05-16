@@ -47,7 +47,7 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint
 
         origin = float3(lens_radius_ * lens, 0.f);
 
-        float const  t     = focus_distance_ / direction[2];
+        float const t = focus_distance_ / direction[2];
 
         float3 const focus = t * direction;
 

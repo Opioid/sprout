@@ -13,8 +13,9 @@ bvh::Tree<Prop>& BVH_wrapper::tree() noexcept {
     return tree_;
 }
 
-void BVH_wrapper::set_props(std::vector<Prop*> const& finite_props, std::vector<Prop*> const& infinite_props) noexcept {
-    finite_props_     = finite_props.data();
+void BVH_wrapper::set_props(std::vector<Prop*> const& finite_props,
+                            std::vector<Prop*> const& infinite_props) noexcept {
+    finite_props_ = finite_props.data();
 
     num_infinite_props_ = static_cast<uint32_t>(infinite_props.size());
     infinite_props_     = infinite_props.data();

@@ -66,7 +66,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
                                              camera ? camera->frame_duration() : 0);
 
     uint32_t const parent_id = 0xFFFFFFFF;
-    bool const success = load(filename, take_mount_folder, parent_id, scene);
+    bool const     success   = load(filename, take_mount_folder, parent_id, scene);
 
     if (success) {
         scene.finish();
@@ -277,12 +277,12 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             entity.ref->set_transformation(transformation);
         }
 
-        if (children) {
-            load_entities(*children, entity.id, mount_folder, local_materials, scene);
-        }
-
         if (visibility) {
             set_visibility(entity.ref, *visibility);
+        }
+
+        if (children) {
+            load_entities(*children, entity.id, mount_folder, local_materials, scene);
         }
     }
 }

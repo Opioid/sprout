@@ -15,6 +15,8 @@ target_sources(core
     "morphable_shape.hpp"
     "node_stack.hpp"
     "node_stack.inl"
+    "null.cpp"
+    "null.hpp"    
     "plane.cpp"
     "plane.hpp"
     "rectangle.cpp"

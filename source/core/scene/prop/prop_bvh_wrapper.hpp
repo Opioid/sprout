@@ -1,9 +1,9 @@
 #ifndef SU_CORE_SCENE_PROP_BVH_WRAPPER_HPP
 #define SU_CORE_SCENE_PROP_BVH_WRAPPER_HPP
 
+#include <vector>
 #include "scene/bvh/scene_bvh_tree.hpp"
 #include "scene/material/sampler_settings.hpp"
-#include <vector>
 
 namespace scene {
 
@@ -26,7 +26,8 @@ class BVH_wrapper {
 
     bvh::Tree<Prop>& tree() noexcept;
 
-    void set_props(std::vector<Prop*> const& finite_props, std::vector<Prop*> const& infinite_props) noexcept;
+    void set_props(std::vector<Prop*> const& finite_props,
+                   std::vector<Prop*> const& infinite_props) noexcept;
 
     AABB const& aabb() const noexcept;
 

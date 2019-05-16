@@ -10,6 +10,7 @@
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
 #include "scene_constants.hpp"
+#include "shape/null.hpp"
 #include "take/take_settings.hpp"
 
 namespace thread {
@@ -168,21 +169,22 @@ class Scene {
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
 
+    shape::Null       null_shape_;
     light::Null_light null_light_;
 
     bool has_masked_material_;
     bool has_tinted_shadow_;
     bool has_volumes_;
 
-    std::vector<entity::Dummy*> dummies_;
+    std::vector<entity::Entity*> dummies_;
 
-    std::vector<prop::Prop*> props_;
+    //    std::vector<prop::Prop*> props_;
 
-    std::vector<uint32_t> finite_iprops_;
-    std::vector<uint32_t> infinite_iprops_;
+    //    std::vector<uint32_t> finite_iprops_;
+    //    std::vector<uint32_t> infinite_iprops_;
 
-    std::vector<uint32_t> ivolumes_;
-    std::vector<uint32_t> infinite_ivolumes_;
+    //    std::vector<uint32_t> ivolumes_;
+    //    std::vector<uint32_t> infinite_ivolumes_;
 
     std::vector<prop::Prop*> finite_props_;
     std::vector<prop::Prop*> infinite_props_;

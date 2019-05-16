@@ -64,7 +64,7 @@ template <typename T>
 T Interpolated_function<T>::operator()(float x) const noexcept {
     x = std::min(x, range_end_);
 
-    float const    o      = x * inverse_range_;
+    float const o = x * inverse_range_;
 
     uint32_t const offset = static_cast<uint32_t>(o);
 
