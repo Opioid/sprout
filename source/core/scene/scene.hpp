@@ -56,6 +56,7 @@ struct Prop_ref;
 
 }  // namespace prop
 
+class Extension;
 class Worker;
 
 struct Ray;
@@ -142,10 +143,12 @@ class Scene {
 
     light::Light* create_prop_volume_image_light(Prop* prop, uint32_t part) noexcept;
 
-    uint32_t add_extension(Entity* extension) noexcept;
-    uint32_t add_extension(Entity* extension, std::string const& name) noexcept;
+    Entity_ref create_extension(Extension* extension) noexcept;
+    //   uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
 
     void attach(uint32_t parent_id, uint32_t child_id) const noexcept;
+
+    void set_transformation(uint32_t entity, math::Transformation const& t) const noexcept;
 
     void add_material(Material* material) noexcept;
 
@@ -194,7 +197,7 @@ class Scene {
 
     std::vector<light::Light*> lights_;
 
-    std::vector<entity::Entity*> extensions_;
+    std::vector<Extension*> extensions_;
 
     std::vector<entity::Entity*> entities_;
 

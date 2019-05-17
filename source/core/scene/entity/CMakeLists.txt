@@ -2,9 +2,6 @@ target_sources(core
 	PRIVATE
 	"composed_transformation.hpp"
 	"composed_transformation.inl"
-	"dummy.cpp"
-	"dummy.hpp"
-	"entity_extension_provider.hpp"
 	"entity.cpp"
 	"entity.hpp"
 	"keyframe.cpp"

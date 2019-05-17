@@ -1,6 +1,3 @@
-add_subdirectory(aurora)
-add_subdirectory(flame)
-add_subdirectory(fluid)
 add_subdirectory(mesh)
 add_subdirectory(sky)
 add_subdirectory(starburst)

@@ -5,6 +5,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 #include "core/scene/prop/prop.hpp"
+#include "core/scene/scene.hpp"
 #include "core/scene/scene_constants.hpp"
 
 namespace procedural::sky {
@@ -13,7 +14,7 @@ Sky::Sky() noexcept = default;
 
 Sky::~Sky() noexcept {}
 
-void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
+void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) noexcept {
     sky_ = sky;
     sun_ = sun;
 
@@ -21,10 +22,10 @@ void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) noexcept {
         float3(0.f), float3(1.f),
         math::quaternion::create_rotation_x(math::degrees_to_radians(90.f))};
 
-    sky->set_transformation(transformation);
+    scene.set_transformation(sky, transformation);
 }
 
-void Sky::set_parameters(json::Value const& parameters) noexcept {
+void Sky::set_parameters(json::Value const& parameters, Scene& scene) noexcept {
     for (auto& n : parameters.GetObject()) {
         if ("sun" == n.name) {
             float3 const angles = json::read_float3(n.value, "rotation", float3(0.f));
@@ -37,7 +38,7 @@ void Sky::set_parameters(json::Value const& parameters) noexcept {
         }
     }
 
-    update();
+    private_update(scene);
 }
 
 Model& Sky::model() noexcept {
@@ -78,7 +79,23 @@ bool Sky::sun_changed_since_last_check() noexcept {
     return sun_changed;
 }
 
-void Sky::update() noexcept {
+void Sky::update(Scene& scene) noexcept {
+    scene::entity::Entity* const e = scene.entity(prop_);
+
+    scene::entity::Entity* const sky = scene.entity(sky_);
+    scene::entity::Entity* const sun = scene.entity(sun_);
+
+    sky->set_visibility(e->visible_in_camera(), e->visible_in_reflection(), e->visible_in_shadow());
+    sun->set_visibility(e->visible_in_camera(), e->visible_in_reflection(), e->visible_in_shadow());
+
+    if (implicit_rotation_) {
+        sun_rotation_ = math::quaternion::create_matrix3x3(e->local_frame_0().rotation);
+
+        private_update(scene);
+    }
+}
+
+void Sky::private_update(Scene& scene) noexcept {
     model_.set_sun_direction(sun_rotation_.r[2]);
     model_.set_ground_albedo(ground_albedo_);
     model_.set_turbidity(turbidity_);
@@ -86,23 +103,12 @@ void Sky::update() noexcept {
     math::Transformation transformation{float3(0.f), float3(Model::radius()),
                                         math::quaternion::create(sun_rotation_)};
 
-    sun_->set_transformation(transformation);
+    scene.set_transformation(sun_, transformation);
 
     model_.compile();
 
     sky_changed_ = true;
     sun_changed_ = true;
-}
-
-void Sky::on_set_transformation() noexcept {
-    sky_->set_visibility(visible_in_camera(), visible_in_reflection(), visible_in_shadow());
-    sun_->set_visibility(visible_in_camera(), visible_in_reflection(), visible_in_shadow());
-
-    if (implicit_rotation_) {
-        sun_rotation_ = math::quaternion::create_matrix3x3(local_frame_0().rotation);
-
-        update();
-    }
 }
 
 }  // namespace procedural::sky

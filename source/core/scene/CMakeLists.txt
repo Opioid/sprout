@@ -9,6 +9,8 @@ add_subdirectory(shape)
 
 target_sources(core
     PRIVATE
+    "extension.hpp"
+    "extension_provider.hpp"
     "scene.cpp"
     "scene.hpp"
     "scene_constants.hpp"

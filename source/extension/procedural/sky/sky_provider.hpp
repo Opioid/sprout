@@ -1,7 +1,7 @@
 #ifndef SU_EXTENSION_PROCEDURAL_SKY_PROVIDER_HPP
 #define SU_EXTENSION_PROCEDURAL_SKY_PROVIDER_HPP
 
-#include "core/scene/entity/entity_extension_provider.hpp"
+#include "core/scene/extension_provider.hpp"
 
 namespace scene {
 
@@ -17,7 +17,7 @@ namespace procedural::sky {
 
 void init(scene::Loader& loader, scene::material::Provider& material_provider) noexcept;
 
-class Provider : public scene::entity::Extension_provider {
+class Provider : public scene::Extension_provider {
   public:
     ~Provider() noexcept override final;
 

@@ -42,7 +42,7 @@ entity::Entity_ref Provider::create_extension(json::Value const& extension_value
                                               resource::Manager& manager) noexcept {
     Sky* sky = new Sky;
 
-    uint32_t const sky_id = scene.add_extension(sky, name);
+    Entity_ref sky_entity = scene.create_extension(sky /*, name*/);
 
     static bool constexpr bake = true;
 
@@ -62,19 +62,17 @@ entity::Entity_ref Provider::create_extension(json::Value const& extension_value
     manager.store<material::Material>("proc:sun", sun_material);
 
     Scene::Prop_ref sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
-
     sky_prop.ref->allocate_frames(1, 1);
 
     Scene::Prop_ref sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
-
     sun_prop.ref->allocate_frames(1, 1);
 
-    sky->init(sky_prop.ref, sun_prop.ref);
+    sky->init(sky_prop.id, sun_prop.id, scene);
 
     if (auto const p = extension_value.FindMember("parameters"); extension_value.MemberEnd() != p) {
-        sky->set_parameters(p->value);
+        sky->set_parameters(p->value, scene);
     } else {
-        sky->update();
+        sky->update(scene);
     }
 
     if (bake) {
@@ -85,7 +83,7 @@ entity::Entity_ref Provider::create_extension(json::Value const& extension_value
 
     scene.create_prop_light(sun_prop.ref, 0);
 
-    return entity::Entity_ref{sky, sky_id};
+    return sky_entity;
 }
 
 }  // namespace procedural::sky

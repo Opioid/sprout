@@ -9,8 +9,7 @@
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "camera/camera.hpp"
-#include "entity/dummy.hpp"
-#include "entity/entity_extension_provider.hpp"
+#include "extension_provider.hpp"
 #include "image/texture/texture_provider.hpp"
 #include "light/light.hpp"
 #include "logging/logging.hpp"
@@ -77,8 +76,8 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
     return success;
 }
 
-void Loader::register_extension_provider(std::string const&          name,
-                                         entity::Extension_provider* provider) noexcept {
+void Loader::register_extension_provider(std::string const&  name,
+                                         Extension_provider* provider) noexcept {
     extension_providers_[name] = provider;
 }
 

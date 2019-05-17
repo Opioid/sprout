@@ -9,7 +9,7 @@
 #include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "bvh/scene_bvh_builder.inl"
-#include "entity/dummy.hpp"
+#include "extension.hpp"
 #include "image/texture/texture.hpp"
 #include "light/prop_image_light.hpp"
 #include "light/prop_light.hpp"
@@ -247,7 +247,7 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     }
 
     for (auto e : extensions_) {
-        e->calculate_world_transformation(entities_.data());
+        e->update(*this);
     }
 
     for (auto p : finite_props_) {
@@ -400,24 +400,34 @@ light::Light* Scene::create_prop_volume_image_light(Prop* prop, uint32_t part) n
     return light;
 }
 
-uint32_t Scene::add_extension(Entity* extension) noexcept {
+Scene::Entity_ref Scene::create_extension(Extension* extension) noexcept {
     extensions_.push_back(extension);
 
-    entities_.push_back(extension);
+    //    entities_.push_back(extension);
 
-    return static_cast<uint32_t>(entities_.size()) - 1;
+    //    return static_cast<uint32_t>(entities_.size()) - 1;
+
+    Entity_ref dummy = create_dummy();
+
+    extension->init(dummy.id);
+
+    return dummy;
 }
 
-uint32_t Scene::add_extension(Entity* extension, std::string const& name) noexcept {
-    uint32_t const id = add_extension(extension);
+// uint32_t Scene::create_extension(Extension* extension, std::string const& name) noexcept {
+//    uint32_t const id = create_extension(extension);
 
-    add_named_entity(extension, name);
+//    add_named_entity(extension, name);
 
-    return id;
-}
+//    return id;
+//}
 
 void Scene::attach(uint32_t parent_id, uint32_t child_id) const noexcept {
     entities_[parent_id]->attach(parent_id, child_id, entities_.data());
+}
+
+void Scene::set_transformation(uint32_t entity, math::Transformation const& t) const noexcept {
+    entities_[entity]->set_transformation(t);
 }
 
 void Scene::add_material(Material* material) noexcept {

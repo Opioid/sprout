@@ -26,7 +26,6 @@ namespace entity {
 
 class Entity;
 struct Entity_ref;
-class Extension_provider;
 
 }  // namespace entity
 
@@ -59,6 +58,8 @@ class Provider;
 }  // namespace triangle
 }  // namespace shape
 
+class Extension_provider;
+
 class Scene;
 
 class Loader {
@@ -74,8 +75,8 @@ class Loader {
     bool load(std::string const& filename, std::string_view take_name, take::Take const& take,
               Scene& scene) noexcept;
 
-    void register_extension_provider(std::string const&          name,
-                                     entity::Extension_provider* provider) noexcept;
+    void register_extension_provider(std::string const&  name,
+                                     Extension_provider* provider) noexcept;
 
     void register_mesh_generator(std::string const&          name,
                                  shape::triangle::Generator* generator) noexcept;
@@ -135,7 +136,7 @@ class Loader {
 
     Material& fallback_material_;
 
-    std::map<std::string, entity::Extension_provider*> extension_providers_;
+    std::map<std::string, Extension_provider*>         extension_providers_;
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 };
 
