@@ -104,8 +104,6 @@ class Scene {
     bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
         noexcept;
 
-    Entity* const* entities() const noexcept;
-
     Entity* entity(size_t index) const noexcept;
     Entity* entity(std::string_view name) const noexcept;
 
@@ -181,13 +179,13 @@ class Scene {
 
     std::vector<entity::Entity*> dummies_;
 
-    //    std::vector<prop::Prop*> props_;
+    std::vector<prop::Prop*> props_;
 
-    //    std::vector<uint32_t> finite_iprops_;
-    //    std::vector<uint32_t> infinite_iprops_;
+    std::vector<uint32_t> finite_iprops_;
+    std::vector<uint32_t> infinite_iprops_;
 
-    //    std::vector<uint32_t> ivolumes_;
-    //    std::vector<uint32_t> infinite_ivolumes_;
+    std::vector<uint32_t> ivolumes_;
+    std::vector<uint32_t> infinite_ivolumes_;
 
     std::vector<prop::Prop*> finite_props_;
     std::vector<prop::Prop*> infinite_props_;
@@ -198,8 +196,6 @@ class Scene {
     std::vector<light::Light*> lights_;
 
     std::vector<Extension*> extensions_;
-
-    std::vector<entity::Entity*> entities_;
 
     std::map<std::string, entity::Entity*, std::less<>> named_entities_;
 

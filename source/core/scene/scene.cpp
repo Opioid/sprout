@@ -28,18 +28,17 @@ namespace scene {
 
 Scene::Scene() noexcept {
     dummies_.reserve(16);
-    //    props_.reserve(16);
-    //    finite_iprops_.reserve(16);
-    //    infinite_iprops_.reserve(2);
-    //    ivolumes_.reserve(16);
-    //    infinite_ivolumes_.reserve(1);
+    props_.reserve(16);
+    finite_iprops_.reserve(16);
+    infinite_iprops_.reserve(2);
+    ivolumes_.reserve(16);
+    infinite_ivolumes_.reserve(1);
     finite_props_.reserve(16);
     infinite_props_.reserve(2);
     volumes_.reserve(16);
     infinite_volumes_.reserve(1);
     lights_.reserve(16);
     extensions_.reserve(16);
-    entities_.reserve(16);
     materials_.reserve(16);
     animations_.reserve(16);
     animation_stages_.reserve(16);
@@ -167,16 +166,12 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
     return false;
 }
 
-entity::Entity* const* Scene::entities() const noexcept {
-    return entities_.data();
-}
-
 entity::Entity* Scene::entity(size_t index) const noexcept {
-    if (index >= entities_.size()) {
+    if (index >= props_.size()) {
         return nullptr;
     }
 
-    return entities_[index];
+    return props_[index];
 }
 
 entity::Entity* Scene::entity(std::string_view name) const noexcept {
@@ -243,7 +238,7 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
 
     // handle changed transformations
     for (auto const d : dummies_) {
-        d->calculate_world_transformation(entities_.data());
+        d->calculate_world_transformation(*this);
     }
 
     for (auto e : extensions_) {
@@ -251,13 +246,13 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     }
 
     for (auto p : finite_props_) {
-        p->calculate_world_transformation(entities_.data());
+        p->calculate_world_transformation(*this);
         has_masked_material_ = has_masked_material_ || p->has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p->has_tinted_shadow();
     }
 
     for (auto p : infinite_props_) {
-        p->calculate_world_transformation(entities_.data());
+        p->calculate_world_transformation(*this);
         has_masked_material_ = has_masked_material_ || p->has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p->has_tinted_shadow();
     }
@@ -292,23 +287,15 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
 }
 
 Scene::Entity_ref Scene::create_dummy() noexcept {
-    //    entity::Dummy* dummy = new entity::Dummy;
-    //    dummies_.push_back(dummy);
-
-    //    entities_.push_back(dummy);
-
-    //    return {dummy, static_cast<uint32_t>(entities_.size()) - 1};
-
     prop::Prop* prop = new prop::Prop;
 
     prop->set_shape_and_materials(&null_shape_, nullptr);
 
-    //   props_.push_back(prop);
+    props_.push_back(prop);
 
     dummies_.push_back(prop);
-    entities_.push_back(prop);
 
-    return {prop, static_cast<uint32_t>(entities_.size()) - 1};
+    return {prop, static_cast<uint32_t>(props_.size()) - 1};
 }
 
 Scene::Entity_ref Scene::create_dummy(std::string const& name) noexcept {
@@ -324,31 +311,29 @@ Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noe
 
     prop->set_shape_and_materials(shape, materials.data());
 
-    //   props_.push_back(prop);
+    props_.push_back(prop);
 
-    //   uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
+    uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
 
     if (shape->is_finite()) {
         finite_props_.push_back(prop);
-        //      finite_iprops_.push_back(prop_id);
+        finite_iprops_.push_back(prop_id);
     } else {
         infinite_props_.push_back(prop);
-        //     infinite_iprops_.push_back(prop_id);
+        infinite_iprops_.push_back(prop_id);
     }
 
     if (prop->has_no_surface()) {
         if (shape->is_finite()) {
             volumes_.push_back(prop);
-            //        ivolumes_.push_back(prop_id);
+            ivolumes_.push_back(prop_id);
         } else {
             infinite_volumes_.push_back(prop);
-            //       infinite_ivolumes_.push_back(prop_id);
+            infinite_ivolumes_.push_back(prop_id);
         }
     }
 
-    entities_.push_back(prop);
-
-    return {prop, static_cast<uint32_t>(entities_.size()) - 1};
+    return {prop, static_cast<uint32_t>(props_.size()) - 1};
 }
 
 Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials,
@@ -423,11 +408,11 @@ Scene::Entity_ref Scene::create_extension(Extension* extension) noexcept {
 //}
 
 void Scene::attach(uint32_t parent_id, uint32_t child_id) const noexcept {
-    entities_[parent_id]->attach(parent_id, child_id, entities_.data());
+    props_[parent_id]->attach(parent_id, child_id, *this);
 }
 
 void Scene::set_transformation(uint32_t entity, math::Transformation const& t) const noexcept {
-    entities_[entity]->set_transformation(t);
+    props_[entity]->set_transformation(t);
 }
 
 void Scene::add_material(Material* material) noexcept {

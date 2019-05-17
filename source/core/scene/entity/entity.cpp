@@ -2,6 +2,7 @@
 #include "base/math/transformation.inl"
 #include "base/memory/align.hpp"
 #include "composed_transformation.inl"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 
 namespace scene::entity {
@@ -63,13 +64,13 @@ void Entity::set_frames(Keyframe const* frames, uint32_t num_frames) noexcept {
     }
 }
 
-void Entity::calculate_world_transformation(Entities entities) noexcept {
+void Entity::calculate_world_transformation(Scene const& scene) noexcept {
     if (Null == parent_) {
         for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
             frames_[i] = frames_[len + i];
         }
 
-        propagate_transformation(entities);
+        propagate_transformation(scene);
     }
 }
 
@@ -95,10 +96,10 @@ void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) 
     properties_.set(Property::Visible_in_shadow, in_shadow);
 }
 
-void Entity::attach(uint32_t self, uint32_t node, Entities entities) noexcept {
-    Entity* n = entities[node];
+void Entity::attach(uint32_t self, uint32_t node, Scene const& scene) noexcept {
+    Entity* n = scene.entity(node);
 
-    n->detach_self(self, entities);
+    n->detach_self(self, scene);
 
     n->parent_ = self;
 
@@ -110,17 +111,17 @@ void Entity::attach(uint32_t self, uint32_t node, Entities entities) noexcept {
     if (Null == child_) {
         child_ = node;
     } else {
-        entities[child_]->add_sibling(node, entities);
+        scene.entity(child_)->add_sibling(node, scene);
     }
 }
 
-void Entity::detach_self(uint32_t self, Entities entities) noexcept {
+void Entity::detach_self(uint32_t self, Scene const& scene) noexcept {
     if (Null != parent_) {
-        entities[parent_]->detach(self, entities);
+        scene.entity(parent_)->detach(self, scene);
     }
 }
 
-void Entity::propagate_transformation(Entities entities) noexcept {
+void Entity::propagate_transformation(Scene const& scene) noexcept {
     if (1 == num_world_frames_) {
         world_transformation_.set(frames_[0].transformation);
     }
@@ -128,14 +129,14 @@ void Entity::propagate_transformation(Entities entities) noexcept {
     on_set_transformation();
 
     if (Null != child_) {
-        entities[child_]->inherit_transformation(frames_, num_world_frames_, entities);
+        scene.entity(child_)->inherit_transformation(frames_, num_world_frames_, scene);
     }
 }
 
 void Entity::inherit_transformation(Keyframe const* frames, uint32_t num_frames,
-                                    Entities entities) noexcept {
+                                    Scene const& scene) noexcept {
     if (Null != next_) {
-        entities[next_]->inherit_transformation(frames, num_frames, entities);
+        scene.entity(next_)->inherit_transformation(frames, num_frames, scene);
     }
 
     for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
@@ -144,22 +145,22 @@ void Entity::inherit_transformation(Keyframe const* frames, uint32_t num_frames,
         frames_[len + lf].transform(frames_[i], frames[of]);
     }
 
-    propagate_transformation(entities);
+    propagate_transformation(scene);
 }
 
-void Entity::add_sibling(uint32_t node, Entities entities) noexcept {
+void Entity::add_sibling(uint32_t node, Scene const& scene) noexcept {
     if (Null == next_) {
         next_ = node;
     } else {
-        entities[next_]->add_sibling(node, entities);
+        scene.entity(next_)->add_sibling(node, scene);
     }
 }
 
-void Entity::detach(uint32_t node, Entities entities) noexcept {
+void Entity::detach(uint32_t node, Scene const& scene) noexcept {
     // we can assume this to be true because of detach()
     // assert(node->parent_ == this);
 
-    Entity* n = entities[node];
+    Entity* n = scene.entity(node);
 
     n->parent_ = Null;
 
@@ -167,18 +168,18 @@ void Entity::detach(uint32_t node, Entities entities) noexcept {
         child_   = n->next_;
         n->next_ = Null;
     } else {
-        entities[child_]->remove_sibling(node, entities);
+        scene.entity(child_)->remove_sibling(node, scene);
     }
 }
 
-void Entity::remove_sibling(uint32_t node, Entities entities) noexcept {
-    Entity* n = entities[node];
+void Entity::remove_sibling(uint32_t node, Scene const& scene) noexcept {
+    Entity* n = scene.entity(node);
 
     if (next_ == node) {
         next_    = n->next_;
         n->next_ = Null;
     } else {
-        n->remove_sibling(node, entities);
+        n->remove_sibling(node, scene);
     }
 }
 

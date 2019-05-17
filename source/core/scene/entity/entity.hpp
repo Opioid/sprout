@@ -7,13 +7,15 @@
 #include "composed_transformation.hpp"
 #include "keyframe.hpp"
 
-namespace scene::entity {
+namespace scene {
+
+class Scene;
+
+namespace entity {
 
 class Entity {
   public:
     using Transformation = Composed_transformation;
-
-    using Entities = Entity* const*;
 
     Entity() noexcept;
 
@@ -37,7 +39,7 @@ class Entity {
 
     void set_frames(Keyframe const* frames, uint32_t num_frames) noexcept;
 
-    void calculate_world_transformation(Entities entities) noexcept;
+    void calculate_world_transformation(Scene const& scene) noexcept;
 
     bool visible_in_camera() const noexcept;
     bool visible_in_reflection() const noexcept;
@@ -47,21 +49,21 @@ class Entity {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
-    void attach(uint32_t self, uint32_t node, Entities entities) noexcept;
+    void attach(uint32_t self, uint32_t node, Scene const& scene) noexcept;
 
-    void detach_self(uint32_t self, Entities entities) noexcept;
+    void detach_self(uint32_t self, Scene const& scene) noexcept;
 
   protected:
-    void propagate_transformation(Entities entities) noexcept;
+    void propagate_transformation(Scene const& scene) noexcept;
 
     void inherit_transformation(Keyframe const* frames, uint32_t num_frames,
-                                Entities entities) noexcept;
+                                Scene const& scene) noexcept;
 
-    void add_sibling(uint32_t node, Entities entities) noexcept;
+    void add_sibling(uint32_t node, Scene const& scene) noexcept;
 
-    void detach(uint32_t node, Entities entities) noexcept;
+    void detach(uint32_t node, Scene const& scene) noexcept;
 
-    void remove_sibling(uint32_t node, Entities entities) noexcept;
+    void remove_sibling(uint32_t node, Scene const& scene) noexcept;
 
     virtual void on_set_transformation() noexcept = 0;
 
@@ -99,6 +101,7 @@ struct Entity_ref {
     }
 };
 
-}  // namespace scene::entity
+}  // namespace entity
+}  // namespace scene
 
 #endif
