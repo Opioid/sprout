@@ -359,12 +359,10 @@ prop::Prop_ref Loader::load_prop(json::Value const& prop_value, std::string cons
     return prop;
 }
 
-uint32_t Loader::load_extension(std::string const& type,
-                                          json::Value const& extension_value,
-                                          std::string const& name, Scene& scene) noexcept {
+uint32_t Loader::load_extension(std::string const& type, json::Value const& extension_value,
+                                std::string const& name, Scene& scene) noexcept {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
-        return p->second->create_extension(extension_value, name, scene,
-                                                                resource_manager_).id;
+        return p->second->create_extension(extension_value, name, scene, resource_manager_).id;
     }
 
     return 0xFFFFFFFF;

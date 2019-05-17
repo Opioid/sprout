@@ -110,7 +110,7 @@ class Loader {
                              Scene& scene) noexcept;
 
     uint32_t load_extension(std::string const& type, json::Value const& extension_value,
-                                      std::string const& name, Scene& scene) noexcept;
+                            std::string const& name, Scene& scene) noexcept;
 
     Shape* load_shape(json::Value const& shape_value) noexcept;
 

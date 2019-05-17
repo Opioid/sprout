@@ -43,10 +43,11 @@ class Builder {
     using const_index = typename std::vector<uint32_t>::const_iterator;
     using index       = typename std::vector<uint32_t>::iterator;
 
-    void split(Build_node* node, index begin, index end, const_index origin, std::vector<T> const& props,
-               uint32_t max_shapes) noexcept;
+    void split(Build_node* node, index begin, index end, const_index origin,
+               std::vector<T> const& props, uint32_t max_shapes) noexcept;
 
-    Split_candidate<T> splitting_plane(AABB const& aabb, index begin, index end, std::vector<T> const& props) noexcept;
+    Split_candidate<T> splitting_plane(AABB const& aabb, index begin, index end,
+                                       std::vector<T> const& props) noexcept;
 
     void serialize(Build_node* node) noexcept;
 

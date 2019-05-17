@@ -105,10 +105,10 @@ class Scene {
         noexcept;
 
     Prop const* prop(size_t index) const noexcept;
-    Prop* prop(size_t index) noexcept;
+    Prop*       prop(size_t index) noexcept;
 
     Entity const* entity(size_t index) const noexcept;
-    Entity* entity(size_t index) noexcept;
+    Entity*       entity(size_t index) noexcept;
 
     Entity* entity(std::string_view name) const noexcept;
 

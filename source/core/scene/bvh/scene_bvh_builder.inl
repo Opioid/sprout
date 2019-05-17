@@ -8,8 +8,6 @@
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
 
-#include <iostream>
-
 namespace scene::bvh {
 
 template <typename T>
@@ -23,7 +21,8 @@ Builder<T>::~Builder() noexcept {
 }
 
 template <typename T>
-void Builder<T>::build(Tree<T>& tree, std::vector<uint32_t>& indices, std::vector<T> const& props) noexcept {
+void Builder<T>::build(Tree<T>& tree, std::vector<uint32_t>& indices,
+                       std::vector<T> const& props) noexcept {
     if (props.empty()) {
         nodes_ = tree.allocate_nodes(0);
     } else {
@@ -63,8 +62,8 @@ void Builder<T>::Build_node::clear() noexcept {
 }
 
 template <typename T>
-void Builder<T>::split(Build_node* node, index begin, index end, const_index origin, std::vector<T> const& props,
-                       uint32_t max_shapes) noexcept {
+void Builder<T>::split(Build_node* node, index begin, index end, const_index origin,
+                       std::vector<T> const& props, uint32_t max_shapes) noexcept {
     node->aabb = aabb(begin, end, props);
 
     if (static_cast<uint32_t>(std::distance(begin, end)) <= max_shapes) {
@@ -75,7 +74,7 @@ void Builder<T>::split(Build_node* node, index begin, index end, const_index ori
         node->axis = sp.axis();
 
         index props1_begin = std::partition(begin, end, [&sp, &props](uint32_t b) {
-            T const& p = props[b];
+            T const&   p   = props[b];
             bool const mib = math::plane::behind(sp.plane(), p.aabb().min());
             bool const mab = math::plane::behind(sp.plane(), p.aabb().max());
 
@@ -97,8 +96,8 @@ void Builder<T>::split(Build_node* node, index begin, index end, const_index ori
 }
 
 template <typename T>
-Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin,
-                                               index end, std::vector<T> const& props) noexcept {
+Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin, index end,
+                                               std::vector<T> const& props) noexcept {
     split_candidates_.clear();
 
     float3 average = float3(0.f);
@@ -150,11 +149,9 @@ uint32_t Builder<T>::current_node_index() const noexcept {
 template <typename T>
 void Builder<T>::assign(Build_node* node, const_index begin, const_index end,
                         const_index origin) noexcept {
-    node->offset = static_cast<uint32_t>(std::distance(origin, begin));
+    node->offset = static_cast<uint32_t>(begin - origin);
 
-    node->props_end = static_cast<uint32_t>(std::distance(origin, end));
-
-    std::cout << node->offset << " " << node->props_end << std::endl;
+    node->props_end = static_cast<uint32_t>(end - origin);
 }
 
 template <typename T>

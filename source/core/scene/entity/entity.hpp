@@ -58,8 +58,7 @@ class Entity {
   protected:
     void propagate_transformation(Scene& scene) noexcept;
 
-    void inherit_transformation(Keyframe const* frames, uint32_t num_frames,
-                                Scene& scene) noexcept;
+    void inherit_transformation(Keyframe const* frames, uint32_t num_frames, Scene& scene) noexcept;
 
     void add_sibling(uint32_t node, Scene& scene) noexcept;
 

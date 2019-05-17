@@ -14,7 +14,8 @@ bvh::Tree<Prop>& BVH_wrapper::tree() noexcept {
 }
 
 void BVH_wrapper::set_props(std::vector<uint32_t> const& finite_props,
-                            std::vector<uint32_t> const& infinite_props, std::vector<Prop> const& props) noexcept {
+                            std::vector<uint32_t> const& infinite_props,
+                            std::vector<Prop> const&     props) noexcept {
     finite_props_ = finite_props.data();
 
     num_infinite_props_ = static_cast<uint32_t>(infinite_props.size());
@@ -46,9 +47,9 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
 
-    bvh::Node*   nodes = tree_.nodes_;
+    bvh::Node* nodes = tree_.nodes_;
 
-    Prop const* props = props_;
+    Prop const*     props        = props_;
     uint32_t const* finite_props = finite_props_;
 
     while (!node_stack.empty()) {
@@ -114,9 +115,9 @@ bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
 
-    bvh::Node*   nodes = tree_.nodes_;
+    bvh::Node* nodes = tree_.nodes_;
 
-    Prop const* props = props_;
+    Prop const*     props        = props_;
     uint32_t const* finite_props = finite_props_;
 
     while (!node_stack.empty()) {
@@ -180,9 +181,9 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, shape::Norm
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
 
-    bvh::Node*   nodes = tree_.nodes_;
+    bvh::Node* nodes = tree_.nodes_;
 
-    Prop const* props = props_;
+    Prop const*     props        = props_;
     uint32_t const* finite_props = finite_props_;
 
     while (!node_stack.empty()) {
@@ -239,9 +240,9 @@ bool BVH_wrapper::intersect_p(Ray const& ray, shape::Node_stack& node_stack) con
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
 
-    bvh::Node*   nodes = tree_.nodes_;
+    bvh::Node* nodes = tree_.nodes_;
 
-    Prop const* props = props_;
+    Prop const*     props        = props_;
     uint32_t const* finite_props = finite_props_;
 
     while (!node_stack.empty()) {
@@ -304,9 +305,9 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
 
-    bvh::Node*   nodes = tree_.nodes_;
+    bvh::Node* nodes = tree_.nodes_;
 
-    Prop const* props = props_;
+    Prop const*     props        = props_;
     uint32_t const* finite_props = finite_props_;
 
     while (!node_stack.empty()) {
@@ -368,9 +369,9 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
     Vector const ray_min_t         = simd::load_float(&ray.min_t);
     Vector       ray_max_t         = simd::load_float(&ray.max_t);
 
-    bvh::Node*   nodes = tree_.nodes_;
+    bvh::Node* nodes = tree_.nodes_;
 
-    Prop const* props = props_;
+    Prop const*     props        = props_;
     uint32_t const* finite_props = finite_props_;
 
     while (!node_stack.empty()) {

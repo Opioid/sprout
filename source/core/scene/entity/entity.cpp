@@ -9,11 +9,15 @@ namespace scene::entity {
 
 Entity::Entity() noexcept = default;
 
-Entity::Entity(Entity&& other) noexcept : properties_(other.properties_), parent_(other.parent_),
-    next_(other.next_), child_(other.child_),
-    world_transformation_(other.world_transformation_), num_world_frames_(other.num_world_frames_),
-    num_local_frames_(other.num_local_frames_), frames_(other.frames_)
-{
+Entity::Entity(Entity&& other) noexcept
+    : properties_(other.properties_),
+      parent_(other.parent_),
+      next_(other.next_),
+      child_(other.child_),
+      world_transformation_(other.world_transformation_),
+      num_world_frames_(other.num_world_frames_),
+      num_local_frames_(other.num_local_frames_),
+      frames_(other.frames_) {
     other.frames_ = nullptr;
 }
 

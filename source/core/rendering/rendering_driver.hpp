@@ -59,7 +59,7 @@ class Driver {
     Camera& camera() noexcept;
 
     Scene const& scene() const noexcept;
-    Scene& scene() noexcept;
+    Scene&       scene() noexcept;
 
     size_t num_bytes() const noexcept;
 
