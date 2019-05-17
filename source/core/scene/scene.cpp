@@ -222,7 +222,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
     }
 
     for (auto& s : animation_stages_) {
-        s.update();
+        s.update(*this);
     }
 
     for (auto p : finite_props_) {
@@ -431,9 +431,9 @@ animation::Animation* Scene::create_animation(uint32_t count) noexcept {
     return animation;
 }
 
-void Scene::create_animation_stage(Entity* entity, animation::Animation* animation) noexcept {
+void Scene::create_animation_stage(uint32_t entity, animation::Animation* animation) noexcept {
     animation_stages_.emplace_back(entity, animation);
-    animation_stages_.back().allocate_enitity_frames();
+    animation_stages_.back().allocate_enitity_frames(*this);
 }
 
 size_t Scene::num_bytes() const noexcept {

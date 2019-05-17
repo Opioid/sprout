@@ -2,19 +2,21 @@
 #include "animation.hpp"
 #include "base/math/vector4.inl"
 #include "scene/entity/entity.hpp"
+#include "scene/scene.hpp"
 
 namespace scene::animation {
 
-Stage::Stage(entity::Entity* entity, Animation* animation) noexcept
+Stage::Stage(uint32_t entity, Animation* animation) noexcept
     : entity_(entity), animation_(animation) {}
 
-void Stage::allocate_enitity_frames() const noexcept {
+void Stage::allocate_enitity_frames(Scene const& scene) const noexcept {
     uint32_t const num_frames = animation_->num_interpolated_frames();
-    entity_->allocate_frames(num_frames, num_frames);
+    scene.entity(entity_)->allocate_frames(num_frames, num_frames);
 }
 
-void Stage::update() const noexcept {
-    entity_->set_frames(animation_->interpolated_frames(), animation_->num_interpolated_frames());
+void Stage::update(Scene const& scene) const noexcept {
+    scene.entity(entity_)->set_frames(animation_->interpolated_frames(),
+                                      animation_->num_interpolated_frames());
 }
 
 }  // namespace scene::animation

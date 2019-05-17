@@ -334,10 +334,11 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
     }
 
     if (animation_value) {
-        if (auto animation = scene::animation::load(*animation_value, transformation, scene);
-            animation) {
-            scene.create_animation_stage(camera, animation);
-        }
+        //        if (auto animation = scene::animation::load(*animation_value, transformation,
+        //        scene);
+        //            animation) {
+        //            scene.create_animation_stage(camera, animation);
+        //        }
     } else {
         camera->allocate_frames(1, 1);
         camera->set_transformation(transformation);

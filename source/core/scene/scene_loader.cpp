@@ -216,7 +216,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         entity::Entity_ref entity = entity::Entity_ref::Null();
 
         if ("Light" == type_name) {
-            prop::Prop_ref prop = load_prop(e, name, mount_folder, local_materials, scene);
+            prop::Prop_ref const prop = load_prop(e, name, mount_folder, local_materials, scene);
 
             if (prop.ref && prop.ref->visible_in_reflection()) {
                 create_light(prop.id, scene);
@@ -224,8 +224,9 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
             entity = Scene::Entity_ref{prop.ref, prop.id};
         } else if ("Prop" == type_name) {
-            prop::Prop_ref prop = load_prop(e, name, mount_folder, local_materials, scene);
-            entity              = Scene::Entity_ref{prop.ref, prop.id};
+            prop::Prop_ref const prop = load_prop(e, name, mount_folder, local_materials, scene);
+
+            entity = Scene::Entity_ref{prop.ref, prop.id};
         } else if ("Dummy" == type_name) {
             entity = scene.create_dummy();
         } else {
@@ -261,7 +262,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         if (animation_value) {
             animation = animation::load(*animation_value, transformation, scene);
             if (animation) {
-                scene.create_animation_stage(entity.ref, animation);
+                scene.create_animation_stage(entity.id, animation);
             }
         }
 

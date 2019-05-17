@@ -155,7 +155,7 @@ class Scene {
 
     animation::Animation* create_animation(uint32_t count) noexcept;
 
-    void create_animation_stage(Entity* entity, animation::Animation* animation) noexcept;
+    void create_animation_stage(uint32_t entity, animation::Animation* animation) noexcept;
 
     size_t num_bytes() const noexcept;
 
