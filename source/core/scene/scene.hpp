@@ -180,21 +180,13 @@ class Scene {
     bool has_tinted_shadow_;
     bool has_volumes_;
 
-    std::vector<entity::Entity*> dummies_;
-
     std::vector<prop::Prop*> props_;
 
-    std::vector<uint32_t> finite_iprops_;
-    std::vector<uint32_t> infinite_iprops_;
+    std::vector<uint32_t> finite_props_;
+    std::vector<uint32_t> infinite_props_;
 
-    std::vector<uint32_t> ivolumes_;
-    std::vector<uint32_t> infinite_ivolumes_;
-
-    std::vector<prop::Prop*> finite_props_;
-    std::vector<prop::Prop*> infinite_props_;
-
-    std::vector<prop::Prop*> volumes_;
-    std::vector<prop::Prop*> infinite_volumes_;
+    std::vector<uint32_t> volumes_;
+    std::vector<uint32_t> infinite_volumes_;
 
     std::vector<light::Light*> lights_;
 

@@ -27,12 +27,7 @@
 namespace scene {
 
 Scene::Scene() noexcept {
-    dummies_.reserve(16);
     props_.reserve(16);
-    finite_iprops_.reserve(16);
-    infinite_iprops_.reserve(2);
-    ivolumes_.reserve(16);
-    infinite_ivolumes_.reserve(1);
     finite_props_.reserve(16);
     infinite_props_.reserve(2);
     volumes_.reserve(16);
@@ -62,16 +57,8 @@ Scene::~Scene() noexcept {
         }
     }
 
-    for (auto p : finite_props_) {
+    for (auto p : props_) {
         delete p;
-    }
-
-    for (auto p : infinite_props_) {
-        delete p;
-    }
-
-    for (auto const d : dummies_) {
-        delete d;
     }
 }
 
@@ -90,7 +77,8 @@ AABB const& Scene::aabb() const noexcept {
 AABB Scene::caustic_aabb() const noexcept {
     AABB aabb = AABB::empty();
 
-    for (auto const p : finite_props_) {
+    for (auto const i : finite_props_) {
+        Prop const* p = props_[i];
         if (p->has_caustic_material()) {
             aabb.merge_assign(p->aabb());
         }
@@ -102,7 +90,8 @@ AABB Scene::caustic_aabb() const noexcept {
 AABB Scene::caustic_aabb(float3x3 const& rotation) const noexcept {
     AABB aabb = AABB::empty();
 
-    for (auto const p : finite_props_) {
+    for (auto const i : finite_props_) {
+        Prop const* p = props_[i];
         if (p->has_caustic_material()) {
             aabb.merge_assign(p->aabb().transform_transposed(rotation));
         }
@@ -167,13 +156,13 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
 }
 
 Prop* Scene::prop(size_t index) const noexcept {
-    SOFT_ASSERT(index >= props_.size());
+    SOFT_ASSERT(index < props_.size());
 
     return props_[index];
 }
 
 entity::Entity* Scene::entity(size_t index) const noexcept {
-    SOFT_ASSERT(index >= props_.size());
+    SOFT_ASSERT(index < props_.size());
 
     return props_[index];
 }
@@ -225,7 +214,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
         s.update(*this);
     }
 
-    for (auto p : finite_props_) {
+    for (auto p : props_) {
         p->morph(thread_pool);
     }
 
@@ -240,38 +229,27 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
 
-    // handle changed transformations
-    for (auto const d : dummies_) {
-        d->calculate_world_transformation(*this);
-    }
-
     for (auto e : extensions_) {
         e->update(*this);
     }
 
-    for (auto p : finite_props_) {
-        p->calculate_world_transformation(*this);
-        has_masked_material_ = has_masked_material_ || p->has_masked_material();
-        has_tinted_shadow_   = has_tinted_shadow_ || p->has_tinted_shadow();
-    }
-
-    for (auto p : infinite_props_) {
+    for (auto p : props_) {
         p->calculate_world_transformation(*this);
         has_masked_material_ = has_masked_material_ || p->has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p->has_tinted_shadow();
     }
 
     for (auto v : volumes_) {
-        v->set_visible_in_shadow(false);
+        props_[v]->set_visible_in_shadow(false);
     }
 
     // rebuild prop BVH
-    bvh_builder_.build(prop_bvh_.tree(), finite_props_);
-    prop_bvh_.set_props(finite_props_, infinite_props_);
+    bvh_builder_.build(prop_bvh_.tree(), finite_props_, props_);
+    prop_bvh_.set_props(finite_props_, infinite_props_, props_);
 
     // rebuild volume BVH
-    bvh_builder_.build(volume_bvh_.tree(), volumes_);
-    volume_bvh_.set_props(volumes_, infinite_volumes_);
+    bvh_builder_.build(volume_bvh_.tree(), volumes_, props_);
+    volume_bvh_.set_props(volumes_, infinite_volumes_, props_);
 
     // re-sort lights PDF
     for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
@@ -297,8 +275,6 @@ Scene::Entity_ref Scene::create_dummy() noexcept {
 
     props_.push_back(prop);
 
-    dummies_.push_back(prop);
-
     return {prop, static_cast<uint32_t>(props_.size()) - 1};
 }
 
@@ -320,20 +296,16 @@ Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noe
     uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
 
     if (shape->is_finite()) {
-        finite_props_.push_back(prop);
-        finite_iprops_.push_back(prop_id);
+        finite_props_.push_back(prop_id);
     } else {
-        infinite_props_.push_back(prop);
-        infinite_iprops_.push_back(prop_id);
+        infinite_props_.push_back(prop_id);
     }
 
     if (prop->has_no_surface()) {
         if (shape->is_finite()) {
-            volumes_.push_back(prop);
-            ivolumes_.push_back(prop_id);
+            volumes_.push_back(prop_id);
         } else {
-            infinite_volumes_.push_back(prop);
-            infinite_ivolumes_.push_back(prop_id);
+            infinite_volumes_.push_back(prop_id);
         }
     }
 
@@ -439,11 +411,7 @@ void Scene::create_animation_stage(uint32_t entity, animation::Animation* animat
 size_t Scene::num_bytes() const noexcept {
     size_t num_bytes = 0;
 
-    for (auto p : finite_props_) {
-        num_bytes += p->num_bytes();
-    }
-
-    for (auto p : infinite_props_) {
+    for (auto p : props_) {
         num_bytes += p->num_bytes();
     }
 

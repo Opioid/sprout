@@ -23,12 +23,12 @@ Builder<T>::~Builder() noexcept {
 }
 
 template <typename T>
-void Builder<T>::build(Tree<T>& tree, std::vector<T*>& finite_props) noexcept {
-    if (finite_props.empty()) {
+void Builder<T>::build(Tree<T>& tree, std::vector<uint32_t>& indices, std::vector<T*> const& props) noexcept {
+    if (props.empty()) {
         nodes_ = tree.allocate_nodes(0);
     } else {
         num_nodes_ = 1;
-        split(root_, finite_props.begin(), finite_props.end(), finite_props.begin(), 4);
+        split(root_, indices.begin(), indices.end(), indices.begin(), props, 4);
 
         nodes_ = tree.allocate_nodes(num_nodes_);
 
@@ -63,20 +63,21 @@ void Builder<T>::Build_node::clear() noexcept {
 }
 
 template <typename T>
-void Builder<T>::split(Build_node* node, index begin, index end, const_index origin,
+void Builder<T>::split(Build_node* node, index begin, index end, const_index origin, std::vector<T*> const& props,
                        uint32_t max_shapes) noexcept {
-    node->aabb = aabb(begin, end);
+    node->aabb = aabb(begin, end, props);
 
     if (static_cast<uint32_t>(std::distance(begin, end)) <= max_shapes) {
         assign(node, begin, end, origin);
     } else {
-        Split_candidate<T> sp = splitting_plane(node->aabb, begin, end);
+        Split_candidate<T> sp = splitting_plane(node->aabb, begin, end, props);
 
         node->axis = sp.axis();
 
-        index props1_begin = std::partition(begin, end, [&sp](T* b) {
-            bool const mib = math::plane::behind(sp.plane(), b->aabb().min());
-            bool const mab = math::plane::behind(sp.plane(), b->aabb().max());
+        index props1_begin = std::partition(begin, end, [&sp, &props](uint32_t b) {
+            T const* p = props[b];
+            bool const mib = math::plane::behind(sp.plane(), p->aabb().min());
+            bool const mab = math::plane::behind(sp.plane(), p->aabb().max());
 
             return mib && mab;
         });
@@ -85,10 +86,10 @@ void Builder<T>::split(Build_node* node, index begin, index end, const_index ori
             assign(node, props1_begin, end, origin);
         } else {
             node->children[0] = new Build_node;
-            split(node->children[0], begin, props1_begin, origin, max_shapes);
+            split(node->children[0], begin, props1_begin, origin, props, max_shapes);
 
             node->children[1] = new Build_node;
-            split(node->children[1], props1_begin, end, origin, max_shapes);
+            split(node->children[1], props1_begin, end, origin, props, max_shapes);
 
             num_nodes_ += 2;
         }
@@ -97,20 +98,20 @@ void Builder<T>::split(Build_node* node, index begin, index end, const_index ori
 
 template <typename T>
 Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin,
-                                               index end) noexcept {
+                                               index end, std::vector<T*> const& props) noexcept {
     split_candidates_.clear();
 
     float3 average = float3(0.f);
 
     for (index i = begin; i != end; ++i) {
-        average += (*i)->aabb().position();
+        average += props[*i]->aabb().position();
     }
 
     average /= static_cast<float>(std::distance(begin, end));
 
-    split_candidates_.emplace_back(uint8_t(0), average, begin, end);
-    split_candidates_.emplace_back(uint8_t(1), average, begin, end);
-    split_candidates_.emplace_back(uint8_t(2), average, begin, end);
+    split_candidates_.emplace_back(uint8_t(0), average, begin, end, props);
+    split_candidates_.emplace_back(uint8_t(1), average, begin, end, props);
+    split_candidates_.emplace_back(uint8_t(2), average, begin, end, props);
 
     std::sort(
         split_candidates_.begin(), split_candidates_.end(),
@@ -155,11 +156,11 @@ void Builder<T>::assign(Build_node* node, const_index begin, const_index end,
 }
 
 template <typename T>
-AABB Builder<T>::aabb(index begin, index end) noexcept {
+AABB Builder<T>::aabb(index begin, index end, std::vector<T*> const& props) noexcept {
     AABB aabb = AABB::empty();
 
     for (index i = begin; i != end; ++i) {
-        aabb.merge_assign((*i)->aabb());
+        aabb.merge_assign(props[*i]->aabb());
     }
 
     return aabb;
