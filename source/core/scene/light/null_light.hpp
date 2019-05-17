@@ -13,8 +13,8 @@ namespace light {
 
 class Null_light : public Light {
   public:
-    Transformation const& transformation_at(uint64_t time, Transformation& transformation) const
-        noexcept override final;
+    Transformation const& transformation_at(uint64_t time, Transformation& transformation,
+                                            Scene const& scene) const noexcept override final;
 
     bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
                 bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
@@ -37,11 +37,12 @@ class Null_light : public Light {
     float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
               Worker const& worker) const noexcept override final;
 
-    float3 power(AABB const& scene_bb) const noexcept override final;
+    float3 power(AABB const& scene_bb, Scene const& scene) const noexcept override final;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, thread::Pool& pool) noexcept override;
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+                          thread::Pool& pool) noexcept override;
 
-    bool equals(Prop const* prop, uint32_t part) const noexcept override final;
+    bool equals(uint32_t prop, uint32_t part) const noexcept override final;
 };
 
 }  // namespace light

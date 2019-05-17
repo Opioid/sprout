@@ -98,20 +98,21 @@ Scene::Shape* Loader::cube() noexcept {
     return cube_;
 }
 
-void Loader::create_light(prop::Prop* prop, Scene& scene) noexcept {
+void Loader::create_light(uint32_t prop_id, Scene& scene) noexcept {
+    Prop const* prop = scene.prop(prop_id);
     for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
         if (auto const material = prop->material(i); material->is_emissive()) {
             if (material->is_scattering_volume()) {
                 if (prop->shape()->is_analytical() && material->has_emission_map()) {
-                    scene.create_prop_volume_image_light(prop, i);
+                    scene.create_prop_volume_image_light(prop_id, i);
                 } else {
-                    scene.create_prop_volume_light(prop, i);
+                    scene.create_prop_volume_light(prop_id, i);
                 }
             } else {
                 if (prop->shape()->is_analytical() && material->has_emission_map()) {
-                    scene.create_prop_image_light(prop, i);
+                    scene.create_prop_image_light(prop_id, i);
                 } else {
-                    scene.create_prop_light(prop, i);
+                    scene.create_prop_light(prop_id, i);
                 }
             }
         }
@@ -218,7 +219,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             prop::Prop_ref prop = load_prop(e, name, mount_folder, local_materials, scene);
 
             if (prop.ref && prop.ref->visible_in_reflection()) {
-                create_light(prop.ref, scene);
+                create_light(prop.id, scene);
             }
 
             entity = Scene::Entity_ref{prop.ref, prop.id};

@@ -4,6 +4,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
 #include "scene/prop/prop.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_ray.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/shape.hpp"
@@ -11,34 +12,36 @@
 
 namespace scene::light {
 
-void Prop_light::init(Prop* prop, uint32_t part) noexcept {
+void Prop_light::init(uint32_t prop, uint32_t part) noexcept {
     prop_ = prop;
     part_ = part;
 }
 
 Light::Transformation const& Prop_light::transformation_at(uint64_t        time,
-                                                           Transformation& transformation) const
-    noexcept {
-    return prop_->transformation_at(time, transformation);
+                                                           Transformation& transformation,
+                                                           Scene const&    scene) const noexcept {
+    return scene.prop(prop_)->transformation_at(time, transformation);
 }
 
 bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
                         bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                         Worker const& worker, Sample_to& result) const noexcept {
-    auto const material = prop_->material(part_);
+    Prop const* prop = worker.scene().prop(prop_);
 
-    float const area = prop_->area(part_);
+    auto const material = prop->material(part_);
+
+    float const area = prop->area(part_);
 
     bool const two_sided = material->is_two_sided();
 
     if (total_sphere) {
-        if (!prop_->shape()->sample(part_, p, transformation, area, two_sided, sampler,
-                                    sampler_dimension, worker.node_stack(), result)) {
+        if (!prop->shape()->sample(part_, p, transformation, area, two_sided, sampler,
+                                   sampler_dimension, worker.node_stack(), result)) {
             return false;
         }
     } else {
-        if (!prop_->shape()->sample(part_, p, n, transformation, area, two_sided, sampler,
-                                    sampler_dimension, worker.node_stack(), result)) {
+        if (!prop->shape()->sample(part_, p, n, transformation, area, two_sided, sampler,
+                                   sampler_dimension, worker.node_stack(), result)) {
             return false;
         }
 
@@ -52,9 +55,11 @@ bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& 
 
 float3 Prop_light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
     noexcept {
-    auto const material = prop_->material(part_);
+    Prop const* prop = worker.scene().prop(prop_);
 
-    float const area = prop_->area(part_);
+    auto const material = prop->material(part_);
+
+    float const area = prop->area(part_);
 
     return material->evaluate_radiance(sample.wi, sample.uvw.xy(), area, filter, worker);
 }
@@ -62,16 +67,18 @@ float3 Prop_light::evaluate(Sample_to const& sample, Filter filter, Worker const
 bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
                         uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
                         Sample_from& result) const noexcept {
-    auto const material = prop_->material(part_);
+    Prop const* prop = worker.scene().prop(prop_);
 
-    float const area = prop_->area(part_);
+    auto const material = prop->material(part_);
+
+    float const area = prop->area(part_);
 
     bool const two_sided = material->is_two_sided();
 
     float2 const importance_uv = sampler.generate_sample_2D();
 
-    if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
-                                importance_uv, bounds, worker.node_stack(), result)) {
+    if (!prop->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
+                               importance_uv, bounds, worker.node_stack(), result)) {
         return false;
     }
 
@@ -82,9 +89,11 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
                         uint32_t sampler_dimension, Distribution_2D const& importance,
                         AABB const& bounds, Worker const& worker, Sample_from& result) const
     noexcept {
-    auto const material = prop_->material(part_);
+    Prop const* prop = worker.scene().prop(prop_);
 
-    float const area = prop_->area(part_);
+    auto const material = prop->material(part_);
+
+    float const area = prop->area(part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -95,8 +104,8 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
         return false;
     }
 
-    if (!prop_->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
-                                importance_uv.uv, bounds, worker.node_stack(), result)) {
+    if (!prop->shape()->sample(part_, transformation, area, two_sided, sampler, sampler_dimension,
+                               importance_uv.uv, bounds, worker.node_stack(), result)) {
         return false;
     }
 
@@ -107,42 +116,49 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
 
 float3 Prop_light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
     noexcept {
-    auto const material = prop_->material(part_);
+    Prop const* prop = worker.scene().prop(prop_);
 
-    float const area = prop_->area(part_);
+    auto const material = prop->material(part_);
+
+    float const area = prop->area(part_);
 
     return material->evaluate_radiance(-sample.dir, sample.uv, area, filter, worker);
 }
 
 float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-                      Filter /*filter*/, Worker const& /*worker*/) const noexcept {
+                      Filter /*filter*/, Worker const& worker) const noexcept {
+    Prop const* prop = worker.scene().prop(prop_);
+
     Transformation temp;
-    auto const&    transformation = prop_->transformation_at(ray.time, temp);
+    auto const&    transformation = prop->transformation_at(ray.time, temp);
 
-    float const area = prop_->area(part_);
+    float const area = prop->area(part_);
 
-    bool const two_sided = prop_->material(part_)->is_two_sided();
+    bool const two_sided = prop->material(part_)->is_two_sided();
 
-    return prop_->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
+    return prop->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
 }
 
-float3 Prop_light::power(AABB const& scene_bb) const noexcept {
-    float const area = prop_->area(part_);
+float3 Prop_light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
+    Prop const* prop = scene.prop(prop_);
 
-    float3 const radiance = prop_->material(part_)->average_radiance(area);
+    float const area = prop->area(part_);
 
-    if (prop_->shape()->is_finite()) {
+    float3 const radiance = prop->material(part_)->average_radiance(area);
+
+    if (prop->shape()->is_finite()) {
         return area * radiance;
     } else {
         return squared_length(scene_bb.halfsize()) * area * radiance;
     }
 }
 
-void Prop_light::prepare_sampling(uint32_t light_id, uint64_t time, thread::Pool& pool) noexcept {
-    prop_->prepare_sampling(part_, light_id, time, false, pool);
+void Prop_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+                                  thread::Pool& pool) noexcept {
+    scene.prop(prop_)->prepare_sampling(part_, light_id, time, false, pool);
 }
 
-bool Prop_light::equals(Prop const* prop, uint32_t part) const noexcept {
+bool Prop_light::equals(uint32_t prop, uint32_t part) const noexcept {
     return prop_ == prop && part_ == part;
 }
 

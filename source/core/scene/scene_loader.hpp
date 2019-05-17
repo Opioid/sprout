@@ -85,7 +85,7 @@ class Loader {
     Shape* celestial_disk() noexcept;
     Shape* cube() noexcept;
 
-    void create_light(prop::Prop* prop, Scene& scene) noexcept;
+    void create_light(uint32_t prop_id, Scene& scene) noexcept;
 
     size_t num_bytes() const noexcept;
 

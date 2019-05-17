@@ -166,10 +166,14 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
     return false;
 }
 
+Prop* Scene::prop(size_t index) const noexcept {
+    SOFT_ASSERT(index >= props_.size());
+
+    return props_[index];
+}
+
 entity::Entity* Scene::entity(size_t index) const noexcept {
-    if (index >= props_.size()) {
-        return nullptr;
-    }
+    SOFT_ASSERT(index >= props_.size());
 
     return props_[index];
 }
@@ -272,8 +276,8 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     // re-sort lights PDF
     for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
         auto l = lights_[i];
-        l->prepare_sampling(i, time, pool);
-        light_powers_[i] = std::sqrt(spectrum::luminance(l->power(prop_bvh_.aabb())));
+        l->prepare_sampling(i, time, *this, pool);
+        light_powers_[i] = std::sqrt(spectrum::luminance(l->power(prop_bvh_.aabb(), *this)));
     }
 
     light_distribution_.init(light_powers_.data(), static_cast<uint32_t>(light_powers_.size()));
@@ -345,7 +349,7 @@ Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials,
     return prop;
 }
 
-light::Light* Scene::create_prop_light(Prop* prop, uint32_t part) noexcept {
+light::Light* Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_light* light = new light::Prop_light;
 
     lights_.push_back(light);
@@ -355,7 +359,7 @@ light::Light* Scene::create_prop_light(Prop* prop, uint32_t part) noexcept {
     return light;
 }
 
-light::Light* Scene::create_prop_image_light(Prop* prop, uint32_t part) noexcept {
+light::Light* Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_image_light* light = new light::Prop_image_light;
 
     lights_.push_back(light);
@@ -365,7 +369,7 @@ light::Light* Scene::create_prop_image_light(Prop* prop, uint32_t part) noexcept
     return light;
 }
 
-light::Light* Scene::create_prop_volume_light(Prop* prop, uint32_t part) noexcept {
+light::Light* Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_volume_light* light = new light::Prop_volume_light;
 
     lights_.push_back(light);
@@ -375,7 +379,7 @@ light::Light* Scene::create_prop_volume_light(Prop* prop, uint32_t part) noexcep
     return light;
 }
 
-light::Light* Scene::create_prop_volume_image_light(Prop* prop, uint32_t part) noexcept {
+light::Light* Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_volume_image_light* light = new light::Prop_volume_image_light;
 
     lights_.push_back(light);

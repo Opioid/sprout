@@ -4,8 +4,8 @@
 namespace scene::light {
 
 Light::Transformation const& Null_light::transformation_at(uint64_t /*time*/,
-                                                           Transformation& transformation) const
-    noexcept {
+                                                           Transformation& transformation,
+                                                           Scene const& /*scene*/) const noexcept {
     return transformation;
 }
 
@@ -44,14 +44,14 @@ float Null_light::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
     return 0.f;
 }
 
-float3 Null_light::power(AABB const& /*scene_bb*/) const noexcept {
+float3 Null_light::power(AABB const& /*scene_bb*/, Scene const& /*scene*/) const noexcept {
     return float3(0.f);
 }
 
-void Null_light::prepare_sampling(uint32_t /*light_id*/, uint64_t /*time*/,
+void Null_light::prepare_sampling(uint32_t /*light_id*/, uint64_t /*time*/, Scene const& /*scene*/,
                                   thread::Pool& /*pool*/) noexcept {}
 
-bool Null_light::equals(Prop const* /*prop*/, uint32_t /*part*/) const noexcept {
+bool Null_light::equals(uint32_t /*prop*/, uint32_t /*part*/) const noexcept {
     return false;
 }
 

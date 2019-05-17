@@ -25,9 +25,10 @@ class Prop_volume_light : public Prop_light {
     float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
               Worker const& worker) const noexcept override;
 
-    float3 power(AABB const& scene_bb) const noexcept override final;
+    float3 power(AABB const& scene_bb, Scene const& scene) const noexcept override final;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, thread::Pool& pool) noexcept override;
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+                          thread::Pool& pool) noexcept override;
 };
 
 }  // namespace scene::light

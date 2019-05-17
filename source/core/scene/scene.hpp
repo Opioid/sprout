@@ -104,7 +104,10 @@ class Scene {
     bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
         noexcept;
 
+    Prop* prop(size_t index) const noexcept;
+
     Entity* entity(size_t index) const noexcept;
+
     Entity* entity(std::string_view name) const noexcept;
 
     std::vector<light::Light*> const& lights() const noexcept;
@@ -133,13 +136,13 @@ class Scene {
     Prop_ref create_prop(Shape* shape, Materials const& materials,
                          std::string const& name) noexcept;
 
-    light::Light* create_prop_light(Prop* prop, uint32_t part) noexcept;
+    light::Light* create_prop_light(uint32_t prop, uint32_t part) noexcept;
 
-    light::Light* create_prop_image_light(Prop* prop, uint32_t part) noexcept;
+    light::Light* create_prop_image_light(uint32_t prop, uint32_t part) noexcept;
 
-    light::Light* create_prop_volume_light(Prop* prop, uint32_t part) noexcept;
+    light::Light* create_prop_volume_light(uint32_t prop, uint32_t part) noexcept;
 
-    light::Light* create_prop_volume_image_light(Prop* prop, uint32_t part) noexcept;
+    light::Light* create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept;
 
     Entity_ref create_extension(Extension* extension) noexcept;
     //   uint32_t create_extension(Extension* extension, std::string const& name) noexcept;

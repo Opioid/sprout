@@ -38,6 +38,7 @@ struct Sample_to;
 struct Sample_from;
 }  // namespace shape
 
+class Scene;
 class Worker;
 struct Ray;
 
@@ -56,9 +57,8 @@ class Light {
 
     virtual ~Light() noexcept;
 
-    virtual Transformation const& transformation_at(uint64_t        time,
-                                                    Transformation& transformation) const
-        noexcept = 0;
+    virtual Transformation const& transformation_at(uint64_t time, Transformation& transformation,
+                                                    Scene const& scene) const noexcept = 0;
 
     virtual bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
                         bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
@@ -96,12 +96,12 @@ class Light {
     virtual float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                       Filter filter, Worker const& worker) const noexcept = 0;
 
-    virtual float3 power(AABB const& scene_bb) const noexcept = 0;
+    virtual float3 power(AABB const& scene_bb, Scene const& scene) const noexcept = 0;
 
-    virtual void prepare_sampling(uint32_t light_id, uint64_t time,
+    virtual void prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
                                   thread::Pool& pool) noexcept = 0;
 
-    virtual bool equals(Prop const* prop, uint32_t part) const noexcept = 0;
+    virtual bool equals(uint32_t prop, uint32_t part) const noexcept = 0;
 
     static uint32_t constexpr Volume_light_mask = 0x40000000;
 

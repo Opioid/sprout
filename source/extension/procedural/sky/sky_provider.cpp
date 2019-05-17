@@ -76,12 +76,12 @@ entity::Entity_ref Provider::create_extension(json::Value const& extension_value
     }
 
     if (bake) {
-        scene.create_prop_image_light(sky_prop.ref, 0);
+        scene.create_prop_image_light(sky_prop.id, 0);
     } else {
-        scene.create_prop_light(sky_prop.ref, 0);
+        scene.create_prop_light(sky_prop.id, 0);
     }
 
-    scene.create_prop_light(sun_prop.ref, 0);
+    scene.create_prop_light(sun_prop.id, 0);
 
     return sky_entity;
 }

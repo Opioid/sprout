@@ -4,6 +4,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
 #include "scene/prop/prop.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_ray.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/shape.hpp"
@@ -14,9 +15,11 @@ namespace scene::light {
 
 bool Prop_image_light::sample(float3 const& p, float3 const& n,
                               Transformation const& transformation, bool total_sphere,
-                              Sampler& sampler, uint32_t           sampler_dimension,
-                              Worker const& /*worker*/, Sample_to& result) const noexcept {
-    auto const material = prop_->material(part_);
+                              Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
+                              Sample_to& result) const noexcept {
+    Prop const* prop = worker.scene().prop(prop_);
+
+    auto const material = prop->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
@@ -25,12 +28,12 @@ bool Prop_image_light::sample(float3 const& p, float3 const& n,
         return false;
     }
 
-    float const area = prop_->area(part_);
+    float const area = prop->area(part_);
 
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result)) {
+    if (!prop->shape()->sample(part_, p, rs.uv, transformation, area, two_sided, result)) {
         return false;
     }
 
@@ -43,9 +46,11 @@ bool Prop_image_light::sample(float3 const& p, float3 const& n,
 }
 
 bool Prop_image_light::sample(Transformation const& transformation, Sampler& sampler,
-                              uint32_t sampler_dimension, AABB const& bounds,
-                              Worker const& /*worker*/, Sample_from&  result) const noexcept {
-    auto const material = prop_->material(part_);
+                              uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
+                              Sample_from& result) const noexcept {
+    Prop const* prop = worker.scene().prop(prop_);
+
+    auto const material = prop->material(part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
@@ -54,15 +59,15 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
         return false;
     }
 
-    float const area = prop_->area(part_);
+    float const area = prop->area(part_);
 
     bool const two_sided = material->is_two_sided();
 
     float2 const importance_uv = sampler.generate_sample_2D();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, sampler,
-                                sampler_dimension, importance_uv, bounds, result)) {
+    if (!prop->shape()->sample(part_, rs.uv, transformation, area, two_sided, sampler,
+                               sampler_dimension, importance_uv, bounds, result)) {
         return false;
     }
 
@@ -73,9 +78,11 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
 
 bool Prop_image_light::sample(Transformation const& transformation, Sampler& sampler,
                               uint32_t sampler_dimension, Distribution_2D const& importance,
-                              AABB const&  bounds, Worker const& /*worker*/,
-                              Sample_from& result) const noexcept {
-    auto const material = prop_->material(part_);
+                              AABB const& bounds, Worker const& worker, Sample_from& result) const
+    noexcept {
+    Prop const* prop = worker.scene().prop(prop_);
+
+    auto const material = prop->material(part_);
 
     float2 const s2d0 = sampler.generate_sample_2D(sampler_dimension);
 
@@ -84,7 +91,7 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
         return false;
     }
 
-    float const area = prop_->area(part_);
+    float const area = prop->area(part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -96,8 +103,8 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
     }
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!prop_->shape()->sample(part_, rs.uv, transformation, area, two_sided, sampler,
-                                sampler_dimension, importance_uv.uv, bounds, result)) {
+    if (!prop->shape()->sample(part_, rs.uv, transformation, area, two_sided, sampler,
+                               sampler_dimension, importance_uv.uv, bounds, result)) {
         return false;
     }
 
@@ -108,27 +115,29 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
 
 float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bool /*total_sphere*/,
                             Filter filter, Worker const& worker) const noexcept {
+    Prop const* prop = worker.scene().prop(prop_);
+
     Transformation temp;
-    auto const&    transformation = prop_->transformation_at(ray.time, temp);
+    auto const&    transformation = prop->transformation_at(ray.time, temp);
 
-    float const area = prop_->area(part_);
+    float const area = prop->area(part_);
 
-    auto const material = prop_->material(part_);
+    auto const material = prop->material(part_);
 
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    float const shape_pdf = prop_->shape()->pdf_uv(ray, intersection, transformation, area,
-                                                   two_sided);
+    float const shape_pdf = prop->shape()->pdf_uv(ray, intersection, transformation, area,
+                                                  two_sided);
 
     float const material_pdf = material->emission_pdf(intersection.uv, filter, worker);
 
     return shape_pdf * material_pdf;
 }
 
-void Prop_image_light::prepare_sampling(uint32_t light_id, uint64_t time,
+void Prop_image_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
                                         thread::Pool& pool) noexcept {
-    prop_->prepare_sampling(part_, light_id, time, true, pool);
+    scene.prop(prop_)->prepare_sampling(part_, light_id, time, true, pool);
 }
 
 }  // namespace scene::light
