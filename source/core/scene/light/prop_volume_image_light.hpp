@@ -14,7 +14,7 @@ class Prop_volume_image_light final : public Prop_volume_light {
     float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
               Worker const& worker) const noexcept override final;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                           thread::Pool& pool) noexcept override final;
 };
 

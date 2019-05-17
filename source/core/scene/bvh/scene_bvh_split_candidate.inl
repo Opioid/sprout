@@ -13,12 +13,12 @@ Split_candidate<T>::Split_candidate(math::Plane const& plane, uint8_t axis) noex
 
 template <typename T>
 Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos,
-                                    std::vector<uint32_t> const& indices, std::vector<T*> const& props) noexcept
+                                    std::vector<uint32_t> const& indices, std::vector<T> const& props) noexcept
     : Split_candidate(split_axis, pos, indices.begin(), indices.end(), props) {}
 
 template <typename T>
 Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index begin,
-                                    index end, std::vector<T*> const& props) noexcept
+                                    index end, std::vector<T> const& props) noexcept
     : axis_(split_axis) {
     key_ = 0;
 
@@ -44,9 +44,9 @@ Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index
     uint32_t split      = 0;
 
     for (index i = begin; i != end; ++i) {
-        T const* p = props[*i];
-        bool const mib = math::plane::behind(plane_, p->aabb().min());
-        bool const mab = math::plane::behind(plane_, p->aabb().max());
+        T const& p = props[*i];
+        bool const mib = math::plane::behind(plane_, p.aabb().min());
+        bool const mab = math::plane::behind(plane_, p.aabb().max());
 
         if (mib && mab) {
             ++num_side_0;

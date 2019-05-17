@@ -109,7 +109,7 @@ class Loader {
                              std::string_view mount_folder, Local_materials const& local_materials,
                              Scene& scene) noexcept;
 
-    entity::Entity_ref load_extension(std::string const& type, json::Value const& extension_value,
+    uint32_t load_extension(std::string const& type, json::Value const& extension_value,
                                       std::string const& name, Scene& scene) noexcept;
 
     Shape* load_shape(json::Value const& shape_value) noexcept;

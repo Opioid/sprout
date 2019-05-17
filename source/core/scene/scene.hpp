@@ -104,9 +104,11 @@ class Scene {
     bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
         noexcept;
 
-    Prop* prop(size_t index) const noexcept;
+    Prop const* prop(size_t index) const noexcept;
+    Prop* prop(size_t index) noexcept;
 
-    Entity* entity(size_t index) const noexcept;
+    Entity const* entity(size_t index) const noexcept;
+    Entity* entity(size_t index) noexcept;
 
     Entity* entity(std::string_view name) const noexcept;
 
@@ -147,9 +149,9 @@ class Scene {
     Entity_ref create_extension(Extension* extension) noexcept;
     //   uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
 
-    void attach(uint32_t parent_id, uint32_t child_id) const noexcept;
+    void attach(uint32_t parent_id, uint32_t child_id) noexcept;
 
-    void set_transformation(uint32_t entity, math::Transformation const& t) const noexcept;
+    void set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
     void add_material(Material* material) noexcept;
 
@@ -180,7 +182,7 @@ class Scene {
     bool has_tinted_shadow_;
     bool has_volumes_;
 
-    std::vector<prop::Prop*> props_;
+    std::vector<prop::Prop> props_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;

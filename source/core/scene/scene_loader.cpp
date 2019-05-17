@@ -213,7 +213,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
         std::string const name = json::read_string(e, "name");
 
-        entity::Entity_ref entity = entity::Entity_ref::Null();
+        uint32_t entity_id = 0xFFFFFFFF;
 
         if ("Light" == type_name) {
             prop::Prop_ref const prop = load_prop(e, name, mount_folder, local_materials, scene);
@@ -222,20 +222,22 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
                 create_light(prop.id, scene);
             }
 
-            entity = Scene::Entity_ref{prop.ref, prop.id};
+            entity_id = prop.id;
         } else if ("Prop" == type_name) {
             prop::Prop_ref const prop = load_prop(e, name, mount_folder, local_materials, scene);
 
-            entity = Scene::Entity_ref{prop.ref, prop.id};
+            entity_id = prop.id;
         } else if ("Dummy" == type_name) {
-            entity = scene.create_dummy();
+            entity_id = scene.create_dummy().id;
         } else {
-            entity = load_extension(type_name, e, name, scene);
+            entity_id = load_extension(type_name, e, name, scene);
         }
 
-        if (!entity.ref) {
+        if (0xFFFFFFFF == entity_id) {
             continue;
         }
+
+        entity::Entity* entity_ptr = scene.entity(entity_id);
 
         math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
 
@@ -262,28 +264,28 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         if (animation_value) {
             animation = animation::load(*animation_value, transformation, scene);
             if (animation) {
-                scene.create_animation_stage(entity.id, animation);
+                scene.create_animation_stage(entity_id, animation);
             }
         }
 
         if (parent_id != 0xFFFFFFFF) {
-            scene.attach(parent_id, entity.id);
+            scene.attach(parent_id, entity_id);
         }
 
         if (!animation) {
             if (parent_id == 0xFFFFFFFF) {
-                entity.ref->allocate_frames(1, 1);
+                entity_ptr->allocate_frames(1, 1);
             }
 
-            entity.ref->set_transformation(transformation);
+            entity_ptr->set_transformation(transformation);
         }
 
         if (visibility) {
-            set_visibility(entity.ref, *visibility);
+            set_visibility(entity_ptr, *visibility);
         }
 
         if (children) {
-            load_entities(*children, entity.id, mount_folder, local_materials, scene);
+            load_entities(*children, entity_id, mount_folder, local_materials, scene);
         }
     }
 }
@@ -357,17 +359,15 @@ prop::Prop_ref Loader::load_prop(json::Value const& prop_value, std::string cons
     return prop;
 }
 
-entity::Entity_ref Loader::load_extension(std::string const& type,
+uint32_t Loader::load_extension(std::string const& type,
                                           json::Value const& extension_value,
                                           std::string const& name, Scene& scene) noexcept {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
-        entity::Entity_ref entity = p->second->create_extension(extension_value, name, scene,
-                                                                resource_manager_);
-
-        return entity;
+        return p->second->create_extension(extension_value, name, scene,
+                                                                resource_manager_).id;
     }
 
-    return Scene::Entity_ref::Null();
+    return 0xFFFFFFFF;
 }
 
 Scene::Shape* Loader::load_shape(json::Value const& shape_value) noexcept {

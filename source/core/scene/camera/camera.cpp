@@ -21,7 +21,7 @@ Camera::~Camera() noexcept {
     delete sensor_;
 }
 
-void Camera::update(Scene const& scene, uint64_t time, Worker& worker) noexcept {
+void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
     calculate_world_transformation(scene);
 
     interface_stack_.clear();

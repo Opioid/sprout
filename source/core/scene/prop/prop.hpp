@@ -31,6 +31,10 @@ class Prop : public entity::Entity {
     using Material   = material::Material;
     using Shape      = shape::Shape;
 
+    Prop();
+
+    Prop(Prop&& other) noexcept;
+
     ~Prop() noexcept override;
 
     void morph(thread::Pool& pool) noexcept;

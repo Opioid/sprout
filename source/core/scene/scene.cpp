@@ -26,17 +26,19 @@
 
 namespace scene {
 
+static size_t constexpr Num_reserved_props = 32;
+
 Scene::Scene() noexcept {
-    props_.reserve(16);
-    finite_props_.reserve(16);
-    infinite_props_.reserve(2);
-    volumes_.reserve(16);
+    props_.reserve(Num_reserved_props);
+    finite_props_.reserve(Num_reserved_props);
+    infinite_props_.reserve(3);
+    volumes_.reserve(Num_reserved_props);
     infinite_volumes_.reserve(1);
-    lights_.reserve(16);
-    extensions_.reserve(16);
-    materials_.reserve(16);
-    animations_.reserve(16);
-    animation_stages_.reserve(16);
+    lights_.reserve(Num_reserved_props);
+    extensions_.reserve(Num_reserved_props);
+    materials_.reserve(Num_reserved_props);
+    animations_.reserve(Num_reserved_props);
+    animation_stages_.reserve(Num_reserved_props);
 }
 
 Scene::~Scene() noexcept {
@@ -56,10 +58,6 @@ Scene::~Scene() noexcept {
             delete l;
         }
     }
-
-    for (auto p : props_) {
-        delete p;
-    }
 }
 
 void Scene::finish() noexcept {
@@ -78,9 +76,9 @@ AABB Scene::caustic_aabb() const noexcept {
     AABB aabb = AABB::empty();
 
     for (auto const i : finite_props_) {
-        Prop const* p = props_[i];
-        if (p->has_caustic_material()) {
-            aabb.merge_assign(p->aabb());
+        Prop const& p = props_[i];
+        if (p.has_caustic_material()) {
+            aabb.merge_assign(p.aabb());
         }
     }
 
@@ -91,9 +89,9 @@ AABB Scene::caustic_aabb(float3x3 const& rotation) const noexcept {
     AABB aabb = AABB::empty();
 
     for (auto const i : finite_props_) {
-        Prop const* p = props_[i];
-        if (p->has_caustic_material()) {
-            aabb.merge_assign(p->aabb().transform_transposed(rotation));
+        Prop const& p = props_[i];
+        if (p.has_caustic_material()) {
+            aabb.merge_assign(p.aabb().transform_transposed(rotation));
         }
     }
 
@@ -155,16 +153,28 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
     return false;
 }
 
-Prop* Scene::prop(size_t index) const noexcept {
+Prop const* Scene::prop(size_t index) const noexcept {
     SOFT_ASSERT(index < props_.size());
 
-    return props_[index];
+    return &props_[index];
 }
 
-entity::Entity* Scene::entity(size_t index) const noexcept {
+Prop* Scene::prop(size_t index) noexcept {
     SOFT_ASSERT(index < props_.size());
 
-    return props_[index];
+    return &props_[index];
+}
+
+entity::Entity const* Scene::entity(size_t index) const noexcept {
+    SOFT_ASSERT(index < props_.size());
+
+    return &props_[index];
+}
+
+entity::Entity* Scene::entity(size_t index) noexcept {
+    SOFT_ASSERT(index < props_.size());
+
+    return &props_[index];
 }
 
 entity::Entity* Scene::entity(std::string_view name) const noexcept {
@@ -214,8 +224,8 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
         s.update(*this);
     }
 
-    for (auto p : props_) {
-        p->morph(thread_pool);
+    for (auto& p : props_) {
+        p.morph(thread_pool);
     }
 
     for (auto m : materials_) {
@@ -233,14 +243,14 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
         e->update(*this);
     }
 
-    for (auto p : props_) {
-        p->calculate_world_transformation(*this);
-        has_masked_material_ = has_masked_material_ || p->has_masked_material();
-        has_tinted_shadow_   = has_tinted_shadow_ || p->has_tinted_shadow();
+    for (auto& p : props_) {
+        p.calculate_world_transformation(*this);
+        has_masked_material_ = has_masked_material_ || p.has_masked_material();
+        has_tinted_shadow_   = has_tinted_shadow_ || p.has_tinted_shadow();
     }
 
     for (auto v : volumes_) {
-        props_[v]->set_visible_in_shadow(false);
+        props_[v].set_visible_in_shadow(false);
     }
 
     // rebuild prop BVH
@@ -269,13 +279,15 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
 }
 
 Scene::Entity_ref Scene::create_dummy() noexcept {
-    prop::Prop* prop = new prop::Prop;
+    props_.emplace_back();
+
+    uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
+
+    prop::Prop* prop = &props_[prop_id];
 
     prop->set_shape_and_materials(&null_shape_, nullptr);
 
-    props_.push_back(prop);
-
-    return {prop, static_cast<uint32_t>(props_.size()) - 1};
+    return {prop, prop_id};
 }
 
 Scene::Entity_ref Scene::create_dummy(std::string const& name) noexcept {
@@ -287,13 +299,13 @@ Scene::Entity_ref Scene::create_dummy(std::string const& name) noexcept {
 }
 
 Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
-    prop::Prop* prop = new prop::Prop;
-
-    prop->set_shape_and_materials(shape, materials.data());
-
-    props_.push_back(prop);
+    props_.emplace_back();
 
     uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
+
+    prop::Prop* prop = &props_[prop_id];
+
+    prop->set_shape_and_materials(shape, materials.data());
 
     if (shape->is_finite()) {
         finite_props_.push_back(prop_id);
@@ -309,7 +321,7 @@ Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noe
         }
     }
 
-    return {prop, static_cast<uint32_t>(props_.size()) - 1};
+    return {prop, prop_id};
 }
 
 Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials,
@@ -364,10 +376,6 @@ light::Light* Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part
 Scene::Entity_ref Scene::create_extension(Extension* extension) noexcept {
     extensions_.push_back(extension);
 
-    //    entities_.push_back(extension);
-
-    //    return static_cast<uint32_t>(entities_.size()) - 1;
-
     Entity_ref dummy = create_dummy();
 
     extension->init(dummy.id);
@@ -375,20 +383,12 @@ Scene::Entity_ref Scene::create_extension(Extension* extension) noexcept {
     return dummy;
 }
 
-// uint32_t Scene::create_extension(Extension* extension, std::string const& name) noexcept {
-//    uint32_t const id = create_extension(extension);
-
-//    add_named_entity(extension, name);
-
-//    return id;
-//}
-
-void Scene::attach(uint32_t parent_id, uint32_t child_id) const noexcept {
-    props_[parent_id]->attach(parent_id, child_id, *this);
+void Scene::attach(uint32_t parent_id, uint32_t child_id) noexcept {
+    props_[parent_id].attach(parent_id, child_id, *this);
 }
 
-void Scene::set_transformation(uint32_t entity, math::Transformation const& t) const noexcept {
-    props_[entity]->set_transformation(t);
+void Scene::set_transformation(uint32_t entity, math::Transformation const& t) noexcept {
+    props_[entity].set_transformation(t);
 }
 
 void Scene::add_material(Material* material) noexcept {
@@ -411,8 +411,8 @@ void Scene::create_animation_stage(uint32_t entity, animation::Animation* animat
 size_t Scene::num_bytes() const noexcept {
     size_t num_bytes = 0;
 
-    for (auto p : props_) {
-        num_bytes += p->num_bytes();
+    for (auto& p : props_) {
+        num_bytes += p.num_bytes();
     }
 
     return num_bytes + sizeof(*this);

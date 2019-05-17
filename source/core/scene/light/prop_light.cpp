@@ -153,7 +153,7 @@ float3 Prop_light::power(AABB const& scene_bb, Scene const& scene) const noexcep
     }
 }
 
-void Prop_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+void Prop_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                   thread::Pool& pool) noexcept {
     scene.prop(prop_)->prepare_sampling(part_, light_id, time, false, pool);
 }

@@ -40,7 +40,7 @@ class Camera : public entity::Entity {
 
     virtual float pixel_solid_angle() const noexcept = 0;
 
-    void update(Scene const& scene, uint64_t time, Worker& worker) noexcept;
+    void update(Scene& scene, uint64_t time, Worker& worker) noexcept;
 
     virtual bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
                               Ray& ray) const noexcept = 0;

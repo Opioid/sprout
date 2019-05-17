@@ -68,6 +68,10 @@ scene::Scene const& Driver::scene() const noexcept {
     return scene_;
 }
 
+scene::Scene& Driver::scene() noexcept {
+    return scene_;
+}
+
 size_t Driver::num_bytes() const noexcept {
     // Every worker must have exactly the same size, so we only need to query a single one
     size_t const worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();

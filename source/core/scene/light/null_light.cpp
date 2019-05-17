@@ -48,7 +48,7 @@ float3 Null_light::power(AABB const& /*scene_bb*/, Scene const& /*scene*/) const
     return float3(0.f);
 }
 
-void Null_light::prepare_sampling(uint32_t /*light_id*/, uint64_t /*time*/, Scene const& /*scene*/,
+void Null_light::prepare_sampling(uint32_t /*light_id*/, uint64_t /*time*/, Scene& /*scene*/,
                                   thread::Pool& /*pool*/) noexcept {}
 
 bool Null_light::equals(uint32_t /*prop*/, uint32_t /*part*/) const noexcept {

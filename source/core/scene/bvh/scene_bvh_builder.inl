@@ -23,7 +23,7 @@ Builder<T>::~Builder() noexcept {
 }
 
 template <typename T>
-void Builder<T>::build(Tree<T>& tree, std::vector<uint32_t>& indices, std::vector<T*> const& props) noexcept {
+void Builder<T>::build(Tree<T>& tree, std::vector<uint32_t>& indices, std::vector<T> const& props) noexcept {
     if (props.empty()) {
         nodes_ = tree.allocate_nodes(0);
     } else {
@@ -63,7 +63,7 @@ void Builder<T>::Build_node::clear() noexcept {
 }
 
 template <typename T>
-void Builder<T>::split(Build_node* node, index begin, index end, const_index origin, std::vector<T*> const& props,
+void Builder<T>::split(Build_node* node, index begin, index end, const_index origin, std::vector<T> const& props,
                        uint32_t max_shapes) noexcept {
     node->aabb = aabb(begin, end, props);
 
@@ -75,9 +75,9 @@ void Builder<T>::split(Build_node* node, index begin, index end, const_index ori
         node->axis = sp.axis();
 
         index props1_begin = std::partition(begin, end, [&sp, &props](uint32_t b) {
-            T const* p = props[b];
-            bool const mib = math::plane::behind(sp.plane(), p->aabb().min());
-            bool const mab = math::plane::behind(sp.plane(), p->aabb().max());
+            T const& p = props[b];
+            bool const mib = math::plane::behind(sp.plane(), p.aabb().min());
+            bool const mab = math::plane::behind(sp.plane(), p.aabb().max());
 
             return mib && mab;
         });
@@ -98,13 +98,13 @@ void Builder<T>::split(Build_node* node, index begin, index end, const_index ori
 
 template <typename T>
 Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin,
-                                               index end, std::vector<T*> const& props) noexcept {
+                                               index end, std::vector<T> const& props) noexcept {
     split_candidates_.clear();
 
     float3 average = float3(0.f);
 
     for (index i = begin; i != end; ++i) {
-        average += props[*i]->aabb().position();
+        average += props[*i].aabb().position();
     }
 
     average /= static_cast<float>(std::distance(begin, end));
@@ -153,14 +153,16 @@ void Builder<T>::assign(Build_node* node, const_index begin, const_index end,
     node->offset = static_cast<uint32_t>(std::distance(origin, begin));
 
     node->props_end = static_cast<uint32_t>(std::distance(origin, end));
+
+    std::cout << node->offset << " " << node->props_end << std::endl;
 }
 
 template <typename T>
-AABB Builder<T>::aabb(index begin, index end, std::vector<T*> const& props) noexcept {
+AABB Builder<T>::aabb(index begin, index end, std::vector<T> const& props) noexcept {
     AABB aabb = AABB::empty();
 
     for (index i = begin; i != end; ++i) {
-        aabb.merge_assign(props[*i]->aabb());
+        aabb.merge_assign(props[*i].aabb());
     }
 
     return aabb;

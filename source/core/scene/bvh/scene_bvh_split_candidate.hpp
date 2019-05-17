@@ -11,11 +11,11 @@ template <typename T>
 class Split_candidate {
   public:
     Split_candidate(math::Plane const& plane, uint8_t axis) noexcept;
-    Split_candidate(uint8_t split_axis, float3 const& pos, std::vector<uint32_t> const& indices, std::vector<T*> const& props) noexcept;
+    Split_candidate(uint8_t split_axis, float3 const& pos, std::vector<uint32_t> const& indices, std::vector<T> const& props) noexcept;
 
     using index = typename std::vector<uint32_t>::iterator;
 
-    Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end, std::vector<T*> const& props) noexcept;
+    Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end, std::vector<T> const& props) noexcept;
 
     uint64_t key() const noexcept;
 

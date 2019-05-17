@@ -27,7 +27,7 @@ class Prop_volume_light : public Prop_light {
 
     float3 power(AABB const& scene_bb, Scene const& scene) const noexcept override final;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                           thread::Pool& pool) noexcept override;
 };
 

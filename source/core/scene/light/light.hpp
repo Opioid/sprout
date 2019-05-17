@@ -98,7 +98,7 @@ class Light {
 
     virtual float3 power(AABB const& scene_bb, Scene const& scene) const noexcept = 0;
 
-    virtual void prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+    virtual void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                   thread::Pool& pool) noexcept = 0;
 
     virtual bool equals(uint32_t prop, uint32_t part) const noexcept = 0;

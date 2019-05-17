@@ -19,6 +19,8 @@ class Entity {
 
     Entity() noexcept;
 
+    Entity(Entity&& other) noexcept;
+
     virtual ~Entity() noexcept;
 
     virtual void set_parameters(json::Value const& parameters) noexcept = 0;
@@ -39,7 +41,7 @@ class Entity {
 
     void set_frames(Keyframe const* frames, uint32_t num_frames) noexcept;
 
-    void calculate_world_transformation(Scene const& scene) noexcept;
+    void calculate_world_transformation(Scene& scene) noexcept;
 
     bool visible_in_camera() const noexcept;
     bool visible_in_reflection() const noexcept;
@@ -49,21 +51,21 @@ class Entity {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
-    void attach(uint32_t self, uint32_t node, Scene const& scene) noexcept;
+    void attach(uint32_t self, uint32_t node, Scene& scene) noexcept;
 
-    void detach_self(uint32_t self, Scene const& scene) noexcept;
+    void detach_self(uint32_t self, Scene& scene) noexcept;
 
   protected:
-    void propagate_transformation(Scene const& scene) noexcept;
+    void propagate_transformation(Scene& scene) noexcept;
 
     void inherit_transformation(Keyframe const* frames, uint32_t num_frames,
-                                Scene const& scene) noexcept;
+                                Scene& scene) noexcept;
 
-    void add_sibling(uint32_t node, Scene const& scene) noexcept;
+    void add_sibling(uint32_t node, Scene& scene) noexcept;
 
-    void detach(uint32_t node, Scene const& scene) noexcept;
+    void detach(uint32_t node, Scene& scene) noexcept;
 
-    void remove_sibling(uint32_t node, Scene const& scene) noexcept;
+    void remove_sibling(uint32_t node, Scene& scene) noexcept;
 
     virtual void on_set_transformation() noexcept = 0;
 

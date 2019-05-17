@@ -77,7 +77,7 @@ float3 Prop_volume_light::power(AABB const& /*scene_bb*/, Scene const& scene) co
     return volume * radiance;
 }
 
-void Prop_volume_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene const& scene,
+void Prop_volume_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                          thread::Pool& pool) noexcept {
     scene.prop(prop_)->prepare_sampling_volume(part_, Volume_light_mask | light_id, time, false,
                                                pool);

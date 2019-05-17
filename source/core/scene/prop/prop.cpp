@@ -13,6 +13,14 @@
 
 namespace scene::prop {
 
+Prop::Prop() = default;
+
+Prop::Prop(Prop&& other) noexcept : entity::Entity(std::move(other)), aabb_(other.aabb_), shape_(other.shape_), parts_(other.parts_), materials_(other.materials_) {
+    other.shape_ = nullptr;
+    other.parts_ = nullptr;
+    other.materials_ = nullptr;
+}
+
 Prop::~Prop() noexcept {
     delete[] parts_;
     delete[] materials_;
