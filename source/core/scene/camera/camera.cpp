@@ -21,15 +21,23 @@ Camera::~Camera() noexcept {
     delete sensor_;
 }
 
-void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
-    calculate_world_transformation(scene);
+void Camera::init(uint32_t entity) noexcept {
+    entity_ = entity;
+}
 
+uint32_t Camera::entity() const noexcept {
+    return entity_;
+}
+
+void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
     interface_stack_.clear();
     interfaces_.clear();
 
+    entity::Entity const* self = scene.entity(entity_);
+
     if (scene.has_volumes()) {
         Transformation temp;
-        auto const&    transformation = transformation_at(time, temp);
+        auto const&    transformation = self->transformation_at(time, temp);
 
         Ray ray(transformation.position, normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t);
 
@@ -53,7 +61,7 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
         }
     }
 
-    on_update(time, worker);
+    on_update(self, time, worker);
 }
 
 void Camera::set_parameters(json::Value const& parameters) noexcept {
@@ -112,8 +120,6 @@ uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept
 
     return static_cast<uint64_t>(frame) * frame_step_ + fdi;
 }
-
-void Camera::on_set_transformation() noexcept {}
 
 Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept {
     return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);

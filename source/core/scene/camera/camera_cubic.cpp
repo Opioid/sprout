@@ -5,6 +5,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/entity/entity.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -75,8 +76,8 @@ float Cubic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view, Ray& ray) const
-    noexcept {
+bool Cubic::generate_ray(entity::Entity const* self, Camera_sample const& sample, uint32_t frame,
+                         uint32_t view, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -86,7 +87,7 @@ bool Cubic::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t v
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp);
+    auto const&    transformation = self->transformation_at(time, temp);
 
     ray = create_ray(transform_point(transformation.object_to_world, float3(0.f)),
                      transform_vector(transformation.object_to_world, direction), time);
@@ -94,7 +95,8 @@ bool Cubic::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t v
     return true;
 }
 
-void Cubic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
+void Cubic::on_update(entity::Entity const* /*self*/, uint64_t /*time*/,
+                      Worker& /*worker*/) noexcept {}
 
 void Cubic::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
 

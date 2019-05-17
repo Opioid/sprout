@@ -12,7 +12,7 @@ class Extension {
   public:
     virtual ~Extension() noexcept {}
 
-    void init(uint32_t prop) {
+    void init(uint32_t prop) noexcept {
         prop_ = prop;
     }
 

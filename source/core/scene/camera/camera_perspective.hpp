@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_CAMERA_PERSPECTIVE_HPP
 #define SU_CORE_SCENE_CAMERA_PERSPECTIVE_HPP
 
+#include "base/math/matrix3x3.hpp"
 #include "camera.hpp"
 
 namespace scene::camera {
@@ -31,8 +32,8 @@ class Perspective : public Camera {
 
     float pixel_solid_angle() const noexcept override final;
 
-    bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view, Ray& ray) const
-        noexcept override final;
+    bool generate_ray(entity::Entity const* self, Camera_sample const& sample, uint32_t frame,
+                      uint32_t view, Ray& ray) const noexcept override final;
 
     void set_fov(float fov) noexcept;
 
@@ -41,9 +42,10 @@ class Perspective : public Camera {
     void set_focus(Focus const& focus) noexcept;
 
   private:
-    void on_update(uint64_t time, Worker& worker) noexcept override final;
+    void on_update(entity::Entity const* self, uint64_t time,
+                   Worker& worker) noexcept override final;
 
-    void update_focus(uint64_t time, Worker& worker) noexcept;
+    void update_focus(entity::Entity const* self, uint64_t time, Worker& worker) noexcept;
 
     void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
 

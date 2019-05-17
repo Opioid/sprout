@@ -8,6 +8,7 @@
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 
 namespace rendering {
@@ -17,6 +18,8 @@ Camera_worker::Camera_worker(Tile_queue const& tiles) : tiles_(tiles) {}
 void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
                            uint32_t num_samples) noexcept {
     scene::camera::Camera const& camera = *camera_;
+
+    scene::entity::Entity const* camera_entity = scene_->entity(camera.entity());
 
     auto& sensor = camera.sensor();
 
@@ -43,7 +46,7 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
             for (uint32_t i = 0; i < num_samples; ++i) {
                 sampler::Camera_sample const sample = sampler_->generate_camera_sample(pixel, i);
 
-                if (Ray ray; camera.generate_ray(sample, frame, view, ray)) {
+                if (Ray ray; camera.generate_ray(camera_entity, sample, frame, view, ray)) {
                     float4 const color = li(ray, camera.interface_stack());
                     sensor.add_sample(sample, color, isolated_bounds, bounds);
                 } else {

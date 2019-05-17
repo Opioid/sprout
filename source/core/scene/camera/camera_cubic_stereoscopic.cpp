@@ -6,6 +6,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/entity/entity.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -73,7 +74,8 @@ float Cubic_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t frame,
+bool Cubic_stereoscopic::generate_ray(entity::Entity const*         self,
+                                      sampler::Camera_sample const& sample, uint32_t frame,
                                       uint32_t view, scene::Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -97,7 +99,7 @@ bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp);
+    auto const&    transformation = self->transformation_at(time, temp);
 
     ray = create_ray(transform_point(transformation.object_to_world, eye_offset),
                      transform_vector(transformation.object_to_world, direction), time);
@@ -109,7 +111,8 @@ void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) 
     ipd_falloff_ = std::sqrt(ipd_falloff);
 }
 
-void Cubic_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
+void Cubic_stereoscopic::on_update(entity::Entity const* /*self*/, uint64_t /*time*/,
+                                   Worker& /*worker*/) noexcept {}
 
 void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("stereo" == name) {

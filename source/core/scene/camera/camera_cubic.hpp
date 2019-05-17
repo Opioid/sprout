@@ -1,6 +1,8 @@
 #ifndef SU_CORE_SCENE_CAMERA_CUBIC_HPP
 #define SU_CORE_SCENE_CAMERA_CUBIC_HPP
 
+#include "base/math/matrix3x3.hpp"
+#include "base/math/vector4.hpp"
 #include "camera.hpp"
 
 namespace scene::camera {
@@ -19,11 +21,12 @@ class Cubic : public Camera {
 
     float pixel_solid_angle() const noexcept override final;
 
-    bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view, Ray& ray) const
-        noexcept override final;
+    bool generate_ray(entity::Entity const* self, Camera_sample const& sample, uint32_t frame,
+                      uint32_t view, Ray& ray) const noexcept override final;
 
   private:
-    void on_update(uint64_t time, Worker& worker) noexcept override final;
+    void on_update(entity::Entity const* /*self*/, uint64_t time,
+                   Worker& worker) noexcept override final;
 
     void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
 

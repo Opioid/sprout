@@ -9,6 +9,7 @@
 #include "core/rendering/rendering_driver_progressive.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/scene/camera/camera.hpp"
+#include "core/scene/entity/entity.hpp"
 #include "core/scene/scene.hpp"
 
 namespace controller {
@@ -23,7 +24,7 @@ void Message_handler::handle(std::string const& message) noexcept {
     } else if ("md:[" == message.substr(0, 4)) {
         float3 delta;
         sscanf(message.c_str(), "md:[%f,%f,%f]", &delta.v[0], &delta.v[1], &delta.v[2]);
-        camera_.mouse_delta(delta);
+        camera_.mouse_delta(delta, driver_.scene());
         driver_.schedule_restart(false);
     } else {
         size_t op = message.find_first_of("=");
@@ -66,7 +67,8 @@ void Message_handler::handle(std::string const& message) noexcept {
         std::string parameters = message.substr(op + 1);
 
         if ("camera" == assignee) {
-            handle_entity(&driver_.camera(), value, parameters, false);
+            handle_entity(driver_.scene().entity(driver_.camera().entity()), value, parameters,
+                          false);
         } else if ("entities" == assignee.substr(0, 8)) {
             if ('\"' == index.front() && '\"' == index.back()) {
                 std::string index_string = index.substr(1, index.size() - 2);
@@ -74,7 +76,7 @@ void Message_handler::handle(std::string const& message) noexcept {
                 scene::entity::Entity* entity = driver_.scene().entity(index_string);
                 handle_entity(entity, value, parameters, true);
             } else {
-                uint32_t const index_number = std::stoul(index);
+                uint32_t const index_number = static_cast<uint32_t>(std::stoul(index));
 
                 scene::entity::Entity* entity = driver_.scene().entity(index_number);
                 handle_entity(entity, value, parameters, true);

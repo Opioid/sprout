@@ -6,6 +6,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/entity/entity.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -36,7 +37,8 @@ float Perspective_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t frame,
+bool Perspective_stereoscopic::generate_ray(entity::Entity const*         self,
+                                            sampler::Camera_sample const& sample, uint32_t frame,
                                             uint32_t view, scene::Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -46,7 +48,7 @@ bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto&          transformation = transformation_at(time, temp);
+    auto&          transformation = self->transformation_at(time, temp);
 
     ray = create_ray(transform_point(transformation.object_to_world, eye_offsets_[view]),
                      transform_vector(transformation.object_to_world, direction), time);
@@ -68,7 +70,8 @@ void Perspective_stereoscopic::set_fov(float fov) noexcept {
     d_y_ = (left_bottom - left_top_) / fr[1];
 }
 
-void Perspective_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
+void Perspective_stereoscopic::on_update(entity::Entity const* /*self*/, uint64_t /*time*/,
+                                         Worker& /*worker*/) noexcept {}
 
 void Perspective_stereoscopic::set_parameter(std::string_view   name,
                                              json::Value const& value) noexcept {
