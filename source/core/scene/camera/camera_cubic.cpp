@@ -5,7 +5,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
-#include "scene/entity/entity.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -76,7 +76,7 @@ float Cubic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic::generate_ray(entity::Entity const* self, Camera_sample const& sample, uint32_t frame,
+bool Cubic::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
                          uint32_t view, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -95,8 +95,7 @@ bool Cubic::generate_ray(entity::Entity const* self, Camera_sample const& sample
     return true;
 }
 
-void Cubic::on_update(entity::Entity const* /*self*/, uint64_t /*time*/,
-                      Worker& /*worker*/) noexcept {}
+void Cubic::on_update(Prop const* /*self*/, uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Cubic::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
 

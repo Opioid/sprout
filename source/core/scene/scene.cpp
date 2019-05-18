@@ -165,21 +165,9 @@ Prop* Scene::prop(size_t index) noexcept {
     return &props_[index];
 }
 
-entity::Entity const* Scene::entity(size_t index) const noexcept {
-    SOFT_ASSERT(index < props_.size());
-
-    return &props_[index];
-}
-
-entity::Entity* Scene::entity(size_t index) noexcept {
-    SOFT_ASSERT(index < props_.size());
-
-    return &props_[index];
-}
-
-entity::Entity* Scene::entity(std::string_view name) const noexcept {
-    auto e = named_entities_.find(name);
-    if (named_entities_.end() == e) {
+Prop* Scene::prop(std::string_view name) const noexcept {
+    auto e = named_props_.find(name);
+    if (named_props_.end() == e) {
         return nullptr;
     }
 
@@ -278,7 +266,7 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
     num_interpolation_frames_ = count_frames(frame_step, frame_duration) + 1;
 }
 
-Scene::Entity_ref Scene::create_dummy() noexcept {
+Scene::Prop_ref Scene::create_dummy() noexcept {
     props_.emplace_back();
 
     uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
@@ -290,10 +278,10 @@ Scene::Entity_ref Scene::create_dummy() noexcept {
     return {prop, prop_id};
 }
 
-Scene::Entity_ref Scene::create_dummy(std::string const& name) noexcept {
-    Entity_ref dummy = create_dummy();
+Scene::Prop_ref Scene::create_dummy(std::string const& name) noexcept {
+    Prop_ref dummy = create_dummy();
 
-    add_named_entity(dummy.ref, name);
+    add_named_prop(dummy.ref, name);
 
     return dummy;
 }
@@ -328,7 +316,7 @@ Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials,
                                    std::string const& name) noexcept {
     Prop_ref prop = create_prop(shape, materials);
 
-    add_named_entity(prop.ref, name);
+    add_named_prop(prop.ref, name);
 
     return prop;
 }
@@ -373,10 +361,10 @@ light::Light* Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part
     return light;
 }
 
-Scene::Entity_ref Scene::create_extension(Extension* extension) noexcept {
+Scene::Prop_ref Scene::create_extension(Extension* extension) noexcept {
     extensions_.push_back(extension);
 
-    Entity_ref dummy = create_dummy();
+    Prop_ref dummy = create_dummy();
 
     extension->init(dummy.id);
 
@@ -418,16 +406,16 @@ size_t Scene::num_bytes() const noexcept {
     return num_bytes + sizeof(*this);
 }
 
-void Scene::add_named_entity(Entity* entity, std::string const& name) noexcept {
-    if (!entity || name.empty()) {
+void Scene::add_named_prop(Prop* prop, std::string const& name) noexcept {
+    if (!prop || name.empty()) {
         return;
     }
 
-    if (named_entities_.find(name) != named_entities_.end()) {
+    if (named_props_.find(name) != named_props_.end()) {
         return;
     }
 
-    named_entities_.insert_or_assign(name, entity);
+    named_props_.insert_or_assign(name, prop);
 }
 
 static inline bool matching(uint64_t a, uint64_t b) noexcept {

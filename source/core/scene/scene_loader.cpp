@@ -237,7 +237,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             continue;
         }
 
-        entity::Entity* entity_ptr = scene.entity(entity_id);
+        prop::Prop* prop_ptr = scene.prop(entity_id);
 
         math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
 
@@ -274,14 +274,14 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
         if (!animation) {
             if (parent_id == 0xFFFFFFFF) {
-                entity_ptr->allocate_frames(1, 1);
+                prop_ptr->allocate_frames(1, 1);
             }
 
-            entity_ptr->set_transformation(transformation);
+            prop_ptr->set_transformation(transformation);
         }
 
         if (visibility) {
-            set_visibility(entity_ptr, *visibility);
+            set_visibility(prop_ptr, *visibility);
         }
 
         if (children) {
@@ -290,7 +290,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
     }
 }
 
-void Loader::set_visibility(entity::Entity* entity, json::Value const& visibility_value) noexcept {
+void Loader::set_visibility(prop::Prop* prop, json::Value const& visibility_value) noexcept {
     bool in_camera     = true;
     bool in_reflection = true;
     bool in_shadow     = true;
@@ -305,7 +305,7 @@ void Loader::set_visibility(entity::Entity* entity, json::Value const& visibilit
         }
     }
 
-    entity->set_visibility(in_camera, in_reflection, in_shadow);
+    prop->set_visibility(in_camera, in_reflection, in_shadow);
 }
 
 prop::Prop_ref Loader::load_prop(json::Value const& prop_value, std::string const& name,

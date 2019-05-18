@@ -6,7 +6,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
-#include "scene/entity/entity.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -34,8 +34,8 @@ float Hemispherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Hemispherical::generate_ray(entity::Entity const* self, Camera_sample const& sample,
-                                 uint32_t frame, uint32_t /*view*/, Ray& ray) const noexcept {
+bool Hemispherical::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
+                                 uint32_t /*view*/, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];
@@ -66,7 +66,7 @@ bool Hemispherical::generate_ray(entity::Entity const* self, Camera_sample const
     return true;
 }
 
-void Hemispherical::on_update(entity::Entity const* /*self*/, uint64_t /*time*/,
+void Hemispherical::on_update(prop::Prop const* /*self*/, uint64_t /*time*/,
                               Worker& /*worker*/) noexcept {}
 
 void Hemispherical::set_parameter(std::string_view /*name*/,

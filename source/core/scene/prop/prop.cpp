@@ -4,7 +4,9 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
-#include "scene/entity/composed_transformation.hpp"
+#include "base/memory/align.hpp"
+#include "scene/entity/composed_transformation.inl"
+#include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/morphable_shape.hpp"
@@ -16,28 +18,145 @@ namespace scene::prop {
 Prop::Prop() = default;
 
 Prop::Prop(Prop&& other) noexcept
-    : entity::Entity(std::move(other)),
+    : properties_(other.properties_),
+      parent_(other.parent_),
+      next_(other.next_),
+      child_(other.child_),
       aabb_(other.aabb_),
+      world_transformation_(other.world_transformation_),
+      num_world_frames_(other.num_world_frames_),
+      num_local_frames_(other.num_local_frames_),
+      frames_(other.frames_),
       shape_(other.shape_),
-      parts_(other.parts_),
-      materials_(other.materials_) {
+      materials_(other.materials_),
+      parts_(other.parts_) {
+    other.frames_    = nullptr;
     other.shape_     = nullptr;
     other.parts_     = nullptr;
     other.materials_ = nullptr;
 }
 
 Prop::~Prop() noexcept {
-    delete[] parts_;
-    delete[] materials_;
+    memory::free_aligned(parts_);
+    memory::free_aligned(materials_);
+    memory::free_aligned(frames_);
+}
+
+void Prop::allocate_frames(uint32_t num_world_frames, uint32_t num_local_frames) noexcept {
+    num_world_frames_ = num_world_frames;
+    num_local_frames_ = num_local_frames;
+
+    frames_ = memory::allocate_aligned<Keyframe>(num_world_frames + num_local_frames);
+}
+
+math::Transformation const& Prop::local_frame_0() const noexcept {
+    return frames_[num_world_frames_].transformation;
+}
+
+entity::Composed_transformation const& Prop::transformation_at(uint64_t        time,
+                                                               Transformation& transformation) const
+    noexcept {
+    if (1 == num_world_frames_) {
+        return world_transformation_;
+    }
+
+    for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
+        auto const& a = frames_[i];
+        auto const& b = frames_[i + 1];
+
+        if (time >= a.time && time < b.time) {
+            uint64_t const range = b.time - a.time;
+            uint64_t const delta = time - a.time;
+
+            float const t = static_cast<float>(delta) / static_cast<float>(range);
+
+            transformation.set(lerp(a.transformation, b.transformation, t));
+
+            break;
+        }
+    }
+
+    return transformation;
+}
+
+void Prop::set_transformation(math::Transformation const& t) noexcept {
+    Keyframe& local_frame = frames_[num_world_frames_];
+
+    local_frame.transformation = t;
+    local_frame.time           = scene::Static_time;
+}
+
+void Prop::set_frames(Keyframe const* frames, uint32_t num_frames) noexcept {
+    Keyframe* local_frames = &frames_[num_world_frames_];
+    for (uint32_t i = 0; i < num_frames; ++i) {
+        local_frames[i] = frames[i];
+    }
+}
+
+void Prop::calculate_world_transformation(Scene& scene) noexcept {
+    if (Null == parent_) {
+        for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
+            frames_[i] = frames_[len + i];
+        }
+
+        propagate_transformation(scene);
+    }
+}
+
+bool Prop::visible_in_camera() const noexcept {
+    return properties_.test(Property::Visible_in_camera);
+}
+
+bool Prop::visible_in_reflection() const noexcept {
+    return properties_.test(Property::Visible_in_reflection);
+}
+
+bool Prop::visible_in_shadow() const noexcept {
+    return properties_.test(Property::Visible_in_shadow);
+}
+
+void Prop::set_visible_in_shadow(bool value) noexcept {
+    properties_.set(Property::Visible_in_shadow, value);
+}
+
+void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept {
+    properties_.set(Property::Visible_in_camera, in_camera);
+    properties_.set(Property::Visible_in_reflection, in_reflection);
+    properties_.set(Property::Visible_in_shadow, in_shadow);
+}
+
+void Prop::attach(uint32_t self, uint32_t node, Scene& scene) noexcept {
+    Prop* n = scene.prop(node);
+
+    n->detach_self(self, scene);
+
+    n->parent_ = self;
+
+    if (0 == n->num_local_frames_) {
+        // This is the case if n has no animation attached to it directly
+        n->allocate_frames(num_world_frames_, 1);
+    }
+
+    if (Null == child_) {
+        child_ = node;
+    } else {
+        scene.prop(child_)->add_sibling(node, scene);
+    }
+}
+
+void Prop::detach_self(uint32_t self, Scene& scene) noexcept {
+    if (Null != parent_) {
+        scene.prop(parent_)->detach(self, scene);
+    }
 }
 
 void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noexcept {
     if (!shape_ || shape_->num_parts() != shape->num_parts()) {
-        delete[] parts_;
-        delete[] materials_;
+        memory::free_aligned(parts_);
+        memory::free_aligned(materials_);
 
-        parts_     = new Part[shape->num_parts()];
-        materials_ = new Material*[shape->num_parts()];
+        parts_     = memory::allocate_aligned<Part>(shape->num_parts());
+        materials_ = memory::allocate_aligned<Material*>(shape->num_parts());
     }
 
     set_shape(shape);
@@ -74,7 +193,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& inte
         return false;
     }
 
-    if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -90,7 +209,7 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack, shape::Intersection&
         return false;
     }
 
-    if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -109,7 +228,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Normals& normals) 
         return false;
     }
 
-    if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -124,7 +243,7 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
         return false;
     }
 
-    if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -171,6 +290,7 @@ void Prop::set_shape(Shape* shape) noexcept {
     properties_.set(Property::Visible_in_camera);
     properties_.set(Property::Visible_in_reflection);
     properties_.set(Property::Visible_in_shadow);
+    properties_.set(Property::Is_finite, shape->is_finite());
 }
 
 bool Prop::visible(uint32_t ray_depth) const noexcept {
@@ -192,9 +312,9 @@ void Prop::on_set_transformation() noexcept {
         aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world,
                                          frames_[0].transformation);
     } else {
-        static uint32_t constexpr num_steps = 4;
+        static uint32_t constexpr Num_steps = 4;
 
-        static float constexpr interval = 1.f / static_cast<float>(num_steps);
+        static float constexpr Interval = 1.f / static_cast<float>(Num_steps);
 
         AABB aabb = shape_->transformed_aabb(frames_[0].transformation);
 
@@ -202,8 +322,8 @@ void Prop::on_set_transformation() noexcept {
             auto const& a = frames_[i].transformation;
             auto const& b = frames_[i + 1].transformation;
 
-            float t = interval;
-            for (uint32_t j = num_steps - 1; j > 0; --j, t += interval) {
+            float t = Interval;
+            for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
                 math::Transformation const interpolated = lerp(a, b, t);
 
                 aabb.merge_assign(shape_->transformed_aabb(interpolated));
@@ -257,7 +377,7 @@ float Prop::opacity(Ray const& ray, Filter filter, Worker const& worker) const n
         return 0.f;
     }
 
-    if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
         return 0.f;
     }
 
@@ -281,7 +401,7 @@ bool Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker, 
         return true;
     }
 
-    if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
         ta = float3(1.f);
         return true;
     }
@@ -332,6 +452,68 @@ bool Prop::has_no_surface() const noexcept {
 
 size_t Prop::num_bytes() const noexcept {
     return sizeof(*this);
+}
+
+void Prop::propagate_transformation(Scene& scene) noexcept {
+    if (1 == num_world_frames_) {
+        world_transformation_.set(frames_[0].transformation);
+    }
+
+    on_set_transformation();
+
+    if (Null != child_) {
+        scene.prop(child_)->inherit_transformation(frames_, num_world_frames_, scene);
+    }
+}
+
+void Prop::inherit_transformation(Keyframe const* frames, uint32_t num_frames,
+                                  Scene& scene) noexcept {
+    if (Null != next_) {
+        scene.prop(next_)->inherit_transformation(frames, num_frames, scene);
+    }
+
+    for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
+        uint32_t const lf = num_local_frames_ > 1 ? i : 0;
+        uint32_t const of = num_frames > 1 ? i : 0;
+        frames_[len + lf].transform(frames_[i], frames[of]);
+    }
+
+    propagate_transformation(scene);
+}
+
+void Prop::add_sibling(uint32_t node, Scene& scene) noexcept {
+    if (Null == next_) {
+        next_ = node;
+    } else {
+        scene.prop(next_)->add_sibling(node, scene);
+    }
+}
+
+void Prop::detach(uint32_t node, Scene& scene) noexcept {
+    // we can assume this to be true because of detach()
+    // assert(node->parent_ == this);
+
+    Prop* n = scene.prop(node);
+
+    n->parent_ = Null;
+
+    if (child_ == node) {
+        child_   = n->next_;
+        n->next_ = Null;
+    } else {
+        scene.prop(child_)->remove_sibling(node, scene);
+    }
+}
+
+void Prop::remove_sibling(uint32_t node, Scene& scene) noexcept {
+    Prop* n = scene.prop(node);
+
+    if (next_ == node) {
+        next_    = n->next_;
+        n->next_ = Null;
+    } else {
+        n->remove_sibling(node, scene);
+    }
 }
 
 }  // namespace scene::prop

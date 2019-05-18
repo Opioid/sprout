@@ -5,7 +5,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
-#include "scene/entity/entity.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -33,8 +33,8 @@ float Spherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Spherical::generate_ray(entity::Entity const* self, Camera_sample const& sample,
-                             uint32_t frame, uint32_t /*view*/, Ray& ray) const noexcept {
+bool Spherical::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
+                             uint32_t /*view*/, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];
@@ -60,8 +60,7 @@ bool Spherical::generate_ray(entity::Entity const* self, Camera_sample const& sa
     return true;
 }
 
-void Spherical::on_update(entity::Entity const* /*self*/, uint64_t /*time*/,
-                          Worker& /*worker*/) noexcept {}
+void Spherical::on_update(Prop const* /*self*/, uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
 

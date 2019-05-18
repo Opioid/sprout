@@ -107,10 +107,7 @@ class Scene {
     Prop const* prop(size_t index) const noexcept;
     Prop*       prop(size_t index) noexcept;
 
-    Entity const* entity(size_t index) const noexcept;
-    Entity*       entity(size_t index) noexcept;
-
-    Entity* entity(std::string_view name) const noexcept;
+    Prop* prop(std::string_view name) const noexcept;
 
     std::vector<light::Light*> const& lights() const noexcept;
 
@@ -130,8 +127,8 @@ class Scene {
 
     void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) noexcept;
 
-    Entity_ref create_dummy() noexcept;
-    Entity_ref create_dummy(std::string const& name) noexcept;
+    Prop_ref create_dummy() noexcept;
+    Prop_ref create_dummy(std::string const& name) noexcept;
 
     Prop_ref create_prop(Shape* shape, Materials const& materials) noexcept;
 
@@ -146,7 +143,7 @@ class Scene {
 
     light::Light* create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept;
 
-    Entity_ref create_extension(Extension* extension) noexcept;
+    Prop_ref create_extension(Extension* extension) noexcept;
     //   uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
 
     void attach(uint32_t parent_id, uint32_t child_id) noexcept;
@@ -162,7 +159,7 @@ class Scene {
     size_t num_bytes() const noexcept;
 
   private:
-    void add_named_entity(Entity* entity, std::string const& name) noexcept;
+    void add_named_prop(Prop* prop, std::string const& name) noexcept;
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept;
 
@@ -194,7 +191,7 @@ class Scene {
 
     std::vector<Extension*> extensions_;
 
-    std::map<std::string, entity::Entity*, std::less<>> named_entities_;
+    std::map<std::string, Prop*, std::less<>> named_props_;
 
     memory::Array<float> light_powers_;
 

@@ -19,7 +19,6 @@ namespace scene {
 
 namespace entity {
 struct Composed_transformation;
-class Entity;
 }  // namespace entity
 
 struct Ray;
@@ -30,6 +29,7 @@ namespace camera {
 
 class Camera {
   public:
+    using Prop           = prop::Prop;
     using Transformation = entity::Composed_transformation;
     using Camera_sample  = sampler::Camera_sample;
     using Sensor         = rendering::sensor::Sensor;
@@ -52,8 +52,8 @@ class Camera {
 
     void update(Scene& scene, uint64_t time, Worker& worker) noexcept;
 
-    virtual bool generate_ray(entity::Entity const* self, Camera_sample const& sample,
-                              uint32_t frame, uint32_t view, Ray& ray) const noexcept = 0;
+    virtual bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
+                              uint32_t view, Ray& ray) const noexcept = 0;
 
     void set_parameters(json::Value const& parameters) noexcept;
 
@@ -71,7 +71,7 @@ class Camera {
     uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
 
   protected:
-    virtual void on_update(entity::Entity const* self, uint64_t time, Worker& worker) noexcept = 0;
+    virtual void on_update(Prop const* self, uint64_t time, Worker& worker) noexcept = 0;
 
     virtual void set_parameter(std::string_view name, json::Value const& value) noexcept = 0;
 

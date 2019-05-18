@@ -9,7 +9,7 @@
 #include "core/rendering/rendering_driver_progressive.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/scene/camera/camera.hpp"
-#include "core/scene/entity/entity.hpp"
+#include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
 
 namespace controller {
@@ -67,19 +67,18 @@ void Message_handler::handle(std::string const& message) noexcept {
         std::string parameters = message.substr(op + 1);
 
         if ("camera" == assignee) {
-            handle_entity(driver_.scene().entity(driver_.camera().entity()), value, parameters,
-                          false);
+            handle_prop(driver_.scene().prop(driver_.camera().entity()), value, parameters, false);
         } else if ("entities" == assignee.substr(0, 8)) {
             if ('\"' == index.front() && '\"' == index.back()) {
                 std::string index_string = index.substr(1, index.size() - 2);
 
-                scene::entity::Entity* entity = driver_.scene().entity(index_string);
-                handle_entity(entity, value, parameters, true);
+                scene::prop::Prop* prop = driver_.scene().prop(index_string);
+                handle_prop(prop, value, parameters, true);
             } else {
                 uint32_t const index_number = static_cast<uint32_t>(std::stoul(index));
 
-                scene::entity::Entity* entity = driver_.scene().entity(index_number);
-                handle_entity(entity, value, parameters, true);
+                scene::prop::Prop* prop = driver_.scene().prop(index_number);
+                handle_prop(prop, value, parameters, true);
             }
         } else if ("materials" == assignee.substr(0, 9)) {
             if ('\"' == index.front() && '\"' == index.back()) {
@@ -90,8 +89,8 @@ void Message_handler::handle(std::string const& message) noexcept {
                 handle_material(material, value, parameters);
             }
         } else {
-            scene::entity::Entity* entity = driver_.scene().entity(assignee);
-            handle_entity(entity, value, parameters, true);
+            scene::prop::Prop* prop = driver_.scene().prop(assignee);
+            handle_prop(prop, value, parameters, true);
         }
     }
 }
@@ -117,9 +116,9 @@ std::string Message_handler::iteration() const noexcept {
     return stream.str();
 }
 
-void Message_handler::handle_entity(scene::entity::Entity* entity, std::string const& value,
-                                    std::string const& parameters, bool recompile) noexcept {
-    if (!entity) {
+void Message_handler::handle_prop(scene::prop::Prop* prop, std::string const& value,
+                                  std::string const& parameters, bool recompile) noexcept {
+    if (!prop) {
         return;
     }
 
@@ -131,11 +130,11 @@ void Message_handler::handle_entity(scene::entity::Entity* entity, std::string c
     }
 
     if ("parameters" == value) {
-        entity->set_parameters(*root);
+        prop->set_parameters(*root);
     } else if ("transformation" == value) {
-        math::Transformation t = entity->local_frame_0();
+        math::Transformation t = prop->local_frame_0();
         json::read_transformation(*root, t);
-        entity->set_transformation(t);
+        prop->set_transformation(t);
     } else {
         return;
     }

@@ -6,7 +6,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
-#include "scene/entity/entity.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -42,7 +42,7 @@ float Spherical_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Spherical_stereoscopic::generate_ray(entity::Entity const* self, Camera_sample const& sample,
+bool Spherical_stereoscopic::generate_ray(Prop const* self, Camera_sample const& sample,
                                           uint32_t frame, uint32_t view, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -74,7 +74,7 @@ bool Spherical_stereoscopic::generate_ray(entity::Entity const* self, Camera_sam
     return true;
 }
 
-void Spherical_stereoscopic::on_update(entity::Entity const* /*self*/, uint64_t /*time*/,
+void Spherical_stereoscopic::on_update(Prop const* /*self*/, uint64_t /*time*/,
                                        Worker& /*worker*/) noexcept {}
 
 void Spherical_stereoscopic::set_parameter(std::string_view   name,

@@ -37,12 +37,12 @@ void Provider::set_material_provider(material::Provider& material_provider) noex
     material_provider_ = &material_provider;
 }
 
-entity::Entity_ref Provider::create_extension(json::Value const& extension_value,
-                                              std::string const& name, Scene& scene,
-                                              resource::Manager& manager) noexcept {
+prop::Prop_ref Provider::create_extension(json::Value const& extension_value,
+                                          std::string const& name, Scene& scene,
+                                          resource::Manager& manager) noexcept {
     Sky* sky = new Sky;
 
-    Entity_ref sky_entity = scene.create_extension(sky /*, name*/);
+    Prop_ref sky_entity = scene.create_extension(sky /*, name*/);
 
     static bool constexpr bake = true;
 

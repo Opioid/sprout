@@ -11,7 +11,6 @@
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/entity/composed_transformation.hpp"
-#include "scene/entity/entity.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/prop/prop.hpp"
@@ -64,8 +63,6 @@ void size() {
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
     print_size<scene::prop::Prop>("prop::Prop", 320);
-
-    print_size<scene::entity::Entity>("Entity", 256);
 
     print_size<scene::Renderstate>("Renderstate", 112);
 

@@ -80,10 +80,10 @@ bool Sky::sun_changed_since_last_check() noexcept {
 }
 
 void Sky::update(Scene& scene) noexcept {
-    scene::entity::Entity* const e = scene.entity(prop_);
+    scene::prop::Prop* const e = scene.prop(prop_);
 
-    scene::entity::Entity* const sky = scene.entity(sky_);
-    scene::entity::Entity* const sun = scene.entity(sun_);
+    scene::prop::Prop* const sky = scene.prop(sky_);
+    scene::prop::Prop* const sun = scene.prop(sun_);
 
     sky->set_visibility(e->visible_in_camera(), e->visible_in_reflection(), e->visible_in_shadow());
     sun->set_visibility(e->visible_in_camera(), e->visible_in_reflection(), e->visible_in_shadow());

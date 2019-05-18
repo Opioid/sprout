@@ -12,9 +12,10 @@ class Manager;
 
 namespace scene {
 
-namespace entity {
-class Entity;
+namespace prop {
+class Prop;
 }
+
 namespace material {
 class Material;
 }
@@ -37,8 +38,8 @@ class Message_handler : public server::Message_handler {
     std::string iteration() const noexcept override final;
 
   private:
-    void handle_entity(scene::entity::Entity* entity, std::string const& value,
-                       std::string const& parameters, bool recompile) noexcept;
+    void handle_prop(scene::prop::Prop* prop, std::string const& value,
+                     std::string const& parameters, bool recompile) noexcept;
 
     void handle_material(scene::material::Material* material, std::string const& value,
                          std::string const& parameters) noexcept;

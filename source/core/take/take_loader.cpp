@@ -57,8 +57,8 @@
 #include "scene/camera/camera_perspective_stereoscopic.hpp"
 #include "scene/camera/camera_spherical.hpp"
 #include "scene/camera/camera_spherical_stereoscopic.hpp"
-#include "scene/entity/entity.hpp"
 #include "scene/material/volumetric/volumetric_material.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/scene.hpp"
 #include "take.hpp"
 
@@ -334,18 +334,18 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
         camera->set_sensor(sensor);
     }
 
-    scene::entity::Entity_ref const entity = scene.create_dummy();
+    scene::prop::Prop_ref const prop = scene.create_dummy();
 
-    camera->init(entity.id);
+    camera->init(prop.id);
 
     if (animation_value) {
         if (auto animation = scene::animation::load(*animation_value, transformation, scene);
             animation) {
-            scene.create_animation_stage(entity.id, animation);
+            scene.create_animation_stage(prop.id, animation);
         }
     } else {
-        entity.ref->allocate_frames(1, 1);
-        entity.ref->set_transformation(transformation);
+        prop.ref->allocate_frames(1, 1);
+        prop.ref->set_transformation(transformation);
     }
 
     take.view.camera = camera;

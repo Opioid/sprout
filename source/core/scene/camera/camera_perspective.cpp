@@ -8,7 +8,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/entity/composed_transformation.inl"
-#include "scene/entity/entity.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -35,8 +35,8 @@ float Perspective::pixel_solid_angle() const noexcept {
     return fov_ / static_cast<float>(resolution_[0]);
 }
 
-bool Perspective::generate_ray(entity::Entity const* self, Camera_sample const& sample,
-                               uint32_t frame, uint32_t /*view*/, Ray& ray) const noexcept {
+bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
+                               uint32_t /*view*/, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -100,7 +100,7 @@ void Perspective::set_focus(Focus const& focus) noexcept {
     focus_distance_ = focus_.distance;
 }
 
-void Perspective::on_update(entity::Entity const* self, uint64_t time, Worker& worker) noexcept {
+void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noexcept {
     float2 const fr(resolution_);
     float const  ratio = fr[0] / fr[1];
 
@@ -125,7 +125,7 @@ void Perspective::on_update(entity::Entity const* self, uint64_t time, Worker& w
     update_focus(self, time, worker);
 }
 
-void Perspective::update_focus(entity::Entity const* self, uint64_t time, Worker& worker) noexcept {
+void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) noexcept {
     if (focus_.use_point && lens_radius_ > 0.f) {
         float3 const direction = normalize(left_top_ + focus_.point[0] * d_x_ +
                                            focus_.point[1] * d_y_);

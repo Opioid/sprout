@@ -22,13 +22,6 @@ struct Take;
 
 namespace scene {
 
-namespace entity {
-
-class Entity;
-struct Entity_ref;
-
-}  // namespace entity
-
 namespace surrounding {
 class Surrounding;
 }
@@ -102,8 +95,7 @@ class Loader {
                        std::string_view mount_folder, Local_materials const& local_materials,
                        Scene& scene) noexcept;
 
-    static void set_visibility(entity::Entity*    entity,
-                               json::Value const& visibility_value) noexcept;
+    static void set_visibility(prop::Prop* prop, json::Value const& visibility_value) noexcept;
 
     prop::Prop_ref load_prop(json::Value const& prop_value, std::string const& name,
                              std::string_view mount_folder, Local_materials const& local_materials,

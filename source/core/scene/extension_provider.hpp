@@ -12,18 +12,18 @@ namespace scene {
 
 class Scene;
 
-namespace entity {
-struct Entity_ref;
+namespace prop {
+struct Prop_ref;
 }
 
 class Extension_provider {
   public:
-    using Entity_ref = entity::Entity_ref;
+    using Prop_ref = prop::Prop_ref;
 
     virtual ~Extension_provider() noexcept {}
 
-    virtual Entity_ref create_extension(json::Value const& extension_value, std::string const& name,
-                                        Scene& scene, resource::Manager& manager) noexcept = 0;
+    virtual Prop_ref create_extension(json::Value const& extension_value, std::string const& name,
+                                      Scene& scene, resource::Manager& manager) noexcept = 0;
 };
 
 }  // namespace scene

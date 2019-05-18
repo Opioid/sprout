@@ -33,7 +33,7 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
     interface_stack_.clear();
     interfaces_.clear();
 
-    entity::Entity const* self = scene.entity(entity_);
+    Prop const* self = scene.prop(entity_);
 
     if (scene.has_volumes()) {
         Transformation temp;
