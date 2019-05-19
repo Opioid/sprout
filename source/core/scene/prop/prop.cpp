@@ -53,9 +53,8 @@ math::Transformation const& Prop::local_frame_0() const noexcept {
     return frames_[num_world_frames_].transformation;
 }
 
-entity::Composed_transformation const& Prop::transformation_at(uint64_t        time,
-                                                               Transformation& transformation) const
-    noexcept {
+Prop::Transformation const& Prop::transformation_at(uint64_t        time,
+                                                    Transformation& transformation) const noexcept {
     if (1 == num_world_frames_) {
         return world_transformation_;
     }
