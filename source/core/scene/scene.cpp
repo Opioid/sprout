@@ -10,6 +10,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "bvh/scene_bvh_builder.inl"
 #include "extension.hpp"
+#include "entity/composed_transformation.inl"
 #include "image/texture/texture.hpp"
 #include "light/prop_image_light.hpp"
 #include "light/prop_light.hpp"
@@ -30,6 +31,7 @@ static size_t constexpr Num_reserved_props = 32;
 
 Scene::Scene() noexcept {
     props_.reserve(Num_reserved_props);
+    world_transformations_.reserve(Num_reserved_props);
     finite_props_.reserve(Num_reserved_props);
     infinite_props_.reserve(3);
     volumes_.reserve(Num_reserved_props);
