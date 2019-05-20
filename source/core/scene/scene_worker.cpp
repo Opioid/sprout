@@ -122,16 +122,16 @@ void Worker::reset_interface_stack(Interface_stack const& stack) noexcept {
 
 float Worker::ior_outside(float3 const& wo, Intersection const& intersection) const noexcept {
     if (intersection.same_hemisphere(wo)) {
-        return interface_stack_.top_ior();
+        return interface_stack_.top_ior(*this);
     } else {
-        return interface_stack_.peek_ior(intersection);
+        return interface_stack_.peek_ior(intersection, *this);
     }
 }
 
 void Worker::interface_change(float3 const& dir, Intersection const& intersection) noexcept {
     if (intersection.same_hemisphere(dir)) {
         interface_stack_.remove(intersection);
-    } else if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
+    } else if (interface_stack_.top_is_vacuum(*this) || intersection.material(*this)->ior() > 1.f) {
         interface_stack_.push(intersection);
     }
 }
@@ -143,15 +143,15 @@ material::IoR Worker::interface_change_ior(float3 const&       dir,
     material::IoR ior;
 
     if (leave) {
-        ior.eta_t = interface_stack_.peek_ior(intersection);
-        ior.eta_i = intersection.material()->ior();
+        ior.eta_t = interface_stack_.peek_ior(intersection, *this);
+        ior.eta_i = intersection.material(*this)->ior();
 
         interface_stack_.remove(intersection);
     } else {
-        ior.eta_t = intersection.material()->ior();
-        ior.eta_i = interface_stack_.top_ior();
+        ior.eta_t = intersection.material(*this)->ior();
+        ior.eta_i = interface_stack_.top_ior(*this);
 
-        if (interface_stack_.top_is_vacuum() || intersection.material()->ior() > 1.f) {
+        if (interface_stack_.top_is_vacuum(*this) || intersection.material(*this)->ior() > 1.f) {
             interface_stack_.push(intersection);
         }
     }

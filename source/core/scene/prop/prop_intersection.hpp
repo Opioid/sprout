@@ -27,13 +27,13 @@ class Prop;
 struct Intersection {
     using Filter = material::Sampler_settings::Filter;
 
-    material::Material const* material() const noexcept;
+    material::Material const* material(Worker const& worker) const noexcept;
 
-    bool is_light() const noexcept;
+    bool is_light(Worker const& worker) const noexcept;
 
-    uint32_t light_id() const noexcept;
+    uint32_t light_id(Worker const& worker) const noexcept;
 
-    float area() const noexcept;
+    float area(Worker const& worker) const noexcept;
 
     float opacity(uint64_t time, Filter filter, Worker const& worker) const noexcept;
 
@@ -46,9 +46,9 @@ struct Intersection {
 
     bool same_hemisphere(float3 const& v) const noexcept;
 
-    Prop const* prop;
-
     shape::Intersection geo;
+
+    uint32_t prop;
 
     bool subsurface;
 };

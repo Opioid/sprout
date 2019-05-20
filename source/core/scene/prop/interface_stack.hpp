@@ -7,6 +7,8 @@
 
 namespace scene {
 
+class Worker;
+
 namespace material {
 class Material;
 }
@@ -17,13 +19,13 @@ struct Intersection;
 class Prop;
 
 struct Interface {
-    material::Material const* material() const noexcept;
+    material::Material const* material(Worker const& worker) const noexcept;
 
     bool matches(Intersection const& intersection) const noexcept;
 
-    Prop const* prop;
-    float2      uv;
-    uint32_t    part;
+    uint32_t prop;
+    float2   uv;
+    uint32_t part;
 };
 
 class Interface_stack {
@@ -44,16 +46,16 @@ class Interface_stack {
 
     Interface const* top() const noexcept;
 
-    float top_ior() const noexcept;
+    float top_ior(Worker const& worker) const noexcept;
 
-    bool top_is_vacuum() const noexcept;
-    bool top_is_vacuum_or_not_scattering() const noexcept;
+    bool top_is_vacuum(Worker const& worker) const noexcept;
+    bool top_is_vacuum_or_not_scattering(Worker const& worker) const noexcept;
 
     void push(Intersection const& intersection) noexcept;
 
     bool remove(Intersection const& intersection) noexcept;
 
-    float peek_ior(Intersection const& intersection) const noexcept;
+    float peek_ior(Intersection const& intersection, Worker const& worker) const noexcept;
 
     void pop() noexcept;
 

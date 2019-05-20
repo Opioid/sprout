@@ -137,7 +137,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_is_vacuum_or_not_scattering();
+                                    worker.interface_stack().top_is_vacuum_or_not_scattering(
+                                        worker);
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
@@ -258,7 +259,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             result_li += throughput * radiance;
 
             if (pure_emissive) {
-                transparent &= !intersection.prop->visible_in_camera() &&
+                transparent &= !worker.scene().prop(intersection.prop)->visible_in_camera() &&
                                ray.max_t >= scene::Ray_max_t;
                 break;
             }
@@ -359,7 +360,7 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
                                       Bxdf_sample sample_result, bool treat_as_singular,
                                       bool is_translucent, Filter filter, Worker& worker,
                                       bool& pure_emissive) noexcept {
-    uint32_t const light_id = intersection.light_id();
+    uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_area_light(light_id)) {
         pure_emissive = false;
         return float3(0.f);
@@ -411,7 +412,7 @@ float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
                                              Intersection const& intersection, float bxdf_pdf,
                                              bool treat_as_singular, bool is_translucent,
                                              Worker& worker) const noexcept {
-    uint32_t const light_id = intersection.light_id();
+    uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_light(light_id)) {
         return float3(0.f);
     }

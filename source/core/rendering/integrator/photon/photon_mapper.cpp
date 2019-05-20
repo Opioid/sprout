@@ -141,7 +141,7 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
                 } else {
                     if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
                         ((caustic_ray &&
-                          worker.interface_stack().top_is_vacuum_or_not_scattering()) ||
+                          worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                          settings_.full_light_path)) {
                         if (!infinite_world || unnatural_limit.intersect(intersection.geo.p)) {
                             auto& photon = photons[num_photons];

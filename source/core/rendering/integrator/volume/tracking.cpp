@@ -142,7 +142,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
     auto const interface = worker.interface_stack().top();
 
-    auto const& material = *interface->material();
+    auto const& material = *interface->material(worker);
 
     float const d = ray.max_t;
 
@@ -152,13 +152,15 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
     }
 
     if (material.is_heterogeneous_volume()) {
+        auto const prop = worker.scene().prop(interface->prop);
+
         Transformation temp;
-        auto const&    transformation = interface->prop->transformation_at(ray.time, temp);
+        auto const&    transformation = prop->transformation_at(ray.time, temp);
 
         float3 const local_origin = transformation.world_to_object_point(ray.origin);
         float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-        auto const   shape  = interface->prop->shape();
+        auto const   shape  = prop->shape();
         float3 const origin = shape->object_to_texture_point(local_origin);
         float3 const dir    = shape->object_to_texture_vector(local_dir);
 

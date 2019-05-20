@@ -164,7 +164,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
     auto const interface = worker.interface_stack().top();
 
-    auto const& material = *intersection.material();
+    auto const& material = *intersection.material(worker);
 
     if (!material.is_scattering_volume()) {
         // Basically the "glass" case
@@ -177,10 +177,12 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     }
 
     if (material.is_heterogeneous_volume()) {
-        auto const shape = interface->prop->shape();
+        auto const prop = worker.scene().prop(interface->prop);
+
+        auto const shape = prop->shape();
 
         Transformation temp;
-        auto const&    transformation = interface->prop->transformation_at(ray.time, temp);
+        auto const&    transformation = prop->transformation_at(ray.time, temp);
 
         float3 const local_origin = transformation.world_to_object_point(ray.origin);
         float3 const local_dir    = transformation.world_to_object_vector(ray.direction);

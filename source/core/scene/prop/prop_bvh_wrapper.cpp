@@ -32,7 +32,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
                             Intersection& intersection) const noexcept {
     bool hit = false;
 
-    Prop const* prop = nullptr;
+    uint32_t prop = 0xFFFFFFFF;
 
     node_stack.clear();
     if (0 != tree_.num_nodes_) {
@@ -69,8 +69,8 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
             }
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                auto const p = &props[finite_props[i]];
-                if (p->intersect(ray, node_stack, intersection.geo)) {
+                uint32_t const p = finite_props[i];
+                if (props[p].intersect(ray, node_stack, intersection.geo)) {
                     prop      = p;
                     hit       = true;
                     ray_max_t = simd::load_float(&ray.max_t);
@@ -84,8 +84,8 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack,
     uint32_t const* infinite_props = infinite_props_;
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-        auto const p = &props[infinite_props[i]];
-        if (p->intersect(ray, node_stack, intersection.geo)) {
+        uint32_t const p = infinite_props[i];
+        if (props[p].intersect(ray, node_stack, intersection.geo)) {
             prop = p;
             hit  = true;
         }
@@ -100,7 +100,7 @@ bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
                                  Intersection& intersection) const noexcept {
     bool hit = false;
 
-    Prop const* prop = nullptr;
+    uint32_t prop = 0xFFFFFFFF;
 
     node_stack.clear();
     if (0 != tree_.num_nodes_) {
@@ -137,8 +137,8 @@ bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
             }
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                auto const p = &props[finite_props[i]];
-                if (p->intersect_fast(ray, node_stack, intersection.geo)) {
+                uint32_t const p = finite_props[i];
+                if (props[p].intersect_fast(ray, node_stack, intersection.geo)) {
                     prop      = p;
                     hit       = true;
                     ray_max_t = simd::load_float(&ray.max_t);
@@ -152,8 +152,8 @@ bool BVH_wrapper::intersect_fast(Ray& ray, shape::Node_stack& node_stack,
     uint32_t const* infinite_props = infinite_props_;
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-        auto const p = &props[infinite_props[i]];
-        if (p->intersect_fast(ray, node_stack, intersection.geo)) {
+        uint32_t const p = infinite_props[i];
+        if (props[p].intersect_fast(ray, node_stack, intersection.geo)) {
             prop = p;
             hit  = true;
         }
@@ -203,8 +203,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, shape::Norm
             }
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                auto const p = &props[finite_props[i]];
-                if (p->intersect(ray, node_stack, normals)) {
+                if (props[finite_props[i]].intersect(ray, node_stack, normals)) {
                     hit       = true;
                     ray_max_t = simd::load_float(&ray.max_t);
                 }
@@ -217,8 +216,7 @@ bool BVH_wrapper::intersect(Ray& ray, shape::Node_stack& node_stack, shape::Norm
     uint32_t const* infinite_props = infinite_props_;
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-        auto const p = &props[infinite_props[i]];
-        if (p->intersect(ray, node_stack, normals)) {
+        if (props[infinite_props[i]].intersect(ray, node_stack, normals)) {
             hit = true;
         }
     }

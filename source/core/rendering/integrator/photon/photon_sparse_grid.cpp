@@ -307,8 +307,9 @@ uint32_t Sparse_grid::reduce_and_move(Photon* photons, float merge_radius, uint3
         comp_num_photons -= num_reduced[i];
     }
 
-    std::partition(photons_, photons_ + num_photons_,
-                   [](Photon const& p) noexcept { return p.alpha[0] >= 0.f; });
+    std::partition(photons_, photons_ + num_photons_, [](Photon const& p) noexcept {
+        return p.alpha[0] >= 0.f;
+    });
 
     if (photons != photons_) {
         Photon* old_photons = photons_;
@@ -629,15 +630,17 @@ static float3 scattering_coefficient(prop::Intersection const& intersection,
                                      Worker const&             worker) noexcept {
     using Filter = material::Sampler_settings::Filter;
 
-    auto const& material = *intersection.material();
+    auto const& material = *intersection.material(worker);
 
     if (material.is_heterogeneous_volume()) {
+        auto const prop = worker.scene().prop(intersection.prop);
+
         entity::Composed_transformation temp;
-        auto const& transformation = intersection.prop->transformation_at(0, temp);
+        auto const&                     transformation = prop->transformation_at(0, temp);
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
 
-        auto const shape = intersection.prop->shape();
+        auto const shape = prop->shape();
 
         float3 const uvw = shape->object_to_texture_point(local_position);
 

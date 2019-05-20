@@ -6,13 +6,15 @@
 #include "prop.hpp"
 #include "prop_intersection.hpp"
 #include "scene/material/material.hpp"
+#include "scene/scene.hpp"
+#include "scene/scene_worker.hpp"
 
 #include "base/debug/assert.hpp"
 
 namespace scene::prop {
 
-inline material::Material const* Interface::material() const noexcept {
-    return prop->material(part);
+inline material::Material const* Interface::material(Worker const& worker) const noexcept {
+    return worker.scene().prop(prop)->material(part);
 }
 
 inline bool Interface::matches(Intersection const& intersection) const noexcept {
@@ -63,25 +65,25 @@ inline Interface const* Interface_stack::top() const noexcept {
     return nullptr;
 }
 
-inline float Interface_stack::top_ior() const noexcept {
+inline float Interface_stack::top_ior(Worker const& worker) const noexcept {
     if (index_ > 0) {
-        return stack_[index_ - 1].material()->ior();
+        return stack_[index_ - 1].material(worker)->ior();
     }
 
     return 1.f;
 }
 
-inline bool Interface_stack::top_is_vacuum() const noexcept {
+inline bool Interface_stack::top_is_vacuum(Worker const& worker) const noexcept {
     if (index_ > 0) {
-        return 1.f == stack_[index_ - 1].material()->ior();
+        return 1.f == stack_[index_ - 1].material(worker)->ior();
     }
 
     return true;
 }
 
-inline bool Interface_stack::top_is_vacuum_or_not_scattering() const noexcept {
+inline bool Interface_stack::top_is_vacuum_or_not_scattering(Worker const& worker) const noexcept {
     if (index_ > 0) {
-        auto const material = stack_[index_ - 1].material();
+        auto const material = stack_[index_ - 1].material(worker);
         return 1.f == material->ior() || !material->is_scattering_volume();
     }
 
@@ -113,16 +115,17 @@ inline bool Interface_stack::remove(Intersection const& intersection) noexcept {
     return false;
 }
 
-inline float Interface_stack::peek_ior(Intersection const& intersection) const noexcept {
+inline float Interface_stack::peek_ior(Intersection const& intersection, Worker const& worker) const
+    noexcept {
     if (index_ <= 1) {
         return 1.f;
     }
 
     int32_t const back = index_ - 1;
     if (stack_[back].matches(intersection)) {
-        return stack_[back - 1].material()->ior();
+        return stack_[back - 1].material(worker)->ior();
     } else {
-        return stack_[back].material()->ior();
+        return stack_[back].material(worker)->ior();
     }
 }
 
