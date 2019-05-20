@@ -20,7 +20,7 @@ void Prop_light::init(uint32_t prop, uint32_t part) noexcept {
 Light::Transformation const& Prop_light::transformation_at(uint64_t        time,
                                                            Transformation& transformation,
                                                            Scene const&    scene) const noexcept {
-    return scene.prop(prop_)->transformation_at(time, transformation);
+    return scene.prop(prop_)->transformation_at(prop_, time, transformation, scene);
 }
 
 bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
@@ -130,7 +130,7 @@ float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool tot
     Prop const* prop = worker.scene().prop(prop_);
 
     Transformation temp;
-    auto const&    transformation = prop->transformation_at(ray.time, temp);
+    auto const&    transformation = prop->transformation_at(prop_, ray.time, temp, worker.scene());
 
     float const area = prop->area(part_);
 
@@ -155,7 +155,7 @@ float3 Prop_light::power(AABB const& scene_bb, Scene const& scene) const noexcep
 
 void Prop_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                   thread::Pool& pool) noexcept {
-    scene.prop(prop_)->prepare_sampling(part_, light_id, time, false, pool);
+    scene.prop(prop_)->prepare_sampling(prop_, part_, light_id, time, false, pool, scene);
 }
 
 bool Prop_light::equals(uint32_t prop, uint32_t part) const noexcept {

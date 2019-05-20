@@ -8,8 +8,8 @@
 namespace controller {
 
 Camera::Camera(uint32_t camera, scene::Scene const& scene) : camera_(camera) {
-    scene::entity::Composed_transformation temp;
-    auto& transformation = scene.prop(camera_)->transformation_at(0, temp);
+    scene::Scene::Transformation temp;
+    auto& transformation = scene.prop(camera_)->transformation_at(camera_, 0, temp, scene);
 
     position_ = transformation.position;
 }

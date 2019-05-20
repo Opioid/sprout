@@ -118,7 +118,7 @@ float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bo
     Prop const* prop = worker.scene().prop(prop_);
 
     Transformation temp;
-    auto const&    transformation = prop->transformation_at(ray.time, temp);
+    auto const&    transformation = prop->transformation_at(prop_, ray.time, temp, worker.scene());
 
     float const area = prop->area(part_);
 
@@ -137,7 +137,7 @@ float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bo
 
 void Prop_image_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                         thread::Pool& pool) noexcept {
-    scene.prop(prop_)->prepare_sampling(part_, light_id, time, true, pool);
+    scene.prop(prop_)->prepare_sampling(prop_, part_, light_id, time, true, pool, scene);
 }
 
 }  // namespace scene::light

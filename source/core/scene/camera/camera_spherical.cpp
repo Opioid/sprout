@@ -34,7 +34,7 @@ float Spherical::pixel_solid_angle() const noexcept {
 }
 
 bool Spherical::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
-                             uint32_t /*view*/, Ray& ray) const noexcept {
+                             uint32_t /*view*/, Scene const& scene, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];
@@ -53,7 +53,7 @@ bool Spherical::generate_ray(Prop const* self, Camera_sample const& sample, uint
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto&          transformation = self->transformation_at(time, temp);
+    auto&          transformation = self->transformation_at(entity_, time, temp, scene);
 
     ray = create_ray(transformation.position, transform_vector(transformation.rotation, dir), time);
 

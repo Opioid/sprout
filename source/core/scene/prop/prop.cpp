@@ -19,17 +19,16 @@ Prop::Prop() = default;
 
 Prop::Prop(Prop&& other) noexcept
     : properties_(other.properties_),
-      parent_(other.parent_),
-      next_(other.next_),
-      child_(other.child_),
-      aabb_(other.aabb_),
-      world_transformation_(other.world_transformation_),
       num_world_frames_(other.num_world_frames_),
-      num_local_frames_(other.num_local_frames_),
       frames_(other.frames_),
+      aabb_(other.aabb_),
       shape_(other.shape_),
       materials_(other.materials_),
-      parts_(other.parts_) {
+      parts_(other.parts_),
+      num_local_frames_(other.num_local_frames_),
+      parent_(other.parent_),
+      next_(other.next_),
+      child_(other.child_) {
     other.frames_    = nullptr;
     other.shape_     = nullptr;
     other.parts_     = nullptr;
@@ -56,10 +55,12 @@ math::Transformation const& Prop::local_frame_0() const noexcept {
     return frames_[num_world_frames_].transformation;
 }
 
-Prop::Transformation const& Prop::transformation_at(uint64_t        time,
-                                                    Transformation& transformation) const noexcept {
+Prop::Transformation const& Prop::transformation_at(uint32_t self, uint64_t time,
+                                                    Transformation& transformation,
+                                                    Scene const&    scene) const noexcept {
     if (1 == num_world_frames_) {
-        return world_transformation_;
+        return scene.prop_world_transformation(self);
+        //    return world_transformation_;
     }
 
     for (uint32_t i = 0, len = num_world_frames_ - 1; i < len; ++i) {
@@ -97,13 +98,13 @@ void Prop::set_frames(animation::Keyframe const* frames, uint32_t num_frames) no
     morphing_ = frames[0].m;
 }
 
-void Prop::calculate_world_transformation(Scene& scene) noexcept {
+void Prop::calculate_world_transformation(uint32_t self, Scene& scene) noexcept {
     if (Null == parent_) {
         for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
             frames_[i] = frames_[len + i];
         }
 
-        propagate_transformation(scene);
+        propagate_transformation(self, scene);
     }
 }
 
@@ -192,8 +193,8 @@ void Prop::morph(thread::Pool& pool) noexcept {
     }
 }
 
-bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const
-    noexcept {
+bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
+                     shape::Intersection& intersection) const noexcept {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -203,13 +204,13 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& inte
     }
 
     Transformation temp;
-    auto const&    transformation = transformation_at(ray.time, temp);
+    auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->intersect(ray, transformation, node_stack, intersection);
+    return shape_->intersect(ray, transformation, worker.node_stack(), intersection);
 }
 
-bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack, shape::Intersection& intersection) const
-    noexcept {
+bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
+                          shape::Intersection& intersection) const noexcept {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -219,12 +220,13 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack, shape::Intersection&
     }
 
     Transformation temp;
-    auto const&    transformation = transformation_at(ray.time, temp);
+    auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->intersect_fast(ray, transformation, node_stack, intersection);
+    return shape_->intersect_fast(ray, transformation, worker.node_stack(), intersection);
 }
 
-bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Normals& normals) const noexcept {
+bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const
+    noexcept {
     //	if (!visible(ray.depth)) {
     //		return false;
     //	}
@@ -238,12 +240,12 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Normals& normals) 
     }
 
     Transformation temp;
-    auto const&    transformation = transformation_at(ray.time, temp);
+    auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->intersect(ray, transformation, node_stack, normals);
+    return shape_->intersect(ray, transformation, worker.node_stack(), normals);
 }
 
-bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
+bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const noexcept {
     if (!visible_in_shadow()) {
         return false;
     }
@@ -253,9 +255,9 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
     }
 
     Transformation temp;
-    auto const&    transformation = transformation_at(ray.time, temp);
+    auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->intersect_p(ray, transformation, node_stack);
+    return shape_->intersect_p(ray, transformation, worker.node_stack());
 }
 
 shape::Shape const* Prop::shape() const noexcept {
@@ -293,10 +295,11 @@ bool Prop::visible(uint32_t ray_depth) const noexcept {
     return true;
 }
 
-void Prop::on_set_transformation() noexcept {
+void Prop::on_set_transformation(uint32_t self, Scene const& scene) noexcept {
     if (1 == num_world_frames_) {
-        aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world,
-                                         frames_[0].transformation);
+        auto const& t = scene.prop_world_transformation(self);
+
+        aabb_ = shape_->transformed_aabb(t.object_to_world, frames_[0].transformation);
     } else {
         static uint32_t constexpr Num_steps = 4;
 
@@ -322,12 +325,13 @@ void Prop::on_set_transformation() noexcept {
 
 void Prop::set_parameters(json::Value const& /*parameters*/) noexcept {}
 
-void Prop::prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
-                            bool material_importance_sampling, thread::Pool& pool) noexcept {
+void Prop::prepare_sampling(uint32_t self, uint32_t part, uint32_t light_id, uint64_t time,
+                            bool material_importance_sampling, thread::Pool& pool,
+                            Scene const& scene) noexcept {
     shape_->prepare_sampling(part);
 
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp);
+    auto const&    transformation = transformation_at(self, time, temp, scene);
 
     float const area  = shape_->area(part, transformation.scale);
     parts_[part].area = area;
@@ -338,12 +342,13 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id, uint64_t time,
                                        material_importance_sampling, pool);
 }
 
-void Prop::prepare_sampling_volume(uint32_t part, uint32_t light_id, uint64_t time,
-                                   bool material_importance_sampling, thread::Pool& pool) noexcept {
+void Prop::prepare_sampling_volume(uint32_t self, uint32_t part, uint32_t light_id, uint64_t time,
+                                   bool material_importance_sampling, thread::Pool& pool,
+                                   Scene const& scene) noexcept {
     shape_->prepare_sampling(part);
 
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp);
+    auto const&    transformation = transformation_at(self, time, temp, scene);
 
     float const volume  = shape_->volume(part, transformation.scale);
     parts_[part].volume = volume;
@@ -354,9 +359,10 @@ void Prop::prepare_sampling_volume(uint32_t part, uint32_t light_id, uint64_t ti
                                        material_importance_sampling, pool);
 }
 
-float Prop::opacity(Ray const& ray, Filter filter, Worker const& worker) const noexcept {
+float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const
+    noexcept {
     if (!has_masked_material()) {
-        return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
+        return intersect_p(self, ray, worker) ? 1.f : 0.f;
     }
 
     if (!visible_in_shadow()) {
@@ -368,15 +374,15 @@ float Prop::opacity(Ray const& ray, Filter filter, Worker const& worker) const n
     }
 
     Transformation temp;
-    auto const&    transformation = transformation_at(ray.time, temp);
+    auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
     return shape_->opacity(ray, transformation, materials_, filter, worker);
 }
 
-bool Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
-    noexcept {
+bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
+                           float3& ta) const noexcept {
     if (!has_tinted_shadow()) {
-        float const o = opacity(ray, filter, worker);
+        float const o = opacity(self, ray, filter, worker);
 
         ta = float3(1.f - o);
         return 0.f == o;
@@ -393,7 +399,7 @@ bool Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker, 
     }
 
     Transformation temp;
-    auto const&    transformation = transformation_at(ray.time, temp);
+    auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
     return shape_->thin_absorption(ray, transformation, materials_, filter, worker, ta);
 }
@@ -440,22 +446,22 @@ size_t Prop::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-void Prop::propagate_transformation(Scene& scene) noexcept {
+void Prop::propagate_transformation(uint32_t self, Scene& scene) noexcept {
     if (1 == num_world_frames_) {
-        world_transformation_.set(frames_[0].transformation);
+        scene.prop_set_world_transformation(self, frames_[0].transformation);
     }
 
-    on_set_transformation();
+    on_set_transformation(self, scene);
 
     if (Null != child_) {
-        scene.prop(child_)->inherit_transformation(frames_, num_world_frames_, scene);
+        scene.prop(child_)->inherit_transformation(self, frames_, num_world_frames_, scene);
     }
 }
 
-void Prop::inherit_transformation(Keyframe const* frames, uint32_t num_frames,
+void Prop::inherit_transformation(uint32_t self, Keyframe const* frames, uint32_t num_frames,
                                   Scene& scene) noexcept {
     if (Null != next_) {
-        scene.prop(next_)->inherit_transformation(frames, num_frames, scene);
+        scene.prop(next_)->inherit_transformation(self, frames, num_frames, scene);
     }
 
     for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
@@ -464,7 +470,7 @@ void Prop::inherit_transformation(Keyframe const* frames, uint32_t num_frames,
         frames_[len + lf].transform(frames_[i], frames[of]);
     }
 
-    propagate_transformation(scene);
+    propagate_transformation(self, scene);
 }
 
 void Prop::add_sibling(uint32_t node, Scene& scene) noexcept {

@@ -275,9 +275,8 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
         comp_num_photons -= num_reduced[i];
     }
 
-    std::partition(photons_, photons_ + num_photons_, [](Photon const& p) noexcept {
-        return p.alpha[0] >= 0.f;
-    });
+    std::partition(photons_, photons_ + num_photons_,
+                   [](Photon const& p) noexcept { return p.alpha[0] >= 0.f; });
 
     if (photons != photons_) {
         Photon* old_photons = photons_;
@@ -557,7 +556,8 @@ static float3 scattering_coefficient(prop::Intersection const& intersection,
 
     if (material.is_heterogeneous_volume()) {
         entity::Composed_transformation temp;
-        auto const&                     transformation = prop->transformation_at(0, temp);
+        auto const& transformation = prop->transformation_at(intersection.prop, 0, temp,
+                                                             worker.scene());
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
 

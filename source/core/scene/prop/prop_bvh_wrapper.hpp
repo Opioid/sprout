@@ -32,15 +32,13 @@ class BVH_wrapper {
 
     AABB const& aabb() const noexcept;
 
-    bool intersect(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const
-        noexcept;
+    bool intersect(Ray& ray, Worker const& worker, Intersection& intersection) const noexcept;
 
-    bool intersect_fast(Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const
-        noexcept;
+    bool intersect_fast(Ray& ray, Worker const& worker, Intersection& intersection) const noexcept;
 
-    bool intersect(Ray& ray, shape::Node_stack& node_stack, shape::Normals& normals) const noexcept;
+    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const noexcept;
 
-    bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const noexcept;
+    bool intersect_p(Ray const& ray, Worker const& worker) const noexcept;
 
     bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const noexcept;
 

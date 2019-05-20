@@ -36,7 +36,7 @@ float Perspective::pixel_solid_angle() const noexcept {
 }
 
 bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
-                               uint32_t /*view*/, Ray& ray) const noexcept {
+                               uint32_t /*view*/, Scene const& scene, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -60,7 +60,7 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = self->transformation_at(time, temp);
+    auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
 
     float3 const origin_w = transform_point(transformation.object_to_world, origin);
 
@@ -131,7 +131,7 @@ void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) 
                                            focus_.point[1] * d_y_);
 
         Transformation temp;
-        auto const&    transformation = self->transformation_at(time, temp);
+        auto const& transformation = self->transformation_at(entity_, time, temp, worker.scene());
 
         Ray ray(transformation.position, transformation.object_to_world_vector(direction), 0.f,
                 Ray_max_t, 0, time, 0.f);

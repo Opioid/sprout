@@ -24,7 +24,7 @@ class Cubic_stereoscopic : public Stereoscopic {
     float pixel_solid_angle() const noexcept override final;
 
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
-                      Ray& ray) const noexcept override final;
+                      Scene const& scene, Ray& ray) const noexcept override final;
 
     void set_interpupillary_distance_falloff(float ipd_falloff) noexcept;
 

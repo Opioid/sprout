@@ -160,7 +160,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
     float3 w(1.f);
 
     for (;;) {
-        bool const hit = scene_->intersect_volume(tray, node_stack_, intersection);
+        bool const hit = scene_->intersect_volume(tray, *this, intersection);
 
         SOFT_ASSERT(tray.max_t > tray.min_t);
 

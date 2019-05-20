@@ -106,22 +106,22 @@ bool Scene::has_volumes() const noexcept {
     return has_volumes_;
 }
 
-bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
+bool Scene::intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
     noexcept {
-    return prop_bvh_.intersect(ray, node_stack, intersection);
+    return prop_bvh_.intersect(ray, worker, intersection);
 }
 
-bool Scene::intersect(Ray& ray, Node_stack& node_stack, shape::Normals& normals) const noexcept {
-    return prop_bvh_.intersect(ray, node_stack, normals);
+bool Scene::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const noexcept {
+    return prop_bvh_.intersect(ray, worker, normals);
 }
 
-bool Scene::intersect_volume(Ray& ray, Node_stack& node_stack,
-                             prop::Intersection& intersection) const noexcept {
-    return volume_bvh_.intersect_fast(ray, node_stack, intersection);
+bool Scene::intersect_volume(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
+    noexcept {
+    return volume_bvh_.intersect_fast(ray, worker, intersection);
 }
 
-bool Scene::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
-    return prop_bvh_.intersect_p(ray, node_stack);
+bool Scene::intersect_p(Ray const& ray, Worker const& worker) const noexcept {
+    return prop_bvh_.intersect_p(ray, worker);
 }
 
 bool Scene::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const
@@ -130,7 +130,7 @@ bool Scene::visibility(Ray const& ray, Filter filter, Worker const& worker, floa
         return prop_bvh_.visibility(ray, filter, worker, v);
     }
 
-    if (!prop_bvh_.intersect_p(ray, worker.node_stack())) {
+    if (!prop_bvh_.intersect_p(ray, worker)) {
         v = 1.f;
         return true;
     }
@@ -231,10 +231,13 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
         e->update(*this);
     }
 
+    uint32_t i = 0;
     for (auto& p : props_) {
-        p.calculate_world_transformation(*this);
+        p.calculate_world_transformation(i, *this);
         has_masked_material_ = has_masked_material_ || p.has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p.has_tinted_shadow();
+
+        ++i;
     }
 
     for (auto v : volumes_) {
@@ -268,6 +271,7 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
 
 Scene::Prop_ref Scene::create_dummy() noexcept {
     props_.emplace_back();
+    world_transformations_.emplace_back();
 
     uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
 
@@ -288,6 +292,7 @@ Scene::Prop_ref Scene::create_dummy(std::string const& name) noexcept {
 
 Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     props_.emplace_back();
+    world_transformations_.emplace_back();
 
     uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
 
@@ -379,8 +384,12 @@ void Scene::prop_set_transformation(uint32_t entity, math::Transformation const&
     props_[entity].set_transformation(t);
 }
 
+Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const noexcept {
+    return world_transformations_[entity];
+}
+
 void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept {
- //   props_[entity].world_transformation_.set(t);
+    world_transformations_[entity].set(t);
 }
 
 void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,

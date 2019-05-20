@@ -48,7 +48,7 @@ float Prop_volume_image_light::pdf(Ray const& ray, Intersection const& intersect
     Prop const* prop = worker.scene().prop(prop_);
 
     Transformation temp;
-    auto const&    transformation = prop->transformation_at(ray.time, temp);
+    auto const&    transformation = prop->transformation_at(prop_, ray.time, temp, worker.scene());
 
     float const volume = prop->volume(part_);
 
@@ -63,8 +63,8 @@ float Prop_volume_image_light::pdf(Ray const& ray, Intersection const& intersect
 
 void Prop_volume_image_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                                thread::Pool& pool) noexcept {
-    scene.prop(prop_)->prepare_sampling_volume(part_, Volume_light_mask | light_id, time, true,
-                                               pool);
+    scene.prop(prop_)->prepare_sampling_volume(prop_, part_, Volume_light_mask | light_id, time,
+                                               true, pool, scene);
 }
 
 }  // namespace scene::light

@@ -38,11 +38,11 @@ uint32_t Worker::id() const noexcept {
 }
 
 bool Worker::intersect(Ray& ray, Intersection& intersection) const noexcept {
-    return scene_->intersect(ray, node_stack_, intersection);
+    return scene_->intersect(ray, *this, intersection);
 }
 
 bool Worker::intersect(Ray& ray, shape::Normals& normals) const noexcept {
-    return scene_->intersect(ray, node_stack_, normals);
+    return scene_->intersect(ray, *this, normals);
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept {
@@ -81,7 +81,7 @@ bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
 }
 
 bool Worker::visibility(Ray const& ray) const noexcept {
-    return !scene_->intersect_p(ray, node_stack_);
+    return !scene_->intersect_p(ray, *this);
 }
 
 bool Worker::masked_visibility(Ray const& ray, Filter filter, float& mv) const noexcept {

@@ -63,14 +63,15 @@ struct Ray;
 
 class Scene {
   public:
-    using Node_stack = shape::Node_stack;
-    using Filter     = material::Sampler_settings::Filter;
-    using Entity     = entity::Entity;
-    using Entity_ref = entity::Entity_ref;
-    using Prop       = prop::Prop;
-    using Prop_ref   = prop::Prop_ref;
-    using Material   = material::Material;
-    using Shape      = shape::Shape;
+    using Node_stack     = shape::Node_stack;
+    using Filter         = material::Sampler_settings::Filter;
+    using Entity         = entity::Entity;
+    using Entity_ref     = entity::Entity_ref;
+    using Transformation = entity::Composed_transformation;
+    using Prop           = prop::Prop;
+    using Prop_ref       = prop::Prop_ref;
+    using Material       = material::Material;
+    using Shape          = shape::Shape;
 
     using Materials = memory::Array<material::Material*>;
 
@@ -89,15 +90,14 @@ class Scene {
 
     bool has_volumes() const noexcept;
 
-    bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
+    bool intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const noexcept;
+
+    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const noexcept;
+
+    bool intersect_volume(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
         noexcept;
 
-    bool intersect(Ray& ray, Node_stack& node_stack, shape::Normals& normals) const noexcept;
-
-    bool intersect_volume(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const
-        noexcept;
-
-    bool intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept;
+    bool intersect_p(Ray const& ray, Worker const& worker) const noexcept;
 
     bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const noexcept;
 
@@ -149,6 +149,8 @@ class Scene {
     void prop_attach(uint32_t parent_id, uint32_t child_id) noexcept;
 
     void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
+
+    Transformation const& prop_world_transformation(uint32_t entity) const noexcept;
     void prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
     void prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
@@ -183,7 +185,8 @@ class Scene {
     bool has_tinted_shadow_;
     bool has_volumes_;
 
-    std::vector<prop::Prop> props_;
+    std::vector<prop::Prop>     props_;
+    std::vector<Transformation> world_transformations_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;

@@ -37,14 +37,14 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
 
     if (scene.has_volumes()) {
         Transformation temp;
-        auto const&    transformation = self->transformation_at(time, temp);
+        auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
 
         Ray ray(transformation.position, normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t);
 
         prop::Intersection intersection;
 
         for (;;) {
-            if (!scene.intersect_volume(ray, worker.node_stack(), intersection)) {
+            if (!scene.intersect_volume(ray, worker, intersection)) {
                 break;
             }
 
