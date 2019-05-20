@@ -29,8 +29,6 @@ struct Intersection {
 
     material::Material const* material(Worker const& worker) const noexcept;
 
-    bool is_light(Worker const& worker) const noexcept;
-
     uint32_t light_id(Worker const& worker) const noexcept;
 
     float area(Worker const& worker) const noexcept;

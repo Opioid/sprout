@@ -30,6 +30,8 @@ class Node_stack;
 
 namespace prop {
 
+static uint32_t constexpr Null = 0xFFFFFFFF;
+
 class alignas(64) Prop {
   public:
     using Transformation = entity::Composed_transformation;

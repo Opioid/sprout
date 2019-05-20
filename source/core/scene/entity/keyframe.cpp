@@ -6,7 +6,8 @@
 
 namespace scene::entity {
 
-void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restrict other, float t) const noexcept {
+void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restrict other,
+                           float t) const noexcept {
     if (targets[0] == targets[1] && other.targets[0] == other.targets[1]) {
         result.weight = t;
 
@@ -21,7 +22,8 @@ void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restri
     }
 }
 
-void Keyframe::interpolate(Keyframe& __restrict result, Keyframe const& __restrict other, float t) const noexcept {
+void Keyframe::interpolate(Keyframe& __restrict result, Keyframe const& __restrict other,
+                           float t) const noexcept {
     result.transformation = lerp(transformation, other.transformation, t);
 }
 
@@ -32,7 +34,8 @@ void Keyframe::transform(math::Transformation& result, math::Transformation cons
     result.scale    = transformation.scale;
 }
 
-void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict from) const noexcept {
+void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict from) const
+    noexcept {
     result.transformation.position = transform_point(float4x4(from.transformation),
                                                      transformation.position);
     result.transformation.rotation = quaternion::mul(from.transformation.rotation,

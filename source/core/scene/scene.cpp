@@ -371,12 +371,17 @@ Scene::Prop_ref Scene::create_extension(Extension* extension) noexcept {
     return dummy;
 }
 
-void Scene::attach(uint32_t parent_id, uint32_t child_id) noexcept {
+void Scene::prop_attach(uint32_t parent_id, uint32_t child_id) noexcept {
     props_[parent_id].attach(parent_id, child_id, *this);
 }
 
-void Scene::set_transformation(uint32_t entity, math::Transformation const& t) noexcept {
+void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept {
     props_[entity].set_transformation(t);
+}
+
+void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
+                                 uint32_t num_local_frames) noexcept {
+    props_[entity].allocate_frames(num_world_frames, num_local_frames);
 }
 
 void Scene::add_material(Material* material) noexcept {

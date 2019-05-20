@@ -97,9 +97,9 @@ class Loader {
 
     static void set_visibility(prop::Prop* prop, json::Value const& visibility_value) noexcept;
 
-    prop::Prop_ref load_prop(json::Value const& prop_value, std::string const& name,
-                             std::string_view mount_folder, Local_materials const& local_materials,
-                             Scene& scene) noexcept;
+    uint32_t load_prop(json::Value const& prop_value, std::string const& name,
+                       std::string_view mount_folder, Local_materials const& local_materials,
+                       Scene& scene) noexcept;
 
     uint32_t load_extension(std::string const& type, json::Value const& extension_value,
                             std::string const& name, Scene& scene) noexcept;

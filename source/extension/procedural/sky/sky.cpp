@@ -22,7 +22,7 @@ void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) noexcept {
         float3(0.f), float3(1.f),
         math::quaternion::create_rotation_x(math::degrees_to_radians(90.f))};
 
-    scene.set_transformation(sky, transformation);
+    scene.prop_set_transformation(sky, transformation);
 }
 
 void Sky::set_parameters(json::Value const& parameters, Scene& scene) noexcept {
@@ -103,7 +103,7 @@ void Sky::private_update(Scene& scene) noexcept {
     math::Transformation transformation{float3(0.f), float3(Model::radius()),
                                         math::quaternion::create(sun_rotation_)};
 
-    scene.set_transformation(sun_, transformation);
+    scene.prop_set_transformation(sun_, transformation);
 
     model_.compile();
 

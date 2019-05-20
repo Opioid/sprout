@@ -146,9 +146,12 @@ class Scene {
     Prop_ref create_extension(Extension* extension) noexcept;
     //   uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
 
-    void attach(uint32_t parent_id, uint32_t child_id) noexcept;
+    void prop_attach(uint32_t parent_id, uint32_t child_id) noexcept;
 
-    void set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
+    void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
+
+    void prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
+                              uint32_t num_local_frames) noexcept;
 
     void add_material(Material* material) noexcept;
 

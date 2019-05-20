@@ -213,27 +213,27 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
         std::string const name = json::read_string(e, "name");
 
-        uint32_t entity_id = 0xFFFFFFFF;
+        uint32_t entity_id = prop::Null;
 
         if ("Light" == type_name) {
-            prop::Prop_ref const prop = load_prop(e, name, mount_folder, local_materials, scene);
+            uint32_t const prop_id = load_prop(e, name, mount_folder, local_materials, scene);
 
-            if (prop.ref && prop.ref->visible_in_reflection()) {
-                create_light(prop.id, scene);
+            if (prop::Null != prop_id && scene.prop(prop_id)->visible_in_reflection()) {
+                create_light(prop_id, scene);
             }
 
-            entity_id = prop.id;
+            entity_id = prop_id;
         } else if ("Prop" == type_name) {
-            prop::Prop_ref const prop = load_prop(e, name, mount_folder, local_materials, scene);
+            uint32_t const prop_id = load_prop(e, name, mount_folder, local_materials, scene);
 
-            entity_id = prop.id;
+            entity_id = prop_id;
         } else if ("Dummy" == type_name) {
             entity_id = scene.create_dummy().id;
         } else {
             entity_id = load_extension(type_name, e, name, scene);
         }
 
-        if (0xFFFFFFFF == entity_id) {
+        if (prop::Null == entity_id) {
             continue;
         }
 
@@ -268,16 +268,16 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             }
         }
 
-        if (parent_id != 0xFFFFFFFF) {
-            scene.attach(parent_id, entity_id);
+        if (prop::Null != parent_id) {
+            scene.prop_attach(parent_id, entity_id);
         }
 
         if (!animation) {
-            if (parent_id == 0xFFFFFFFF) {
-                prop_ptr->allocate_frames(1, 1);
+            if (prop::Null == parent_id) {
+                scene.prop_allocate_frames(entity_id, 1, 1);
             }
 
-            prop_ptr->set_transformation(transformation);
+            scene.prop_set_transformation(entity_id, transformation);
         }
 
         if (visibility) {
@@ -308,9 +308,9 @@ void Loader::set_visibility(prop::Prop* prop, json::Value const& visibility_valu
     prop->set_visibility(in_camera, in_reflection, in_shadow);
 }
 
-prop::Prop_ref Loader::load_prop(json::Value const& prop_value, std::string const& name,
-                                 std::string_view       mount_folder,
-                                 Local_materials const& local_materials, Scene& scene) noexcept {
+uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
+                           std::string_view mount_folder, Local_materials const& local_materials,
+                           Scene& scene) noexcept {
     logging::verbose("Loading prop...");
 
     Shape* shape = nullptr;
@@ -330,7 +330,7 @@ prop::Prop_ref Loader::load_prop(json::Value const& prop_value, std::string cons
     }
 
     if (!shape) {
-        return prop::Prop_ref::Null();
+        return 0xFFFFFFFF;
     }
 
     Materials materials;
@@ -356,7 +356,7 @@ prop::Prop_ref Loader::load_prop(json::Value const& prop_value, std::string cons
         set_visibility(prop.ref, *visibility);
     }
 
-    return prop;
+    return prop.id;
 }
 
 uint32_t Loader::load_extension(std::string const& type, json::Value const& extension_value,

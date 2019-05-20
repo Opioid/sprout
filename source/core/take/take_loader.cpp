@@ -334,18 +334,18 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
         camera->set_sensor(sensor);
     }
 
-    scene::prop::Prop_ref const prop = scene.create_dummy();
+    uint32_t const prop_id = scene.create_dummy().id;
 
-    camera->init(prop.id);
+    camera->init(prop_id);
 
     if (animation_value) {
         if (auto animation = scene::animation::load(*animation_value, transformation, scene);
             animation) {
-            scene.create_animation_stage(prop.id, animation);
+            scene.create_animation_stage(prop_id, animation);
         }
     } else {
-        prop.ref->allocate_frames(1, 1);
-        prop.ref->set_transformation(transformation);
+        scene.prop_allocate_frames(prop_id, 1, 1);
+        scene.prop_set_transformation(prop_id, transformation);
     }
 
     take.view.camera = camera;
