@@ -149,6 +149,7 @@ class Scene {
     void prop_attach(uint32_t parent_id, uint32_t child_id) noexcept;
 
     void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
+    void prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
     void prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                               uint32_t num_local_frames) noexcept;
