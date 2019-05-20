@@ -47,6 +47,9 @@ void Prop::allocate_frames(uint32_t num_world_frames, uint32_t num_local_frames)
     num_local_frames_ = num_local_frames;
 
     frames_ = memory::allocate_aligned<Keyframe>(num_world_frames + num_local_frames);
+
+    properties_.set(Property::Test_AABB,
+                    shape_->is_finite() && (shape_->is_complex() || num_world_frames > 1));
 }
 
 math::Transformation const& Prop::local_frame_0() const noexcept {
@@ -161,7 +164,8 @@ void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noe
     set_shape(shape);
 
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
-        auto& p    = parts_[i];
+        auto& p = parts_[i];
+
         p.area     = 1.f;
         p.light_id = 0xFFFFFFFF;
 
@@ -192,7 +196,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Intersection& inte
         return false;
     }
 
-    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -208,7 +212,7 @@ bool Prop::intersect_fast(Ray& ray, Node_stack& node_stack, shape::Intersection&
         return false;
     }
 
-    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -227,7 +231,7 @@ bool Prop::intersect(Ray& ray, Node_stack& node_stack, shape::Normals& normals) 
         return false;
     }
 
-    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -242,7 +246,7 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
         return false;
     }
 
-    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -251,24 +255,6 @@ bool Prop::intersect_p(Ray const& ray, Node_stack& node_stack) const noexcept {
 
     return shape_->intersect_p(ray, transformation, node_stack);
 }
-
-// bool Prop::intersect_p(FVector ray_origin, FVector ray_direction,
-//					   FVector ray_inv_direction, FVector ray_min_t, FVector
-// ray_max_t, 					   float ray_time, shape::Node_stack& node_stack)
-// const { if (!visible_in_shadow()) { 		return false;
-//	}
-
-//	if (shape_->is_complex()
-//	&& !aabb_.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-//		return false;
-//	}
-
-//	entity::Composed_transformation temp;
-//	auto const& transformation = transformation_at(ray_time, temp);
-
-//	return shape_->intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t,
-//							   transformation, node_stack);
-//}
 
 shape::Shape const* Prop::shape() const noexcept {
     return shape_;
@@ -289,7 +275,6 @@ void Prop::set_shape(Shape* shape) noexcept {
     properties_.set(Property::Visible_in_camera);
     properties_.set(Property::Visible_in_reflection);
     properties_.set(Property::Visible_in_shadow);
-    properties_.set(Property::Is_finite, shape->is_finite());
 }
 
 bool Prop::visible(uint32_t ray_depth) const noexcept {
@@ -376,7 +361,7 @@ float Prop::opacity(Ray const& ray, Filter filter, Worker const& worker) const n
         return 0.f;
     }
 
-    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return 0.f;
     }
 
@@ -400,7 +385,7 @@ bool Prop::thin_absorption(Ray const& ray, Filter filter, Worker const& worker, 
         return true;
     }
 
-    if (properties_.test(Property::Is_finite) && !aabb_.intersect_p(ray)) {
+    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         ta = float3(1.f);
         return true;
     }

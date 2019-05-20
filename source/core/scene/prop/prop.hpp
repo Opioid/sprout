@@ -149,7 +149,7 @@ class alignas(64) Prop {
         Visible_in_shadow     = 1 << 2,
         Masked_material       = 1 << 3,
         Tinted_shadow         = 1 << 4,
-        Is_finite             = 1 << 5,
+        Test_AABB             = 1 << 5,
     };
 
     flags::Flags<Property> properties_;
