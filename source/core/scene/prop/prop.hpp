@@ -5,6 +5,7 @@
 #include "base/json/json_types.hpp"
 #include "base/math/aabb.hpp"
 #include "base/math/transformation.hpp"
+#include "scene/animation/animation.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/material/material.hpp"
@@ -58,7 +59,7 @@ class alignas(64) Prop {
 
     void set_transformation(math::Transformation const& t) noexcept;
 
-    void set_frames(Keyframe const* frames, uint32_t num_frames) noexcept;
+    void set_frames(animation::Keyframe const* frames, uint32_t num_frames) noexcept;
 
     void calculate_world_transformation(Scene& scene) noexcept;
 
@@ -181,6 +182,8 @@ class alignas(64) Prop {
     };
 
     Part* parts_ = nullptr;
+
+    entity::Morphing morphing_;
 };
 
 struct Prop_ref {

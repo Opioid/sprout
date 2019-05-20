@@ -47,7 +47,7 @@ void size() {
 
     print_size<math::Transformation>("transformation", 48);
 
-    print_size<scene::entity::Keyframe>("Keyframe", 80);
+    print_size<scene::entity::Keyframe>("Keyframe", 64);
 
     print_size<scene::entity::Composed_transformation>("Composed_transformation", 208);
 

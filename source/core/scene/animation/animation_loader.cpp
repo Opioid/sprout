@@ -16,7 +16,7 @@ Animation* load_keyframes(json::Value const&          keyframes_value,
 Animation* load_sequence(json::Value const&          keyframes_value,
                          math::Transformation const& default_transformation, Scene& scene);
 
-void read_morphing(json::Value const& value, entity::Keyframe::Morphing& morphing);
+void read_morphing(json::Value const& value, entity::Morphing& morphing);
 
 Animation* load(json::Value const&          animation_value,
                 math::Transformation const& default_transformation, Scene& scene) {
@@ -47,17 +47,17 @@ Animation* load_keyframes(json::Value const&          keyframes_value,
     for (uint32_t i = 0, len = keyframes.Size(); i < len; ++i) {
         auto const& k = keyframes[i];
 
-        entity::Keyframe keyframe{default_transformation, {{0, 0}, 0.f}, 0};
+        Keyframe keyframe{{default_transformation, 0}, {{0, 0}, 0.f}};
 
         for (auto& n : k.GetObject()) {
             std::string const node_name = n.name.GetString();
 
             if ("time" == node_name) {
-                keyframe.time = time(json::read_double(n.value));
+                keyframe.k.time = time(json::read_double(n.value));
             } else if ("transformation" == node_name) {
-                json::read_transformation(n.value, keyframe.transformation);
+                json::read_transformation(n.value, keyframe.k.transformation);
             } else if ("morphing" == node_name) {
-                read_morphing(n.value, keyframe.morphing);
+                read_morphing(n.value, keyframe.m);
             }
         }
 
@@ -98,7 +98,7 @@ Animation* load_sequence(json::Value const&          sequence_value,
     for (uint32_t i = 0; i < num_frames; ++i) {
         uint32_t const target = start_frame + i;
 
-        entity::Keyframe const keyframe{default_transformation, {{target, target}, 0.f}, time};
+        Keyframe const keyframe{{default_transformation, time}, {{target, target}, 0.f}};
 
         animation->set(i, keyframe);
 
@@ -108,7 +108,7 @@ Animation* load_sequence(json::Value const&          sequence_value,
     return animation;
 }
 
-void read_morphing(json::Value const& value, entity::Keyframe::Morphing& morphing) {
+void read_morphing(json::Value const& value, entity::Morphing& morphing) {
     for (auto& n : value.GetObject()) {
         std::string const node_name = n.name.GetString();
 

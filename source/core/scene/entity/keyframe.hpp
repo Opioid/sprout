@@ -5,6 +5,13 @@
 
 namespace scene::entity {
 
+struct Morphing {
+    void interpolate(Morphing& result, Morphing const& other, float t) const noexcept;
+
+    uint32_t targets[2];
+    float    weight;
+};
+
 struct alignas(16) Keyframe {
     void interpolate(Keyframe& result, Keyframe const& other, float t) const noexcept;
 
@@ -13,13 +20,6 @@ struct alignas(16) Keyframe {
     void transform(Keyframe& result, Keyframe const& from) const noexcept;
 
     math::Transformation transformation;
-
-    struct Morphing {
-        uint32_t targets[2];
-        float    weight;
-    };
-
-    Morphing morphing;
 
     uint64_t time;
 };
