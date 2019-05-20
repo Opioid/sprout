@@ -86,11 +86,6 @@ class alignas(64) Prop {
 
     bool intersect_p(Ray const& ray, shape::Node_stack& node_stack) const noexcept;
 
-    //	bool intersect_p(FVector ray_origin, FVector ray_direction,
-    //					 FVector ray_inv_direction, FVector ray_mint_, FVector
-    // ray_max_t, 					 float ray_time, shape::Node_stack&
-    // node_stack) const;
-
     shape::Shape const* shape() const noexcept;
     shape::Shape*       shape() noexcept;
 

@@ -94,7 +94,7 @@ inline void Interface_stack::push(Intersection const& intersection) noexcept {
     SOFT_ASSERT(index_ < Num_entries - 1);
 
     if (index_ < Num_entries - 1) {
-        stack_[index_] = {intersection.prop, intersection.geo.uv, intersection.geo.part};
+        stack_[index_] = {intersection.prop, intersection.geo.part, intersection.geo.uv};
         ++index_;
     }
 }

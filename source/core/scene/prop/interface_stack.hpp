@@ -24,8 +24,8 @@ struct Interface {
     bool matches(Intersection const& intersection) const noexcept;
 
     uint32_t prop;
-    float2   uv;
     uint32_t part;
+    float2   uv;
 };
 
 class Interface_stack {
