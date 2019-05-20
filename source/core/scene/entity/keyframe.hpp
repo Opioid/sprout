@@ -6,18 +6,18 @@
 namespace scene::entity {
 
 struct Morphing {
-    void interpolate(Morphing& result, Morphing const& other, float t) const noexcept;
+    void interpolate(Morphing& __restrict result, Morphing const& __restrict other, float t) const noexcept;
 
     uint32_t targets[2];
     float    weight;
 };
 
 struct alignas(16) Keyframe {
-    void interpolate(Keyframe& result, Keyframe const& other, float t) const noexcept;
+    void interpolate(Keyframe& __restrict result, Keyframe const& __restrict other, float t) const noexcept;
 
-    void transform(math::Transformation& result, math::Transformation const& from) const noexcept;
+    void transform(math::Transformation& __restrict result, math::Transformation const& __restrict from) const noexcept;
 
-    void transform(Keyframe& result, Keyframe const& from) const noexcept;
+    void transform(Keyframe& __restrict result, Keyframe const& __restrict from) const noexcept;
 
     math::Transformation transformation;
 
