@@ -41,7 +41,8 @@ class Array {
 
     void push_back(T const& v) noexcept;
 
-    T& operator[](uint64_t i) noexcept;
+    T const& operator[](uint64_t i) const noexcept;
+    T&       operator[](uint64_t i) noexcept;
 
     T const* begin() const noexcept;
     T*       begin() noexcept;

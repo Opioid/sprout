@@ -99,17 +99,17 @@ Scene::Shape* Loader::cube() noexcept {
 }
 
 void Loader::create_light(uint32_t prop_id, Scene& scene) noexcept {
-    Prop const* prop = scene.prop(prop_id);
-    for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
-        if (auto const material = prop->material(i); material->is_emissive()) {
+    auto const shape = scene.prop(prop_id)->shape();
+    for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
+        if (auto const material = scene.prop_material(prop_id, i); material->is_emissive()) {
             if (material->is_scattering_volume()) {
-                if (prop->shape()->is_analytical() && material->has_emission_map()) {
+                if (shape->is_analytical() && material->has_emission_map()) {
                     scene.create_prop_volume_image_light(prop_id, i);
                 } else {
                     scene.create_prop_volume_light(prop_id, i);
                 }
             } else {
-                if (prop->shape()->is_analytical() && material->has_emission_map()) {
+                if (shape->is_analytical() && material->has_emission_map()) {
                     scene.create_prop_image_light(prop_id, i);
                 } else {
                     scene.create_prop_light(prop_id, i);

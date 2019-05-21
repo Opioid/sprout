@@ -24,21 +24,15 @@ Prop::Prop(Prop&& other) noexcept
       frames_(other.frames_),
       aabb_(other.aabb_),
       shape_(other.shape_),
-      materials_(other.materials_),
-      parts_(other.parts_),
       num_local_frames_(other.num_local_frames_),
       parent_(other.parent_),
       next_(other.next_),
       child_(other.child_) {
-    other.frames_    = nullptr;
-    other.shape_     = nullptr;
-    other.parts_     = nullptr;
-    other.materials_ = nullptr;
+    other.frames_ = nullptr;
+    other.shape_  = nullptr;
 }
 
 Prop::~Prop() noexcept {
-    memory::free_aligned(parts_);
-    memory::free_aligned(materials_);
     memory::free_aligned(frames_);
 }
 
@@ -157,25 +151,10 @@ void Prop::detach_self(uint32_t self, Scene& scene) noexcept {
 }
 
 void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noexcept {
-    if (!shape_ || shape_->num_parts() != shape->num_parts()) {
-        memory::free_aligned(parts_);
-        memory::free_aligned(materials_);
-
-        parts_     = memory::allocate_aligned<Part>(shape->num_parts());
-        materials_ = memory::allocate_aligned<Material*>(shape->num_parts());
-    }
-
     set_shape(shape);
 
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
-        auto& p = parts_[i];
-
-        p.area     = 1.f;
-        p.light_id = 0xFFFFFFFF;
-
         auto const m = materials[i];
-
-        materials_[i] = m;
 
         if (m->is_masked()) {
             properties_.set(Property::Masked_material);
@@ -324,42 +303,6 @@ void Prop::on_set_transformation(uint32_t self, Scene const& scene) noexcept {
     }
 }
 
-void Prop::set_parameters(json::Value const& /*parameters*/) noexcept {}
-
-void Prop::prepare_sampling(uint32_t self, uint32_t part, uint32_t light_id, uint64_t time,
-                            bool material_importance_sampling, thread::Pool& pool,
-                            Scene const& scene) noexcept {
-    shape_->prepare_sampling(part);
-
-    Transformation temp;
-    auto const&    transformation = transformation_at(self, time, temp, scene);
-
-    float const area  = shape_->area(part, transformation.scale);
-    parts_[part].area = area;
-
-    parts_[part].light_id = light_id;
-
-    materials_[part]->prepare_sampling(*shape_, part, time, transformation, area,
-                                       material_importance_sampling, pool);
-}
-
-void Prop::prepare_sampling_volume(uint32_t self, uint32_t part, uint32_t light_id, uint64_t time,
-                                   bool material_importance_sampling, thread::Pool& pool,
-                                   Scene const& scene) noexcept {
-    shape_->prepare_sampling(part);
-
-    Transformation temp;
-    auto const&    transformation = transformation_at(self, time, temp, scene);
-
-    float const volume  = shape_->volume(part, transformation.scale);
-    parts_[part].volume = volume;
-
-    parts_[part].light_id = light_id;
-
-    materials_[part]->prepare_sampling(*shape_, part, time, transformation, volume,
-                                       material_importance_sampling, pool);
-}
-
 float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const
     noexcept {
     if (!has_masked_material()) {
@@ -377,7 +320,8 @@ float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& 
     Transformation temp;
     auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->opacity(ray, transformation, materials_, filter, worker);
+    return shape_->opacity(ray, transformation, worker.scene().prop_materials(self), filter,
+                           worker);
 }
 
 bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
@@ -402,45 +346,16 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker 
     Transformation temp;
     auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->thin_absorption(ray, transformation, materials_, filter, worker, ta);
-}
-
-float Prop::area(uint32_t part) const noexcept {
-    return parts_[part].area;
-}
-
-float Prop::volume(uint32_t part) const noexcept {
-    return parts_[part].volume;
-}
-
-uint32_t Prop::light_id(uint32_t part) const noexcept {
-    return parts_[part].light_id;
-}
-
-material::Material const* Prop::material(uint32_t part) const noexcept {
-    return materials_[part];
+    return shape_->thin_absorption(ray, transformation, worker.scene().prop_materials(self), filter,
+                                   worker, ta);
 }
 
 bool Prop::has_masked_material() const noexcept {
     return properties_.test(Property::Masked_material);
 }
 
-bool Prop::has_caustic_material() const noexcept {
-    for (uint32_t i = 0, len = shape_->num_parts(); i < len; ++i) {
-        if (materials_[i]->is_caustic()) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 bool Prop::has_tinted_shadow() const noexcept {
     return properties_.test(Property::Tinted_shadow);
-}
-
-bool Prop::has_no_surface() const noexcept {
-    return 1 == shape_->num_parts() && 1.f == materials_[0]->ior();
 }
 
 size_t Prop::num_bytes() const noexcept {

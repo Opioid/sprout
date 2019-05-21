@@ -19,7 +19,7 @@ bool Prop_image_light::sample(float3 const& p, float3 const& n,
                               Sample_to& result) const noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
@@ -28,7 +28,7 @@ bool Prop_image_light::sample(float3 const& p, float3 const& n,
         return false;
     }
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -50,7 +50,7 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
                               Sample_from& result) const noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
@@ -59,7 +59,7 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
         return false;
     }
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -82,7 +82,7 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
     noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
     float2 const s2d0 = sampler.generate_sample_2D(sampler_dimension);
 
@@ -91,7 +91,7 @@ bool Prop_image_light::sample(Transformation const& transformation, Sampler& sam
         return false;
     }
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -120,9 +120,9 @@ float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bo
     Transformation temp;
     auto const&    transformation = prop->transformation_at(prop_, ray.time, temp, worker.scene());
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -137,7 +137,8 @@ float Prop_image_light::pdf(Ray const& ray, Intersection const& intersection, bo
 
 void Prop_image_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                         thread::Pool& pool) noexcept {
-    scene.prop(prop_)->prepare_sampling(prop_, part_, light_id, time, true, pool, scene);
+    //    scene.prop(prop_)->prepare_sampling(prop_, part_, light_id, time, true, pool, scene);
+    scene.prop_prepare_sampling(prop_, part_, light_id, time, true, pool);
 }
 
 }  // namespace scene::light

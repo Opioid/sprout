@@ -13,15 +13,18 @@
 namespace scene::prop {
 
 inline material::Material const* Intersection::material(Worker const& worker) const noexcept {
-    return worker.scene().prop(prop)->material(geo.part);
+    //   return worker.scene().prop(prop)->material(geo.part);
+    return worker.scene().prop_material(prop, geo.part);
 }
 
 inline uint32_t Intersection::light_id(Worker const& worker) const noexcept {
-    return worker.scene().prop(prop)->light_id(geo.part);
+    //    return worker.scene().prop(prop)->light_id(geo.part);
+    return worker.scene().prop_light_id(prop, geo.part);
 }
 
 inline float Intersection::area(Worker const& worker) const noexcept {
-    return worker.scene().prop(prop)->area(geo.part);
+    //   return worker.scene().prop(prop)->area(geo.part);
+    return worker.scene().prop_area(prop, geo.part);
 }
 
 inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& worker) const

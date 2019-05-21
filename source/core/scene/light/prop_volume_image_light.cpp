@@ -18,7 +18,7 @@ bool Prop_volume_image_light::sample(float3 const& p, float3 const& n,
                                      Worker const& worker, Sample_to& result) const noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
     float const  s1d = sampler.generate_sample_1D(sampler_dimension);
@@ -28,7 +28,7 @@ bool Prop_volume_image_light::sample(float3 const& p, float3 const& n,
         return false;
     }
 
-    float const volume = prop->volume(part_);
+    float const volume = worker.scene().prop_volume(prop_, part_);
 
     if (!prop->shape()->sample(part_, p, rs.uvw, transformation, volume, result)) {
         return false;
@@ -50,9 +50,9 @@ float Prop_volume_image_light::pdf(Ray const& ray, Intersection const& intersect
     Transformation temp;
     auto const&    transformation = prop->transformation_at(prop_, ray.time, temp, worker.scene());
 
-    float const volume = prop->volume(part_);
+    float const volume = worker.scene().prop_volume(prop_, part_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
     float const shape_pdf = prop->shape()->pdf_volume(ray, intersection, transformation, volume);
 
@@ -63,8 +63,8 @@ float Prop_volume_image_light::pdf(Ray const& ray, Intersection const& intersect
 
 void Prop_volume_image_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                                thread::Pool& pool) noexcept {
-    scene.prop(prop_)->prepare_sampling_volume(prop_, part_, Volume_light_mask | light_id, time,
-                                               true, pool, scene);
+    scene.prop_prepare_sampling_volume(prop_, part_, Volume_light_mask | light_id, time, true,
+                                       pool);
 }
 
 }  // namespace scene::light

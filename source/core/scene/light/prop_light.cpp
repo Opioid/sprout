@@ -28,9 +28,9 @@ bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& 
                         Worker const& worker, Sample_to& result) const noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -57,9 +57,9 @@ float3 Prop_light::evaluate(Sample_to const& sample, Filter filter, Worker const
     noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     return material->evaluate_radiance(sample.wi, sample.uvw.xy(), area, filter, worker);
 }
@@ -69,9 +69,9 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
                         Sample_from& result) const noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -91,9 +91,9 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
     noexcept {
     Prop const* prop = worker.scene().prop(prop_);
 
-    auto const material = prop->material(part_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     bool const two_sided = material->is_two_sided();
 
@@ -116,11 +116,9 @@ bool Prop_light::sample(Transformation const& transformation, Sampler& sampler,
 
 float3 Prop_light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
     noexcept {
-    Prop const* prop = worker.scene().prop(prop_);
+    auto const material = worker.scene().prop_material(prop_, part_);
 
-    auto const material = prop->material(part_);
-
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
     return material->evaluate_radiance(-sample.dir, sample.uv, area, filter, worker);
 }
@@ -132,9 +130,9 @@ float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool tot
     Transformation temp;
     auto const&    transformation = prop->transformation_at(prop_, ray.time, temp, worker.scene());
 
-    float const area = prop->area(part_);
+    float const area = worker.scene().prop_area(prop_, part_);
 
-    bool const two_sided = prop->material(part_)->is_two_sided();
+    bool const two_sided = worker.scene().prop_material(prop_, part_)->is_two_sided();
 
     return prop->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
 }
@@ -142,9 +140,9 @@ float Prop_light::pdf(Ray const& ray, Intersection const& intersection, bool tot
 float3 Prop_light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
     Prop const* prop = scene.prop(prop_);
 
-    float const area = prop->area(part_);
+    float const area = scene.prop_area(prop_, part_);
 
-    float3 const radiance = prop->material(part_)->average_radiance(area);
+    float3 const radiance = scene.prop_material(prop_, part_)->average_radiance(area);
 
     if (prop->shape()->is_finite()) {
         return area * radiance;
@@ -155,7 +153,9 @@ float3 Prop_light::power(AABB const& scene_bb, Scene const& scene) const noexcep
 
 void Prop_light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                                   thread::Pool& pool) noexcept {
-    scene.prop(prop_)->prepare_sampling(prop_, part_, light_id, time, false, pool, scene);
+    //   scene.prop(prop_)->prepare_sampling(prop_, part_, light_id, time, false, pool, scene);
+
+    scene.prop_prepare_sampling(prop_, part_, light_id, time, false, pool);
 }
 
 bool Prop_light::equals(uint32_t prop, uint32_t part) const noexcept {

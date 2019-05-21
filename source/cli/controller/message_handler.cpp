@@ -130,7 +130,7 @@ void Message_handler::handle_prop(scene::prop::Prop* prop, std::string const& va
     }
 
     if ("parameters" == value) {
-        prop->set_parameters(*root);
+        //    prop->set_parameters(*root);
     } else if ("transformation" == value) {
         math::Transformation t = prop->local_frame_0();
         json::read_transformation(*root, t);

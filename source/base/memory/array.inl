@@ -110,6 +110,11 @@ void Array<T>::push_back(T const& v) noexcept {
 }
 
 template <typename T>
+T const& Array<T>::operator[](uint64_t i) const noexcept {
+    return data_[i];
+}
+
+template <typename T>
 T& Array<T>::operator[](uint64_t i) noexcept {
     return data_[i];
 }

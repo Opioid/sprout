@@ -101,34 +101,14 @@ class alignas(64) Prop {
 
     void set_shape_and_materials(Shape* shape, Material* const* materials) noexcept;
 
-    void set_parameters(json::Value const& parameters) noexcept;
-
-    void prepare_sampling(uint32_t self, uint32_t part, uint32_t light_id, uint64_t time,
-                          bool material_importance_sampling, thread::Pool& pool,
-                          Scene const& scene) noexcept;
-
-    void prepare_sampling_volume(uint32_t self, uint32_t part, uint32_t light_id, uint64_t time,
-                                 bool material_importance_sampling, thread::Pool& pool,
-                                 Scene const& scene) noexcept;
-
     float opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const
         noexcept;
 
     bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
                          float3& ca) const noexcept;
 
-    float area(uint32_t part) const noexcept;
-
-    float volume(uint32_t part) const noexcept;
-
-    uint32_t light_id(uint32_t part) const noexcept;
-
-    material::Material const* material(uint32_t part) const noexcept;
-
     bool has_masked_material() const noexcept;
-    bool has_caustic_material() const noexcept;
     bool has_tinted_shadow() const noexcept;
-    bool has_no_surface() const noexcept;
 
     size_t num_bytes() const noexcept;
 
@@ -173,19 +153,6 @@ class alignas(64) Prop {
 
     Shape* shape_ = nullptr;
 
-    Material** materials_ = nullptr;
-
-    struct Part {
-        union {
-            float area;
-            float volume;
-        };
-
-        uint32_t light_id;
-    };
-
-    Part* parts_ = nullptr;
-
     entity::Morphing morphing_;
 
     uint32_t num_local_frames_ = 0;
@@ -202,6 +169,23 @@ struct Prop_ref {
     static Prop_ref constexpr Null() noexcept {
         return {nullptr, 0xFFFFFFFF};
     }
+};
+
+struct Prop_material {
+    using Material = material::Material;
+
+    Material** materials = nullptr;
+
+    struct Part {
+        union {
+            float area;
+            float volume;
+        };
+
+        uint32_t light_id;
+    };
+
+    Part* parts = nullptr;
 };
 
 }  // namespace prop

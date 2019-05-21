@@ -14,7 +14,7 @@
 namespace scene::prop {
 
 inline material::Material const* Interface::material(Worker const& worker) const noexcept {
-    return worker.scene().prop(prop)->material(part);
+    return worker.scene().prop_material(prop, part);
 }
 
 inline bool Interface::matches(Intersection const& intersection) const noexcept {

@@ -53,6 +53,7 @@ namespace prop {
 
 struct Intersection;
 class Prop;
+struct Prop_material;
 struct Prop_ref;
 
 }  // namespace prop
@@ -160,6 +161,21 @@ class Scene {
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                          uint32_t num_frames) noexcept;
 
+    void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
+                               bool material_importance_sampling, thread::Pool& pool) noexcept;
+
+    void prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
+                                      uint64_t time, bool material_importance_sampling,
+                                      thread::Pool& pool) noexcept;
+
+    material::Material* const* prop_materials(uint32_t entity) const noexcept;
+    material::Material const*  prop_material(uint32_t entity, uint32_t part) const noexcept;
+
+    uint32_t prop_light_id(uint32_t entity, uint32_t part) const noexcept;
+
+    float prop_area(uint32_t entity, uint32_t part) const noexcept;
+    float prop_volume(uint32_t entity, uint32_t part) const noexcept;
+
     void add_material(Material* material) noexcept;
 
     animation::Animation* create_animation(uint32_t count) noexcept;
@@ -169,6 +185,10 @@ class Scene {
     size_t num_bytes() const noexcept;
 
   private:
+    Prop_ref allocate_prop() noexcept;
+
+    bool prop_has_caustic_material(uint32_t entity, uint32_t num_parts) const noexcept;
+
     void add_named_prop(Prop* prop, std::string const& name) noexcept;
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept;
@@ -189,8 +209,9 @@ class Scene {
     bool has_tinted_shadow_;
     bool has_volumes_;
 
-    std::vector<prop::Prop>     props_;
-    std::vector<Transformation> world_transformations_;
+    std::vector<prop::Prop>          props_;
+    std::vector<Transformation>      prop_world_transformations_;
+    std::vector<prop::Prop_material> prop_materials_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;
