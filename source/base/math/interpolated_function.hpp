@@ -22,7 +22,7 @@ class Interpolated_function {
   private:
     float range_end_;
 
-    float inverse_range_;
+    float inverse_interval_;
 
     size_t num_samples_ = 0;
 

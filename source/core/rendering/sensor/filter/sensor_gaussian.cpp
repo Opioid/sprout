@@ -32,4 +32,23 @@ float Gaussian::evaluate(float2 p) const {
 //    return std::max(0.f, std::exp(-alpha_ * d * d) - exp_);
 //}
 
+/*
+Gaussian_1::Gaussian_1(float radius, float alpha)
+    : radius_(radius),
+      gaussian_(0.f, radius, 16, math::filter::Gaussian_functor_1(radius * radius, alpha))
+{}
+
+float Gaussian_1::radius() const {
+    return radius_;
+}
+
+float Gaussian_1::evaluate(float d) const {
+    return gaussian_(std::abs(d));
+}
+
+float Gaussian_1::evaluate(float2 p) const {
+    return gaussian_(std::abs(p[0])) * gaussian_(std::abs(p[1]));
+}
+*/
+
 }  // namespace rendering::sensor::filter

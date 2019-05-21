@@ -21,7 +21,7 @@ Interpolated_function<T>::Interpolated_function(float range_begin, float range_e
 
     float const interval = range / static_cast<float>(num_samples - 1);
 
-    inverse_range_ = 1.f / interval;
+    inverse_interval_ = 1.f / interval;
 
     float s = range_begin;
     for (size_t i = 0; i < num_samples; ++i, s += interval) {
@@ -51,7 +51,7 @@ void Interpolated_function<T>::from_array(float range_begin, float range_end, si
 
     float const interval = range / static_cast<float>(num_samples - 1);
 
-    inverse_range_ = 1.f / interval;
+    inverse_interval_ = 1.f / interval;
 
     for (size_t i = 0; i < num_samples; ++i) {
         samples_[i] = t[i];
@@ -62,7 +62,7 @@ template <typename T>
 T Interpolated_function<T>::operator()(float x) const noexcept {
     x = std::min(x, range_end_);
 
-    float const o = x * inverse_range_;
+    float const o = x * inverse_interval_;
 
     uint32_t const offset = static_cast<uint32_t>(o);
 

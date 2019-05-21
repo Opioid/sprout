@@ -20,6 +20,20 @@ class Gaussian_functor {
     float alpha_;
 };
 
+class Gaussian_functor_1 {
+  public:
+    Gaussian_functor_1(float squared_radius, float alpha) noexcept
+        : exp_(std::exp(-alpha * squared_radius)), alpha_(alpha) {}
+
+    float operator()(float d) const noexcept {
+        return std::max(0.f, std::exp(-alpha_ * d * d) - exp_);
+    }
+
+  private:
+    float exp_;
+    float alpha_;
+};
+
 }  // namespace math::filter
 
 #endif

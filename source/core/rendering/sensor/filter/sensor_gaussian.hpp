@@ -28,6 +28,22 @@ class Gaussian : public Filter {
 
     //    float alpha_;
 };
+/*
+class Gaussian_1 : public Filter {
+  public:
+    Gaussian_1(float radius, float alpha);
+
+    float radius() const override final;
+
+    float evaluate(float d) const override final;
+
+    float evaluate(float2 p) const override final;
+
+  private:
+    float radius_;
+
+    Interpolated_function<float> gaussian_;
+};*/
 
 }  // namespace rendering::sensor::filter
 
