@@ -15,8 +15,8 @@ template <typename F>
 Interpolated_function<T>::Interpolated_function(float range_begin, float range_end,
                                                 size_t num_samples, F f) noexcept
     : range_end_(range_end),
-      num_samples_(num_samples + 1),
-      samples_(memory::allocate_aligned<T>(num_samples + 1)) {
+      num_samples_(num_samples),
+      samples_(memory::allocate_aligned<T>(num_samples)) {
     float const range = range_end - range_begin;
 
     float const interval = range / static_cast<float>(num_samples - 1);
@@ -27,8 +27,6 @@ Interpolated_function<T>::Interpolated_function(float range_begin, float range_e
     for (size_t i = 0; i < num_samples; ++i, s += interval) {
         samples_[i] = f(s);
     }
-
-    samples_[num_samples] = f(range_end);
 }
 
 template <typename T>

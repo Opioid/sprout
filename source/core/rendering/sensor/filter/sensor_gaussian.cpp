@@ -7,7 +7,7 @@ namespace rendering::sensor::filter {
 
 Gaussian::Gaussian(float radius, float alpha)
     : radius_(radius),
-      gaussian_(0.f, radius * radius, 256, math::filter::Gaussian_functor(radius * radius, alpha))
+      gaussian_(0.f, radius * radius, 16, math::filter::Gaussian_functor(radius * radius, alpha))
 /*      exp_(std::exp(-alpha * radius * radius)),
       alpha_(alpha)*/
 {}
