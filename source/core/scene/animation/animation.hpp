@@ -6,6 +6,8 @@
 
 namespace scene {
 
+class Scene;
+
 namespace animation {
 
 struct Keyframe {
@@ -33,6 +35,20 @@ class Animation {
     uint32_t num_interpolated_frames_;
 
     Keyframe* keyframes_;
+};
+
+class Stage {
+  public:
+    Stage(uint32_t entity, Animation* animation) noexcept;
+
+    void allocate_enitity_frames(Scene& scene) const noexcept;
+
+    void update(Scene& scene) const noexcept;
+
+  private:
+    uint32_t entity_;
+
+    Animation* animation_;
 };
 
 }  // namespace animation

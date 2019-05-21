@@ -5,7 +5,6 @@
 #include "base/json/json_types.hpp"
 #include "base/math/aabb.hpp"
 #include "base/math/transformation.hpp"
-#include "scene/animation/animation.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/material/material.hpp"
@@ -19,6 +18,10 @@ namespace scene {
 class Scene;
 class Worker;
 struct Ray;
+
+namespace animation {
+struct Keyframe;
+}
 
 namespace shape {
 

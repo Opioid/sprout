@@ -5,6 +5,7 @@
 #include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "scene/animation/animation.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"

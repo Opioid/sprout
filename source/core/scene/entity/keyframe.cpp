@@ -13,7 +13,6 @@ void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restri
 
         result.targets[0] = targets[0];
         result.targets[1] = other.targets[0];
-
     } else {
         result.weight = lerp(weight, other.weight, t);
 

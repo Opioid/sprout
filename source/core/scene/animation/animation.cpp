@@ -4,6 +4,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "scene/entity/keyframe.hpp"
+#include "scene/scene.hpp"
 
 namespace scene::animation {
 
@@ -67,6 +68,19 @@ uint32_t Animation::num_interpolated_frames() const noexcept {
 
 Keyframe const* Animation::interpolated_frames() const noexcept {
     return &keyframes_[num_keyframes_];
+}
+
+Stage::Stage(uint32_t entity, Animation* animation) noexcept
+    : entity_(entity), animation_(animation) {}
+
+void Stage::allocate_enitity_frames(Scene& scene) const noexcept {
+    uint32_t const num_frames = animation_->num_interpolated_frames();
+    scene.prop_allocate_frames(entity_, num_frames, num_frames);
+}
+
+void Stage::update(Scene& scene) const noexcept {
+    scene.prop_set_frames(entity_, animation_->interpolated_frames(),
+                          animation_->num_interpolated_frames());
 }
 
 }  // namespace scene::animation

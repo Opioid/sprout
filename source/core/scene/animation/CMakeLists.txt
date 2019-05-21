@@ -2,8 +2,6 @@ target_sources(core
   PRIVATE
   "animation_loader.cpp"
   "animation_loader.hpp"
-  "animation_stage.cpp"
-  "animation_stage.hpp"
   "animation.cpp"
   "animation.hpp"  
 ) 

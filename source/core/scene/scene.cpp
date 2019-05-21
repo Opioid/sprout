@@ -1,6 +1,5 @@
 #include "scene.hpp"
 #include "animation/animation.hpp"
-#include "animation/animation_stage.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
@@ -9,8 +8,8 @@
 #include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "bvh/scene_bvh_builder.inl"
-#include "extension.hpp"
 #include "entity/composed_transformation.inl"
+#include "extension.hpp"
 #include "image/texture/texture.hpp"
 #include "light/prop_image_light.hpp"
 #include "light/prop_light.hpp"
@@ -233,13 +232,13 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
         e->update(*this);
     }
 
-    uint32_t i = 0;
+    uint32_t ei = 0;
     for (auto& p : props_) {
-        p.calculate_world_transformation(i, *this);
+        p.calculate_world_transformation(ei, *this);
         has_masked_material_ = has_masked_material_ || p.has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p.has_tinted_shadow();
 
-        ++i;
+        ++ei;
     }
 
     for (auto v : volumes_) {
@@ -397,6 +396,11 @@ void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation 
 void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                                  uint32_t num_local_frames) noexcept {
     props_[entity].allocate_frames(num_world_frames, num_local_frames);
+}
+
+void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
+                            uint32_t num_frames) noexcept {
+    props_[entity].set_frames(frames, num_frames);
 }
 
 void Scene::add_material(Material* material) noexcept {

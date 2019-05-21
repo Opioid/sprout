@@ -25,6 +25,7 @@ class Shape;
 
 namespace animation {
 
+struct Keyframe;
 class Animation;
 class Stage;
 
@@ -155,6 +156,9 @@ class Scene {
 
     void prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                               uint32_t num_local_frames) noexcept;
+
+    void prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
+                         uint32_t num_frames) noexcept;
 
     void add_material(Material* material) noexcept;
 
