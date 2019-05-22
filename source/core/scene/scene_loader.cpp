@@ -228,7 +228,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
             entity_id = prop_id;
         } else if ("Dummy" == type_name) {
-            entity_id = scene.create_dummy().id;
+            entity_id = scene.create_dummy();
         } else {
             entity_id = load_extension(type_name, e, name, scene);
         }
@@ -236,8 +236,6 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         if (prop::Null == entity_id) {
             continue;
         }
-
-        prop::Prop* prop_ptr = scene.prop(entity_id);
 
         math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
 
@@ -281,7 +279,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (visibility) {
-            set_visibility(prop_ptr, *visibility);
+            set_visibility(entity_id, *visibility, scene);
         }
 
         if (children) {
@@ -290,7 +288,8 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
     }
 }
 
-void Loader::set_visibility(prop::Prop* prop, json::Value const& visibility_value) noexcept {
+void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value,
+                            Scene& scene) noexcept {
     bool in_camera     = true;
     bool in_reflection = true;
     bool in_shadow     = true;
@@ -305,7 +304,7 @@ void Loader::set_visibility(prop::Prop* prop, json::Value const& visibility_valu
         }
     }
 
-    prop->set_visibility(in_camera, in_reflection, in_shadow);
+    scene.prop_set_visibility(prop, in_camera, in_reflection, in_shadow);
 }
 
 uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
@@ -347,22 +346,22 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
         }
     }
 
-    Scene::Prop_ref prop = scene.create_prop(shape, materials, name);
+    uint32_t const prop = scene.create_prop(shape, materials, name);
 
     // It is a annoying that this is done again in load_entities(),
     // but visibility information is already used when creating lights.
     // Should be improved at some point.
     if (visibility) {
-        set_visibility(prop.ref, *visibility);
+        set_visibility(prop, *visibility, scene);
     }
 
-    return prop.id;
+    return prop;
 }
 
 uint32_t Loader::load_extension(std::string const& type, json::Value const& extension_value,
                                 std::string const& name, Scene& scene) noexcept {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
-        return p->second->create_extension(extension_value, name, scene, resource_manager_).id;
+        return p->second->create_extension(extension_value, name, scene, resource_manager_);
     }
 
     return 0xFFFFFFFF;

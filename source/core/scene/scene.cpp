@@ -160,25 +160,25 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
     return false;
 }
 
-Prop const* Scene::prop(size_t index) const noexcept {
+prop::Prop const* Scene::prop(size_t index) const noexcept {
     SOFT_ASSERT(index < props_.size());
 
     return &props_[index];
 }
 
-Prop* Scene::prop(size_t index) noexcept {
+prop::Prop* Scene::prop(size_t index) noexcept {
     SOFT_ASSERT(index < props_.size());
 
     return &props_[index];
 }
 
-Prop* Scene::prop(std::string_view name) const noexcept {
+prop::Prop* Scene::prop(std::string_view name) noexcept {
     auto e = named_props_.find(name);
     if (named_props_.end() == e) {
         return nullptr;
     }
 
-    return e->second;
+    return &props_[e->second];
 }
 
 std::vector<light::Light*> const& Scene::lights() const noexcept {
@@ -276,23 +276,23 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
     num_interpolation_frames_ = count_frames(frame_step, frame_duration) + 1;
 }
 
-Scene::Prop_ref Scene::create_dummy() noexcept {
+uint32_t Scene::create_dummy() noexcept {
     auto const prop = allocate_prop();
 
     prop.ref->set_shape_and_materials(&null_shape_, nullptr);
 
-    return prop;
+    return prop.id;
 }
 
-Scene::Prop_ref Scene::create_dummy(std::string const& name) noexcept {
-    Prop_ref dummy = create_dummy();
+uint32_t Scene::create_dummy(std::string const& name) noexcept {
+    uint32_t const dummy = create_dummy();
 
-    add_named_prop(dummy.ref, name);
+    add_named_prop(dummy, name);
 
     return dummy;
 }
 
-Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
+uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     auto const prop = allocate_prop();
 
     prop.ref->set_shape_and_materials(shape, materials.data());
@@ -325,64 +325,66 @@ Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials) noe
         }
     }
 
+    return prop.id;
+}
+
+uint32_t Scene::create_prop(Shape* shape, Materials const& materials,
+                            std::string const& name) noexcept {
+    uint32_t const prop = create_prop(shape, materials);
+
+    add_named_prop(prop, name);
+
     return prop;
 }
 
-Scene::Prop_ref Scene::create_prop(Shape* shape, Materials const& materials,
-                                   std::string const& name) noexcept {
-    Prop_ref prop = create_prop(shape, materials);
-
-    add_named_prop(prop.ref, name);
-
-    return prop;
-}
-
-light::Light* Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_light* light = new light::Prop_light;
 
     lights_.push_back(light);
 
     light->init(prop, part);
-
-    return light;
 }
 
-light::Light* Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_image_light* light = new light::Prop_image_light;
 
     lights_.push_back(light);
 
     light->init(prop, part);
-
-    return light;
 }
 
-light::Light* Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_volume_light* light = new light::Prop_volume_light;
 
     lights_.push_back(light);
 
     light->init(prop, part);
-
-    return light;
 }
 
-light::Light* Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
     light::Prop_volume_image_light* light = new light::Prop_volume_image_light;
 
     lights_.push_back(light);
 
     light->init(prop, part);
-
-    return light;
 }
 
-Scene::Prop_ref Scene::create_extension(Extension* extension) noexcept {
+uint32_t Scene::create_extension(Extension* extension) noexcept {
     extensions_.push_back(extension);
 
-    Prop_ref dummy = create_dummy();
+    uint32_t const dummy = create_dummy();
 
-    extension->init(dummy.id);
+    extension->init(dummy);
+
+    return dummy;
+}
+
+uint32_t Scene::create_extension(Extension* extension, std::string const& name) noexcept {
+    extensions_.push_back(extension);
+
+    uint32_t const dummy = create_dummy(name);
+
+    extension->init(dummy);
 
     return dummy;
 }
@@ -428,6 +430,11 @@ void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
 void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                             uint32_t num_frames) noexcept {
     props_[entity].set_frames(frames, num_frames);
+}
+
+void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
+                                bool in_shadow) noexcept {
+    props_[entity].set_visibility(in_camera, in_reflection, in_shadow);
 }
 
 void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
@@ -596,7 +603,7 @@ bool Scene::prop_has_caustic_material(uint32_t entity, uint32_t num_parts) const
     return false;
 }
 
-void Scene::add_named_prop(Prop* prop, std::string const& name) noexcept {
+void Scene::add_named_prop(uint32_t prop, std::string const& name) noexcept {
     if (!prop || name.empty()) {
         return;
     }

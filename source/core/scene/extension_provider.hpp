@@ -22,7 +22,7 @@ class Extension_provider {
 
     virtual ~Extension_provider() noexcept {}
 
-    virtual Prop_ref create_extension(json::Value const& extension_value, std::string const& name,
+    virtual uint32_t create_extension(json::Value const& extension_value, std::string const& name,
                                       Scene& scene, resource::Manager& manager) noexcept = 0;
 };
 

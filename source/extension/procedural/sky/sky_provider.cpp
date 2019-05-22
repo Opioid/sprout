@@ -37,12 +37,11 @@ void Provider::set_material_provider(material::Provider& material_provider) noex
     material_provider_ = &material_provider;
 }
 
-prop::Prop_ref Provider::create_extension(json::Value const& extension_value,
-                                          std::string const& name, Scene& scene,
-                                          resource::Manager& manager) noexcept {
+uint32_t Provider::create_extension(json::Value const& extension_value, std::string const& name,
+                                    Scene& scene, resource::Manager& manager) noexcept {
     Sky* sky = new Sky;
 
-    Prop_ref sky_entity = scene.create_extension(sky /*, name*/);
+    uint32_t const sky_entity = scene.create_extension(sky, name);
 
     static bool constexpr bake = true;
 
@@ -61,10 +60,10 @@ prop::Prop_ref Provider::create_extension(json::Value const& extension_value,
 
     manager.store<material::Material>("proc:sun", sun_material);
 
-    uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material}).id;
+    uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
     scene.prop_allocate_frames(sky_prop, 1, 1);
 
-    uint32_t const sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material}).id;
+    uint32_t const sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
     scene.prop_allocate_frames(sun_prop, 1, 1);
 
     sky->init(sky_prop, sun_prop, scene);

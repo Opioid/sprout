@@ -180,9 +180,6 @@ struct Prop_topology {
 
 }  // namespace prop
 
-using Prop     = prop::Prop;
-using Prop_ref = prop::Prop_ref;
-
 }  // namespace scene
 
 #endif

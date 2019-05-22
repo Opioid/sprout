@@ -110,7 +110,7 @@ class Scene {
     Prop const* prop(size_t index) const noexcept;
     Prop*       prop(size_t index) noexcept;
 
-    Prop* prop(std::string_view name) const noexcept;
+    Prop* prop(std::string_view name) noexcept;
 
     std::vector<light::Light*> const& lights() const noexcept;
 
@@ -130,24 +130,24 @@ class Scene {
 
     void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) noexcept;
 
-    Prop_ref create_dummy() noexcept;
-    Prop_ref create_dummy(std::string const& name) noexcept;
+    uint32_t create_dummy() noexcept;
+    uint32_t create_dummy(std::string const& name) noexcept;
 
-    Prop_ref create_prop(Shape* shape, Materials const& materials) noexcept;
+    uint32_t create_prop(Shape* shape, Materials const& materials) noexcept;
 
-    Prop_ref create_prop(Shape* shape, Materials const& materials,
+    uint32_t create_prop(Shape* shape, Materials const& materials,
                          std::string const& name) noexcept;
 
-    light::Light* create_prop_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_light(uint32_t prop, uint32_t part) noexcept;
 
-    light::Light* create_prop_image_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_image_light(uint32_t prop, uint32_t part) noexcept;
 
-    light::Light* create_prop_volume_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_volume_light(uint32_t prop, uint32_t part) noexcept;
 
-    light::Light* create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept;
 
-    Prop_ref create_extension(Extension* extension) noexcept;
-    //   uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
+    uint32_t create_extension(Extension* extension) noexcept;
+    uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
 
     void prop_attach(uint32_t parent_id, uint32_t child_id) noexcept;
 
@@ -161,6 +161,9 @@ class Scene {
 
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                          uint32_t num_frames) noexcept;
+
+    void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
+                             bool in_shadow) noexcept;
 
     void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
                                bool material_importance_sampling, thread::Pool& pool) noexcept;
@@ -200,7 +203,7 @@ class Scene {
 
     bool prop_has_caustic_material(uint32_t entity, uint32_t num_parts) const noexcept;
 
-    void add_named_prop(Prop* prop, std::string const& name) noexcept;
+    void add_named_prop(uint32_t prop, std::string const& name) noexcept;
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept;
 
@@ -235,7 +238,7 @@ class Scene {
 
     std::vector<Extension*> extensions_;
 
-    std::map<std::string, Prop*, std::less<>> named_props_;
+    std::map<std::string, uint32_t, std::less<>> named_props_;
 
     memory::Array<float> light_powers_;
 

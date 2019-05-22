@@ -334,7 +334,7 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
         camera->set_sensor(sensor);
     }
 
-    uint32_t const prop_id = scene.create_dummy().id;
+    uint32_t const prop_id = scene.create_dummy();
 
     camera->init(prop_id);
 
