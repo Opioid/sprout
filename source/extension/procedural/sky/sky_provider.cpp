@@ -61,13 +61,13 @@ prop::Prop_ref Provider::create_extension(json::Value const& extension_value,
 
     manager.store<material::Material>("proc:sun", sun_material);
 
-    Scene::Prop_ref sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
-    sky_prop.ref->allocate_frames(1, 1);
+    uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material}).id;
+    scene.prop_allocate_frames(sky_prop, 1, 1);
 
-    Scene::Prop_ref sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
-    sun_prop.ref->allocate_frames(1, 1);
+    uint32_t const sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material}).id;
+    scene.prop_allocate_frames(sun_prop, 1, 1);
 
-    sky->init(sky_prop.id, sun_prop.id, scene);
+    sky->init(sky_prop, sun_prop, scene);
 
     if (auto const p = extension_value.FindMember("parameters"); extension_value.MemberEnd() != p) {
         sky->set_parameters(p->value, scene);
@@ -76,12 +76,12 @@ prop::Prop_ref Provider::create_extension(json::Value const& extension_value,
     }
 
     if (bake) {
-        scene.create_prop_image_light(sky_prop.id, 0);
+        scene.create_prop_image_light(sky_prop, 0);
     } else {
-        scene.create_prop_light(sky_prop.id, 0);
+        scene.create_prop_light(sky_prop, 0);
     }
 
-    scene.create_prop_light(sun_prop.id, 0);
+    scene.create_prop_light(sun_prop, 0);
 
     return sky_entity;
 }

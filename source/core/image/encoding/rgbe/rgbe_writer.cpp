@@ -29,9 +29,9 @@ void Writer::write_header(std::ostream& stream, int2 dimensions) {
 void Writer::write_pixels(std::ostream& stream, Float4 const& image) {
     auto const& d = image.description().dimensions;
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
-        byte4 rgbe = float_to_rgbe(image.at(i));
+        byte4 const rgbe = float_to_rgbe(image.at(i));
 
-        stream.write(reinterpret_cast<char*>(&rgbe), sizeof(byte4));
+        stream.write(reinterpret_cast<const char*>(&rgbe), sizeof(byte4));
     }
 }
 
