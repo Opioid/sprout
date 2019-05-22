@@ -77,10 +77,6 @@ class alignas(64) Prop {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
-    void attach(uint32_t self, uint32_t node, Scene& scene) noexcept;
-
-    void detach_self(uint32_t self, Scene& scene) noexcept;
-
     void morph(thread::Pool& pool) noexcept;
 
     bool intersect(uint32_t self, Ray& ray, Worker const& worker,
@@ -112,17 +108,11 @@ class alignas(64) Prop {
 
     size_t num_bytes() const noexcept;
 
-  private:
+  public:
     void propagate_transformation(uint32_t self, Scene& scene) noexcept;
 
     void inherit_transformation(uint32_t self, Keyframe const* frames, uint32_t num_frames,
                                 Scene& scene) noexcept;
-
-    void add_sibling(uint32_t node, Scene& scene) noexcept;
-
-    void detach(uint32_t node, Scene& scene) noexcept;
-
-    void remove_sibling(uint32_t node, Scene& scene) noexcept;
 
     void set_shape(Shape* shape) noexcept;
 
@@ -141,8 +131,6 @@ class alignas(64) Prop {
 
     flags::Flags<Property> properties_;
 
-    static uint32_t constexpr Null = 0xFFFFFFFF;
-
     uint32_t num_world_frames_ = 0;
 
     entity::Keyframe* frames_ = nullptr;
@@ -154,12 +142,6 @@ class alignas(64) Prop {
     Shape* shape_ = nullptr;
 
     entity::Morphing morphing_;
-
-    uint32_t num_local_frames_ = 0;
-
-    uint32_t parent_ = Null;
-    uint32_t next_   = Null;
-    uint32_t child_  = Null;
 };
 
 struct Prop_ref {
@@ -186,6 +168,14 @@ struct Prop_material {
     };
 
     Part* parts = nullptr;
+};
+
+struct Prop_topology {
+    uint32_t num_local_frames = 0;
+
+    uint32_t parent = Null;
+    uint32_t next   = Null;
+    uint32_t child  = Null;
 };
 
 }  // namespace prop

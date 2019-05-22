@@ -55,8 +55,6 @@ bool Prop_light::sample(float3 const& p, float3 const& n, Transformation const& 
 
 float3 Prop_light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
     noexcept {
-    Prop const* prop = worker.scene().prop(prop_);
-
     auto const material = worker.scene().prop_material(prop_, part_);
 
     float const area = worker.scene().prop_area(prop_, part_);

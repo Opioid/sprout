@@ -388,7 +388,23 @@ Scene::Prop_ref Scene::create_extension(Extension* extension) noexcept {
 }
 
 void Scene::prop_attach(uint32_t parent_id, uint32_t child_id) noexcept {
-    props_[parent_id].attach(parent_id, child_id, *this);
+    prop_detach_self(child_id);
+
+    prop::Prop_topology& st = prop_topology_[parent_id];
+    prop::Prop_topology& nt = prop_topology_[child_id];
+
+    nt.parent = parent_id;
+
+    if (0 == nt.num_local_frames) {
+        // This is the case if n has no animation attached to it directly
+        prop_allocate_frames(child_id, prop(parent_id)->num_world_frames_, 1);
+    }
+
+    if (prop::Null == st.child) {
+        st.child = child_id;
+    } else {
+        prop_add_sibling(st.child, child_id);
+    }
 }
 
 void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept {
@@ -406,6 +422,7 @@ void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation 
 void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                                  uint32_t num_local_frames) noexcept {
     props_[entity].allocate_frames(num_world_frames, num_local_frames);
+    prop_topology_[entity].num_local_frames = num_local_frames;
 }
 
 void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
@@ -468,6 +485,10 @@ material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) c
     return prop_materials_[entity].materials[part];
 }
 
+prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const noexcept {
+    return prop_topology_[entity];
+}
+
 uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const noexcept {
     return prop_materials_[entity].parts[part].light_id;
 }
@@ -511,12 +532,58 @@ Scene::Prop_ref Scene::allocate_prop() noexcept {
     props_.emplace_back();
     prop_world_transformations_.emplace_back();
     prop_materials_.emplace_back();
+    prop_topology_.emplace_back();
 
     uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
 
     prop::Prop* prop = &props_[prop_id];
 
     return {prop, prop_id};
+}
+
+void Scene::prop_add_sibling(uint32_t self, uint32_t node) noexcept {
+    if (prop::Null == prop_topology(self).next) {
+        prop_topology_[self].next = node;
+    } else {
+        prop_add_sibling(prop_topology(self).next, node);
+    }
+}
+
+void Scene::prop_detach_self(uint32_t self) noexcept {
+    uint32_t const parent = prop_topology(self).parent;
+
+    if (prop::Null != parent) {
+        prop_detach(parent, self);
+    }
+}
+
+void Scene::prop_detach(uint32_t self, uint32_t node) noexcept {
+    // we can assume this to be true because of detach()
+    // assert(node->parent_ == this);
+
+    prop::Prop_topology& st = prop_topology_[self];
+    prop::Prop_topology& nt = prop_topology_[node];
+
+    nt.parent = prop::Null;
+
+    if (st.child == node) {
+        st.child = nt.next;
+        nt.next  = prop::Null;
+    } else {
+        prop_remove_sibling(st.child, node);
+    }
+}
+
+void Scene::prop_remove_sibling(uint32_t self, uint32_t node) noexcept {
+    prop::Prop_topology& st = prop_topology_[self];
+    prop::Prop_topology& nt = prop_topology_[node];
+
+    if (st.next == node) {
+        st.next = nt.next;
+        nt.next = prop::Null;
+    } else {
+        prop_remove_sibling(st.next, node);
+    }
 }
 
 bool Scene::prop_has_caustic_material(uint32_t entity, uint32_t num_parts) const noexcept {

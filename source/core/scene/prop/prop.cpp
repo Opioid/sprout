@@ -23,11 +23,7 @@ Prop::Prop(Prop&& other) noexcept
       num_world_frames_(other.num_world_frames_),
       frames_(other.frames_),
       aabb_(other.aabb_),
-      shape_(other.shape_),
-      num_local_frames_(other.num_local_frames_),
-      parent_(other.parent_),
-      next_(other.next_),
-      child_(other.child_) {
+      shape_(other.shape_) {
     other.frames_ = nullptr;
     other.shape_  = nullptr;
 }
@@ -38,7 +34,6 @@ Prop::~Prop() noexcept {
 
 void Prop::allocate_frames(uint32_t num_world_frames, uint32_t num_local_frames) noexcept {
     num_world_frames_ = num_world_frames;
-    num_local_frames_ = num_local_frames;
 
     frames_ = memory::allocate_aligned<Keyframe>(num_world_frames + num_local_frames);
 
@@ -94,7 +89,7 @@ void Prop::set_frames(animation::Keyframe const* frames, uint32_t num_frames) no
 }
 
 void Prop::calculate_world_transformation(uint32_t self, Scene& scene) noexcept {
-    if (Null == parent_) {
+    if (Null == scene.prop_topology(self).parent) {
         for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
             frames_[i] = frames_[len + i];
         }
@@ -123,31 +118,6 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) no
     properties_.set(Property::Visible_in_camera, in_camera);
     properties_.set(Property::Visible_in_reflection, in_reflection);
     properties_.set(Property::Visible_in_shadow, in_shadow);
-}
-
-void Prop::attach(uint32_t self, uint32_t node, Scene& scene) noexcept {
-    Prop* n = scene.prop(node);
-
-    n->detach_self(self, scene);
-
-    n->parent_ = self;
-
-    if (0 == n->num_local_frames_) {
-        // This is the case if n has no animation attached to it directly
-        n->allocate_frames(num_world_frames_, 1);
-    }
-
-    if (Null == child_) {
-        child_ = node;
-    } else {
-        scene.prop(child_)->add_sibling(node, scene);
-    }
-}
-
-void Prop::detach_self(uint32_t self, Scene& scene) noexcept {
-    if (Null != parent_) {
-        scene.prop(parent_)->detach(self, scene);
-    }
 }
 
 void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noexcept {
@@ -369,59 +339,29 @@ void Prop::propagate_transformation(uint32_t self, Scene& scene) noexcept {
 
     on_set_transformation(self, scene);
 
-    if (Null != child_) {
-        scene.prop(child_)->inherit_transformation(self, frames_, num_world_frames_, scene);
+    uint32_t const child = scene.prop_topology(self).child;
+
+    if (Null != child) {
+        scene.prop(child)->inherit_transformation(child, frames_, num_world_frames_, scene);
     }
 }
 
 void Prop::inherit_transformation(uint32_t self, Keyframe const* frames, uint32_t num_frames,
                                   Scene& scene) noexcept {
-    if (Null != next_) {
-        scene.prop(next_)->inherit_transformation(self, frames, num_frames, scene);
+    uint32_t const next = scene.prop_topology(self).next;
+
+    if (Null != next) {
+        scene.prop(next)->inherit_transformation(next, frames, num_frames, scene);
     }
 
+    uint32_t const num_local_frames = scene.prop_topology(self).num_local_frames;
     for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
-        uint32_t const lf = num_local_frames_ > 1 ? i : 0;
+        uint32_t const lf = num_local_frames > 1 ? i : 0;
         uint32_t const of = num_frames > 1 ? i : 0;
         frames_[len + lf].transform(frames_[i], frames[of]);
     }
 
     propagate_transformation(self, scene);
-}
-
-void Prop::add_sibling(uint32_t node, Scene& scene) noexcept {
-    if (Null == next_) {
-        next_ = node;
-    } else {
-        scene.prop(next_)->add_sibling(node, scene);
-    }
-}
-
-void Prop::detach(uint32_t node, Scene& scene) noexcept {
-    // we can assume this to be true because of detach()
-    // assert(node->parent_ == this);
-
-    Prop* n = scene.prop(node);
-
-    n->parent_ = Null;
-
-    if (child_ == node) {
-        child_   = n->next_;
-        n->next_ = Null;
-    } else {
-        scene.prop(child_)->remove_sibling(node, scene);
-    }
-}
-
-void Prop::remove_sibling(uint32_t node, Scene& scene) noexcept {
-    Prop* n = scene.prop(node);
-
-    if (next_ == node) {
-        next_    = n->next_;
-        n->next_ = Null;
-    } else {
-        n->remove_sibling(node, scene);
-    }
 }
 
 }  // namespace scene::prop

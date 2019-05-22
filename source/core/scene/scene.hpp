@@ -54,6 +54,7 @@ namespace prop {
 struct Intersection;
 class Prop;
 struct Prop_material;
+struct Prop_topology;
 struct Prop_ref;
 
 }  // namespace prop
@@ -171,6 +172,8 @@ class Scene {
     material::Material* const* prop_materials(uint32_t entity) const noexcept;
     material::Material const*  prop_material(uint32_t entity, uint32_t part) const noexcept;
 
+    prop::Prop_topology const& prop_topology(uint32_t entity) const noexcept;
+
     uint32_t prop_light_id(uint32_t entity, uint32_t part) const noexcept;
 
     float prop_area(uint32_t entity, uint32_t part) const noexcept;
@@ -186,6 +189,14 @@ class Scene {
 
   private:
     Prop_ref allocate_prop() noexcept;
+
+    void prop_add_sibling(uint32_t self, uint32_t node) noexcept;
+
+    void prop_detach_self(uint32_t self) noexcept;
+
+    void prop_detach(uint32_t self, uint32_t node) noexcept;
+
+    void prop_remove_sibling(uint32_t self, uint32_t node) noexcept;
 
     bool prop_has_caustic_material(uint32_t entity, uint32_t num_parts) const noexcept;
 
@@ -212,6 +223,7 @@ class Scene {
     std::vector<prop::Prop>          props_;
     std::vector<Transformation>      prop_world_transformations_;
     std::vector<prop::Prop_material> prop_materials_;
+    std::vector<prop::Prop_topology> prop_topology_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;
