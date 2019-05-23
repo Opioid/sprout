@@ -176,11 +176,12 @@ int main(int argc, char* argv[]) {
         auto const rendering_start = std::chrono::high_resolution_clock::now();
 
         if (take.view.camera) {
-            rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size);
+            rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size,
+                                                progressor);
 
             rendering_num_bytes += driver.num_bytes();
 
-            driver.render(take.exporters, progressor);
+            driver.render(take.exporters);
         } else {
             //			baking::Driver
             // driver(take->surface_integrator_factory,

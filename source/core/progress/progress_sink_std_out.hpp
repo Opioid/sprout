@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_PROGRESS_SINK_STD_OUT_HPP
+#define SU_PROGRESS_SINK_STD_OUT_HPP
 
 #include "progress_sink.hpp"
 
@@ -8,9 +9,9 @@ class Std_out : public Sink {
   public:
     Std_out();
 
-    virtual void start(uint32_t resolution) override final;
-    virtual void end() override final;
-    virtual void tick() override final;
+    void start(uint32_t resolution) override final;
+    void end() override final;
+    void tick() override final;
 
   private:
     uint32_t resolution_;
@@ -22,3 +23,5 @@ class Std_out : public Sink {
 };
 
 }  // namespace progress
+
+#endif

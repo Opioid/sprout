@@ -18,10 +18,10 @@
 namespace rendering {
 
 Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-                                     uint32_t max_sample_size) noexcept
-    : Driver(take, scene, thread_pool, max_sample_size) {}
+                                     uint32_t max_sample_size, progress::Sink& progressor) noexcept
+    : Driver(take, scene, thread_pool, max_sample_size), progressor_(progressor) {}
 
-void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor) noexcept {
+void Driver_finalframe::render(Exporters& exporters) noexcept {
     photons_baked_ = false;
 
     auto& camera = *view_.camera;
@@ -37,16 +37,16 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
 
         sensor.clear();
 
-        progressor.start(progress_range);
+        progressor_.start(progress_range);
 
         uint64_t const start = current_frame * camera.frame_step();
         scene_.simulate(start, start + camera.frame_duration(), thread_pool_);
 
         camera.update(scene_, start, workers_[0]);
 
-        render_frame(current_frame, progressor);
+        render_frame(current_frame);
 
-        progressor.end();
+        progressor_.end();
 
         auto const render_duration = chrono::seconds_since(render_start);
         logging::info("Render time " + string::to_string(render_duration) + " s");
@@ -64,13 +64,13 @@ void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor)
     }
 }
 
-void Driver_finalframe::render_frame(uint32_t frame, progress::Sink& progressor) noexcept {
+void Driver_finalframe::render_frame(uint32_t frame) noexcept {
     bake_photons(frame);
 
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         tiles_.restart();
 
-        thread_pool_.run_parallel([ this, frame, v, &progressor ](uint32_t index) noexcept {
+        thread_pool_.run_parallel([ this, frame, v ](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
             uint32_t const num_samples = view_.num_samples_per_pixel;
@@ -78,7 +78,7 @@ void Driver_finalframe::render_frame(uint32_t frame, progress::Sink& progressor)
             for (int4 tile; tiles_.pop(tile);) {
                 worker.render(frame, v, tile, num_samples);
 
-                progressor.tick();
+                progressor_.tick();
             }
         });
     }
