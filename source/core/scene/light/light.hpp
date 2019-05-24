@@ -112,7 +112,8 @@ class Light {
     static uint32_t strip_mask(uint32_t id) noexcept;
 };
 
-class NewLight {
+class alignas(16) NewLight {
+  public:
     using Transformation = entity::Composed_transformation;
     using Filter         = material::Sampler_settings::Filter;
     using Intersection   = shape::Intersection;
@@ -121,6 +122,8 @@ class NewLight {
     using Sampler        = sampler::Sampler;
 
     enum class Type { Null, Prop, Prop_image, Volume, Volume_image };
+
+    NewLight();
 
     NewLight(Type type, uint32_t prop, uint32_t part);
 

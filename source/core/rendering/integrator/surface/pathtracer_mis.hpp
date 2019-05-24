@@ -50,7 +50,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
                          Material_sample const& material_sample, bool evaluate_back, Filter filter,
                          Worker& worker) noexcept;
 
-    float3 evaluate_light(Light const& light, float light_weight, Ray const& history,
+    float3 evaluate_light(NewLight const& light, float light_weight, Ray const& history,
                           float3 const& p, uint32_t sampler_dimension, bool evaluate_back,
                           Intersection const& intersection, Material_sample const& material_sample,
                           Filter filter, Worker& worker) noexcept;

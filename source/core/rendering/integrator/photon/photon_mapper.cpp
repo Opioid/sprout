@@ -7,7 +7,7 @@
 #include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
-#include "scene/light/light.hpp"
+#include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
@@ -108,7 +108,8 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
         bool caustic_ray = false;
 
         Ray          ray;
-        Light const* light;
+     //   Light const* light;
+        NewLight light;
         if (!generate_light_ray(map, frame, bounds, worker, ray, light, light_id, light_sample)) {
             continue;
         }
@@ -117,7 +118,7 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
             continue;
         }
 
-        float3 radiance = light->evaluate(light_sample, Filter::Nearest, worker) /
+        float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) /
                           (light_sample.pdf);
 
         for (; ray.depth < settings_.max_bounces;) {
@@ -227,7 +228,7 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
 }
 
 bool Mapper::generate_light_ray(Map const& map, uint32_t frame, AABB const& bounds, Worker& worker,
-                                Ray& ray, Light const*& light_out, uint32_t& light_id,
+                                Ray& ray, NewLight& light_out, uint32_t& light_id,
                                 Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 
@@ -258,7 +259,7 @@ bool Mapper::generate_light_ray(Map const& map, uint32_t frame, AABB const& boun
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_out = &light.ref;
+    light_out = light.ref;
     light_id  = light.id;
 
     light_sample.pdf *= light.pdf;

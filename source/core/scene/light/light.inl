@@ -18,7 +18,7 @@ using Sample_to   = shape::Sample_to;
 using Sample_from = shape::Sample_from;
 using Sampler     = sampler::Sampler;
 
-NewLight::NewLight(Type type, uint32_t prop, uint32_t part)
+inline NewLight::NewLight(Type type, uint32_t prop, uint32_t part)
     : type_(type), prop_(prop), part_(part) {}
 
 inline entity::Composed_transformation const& NewLight::transformation_at(
@@ -157,6 +157,8 @@ inline bool NewLight::sample(float3 const& p, float3 const& n, Transformation co
             return volume_image_sample(prop_, part_, p, n, transformation, sampler,
                                        sampler_dimension, worker, result);
     }
+
+    return false;
 }
 
 static inline float3 prop_evaluate(uint32_t prop, uint32_t part, Sample_to const& sample,
@@ -191,6 +193,8 @@ inline float3 NewLight::evaluate(Sample_to const& sample, Filter filter, Worker 
         case Type::Volume_image:
             return volume_evaluate(prop_, part_, sample, filter, worker);
     }
+
+    return float3(0.f);
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part,
@@ -263,6 +267,8 @@ inline bool NewLight::sample(Transformation const& transformation, Sampler& samp
         case Type::Volume_image:
             return false;
     }
+
+    return false;
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part,
@@ -349,6 +355,8 @@ inline bool NewLight::sample(Transformation const& transformation, Sampler& samp
         case Type::Volume_image:
             return false;
     }
+
+    return false;
 }
 
 static inline float3 prop_evaluate(uint32_t prop, uint32_t part, Sample_from const& sample,
@@ -374,6 +382,8 @@ inline float3 NewLight::evaluate(Sample_from const& sample, Filter filter,
         case Type::Volume_image:
             return prop_evaluate(prop_, part_, sample, filter, worker);
     }
+
+    return float3(0.f);
 }
 
 inline bool NewLight::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
@@ -449,24 +459,20 @@ static float volume_pdf(uint32_t prop, uint32_t part, Ray const& ray,
                         shape::Intersection const&             intersection,
                         entity::Composed_transformation const& transformation,
                         Worker const&                          worker) noexcept {
-    prop::Prop const* p = worker.scene().prop(prop);
-
     float const volume = worker.scene().prop_volume(prop, part);
 
-    return p->shape()->pdf_volume(ray, intersection, transformation, volume);
+    return worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection, transformation, volume);
 }
 
 static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
                                      shape::Intersection const&             intersection,
                                      entity::Composed_transformation const& transformation,
                                      Filter filter, Worker const& worker) noexcept {
-    prop::Prop const* p = worker.scene().prop(prop);
-
     float const volume = worker.scene().prop_volume(prop, part);
 
     auto const material = worker.scene().prop_material(prop, part);
 
-    float const shape_pdf = p->shape()->pdf_volume(ray, intersection, transformation, volume);
+    float const shape_pdf = worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection, transformation, volume);
 
     float const material_pdf = material->emission_pdf(intersection.uvw, filter, worker);
 
@@ -493,6 +499,8 @@ inline float NewLight::pdf(Ray const& ray, Intersection const& intersection, boo
             return volume_image_pdf(prop_, part_, ray, intersection, transformation, filter,
                                     worker);
     }
+
+    return 0.f;
 }
 
 inline bool NewLight::equals(uint32_t prop, uint32_t part) const noexcept {

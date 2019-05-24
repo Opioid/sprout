@@ -11,6 +11,7 @@
 #include "entity/composed_transformation.inl"
 #include "extension.hpp"
 #include "image/texture/texture.hpp"
+#include "light/light.inl"
 #include "light/prop_image_light.hpp"
 #include "light/prop_light.hpp"
 #include "light/prop_volume_image_light.hpp"
@@ -60,16 +61,17 @@ Scene::~Scene() noexcept {
     // Normally lights_ should never be empty; containing null_light instead
     // But it can happen for partially constructed scenes,
     // and we still don't want the destructor to crash.
-    if (!lights_.empty() && lights_[0] != &null_light_) {
-        for (auto l : lights_) {
-            delete l;
-        }
-    }
+//    if (!lights_.empty() && lights_[0] != &null_light_) {
+//        for (auto l : lights_) {
+//            delete l;
+//        }
+//    }
 }
 
 void Scene::finish() noexcept {
     if (lights_.empty()) {
-        lights_.push_back(&null_light_);
+    //    lights_.push_back(&null_light_);
+    lights_.emplace_back(light::NewLight::Type::Null, prop::Null, prop::Null);
     }
 
     light_powers_.resize(lights_.size());
@@ -181,7 +183,11 @@ prop::Prop* Scene::prop(std::string_view name) noexcept {
     return &props_[e->second];
 }
 
-std::vector<light::Light*> const& Scene::lights() const noexcept {
+//std::vector<light::Light*> const& Scene::lights() const noexcept {
+//    return lights_;
+//}
+
+std::vector<light::NewLight> const& Scene::lights() const noexcept {
     return lights_;
 }
 
@@ -193,7 +199,8 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
     id = light::Light::strip_mask(id);
 
     float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
-    return {*lights_[id], pdf, id};
+ //   return {*lights_[id], pdf, id};
+    return {lights_[id], pdf, id};
 }
 
 Scene::Light Scene::random_light(float random) const noexcept {
@@ -203,7 +210,8 @@ Scene::Light Scene::random_light(float random) const noexcept {
 
     SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
 
-    return {*lights_[l.offset], l.pdf, l.offset};
+  //  return {*lights_[l.offset], l.pdf, l.offset};
+    return {lights_[l.offset], l.pdf, l.offset};
 }
 
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {
@@ -219,8 +227,10 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
         s.update(*this);
     }
 
+    uint32_t i = 0;
     for (auto& p : props_) {
-        p.morph(thread_pool);
+        p.morph(i, thread_pool, *this);
+        ++i;
     }
 
     for (auto m : materials_) {
@@ -261,9 +271,9 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
 
     // re-sort lights PDF
     for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
-        auto l = lights_[i];
-        l->prepare_sampling(i, time, *this, pool);
-        light_powers_[i] = std::sqrt(spectrum::luminance(l->power(prop_bvh_.aabb(), *this)));
+        auto& l = lights_[i];
+        l.prepare_sampling(i, time, *this, pool);
+        light_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
     }
 
     light_distribution_.init(light_powers_.data(), static_cast<uint32_t>(light_powers_.size()));
@@ -338,35 +348,42 @@ uint32_t Scene::create_prop(Shape* shape, Materials const& materials,
 }
 
 void Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
-    light::Prop_light* light = new light::Prop_light;
+//    light::Prop_light* light = new light::Prop_light;
 
-    lights_.push_back(light);
+//    lights_.push_back(light);
 
-    light->init(prop, part);
+//    light->init(prop, part);
+    lights_.emplace_back(light::NewLight::Type::Prop, prop, part);
 }
 
 void Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
-    light::Prop_image_light* light = new light::Prop_image_light;
+//    light::Prop_image_light* light = new light::Prop_image_light;
 
-    lights_.push_back(light);
+//    lights_.push_back(light);
 
-    light->init(prop, part);
+//    light->init(prop, part);
+
+    lights_.emplace_back(light::NewLight::Type::Prop_image, prop, part);
 }
 
 void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
-    light::Prop_volume_light* light = new light::Prop_volume_light;
+//    light::Prop_volume_light* light = new light::Prop_volume_light;
 
-    lights_.push_back(light);
+//    lights_.push_back(light);
 
-    light->init(prop, part);
+//    light->init(prop, part);
+
+    lights_.emplace_back(light::NewLight::Type::Volume, prop, part);
 }
 
 void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
-    light::Prop_volume_image_light* light = new light::Prop_volume_image_light;
+//    light::Prop_volume_image_light* light = new light::Prop_volume_image_light;
 
-    lights_.push_back(light);
+//    lights_.push_back(light);
 
-    light->init(prop, part);
+//    light->init(prop, part);
+
+    lights_.emplace_back(light::NewLight::Type::Volume_image, prop, part);
 }
 
 uint32_t Scene::create_extension(Extension* extension) noexcept {
@@ -429,7 +446,15 @@ void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
 
 void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                             uint32_t num_frames) noexcept {
-    props_[entity].set_frames(frames, num_frames);
+    props_[entity].set_frames(entity, frames, num_frames, *this);
+}
+
+entity::Morphing const& Scene::prop_morphing(uint32_t entity) const noexcept {
+    return prop_morphing_[entity];
+}
+
+void Scene::prop_set_morphing(uint32_t entity, entity::Morphing const& morphing) noexcept {
+    prop_morphing_[entity] = morphing;
 }
 
 void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
@@ -538,6 +563,7 @@ size_t Scene::num_bytes() const noexcept {
 Scene::Prop_ref Scene::allocate_prop() noexcept {
     props_.emplace_back();
     prop_world_transformations_.emplace_back();
+    prop_morphing_.emplace_back();
     prop_materials_.emplace_back();
     prop_topology_.emplace_back();
 

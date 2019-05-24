@@ -1,4 +1,5 @@
 #include "light.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "scene/entity/composed_transformation.hpp"
@@ -55,6 +56,8 @@ bool Light::is_area_light(uint32_t id) noexcept {
 uint32_t Light::strip_mask(uint32_t id) noexcept {
     return ~Volume_light_mask & id;
 }
+
+NewLight::NewLight() = default;
 
 static inline float3 prop_power(uint32_t prop, uint32_t part, AABB const& scene_bb,
                                 Scene const& scene) noexcept {

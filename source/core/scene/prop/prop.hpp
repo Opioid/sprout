@@ -65,7 +65,7 @@ class alignas(64) Prop {
 
     void set_transformation(math::Transformation const& t) noexcept;
 
-    void set_frames(animation::Keyframe const* frames, uint32_t num_frames) noexcept;
+    void set_frames(uint32_t self, animation::Keyframe const* frames, uint32_t num_frames, Scene& scene) noexcept;
 
     void calculate_world_transformation(uint32_t self, Scene& scene) noexcept;
 
@@ -77,7 +77,7 @@ class alignas(64) Prop {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
-    void morph(thread::Pool& pool) noexcept;
+    void morph(uint32_t self, thread::Pool& pool, Scene const& scene) noexcept;
 
     bool intersect(uint32_t self, Ray& ray, Worker const& worker,
                    shape::Intersection& intersection) const noexcept;
@@ -141,7 +141,7 @@ class alignas(64) Prop {
 
     Shape* shape_ = nullptr;
 
-    entity::Morphing morphing_;
+ //   entity::Morphing morphing_;
 };
 
 struct Prop_ref {

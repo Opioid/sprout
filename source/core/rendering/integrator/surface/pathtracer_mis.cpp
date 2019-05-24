@@ -5,7 +5,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
-#include "scene/light/light.hpp"
+#include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
@@ -308,7 +308,8 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
     } else {
         auto const& lights = worker.scene().lights();
         for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
-            auto const& light = *lights[l];
+         //   auto const& light = *lights[l];
+            auto const& light = lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {
                 float3 const el = evaluate_light(light, 1.f, ray, p, l, evaluate_back, intersection,
                                                  material_sample, filter, worker);
@@ -321,7 +322,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
     return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ray const& history,
+float3 Pathtracer_MIS::evaluate_light(NewLight const& light, float light_weight, Ray const& history,
                                       float3 const& p, uint32_t sampler_dimension,
                                       bool evaluate_back, Intersection const& intersection,
                                       Material_sample const& material_sample, Filter filter,

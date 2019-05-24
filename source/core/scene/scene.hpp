@@ -36,6 +36,7 @@ namespace entity {
 class Entity;
 struct Entity_ref;
 class Dummy;
+struct Morphing;
 
 }  // namespace entity
 
@@ -112,10 +113,12 @@ class Scene {
 
     Prop* prop(std::string_view name) noexcept;
 
-    std::vector<light::Light*> const& lights() const noexcept;
+ //   std::vector<light::Light*> const& lights() const noexcept;
+    std::vector<light::NewLight> const& lights() const noexcept;
 
     struct Light {
-        light::Light const& ref;
+     //   light::NewLight const& ref;
+        light::NewLight ref;
 
         float    pdf;
         uint32_t id;
@@ -161,6 +164,9 @@ class Scene {
 
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                          uint32_t num_frames) noexcept;
+
+    entity::Morphing const& prop_morphing(uint32_t entity) const noexcept;
+    void prop_set_morphing(uint32_t entity, entity::Morphing const& morphing) noexcept;
 
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
                              bool in_shadow) noexcept;
@@ -225,6 +231,7 @@ class Scene {
 
     std::vector<prop::Prop>          props_;
     std::vector<Transformation>      prop_world_transformations_;
+    std::vector<entity::Morphing>    prop_morphing_;
     std::vector<prop::Prop_material> prop_materials_;
     std::vector<prop::Prop_topology> prop_topology_;
 
@@ -234,7 +241,8 @@ class Scene {
     std::vector<uint32_t> volumes_;
     std::vector<uint32_t> infinite_volumes_;
 
-    std::vector<light::Light*> lights_;
+   // std::vector<light::Light*> lights_;
+    std::vector<light::NewLight> lights_;
 
     std::vector<Extension*> extensions_;
 
