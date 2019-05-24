@@ -9,55 +9,7 @@
 
 namespace scene::light {
 
-Light::~Light() noexcept {}
-
-bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
-                   Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                   Sample_to& result) const noexcept {
-    Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
-
-    return sample(p, n, transformation, total_sphere, sampler, sampler_dimension, worker, result);
-}
-
-bool Light::sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                   Worker const& worker, Sample_to& result) const noexcept {
-    Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
-
-    return sample(p, float3(0.f), transformation, true, sampler, sampler_dimension, worker, result);
-}
-
-bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
-                   Worker const& worker, Sample_from& result) const noexcept {
-    Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
-
-    return sample(transformation, sampler, sampler_dimension, bounds, worker, result);
-}
-
-bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                   Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
-                   Sample_from& result) const noexcept {
-    Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
-
-    return sample(transformation, sampler, sampler_dimension, importance, bounds, worker, result);
-}
-
-bool Light::is_light(uint32_t id) noexcept {
-    return 0xFFFFFFFF != id;
-}
-
-bool Light::is_area_light(uint32_t id) noexcept {
-    return 0 == (id & Volume_light_mask);
-}
-
-uint32_t Light::strip_mask(uint32_t id) noexcept {
-    return ~Volume_light_mask & id;
-}
-
-NewLight::NewLight() = default;
+Light::Light() = default;
 
 static inline float3 prop_power(uint32_t prop, uint32_t part, AABB const& scene_bb,
                                 Scene const& scene) noexcept {
@@ -80,7 +32,7 @@ static inline float3 volume_power(uint32_t prop, uint32_t part, Scene const& sce
     return volume * radiance;
 }
 
-float3 NewLight::power(AABB const& scene_bb, Scene const& scene) const noexcept {
+float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
     switch (type_) {
         case Type::Null:
             return float3(0.f);
@@ -97,8 +49,8 @@ float3 NewLight::power(AABB const& scene_bb, Scene const& scene) const noexcept 
     return float3(0.);
 }
 
-void NewLight::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
-                                thread::Pool& pool) const noexcept {
+void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
+                             thread::Pool& pool) const noexcept {
     switch (type_) {
         case Type::Null:
             break;
@@ -115,6 +67,18 @@ void NewLight::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
             scene.prop_prepare_sampling_volume(prop_, part_, light_id, time, true, pool);
             break;
     }
+}
+
+bool Light::is_light(uint32_t id) noexcept {
+    return 0xFFFFFFFF != id;
+}
+
+bool Light::is_area_light(uint32_t id) noexcept {
+    return 0 == (id & Volume_light_mask);
+}
+
+uint32_t Light::strip_mask(uint32_t id) noexcept {
+    return ~Volume_light_mask & id;
 }
 
 }  // namespace scene::light

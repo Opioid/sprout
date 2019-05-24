@@ -141,8 +141,6 @@ class alignas(64) Prop {
     AABB aabb_;
 
     Shape* shape_ = nullptr;
-
-    //   entity::Morphing morphing_;
 };
 
 struct Prop_ref {

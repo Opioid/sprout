@@ -12,10 +12,6 @@
 #include "extension.hpp"
 #include "image/texture/texture.hpp"
 #include "light/light.inl"
-#include "light/prop_image_light.hpp"
-#include "light/prop_light.hpp"
-#include "light/prop_volume_image_light.hpp"
-#include "light/prop_volume_light.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "scene_constants.hpp"
@@ -57,21 +53,11 @@ Scene::~Scene() noexcept {
     for (auto e : extensions_) {
         delete e;
     }
-
-    // Normally lights_ should never be empty; containing null_light instead
-    // But it can happen for partially constructed scenes,
-    // and we still don't want the destructor to crash.
-    //    if (!lights_.empty() && lights_[0] != &null_light_) {
-    //        for (auto l : lights_) {
-    //            delete l;
-    //        }
-    //    }
 }
 
 void Scene::finish() noexcept {
     if (lights_.empty()) {
-        //    lights_.push_back(&null_light_);
-        lights_.emplace_back(light::NewLight::Type::Null, prop::Null, prop::Null);
+        lights_.emplace_back(light::Light::Type::Null, prop::Null, prop::Null);
     }
 
     light_powers_.resize(lights_.size());
@@ -183,11 +169,7 @@ prop::Prop* Scene::prop(std::string_view name) noexcept {
     return &props_[e->second];
 }
 
-// std::vector<light::Light*> const& Scene::lights() const noexcept {
-//    return lights_;
-//}
-
-std::vector<light::NewLight> const& Scene::lights() const noexcept {
+std::vector<light::Light> const& Scene::lights() const noexcept {
     return lights_;
 }
 
@@ -199,7 +181,7 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
     id = light::Light::strip_mask(id);
 
     float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
-    //   return {*lights_[id], pdf, id};
+
     return {lights_[id], pdf, id};
 }
 
@@ -210,7 +192,6 @@ Scene::Light Scene::random_light(float random) const noexcept {
 
     SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
 
-    //  return {*lights_[l.offset], l.pdf, l.offset};
     return {lights_[l.offset], l.pdf, l.offset};
 }
 
@@ -348,42 +329,19 @@ uint32_t Scene::create_prop(Shape* shape, Materials const& materials,
 }
 
 void Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
-    //    light::Prop_light* light = new light::Prop_light;
-
-    //    lights_.push_back(light);
-
-    //    light->init(prop, part);
-    lights_.emplace_back(light::NewLight::Type::Prop, prop, part);
+    lights_.emplace_back(light::Light::Type::Prop, prop, part);
 }
 
 void Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
-    //    light::Prop_image_light* light = new light::Prop_image_light;
-
-    //    lights_.push_back(light);
-
-    //    light->init(prop, part);
-
-    lights_.emplace_back(light::NewLight::Type::Prop_image, prop, part);
+    lights_.emplace_back(light::Light::Type::Prop_image, prop, part);
 }
 
 void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
-    //    light::Prop_volume_light* light = new light::Prop_volume_light;
-
-    //    lights_.push_back(light);
-
-    //    light->init(prop, part);
-
-    lights_.emplace_back(light::NewLight::Type::Volume, prop, part);
+    lights_.emplace_back(light::Light::Type::Volume, prop, part);
 }
 
 void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
-    //    light::Prop_volume_image_light* light = new light::Prop_volume_image_light;
-
-    //    lights_.push_back(light);
-
-    //    light->init(prop, part);
-
-    lights_.emplace_back(light::NewLight::Type::Volume_image, prop, part);
+    lights_.emplace_back(light::Light::Type::Volume_image, prop, part);
 }
 
 uint32_t Scene::create_extension(Extension* extension) noexcept {

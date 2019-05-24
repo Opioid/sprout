@@ -20,10 +20,10 @@ using Sample_to   = shape::Sample_to;
 using Sample_from = shape::Sample_from;
 using Sampler     = sampler::Sampler;
 
-inline NewLight::NewLight(Type type, uint32_t prop, uint32_t part)
+inline Light::Light(Type type, uint32_t prop, uint32_t part)
     : type_(type), prop_(prop), part_(part) {}
 
-inline entity::Composed_transformation const& NewLight::transformation_at(
+inline entity::Composed_transformation const& Light::transformation_at(
     uint64_t time, Transformation& transformation, Scene const& scene) const noexcept {
     return scene.prop(prop_)->transformation_at(prop_, time, transformation, scene);
 }
@@ -140,9 +140,9 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float3 cons
     return false;
 }
 
-inline bool NewLight::sample(float3 const& p, float3 const& n, Transformation const& transformation,
-                             bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
-                             Worker const& worker, Sample_to& result) const noexcept {
+inline bool Light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
+                          bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
+                          Worker const& worker, Sample_to& result) const noexcept {
     switch (type_) {
         case Type::Null:
             return false;
@@ -181,7 +181,7 @@ static inline float3 volume_evaluate(uint32_t prop, uint32_t part, Sample_to con
     return material->evaluate_radiance(sample.wi, sample.uvw, volume, filter, worker);
 }
 
-inline float3 NewLight::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
+inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
     noexcept {
     switch (type_) {
         case Type::Null:
@@ -252,9 +252,9 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part,
     return true;
 }
 
-inline bool NewLight::sample(Transformation const& transformation, Sampler& sampler,
-                             uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
-                             Sample_from& result) const noexcept {
+inline bool Light::sample(Transformation const& transformation, Sampler& sampler,
+                          uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
+                          Sample_from& result) const noexcept {
     switch (type_) {
         case Type::Null:
             return false;
@@ -339,9 +339,9 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part,
     return true;
 }
 
-inline bool NewLight::sample(Transformation const& transformation, Sampler& sampler,
-                             uint32_t sampler_dimension, Distribution_2D const& importance,
-                             AABB const& bounds, Worker const& worker, Sample_from& result) const
+inline bool Light::sample(Transformation const& transformation, Sampler& sampler,
+                          uint32_t sampler_dimension, Distribution_2D const& importance,
+                          AABB const& bounds, Worker const& worker, Sample_from& result) const
     noexcept {
     switch (type_) {
         case Type::Null:
@@ -370,8 +370,8 @@ static inline float3 prop_evaluate(uint32_t prop, uint32_t part, Sample_from con
     return material->evaluate_radiance(-sample.dir, sample.uv, area, filter, worker);
 }
 
-inline float3 NewLight::evaluate(Sample_from const& sample, Filter filter,
-                                 Worker const& worker) const noexcept {
+inline float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
+    noexcept {
     switch (type_) {
         case Type::Null:
             return float3(0.f);
@@ -388,26 +388,26 @@ inline float3 NewLight::evaluate(Sample_from const& sample, Filter filter,
     return float3(0.f);
 }
 
-inline bool NewLight::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
-                             Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                             Sample_to& result) const noexcept {
+inline bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
+                          Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
+                          Sample_to& result) const noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
 
     return sample(p, n, transformation, total_sphere, sampler, sampler_dimension, worker, result);
 }
 
-inline bool NewLight::sample(float3 const& p, uint64_t time, Sampler& sampler,
-                             uint32_t sampler_dimension, Worker const& worker,
-                             Sample_to& result) const noexcept {
+inline bool Light::sample(float3 const& p, uint64_t time, Sampler& sampler,
+                          uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const
+    noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
 
     return sample(p, float3(0.f), transformation, true, sampler, sampler_dimension, worker, result);
 }
 
-inline bool NewLight::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                             AABB const& bounds, Worker const& worker, Sample_from& result) const
+inline bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+                          AABB const& bounds, Worker const& worker, Sample_from& result) const
     noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
@@ -415,9 +415,9 @@ inline bool NewLight::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d
     return sample(transformation, sampler, sampler_dimension, bounds, worker, result);
 }
 
-inline bool NewLight::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                             Distribution_2D const& importance, AABB const& bounds,
-                             Worker const& worker, Sample_from& result) const noexcept {
+inline bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+                          Distribution_2D const& importance, AABB const& bounds,
+                          Worker const& worker, Sample_from& result) const noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
 
@@ -481,8 +481,8 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ra
     return shape_pdf * material_pdf;
 }
 
-inline float NewLight::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-                           Filter filter, Worker const& worker) const noexcept {
+inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
+                        Filter filter, Worker const& worker) const noexcept {
     Transformation temp;
     auto const&    transformation = transformation_at(ray.time, temp, worker.scene());
 
@@ -503,7 +503,7 @@ inline float NewLight::pdf(Ray const& ray, Intersection const& intersection, boo
     return 0.f;
 }
 
-inline bool NewLight::equals(uint32_t prop, uint32_t part) const noexcept {
+inline bool Light::equals(uint32_t prop, uint32_t part) const noexcept {
     return prop_ == prop && part_ == part;
 }
 

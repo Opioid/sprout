@@ -6,6 +6,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "photon.hpp"
 #include "photon_importance.hpp"
+#include "scene/light/light.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_worker.hpp"
 

@@ -86,7 +86,6 @@ void Prop::set_frames(uint32_t self, animation::Keyframe const* frames, uint32_t
         local_frames[i] = frames[i].k;
     }
 
-    //   morphing_ = frames[0].m;
     scene.prop_set_morphing(self, frames[0].m);
 }
 

@@ -61,7 +61,7 @@ class Mapper : public Integrator {
                           Sample_from& light_sample) noexcept;
 
     bool generate_light_ray(Map const& map, uint32_t frame, AABB const& bounds, Worker& worker,
-                            Ray& ray, NewLight& light, uint32_t& light_id,
+                            Ray& ray, Light& light, uint32_t& light_id,
                             Sample_from& light_sample) noexcept;
 
     Settings const settings_;

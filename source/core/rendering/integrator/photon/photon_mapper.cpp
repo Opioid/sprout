@@ -109,7 +109,7 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
 
         Ray ray;
         //   Light const* light;
-        NewLight light;
+        Light light;
         if (!generate_light_ray(map, frame, bounds, worker, ray, light, light_id, light_sample)) {
             continue;
         }
@@ -228,7 +228,7 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
 }
 
 bool Mapper::generate_light_ray(Map const& map, uint32_t frame, AABB const& bounds, Worker& worker,
-                                Ray& ray, NewLight& light_out, uint32_t& light_id,
+                                Ray& ray, Light& light_out, uint32_t& light_id,
                                 Sample_from& light_sample) noexcept {
     float const select = sampler_.generate_sample_1D(1);
 

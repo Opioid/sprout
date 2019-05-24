@@ -34,7 +34,7 @@ class Sample;
 
 namespace light {
 class Light;
-class NewLight;
+class Light;
 }  // namespace light
 
 namespace prop {
@@ -62,7 +62,6 @@ class Integrator {
     using Scene           = scene::Scene;
     using Transformation  = scene::entity::Composed_transformation;
     using Light           = scene::light::Light;
-    using NewLight        = scene::light::NewLight;
     using Material        = scene::material::Material;
     using Material_sample = scene::material::Sample;
     using Filter          = scene::material::Sampler_settings::Filter;

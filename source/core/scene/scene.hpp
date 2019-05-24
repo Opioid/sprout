@@ -6,7 +6,6 @@
 #include "base/math/distribution/distribution_1d.hpp"
 #include "base/memory/array.hpp"
 #include "bvh/scene_bvh_builder.hpp"
-#include "light/null_light.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
 #include "scene_constants.hpp"
@@ -43,10 +42,6 @@ struct Morphing;
 namespace light {
 
 class Light;
-class Prop_light;
-class Prop_image_light;
-class Prop_volume_light;
-class Prop_volume_image_light;
 
 }  // namespace light
 
@@ -114,11 +109,11 @@ class Scene {
     Prop* prop(std::string_view name) noexcept;
 
     //   std::vector<light::Light*> const& lights() const noexcept;
-    std::vector<light::NewLight> const& lights() const noexcept;
+    std::vector<light::Light> const& lights() const noexcept;
 
     struct Light {
-        //   light::NewLight const& ref;
-        light::NewLight const& ref;
+        //   light::Light const& ref;
+        light::Light const& ref;
 
         float    pdf;
         uint32_t id;
@@ -222,8 +217,7 @@ class Scene {
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
 
-    shape::Null       null_shape_;
-    light::Null_light null_light_;
+    shape::Null null_shape_;
 
     bool has_masked_material_;
     bool has_tinted_shadow_;
@@ -242,7 +236,7 @@ class Scene {
     std::vector<uint32_t> infinite_volumes_;
 
     // std::vector<light::Light*> lights_;
-    std::vector<light::NewLight> lights_;
+    std::vector<light::Light> lights_;
 
     std::vector<Extension*> extensions_;
 

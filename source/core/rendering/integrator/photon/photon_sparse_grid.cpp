@@ -307,9 +307,8 @@ uint32_t Sparse_grid::reduce_and_move(Photon* photons, float merge_radius, uint3
         comp_num_photons -= num_reduced[i];
     }
 
-    std::partition(photons_, photons_ + num_photons_, [](Photon const& p) noexcept {
-        return p.alpha[0] >= 0.f;
-    });
+    std::partition(photons_, photons_ + num_photons_,
+                   [](Photon const& p) noexcept { return p.alpha[0] >= 0.f; });
 
     if (photons != photons_) {
         Photon* old_photons = photons_;
