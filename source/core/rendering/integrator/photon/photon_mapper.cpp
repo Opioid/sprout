@@ -107,8 +107,8 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
 
         bool caustic_ray = false;
 
-        Ray          ray;
-     //   Light const* light;
+        Ray ray;
+        //   Light const* light;
         NewLight light;
         if (!generate_light_ray(map, frame, bounds, worker, ray, light, light_id, light_sample)) {
             continue;

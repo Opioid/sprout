@@ -1,8 +1,10 @@
 #ifndef SU_SCENE_LIGHT_LIGHT_INL
 #define SU_SCENE_LIGHT_LIGHT_INL
 
+#include "base/math/vector3.inl"
 #include "light.hpp"
 #include "sampler/sampler.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/scene.hpp"
@@ -426,21 +428,18 @@ static inline float prop_pdf(uint32_t prop, uint32_t part, Ray const& ray,
                              shape::Intersection const&             intersection,
                              entity::Composed_transformation const& transformation,
                              bool total_sphere, Worker const& worker) noexcept {
-    prop::Prop const* p = worker.scene().prop(prop);
-
     float const area = worker.scene().prop_area(prop, part);
 
     bool const two_sided = worker.scene().prop_material(prop, part)->is_two_sided();
 
-    return p->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
+    return worker.scene().prop(prop)->shape()->pdf(ray, intersection, transformation, area,
+                                                   two_sided, total_sphere);
 }
 
 static inline float prop_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
                                    shape::Intersection const&             intersection,
                                    entity::Composed_transformation const& transformation,
                                    Filter filter, Worker const& worker) noexcept {
-    prop::Prop const* p = worker.scene().prop(prop);
-
     float const area = worker.scene().prop_area(prop, part);
 
     auto const material = worker.scene().prop_material(prop, part);
@@ -448,7 +447,8 @@ static inline float prop_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    float const shape_pdf = p->shape()->pdf_uv(ray, intersection, transformation, area, two_sided);
+    float const shape_pdf = worker.scene().prop(prop)->shape()->pdf_uv(
+        ray, intersection, transformation, area, two_sided);
 
     float const material_pdf = material->emission_pdf(intersection.uv, filter, worker);
 
@@ -461,7 +461,8 @@ static float volume_pdf(uint32_t prop, uint32_t part, Ray const& ray,
                         Worker const&                          worker) noexcept {
     float const volume = worker.scene().prop_volume(prop, part);
 
-    return worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection, transformation, volume);
+    return worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection, transformation,
+                                                          volume);
 }
 
 static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
@@ -472,7 +473,8 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ra
 
     auto const material = worker.scene().prop_material(prop, part);
 
-    float const shape_pdf = worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection, transformation, volume);
+    float const shape_pdf = worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection,
+                                                                           transformation, volume);
 
     float const material_pdf = material->emission_pdf(intersection.uvw, filter, worker);
 
@@ -481,10 +483,8 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ra
 
 inline float NewLight::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
                            Filter filter, Worker const& worker) const noexcept {
-    prop::Prop const* p = worker.scene().prop(prop_);
-
     Transformation temp;
-    auto const&    transformation = p->transformation_at(prop_, ray.time, temp, worker.scene());
+    auto const&    transformation = transformation_at(ray.time, temp, worker.scene());
 
     switch (type_) {
         case Type::Null:

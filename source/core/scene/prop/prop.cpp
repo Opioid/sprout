@@ -79,13 +79,14 @@ void Prop::set_transformation(math::Transformation const& t) noexcept {
     local_frame.time           = scene::Static_time;
 }
 
-void Prop::set_frames(uint32_t self, animation::Keyframe const* frames, uint32_t num_frames, Scene& scene) noexcept {
+void Prop::set_frames(uint32_t self, animation::Keyframe const* frames, uint32_t num_frames,
+                      Scene& scene) noexcept {
     Keyframe* local_frames = &frames_[num_world_frames_];
     for (uint32_t i = 0; i < num_frames; ++i) {
         local_frames[i] = frames[i].k;
     }
 
- //   morphing_ = frames[0].m;
+    //   morphing_ = frames[0].m;
     scene.prop_set_morphing(self, frames[0].m);
 }
 
@@ -139,7 +140,7 @@ void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noe
 
 void Prop::morph(uint32_t self, thread::Pool& pool, Scene const& scene) noexcept {
     if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
-    //    auto const& m = morphing_;
+        //    auto const& m = morphing_;
         auto const& m = scene.prop_morphing(self);
         morphable->morph(m.targets[0], m.targets[1], m.weight, pool);
     }

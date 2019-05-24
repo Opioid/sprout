@@ -113,11 +113,11 @@ class Scene {
 
     Prop* prop(std::string_view name) noexcept;
 
- //   std::vector<light::Light*> const& lights() const noexcept;
+    //   std::vector<light::Light*> const& lights() const noexcept;
     std::vector<light::NewLight> const& lights() const noexcept;
 
     struct Light {
-     //   light::NewLight const& ref;
+        //   light::NewLight const& ref;
         light::NewLight ref;
 
         float    pdf;
@@ -241,7 +241,7 @@ class Scene {
     std::vector<uint32_t> volumes_;
     std::vector<uint32_t> infinite_volumes_;
 
-   // std::vector<light::Light*> lights_;
+    // std::vector<light::Light*> lights_;
     std::vector<light::NewLight> lights_;
 
     std::vector<Extension*> extensions_;
