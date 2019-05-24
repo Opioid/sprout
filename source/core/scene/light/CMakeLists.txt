@@ -4,6 +4,7 @@ target_sources(core
     "emittance.hpp"
     "light.cpp"
     "light.hpp"
+    "light.inl"
     "null_light.cpp"
     "null_light.hpp"
     "prop_image_light.cpp"
