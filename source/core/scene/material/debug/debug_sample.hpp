@@ -4,7 +4,7 @@
 
 namespace scene::material::debug {
 
-class Sample : public material::Sample {
+class alignas(32) Sample : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 

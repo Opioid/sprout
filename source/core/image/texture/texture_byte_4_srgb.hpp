@@ -6,7 +6,7 @@
 
 namespace image::texture {
 
-class Byte4_sRGB final : public Texture {
+class alignas(64) Byte4_sRGB final : public Texture {
   public:
     Byte4_sRGB(Image const& image) noexcept;
 

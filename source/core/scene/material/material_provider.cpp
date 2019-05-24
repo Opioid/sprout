@@ -121,6 +121,10 @@ Material* Provider::load(void const* data, std::string_view                 moun
     return load(*value, mount_folder, manager);
 }
 
+void Provider::release(Material* resource) const noexcept {
+    delete resource;
+}
+
 size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }

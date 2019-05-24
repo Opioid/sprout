@@ -5,7 +5,7 @@
 
 namespace scene::material::substitute {
 
-class Material : public Material_base {
+class alignas(64) Material : public Material_base {
   public:
     Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 

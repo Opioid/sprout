@@ -5,7 +5,7 @@
 
 namespace scene::material::substitute {
 
-class Sample : public Sample_base {
+class alignas(64) Sample : public Sample_base {
   public:
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
 

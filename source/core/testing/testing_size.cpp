@@ -2,10 +2,10 @@
 #include <iostream>
 #include <string>
 #include "base/math/vector3.inl"
-#include "image/typed_image.hpp"
 #include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_byte_3_srgb.hpp"
+#include "image/typed_image.hpp"
 #include "rendering/integrator/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
@@ -16,12 +16,28 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/debug/debug_material.hpp"
+#include "scene/material/debug/debug_sample.hpp"
+#include "scene/material/glass/glass_material.hpp"
+#include "scene/material/glass/glass_sample.hpp"
+#include "scene/material/light/light_constant.hpp"
+#include "scene/material/light/light_emissionmap.hpp"
+#include "scene/material/light/light_material_sample.hpp"
+#include "scene/material/metal/metal_material.hpp"
+#include "scene/material/metal/metal_sample.hpp"
+#include "scene/material/substitute/substitute_material.hpp"
+#include "scene/material/substitute/substitute_sample.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_renderstate.hpp"
+#include "scene/shape/canopy.hpp"
+#include "scene/shape/celestial_disk.hpp"
+#include "scene/shape/infinite_sphere.hpp"
 #include "scene/shape/shape_intersection.hpp"
+#include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_indexed_data.hpp"
+#include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/shape/triangle/triangle_mesh_bvh.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
 
@@ -65,6 +81,24 @@ void size() {
 
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
+    print_size<scene::material::debug::Material>("debug::Material", 32);
+    print_size<scene::material::debug::Sample>("debug::Sample", 96);
+
+    print_size<scene::material::glass::Glass>("glass::Glass", 128);
+    print_size<scene::material::glass::Sample>("glass::Sample", 128);
+
+    print_size<scene::material::light::Constant>("light::Constant", 64);
+    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
+    print_size<scene::material::light::Sample>("light::Sample", 128);
+
+    print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 128);
+    print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 128);
+    print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
+    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 192);
+
+    print_size<scene::material::substitute::Material>("substitute::Material", 128);
+    print_size<scene::material::substitute::Sample>("substitute::Sample", 192);
+
     print_size<scene::prop::Prop>("prop::Prop", 64);
 
     print_size<scene::Renderstate>("Renderstate", 112);
@@ -72,6 +106,12 @@ void size() {
     print_size<scene::bvh::Node>("scene::bvh::Node", 32);
 
     print_size<float3>("Intersection_vertex_MT", 16);
+
+    print_size<scene::shape::Canopy>("Canopy", 64);
+    print_size<scene::shape::Celestial_disk>("Celestial_disk", 64);
+    print_size<scene::shape::Sphere>("Sphere", 64);
+    print_size<scene::shape::Infinite_sphere>("Infinite_sphere", 64);
+    print_size<scene::shape::triangle::Mesh>("Mesh", 192);
 
     print_size<scene::shape::triangle::bvh::Indexed_data<
         scene::shape::triangle::Shading_vertex_type>::Index_triangle>("Index_triangle", 16);

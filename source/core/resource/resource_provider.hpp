@@ -26,6 +26,8 @@ class Provider {
     virtual T* load(void const* data, std::string_view mount_folder, Variant_map const& options,
                     Manager& manager) noexcept = 0;
 
+    virtual void release(T* resource) const noexcept = 0;
+
     virtual size_t num_bytes() const noexcept = 0;
 
     virtual size_t num_bytes(T const* resource) const noexcept = 0;

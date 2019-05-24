@@ -7,7 +7,7 @@
 namespace image::texture {
 
 template <typename T>
-class Float1_t final : public Texture {
+class alignas(64) Float1_t final : public Texture {
   public:
     Float1_t(Image const& image) noexcept;
 

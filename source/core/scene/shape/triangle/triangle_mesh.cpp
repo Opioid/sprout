@@ -26,7 +26,7 @@ bool Mesh::init() noexcept {
     aabb_       = tree_.aabb();
     inv_extent_ = 1.f / aabb_.extent();
 
-    distributions_ = memory::construct_aligned<Distribution>(tree_.num_parts());
+    distributions_ = memory::construct_array_aligned<Distribution>(tree_.num_parts());
 
     return 0 != tree_.num_parts();
 }

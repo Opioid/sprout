@@ -7,7 +7,7 @@
 
 namespace scene::shape::triangle {
 
-class Mesh : public Shape {
+class alignas(64) Mesh : public Shape {
   public:
     Mesh() noexcept;
 

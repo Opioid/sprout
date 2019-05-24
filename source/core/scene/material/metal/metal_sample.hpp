@@ -5,7 +5,7 @@
 
 namespace scene::material::metal {
 
-class Sample_isotropic : public material::Sample {
+class alignas(64) Sample_isotropic : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 
@@ -32,7 +32,7 @@ class Sample_isotropic : public material::Sample {
     bool avoid_caustics_;
 };
 
-class Sample_anisotropic : public material::Sample {
+class alignas(64) Sample_anisotropic : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 

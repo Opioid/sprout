@@ -5,7 +5,7 @@
 
 namespace scene::material::glass {
 
-class Glass : public Material {
+class alignas(64) Glass : public Material {
   public:
     Glass(Sampler_settings const& sampler_settings) noexcept;
 

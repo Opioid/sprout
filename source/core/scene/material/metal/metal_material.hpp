@@ -4,7 +4,7 @@
 
 namespace scene::material::metal {
 
-class Material_isotropic : public Material {
+class alignas(64) Material_isotropic : public Material {
   public:
     Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
@@ -33,7 +33,7 @@ class Material_isotropic : public Material {
     float alpha_;
 };
 
-class Material_anisotropic : public Material {
+class alignas(64) Material_anisotropic : public Material {
   public:
     Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 

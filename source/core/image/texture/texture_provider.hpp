@@ -32,6 +32,8 @@ class Provider final : public resource::Provider<Texture> {
     Texture* load(void const* data, std::string_view mount_folder, Variant_map const& options,
                   resource::Manager& manager) noexcept override final;
 
+    void release(Texture* resource) const noexcept override final;
+
     size_t num_bytes() const noexcept override final;
 
     size_t num_bytes(Texture const* resource) const noexcept override final;

@@ -45,7 +45,7 @@ void Map::init(scene::Scene const& scene, uint32_t num_workers) noexcept {
 
     num_importances_ = static_cast<uint32_t>(scene.lights().size());
 
-    importances_ = memory::construct_aligned<Importance>(scene.lights().size());
+    importances_ = memory::construct_array_aligned<Importance>(scene.lights().size());
 }
 
 void Map::start() noexcept {

@@ -8,6 +8,8 @@
 #include "file/file_system.hpp"
 #include "resource_cache.hpp"
 
+//#include <iostream>
+
 namespace resource {
 
 inline Cache::~Cache() {}
@@ -18,7 +20,7 @@ Typed_cache<T>::Typed_cache(Provider<T>& provider) : provider_(provider) {}
 template <typename T>
 Typed_cache<T>::~Typed_cache() {
     for (auto r : resources_) {
-        delete r.second;
+        provider_.release(r.second);
     }
 }
 
@@ -35,6 +37,12 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
     if (!resource) {
         return nullptr;
     }
+
+//    std::cout << filename << " ";
+//    std::cout << T::identifier() << " "
+//              << reinterpret_cast<uint64_t>(resource) %
+//                     64 /*<< " " << provider_.num_bytes(resource)*/
+//              << std::endl;
 
     resources_.insert_or_assign(key, resource);
 

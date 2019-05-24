@@ -6,7 +6,7 @@
 
 namespace image::texture {
 
-class Float3 final : public Texture {
+class alignas(64) Float3 final : public Texture {
   public:
     Float3(Image const& image) noexcept;
 

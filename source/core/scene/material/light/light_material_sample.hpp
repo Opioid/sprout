@@ -5,7 +5,7 @@
 
 namespace scene::material::light {
 
-class Sample : public material::Sample {
+class alignas(64) Sample : public material::Sample {
   public:
     Layer const& base_layer() const noexcept override final;
 

@@ -36,6 +36,8 @@ class Provider : public resource::Provider<Shape> {
     Shape* load(void const* data, std::string_view mount_folder, memory::Variant_map const& options,
                 resource::Manager& manager) noexcept override final;
 
+    void release(Shape* resource) const noexcept override final;
+
     size_t num_bytes() const noexcept override final;
 
     size_t num_bytes(Shape const* resource) const noexcept override final;

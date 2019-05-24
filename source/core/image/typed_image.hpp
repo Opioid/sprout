@@ -8,7 +8,7 @@
 namespace image {
 
 template <typename T>
-class Typed_image final : public Image {
+class alignas(32) Typed_image final : public Image {
   public:
     Typed_image(Description const& description) noexcept;
 

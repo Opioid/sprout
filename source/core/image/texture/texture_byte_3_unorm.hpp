@@ -6,7 +6,7 @@
 
 namespace image::texture {
 
-class Byte3_unorm final : public Texture {
+class alignas(64) Byte3_unorm final : public Texture {
   public:
     Byte3_unorm(Image const& image) noexcept;
 

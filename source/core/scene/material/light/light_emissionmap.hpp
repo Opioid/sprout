@@ -6,7 +6,7 @@
 
 namespace scene::material::light {
 
-class Emissionmap : public Material {
+class alignas(64) Emissionmap : public Material {
   public:
     Emissionmap(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
