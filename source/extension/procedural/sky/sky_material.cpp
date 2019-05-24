@@ -197,7 +197,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 }
 
 size_t Sky_baked_material::num_bytes() const noexcept {
-    return sizeof(*this) + emission_map_.texture().image().num_bytes() + distribution_.num_bytes();
+    return sizeof(*this) + emission_map_.texture().image_num_bytes() + distribution_.num_bytes();
 }
 
 float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& transformation,

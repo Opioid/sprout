@@ -44,8 +44,6 @@ class Image {
   public:
     static std::string identifier() noexcept;
 
-    virtual ~Image() noexcept;
-
     Description const& description() const noexcept;
 
     int2 dimensions2() const noexcept;
@@ -56,8 +54,6 @@ class Image {
     int2 coordinates_2(int32_t index) const noexcept;
 
     int3 coordinates_3(int64_t index) const noexcept;
-
-    virtual size_t num_bytes() const noexcept = 0;
 
   protected:
     void resize(int3 const& dimensions, int32_t num_elements = 1) noexcept;

@@ -30,6 +30,8 @@ class Provider final : public resource::Provider<Material> {
 
     size_t num_bytes() const noexcept override final;
 
+    size_t num_bytes(Material const* resource) const noexcept override final;
+
     Material& fallback_material() noexcept;
 
   private:

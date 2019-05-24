@@ -22,6 +22,8 @@ class Provider final : public resource::Provider<Image> {
 
     size_t num_bytes() const noexcept override final;
 
+    size_t num_bytes(Image const* resource) const noexcept override final;
+
   private:
     procedural::flakes::Provider flakes_provider_;
 };

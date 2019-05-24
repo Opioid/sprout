@@ -27,6 +27,8 @@ class Provider {
                     Manager& manager) noexcept = 0;
 
     virtual size_t num_bytes() const noexcept = 0;
+
+    virtual size_t num_bytes(T const* resource) const noexcept = 0;
 };
 
 }  // namespace resource

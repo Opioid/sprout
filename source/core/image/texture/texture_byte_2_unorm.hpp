@@ -29,6 +29,8 @@ class Byte2_unorm final : public Texture {
     float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept override final;
     float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept override final;
 
+    size_t image_num_bytes() const noexcept override final;
+
   private:
     Byte2 const& image_;
 };

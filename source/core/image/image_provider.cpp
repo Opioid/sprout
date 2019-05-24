@@ -13,6 +13,7 @@
 #include "resource/resource_manager.hpp"
 #include "resource/resource_provider.inl"
 #include "string/string.hpp"
+#include "typed_image.hpp"
 
 namespace image {
 
@@ -75,6 +76,33 @@ Image* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
 
 size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
+}
+
+size_t Provider::num_bytes(Image const* resource) const noexcept {
+    switch (resource->description().type) {
+        case Image::Type::Byte1:
+            return static_cast<Byte1 const*>(resource)->num_bytes();
+        case Image::Type::Byte2:
+            return static_cast<Byte2 const*>(resource)->num_bytes();
+        case Image::Type::Byte3:
+            return static_cast<Byte3 const*>(resource)->num_bytes();
+        case Image::Type::Byte4:
+            return static_cast<Byte4 const*>(resource)->num_bytes();
+        case Image::Type::Float1:
+            return static_cast<Float1 const*>(resource)->num_bytes();
+        case Image::Type::Float1_sparse:
+            return static_cast<Float1_sparse const*>(resource)->num_bytes();
+        case Image::Type::Float2:
+            return static_cast<Float2 const*>(resource)->num_bytes();
+        case Image::Type::Float3:
+            return static_cast<Float3 const*>(resource)->num_bytes();
+        case Image::Type::Float4:
+            return static_cast<Float4 const*>(resource)->num_bytes();
+        case Image::Type::Undefined:
+            return 0;
+    }
+
+    return 0;
 }
 
 }  // namespace image

@@ -16,10 +16,6 @@ Texture::Texture(Image const& image) noexcept
 
 Texture::~Texture() noexcept {}
 
-Image const& Texture::image() const noexcept {
-    return untyped_image_;
-}
-
 int32_t Texture::num_channels() const noexcept {
     return untyped_image_.description().num_channels();
 }

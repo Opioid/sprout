@@ -86,7 +86,7 @@ size_t Typed_cache<T>::num_bytes() const noexcept {
     size_t num_bytes = 0;
 
     for (auto r : resources_) {
-        num_bytes += r.second->num_bytes();
+        num_bytes += provider_.num_bytes(r.second);
     }
 
     num_bytes += provider_.num_bytes();

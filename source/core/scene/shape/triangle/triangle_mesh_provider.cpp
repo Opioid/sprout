@@ -154,6 +154,10 @@ size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
+size_t Provider::num_bytes(Shape const* resource) const noexcept {
+    return resource->num_bytes();
+}
+
 Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
                              uint32_t num_parts, thread::Pool& thread_pool) noexcept {
     if (triangles.empty() || vertices.empty() || !num_parts) {

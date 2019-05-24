@@ -98,4 +98,8 @@ float4 Byte1_unorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     return float4(encoding::cached_unorm_to_float(value), 0.f, 0.f, 1.f);
 }
 
+size_t Byte1_unorm::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
+
 }  // namespace image::texture

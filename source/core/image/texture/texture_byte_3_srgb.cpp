@@ -93,4 +93,8 @@ float4 Byte3_sRGB::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     return encoding::cached_srgb_to_float4(value);
 }
 
+size_t Byte3_sRGB::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
+
 }  // namespace image::texture

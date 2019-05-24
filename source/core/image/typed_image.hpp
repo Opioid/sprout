@@ -12,7 +12,7 @@ class Typed_image final : public Image {
   public:
     Typed_image(Description const& description) noexcept;
 
-    ~Typed_image() noexcept override;
+    ~Typed_image() noexcept;
 
     Typed_image<T> clone() const noexcept;
 
@@ -51,7 +51,7 @@ class Typed_image final : public Image {
 
     T* data() const noexcept;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept;
 
   private:
     T* data_ = nullptr;
@@ -62,7 +62,7 @@ class Typed_sparse_image final : public Image {
   public:
     Typed_sparse_image(Description const& description) noexcept;
 
-    ~Typed_sparse_image() noexcept override;
+    ~Typed_sparse_image() noexcept;
 
     T load(int64_t index) const noexcept;
 
@@ -88,7 +88,7 @@ class Typed_sparse_image final : public Image {
 
     void gather(int4 const& xy_xy1, T c[4]) const noexcept;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept;
 
   private:
     static int32_t constexpr Log2_cell_dim = 4;

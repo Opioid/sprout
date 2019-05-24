@@ -2,7 +2,9 @@
 #include <iostream>
 #include <string>
 #include "base/math/vector3.inl"
+#include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
+#include "image/texture/texture_byte_3_srgb.hpp"
 #include "rendering/integrator/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
@@ -62,7 +64,7 @@ void size() {
 
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
-    print_size<scene::prop::Prop>("prop::Prop", 128);
+    print_size<scene::prop::Prop>("prop::Prop", 64);
 
     print_size<scene::Renderstate>("Renderstate", 112);
 
@@ -78,6 +80,9 @@ void size() {
     print_size<scene::shape::triangle::Shading_vertex_MTC>("Shading_vertex_MTC", 32);
 
     print_size<scene::shape::Vertex>("Vertex", 48);
+
+    print_size<image::texture::Texture>("texture::Texture", 48);
+    print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 64);
 
     print_size<image::texture::Adapter>("texture::Adapter", 16);
 

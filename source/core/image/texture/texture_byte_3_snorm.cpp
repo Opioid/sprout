@@ -115,4 +115,8 @@ float4 Byte3_snorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
                   encoding::cached_snorm_to_float(value[2]), 1.f);
 }
 
+size_t Byte3_snorm::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
+
 }  // namespace image::texture

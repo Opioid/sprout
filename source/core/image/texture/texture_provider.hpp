@@ -33,6 +33,8 @@ class Provider final : public resource::Provider<Texture> {
                   resource::Manager& manager) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
+
+    size_t num_bytes(Texture const* resource) const noexcept override final;
 };
 
 }  // namespace texture

@@ -38,6 +38,8 @@ class Provider : public resource::Provider<Shape> {
 
     size_t num_bytes() const noexcept override final;
 
+    size_t num_bytes(Shape const* resource) const noexcept override final;
+
     static Shape* create_mesh(Triangles const& triangles, Vertices const& vertices,
                               uint32_t num_parts, thread::Pool& thread_pool) noexcept;
 

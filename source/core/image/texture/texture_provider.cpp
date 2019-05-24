@@ -102,4 +102,8 @@ size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
+size_t Provider::num_bytes(Texture const* /*resource*/) const noexcept {
+    return 0;
+}
+
 }  // namespace image::texture

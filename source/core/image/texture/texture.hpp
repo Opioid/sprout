@@ -18,8 +18,6 @@ class Texture {
 
     virtual ~Texture() noexcept;
 
-    Image const& image() const noexcept;
-
     int32_t num_channels() const noexcept;
     int32_t num_elements() const noexcept;
 
@@ -56,6 +54,8 @@ class Texture {
 
     float3 average_3() const noexcept;
     float3 average_3(int32_t element) const noexcept;
+
+    virtual size_t image_num_bytes() const noexcept = 0;
 
   protected:
     Image const& untyped_image_;

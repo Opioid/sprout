@@ -92,4 +92,9 @@ float4 Float3::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
 
     //	return float4(image_.at(x, y, z), 1.f);
 }
+
+size_t Float3::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
+
 }  // namespace image::texture
