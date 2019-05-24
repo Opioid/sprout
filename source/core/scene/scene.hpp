@@ -118,7 +118,7 @@ class Scene {
 
     struct Light {
         //   light::NewLight const& ref;
-        light::NewLight ref;
+        light::NewLight const& ref;
 
         float    pdf;
         uint32_t id;
