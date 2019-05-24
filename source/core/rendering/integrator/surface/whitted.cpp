@@ -3,7 +3,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "rendering/rendering_worker.hpp"
-#include "scene/light/light.hpp"
+#include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
