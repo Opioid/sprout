@@ -48,8 +48,6 @@ class Shape {
 
     virtual ~Shape() noexcept;
 
-    AABB const& aabb() const noexcept;
-
     float3 object_to_texture_point(float3 const& p) const noexcept;
     float3 object_to_texture_vector(float3 const& v) const noexcept;
 
