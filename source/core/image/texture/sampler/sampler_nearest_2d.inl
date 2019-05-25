@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "address_mode.hpp"
 #include "base/math/vector2.inl"
-#include "image/texture/texture.hpp"
+#include "image/texture/texture.inl"
 #include "sampler_nearest_2d.hpp"
 
 namespace image::texture::sampler {

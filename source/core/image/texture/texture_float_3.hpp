@@ -1,8 +1,8 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_FLOAT3_HPP
 #define SU_CORE_IMAGE_TEXTURE_FLOAT3_HPP
 
+#include <cstddef>
 #include "image/typed_image_fwd.hpp"
-#include "texture.hpp"
 
 namespace image::texture {
 

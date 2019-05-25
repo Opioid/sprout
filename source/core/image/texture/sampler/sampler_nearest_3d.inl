@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include "address_mode.hpp"
-#include "image/texture/texture.hpp"
+#include "image/texture/texture.inl"
 #include "math/vector4.inl"
 #include "sampler_nearest_3d.hpp"
 

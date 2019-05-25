@@ -4,8 +4,7 @@
 
 namespace image::texture {
 
-Float3::Float3(Image const& image) noexcept
-    : image_(static_cast<image::Float3 const&>(image)) {}
+Float3::Float3(Image const& image) noexcept : image_(static_cast<image::Float3 const&>(image)) {}
 
 Image const& Float3::image() const noexcept {
     return image_;

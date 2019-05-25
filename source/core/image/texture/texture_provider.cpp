@@ -7,7 +7,7 @@
 #include "logging/logging.hpp"
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
-#include "texturely.inl"
+#include "texture.inl"
 #include "texture_byte_1_unorm.hpp"
 #include "texture_byte_2_snorm.hpp"
 #include "texture_byte_2_unorm.hpp"

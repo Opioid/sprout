@@ -38,11 +38,11 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
         return nullptr;
     }
 
-//    std::cout << filename << " ";
-//    std::cout << T::identifier() << " "
-//              << reinterpret_cast<uint64_t>(resource) %
-//                     64 /*<< " " << provider_.num_bytes(resource)*/
-//              << std::endl;
+    //    std::cout << filename << " ";
+    //    std::cout << T::identifier() << " "
+    //              << reinterpret_cast<uint64_t>(resource) %
+    //                     64 /*<< " " << provider_.num_bytes(resource)*/
+    //              << std::endl;
 
     resources_.insert_or_assign(key, resource);
 

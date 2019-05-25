@@ -1,12 +1,12 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_BYTE3_SRGB_HPP
 #define SU_CORE_IMAGE_TEXTURE_BYTE3_SRGB_HPP
 
+#include <cstddef>
 #include "image/typed_image_fwd.hpp"
-#include "texture.hpp"
 
 namespace image::texture {
 
-class Byte3_sRGB  {
+class Byte3_sRGB {
   public:
     Byte3_sRGB(Image const& image) noexcept;
 

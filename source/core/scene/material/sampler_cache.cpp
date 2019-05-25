@@ -1,10 +1,10 @@
 #include "sampler_cache.hpp"
-#include "image/texture/texturely.inl"
 #include "image/texture/sampler/address_mode.hpp"
 #include "image/texture/sampler/sampler_linear_2d.inl"
 #include "image/texture/sampler/sampler_linear_3d.inl"
 #include "image/texture/sampler/sampler_nearest_2d.inl"
 #include "image/texture/sampler/sampler_nearest_3d.inl"
+#include "image/texture/texture.inl"
 
 namespace scene::material {
 

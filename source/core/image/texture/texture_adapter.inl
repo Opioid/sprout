@@ -4,8 +4,7 @@
 #include "base/math/vector4.inl"
 #include "sampler/sampler_2d.hpp"
 #include "sampler/sampler_3d.hpp"
-#include "texture.hpp"
-#include "texturely.inl"
+#include "texture.inl"
 #include "texture_adapter.hpp"
 
 namespace image::texture {

@@ -8,7 +8,7 @@
 #include "core/baking/baking_driver.hpp"
 #include "core/file/file_system.hpp"
 #include "core/image/image_provider.hpp"
-#include "core/image/texture/texturely.inl"
+#include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/logging.hpp"
 #include "core/progress/progress_sink_null.hpp"

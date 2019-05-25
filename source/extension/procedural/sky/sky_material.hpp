@@ -2,7 +2,7 @@
 #define SU_EXTENSION_PROCEDURAL_SKY_SKY_MATERIAL_HPP
 
 #include "base/math/distribution/distribution_2d.hpp"
-#include "core/image/texture/texturely.hpp"
+#include "core/image/texture/texture.hpp"
 #include "core/image/texture/texture_float_3.hpp"
 #include "core/image/typed_image.hpp"
 #include "sky_material_base.hpp"

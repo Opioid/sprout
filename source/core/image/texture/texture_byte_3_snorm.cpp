@@ -5,8 +5,7 @@
 
 namespace image::texture {
 
-Byte3_snorm::Byte3_snorm(Image const& image) noexcept
-    : image_(static_cast<Byte3 const&>(image)) {}
+Byte3_snorm::Byte3_snorm(Image const& image) noexcept : image_(static_cast<Byte3 const&>(image)) {}
 
 Image const& Byte3_snorm::image() const noexcept {
     return image_;

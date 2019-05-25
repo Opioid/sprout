@@ -31,8 +31,6 @@ target_sources(core
     "texture_test.cpp"
     "texture_test.hpp"
     "texture_types.hpp"
-    "texture.cpp"
     "texture.hpp"
-    "texturely.hpp"
-    "texturely.inl"
+    "texture.inl"
     ) 

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "base/math/vector3.inl"
-#include "image/texture/texturely.hpp"
+#include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_byte_3_srgb.hpp"
 #include "image/typed_image.hpp"
