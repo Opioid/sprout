@@ -6,7 +6,27 @@
 namespace image::texture {
 
 Byte3_sRGB::Byte3_sRGB(Image const& image) noexcept
-    : Texture(image), image_(static_cast<Byte3 const&>(image)) {}
+    : image_(static_cast<Byte3 const&>(image)) {}
+
+Image const& Byte3_sRGB::image() const noexcept {
+    return image_;
+}
+
+int32_t Byte3_sRGB::num_channels() const noexcept {
+    return image_.description().num_channels();
+}
+
+int32_t Byte3_sRGB::num_elements() const noexcept {
+    return image_.description().num_elements;
+}
+
+int2 Byte3_sRGB::dimensions_2() const noexcept {
+    return image_.description().dimensions.xy();
+}
+
+int3 const& Byte3_sRGB::dimensions_3() const noexcept {
+    return image_.description().dimensions;
+}
 
 float Byte3_sRGB::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);

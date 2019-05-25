@@ -11,6 +11,7 @@ class Sampler_3D;
 }  // namespace sampler
 
 class Texture;
+class Texture;
 
 class Adapter {
   public:

@@ -65,7 +65,7 @@ static int2 constexpr Bake_dimensions(256);
 Sky_baked_material::Sky_baked_material(Sky& sky) noexcept
     : Material(sky),
       cache_(image::Image::Description(image::Image::Type::Float3, Bake_dimensions)),
-      cache_texture_(cache_),
+      cache_texture_(image::texture::Float3(cache_)),
       emission_map_(&cache_texture_) {}
 
 Sky_baked_material::~Sky_baked_material() noexcept {}

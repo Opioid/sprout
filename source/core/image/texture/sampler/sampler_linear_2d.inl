@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "address_mode.hpp"
 #include "bilinear.hpp"
-#include "image/texture/texture.hpp"
+#include "image/texture/texturely.hpp"
 #include "sampler_linear_2d.hpp"
 
 namespace image::texture::sampler {

@@ -3,7 +3,7 @@
 #include "image/image.hpp"
 
 namespace image::texture {
-
+/*
 std::string Texture::identifier() noexcept {
     return "Texture";
 }
@@ -15,6 +15,10 @@ Texture::Texture(Image const& image) noexcept
       dimensions_float_(float3(image.description().dimensions)) {}
 
 Texture::~Texture() noexcept {}
+
+Image const& Texture::image() const noexcept {
+    return untyped_image_;
+}
 
 int32_t Texture::num_channels() const noexcept {
     return untyped_image_.description().num_channels();
@@ -88,5 +92,5 @@ float3 Texture::average_3(int32_t element) const noexcept {
     auto const df = dimensions_float2();
     return average / (df[0] * df[1]);
 }
-
+*/
 }  // namespace image::texture

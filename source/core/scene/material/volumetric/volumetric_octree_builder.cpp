@@ -1,7 +1,7 @@
 #include "volumetric_octree_builder.hpp"
 #include "base/math/vector4.inl"
 #include "base/thread/thread_pool.hpp"
-#include "image/texture/texture.hpp"
+#include "image/texture/texturely.inl"
 #include "scene/material/collision_coefficients.inl"
 
 namespace scene::material::volumetric {

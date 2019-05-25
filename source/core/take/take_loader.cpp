@@ -14,7 +14,7 @@
 #include "exporting/exporting_sink_statistics.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/encoding/rgbe/rgbe_writer.hpp"
-#include "image/texture/texture.hpp"
+#include "image/texture/texturely.inl"
 #include "logging/logging.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/debug.hpp"

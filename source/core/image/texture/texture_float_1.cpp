@@ -6,7 +6,32 @@ namespace image::texture {
 
 template <typename T>
 Float1_t<T>::Float1_t(Image const& image) noexcept
-    : Texture(image), image_(reinterpret_cast<T const&>(image)) {}
+    : image_(reinterpret_cast<T const&>(image)) {}
+
+template <typename T>
+Image const& Float1_t<T>::image() const noexcept {
+    return image_;
+}
+
+template <typename T>
+int32_t Float1_t<T>::num_channels() const noexcept {
+    return image_.description().num_channels();
+}
+
+template <typename T>
+int32_t Float1_t<T>::num_elements() const noexcept {
+    return image_.description().num_elements;
+}
+
+template <typename T>
+int2 Float1_t<T>::dimensions_2() const noexcept {
+    return image_.description().dimensions.xy();
+}
+
+template <typename T>
+int3 const& Float1_t<T>::dimensions_3() const noexcept {
+    return image_.description().dimensions;
+}
 
 template <typename T>
 float Float1_t<T>::at_1(int32_t i) const noexcept {

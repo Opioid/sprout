@@ -9,7 +9,7 @@ namespace image {
 class Image;
 
 namespace texture {
-
+/*
 class Texture {
   public:
     static std::string identifier() noexcept;
@@ -17,6 +17,8 @@ class Texture {
     Texture(Image const& image) noexcept;
 
     virtual ~Texture() noexcept;
+
+    Image const& image() const noexcept;
 
     int32_t num_channels() const noexcept;
     int32_t num_elements() const noexcept;
@@ -64,6 +66,7 @@ class Texture {
 
     float3 dimensions_float_;
 };
+*/
 
 }  // namespace texture
 }  // namespace image

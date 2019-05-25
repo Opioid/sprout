@@ -7,31 +7,39 @@
 namespace image::texture {
 
 template <typename T>
-class alignas(64) Float1_t final : public Texture {
+class Float1_t {
   public:
     Float1_t(Image const& image) noexcept;
 
-    float  at_1(int32_t i) const noexcept override final;
-    float3 at_3(int32_t i) const noexcept override final;
+    Image const& image() const noexcept;
 
-    float  at_1(int32_t x, int32_t y) const noexcept override final;
-    float2 at_2(int32_t x, int32_t y) const noexcept override final;
-    float3 at_3(int32_t x, int32_t y) const noexcept override final;
+    int2        dimensions_2() const noexcept;
+    int3 const& dimensions_3() const noexcept;
 
-    void gather_1(int4 const& xy_xy1, float c[4]) const noexcept override final;
-    void gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept override final;
-    void gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept override final;
+    int32_t num_channels() const noexcept;
+    int32_t num_elements() const noexcept;
 
-    float  at_element_1(int32_t x, int32_t y, int32_t element) const noexcept override final;
-    float2 at_element_2(int32_t x, int32_t y, int32_t element) const noexcept override final;
-    float3 at_element_3(int32_t x, int32_t y, int32_t element) const noexcept override final;
+    float  at_1(int32_t i) const noexcept;
+    float3 at_3(int32_t i) const noexcept;
 
-    float  at_1(int32_t x, int32_t y, int32_t z) const noexcept override final;
-    float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept override final;
-    float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept override final;
-    float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept override final;
+    float  at_1(int32_t x, int32_t y) const noexcept;
+    float2 at_2(int32_t x, int32_t y) const noexcept;
+    float3 at_3(int32_t x, int32_t y) const noexcept;
 
-    size_t image_num_bytes() const noexcept override final;
+    void gather_1(int4 const& xy_xy1, float c[4]) const noexcept;
+    void gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept;
+    void gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept;
+
+    float  at_element_1(int32_t x, int32_t y, int32_t element) const noexcept;
+    float2 at_element_2(int32_t x, int32_t y, int32_t element) const noexcept;
+    float3 at_element_3(int32_t x, int32_t y, int32_t element) const noexcept;
+
+    float  at_1(int32_t x, int32_t y, int32_t z) const noexcept;
+    float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept;
+    float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept;
+    float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept;
+
+    size_t image_num_bytes() const noexcept;
 
   private:
     T const& image_;
