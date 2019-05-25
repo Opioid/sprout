@@ -20,20 +20,6 @@ class alignas(64) Texture {
   public:
     static std::string identifier() noexcept;
 
-    enum class Type {
-        Byte1_unorm,
-        Byte2_snorm,
-        Byte2_unorm,
-        Byte3_snorm,
-        Byte3_unorm,
-        Byte3_sRGB,
-        Byte4_sRGB,
-        Float1,
-        Float1_sparse,
-        Float2,
-        Float3,
-    };
-
     Texture(Byte1_unorm const& texture) noexcept;
     Texture(Byte2_snorm const& texture) noexcept;
     Texture(Byte2_unorm const& texture) noexcept;
@@ -86,6 +72,20 @@ class alignas(64) Texture {
     size_t image_num_bytes() const noexcept;
 
   private:
+    enum class Type {
+        Byte1_unorm,
+        Byte2_snorm,
+        Byte2_unorm,
+        Byte3_snorm,
+        Byte3_unorm,
+        Byte3_sRGB,
+        Byte4_sRGB,
+        Float1,
+        Float1_sparse,
+        Float2,
+        Float3,
+    };
+
     Type const type_;
 
     int3 const back_;
