@@ -33,7 +33,7 @@ class alignas(64) Float2 final : public Texture {
     size_t image_num_bytes() const noexcept override final;
 
   private:
-    const image::Float2& image_;
+    image::Float2 const& image_;
 };
 
 }  // namespace image::texture

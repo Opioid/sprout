@@ -33,7 +33,7 @@ class alignas(64) Byte2_snorm final : public Texture {
     size_t image_num_bytes() const noexcept override final;
 
   private:
-    const Byte2& image_;
+    Byte2 const& image_;
 };
 
 }  // namespace image::texture

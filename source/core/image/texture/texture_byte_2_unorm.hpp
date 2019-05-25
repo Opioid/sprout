@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_BYTE2_UNORM_HPP
+#define SU_CORE_IMAGE_TEXTURE_BYTE2_UNORM_HPP
 
 #include "image/typed_image_fwd.hpp"
 #include "texture.hpp"
@@ -36,3 +37,5 @@ class alignas(64) Byte2_unorm final : public Texture {
 };
 
 }  // namespace image::texture
+
+#endif
