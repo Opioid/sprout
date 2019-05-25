@@ -5,7 +5,8 @@
 
 namespace image::texture {
 
-Byte3_sRGB::Byte3_sRGB(Image const& image) noexcept : Typed_texture<Byte3>(static_cast<Byte3 const&>(image)) {}
+Byte3_sRGB::Byte3_sRGB(Image const& image) noexcept
+    : Typed_texture<Byte3>(static_cast<Byte3 const&>(image)) {}
 
 float Byte3_sRGB::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);

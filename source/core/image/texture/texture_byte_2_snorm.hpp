@@ -1,8 +1,8 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_BYTE2_SNORM_HPP
 #define SU_CORE_IMAGE_TEXTURE_BYTE2_SNORM_HPP
 
-#include "typed_texture.hpp"
 #include "image/typed_image_fwd.hpp"
+#include "typed_texture.hpp"
 
 namespace image::texture {
 
@@ -30,8 +30,6 @@ class Byte2_snorm : public Typed_texture<Byte2> {
     float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept;
     float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept;
 };
-
-
 
 }  // namespace image::texture
 

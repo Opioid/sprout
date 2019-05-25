@@ -2,14 +2,14 @@
 #define SU_CORE_IMAGE_TEXTURE_TYPED_TEXTURE_HPP
 
 #include <cstddef>
-#include "image/typed_image_fwd.hpp"
 #include "base/math/vector.hpp"
+#include "image/typed_image_fwd.hpp"
 
 namespace image::texture {
 
 template <typename T>
 class Typed_texture {
-public:
+  public:
     Typed_texture(T const& image);
 
     Image const& image() const noexcept;
@@ -22,7 +22,7 @@ public:
 
     size_t image_num_bytes() const noexcept;
 
-protected:
+  protected:
     T const& image_;
 };
 
@@ -35,6 +35,6 @@ extern template class Typed_texture<Float1_sparse>;
 extern template class Typed_texture<Float2>;
 extern template class Typed_texture<Float3>;
 
-}
+}  // namespace image::texture
 
 #endif

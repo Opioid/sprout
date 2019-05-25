@@ -1,15 +1,14 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_FLOAT2_HPP
 #define SU_CORE_IMAGE_TEXTURE_FLOAT2_HPP
 
-#include "typed_texture.hpp"
 #include "image/typed_image_fwd.hpp"
+#include "typed_texture.hpp"
 
 namespace image::texture {
 
-class Float2 : public Typed_texture<Float2> {
+class Float2 : public Typed_texture<image::Float2> {
   public:
     Float2(Image const& image) noexcept;
-
 
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;
@@ -30,7 +29,6 @@ class Float2 : public Typed_texture<Float2> {
     float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept;
     float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept;
     float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept;
-
 };
 
 }  // namespace image::texture

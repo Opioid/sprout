@@ -5,7 +5,8 @@
 namespace image::texture {
 
 template <typename T>
-Float1_t<T>::Float1_t(Image const& image) noexcept : Typed_texture<T>(reinterpret_cast<T const&>(image)) {}
+Float1_t<T>::Float1_t(Image const& image) noexcept
+    : Typed_texture<T>(reinterpret_cast<T const&>(image)) {}
 
 template <typename T>
 float Float1_t<T>::at_1(int32_t i) const noexcept {

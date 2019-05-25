@@ -1,8 +1,8 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_BYTE4_SRGB_HPP
 #define SU_CORE_IMAGE_TEXTURE_BYTE4_SRGB_HPP
 
-#include "typed_texture.hpp"
 #include "image/typed_image_fwd.hpp"
+#include "typed_texture.hpp"
 
 namespace image::texture {
 

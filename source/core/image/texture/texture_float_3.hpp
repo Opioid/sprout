@@ -1,12 +1,12 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_FLOAT3_HPP
 #define SU_CORE_IMAGE_TEXTURE_FLOAT3_HPP
 
-#include "typed_texture.hpp"
 #include "image/typed_image_fwd.hpp"
+#include "typed_texture.hpp"
 
 namespace image::texture {
 
-class Float3 : public Typed_texture<Float3> {
+class Float3 : public Typed_texture<image::Float3> {
   public:
     Float3(Image const& image) noexcept;
 
