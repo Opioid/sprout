@@ -5,27 +5,7 @@
 
 namespace image::texture {
 
-Byte3_unorm::Byte3_unorm(Image const& image) noexcept : image_(static_cast<Byte3 const&>(image)) {}
-
-Image const& Byte3_unorm::image() const noexcept {
-    return image_;
-}
-
-int32_t Byte3_unorm::num_channels() const noexcept {
-    return image_.description().num_channels();
-}
-
-int32_t Byte3_unorm::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-int2 Byte3_unorm::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-int3 const& Byte3_unorm::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
+Byte3_unorm::Byte3_unorm(Image const& image) noexcept : Typed_texture<Byte3>(static_cast<Byte3 const&>(image)) {}
 
 float Byte3_unorm::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);
@@ -146,10 +126,6 @@ float4 Byte3_unorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     return float4(encoding::cached_unorm_to_float(value[0]),
                   encoding::cached_unorm_to_float(value[1]),
                   encoding::cached_unorm_to_float(value[2]), 1.f);
-}
-
-size_t Byte3_unorm::image_num_bytes() const noexcept {
-    return image_.num_bytes();
 }
 
 }  // namespace image::texture

@@ -5,27 +5,7 @@
 
 namespace image::texture {
 
-Byte2_snorm::Byte2_snorm(Image const& image) noexcept : image_(static_cast<Byte2 const&>(image)) {}
-
-Image const& Byte2_snorm::image() const noexcept {
-    return image_;
-}
-
-int32_t Byte2_snorm::num_channels() const noexcept {
-    return image_.description().num_channels();
-}
-
-int32_t Byte2_snorm::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-int2 Byte2_snorm::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-int3 const& Byte2_snorm::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
+Byte2_snorm::Byte2_snorm(Image const& image) noexcept : Typed_texture<Byte2>(static_cast<Byte2 const&>(image)) {}
 
 float Byte2_snorm::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);
@@ -139,8 +119,6 @@ float4 Byte2_snorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
                   encoding::cached_snorm_to_float(value[1]), 0.f, 1.f);
 }
 
-size_t Byte2_snorm::image_num_bytes() const noexcept {
-    return image_.num_bytes();
-}
+
 
 }  // namespace image::texture

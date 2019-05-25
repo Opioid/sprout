@@ -5,27 +5,7 @@
 
 namespace image::texture {
 
-Byte4_sRGB::Byte4_sRGB(Image const& image) noexcept : image_(static_cast<Byte4 const&>(image)) {}
-
-Image const& Byte4_sRGB::image() const noexcept {
-    return image_;
-}
-
-int32_t Byte4_sRGB::num_channels() const noexcept {
-    return image_.description().num_channels();
-}
-
-int32_t Byte4_sRGB::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-int2 Byte4_sRGB::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-int3 const& Byte4_sRGB::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
+Byte4_sRGB::Byte4_sRGB(Image const& image) noexcept : Typed_texture<Byte4>(static_cast<Byte4 const&>(image)) {}
 
 float Byte4_sRGB::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);
@@ -110,10 +90,6 @@ float3 Byte4_sRGB::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
 float4 Byte4_sRGB::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     auto const value = image_.load(x, y, z);
     return encoding::cached_srgb_to_float4(value);
-}
-
-size_t Byte4_sRGB::image_num_bytes() const noexcept {
-    return image_.num_bytes();
 }
 
 }  // namespace image::texture

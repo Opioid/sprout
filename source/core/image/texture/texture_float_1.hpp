@@ -1,23 +1,15 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_FLOAT1_HPP
 #define SU_CORE_IMAGE_TEXTURE_FLOAT1_HPP
 
-#include <cstddef>
+#include "typed_texture.hpp"
 #include "image/typed_image_fwd.hpp"
 
 namespace image::texture {
 
 template <typename T>
-class Float1_t {
+class Float1_t : public Typed_texture<T> {
   public:
     Float1_t(Image const& image) noexcept;
-
-    Image const& image() const noexcept;
-
-    int2        dimensions_2() const noexcept;
-    int3 const& dimensions_3() const noexcept;
-
-    int32_t num_channels() const noexcept;
-    int32_t num_elements() const noexcept;
 
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;
@@ -38,11 +30,6 @@ class Float1_t {
     float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept;
     float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept;
     float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept;
-
-    size_t image_num_bytes() const noexcept;
-
-  private:
-    T const& image_;
 };
 
 extern template class Float1_t<image::Float1>;
