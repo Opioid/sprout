@@ -20,6 +20,21 @@ class alignas(64) Texture {
   public:
     static std::string identifier() noexcept;
 
+    enum class Type {
+        Byte1_unorm,
+        Byte2_snorm,
+        Byte2_unorm,
+        Byte3_snorm,
+        Byte3_unorm,
+        Byte3_sRGB,
+        Byte4_sRGB,
+        Float1,
+        Float1_sparse,
+        Float2,
+        Float3,
+
+    };
+
     Texture(Byte1_unorm const& texture) noexcept;
     Texture(Byte2_snorm const& texture) noexcept;
     Texture(Byte2_unorm const& texture) noexcept;
@@ -72,38 +87,24 @@ class alignas(64) Texture {
     size_t image_num_bytes() const noexcept;
 
   private:
-    enum class Type {
-        Byte1_unorm,
-        Byte2_snorm,
-        Byte2_unorm,
-        Byte3_snorm,
-        Byte3_unorm,
-        Byte3_sRGB,
-        Byte4_sRGB,
-        Float1,
-        Float1_sparse,
-        Float2,
-        Float3,
-    };
+    Type type_;
 
-    Type const type_;
+    int3 back_;
 
-    int3 const back_;
-
-    float3 const dimensions_float_;
+    float3 dimensions_float_;
 
     union {
-        Byte1_unorm const   byte1_unorm_;
-        Byte2_snorm const   byte2_snorm_;
-        Byte2_unorm const   byte2_unorm_;
-        Byte3_snorm const   byte3_snorm_;
-        Byte3_unorm const   byte3_unorm_;
-        Byte3_sRGB const    byte3_srgb_;
-        Byte4_sRGB const    byte4_srgb_;
-        Float1 const        float1_;
-        Float1_sparse const float1_sparse_;
-        Float2 const        float2_;
-        Float3 const        float3_;
+        Byte1_unorm   byte1_unorm_;
+        Byte2_snorm   byte2_snorm_;
+        Byte2_unorm   byte2_unorm_;
+        Byte3_snorm   byte3_snorm_;
+        Byte3_unorm   byte3_unorm_;
+        Byte3_sRGB    byte3_srgb_;
+        Byte4_sRGB    byte4_srgb_;
+        Float1        float1_;
+        Float1_sparse float1_sparse_;
+        Float2        float2_;
+        Float3        float3_;
     };
 };
 

@@ -27,10 +27,6 @@ int3 const& Byte3_sRGB::dimensions_3() const noexcept {
     return image_.description().dimensions;
 }
 
-size_t Byte3_sRGB::image_num_bytes() const noexcept {
-    return image_.num_bytes();
-}
-
 float Byte3_sRGB::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);
     return encoding::cached_srgb_to_float(value[0]);
@@ -114,6 +110,10 @@ float3 Byte3_sRGB::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
 float4 Byte3_sRGB::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     auto const value = image_.load(x, y, z);
     return encoding::cached_srgb_to_float4(value);
+}
+
+size_t Byte3_sRGB::image_num_bytes() const noexcept {
+    return image_.num_bytes();
 }
 
 }  // namespace image::texture

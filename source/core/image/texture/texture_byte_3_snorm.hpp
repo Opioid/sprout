@@ -18,8 +18,6 @@ class Byte3_snorm {
     int2        dimensions_2() const noexcept;
     int3 const& dimensions_3() const noexcept;
 
-    size_t image_num_bytes() const noexcept;
-
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;
 
@@ -39,6 +37,8 @@ class Byte3_snorm {
     float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept;
     float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept;
     float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept;
+
+    size_t image_num_bytes() const noexcept;
 
   private:
     Byte3 const& image_;

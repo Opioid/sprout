@@ -27,10 +27,6 @@ int3 const& Byte1_unorm::dimensions_3() const noexcept {
     return image_.description().dimensions;
 }
 
-size_t Byte1_unorm::image_num_bytes() const noexcept {
-    return image_.num_bytes();
-}
-
 float Byte1_unorm::at_1(int32_t i) const noexcept {
     uint8_t value = image_.load(i);
     return encoding::cached_unorm_to_float(value);
@@ -119,6 +115,10 @@ float3 Byte1_unorm::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
 float4 Byte1_unorm::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     uint8_t value = image_.load(x, y, z);
     return float4(encoding::cached_unorm_to_float(value), 0.f, 0.f, 1.f);
+}
+
+size_t Byte1_unorm::image_num_bytes() const noexcept {
+    return image_.num_bytes();
 }
 
 }  // namespace image::texture

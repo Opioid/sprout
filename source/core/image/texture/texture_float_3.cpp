@@ -26,10 +26,6 @@ int3 const& Float3::dimensions_3() const noexcept {
     return image_.description().dimensions;
 }
 
-size_t Float3::image_num_bytes() const noexcept {
-    return image_.num_bytes();
-}
-
 float Float3::at_1(int32_t i) const noexcept {
     return image_.load(i)[0];
 }
@@ -114,6 +110,10 @@ float4 Float3::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     return float4(image_.load(x, y, z), 1.f);
 
     //	return float4(image_.at(x, y, z), 1.f);
+}
+
+size_t Float3::image_num_bytes() const noexcept {
+    return image_.num_bytes();
 }
 
 }  // namespace image::texture
