@@ -33,6 +33,11 @@ int3 const& Float1_t<T>::dimensions_3() const noexcept {
 }
 
 template <typename T>
+size_t Float1_t<T>::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
+
+template <typename T>
 float Float1_t<T>::at_1(int32_t i) const noexcept {
     return image_.load(i);
 }
@@ -117,11 +122,6 @@ float3 Float1_t<T>::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
 template <typename T>
 float4 Float1_t<T>::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
     return float4(image_.load(x, y, z), 0.f, 0.f, 1.f);
-}
-
-template <typename T>
-size_t Float1_t<T>::image_num_bytes() const noexcept {
-    return image_.num_bytes();
 }
 
 template class Float1_t<image::Float1>;

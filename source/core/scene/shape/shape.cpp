@@ -11,10 +11,6 @@ std::string Shape::identifier() noexcept {
 
 Shape::~Shape() noexcept {}
 
-AABB const& Shape::aabb() const noexcept {
-    return aabb_;
-}
-
 float3 Shape::object_to_texture_point(float3 const& p) const noexcept {
     return (p - aabb_.bounds[0]) * inv_extent_;
 }
