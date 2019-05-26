@@ -4,8 +4,31 @@
 
 namespace image::texture {
 
-Float2::Float2(Image const& image) noexcept
-    : Typed_texture<image::Float2>(static_cast<image::Float2 const&>(image)) {}
+Float2::Float2(Image const& image) noexcept : image_(static_cast<image::Float2 const&>(image)) {}
+
+Image const& Float2::image() const noexcept {
+    return image_;
+}
+
+int32_t Float2::num_channels() const noexcept {
+    return image_.description().num_channels();
+}
+
+int32_t Float2::num_elements() const noexcept {
+    return image_.description().num_elements;
+}
+
+int2 Float2::dimensions_2() const noexcept {
+    return image_.description().dimensions.xy();
+}
+
+int3 const& Float2::dimensions_3() const noexcept {
+    return image_.description().dimensions;
+}
+
+size_t Float2::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
 
 float Float2::at_1(int32_t i) const noexcept {
     return image_.load(i)[0];

@@ -5,8 +5,31 @@
 
 namespace image::texture {
 
-Byte2_unorm::Byte2_unorm(Image const& image) noexcept
-    : Typed_texture<Byte2>(static_cast<Byte2 const&>(image)) {}
+Byte2_unorm::Byte2_unorm(Image const& image) noexcept : image_(static_cast<Byte2 const&>(image)) {}
+
+Image const& Byte2_unorm::image() const noexcept {
+    return image_;
+}
+
+int32_t Byte2_unorm::num_channels() const noexcept {
+    return image_.description().num_channels();
+}
+
+int32_t Byte2_unorm::num_elements() const noexcept {
+    return image_.description().num_elements;
+}
+
+int2 Byte2_unorm::dimensions_2() const noexcept {
+    return image_.description().dimensions.xy();
+}
+
+int3 const& Byte2_unorm::dimensions_3() const noexcept {
+    return image_.description().dimensions;
+}
+
+size_t Byte2_unorm::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
 
 float Byte2_unorm::at_1(int32_t i) const noexcept {
     auto value = image_.load(i);

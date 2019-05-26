@@ -5,8 +5,31 @@
 
 namespace image::texture {
 
-Byte3_snorm::Byte3_snorm(Image const& image) noexcept
-    : Typed_texture<Byte3>(static_cast<Byte3 const&>(image)) {}
+Byte3_snorm::Byte3_snorm(Image const& image) noexcept : image_(static_cast<Byte3 const&>(image)) {}
+
+Image const& Byte3_snorm::image() const noexcept {
+    return image_;
+}
+
+int32_t Byte3_snorm::num_channels() const noexcept {
+    return image_.description().num_channels();
+}
+
+int32_t Byte3_snorm::num_elements() const noexcept {
+    return image_.description().num_elements;
+}
+
+int2 Byte3_snorm::dimensions_2() const noexcept {
+    return image_.description().dimensions.xy();
+}
+
+int3 const& Byte3_snorm::dimensions_3() const noexcept {
+    return image_.description().dimensions;
+}
+
+size_t Byte3_snorm::image_num_bytes() const noexcept {
+    return image_.num_bytes();
+}
 
 float Byte3_snorm::at_1(int32_t i) const noexcept {
     auto value = image_.load(i);

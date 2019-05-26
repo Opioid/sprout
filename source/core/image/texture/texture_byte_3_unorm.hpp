@@ -1,14 +1,24 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_BYTE3_UNORM_HPP
 #define SU_CORE_IMAGE_TEXTURE_BYTE3_UNORM_HPP
 
+#include <cstddef>
 #include "image/typed_image_fwd.hpp"
-#include "typed_texture.hpp"
 
 namespace image::texture {
 
-class Byte3_unorm : public Typed_texture<Byte3> {
+class Byte3_unorm {
   public:
     Byte3_unorm(Image const& image) noexcept;
+
+    Image const& image() const noexcept;
+
+    int32_t num_channels() const noexcept;
+    int32_t num_elements() const noexcept;
+
+    int2        dimensions_2() const noexcept;
+    int3 const& dimensions_3() const noexcept;
+
+    size_t image_num_bytes() const noexcept;
 
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;
@@ -29,6 +39,9 @@ class Byte3_unorm : public Typed_texture<Byte3> {
     float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept;
     float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept;
     float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept;
+
+  private:
+    Byte3 const& image_;
 };
 
 }  // namespace image::texture

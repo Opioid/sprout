@@ -33,6 +33,4 @@ target_sources(core
     "texture_types.hpp"
     "texture.hpp"
     "texture.inl"
-    "typed_texture.cpp"
-    "typed_texture.hpp"
     ) 
