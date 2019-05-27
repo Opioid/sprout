@@ -13,7 +13,6 @@ namespace scene::shape::triangle::bvh {
 template <typename SV>
 Indexed_data<SV>::Indexed_data() noexcept
     : num_triangles_(0),
-      current_triangle_(0),
       num_vertices_(0),
       triangles_(nullptr),
       intersection_vertices_(nullptr),
@@ -29,11 +28,6 @@ Indexed_data<SV>::~Indexed_data() noexcept {
 template <typename SV>
 uint32_t Indexed_data<SV>::num_triangles() const noexcept {
     return num_triangles_;
-}
-
-template <typename SV>
-uint32_t Indexed_data<SV>::current_triangle() const noexcept {
-    return current_triangle_;
 }
 
 template <typename SV>
@@ -292,13 +286,11 @@ void Indexed_data<SV>::allocate_triangles(uint32_t             num_triangles,
 
         shading_vertices_[i] = SV(vertices.n(i), vertices.t(i), vertices.uv(i));
     }
-
-    current_triangle_ = 0;
 }
 
 template <typename SV>
 void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                                    Vertex_stream const& vertices) noexcept {
+                                    Vertex_stream const& vertices, uint32_t current_triangle) noexcept {
     uint8_t bitanget_sign = 0;
 
     uint8_t const abts = vertices.bitangent_sign(a);
@@ -309,8 +301,7 @@ void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t
         bitanget_sign = 1;
     }
 
-    triangles_[current_triangle_] = Index_triangle(a, b, c, bitanget_sign, material_index);
-    ++current_triangle_;
+    triangles_[current_triangle] = Index_triangle(a, b, c, bitanget_sign, material_index);
 }
 
 template <typename SV>

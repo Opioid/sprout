@@ -52,11 +52,6 @@ class Builder_base {
 
     uint32_t current_node_index() const;
 
-    template <typename Data>
-    static void assign(Build_node* node, index begin, index end,
-                       const std::vector<Index_triangle>& triangles,
-                       const std::vector<Vertex>& vertices, Tree<Data>& tree);
-
     static AABB submesh_aabb(index begin, index end, const std::vector<Index_triangle>& triangles,
                              const std::vector<Vertex>& vertices);
 

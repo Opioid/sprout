@@ -70,29 +70,35 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
     nodes_ = tree.allocate_nodes(num_nodes_);
 
     current_node_ = 0;
-    serialize(&root, triangles, vertices, tree);
+
+    uint32_t current_triangle = 0;
+    serialize(&root, triangles, vertices, tree, current_triangle);
 }
 
 template <typename Data>
 void Builder_SAH::serialize(Build_node* node, Triangles triangles, Vertices vertices,
-                            Tree<Data>& tree) {
+                            Tree<Data>& tree, uint32_t& current_triangle) {
     auto& n = new_node();
     n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 
     if (node->children[0]) {
-        serialize(node->children[0], triangles, vertices, tree);
+        serialize(node->children[0], triangles, vertices, tree, current_triangle);
 
         n.set_split_node(current_node_index(), node->axis);
 
-        serialize(node->children[1], triangles, vertices, tree);
+        serialize(node->children[1], triangles, vertices, tree, current_triangle);
     } else {
         uint8_t const num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
         n.set_leaf_node(node->start_index, num_primitives);
 
+        uint32_t i = current_triangle;
         for (auto const p : node->primitives) {
             auto const& t = triangles[p];
-            tree.add_triangle(t.i[0], t.i[1], t.i[2], t.material_index, vertices);
+            tree.add_triangle(t.i[0], t.i[1], t.i[2], t.material_index, vertices, i);
+            ++i;
         }
+
+        current_triangle = i;
     }
 }
 

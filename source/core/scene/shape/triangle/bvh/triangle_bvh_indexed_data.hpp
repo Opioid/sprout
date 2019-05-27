@@ -27,8 +27,6 @@ class Indexed_data {
 
     uint32_t num_triangles() const noexcept;
 
-    uint32_t current_triangle() const noexcept;
-
     bool intersect(uint32_t index, ray& ray, float2& uv) const noexcept;
 
     bool intersect_p(uint32_t index, ray const& ray) const noexcept;
@@ -78,7 +76,7 @@ class Indexed_data {
     void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) noexcept;
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertex_stream const& vertices) noexcept;
+                      Vertex_stream const& vertices, uint32_t current_triangle) noexcept;
 
     size_t num_bytes() const noexcept;
 
@@ -93,7 +91,6 @@ class Indexed_data {
 
   private:
     uint32_t num_triangles_;
-    uint32_t current_triangle_;
     uint32_t num_vertices_;
 
     Index_triangle* triangles_;

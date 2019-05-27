@@ -63,11 +63,6 @@ uint32_t Tree<Data>::num_triangles(uint32_t part) const noexcept {
 }
 
 template <typename Data>
-uint32_t Tree<Data>::current_triangle() const noexcept {
-    return data_.current_triangle();
-}
-
-template <typename Data>
 bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersectioni& intersection) const
     noexcept {
     node_stack.push(0xFFFFFFFF);
@@ -622,10 +617,10 @@ void Tree<Data>::allocate_triangles(uint32_t             num_triangles,
 
 template <typename Data>
 void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                              Vertex_stream const& vertices) noexcept {
+                              Vertex_stream const& vertices, uint32_t current_triangle) noexcept {
     ++num_part_triangles_[material_index];
 
-    data_.add_triangle(a, b, c, material_index, vertices);
+    data_.add_triangle(a, b, c, material_index, vertices, current_triangle);
 }
 
 template <typename Data>
