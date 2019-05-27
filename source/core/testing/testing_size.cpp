@@ -124,9 +124,9 @@ void size() {
 
     print_size<image::Byte3>("image::Byte3", 32);
 
-    print_size<image::texture::Texture>("texture::Texture", 48);
+    print_size<image::texture::Texture>("texture::Texture", 64);
 
-    print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 64);
+    print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 8);
 
     print_size<image::texture::Adapter>("texture::Adapter", 16);
 
