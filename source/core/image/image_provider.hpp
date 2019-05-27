@@ -20,8 +20,6 @@ class Provider final : public resource::Provider<Image> {
     Image* load(void const* data, std::string_view mount_folder, Variant_map const& options,
                 resource::Manager& manager) noexcept override final;
 
-    void release(Image* resource) const noexcept override final;
-
     size_t num_bytes() const noexcept override final;
 
     size_t num_bytes(Image const* resource) const noexcept override final;

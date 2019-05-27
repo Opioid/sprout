@@ -8,8 +8,6 @@
 #include "file/file_system.hpp"
 #include "resource_cache.hpp"
 
-//#include <iostream>
-
 namespace resource {
 
 inline Cache::~Cache() {}
@@ -20,7 +18,7 @@ Typed_cache<T>::Typed_cache(Provider<T>& provider) : provider_(provider) {}
 template <typename T>
 Typed_cache<T>::~Typed_cache() {
     for (auto r : resources_) {
-        provider_.release(r.second);
+        delete r.second;
     }
 }
 

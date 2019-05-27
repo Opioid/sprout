@@ -8,11 +8,11 @@
 namespace image {
 
 template <typename T>
-class alignas(32) Typed_image final : public Image {
+class alignas(64) Typed_image final : public Image {
   public:
     Typed_image(Description const& description) noexcept;
 
-    ~Typed_image() noexcept;
+    ~Typed_image() noexcept override final;
 
     Typed_image<T> clone() const noexcept;
 

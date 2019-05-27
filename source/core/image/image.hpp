@@ -42,6 +42,9 @@ class Image {
     Image(Description const& description) noexcept;
 
   public:
+
+    virtual ~Image();
+
     static std::string identifier() noexcept;
 
     Description const& description() const noexcept;

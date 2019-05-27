@@ -99,10 +99,6 @@ Texture* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
     return nullptr;
 }
 
-void Provider::release(Texture* resource) const noexcept {
-    delete resource;
-}
-
 size_t Provider::num_bytes() const noexcept {
     return sizeof(*this);
 }

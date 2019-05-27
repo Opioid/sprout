@@ -18,7 +18,7 @@ class Typed_cache : public Cache {
   public:
     Typed_cache(Provider<T>& provider);
 
-    virtual ~Typed_cache() override final;
+    ~Typed_cache() override final;
 
     T* load(std::string const& filename, memory::Variant_map const& options, Manager& manager);
 

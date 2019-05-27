@@ -3,6 +3,8 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 
+#include <iostream>
+
 namespace image {
 
 template <typename T>

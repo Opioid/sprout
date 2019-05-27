@@ -41,6 +41,8 @@ std::string Image::identifier() noexcept {
 
 Image::Image(Description const& description) noexcept : description_(description) {}
 
+Image::~Image() {}
+
 const Image::Description& Image::description() const noexcept {
     return description_;
 }
