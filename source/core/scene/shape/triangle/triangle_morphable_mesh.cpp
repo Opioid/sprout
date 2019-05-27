@@ -23,8 +23,23 @@ Morphable_mesh::~Morphable_mesh() {
     delete collection_;
 }
 
-void Morphable_mesh::init() noexcept {
-    aabb_ = tree_.aabb();
+void Morphable_mesh::init() noexcept {}
+
+float3 Morphable_mesh::object_to_texture_point(float3 const& p) const noexcept {
+    return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
+}
+
+float3 Morphable_mesh::object_to_texture_vector(float3 const& v) const noexcept {
+    return v / tree_.aabb().extent();
+}
+
+AABB Morphable_mesh::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const
+    noexcept {
+    return tree_.aabb().transform(m);
+}
+
+AABB Morphable_mesh::transformed_aabb(math::Transformation const& t) const noexcept {
+    return transformed_aabb(float4x4(t), t);
 }
 
 uint32_t Morphable_mesh::num_parts() const noexcept {

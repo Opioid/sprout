@@ -23,9 +23,6 @@ Mesh::~Mesh() noexcept {
 }
 
 bool Mesh::init() noexcept {
-    aabb_       = tree_.aabb();
-    inv_extent_ = 1.f / aabb_.extent();
-
     distributions_ = memory::construct_array_aligned<Distribution>(tree_.num_parts());
 
     return 0 != tree_.num_parts();
@@ -33,6 +30,22 @@ bool Mesh::init() noexcept {
 
 Tree& Mesh::tree() noexcept {
     return tree_;
+}
+
+float3 Mesh::object_to_texture_point(float3 const& p) const noexcept {
+    return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
+}
+
+float3 Mesh::object_to_texture_vector(float3 const& v) const noexcept {
+    return v / tree_.aabb().extent();
+}
+
+AABB Mesh::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const noexcept {
+    return tree_.aabb().transform(m);
+}
+
+AABB Mesh::transformed_aabb(math::Transformation const& t) const noexcept {
+    return transformed_aabb(float4x4(t), t);
 }
 
 uint32_t Mesh::num_parts() const noexcept {

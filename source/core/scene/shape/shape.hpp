@@ -48,11 +48,12 @@ class Shape {
 
     virtual ~Shape() noexcept;
 
-    float3 object_to_texture_point(float3 const& p) const noexcept;
-    float3 object_to_texture_vector(float3 const& v) const noexcept;
+    virtual float3 object_to_texture_point(float3 const& p) const noexcept  = 0;
+    virtual float3 object_to_texture_vector(float3 const& v) const noexcept = 0;
 
-    virtual AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const noexcept;
-    virtual AABB transformed_aabb(math::Transformation const& t) const noexcept;
+    virtual AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
+        noexcept                                                                = 0;
+    virtual AABB transformed_aabb(math::Transformation const& t) const noexcept = 0;
 
     virtual uint32_t num_parts() const noexcept;
 
@@ -138,11 +139,6 @@ class Shape {
     virtual Morphable_shape* morphable_shape() noexcept;
 
     virtual size_t num_bytes() const noexcept = 0;
-
-  protected:
-    AABB aabb_;
-
-    float3 inv_extent_;
 };
 
 }  // namespace shape

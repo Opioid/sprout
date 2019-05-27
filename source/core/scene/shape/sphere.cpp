@@ -24,9 +24,14 @@
 
 namespace scene::shape {
 
-Sphere::Sphere() noexcept {
-    aabb_.set_min_max(float3(-1.f), float3(1.f));
-    inv_extent_ = 1.f / aabb_.extent();
+Sphere::Sphere() noexcept {}
+
+float3 Sphere::object_to_texture_point(float3 const& p) const noexcept {
+    return (p - float3(-1.f)) * (1.f / float3(2.f));
+}
+
+float3 Sphere::object_to_texture_vector(float3 const& v) const noexcept {
+    return v * (1.f / float3(2.f));
 }
 
 AABB Sphere::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const noexcept {

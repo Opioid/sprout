@@ -107,11 +107,11 @@ void size() {
 
     print_size<float3>("Intersection_vertex_MT", 16);
 
-    print_size<scene::shape::Canopy>("Canopy", 64);
-    print_size<scene::shape::Celestial_disk>("Celestial_disk", 64);
-    print_size<scene::shape::Sphere>("Sphere", 64);
-    print_size<scene::shape::Infinite_sphere>("Infinite_sphere", 64);
-    print_size<scene::shape::triangle::Mesh>("Mesh", 192);
+    print_size<scene::shape::Canopy>("Canopy", 8);
+    print_size<scene::shape::Celestial_disk>("Celestial_disk", 8);
+    print_size<scene::shape::Sphere>("Sphere", 8);
+    print_size<scene::shape::Infinite_sphere>("Infinite_sphere", 8);
+    print_size<scene::shape::triangle::Mesh>("Mesh", 128);
 
     print_size<scene::shape::triangle::bvh::Indexed_data<
         scene::shape::triangle::Shading_vertex_type>::Index_triangle>("Index_triangle", 16);

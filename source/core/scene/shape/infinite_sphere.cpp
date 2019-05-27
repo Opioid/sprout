@@ -16,8 +16,23 @@
 
 namespace scene::shape {
 
-Infinite_sphere::Infinite_sphere() noexcept {
-    aabb_.set_min_max(float3(0.f), float3(0.f));
+Infinite_sphere::Infinite_sphere() noexcept {}
+
+float3 Infinite_sphere::object_to_texture_point(float3 const& p) const noexcept {
+    return p;
+}
+
+float3 Infinite_sphere::object_to_texture_vector(float3 const& v) const noexcept {
+    return v;
+}
+
+AABB Infinite_sphere::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const
+    noexcept {
+    return transformed_aabb(t);
+}
+
+AABB Infinite_sphere::transformed_aabb(math::Transformation const& /*t*/) const noexcept {
+    return AABB::empty();
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transformation,

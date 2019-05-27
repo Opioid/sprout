@@ -9,6 +9,14 @@ class Rectangle final : public Shape {
   public:
     Rectangle() noexcept;
 
+    float3 object_to_texture_point(float3 const& p) const noexcept override final;
+    float3 object_to_texture_vector(float3 const& v) const noexcept override final;
+
+    AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
+        noexcept override final;
+
+    AABB transformed_aabb(math::Transformation const& t) const noexcept override final;
+
     bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                    Intersection& intersection) const noexcept override final;
 

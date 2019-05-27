@@ -20,9 +20,22 @@
 
 namespace scene::shape {
 
-Cube::Cube() noexcept {
-    aabb_.set_min_max(float3(-1.f), float3(1.f));
-    inv_extent_ = 1.f / aabb_.extent();
+Cube::Cube() noexcept {}
+
+float3 Cube::object_to_texture_point(float3 const& p) const noexcept {
+    return (p - float3(-1.f)) * (1.f / float3(2.f));
+}
+
+float3 Cube::object_to_texture_vector(float3 const& v) const noexcept {
+    return v * (1.f / float3(2.f));
+}
+
+AABB Cube::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const noexcept {
+    return AABB(float3(-1.f), float3(1.f)).transform(m);
+}
+
+AABB Cube::transformed_aabb(math::Transformation const& t) const noexcept {
+    return transformed_aabb(float4x4(t), t);
 }
 
 bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,

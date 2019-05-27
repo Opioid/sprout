@@ -18,8 +18,22 @@ namespace scene::shape {
 
 static float constexpr Canopy_eps = -0.0005f;
 
-Canopy::Canopy() noexcept {
-    aabb_.set_min_max(float3(0.f), float3(0.f));
+Canopy::Canopy() noexcept {}
+
+float3 Canopy::object_to_texture_point(float3 const& p) const noexcept {
+    return p;
+}
+
+float3 Canopy::object_to_texture_vector(float3 const& v) const noexcept {
+    return v;
+}
+
+AABB Canopy::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const noexcept {
+    return transformed_aabb(t);
+}
+
+AABB Canopy::transformed_aabb(math::Transformation const& /*t*/) const noexcept {
+    return AABB::empty();
 }
 
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,

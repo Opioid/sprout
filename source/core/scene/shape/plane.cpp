@@ -10,8 +10,22 @@
 
 namespace scene::shape {
 
-Plane::Plane() noexcept {
-    aabb_.set_min_max(float3(0.f), float3(0.f));
+Plane::Plane() noexcept {}
+
+float3 Plane::object_to_texture_point(float3 const& p) const noexcept {
+    return p;
+}
+
+float3 Plane::object_to_texture_vector(float3 const& v) const noexcept {
+    return v;
+}
+
+AABB Plane::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const noexcept {
+    return transformed_aabb(t);
+}
+
+AABB Plane::transformed_aabb(math::Transformation const& /*t*/) const noexcept {
+    return AABB::empty();
 }
 
 bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,

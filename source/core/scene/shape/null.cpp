@@ -5,18 +5,16 @@
 #include "base/debug/assert.hpp"
 #include "shape_test.hpp"
 
-// Hearn and Baker Null intersection test as seen
-// in "Precision Improvements for Ray/Null Intersection"
-// and
-// https://github.com/NVIDIAGameWorks/GettingStartedWithRTXRayTracing/blob/master/DXR-Nullflake/Data/Nullflake/NullIntersect.hlsli
-// Note that the ray direction is not necessarily normalized, which might make problems,
-// but so far I didn't encounter any.
-
 namespace scene::shape {
 
-Null::Null() noexcept {
-    aabb_       = AABB::empty();
-    inv_extent_ = float3(0.f);
+Null::Null() noexcept {}
+
+float3 Null::object_to_texture_point(float3 const& p) const noexcept {
+    return p;
+}
+
+float3 Null::object_to_texture_vector(float3 const& v) const noexcept {
+    return v;
 }
 
 AABB Null::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const noexcept {

@@ -12,8 +12,23 @@
 
 namespace scene::shape {
 
-Celestial_disk::Celestial_disk() noexcept {
-    aabb_.set_min_max(float3(0.f), float3(0.f));
+Celestial_disk::Celestial_disk() noexcept {}
+
+float3 Celestial_disk::object_to_texture_point(float3 const& p) const noexcept {
+    return p;
+}
+
+float3 Celestial_disk::object_to_texture_vector(float3 const& v) const noexcept {
+    return v;
+}
+
+AABB Celestial_disk::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const
+    noexcept {
+    return transformed_aabb(t);
+}
+
+AABB Celestial_disk::transformed_aabb(math::Transformation const& /*t*/) const noexcept {
+    return AABB::empty();
 }
 
 bool Celestial_disk::intersect(Ray& ray, Transformation const&           transformation,

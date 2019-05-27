@@ -9,6 +9,9 @@ class Sphere final : public Shape {
   public:
     Sphere() noexcept;
 
+    float3 object_to_texture_point(float3 const& p) const noexcept override final;
+    float3 object_to_texture_vector(float3 const& v) const noexcept override final;
+
     AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
         noexcept override final;
 
