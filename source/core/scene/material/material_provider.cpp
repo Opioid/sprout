@@ -1451,6 +1451,8 @@ uint32_t Provider::max_sample_size() noexcept {
     num_bytes = std::max(substitute::Material_translucent::sample_size(), num_bytes);
     num_bytes = std::max(volumetric::Material::sample_size(), num_bytes);
 
+    num_bytes += num_bytes % 64;
+
     return static_cast<uint32_t>(num_bytes);
 }
 
