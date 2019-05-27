@@ -132,7 +132,7 @@ class Tree {
     uint32_t num_nodes_;
     uint32_t num_parts_;
 
-    Node*    nodes_;
+    Node*     nodes_;
     uint32_t* num_part_triangles_;
 
     Data data_;

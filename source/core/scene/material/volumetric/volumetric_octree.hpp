@@ -54,7 +54,7 @@ struct Node {
     uint32_t children_or_data : 31;
 };
 
-class Gridtree {
+class alignas(64) Gridtree {
   public:
     Gridtree() noexcept;
 
@@ -77,10 +77,10 @@ class Gridtree {
 
   private:
     uint32_t num_nodes_;
-    Node*    nodes_;
-
     uint32_t num_data_;
-    CM*      data_;
+
+    Node* nodes_;
+    CM*   data_;
 
     int3  dimensions_;
     uint3 num_cells_;

@@ -9,7 +9,7 @@
 
 namespace scene::material::volumetric {
 
-Gridtree::Gridtree() noexcept : num_nodes_(0), nodes_(nullptr), num_data_(0), data_(nullptr) {}
+Gridtree::Gridtree() noexcept : num_nodes_(0), num_data_(0), nodes_(nullptr), data_(nullptr) {}
 
 Gridtree::~Gridtree() noexcept {
     memory::free_aligned(data_);

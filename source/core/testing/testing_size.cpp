@@ -27,6 +27,8 @@
 #include "scene/material/metal/metal_sample.hpp"
 #include "scene/material/substitute/substitute_material.hpp"
 #include "scene/material/substitute/substitute_sample.hpp"
+#include "scene/material/volumetric/volumetric_grid.hpp"
+#include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/scene_ray.inl"
@@ -98,6 +100,9 @@ void size() {
 
     print_size<scene::material::substitute::Material>("substitute::Material", 128);
     print_size<scene::material::substitute::Sample>("substitute::Sample", 192);
+
+    print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);
+    print_size<scene::material::volumetric::Grid>("volumetric::Grid", 192);
 
     print_size<scene::prop::Prop>("prop::Prop", 64);
 

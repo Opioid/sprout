@@ -123,7 +123,8 @@ class Builder_SAH /*: private Builder_base*/ {
                                     bool& exhausted, thread::Pool& thread_pool);
 
     template <typename Data>
-    void serialize(Build_node* node, Triangles triangles, Vertices vertices, Tree<Data>& tree, uint32_t& current_triangle);
+    void serialize(Build_node* node, Triangles triangles, Vertices vertices, Tree<Data>& tree,
+                   uint32_t& current_triangle);
 
     using Node = scene::bvh::Node;
 

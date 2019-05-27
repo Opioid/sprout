@@ -17,7 +17,7 @@ namespace scene::shape::triangle::bvh {
 
 template <typename Data>
 Tree<Data>::Tree() noexcept
-    : num_nodes_(0), num_parts_(0), nodes_(nullptr),num_part_triangles_(nullptr) {}
+    : num_nodes_(0), num_parts_(0), nodes_(nullptr), num_part_triangles_(nullptr) {}
 
 template <typename Data>
 Tree<Data>::~Tree() noexcept {

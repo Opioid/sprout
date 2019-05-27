@@ -8,7 +8,7 @@
 
 namespace scene::material::volumetric {
 
-class Grid : public Material {
+class alignas(64) Grid : public Material {
   public:
     Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density) noexcept;
 
