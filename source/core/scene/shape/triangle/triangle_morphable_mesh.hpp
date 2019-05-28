@@ -11,7 +11,7 @@ namespace scene::shape::triangle {
 struct Triangle_MT;
 class Morph_target_collection;
 
-class Morphable_mesh : public Shape, public Morphable_shape {
+class alignas(64) Morphable_mesh : public Shape, public Morphable_shape {
   public:
     Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts) noexcept;
 
@@ -109,7 +109,7 @@ class Morphable_mesh : public Shape, public Morphable_shape {
 
     Morph_target_collection* collection_;
 
-    std::vector<Vertex> vertices_;
+    Vertex* vertices_;
 
     friend class Provider;
 };

@@ -67,16 +67,20 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 void Driver_finalframe::render_frame(uint32_t frame) noexcept {
     bake_photons(frame);
 
+    frame_ = frame;
+
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+        iteration_ = v;
+
         tiles_.restart();
 
-        thread_pool_.run_parallel([ this, frame, v ](uint32_t index) noexcept {
+        thread_pool_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
             uint32_t const num_samples = view_.num_samples_per_pixel;
 
             for (int4 tile; tiles_.pop(tile);) {
-                worker.render(frame, v, tile, num_samples);
+                worker.render(frame_, iteration_, tile, num_samples);
 
                 progressor_.tick();
             }
@@ -102,12 +106,16 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
     uint32_t num_photons = photon_settings_.num_photons;  // / 10 + 1;
 
+    frame_ = frame;
+
     for (uint32_t iteration = 0;; ++iteration) {
+        iteration_ = iteration;
+
         thread_pool_.run_range(
-            [ this, frame, iteration ](uint32_t id, int32_t begin, int32_t end) noexcept {
+            [this](uint32_t id, int32_t begin, int32_t end) noexcept {
                 auto& worker = workers_[id];
 
-                photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame, iteration);
+                photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame_, iteration_);
             },
             static_cast<int32_t>(begin),
             num_photons /*static_cast<int32_t>(photon_settings_.num_photons)*/);

@@ -18,15 +18,14 @@ struct Index_triangle;
 
 class Morph_target_collection {
   public:
-    std::vector<Index_triangle>&       triangles();
-    const std::vector<Index_triangle>& triangles() const;
+    const std::vector<Index_triangle>& triangles() const noexcept;
+    std::vector<Index_triangle>&       triangles() noexcept;
 
-    const std::vector<Vertex>& vertices(uint32_t target) const;
+    uint32_t num_vertices() const noexcept;
 
-    void add_swap_vertices(std::vector<Vertex>& vertices);
+    void add_swap_vertices(std::vector<Vertex>& vertices) noexcept;
 
-    void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool,
-               std::vector<Vertex>& vertices);
+    void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool, Vertex* vertices) noexcept;
 
   private:
     std::vector<Index_triangle> triangles_;

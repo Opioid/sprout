@@ -72,6 +72,9 @@ class Driver {
 
     Camera_worker* workers_;
 
+    uint32_t frame_;
+    uint32_t iteration_;
+
     Tile_queue tiles_;
 
     image::Float4 target_;

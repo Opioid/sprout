@@ -2,6 +2,7 @@
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/align.hpp"
 #include "bvh/triangle_bvh_builder_sah.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
@@ -14,9 +15,9 @@
 namespace scene::shape::triangle {
 
 Morphable_mesh::Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts) noexcept
-    : collection_(collection) {
+    : collection_(collection),
+      vertices_(memory::allocate_aligned<Vertex>(collection->num_vertices())) {
     tree_.allocate_parts(num_parts);
-    vertices_.resize(collection_->vertices(0).size());
 }
 
 Morphable_mesh::~Morphable_mesh() {
@@ -266,7 +267,7 @@ Morphable_shape* Morphable_mesh::morphable_shape() noexcept {
 void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) noexcept {
     collection_->morph(a, b, weight, pool, vertices_);
 
-    Vertex_stream_interleaved vertices(static_cast<uint32_t>(vertices_.size()), vertices_.data());
+    Vertex_stream_interleaved vertices(collection_->num_vertices(), vertices_);
 
     bvh::Builder_SAH builder(16, 64);
     builder.build(tree_, static_cast<uint32_t>(collection_->triangles().size()),
