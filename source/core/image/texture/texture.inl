@@ -30,108 +30,30 @@ TEXTURE_CONSTRUCTOR(Float1_sparse, float1_sparse_)
 TEXTURE_CONSTRUCTOR(Float2, float2_)
 TEXTURE_CONSTRUCTOR(Float3, float3_)
 
-#define TEXTURE_DELEGATE(NAME)            \
-    switch (type_) {                      \
-        case Type::Byte1_unorm:           \
-            return byte1_unorm_.NAME();   \
-        case Type::Byte2_snorm:           \
-            return byte2_snorm_.NAME();   \
-        case Type::Byte2_unorm:           \
-            return byte2_unorm_.NAME();   \
-        case Type::Byte3_snorm:           \
-            return byte3_snorm_.NAME();   \
-        case Type::Byte3_unorm:           \
-            return byte3_unorm_.NAME();   \
-        case Type::Byte3_sRGB:            \
-            return byte3_srgb_.NAME();    \
-        case Type::Byte4_sRGB:            \
-            return byte4_srgb_.NAME();    \
-        case Type::Float1:                \
-            return float1_.NAME();        \
-        case Type::Float1_sparse:         \
-            return float1_sparse_.NAME(); \
-        case Type::Float2:                \
-            return float2_.NAME();        \
-        case Type::Float3:                \
-            return float3_.NAME();        \
-    }
-
-#define TEXTURE_DELEGATE1(NAME, A)         \
-    switch (type_) {                       \
-        case Type::Byte1_unorm:            \
-            return byte1_unorm_.NAME(A);   \
-        case Type::Byte2_snorm:            \
-            return byte2_snorm_.NAME(A);   \
-        case Type::Byte2_unorm:            \
-            return byte2_unorm_.NAME(A);   \
-        case Type::Byte3_snorm:            \
-            return byte3_snorm_.NAME(A);   \
-        case Type::Byte3_unorm:            \
-            return byte3_unorm_.NAME(A);   \
-        case Type::Byte3_sRGB:             \
-            return byte3_srgb_.NAME(A);    \
-        case Type::Byte4_sRGB:             \
-            return byte4_srgb_.NAME(A);    \
-        case Type::Float1:                 \
-            return float1_.NAME(A);        \
-        case Type::Float1_sparse:          \
-            return float1_sparse_.NAME(A); \
-        case Type::Float2:                 \
-            return float2_.NAME(A);        \
-        case Type::Float3:                 \
-            return float3_.NAME(A);        \
-    }
-
-#define TEXTURE_DELEGATE2(NAME, A, B)         \
-    switch (type_) {                          \
-        case Type::Byte1_unorm:               \
-            return byte1_unorm_.NAME(A, B);   \
-        case Type::Byte2_snorm:               \
-            return byte2_snorm_.NAME(A, B);   \
-        case Type::Byte2_unorm:               \
-            return byte2_unorm_.NAME(A, B);   \
-        case Type::Byte3_snorm:               \
-            return byte3_snorm_.NAME(A, B);   \
-        case Type::Byte3_unorm:               \
-            return byte3_unorm_.NAME(A, B);   \
-        case Type::Byte3_sRGB:                \
-            return byte3_srgb_.NAME(A, B);    \
-        case Type::Byte4_sRGB:                \
-            return byte4_srgb_.NAME(A, B);    \
-        case Type::Float1:                    \
-            return float1_.NAME(A, B);        \
-        case Type::Float1_sparse:             \
-            return float1_sparse_.NAME(A, B); \
-        case Type::Float2:                    \
-            return float2_.NAME(A, B);        \
-        case Type::Float3:                    \
-            return float3_.NAME(A, B);        \
-    }
-
-#define TEXTURE_DELEGATE3(NAME, A, B, C)         \
-    switch (type_) {                             \
-        case Type::Byte1_unorm:                  \
-            return byte1_unorm_.NAME(A, B, C);   \
-        case Type::Byte2_snorm:                  \
-            return byte2_snorm_.NAME(A, B, C);   \
-        case Type::Byte2_unorm:                  \
-            return byte2_unorm_.NAME(A, B, C);   \
-        case Type::Byte3_snorm:                  \
-            return byte3_snorm_.NAME(A, B, C);   \
-        case Type::Byte3_unorm:                  \
-            return byte3_unorm_.NAME(A, B, C);   \
-        case Type::Byte3_sRGB:                   \
-            return byte3_srgb_.NAME(A, B, C);    \
-        case Type::Byte4_sRGB:                   \
-            return byte4_srgb_.NAME(A, B, C);    \
-        case Type::Float1:                       \
-            return float1_.NAME(A, B, C);        \
-        case Type::Float1_sparse:                \
-            return float1_sparse_.NAME(A, B, C); \
-        case Type::Float2:                       \
-            return float2_.NAME(A, B, C);        \
-        case Type::Float3:                       \
-            return float3_.NAME(A, B, C);        \
+#define TEXTURE_DELEGATE(NAME, ...)                  \
+    switch (type_) {                                 \
+        case Type::Byte1_unorm:                      \
+            return byte1_unorm_.NAME(__VA_ARGS__);   \
+        case Type::Byte2_snorm:                      \
+            return byte2_snorm_.NAME(__VA_ARGS__);   \
+        case Type::Byte2_unorm:                      \
+            return byte2_unorm_.NAME(__VA_ARGS__);   \
+        case Type::Byte3_snorm:                      \
+            return byte3_snorm_.NAME(__VA_ARGS__);   \
+        case Type::Byte3_unorm:                      \
+            return byte3_unorm_.NAME(__VA_ARGS__);   \
+        case Type::Byte3_sRGB:                       \
+            return byte3_srgb_.NAME(__VA_ARGS__);    \
+        case Type::Byte4_sRGB:                       \
+            return byte4_srgb_.NAME(__VA_ARGS__);    \
+        case Type::Float1:                           \
+            return float1_.NAME(__VA_ARGS__);        \
+        case Type::Float1_sparse:                    \
+            return float1_sparse_.NAME(__VA_ARGS__); \
+        case Type::Float2:                           \
+            return float2_.NAME(__VA_ARGS__);        \
+        case Type::Float3:                           \
+            return float3_.NAME(__VA_ARGS__);        \
     }
 
 inline int32_t Texture::num_channels() const noexcept {
@@ -175,85 +97,85 @@ inline float3 const& Texture::dimensions_float3() const noexcept {
 }
 
 inline float Texture::at_1(int32_t i) const noexcept {
-    TEXTURE_DELEGATE1(at_1, i)
+    TEXTURE_DELEGATE(at_1, i)
 
     return 0.f;
 }
 
 inline float3 Texture::at_3(int32_t i) const noexcept {
-    TEXTURE_DELEGATE1(at_3, i)
+    TEXTURE_DELEGATE(at_3, i)
 
     return float3(0.f);
 }
 
 inline float Texture::at_1(int32_t x, int32_t y) const noexcept {
-    TEXTURE_DELEGATE2(at_1, x, y)
+    TEXTURE_DELEGATE(at_1, x, y)
 
     return 0.f;
 }
 
 inline float2 Texture::at_2(int32_t x, int32_t y) const noexcept {
-    TEXTURE_DELEGATE2(at_2, x, y)
+    TEXTURE_DELEGATE(at_2, x, y)
 
     return float2(0.f);
 }
 
 inline float3 Texture::at_3(int32_t x, int32_t y) const noexcept {
-    TEXTURE_DELEGATE2(at_3, x, y)
+    TEXTURE_DELEGATE(at_3, x, y)
 
     return float3(0.);
 }
 
 inline void Texture::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
-    TEXTURE_DELEGATE2(gather_1, xy_xy1, c)
+    TEXTURE_DELEGATE(gather_1, xy_xy1, c)
 }
 
 inline void Texture::gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept {
-    TEXTURE_DELEGATE2(gather_2, xy_xy1, c)
+    TEXTURE_DELEGATE(gather_2, xy_xy1, c)
 }
 
 inline void Texture::gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept {
-    TEXTURE_DELEGATE2(gather_3, xy_xy1, c)
+    TEXTURE_DELEGATE(gather_3, xy_xy1, c)
 }
 
 inline float Texture::at_element_1(int32_t x, int32_t y, int32_t element) const noexcept {
-    TEXTURE_DELEGATE3(at_element_1, x, y, element)
+    TEXTURE_DELEGATE(at_element_1, x, y, element)
 
     return 0.f;
 }
 
 inline float2 Texture::at_element_2(int32_t x, int32_t y, int32_t element) const noexcept {
-    TEXTURE_DELEGATE3(at_element_2, x, y, element)
+    TEXTURE_DELEGATE(at_element_2, x, y, element)
 
     return float2(0.f);
 }
 
 inline float3 Texture::at_element_3(int32_t x, int32_t y, int32_t element) const noexcept {
-    TEXTURE_DELEGATE3(at_element_3, x, y, element)
+    TEXTURE_DELEGATE(at_element_3, x, y, element)
 
     return float3(0.);
 }
 
 inline float Texture::at_1(int32_t x, int32_t y, int32_t z) const noexcept {
-    TEXTURE_DELEGATE3(at_1, x, y, z)
+    TEXTURE_DELEGATE(at_1, x, y, z)
 
     return 0.f;
 }
 
 inline float2 Texture::at_2(int32_t x, int32_t y, int32_t z) const noexcept {
-    TEXTURE_DELEGATE3(at_2, x, y, z)
+    TEXTURE_DELEGATE(at_2, x, y, z)
 
     return float2(0.);
 }
 
 inline float3 Texture::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
-    TEXTURE_DELEGATE3(at_3, x, y, z)
+    TEXTURE_DELEGATE(at_3, x, y, z)
 
     return float3(0.f);
 }
 
 inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
-    TEXTURE_DELEGATE3(at_4, x, y, z)
+    TEXTURE_DELEGATE(at_4, x, y, z)
 
     return float4(0.f);
 }
