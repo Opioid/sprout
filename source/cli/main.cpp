@@ -7,6 +7,7 @@
 #include "controller/controller_progressive.hpp"
 #include "core/baking/baking_driver.hpp"
 #include "core/file/file_system.hpp"
+#include "core/image/image.hpp"
 #include "core/image/image_provider.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"

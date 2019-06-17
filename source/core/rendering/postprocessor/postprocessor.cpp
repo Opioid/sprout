@@ -22,7 +22,7 @@ void Postprocessor::apply(image::Float4 const& source, image::Float4& destinatio
             [this, p, &source, &destination](uint32_t id, int32_t begin, int32_t end) {
                 apply(id, p, begin, end, source, destination);
             },
-            0, destination.area());
+            0, destination.description().area());
     }
 }
 

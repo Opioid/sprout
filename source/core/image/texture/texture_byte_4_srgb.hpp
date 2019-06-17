@@ -8,17 +8,14 @@ namespace image::texture {
 
 class Byte4_sRGB {
   public:
-    Byte4_sRGB(Image const& image) noexcept;
+    Byte4_sRGB(Byte4 const& image) noexcept;
 
-    Image const& image() const noexcept;
+    Byte4 const& image() const noexcept;
 
-    int32_t num_channels() const noexcept;
     int32_t num_elements() const noexcept;
 
     int2        dimensions_2() const noexcept;
     int3 const& dimensions_3() const noexcept;
-
-    size_t image_num_bytes() const noexcept;
 
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;

@@ -2,20 +2,20 @@
 #include <iostream>
 #include "base/math/print.hpp"
 #include "base/math/vector3.inl"
-#include "image/typed_image.hpp"
+#include "image/image.hpp"
 #include "texture_encoding.hpp"
 
 namespace image::texture::testing {
 
 bool is_valid_normal_map(Image const& image, std::string const& filename) {
-    if (Image::Type::Byte3 != image.description().type) {
+    if (Image::Type::Byte3 != image.type()) {
         std::cout << "\"" << filename << "\" is not Byte3" << std::endl;
         return false;
     }
 
-    Byte3 const& typed_image = static_cast<Byte3 const&>(image);
+    Byte3 const& typed_image = image.byte3();
 
-    int2 d = image.description().dimensions.xy();
+    int2 d = typed_image.description().dimensions.xy();
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
             auto value = typed_image.at(x, y);

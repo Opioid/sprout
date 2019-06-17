@@ -15,10 +15,11 @@ int2 Sensor::dimensions() const noexcept {
 }
 
 void Sensor::resolve(thread::Pool& pool, image::Float4& target) const noexcept {
-    pool.run_range([ this, &target ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-        resolve(begin, end, target);
-    },
-                   0, target.area());
+    pool.run_range(
+        [ this, &target ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            resolve(begin, end, target);
+        },
+        0, target.description().area());
 }
 
 }  // namespace rendering::sensor

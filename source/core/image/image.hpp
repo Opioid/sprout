@@ -1,66 +1,69 @@
 #ifndef SU_CORE_IMAGE_IMAGE_HPP
 #define SU_CORE_IMAGE_IMAGE_HPP
 
-#include <cstddef>
 #include <string>
-#include "base/math/vector3.hpp"
+#include "typed_image.hpp"
 
 namespace image {
 
-class Image {
+class alignas(64) Image {
   public:
-    enum class Type {
-        Undefined,
-        Byte1,
-        Byte2,
-        Byte3,
-        Byte4,
-        Float1,
-        Float1_sparse,
-        Float2,
-        Float3,
-        Float4
-    };
-
-    struct Description {
-        Description(Type type) noexcept;
-        Description(Type type, int2 dimensions, int32_t num_elements = 1) noexcept;
-        Description(Type type, int3 const& dimensions, int32_t num_elements = 1) noexcept;
-
-        uint64_t num_pixels() const noexcept;
-
-        int32_t num_channels() const noexcept;
-
-        Type type;
-
-        int3 dimensions;
-
-        int32_t num_elements;
-    };
-
-  protected:
-    Image(Description const& description) noexcept;
-
-  public:
-    virtual ~Image();
+    enum class Type { Byte1, Byte2, Byte3, Byte4, Float1, Float1_sparse, Float2, Float3, Float4 };
 
     static std::string identifier() noexcept;
 
+    Image(Byte1&& image) noexcept;
+    Image(Byte2&& image) noexcept;
+    Image(Byte3&& image) noexcept;
+    Image(Byte4&& image) noexcept;
+    Image(Float1&& image) noexcept;
+    Image(Float1_sparse&& image) noexcept;
+    Image(Float2&& image) noexcept;
+    Image(Float3&& image) noexcept;
+    Image(Float4&& image) noexcept;
+
+    ~Image();
+
+    Type type() const noexcept;
+
     Description const& description() const noexcept;
 
-    int2 dimensions2() const noexcept;
+    Byte1 const&         byte1() const noexcept;
+    Byte2 const&         byte2() const noexcept;
+    Byte3 const&         byte3() const noexcept;
+    Byte4 const&         byte4() const noexcept;
+    Float1 const&        float1() const noexcept;
+    Float1_sparse const& float1_sparse() const noexcept;
+    Float2 const&        float2() const noexcept;
+    Float3 const&        float3() const noexcept;
+    Float4 const&        float4() const noexcept;
 
-    int32_t area() const noexcept;
-    int32_t volume() const noexcept;
+    Byte1&         byte1() noexcept;
+    Byte2&         byte2() noexcept;
+    Byte3&         byte3() noexcept;
+    Byte4&         byte4() noexcept;
+    Float1&        float1() noexcept;
+    Float1_sparse& float1_sparse() noexcept;
+    Float2&        float2() noexcept;
+    Float3&        float3() noexcept;
+    Float4&        float4() noexcept;
 
-    int2 coordinates_2(int32_t index) const noexcept;
+    size_t num_bytes() const noexcept;
 
-    int3 coordinates_3(int64_t index) const noexcept;
+  private:
+    Type const type_;
 
-  protected:
-    void resize(int3 const& dimensions, int32_t num_elements = 1) noexcept;
-
-    Description description_;
+    union {
+        Byte1         byte1_;
+        Byte2         byte2_;
+        Byte3         byte3_;
+        Byte4         byte4_;
+        Float1        float1_;
+        Float1_sparse float1_sparse_;
+        Float2        float2_;
+        Float3        float3_;
+        Float4        float4_;
+    };
 };
 
 }  // namespace image

@@ -3,7 +3,6 @@
 #include "base/memory/bitfield.inl"
 #include "base/string/string.hpp"
 #include "image/image.hpp"
-#include "image/typed_image.hpp"
 
 #include <iostream>
 
@@ -82,7 +81,7 @@ void Writer::write(std::string const& filename, Image const& image) {
     jstream << "\"description\":{";
 
     newline(jstream, 3);
-    jstream << "\"type\":\"" << image_type_string(image.description().type) << "\",";
+    jstream << "\"type\":\"" << image_type_string(image.type()) << "\",";
 
     int3 const& d = description.dimensions;
     newline(jstream, 3);
@@ -116,8 +115,8 @@ void Writer::write(std::string const& filename, Image const& image) {
         field.clear();
         uint64_t num_active_pixels = 0;
 
-        if (Image::Type::Byte1 == description.type) {
-            image::Byte1 const& typed = *static_cast<image::Byte1 const*>(&image);
+        if (Image::Type::Byte1 == image.type()) {
+            image::Byte1 const& typed = image.byte1();
 
             for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                 uint8_t const density = typed.data()[i];
@@ -127,8 +126,8 @@ void Writer::write(std::string const& filename, Image const& image) {
                     ++num_active_pixels;
                 }
             }
-        } else /*if (Image::Type::Float1 == description.type)*/ {
-            image::Float1 const& typed = *static_cast<image::Float1 const*>(&image);
+        } else {
+            image::Float1 const& typed = image.float1();
 
             for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                 float const density = typed.data()[i];
@@ -143,8 +142,7 @@ void Writer::write(std::string const& filename, Image const& image) {
         newline(jstream, 2);
         jstream << "\"pixels\":{";
 
-        uint64_t const pixels_size = num_active_pixels *
-                                     image_type_bytes_per_pixel(description.type);
+        uint64_t const pixels_size = num_active_pixels * image_type_bytes_per_pixel(image.type());
 
         newline(jstream, 3);
         binary_tag(jstream, pixel_offset, pixels_size);
@@ -177,8 +175,8 @@ void Writer::write(std::string const& filename, Image const& image) {
         stream.write(reinterpret_cast<char const*>(field.data()),
                      static_cast<std::streamsize>(field.num_bytes()));
 
-        if (Image::Type::Byte1 == description.type) {
-            image::Byte1 const& typed = *static_cast<image::Byte1 const*>(&image);
+        if (Image::Type::Byte1 == image.type()) {
+            image::Byte1 const& typed = image.byte1();
 
             for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                 uint8_t const density = typed.data()[i];
@@ -187,8 +185,8 @@ void Writer::write(std::string const& filename, Image const& image) {
                     stream.write(reinterpret_cast<char const*>(&density), sizeof(uint8_t));
                 }
             }
-        } else /*if (Image::Type::Float1 == description.type)*/ {
-            image::Float1 const& typed = *static_cast<image::Float1 const*>(&image);
+        } else {
+            image::Float1 const& typed = image.float1();
 
             for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                 float const density = typed.data()[i];
@@ -203,14 +201,14 @@ void Writer::write(std::string const& filename, Image const& image) {
         jstream << "\"pixels\":{";
 
         uint64_t const pixels_size = description.num_pixels() *
-                                     image_type_bytes_per_pixel(description.type);
+                                     image_type_bytes_per_pixel(image.type());
 
         newline(jstream, 3);
         binary_tag(jstream, 0, pixels_size);
         jstream << ",";
 
         newline(jstream, 3);
-        jstream << "\"encoding\":\"" << image_type_encoding(description.type) << "\"";
+        jstream << "\"encoding\":\"" << image_type_encoding(image.type()) << "\"";
 
         // close pixels
         newline(jstream, 2);
@@ -233,13 +231,13 @@ void Writer::write(std::string const& filename, Image const& image) {
         stream.write(reinterpret_cast<char const*>(json_string.data()),
                      static_cast<std::streamsize>(json_size * sizeof(char)));
 
-        if (Image::Type::Byte1 == description.type) {
-            image::Byte1 const& typed = *static_cast<image::Byte1 const*>(&image);
+        if (Image::Type::Byte1 == image.type()) {
+            image::Byte1 const& typed = image.byte1();
 
             stream.write(reinterpret_cast<char const*>(typed.data()),
                          static_cast<std::streamsize>(pixels_size));
-        } else /*if (Image::Type::Float1 == description.type)*/ {
-            image::Float1 const& typed = *static_cast<image::Float1 const*>(&image);
+        } else {
+            image::Float1 const& typed = image.float1();
 
             stream.write(reinterpret_cast<char const*>(typed.data()),
                          static_cast<std::streamsize>(pixels_size));

@@ -1,20 +1,41 @@
 #ifndef SU_CORE_IMAGE_TYPED_IMAGE_HPP
 #define SU_CORE_IMAGE_TYPED_IMAGE_HPP
 
-#include "base/math/vector.hpp"
-#include "image.hpp"
+#include "base/math/vector3.hpp"
 #include "typed_image_fwd.hpp"
 
 namespace image {
 
+struct Description {
+    Description() noexcept;
+    Description(int2 dimensions, int32_t num_elements = 1) noexcept;
+    Description(int3 const& dimensions, int32_t num_elements = 1) noexcept;
+
+    uint64_t num_pixels() const noexcept;
+
+    int2 dimensions2() const noexcept;
+
+    int32_t area() const noexcept;
+
+    int32_t volume() const noexcept;
+
+    int3 dimensions;
+
+    int32_t num_elements;
+};
+
 template <typename T>
-class alignas(64) Typed_image final : public Image {
+class Typed_image {
   public:
     Typed_image(Description const& description) noexcept;
 
-    ~Typed_image() noexcept override final;
+    Typed_image(Typed_image&& other) noexcept;
 
-    Typed_image<T> clone() const noexcept;
+    ~Typed_image() noexcept;
+
+    Description const& description() const noexcept;
+
+    int2 coordinates_2(int32_t index) const noexcept;
 
     void resize(int2 dimensions, int32_t num_elements = 1) noexcept;
     void resize(int3 const& dimensions, int32_t num_elements = 1) noexcept;
@@ -54,15 +75,19 @@ class alignas(64) Typed_image final : public Image {
     size_t num_bytes() const noexcept;
 
   private:
+    Description description_;
+
     T* data_ = nullptr;
 };
 
 template <typename T>
-class Typed_sparse_image final : public Image {
+class Typed_sparse_image {
   public:
     Typed_sparse_image(Description const& description) noexcept;
 
     ~Typed_sparse_image() noexcept;
+
+    Description const& description() const noexcept;
 
     T load(int64_t index) const noexcept;
 
@@ -91,10 +116,14 @@ class Typed_sparse_image final : public Image {
     size_t num_bytes() const noexcept;
 
   private:
+    int3 coordinates_3(int64_t index) const noexcept;
+
     static int32_t constexpr Log2_cell_dim = 4;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;
 
     static T constexpr empty_ = T(0);
+
+    Description description_;
 
     int3 num_cells_;
 

@@ -1,87 +1,170 @@
+#ifndef SU_CORE_IMAGE_IMAGE_INL
+#define SU_CORE_IMAGE_IMAGE_INL
+
 #include "image.hpp"
 #include "base/math/vector3.inl"
 
 namespace image {
 
-Image::Description::Description(Type type) noexcept : type(type), dimensions(0), num_elements(0) {}
+#define IMAGE_CONSTRUCTOR(TYPE, MEMBER) \
+    Image::Image(TYPE&& image) noexcept : type_(Type::TYPE), MEMBER(std::move(image)) {}
 
-Image::Description::Description(Type type, int2 dimensions, int32_t num_elements) noexcept
-    : type(type), dimensions(dimensions, 1), num_elements(num_elements) {}
-
-Image::Description::Description(Type type, int3 const& dimensions, int32_t num_elements) noexcept
-    : type(type), dimensions(dimensions), num_elements(num_elements) {}
-
-uint64_t Image::Description::num_pixels() const noexcept {
-    return static_cast<uint64_t>(dimensions[0]) * static_cast<uint64_t>(dimensions[1]) *
-           static_cast<uint64_t>(dimensions[2]) * static_cast<uint64_t>(num_elements);
-}
-
-int32_t Image::Description::num_channels() const noexcept {
-    switch (type) {
-        case Type::Byte1:
-        case Type::Float1:
-            return 1;
-        case Type::Byte2:
-        case Type::Float2:
-            return 2;
-        case Type::Byte3:
-        case Type::Float3:
-            return 3;
-        case Type::Byte4:
-        case Type::Float4:
-            return 4;
-        default:
-            return 0;
+#define IMAGE_DELEGATE(NAME, ...)                    \
+    switch (type_) {                                 \
+        case Type::Byte1:                            \
+            return byte1_.NAME(__VA_ARGS__);         \
+        case Type::Byte2:                            \
+            return byte2_.NAME(__VA_ARGS__);         \
+        case Type::Byte3:                            \
+            return byte3_.NAME(__VA_ARGS__);         \
+        case Type::Byte4:                            \
+            return byte4_.NAME(__VA_ARGS__);         \
+        case Type::Float1:                           \
+            return float1_.NAME(__VA_ARGS__);        \
+        case Type::Float1_sparse:                    \
+            return float1_sparse_.NAME(__VA_ARGS__); \
+        case Type::Float2:                           \
+            return float2_.NAME(__VA_ARGS__);        \
+        case Type::Float3:                           \
+            return float3_.NAME(__VA_ARGS__);        \
+        case Type::Float4:                           \
+            return float4_.NAME(__VA_ARGS__);        \
     }
-}
 
 std::string Image::identifier() noexcept {
     return "Image";
 }
 
-Image::Image(Description const& description) noexcept : description_(description) {}
+IMAGE_CONSTRUCTOR(Byte1, byte1_)
+IMAGE_CONSTRUCTOR(Byte2, byte2_)
+IMAGE_CONSTRUCTOR(Byte3, byte3_)
+IMAGE_CONSTRUCTOR(Byte4, byte4_)
+IMAGE_CONSTRUCTOR(Float1, float1_)
+IMAGE_CONSTRUCTOR(Float1_sparse, float1_sparse_)
+IMAGE_CONSTRUCTOR(Float2, float2_)
+IMAGE_CONSTRUCTOR(Float3, float3_)
+IMAGE_CONSTRUCTOR(Float4, float4_)
 
-Image::~Image() {}
-
-const Image::Description& Image::description() const noexcept {
-    return description_;
+Image::~Image() {
+    switch (type_) {
+        case Type::Byte1:
+            byte1_.~Byte1();
+            break;
+        case Type::Byte2:
+            byte2_.~Byte2();
+            break;
+        case Type::Byte3:
+            byte3_.~Byte3();
+            break;
+        case Type::Byte4:
+            byte4_.~Byte4();
+            break;
+        case Type::Float1:
+            float1_.~Float1();
+            break;
+        case Type::Float1_sparse:
+            float1_sparse_.~Float1_sparse();
+            break;
+        case Type::Float2:
+            float2_.~Float2();
+            break;
+        case Type::Float3:
+            float3_.~Float3();
+            break;
+        case Type::Float4:
+            float4_.~Float4();
+            break;
+    }
 }
 
-int2 Image::dimensions2() const noexcept {
-    return description_.dimensions.xy();
+Image::Type Image::type() const noexcept {
+    return type_;
 }
 
-int32_t Image::area() const noexcept {
-    return description_.dimensions[0] * description_.dimensions[1];
+Description const& Image::description() const noexcept {
+    IMAGE_DELEGATE(description)
+
+    return byte1_.description();
 }
 
-int32_t Image::volume() const noexcept {
-    return description_.dimensions[0] * description_.dimensions[1] * description_.dimensions[2];
+Byte1 const& Image::byte1() const noexcept {
+    return byte1_;
 }
 
-int2 Image::coordinates_2(int32_t index) const noexcept {
-    int2 c;
-    c[1] = index / description_.dimensions[0];
-    c[0] = index - c[1] * description_.dimensions[0];
-    return c;
+Byte2 const& Image::byte2() const noexcept {
+    return byte2_;
 }
 
-int3 Image::coordinates_3(int64_t index) const noexcept {
-    int64_t const area = static_cast<int64_t>(description_.dimensions[0]) *
-                         static_cast<int64_t>(description_.dimensions[1]);
-
-    int64_t const c2 = index / area;
-
-    int64_t const t = c2 * area;
-
-    int64_t const c1 = (index - t) / static_cast<int64_t>(description_.dimensions[0]);
-
-    return int3(index - (t + c1 * static_cast<int64_t>(description_.dimensions[0])), c1, c2);
+Byte3 const& Image::byte3() const noexcept {
+    return byte3_;
 }
 
-void Image::resize(int3 const& dimensions, int32_t num_elements) noexcept {
-    description_.dimensions   = dimensions;
-    description_.num_elements = num_elements;
+Byte4 const& Image::byte4() const noexcept {
+    return byte4_;
+}
+
+Float1 const& Image::float1() const noexcept {
+    return float1_;
+}
+
+Float1_sparse const& Image::float1_sparse() const noexcept {
+    return float1_sparse_;
+}
+
+Float2 const& Image::float2() const noexcept {
+    return float2_;
+}
+
+Float3 const& Image::float3() const noexcept {
+    return float3_;
+}
+
+Float4 const& Image::float4() const noexcept {
+    return float4_;
+}
+
+Byte1& Image::byte1() noexcept {
+    return byte1_;
+}
+
+Byte2& Image::byte2() noexcept {
+    return byte2_;
+}
+
+Byte3& Image::byte3() noexcept {
+    return byte3_;
+}
+
+Byte4& Image::byte4() noexcept {
+    return byte4_;
+}
+
+Float1& Image::float1() noexcept {
+    return float1_;
+}
+
+Float1_sparse& Image::float1_sparse() noexcept {
+    return float1_sparse_;
+}
+
+Float2& Image::float2() noexcept {
+    return float2_;
+}
+
+Float3& Image::float3() noexcept {
+    return float3_;
+}
+
+Float4& Image::float4() noexcept {
+    return float4_;
+}
+
+size_t Image::num_bytes() const noexcept {
+    IMAGE_DELEGATE(num_bytes)
+
+    return 0;
 }
 
 }  // namespace image
+
+#endif

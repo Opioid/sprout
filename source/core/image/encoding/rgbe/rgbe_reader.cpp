@@ -4,7 +4,7 @@
 #include <string>
 #include "base/math/vector4.inl"
 #include "base/memory/array.inl"
-#include "image/typed_image.hpp"
+#include "image/image.hpp"
 #include "logging/logging.hpp"
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
@@ -39,9 +39,9 @@ Image* Reader::read(std::istream& stream) noexcept {
 
     int2 const dimensions(header.width, header.height);
 
-    auto image = new Float3(Image::Description(Image::Type::Float3, dimensions));
+    auto image = new Image(Float3(Description(dimensions)));
 
-    if (!read_pixels_RLE(stream, header.width, header.height, *image)) {
+    if (!read_pixels_RLE(stream, header.width, header.height, image->float3())) {
         delete image;
         return nullptr;
     }

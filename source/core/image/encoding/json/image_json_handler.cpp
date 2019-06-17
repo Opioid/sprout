@@ -5,43 +5,27 @@
 
 namespace image::encoding::json {
 
-class Byte1_handler : public Json_handler::Image_handler {
-  public:
-    Byte1_handler(Image& image) : image_(static_cast<Byte1&>(image)) {}
+Byte1_handler::Byte1_handler(Byte1& image) : image_(image) {}
 
-    void add(uint32_t value) override final {
-        image_.store(current_texel_++, static_cast<uint8_t>(value));
-    }
+void Byte1_handler::add(uint32_t value) {
+    image_.store(current_texel_++, static_cast<uint8_t>(value));
+}
 
-    void add(float value) override final {
-        image_.store(current_texel_++, static_cast<uint8_t>(value));
-    }
+void Byte1_handler::add(float value) {
+    image_.store(current_texel_++, static_cast<uint8_t>(value));
+}
 
-  private:
-    Byte1& image_;
+Float1_handler::Float1_handler(Float1& image) : image_(image) {}
 
-    int32_t current_texel_ = 0;
-};
+void Float1_handler::add(uint32_t value) {
+    image_.store(current_texel_++, static_cast<float>(value));
+}
 
-class Float1_handler : public Json_handler::Image_handler {
-  public:
-    Float1_handler(Image& image) : image_(static_cast<Float1&>(image)) {}
+void Float1_handler::add(float value) {
+    image_.store(current_texel_++, value);
+}
 
-    void add(uint32_t value) override final {
-        image_.store(current_texel_++, static_cast<float>(value));
-    }
-
-    void add(float value) override final {
-        image_.store(current_texel_++, value);
-    }
-
-  private:
-    Float1& image_;
-
-    int32_t current_texel_ = 0;
-};
-
-Json_handler::Image_handler::~Image_handler() {}
+Image_handler::~Image_handler() {}
 
 Json_handler::Json_handler() {
     clear();
@@ -181,17 +165,17 @@ bool Json_handler::EndObject(size_t /*memberCount*/) {
         expected_object_ = Object::Undefined;
 
         if (Image::Type::Byte1 == type_) {
-            Image::Description description(Image::Type::Byte1, dimensions_);
+            Description description(dimensions_);
 
-            image_ = new Byte1(description);
+            image_ = new Image(Byte1(description));
 
-            image_handler_ = new Byte1_handler(*image_);
+            image_handler_ = new Byte1_handler(image_->byte1());
         } else if (Image::Type::Float1 == type_) {
-            Image::Description description(Image::Type::Float1, dimensions_);
+            Description description(dimensions_);
 
-            image_ = new Float1(description);
+            image_ = new Image(Float1(description));
 
-            image_handler_ = new Float1_handler(*image_);
+            image_handler_ = new Float1_handler(image_->float1());
         }
     }
 

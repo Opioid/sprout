@@ -30,15 +30,15 @@ Image* Reader::read(std::istream& stream) noexcept {
 
     int3 const dimensions(69, 171, 67);
 
-    Image::Description description(Image::Type::Float1, dimensions);
+    Description description(dimensions);
 
-    auto volume = new Float1(description);
+    auto volume = new Image(Float1(description));
 
     uint64_t const num_voxels = static_cast<uint64_t>(dimensions[0]) *
                                 static_cast<uint64_t>(dimensions[1]) *
                                 static_cast<uint64_t>(dimensions[2]);
 
-    stream.read(reinterpret_cast<char*>(volume->data()), num_voxels * sizeof(float));
+    stream.read(reinterpret_cast<char*>(volume->float1().data()), num_voxels * sizeof(float));
 
     //   sub::Writer::write("rocket_111.sub", *volume);
 

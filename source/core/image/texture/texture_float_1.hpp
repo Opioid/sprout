@@ -9,17 +9,14 @@ namespace image::texture {
 template <typename T>
 class Float1_t {
   public:
-    Float1_t(Image const& image) noexcept;
+    Float1_t(T const& image) noexcept;
 
-    Image const& image() const noexcept;
+    T const& image() const noexcept;
 
-    int32_t num_channels() const noexcept;
     int32_t num_elements() const noexcept;
 
     int2        dimensions_2() const noexcept;
     int3 const& dimensions_3() const noexcept;
-
-    size_t image_num_bytes() const noexcept;
 
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;

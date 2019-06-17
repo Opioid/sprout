@@ -6,8 +6,8 @@
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/string/string.hpp"
+#include "image/image.hpp"
 #include "image/tiled_image.inl"
-#include "image/typed_image.hpp"
 #include "logging/logging.hpp"
 #include "miniz/miniz.hpp"
 
@@ -162,7 +162,7 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
     }
 
     if (1 == num_channels) {
-        Byte1* image = new Byte1(Image::Description(Image::Type::Byte1, dimensions, num_elements));
+        Image* image = new Image(Byte1(Description(dimensions, num_elements)));
 
         int32_t c;
 
@@ -195,12 +195,12 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
                 color = 255 - color;
             }
 
-            image->store(i, color);
+            image->byte1().store(i, color);
         }
 
         return image;
     } else if (2 == num_channels) {
-        Byte2* image = new Byte2(Image::Description(Image::Type::Byte2, dimensions, num_elements));
+        Image* image = new Image(Byte2(Description(dimensions, num_elements)));
 
         byte2 color(0, 0);
 
@@ -212,12 +212,12 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
                 color.v[c] = info.buffer[o + c];
             }
 
-            image->store(i, color);
+            image->byte2().store(i, color);
         }
 
         return image;
     } else if (3 == num_channels) {
-        Byte3* image = new Byte3(Image::Description(Image::Type::Byte3, dimensions, num_elements));
+        Image* image = new Image(Byte3(Description(dimensions, num_elements)));
 
         byte3 color(0, 0, 0);
 
@@ -233,7 +233,7 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
                 std::swap(color[0], color[1]);
             }
 
-            image->store(i, color);
+            image->byte3().store(i, color);
         }
 
         return image;

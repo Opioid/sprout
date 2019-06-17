@@ -5,14 +5,10 @@
 
 namespace image::texture {
 
-Byte3_sRGB::Byte3_sRGB(Image const& image) noexcept : image_(static_cast<Byte3 const&>(image)) {}
+Byte3_sRGB::Byte3_sRGB(Byte3 const& image) noexcept : image_(image) {}
 
-Image const& Byte3_sRGB::image() const noexcept {
+Byte3 const& Byte3_sRGB::image() const noexcept {
     return image_;
-}
-
-int32_t Byte3_sRGB::num_channels() const noexcept {
-    return image_.description().num_channels();
 }
 
 int32_t Byte3_sRGB::num_elements() const noexcept {
@@ -25,10 +21,6 @@ int2 Byte3_sRGB::dimensions_2() const noexcept {
 
 int3 const& Byte3_sRGB::dimensions_3() const noexcept {
     return image_.description().dimensions;
-}
-
-size_t Byte3_sRGB::image_num_bytes() const noexcept {
-    return image_.num_bytes();
 }
 
 float Byte3_sRGB::at_1(int32_t i) const noexcept {

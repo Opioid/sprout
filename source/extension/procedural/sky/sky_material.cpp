@@ -27,7 +27,7 @@ using namespace scene;
 
 Sky_material::Sky_material(Sky& sky) noexcept : Material(sky) {}
 
-material::Sample const& Sky_material::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Sky_material::sample(float3 const&      wo, scene::Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
                                              Sampler& /*sampler*/, Worker const& worker) const
     noexcept {
@@ -64,13 +64,13 @@ static int2 constexpr Bake_dimensions(256);
 
 Sky_baked_material::Sky_baked_material(Sky& sky) noexcept
     : Material(sky),
-      cache_(image::Image::Description(image::Image::Type::Float3, Bake_dimensions)),
+      cache_(image::Description(Bake_dimensions)),
       cache_texture_(image::texture::Float3(cache_)),
       emission_map_(&cache_texture_) {}
 
 Sky_baked_material::~Sky_baked_material() noexcept {}
 
-material::Sample const& Sky_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene::Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter       filter,
                                                    Sampler& /*sampler*/, Worker const& worker) const
     noexcept {
@@ -197,7 +197,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 }
 
 size_t Sky_baked_material::num_bytes() const noexcept {
-    return sizeof(*this) + emission_map_.texture().image_num_bytes() + distribution_.num_bytes();
+    return sizeof(*this) + cache_.num_bytes() + distribution_.num_bytes();
 }
 
 float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& transformation,

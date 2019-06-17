@@ -69,8 +69,6 @@ class alignas(64) Texture {
     float3 average_3() const noexcept;
     float3 average_3(int32_t element) const noexcept;
 
-    size_t image_num_bytes() const noexcept;
-
   private:
     enum class Type {
         Byte1_unorm,

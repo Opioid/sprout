@@ -3,7 +3,7 @@
 
 #include "base/math/vector3.inl"
 #include "base/math/vector4.inl"
-#include "image/image.hpp"
+#include "image/typed_image.hpp"
 #include "texture.hpp"
 
 namespace image::texture {
@@ -57,7 +57,23 @@ TEXTURE_CONSTRUCTOR(Float3, float3_)
     }
 
 inline int32_t Texture::num_channels() const noexcept {
-    TEXTURE_DELEGATE(num_channels)
+    switch (type_) {
+        case Type::Byte1_unorm:
+        case Type::Float1:
+        case Type::Float1_sparse:
+            return 1;
+        case Type::Byte2_snorm:
+        case Type::Byte2_unorm:
+        case Type::Float2:
+            return 2;
+        case Type::Byte3_snorm:
+        case Type::Byte3_unorm:
+        case Type::Byte3_sRGB:
+        case Type::Float3:
+            return 3;
+        case Type::Byte4_sRGB:
+            return 4;
+    }
 
     return 0;
 }
@@ -219,12 +235,6 @@ inline float3 Texture::average_3(int32_t element) const noexcept {
 
     auto const df = dimensions_float2();
     return average / (df[0] * df[1]);
-}
-
-inline size_t Texture::image_num_bytes() const noexcept {
-    TEXTURE_DELEGATE(image_num_bytes)
-
-    return 0;
 }
 
 }  // namespace image::texture

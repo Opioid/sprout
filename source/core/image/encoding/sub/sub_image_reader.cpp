@@ -10,16 +10,18 @@
 
 namespace image::encoding::sub {
 
-static Image::Type read_image_type(json::Value const& value) noexcept {
+static bool read_image_type(json::Value const& value, Image::Type& type) noexcept {
     if (auto const node = value.FindMember("type"); value.MemberEnd() != node) {
         if ("Byte1" == node->value) {
-            return Image::Type::Byte1;
+            type = Image::Type::Byte1;
+            return true;
         } else if ("Float1" == node->value) {
-            return Image::Type::Float1;
+            type = Image::Type::Float1;
+            return true;
         }
     }
 
-    return Image::Type::Undefined;
+    return false;
 }
 
 Image* Reader::read(std::istream& stream) noexcept {
@@ -58,9 +60,9 @@ Image* Reader::read(std::istream& stream) noexcept {
         return nullptr;
     }
 
-    Image::Type const type = read_image_type(description_node->value);
+    Image::Type type;
 
-    if (Image::Type::Undefined == type) {
+    if (!read_image_type(description_node->value, type)) {
         logging::push_error("Undefined image type.");
         return nullptr;
     }
@@ -109,7 +111,7 @@ Image* Reader::read(std::istream& stream) noexcept {
         }
 
         if (Image::Type::Byte1 == type) {
-            Image::Description description(Image::Type::Byte1, dimensions);
+            Description description(dimensions);
 
             memory::Bitfield field(description.num_pixels());
 
@@ -119,9 +121,9 @@ Image* Reader::read(std::istream& stream) noexcept {
 
             stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
-            auto image = new Byte1(description);
+            auto image = new Image(Byte1(description));
 
-            uint8_t* data = image->data();
+            uint8_t* data = image->byte1().data();
 
             for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                 if (field.get(i)) {
@@ -137,8 +139,7 @@ Image* Reader::read(std::istream& stream) noexcept {
         } else /*if (Image::Type::Float1 == type)*/ {
             static bool constexpr sparse = true;
 
-            Image::Description description(
-                sparse ? Image::Type::Float1_sparse : Image::Type::Float1, dimensions);
+            Description description(dimensions);
 
             memory::Bitfield field(description.num_pixels());
 
@@ -149,22 +150,22 @@ Image* Reader::read(std::istream& stream) noexcept {
             stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
             if (sparse) {
-                auto image = new Float1_sparse(description);
+                auto image = new Image(Float1_sparse(description));
 
                 for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                     if (field.get(i)) {
                         float density;
                         stream.read(reinterpret_cast<char*>(&density), sizeof(float));
 
-                        image->store_sequentially(static_cast<int64_t>(i), density);
+                        image->float1_sparse().store_sequentially(static_cast<int64_t>(i), density);
                     }
                 }
 
                 return image;
             } else {
-                auto image = new Float1(description);
+                auto image = new Image(Float1(description));
 
-                float* data = image->data();
+                float* data = image->float1().data();
 
                 for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                     if (field.get(i)) {
@@ -183,20 +184,20 @@ Image* Reader::read(std::istream& stream) noexcept {
         stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
         if (Image::Type::Byte1 == type) {
-            Image::Description description(Image::Type::Byte1, dimensions);
+            Description description(dimensions);
 
-            auto image = new Byte1(description);
+            auto image = new Image(Byte1(description));
 
-            stream.read(reinterpret_cast<char*>(image->data()),
+            stream.read(reinterpret_cast<char*>(image->byte1().data()),
                         static_cast<std::streamsize>(pixels_size));
 
             return image;
         } else /*if (Image::Type::Float1 == type)*/ {
-            Image::Description description(Image::Type::Float1, dimensions);
+            Description description(dimensions);
 
-            auto image = new Float1(description);
+            auto image = new Image(Float1(description));
 
-            stream.read(reinterpret_cast<char*>(image->data()),
+            stream.read(reinterpret_cast<char*>(image->float1().data()),
                         static_cast<std::streamsize>(pixels_size));
 
             return image;

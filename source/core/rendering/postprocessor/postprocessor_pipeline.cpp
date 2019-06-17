@@ -7,7 +7,7 @@
 
 namespace rendering::postprocessor {
 
-Pipeline::Pipeline() : scratch_(image::Image::Description(image::Image::Type::Float4)) {}
+Pipeline::Pipeline() : scratch_(image::Description()) {}
 
 Pipeline::~Pipeline() {
     for (auto pp : postprocessors_) {

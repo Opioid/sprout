@@ -3,13 +3,42 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 
-#include <iostream>
-
 namespace image {
+
+Description::Description() noexcept : dimensions(0), num_elements(0) {}
+
+Description::Description(int2 dimensions, int32_t num_elements) noexcept
+    : dimensions(dimensions, 1), num_elements(num_elements) {}
+
+Description::Description(int3 const& dimensions, int32_t num_elements) noexcept
+    : dimensions(dimensions), num_elements(num_elements) {}
+
+uint64_t Description::num_pixels() const noexcept {
+    return static_cast<uint64_t>(dimensions[0]) * static_cast<uint64_t>(dimensions[1]) *
+           static_cast<uint64_t>(dimensions[2]) * static_cast<uint64_t>(num_elements);
+}
+
+int2 Description::dimensions2() const noexcept {
+    return dimensions.xy();
+}
+
+int32_t Description::area() const noexcept {
+    return dimensions[0] * dimensions[1];
+}
+
+int32_t Description::volume() const noexcept {
+    return dimensions[0] * dimensions[1] * dimensions[2];
+}
 
 template <typename T>
 Typed_image<T>::Typed_image(Description const& description) noexcept
-    : Image(description), data_(memory::allocate_aligned<T>(description.num_pixels())) {}
+    : description_(description), data_(memory::allocate_aligned<T>(description.num_pixels())) {}
+
+template <typename T>
+Typed_image<T>::Typed_image(Typed_image&& other) noexcept
+    : description_(other.description_), data_(other.data_) {
+    other.data_ = nullptr;
+}
 
 template <typename T>
 Typed_image<T>::~Typed_image() noexcept {
@@ -17,12 +46,20 @@ Typed_image<T>::~Typed_image() noexcept {
 }
 
 template <typename T>
-Typed_image<T> Typed_image<T>::clone() const noexcept {
-    return Typed_image<T>(description_);
+Description const& Typed_image<T>::description() const noexcept {
+    return description_;
 }
 
 template <typename T>
-void Typed_image<T>::resize(int2 dimensions, int32_t num_elements) noexcept {
+int2 Typed_image<T>::coordinates_2(int32_t index) const noexcept {
+    int2 c;
+    c[1] = index / description_.dimensions[0];
+    c[0] = index - c[1] * description_.dimensions[0];
+    return c;
+}
+
+template <typename T>
+void Typed_image<T>::resize(int2 const dimensions, int32_t num_elements) noexcept {
     resize(int3(dimensions, 1), num_elements);
 }
 
@@ -30,14 +67,15 @@ template <typename T>
 void Typed_image<T>::resize(int3 const& dimensions, int32_t num_elements) noexcept {
     memory::free_aligned(data_);
 
-    Image::resize(dimensions, num_elements);
+    description_.dimensions   = dimensions;
+    description_.num_elements = num_elements;
 
     data_ = memory::allocate_aligned<T>(description_.num_pixels());
 }
 
 template <typename T>
 void Typed_image<T>::clear(T v) noexcept {
-    for (int32_t i = 0, len = volume(); i < len; ++i) {
+    for (int32_t i = 0, len = description_.volume(); i < len; ++i) {
         data_[i] = v;
     }
 }
@@ -162,7 +200,7 @@ size_t Typed_image<T>::num_bytes() const noexcept {
 
 template <typename T>
 Typed_sparse_image<T>::Typed_sparse_image(Description const& description) noexcept
-    : Image(description) {
+    : description_(description) {
     int3 const d = description.dimensions;
 
     num_cells_ = d >> Log2_cell_dim;
@@ -188,6 +226,11 @@ Typed_sparse_image<T>::~Typed_sparse_image() noexcept {
     }
 
     memory::free_aligned(cells_);
+}
+
+template <typename T>
+Description const& Typed_sparse_image<T>::description() const noexcept {
+    return description_;
 }
 
 template <typename T>
@@ -405,6 +448,20 @@ size_t Typed_sparse_image<T>::num_bytes() const noexcept {
     }
 
     return num_bytes;
+}
+
+template <typename T>
+int3 Typed_sparse_image<T>::coordinates_3(int64_t index) const noexcept {
+    int64_t const area = static_cast<int64_t>(description_.dimensions[0]) *
+                         static_cast<int64_t>(description_.dimensions[1]);
+
+    int64_t const c2 = index / area;
+
+    int64_t const t = c2 * area;
+
+    int64_t const c1 = (index - t) / static_cast<int64_t>(description_.dimensions[0]);
+
+    return int3(index - (t + c1 * static_cast<int64_t>(description_.dimensions[0])), c1, c2);
 }
 
 template class Typed_image<uint8_t>;

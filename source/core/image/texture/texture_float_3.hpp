@@ -8,17 +8,14 @@ namespace image::texture {
 
 class Float3 {
   public:
-    Float3(Image const& image) noexcept;
+    Float3(image::Float3 const& image) noexcept;
 
-    Image const& image() const noexcept;
+    image::Float3 const& image() const noexcept;
 
-    int32_t num_channels() const noexcept;
     int32_t num_elements() const noexcept;
 
     int2        dimensions_2() const noexcept;
     int3 const& dimensions_3() const noexcept;
-
-    size_t image_num_bytes() const noexcept;
 
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;

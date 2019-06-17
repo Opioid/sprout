@@ -5,6 +5,8 @@
 
 namespace image {
 
+struct Description;
+
 class Image;
 
 template <typename T>

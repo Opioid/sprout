@@ -8,17 +8,14 @@ namespace image::texture {
 
 class Byte1_unorm {
   public:
-    Byte1_unorm(Image const& image) noexcept;
+    Byte1_unorm(Byte1 const& image) noexcept;
 
-    Image const& image() const noexcept;
+    Byte1 const& image() const noexcept;
 
-    int32_t num_channels() const noexcept;
     int32_t num_elements() const noexcept;
 
     int2        dimensions_2() const noexcept;
     int3 const& dimensions_3() const noexcept;
-
-    size_t image_num_bytes() const noexcept;
 
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;

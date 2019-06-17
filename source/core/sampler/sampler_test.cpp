@@ -4,8 +4,8 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "image/encoding/png/png_writer.hpp"
+#include "image/image.hpp"
 #include "image/procedural/image_renderer.hpp"
-#include "image/typed_image.hpp"
 #include "sampler_golden_ratio.hpp"
 #include "sampler_hammersley.hpp"
 #include "sampler_random.hpp"
@@ -104,7 +104,7 @@ void test() {
 
     Renderer renderer(dimensions, 4);
 
-    Byte3 target(Image::Description(Image::Type::Byte3, dimensions));
+    Byte3 target((image::Description(dimensions)));
 
     uint32_t constexpr num_samples = 512;
 

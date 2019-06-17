@@ -5,8 +5,8 @@
 #include "base/memory/variant_map.inl"
 #include "base/random/generator.inl"
 #include "image/encoding/png/png_writer.hpp"
+#include "image/image.hpp"
 #include "image/procedural/image_renderer.hpp"
-#include "image/typed_image.hpp"
 
 namespace image::procedural::flakes {
 
@@ -34,11 +34,11 @@ Image* Provider::create_normal_map(memory::Variant_map const& options) noexcept 
         //   renderer.draw_bounding_square(flake.pos, props.radius);
     }
 
-    Byte3* image = new Byte3(Image::Description(Image::Type::Byte3, props.dimensions));
+    Image* image = new Image(Byte3(Description(props.dimensions)));
 
-    renderer.resolve(*image);
+    renderer.resolve(image->byte3());
 
-    encoding::png::Writer::write("flakes_normal.png", *image);
+    encoding::png::Writer::write("flakes_normal.png", image->byte3());
 
     return image;
 }
@@ -63,11 +63,11 @@ Image* Provider::create_mask(memory::Variant_map const& options) noexcept {
         renderer.draw_disk(flake.pos, flake.normal, props.radius);
     }
 
-    Byte1* image = new Byte1(Image::Description(Image::Type::Byte1, props.dimensions));
+    Image* image = new Image(Byte1(Description(props.dimensions)));
 
-    renderer.resolve(*image);
+    renderer.resolve(image->byte1());
 
-    encoding::png::Writer::write("flakes_mask.png", *image);
+    encoding::png::Writer::write("flakes_mask.png", image->byte1());
 
     return image;
 }

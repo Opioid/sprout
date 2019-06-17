@@ -266,7 +266,7 @@ void Glare2::pre_apply(image::Float4 const& source, image::Float4& destination,
 
             int2 const offset = dim / 4;
 
-            int2 const source_dim = source.dimensions2();
+            int2 const source_dim = source.description().dimensions2();
 
             for (int32_t y = begin, i = begin * dim[0]; y < end; ++y) {
                 for (int32_t x = 0; x < dim[0]; ++x, ++i) {
@@ -328,7 +328,7 @@ void Glare2::pre_apply(image::Float4 const& source, image::Float4& destination,
 
     pool.run_range(
         [this, dim, offset, &source, &destination](uint32_t /*id*/, int32_t begin, int32_t end) {
-            int2 const source_dim = source.dimensions2();
+            int2 const source_dim = source.description().dimensions2();
 
             float const intensity = intensity_;
 
@@ -348,7 +348,7 @@ void Glare2::pre_apply(image::Float4 const& source, image::Float4& destination,
                 }
             }
         },
-        offset[1], offset[1] + source.dimensions2()[1]);
+        offset[1], offset[1] + source.description().dimensions2()[1]);
 
     //	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 128.f);
 }

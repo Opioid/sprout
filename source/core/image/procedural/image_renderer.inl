@@ -61,7 +61,7 @@ void Typed_renderer<T>::draw_circle(float2 pos, float radius) {
 template <typename T>
 void Typed_renderer<T>::resolve(Typed_image<T>& image) const {
     if (1 == sqrt_num_samples_) {
-        for (int32_t i = 0, len = image.area(); i < len; ++i) {
+        for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
             auto s = samples_[i];
             image.store(i, s);
         }

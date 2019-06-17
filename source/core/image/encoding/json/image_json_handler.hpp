@@ -7,6 +7,42 @@
 
 namespace image::encoding::json {
 
+class Image_handler {
+  public:
+    virtual ~Image_handler();
+
+    virtual void add(uint32_t value) = 0;
+    virtual void add(float value)    = 0;
+};
+
+class Byte1_handler : public Image_handler {
+  public:
+    Byte1_handler(Byte1& image);
+
+    void add(uint32_t value) override final;
+
+    void add(float value) override final;
+
+  private:
+    Byte1& image_;
+
+    int32_t current_texel_ = 0;
+};
+
+class Float1_handler : public Image_handler {
+  public:
+    Float1_handler(Float1& image);
+
+    void add(uint32_t value) override final;
+
+    void add(float value) override final;
+
+  private:
+    Float1& image_;
+
+    int32_t current_texel_ = 0;
+};
+
 class Json_handler {
   public:
     Json_handler();
@@ -56,16 +92,6 @@ class Json_handler {
 
     Image* image_;
 
-  public:
-    class Image_handler {
-      public:
-        virtual ~Image_handler();
-
-        virtual void add(uint32_t value) = 0;
-        virtual void add(float value)    = 0;
-    };
-
-  private:
     Image_handler* image_handler_;
 };
 

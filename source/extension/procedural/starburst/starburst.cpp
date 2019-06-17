@@ -57,11 +57,11 @@ void create(thread::Pool& pool) {
 
     int2 dimensions(resolution, resolution);
 
-    Float1 signal(Image::Description(Image::Type::Float1, dimensions));
+    Float1 signal = Float1(Description(dimensions));
 
     std::vector<float2> signal_f(resolution * math::dft_size(resolution));
 
-    Float3 float_image_a(Image::Description(Image::Type::Float3, dimensions));
+    Float3 float_image_a = Float3(Description(dimensions));
 
     bool dirt = false;
     if (dirt) {
@@ -80,7 +80,7 @@ void create(thread::Pool& pool) {
     bool near_field = false;
 
     if (near_field) {
-        Image::Description description(Image::Type::Float2, dimensions);
+        Description description(dimensions);
 
         Float2 signal_a(description);
         Float2 signal_b(description);
@@ -108,10 +108,7 @@ void create(thread::Pool& pool) {
 
                         Spectrum* spectral_data = new Spectrum[resolution * resolution];
 
-
                         for (uint32_t b = 0; b < Num_bands; ++b) {
-
-
 
                                 for (int32_t i = 0, len = signal.area(); i < len; ++i) {
                                         signal_a->store(i, float2(signal.load(i), 0.f));
@@ -120,14 +117,16 @@ void create(thread::Pool& pool) {
                         //	float alpha = 0.2f + 0.5f * (static_cast<float>(b) /
            static_cast<float>(Num_bands));
 
-                                float wl = static_cast<float>(spectral_data->wavelength_center(b));
+                                float wl =
+                                static_cast<float>(spectral_data->wavelength_center(b));
 
                                 float f = 12.f;
                                 float alpha = 0.15f * (wl / 400.f) * (f / 18.f);
 
                                 fdft(*signal_b.get(), signal_a, alpha, 0, pool);
                                 fdft(*signal_a.get(), signal_b, alpha, 1, pool);
-                                squared_magnitude(signal_t.data(), signal_a->data(), resolution,
+                                squared_magnitude(signal_t.data(), signal_a->data(),
+                                resolution,
            resolution);
 
                                 float i_s = wl / 400.f;
@@ -143,7 +142,8 @@ void create(thread::Pool& pool) {
 
                         }
 
-                        pool.run_range([spectral_data, &float_image_a](int32_t begin, int32_t end) {
+                        pool.run_range([spectral_data, &float_image_a](int32_t begin, int32_t
+                        end) {
                                 for (int32_t i = begin; i < end; ++i) {
                                         auto& s = spectral_data[i];
                                         float3 linear_rgb =
@@ -197,7 +197,7 @@ void create(thread::Pool& pool) {
     image::filter::Gaussian<packed_float3> gaussian(radius, radius * 0.0005f);
     gaussian.apply(float_image_a, pool);
 
-    Byte3 byte_image(Image::Description(Image::Type::Byte3, dimensions));
+    Byte3 byte_image = Byte3(Description(dimensions));
 
     pool.run_range(
         [&float_image_a, &byte_image](uint32_t /*id*/, int32_t begin, int32_t end) {
@@ -445,17 +445,17 @@ void diffraction(Spectrum* result, float const* squared_magnitude, int32_t bin,
 }
 
 void write_signal(std::string const& name, Float1 const& signal) {
-    auto const d = signal.description().dimensions;
+    //    auto const d = signal.description().dimensions;
 
-    Byte1 image(Image::Description(Image::Type::Byte1, d));
+    //    Byte1 image(Image::Description(Image::Type::Byte1, d));
 
-    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
-        float   s = signal.load(i);
-        uint8_t b = ::encoding::float_to_unorm(s);
-        image.store(i, b);
-    }
+    //    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+    //        float   s = signal.load(i);
+    //        uint8_t b = ::encoding::float_to_unorm(s);
+    //        image.store(i, b);
+    //    }
 
-    image::encoding::png::Writer::write(name, image);
+    //    image::encoding::png::Writer::write(name, image);
 }
 
 }  // namespace procedural::starburst
