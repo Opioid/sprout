@@ -10,6 +10,8 @@ class Interpolated_function {
   public:
     Interpolated_function() noexcept;
 
+    Interpolated_function(Interpolated_function&& other) noexcept;
+
     template <typename F>
     Interpolated_function(float range_begin, float range_end, size_t num_samples, F f) noexcept;
 
