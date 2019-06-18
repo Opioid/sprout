@@ -129,7 +129,7 @@ void size() {
 
     print_size<scene::shape::Vertex>("Vertex", 48);
 
-    print_size<image::Byte3>("image::Byte3", 64);
+    print_size<image::Byte3>("image::Byte3", 32);
 
     print_size<image::texture::Texture>("texture::Texture", 64);
 

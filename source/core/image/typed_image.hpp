@@ -25,7 +25,7 @@ struct Description {
 };
 
 template <typename T>
-class Typed_image {
+class alignas(16) Typed_image {
   public:
     Typed_image(Description const& description) noexcept;
 

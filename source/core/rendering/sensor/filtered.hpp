@@ -47,7 +47,7 @@ class Filtered : public Base {
 };
 
 template <class Base, class Clamp, class F>
-class Filtered_1p0 : public Filtered<Base, Clamp, F> {
+class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
   public:
     using Camera_sample = sampler::Camera_sample;
     using Filter        = filter::Filter;
@@ -63,7 +63,7 @@ class Filtered_1p0 : public Filtered<Base, Clamp, F> {
 };
 
 template <class Base, class Clamp, class F>
-class Filtered_2p0 : public Filtered<Base, Clamp, F> {
+class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
   public:
     using Camera_sample = sampler::Camera_sample;
     using Filter        = filter::Filter;
@@ -79,7 +79,7 @@ class Filtered_2p0 : public Filtered<Base, Clamp, F> {
 };
 
 template <class Base, class Clamp, class F>
-class Filtered_inf : public Filtered<Base, Clamp, F> {
+class Filtered_inf final : public Filtered<Base, Clamp, F> {
   public:
     using Camera_sample = sampler::Camera_sample;
     using Filter        = filter::Filter;
