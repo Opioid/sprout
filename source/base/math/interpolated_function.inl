@@ -12,7 +12,10 @@ Interpolated_function<T>::Interpolated_function() noexcept {}
 
 template <typename T>
 Interpolated_function<T>::Interpolated_function(Interpolated_function&& other) noexcept
-    : range_end_(other.range_end_), num_samples_(other.num_samples_), samples_(other.samples_) {
+    : range_end_(other.range_end_),
+      inverse_interval_(other.inverse_interval_),
+      num_samples_(other.num_samples_),
+      samples_(other.samples_) {
     other.samples_ = nullptr;
 }
 
