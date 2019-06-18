@@ -62,6 +62,8 @@
 #include "scene/scene.hpp"
 #include "take.hpp"
 
+#include "base/math/interpolated_function.inl"
+
 namespace take {
 
 using Scene               = scene::Scene;
@@ -353,43 +355,104 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
     return true;
 }
 
-template <typename Base>
+template <typename Filter>
+Filter load_filter(json::Value const& /*filter_value*/) noexcept;
+
+template <>
+rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value) noexcept {
+    float radius = 1.f;
+    float alpha  = 1.8f;
+
+    for (auto& n : filter_value.GetObject()) {
+        if ("Gaussian" == n.name) {
+            radius = json::read_float(n.value, "radius", radius);
+            alpha  = json::read_float(n.value, "alpha", alpha);
+
+            break;
+        }
+    }
+
+    return rendering::sensor::filter::Gaussian(radius, alpha);
+}
+
+template <>
+rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value) noexcept {
+    float radius = 1.f;
+    float b      = 1.f / 3.f;
+    float c      = 1.f / 3.f;
+
+    for (auto& n : filter_value.GetObject()) {
+        if ("Mitchell" == n.name) {
+            radius = json::read_float(n.value, "radius", radius);
+            b      = json::read_float(n.value, "b", b);
+            c      = json::read_float(n.value, "c", c);
+
+            break;
+        }
+    }
+
+    return rendering::sensor::filter::Mitchell(radius, b, c);
+}
+
+template <typename Base, typename Filter>
 static Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
-                                       Sensor_filter const* filter) noexcept {
+                                       json::Value const& filter_value) noexcept {
     using namespace rendering::sensor;
 
     bool const clamp = !math::any_negative(clamp_max);
 
+    Filter filter = load_filter<Filter>(filter_value);
+
     if (clamp) {
-        if (filter->radius() <= 1.f) {
-            return new Filtered_1p0<Base, clamp::Clamp>(dimensions, exposure,
-                                                        clamp::Clamp(clamp_max), filter);
+        if (filter.radius() <= 1.f) {
+            return new Filtered_1p0<Base, clamp::Clamp, Filter>(
+                dimensions, exposure, clamp::Clamp(clamp_max), std::move(filter));
         }
 
-        if (filter->radius() <= 2.f) {
-            return new Filtered_2p0<Base, clamp::Clamp>(dimensions, exposure,
-                                                        clamp::Clamp(clamp_max), filter);
+        if (filter.radius() <= 2.f) {
+            return new Filtered_2p0<Base, clamp::Clamp, Filter>(
+                dimensions, exposure, clamp::Clamp(clamp_max), std::move(filter));
         }
 
-        return new Filtered_inf<Base, clamp::Clamp>(dimensions, exposure, clamp::Clamp(clamp_max),
-                                                    filter);
+        return new Filtered_inf<Base, clamp::Clamp, Filter>(
+            dimensions, exposure, clamp::Clamp(clamp_max), std::move(filter));
     }
 
-    if (filter->radius() <= 1.f) {
-        return new Filtered_1p0<Base, clamp::Identity>(dimensions, exposure, clamp::Identity(),
-                                                       filter);
+    if (filter.radius() <= 1.f) {
+        return new Filtered_1p0<Base, clamp::Identity, Filter>(
+            dimensions, exposure, clamp::Identity(), std::move(filter));
     }
 
-    if (filter->radius() <= 2.f) {
-        return new Filtered_2p0<Base, clamp::Identity>(dimensions, exposure, clamp::Identity(),
-                                                       filter);
+    if (filter.radius() <= 2.f) {
+        return new Filtered_2p0<Base, clamp::Identity, Filter>(
+            dimensions, exposure, clamp::Identity(), std::move(filter));
     }
 
-    return new Filtered_inf<Base, clamp::Identity>(dimensions, exposure, clamp::Identity(), filter);
+    return new Filtered_inf<Base, clamp::Identity, Filter>(dimensions, exposure, clamp::Identity(),
+                                                           std::move(filter));
+}
+
+enum class Sensor_filter_type { Undefined, Gaussian, Mitchell };
+
+static Sensor_filter_type read_filter_type(json::Value const& filter_value) noexcept {
+    for (auto& n : filter_value.GetObject()) {
+        if ("Gaussian" == n.name) {
+            return Sensor_filter_type::Gaussian;
+        } else if ("Mitchell" == n.name) {
+            return Sensor_filter_type::Mitchell;
+        }
+    }
+
+    logging::warning(
+        "A reconstruction filter with unknonw type was declared. "
+        "Not using any filter.");
+
+    return Sensor_filter_type::Undefined;
 }
 
 static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept {
     using namespace rendering::sensor;
+    using namespace rendering::sensor::filter;
 
     bool alpha_transparency = false;
 
@@ -397,7 +460,9 @@ static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) 
 
     float3 clamp_max(-1.f);
 
-    filter::Filter const* filter = nullptr;
+    json::Value const* filter_value = nullptr;
+
+    Sensor_filter_type filter_type = Sensor_filter_type::Undefined;
 
     for (auto& n : sensor_value.GetObject()) {
         if ("alpha_transparency" == n.name) {
@@ -407,16 +472,30 @@ static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) 
         } else if ("clamp" == n.name) {
             clamp_max = json::read_float3(n.value);
         } else if ("filter" == n.name) {
-            filter = load_filter(n.value);
+            //    filter = load_filter(n.value);
+            filter_value = &n.value;
+            filter_type  = read_filter_type(n.value);
         }
     }
 
-    if (filter) {
+    if (filter_value && Sensor_filter_type::Undefined != filter_type) {
         if (alpha_transparency) {
-            return make_filtered_sensor<Transparent>(dimensions, exposure, clamp_max, filter);
+            if (Sensor_filter_type::Gaussian == filter_type) {
+                return make_filtered_sensor<Transparent, Gaussian>(dimensions, exposure, clamp_max,
+                                                                   *filter_value);
+            }
+
+            return make_filtered_sensor<Transparent, Mitchell>(dimensions, exposure, clamp_max,
+                                                               *filter_value);
         }
 
-        return make_filtered_sensor<Opaque>(dimensions, exposure, clamp_max, filter);
+        if (Sensor_filter_type::Gaussian == filter_type) {
+            return make_filtered_sensor<Opaque, Gaussian>(dimensions, exposure, clamp_max,
+                                                          *filter_value);
+        }
+
+        return make_filtered_sensor<Opaque, Mitchell>(dimensions, exposure, clamp_max,
+                                                      *filter_value);
     }
 
     bool const clamp = !math::any_negative(clamp_max);
@@ -436,31 +515,6 @@ static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) 
     }
 
     return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
-}
-
-static Sensor_filter const* load_filter(json::Value const& filter_value) noexcept {
-    using namespace rendering::sensor::filter;
-
-    for (auto& n : filter_value.GetObject()) {
-        if ("Gaussian" == n.name) {
-            float const radius = json::read_float(n.value, "radius", 1.f);
-            float const alpha  = json::read_float(n.value, "alpha", 1.8f);
-
-            return new Gaussian(radius, alpha);
-        } else if ("Mitchell" == n.name) {
-            float const radius = json::read_float(n.value, "radius", 2.f);
-            float const b      = json::read_float(n.value, "b", 1.f / 3.f);
-            float const c      = json::read_float(n.value, "c", 1.f / 3.f);
-
-            return new Mitchell(radius, b, c);
-        }
-    }
-
-    logging::warning(
-        "A reconstruction filter with unknonw type was declared. "
-        "Not using any filter.");
-
-    return nullptr;
 }
 
 static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,

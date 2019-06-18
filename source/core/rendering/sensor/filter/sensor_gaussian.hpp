@@ -3,19 +3,20 @@
 
 #include "base/math/interpolated_function.hpp"
 #include "base/math/vector3.hpp"
-#include "sensor_filter.hpp"
 
 namespace rendering::sensor::filter {
 
-class Gaussian : public Filter {
+class Gaussian {
   public:
-    Gaussian(float radius, float alpha);
+    Gaussian(float radius, float alpha) noexcept;
 
-    float radius() const override final;
+    Gaussian(Gaussian&& other) noexcept;
 
-    float evaluate(float d) const override final;
+    float radius() const noexcept;
 
-    float evaluate(float2 p) const override final;
+    float evaluate(float d) const noexcept;
+
+    float evaluate(float2 p) const noexcept;
 
   private:
     //  float gaussian(float d) const;

@@ -17,14 +17,16 @@ namespace filter {
 class Filter;
 }
 
-template <class Base, class Clamp>
+template <class Base, class Clamp, class F>
 class Filtered : public Base {
   public:
-    Filtered(int2 dimensions, float exposure, const Clamp& clamp,
-             filter::Filter const* filter) noexcept;
+    using Filter  = filter::Filter;
+    using Texture = image::texture::Texture;
 
-    Filtered(int2 dimensions, float exposure, image::texture::Texture* backplate,
-             const Clamp& clamp, filter::Filter const* filter) noexcept;
+    Filtered(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
+
+    Filtered(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
+             F&& filter) noexcept;
 
     ~Filtered() noexcept override;
 
@@ -41,45 +43,54 @@ class Filtered : public Base {
 
     Clamp clamp_;
 
-    filter::Filter const* filter_;
+    F const filter_;
 };
 
-template <class Base, class Clamp>
-class Filtered_1p0 : public Filtered<Base, Clamp> {
+template <class Base, class Clamp, class F>
+class Filtered_1p0 : public Filtered<Base, Clamp, F> {
   public:
-    Filtered_1p0(int2 dimensions, float exposure, const Clamp& clamp,
-                 filter::Filter const* filter) noexcept;
+    using Camera_sample = sampler::Camera_sample;
+    using Filter        = filter::Filter;
+    using Texture       = image::texture::Texture;
 
-    Filtered_1p0(int2 dimensions, float exposure, image::texture::Texture* backplate,
-                 const Clamp& clamp, filter::Filter const* filter) noexcept;
+    Filtered_1p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
-    void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
+    Filtered_1p0(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
+                 F&& filter) noexcept;
+
+    void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 };
 
-template <class Base, class Clamp>
-class Filtered_2p0 : public Filtered<Base, Clamp> {
+template <class Base, class Clamp, class F>
+class Filtered_2p0 : public Filtered<Base, Clamp, F> {
   public:
-    Filtered_2p0(int2 dimensions, float exposure, const Clamp& clamp,
-                 filter::Filter const* filter) noexcept;
+    using Camera_sample = sampler::Camera_sample;
+    using Filter        = filter::Filter;
+    using Texture       = image::texture::Texture;
 
-    Filtered_2p0(int2 dimensions, float exposure, image::texture::Texture* backplate,
-                 const Clamp& clamp, filter::Filter const* filter) noexcept;
+    Filtered_2p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
-    void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
+    Filtered_2p0(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
+                 F&& filter) noexcept;
+
+    void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 };
 
-template <class Base, class Clamp>
-class Filtered_inf : public Filtered<Base, Clamp> {
+template <class Base, class Clamp, class F>
+class Filtered_inf : public Filtered<Base, Clamp, F> {
   public:
-    Filtered_inf(int2 dimensions, float exposure, const Clamp& clamp,
-                 filter::Filter const* filter) noexcept;
+    using Camera_sample = sampler::Camera_sample;
+    using Filter        = filter::Filter;
+    using Texture       = image::texture::Texture;
 
-    Filtered_inf(int2 dimensions, float exposure, image::texture::Texture* backplate,
-                 const Clamp& clamp, filter::Filter const* filter) noexcept;
+    Filtered_inf(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
-    void add_sample(sampler::Camera_sample const& sample, float4 const&, int4 const& isolated,
+    Filtered_inf(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
+                 F&& filter) noexcept;
+
+    void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 };
 

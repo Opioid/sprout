@@ -28,22 +28,27 @@ struct Functor {
     float c_;
 };
 
-Mitchell::Mitchell(float radius, float b, float c)
+Mitchell::Mitchell(float radius, float b, float c) noexcept
     : radius_(radius), radius_inv_(1.f / radius), mitchell_(0.f, 1.f, 256, Functor(b, c)) {}
 
-float Mitchell::radius() const {
+Mitchell::Mitchell(Mitchell&& other) noexcept
+    : radius_(other.radius_),
+      radius_inv_(other.radius_inv_),
+      mitchell_(std::move(other.mitchell_)) {}
+
+float Mitchell::radius() const noexcept {
     return radius_;
 }
 
-float Mitchell::evaluate(float d) const {
+float Mitchell::evaluate(float d) const noexcept {
     return mitchell(d * radius_inv_);
 }
 
-float Mitchell::evaluate(float2 p) const {
+float Mitchell::evaluate(float2 p) const noexcept {
     return mitchell(p[0] * radius_inv_) * mitchell(p[1] * radius_inv_);
 }
 
-float Mitchell::mitchell(float x) const {
+float Mitchell::mitchell(float x) const noexcept {
     x = std::abs(x);
 
     if (x >= 1.f) {

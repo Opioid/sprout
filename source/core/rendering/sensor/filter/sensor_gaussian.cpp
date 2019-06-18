@@ -5,24 +5,27 @@
 
 namespace rendering::sensor::filter {
 
-Gaussian::Gaussian(float radius, float alpha)
+Gaussian::Gaussian(float radius, float alpha) noexcept
     : radius_(radius),
       gaussian_(0.f, radius * radius, 16, math::filter::Gaussian_functor(radius * radius, alpha))
 /*      exp_(std::exp(-alpha * radius * radius)),
       alpha_(alpha)*/
 {}
 
-float Gaussian::radius() const {
+Gaussian::Gaussian(Gaussian&& other) noexcept
+    : radius_(other.radius_), gaussian_(std::move(other.gaussian_)) {}
+
+float Gaussian::radius() const noexcept {
     return radius_;
 }
 
-float Gaussian::evaluate(float d) const {
+float Gaussian::evaluate(float d) const noexcept {
     return gaussian_(d * d);
 
     //	return gaussian(d);
 }
 
-float Gaussian::evaluate(float2 p) const {
+float Gaussian::evaluate(float2 p) const noexcept {
     return gaussian_(p[0] * p[0]) * gaussian_(p[1] * p[1]);
 
     //	return gaussian(p.x) * gaussian(p.y);
