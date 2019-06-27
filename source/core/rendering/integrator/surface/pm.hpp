@@ -1,5 +1,5 @@
-#ifndef SU_RENDERING_INTEGRATOR_SURFACE_LIGHTTRACER_HPP
-#define SU_RENDERING_INTEGRATOR_SURFACE_LIGHTTRACER_HPP
+#ifndef SU_RENDERING_INTEGRATOR_SURFACE_PM_HPP
+#define SU_RENDERING_INTEGRATOR_SURFACE_PM_HPP
 
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
@@ -7,17 +7,16 @@
 
 namespace rendering::integrator::surface {
 
-class alignas(64) Lighttracer final : public Integrator {
+class alignas(64) PM final : public Integrator {
   public:
     struct Settings {
         uint32_t min_bounces;
         uint32_t max_bounces;
     };
 
-    Lighttracer(rnd::Generator& rng, take::Settings const& take_settings,
-                Settings const& settings) noexcept;
+    PM(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
 
-    ~Lighttracer() noexcept override final;
+    ~PM() noexcept override final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -45,21 +44,21 @@ class alignas(64) Lighttracer final : public Integrator {
     sampler::Golden_ratio material_samplers_[Num_material_samplers];
 };
 
-class Lighttracer_factory final : public Factory {
+class PM_factory final : public Factory {
   public:
-    Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                        uint32_t min_bounces, uint32_t max_bounces) noexcept;
+    PM_factory(take::Settings const& take_settings, uint32_t num_integrators, uint32_t min_bounces,
+               uint32_t max_bounces) noexcept;
 
-    ~Lighttracer_factory() noexcept override final;
+    ~PM_factory() noexcept override final;
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
     uint32_t max_sample_depth() const noexcept override final;
 
   private:
-    Lighttracer* integrators_;
+    PM* integrators_;
 
-    Lighttracer::Settings settings_;
+    PM::Settings settings_;
 };
 
 }  // namespace rendering::integrator::surface

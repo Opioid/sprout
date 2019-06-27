@@ -18,10 +18,10 @@
 #include "logging/logging.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/debug.hpp"
-#include "rendering/integrator/surface/lighttracer.hpp"
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
+#include "rendering/integrator/surface/pm.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/tracking_multi.hpp"
@@ -579,14 +579,14 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
                                                                light_sampling.num_samples);
 
             return new Whitted_factory(settings, num_workers, num_light_samples);
-        } else if ("LT" == n.name) {
+        } else if ("PM" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
 
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            return new Lighttracer_factory(settings, num_workers, min_bounces, max_bounces);
+            return new PM_factory(settings, num_workers, min_bounces, max_bounces);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 

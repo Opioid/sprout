@@ -1,4 +1,4 @@
-#include "lighttracer.hpp"
+#include "pm.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
@@ -18,16 +18,15 @@
 
 namespace rendering::integrator::surface {
 
-Lighttracer::Lighttracer(rnd::Generator& rng, take::Settings const& take_settings,
-                         Settings const& settings) noexcept
+PM::PM(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
     : Integrator(rng, take_settings),
       settings_(settings),
       sampler_(rng),
       material_samplers_{rng, rng, rng} {}
 
-Lighttracer::~Lighttracer() noexcept {}
+PM::~PM() noexcept {}
 
-void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     for (auto& s : material_samplers_) {
@@ -35,7 +34,7 @@ void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel
     }
 }
 
-void Lighttracer::start_pixel() noexcept {
+void PM::start_pixel() noexcept {
     sampler_.start_pixel();
 
     for (auto& s : material_samplers_) {
@@ -43,8 +42,8 @@ void Lighttracer::start_pixel() noexcept {
     }
 }
 
-float4 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
-                       Interface_stack const& initial_stack) noexcept {
+float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
+              Interface_stack const& initial_stack) noexcept {
     static uint32_t constexpr Max_bounces = 16;
 
     worker.reset_interface_stack(initial_stack);
@@ -124,8 +123,7 @@ float4 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, 1.f);
 }
 
-bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
-                                     float3& radiance) noexcept {
+bool PM::generate_light_ray(uint64_t time, Worker& worker, Ray& ray, float3& radiance) noexcept {
     Scene const& scene = worker.scene();
 
     float const select = sampler_.generate_sample_1D(1);
@@ -150,9 +148,9 @@ bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
     return true;
 }
 
-float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersection,
-                                 Material_sample const& material_sample, Filter filter,
-                                 Worker& worker) noexcept {
+float3 PM::direct_light(Ray const& ray, Intersection const& intersection,
+                        Material_sample const& material_sample, Filter filter,
+                        Worker& worker) noexcept {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -189,7 +187,7 @@ float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersectio
     return result;
 }
 
-sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& PM::material_sampler(uint32_t bounce) noexcept {
     if (Num_material_samplers > bounce) {
         return material_samplers_[bounce];
     }
@@ -197,7 +195,7 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-size_t Lighttracer::num_bytes() const noexcept {
+size_t PM::num_bytes() const noexcept {
     size_t sampler_bytes = 0;
 
     for (auto& s : material_samplers_) {
@@ -207,22 +205,21 @@ size_t Lighttracer::num_bytes() const noexcept {
     return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
 }
 
-Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
-                                         uint32_t num_integrators, uint32_t min_bounces,
-                                         uint32_t max_bounces) noexcept
+PM_factory::PM_factory(take::Settings const& take_settings, uint32_t num_integrators,
+                       uint32_t min_bounces, uint32_t max_bounces) noexcept
     : Factory(take_settings),
-      integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
+      integrators_(memory::allocate_aligned<PM>(num_integrators)),
       settings_{min_bounces, max_bounces} {}
 
-Lighttracer_factory::~Lighttracer_factory() noexcept {
+PM_factory::~PM_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Lighttracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Lighttracer(rng, take_settings_, settings_);
+Integrator* PM_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+    return new (&integrators_[id]) PM(rng, take_settings_, settings_);
 }
 
-uint32_t Lighttracer_factory::max_sample_depth() const noexcept {
+uint32_t PM_factory::max_sample_depth() const noexcept {
     return 2;
 }
 
