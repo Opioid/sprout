@@ -19,7 +19,6 @@
 
 //#include "core/image/encoding/png/png_writer.hpp"
 //#include <fstream>
-#include <iostream>
 
 namespace procedural::sky {
 
@@ -167,11 +166,6 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
                         luminance[x] = spectrum::luminance(wli);
 
                         artw += float4(wli, uv_weight);
-
-                        //    if (Bake_dimensions[0] / 2 == x && Bake_dimensions[1] / 2 == y) {
-                        float const lumen = spectrum::watt_to_lumen(li);
-                        std::cout << lumen << std::endl;
-                        //     }
                     }
 
                     conditional[y].init(luminance, Bake_dimensions[0]);

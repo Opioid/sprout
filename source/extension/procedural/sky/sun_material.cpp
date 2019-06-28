@@ -17,8 +17,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace procedural::sky {
 
 using namespace scene;
@@ -116,13 +114,6 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
         SOFT_ASSERT(all_finite_and_positive(radiance));
 
         cache[i] = radiance;
-    }
-
-    {
-        float3 const radiance = sky_.model().evaluate_sky_and_sun(sky_.sun_wi(0.5f));
-
-        float const lumen = spectrum::watt_to_lumen(radiance);
-        std::cout << lumen << std::endl;
     }
 
     emission_.from_array(0.f, 1.f, num_samples, cache);
