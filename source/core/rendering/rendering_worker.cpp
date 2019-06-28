@@ -32,7 +32,8 @@ void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scen
                   Camera const& camera, uint32_t max_material_sample_size,
                   uint32_t num_samples_per_pixel, Surface_factory& surface_factory,
                   Volume_factory& volume_factory, sampler::Factory& sampler_factory,
-                  Photon_map* photon_map, take::Photon_settings const& photon_settings) noexcept {
+                  Photon_map* photon_map, take::Photon_settings const& photon_settings,
+                  Surface_factory* lighttracer_factory) noexcept {
     scene::Worker::init(id, settings, scene, camera, max_material_sample_size,
                         surface_factory.max_sample_depth());
 
@@ -54,6 +55,10 @@ void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scen
         photon_mapper_->prepare(scene, 0);
 
         photon_map_ = photon_map;
+    }
+
+    if (lighttracer_factory) {
+        lighttracer_ = lighttracer_factory->create(id, rng_);
     }
 }
 

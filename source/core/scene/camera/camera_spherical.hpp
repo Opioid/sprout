@@ -5,7 +5,7 @@
 
 namespace scene::camera {
 
-class Spherical : public Camera {
+class Spherical final : public Camera {
   public:
     Spherical(int2 resolution) noexcept;
 
@@ -19,6 +19,8 @@ class Spherical : public Camera {
 
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
+
+    bool sample(float3 const& p) const noexcept override final;
 
   private:
     void on_update(Prop const* self, uint64_t time, Worker& worker) noexcept override final;

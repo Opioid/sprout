@@ -6,7 +6,7 @@
 
 namespace scene::camera {
 
-class Cubic_stereoscopic : public Stereoscopic {
+class Cubic_stereoscopic final : public Stereoscopic {
   public:
     enum class Layout {
         lxlmxlylmylzlmzrxrmxryrmyrzrmz,
@@ -25,6 +25,8 @@ class Cubic_stereoscopic : public Stereoscopic {
 
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
+
+    bool sample(float3 const& p) const noexcept override final;
 
     void set_interpupillary_distance_falloff(float ipd_falloff) noexcept;
 

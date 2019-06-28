@@ -51,7 +51,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
         workers_[i].init(i, take.settings, scene, *take.view.camera, max_material_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
                          *take.volume_integrator_factory, *take.sampler_factory, photon_map,
-                         take.photon_settings);
+                         take.photon_settings, take.lighttracer_factory);
     }
 }
 

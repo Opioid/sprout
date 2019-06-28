@@ -66,6 +66,10 @@ bool Hemispherical::generate_ray(Prop const* self, Camera_sample const& sample, 
     return true;
 }
 
+bool Hemispherical::sample(float3 const& /*p*/) const noexcept {
+    return false;
+}
+
 void Hemispherical::on_update(prop::Prop const* /*self*/, uint64_t /*time*/,
                               Worker& /*worker*/) noexcept {}
 

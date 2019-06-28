@@ -4,6 +4,8 @@ target_sources(core
 	"ao.hpp"
 	"debug.cpp"
 	"debug.hpp"
+	"lighttracer.cpp"
+	"lighttracer.hpp"
 	"pathtracer_dl.cpp"
 	"pathtracer_dl.hpp"
 	"pathtracer_mis.cpp"

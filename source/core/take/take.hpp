@@ -42,6 +42,7 @@ struct Take {
 
     rendering::integrator::surface::Factory* surface_integrator_factory = nullptr;
     rendering::integrator::volume::Factory*  volume_integrator_factory  = nullptr;
+    rendering::integrator::surface::Factory* lighttracer_factory        = nullptr;
 
     sampler::Factory* sampler_factory = nullptr;
 

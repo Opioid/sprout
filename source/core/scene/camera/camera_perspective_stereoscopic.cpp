@@ -56,6 +56,10 @@ bool Perspective_stereoscopic::generate_ray(Prop const* self, sampler::Camera_sa
     return true;
 }
 
+bool Perspective_stereoscopic::sample(float3 const& /*p*/) const noexcept {
+    return false;
+}
+
 void Perspective_stereoscopic::set_fov(float fov) noexcept {
     float2 fr(resolution_);
     float  ratio = fr[0] / fr[1];

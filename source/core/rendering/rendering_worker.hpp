@@ -62,7 +62,8 @@ class Worker : public scene::Worker {
               uint32_t max_material_sample_size, uint32_t num_samples_per_pixel,
               Surface_factory& surface_factory, Volume_factory& volume_factory,
               sampler::Factory& sampler_factory, Photon_map* photon_map,
-              take::Photon_settings const& photon_settings_) noexcept;
+              take::Photon_settings const& photon_settings_,
+              Surface_factory*             lighttracer_factory) noexcept;
 
     float4 li(Ray& ray, Interface_stack const& interface_stack) noexcept;
 
@@ -92,6 +93,8 @@ class Worker : public scene::Worker {
 
     Photon_mapper* photon_mapper_ = nullptr;
     Photon_map*    photon_map_    = nullptr;
+
+    integrator::surface::Integrator* lighttracer_ = nullptr;
 };
 
 }  // namespace rendering

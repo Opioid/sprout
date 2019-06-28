@@ -6,7 +6,7 @@
 
 namespace scene::camera {
 
-class Perspective : public Camera {
+class Perspective final : public Camera {
   public:
     struct Lens {
         float angle  = 0.f;
@@ -34,6 +34,8 @@ class Perspective : public Camera {
 
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
+
+    bool sample(float3 const& p) const noexcept override final;
 
     void set_fov(float fov) noexcept;
 

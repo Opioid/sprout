@@ -75,6 +75,10 @@ bool Spherical_stereoscopic::generate_ray(Prop const* self, Camera_sample const&
     return true;
 }
 
+bool Spherical_stereoscopic::sample(float3 const& /*p*/) const noexcept {
+    return false;
+}
+
 void Spherical_stereoscopic::on_update(Prop const* /*self*/, uint64_t /*time*/,
                                        Worker& /*worker*/) noexcept {}
 

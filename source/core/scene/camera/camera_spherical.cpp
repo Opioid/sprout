@@ -60,6 +60,10 @@ bool Spherical::generate_ray(Prop const* self, Camera_sample const& sample, uint
     return true;
 }
 
+bool Spherical::sample(float3 const& /*p*/) const noexcept {
+    return false;
+}
+
 void Spherical::on_update(Prop const* /*self*/, uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}

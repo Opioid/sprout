@@ -72,6 +72,10 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
     return true;
 }
 
+bool Perspective::sample(float3 const& p) const noexcept {
+    return false;
+}
+
 void Perspective::set_fov(float fov) noexcept {
     fov_ = fov;
 }

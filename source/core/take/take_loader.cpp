@@ -18,6 +18,7 @@
 #include "logging/logging.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/debug.hpp"
+#include "rendering/integrator/surface/lighttracer.hpp"
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
@@ -555,6 +556,9 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
             load_photon_settings(n.value, take.photon_settings);
         }
     }
+
+    take.lighttracer_factory = new rendering::integrator::surface::Lighttracer_factory(
+        take.settings, num_workers, 1, 1);
 }
 
 static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
@@ -572,7 +576,9 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
     for (auto& n : integrator_value.GetObject()) {
         if ("AO" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
+
             float const    radius      = json::read_float(n.value, "radius", 1.f);
+
             return new AO_factory(settings, num_workers, num_samples, radius);
         } else if ("Whitted" == n.name) {
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
@@ -703,7 +709,7 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
 
     using namespace rendering::postprocessor;
 
-    auto& pipeline = take.view.pipeline;
+    auto const& pipeline = take.view.pipeline;
 
     pipeline.reserve(pp_value.Size());
 

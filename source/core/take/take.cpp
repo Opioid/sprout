@@ -16,6 +16,8 @@ Take::~Take() noexcept {
 
     delete sampler_factory;
 
+    delete lighttracer_factory;
+
     delete volume_integrator_factory;
 
     delete surface_integrator_factory;

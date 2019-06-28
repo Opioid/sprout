@@ -107,6 +107,10 @@ bool Cubic_stereoscopic::generate_ray(Prop const* self, sampler::Camera_sample c
     return true;
 }
 
+bool Cubic_stereoscopic::sample(float3 const& /*p*/) const noexcept {
+    return false;
+}
+
 void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) noexcept {
     ipd_falloff_ = std::sqrt(ipd_falloff);
 }

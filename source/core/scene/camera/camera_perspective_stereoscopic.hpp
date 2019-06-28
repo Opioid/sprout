@@ -6,7 +6,7 @@
 
 namespace scene::camera {
 
-class Perspective_stereoscopic : public Stereoscopic {
+class Perspective_stereoscopic final : public Stereoscopic {
   public:
     Perspective_stereoscopic(int2 resolution) noexcept;
 
@@ -20,6 +20,8 @@ class Perspective_stereoscopic : public Stereoscopic {
 
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
+
+    bool sample(float3 const& p) const noexcept override final;
 
     void set_fov(float fov) noexcept;
 

@@ -253,12 +253,13 @@ void Sparse_grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
         return;
     }
 
-    std::sort(photons, photons + num_photons, [this](Photon const& a, Photon const& b) noexcept {
-        int32_t const ida = map1(a.p);
-        int32_t const idb = map1(b.p);
+    std::sort(
+        photons, photons + num_photons, [this](Photon const& a, Photon const& b) noexcept {
+            int32_t const ida = map1(a.p);
+            int32_t const idb = map1(b.p);
 
-        return ida < idb;
-    });
+            return ida < idb;
+        });
 
     //   int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
 
@@ -307,9 +308,9 @@ uint32_t Sparse_grid::reduce_and_move(Photon* photons, float merge_radius, uint3
         comp_num_photons -= num_reduced[i];
     }
 
-    std::partition(photons_, photons_ + num_photons_, [](Photon const& p) noexcept {
-        return p.alpha[0] >= 0.f;
-    });
+    std::partition(
+        photons_, photons_ + num_photons_,
+        [](Photon const& p) noexcept { return p.alpha[0] >= 0.f; });
 
     if (photons != photons_) {
         Photon* old_photons = photons_;
