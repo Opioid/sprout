@@ -709,7 +709,7 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
 
     using namespace rendering::postprocessor;
 
-    auto const& pipeline = take.view.pipeline;
+    auto& pipeline = take.view.pipeline;
 
     pipeline.reserve(pp_value.Size());
 
