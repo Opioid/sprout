@@ -27,6 +27,12 @@ void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, f
     Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 
+template <class Base, class Clamp>
+void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, float4 const& color,
+                                         int4 const& bounds) noexcept {
+    Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
+}
+
 }  // namespace rendering::sensor
 
 #endif

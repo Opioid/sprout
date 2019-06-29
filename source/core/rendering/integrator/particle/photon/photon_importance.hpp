@@ -1,5 +1,5 @@
-#ifndef SU_RENDERING_INTEGRATOR_PHOTON_IMPORTANCE_HPP
-#define SU_RENDERING_INTEGRATOR_PHOTON_IMPORTANCE_HPP
+#ifndef SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_IMPORTANCE_HPP
+#define SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_IMPORTANCE_HPP
 
 #include <string_view>
 #include "base/math/distribution/distribution_2d.hpp"
@@ -9,7 +9,7 @@ namespace thread {
 class Pool;
 }
 
-namespace rendering::integrator::photon {
+namespace rendering::integrator::particle::photon {
 
 class Importance {
   public:
@@ -37,6 +37,6 @@ class Importance {
     Distribution_2D distribution_;
 };
 
-}  // namespace rendering::integrator::photon
+}  // namespace rendering::integrator::particle::photon
 
 #endif

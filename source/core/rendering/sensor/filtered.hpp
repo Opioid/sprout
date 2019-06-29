@@ -38,8 +38,13 @@ class Filtered : public Base {
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& isolated,
                       int4 const& bounds) noexcept;
 
+    void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& bounds) noexcept;
+
     void weight_and_add(int2 pixel, float2 relative_offset, float4 const& color,
                         int4 const& isolated, int4 const& bounds) noexcept;
+
+    void weight_and_add(int2 pixel, float2 relative_offset, float4 const& color,
+                        int4 const& bounds) noexcept;
 
     Clamp clamp_;
 
@@ -60,6 +65,9 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
 
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
+
+    void add_sample(Camera_sample const& sample, float4 const&,
+                    int4 const&          bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
@@ -76,6 +84,9 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
 
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
+
+    void add_sample(Camera_sample const& sample, float4 const&,
+                    int4 const&          bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
@@ -92,6 +103,9 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
 
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
+
+    void add_sample(Camera_sample const& sample, float4 const&,
+                    int4 const&          bounds) noexcept override final;
 };
 
 }  // namespace rendering::sensor

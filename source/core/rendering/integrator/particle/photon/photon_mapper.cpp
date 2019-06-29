@@ -17,7 +17,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-namespace rendering::integrator::photon {
+namespace rendering::integrator::particle::photon {
 
 Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings,
                Settings const& settings) noexcept
@@ -267,4 +267,4 @@ bool Mapper::generate_light_ray(Map const& map, uint32_t frame, AABB const& boun
     return true;
 }
 
-}  // namespace rendering::integrator::photon
+}  // namespace rendering::integrator::particle::photon

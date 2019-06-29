@@ -1,5 +1,5 @@
-#ifndef SU_RENDERING_INTEGRATOR_PHOTON_MAPPER_HPP
-#define SU_RENDERING_INTEGRATOR_PHOTON_MAPPER_HPP
+#ifndef SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_MAPPER_HPP
+#define SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_MAPPER_HPP
 
 #include "base/math/vector2.hpp"
 #include "rendering/integrator/integrator.hpp"
@@ -21,7 +21,7 @@ namespace rendering {
 
 class Worker;
 
-namespace integrator::photon {
+namespace integrator::particle::photon {
 
 struct Photon;
 class Map;
@@ -71,7 +71,7 @@ class Mapper : public Integrator {
     Photon* photons_;
 };
 
-}  // namespace integrator::photon
+}  // namespace integrator::particle::photon
 }  // namespace rendering
 
 #endif

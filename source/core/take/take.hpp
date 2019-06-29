@@ -12,6 +12,9 @@ class Sink;
 
 namespace rendering::integrator {
 
+namespace particle {
+class Lighttracer_factory;
+}
 namespace surface {
 class Factory;
 }
@@ -40,9 +43,9 @@ struct Take {
 
     Photon_settings photon_settings;
 
-    rendering::integrator::surface::Factory* surface_integrator_factory = nullptr;
-    rendering::integrator::volume::Factory*  volume_integrator_factory  = nullptr;
-    rendering::integrator::surface::Factory* lighttracer_factory        = nullptr;
+    rendering::integrator::surface::Factory*              surface_integrator_factory = nullptr;
+    rendering::integrator::volume::Factory*               volume_integrator_factory  = nullptr;
+    rendering::integrator::particle::Lighttracer_factory* lighttracer_factory        = nullptr;
 
     sampler::Factory* sampler_factory = nullptr;
 

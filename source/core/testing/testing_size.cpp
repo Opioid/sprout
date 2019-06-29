@@ -6,7 +6,7 @@
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_byte_3_srgb.hpp"
 #include "image/typed_image.hpp"
-#include "rendering/integrator/photon/photon.hpp"
+#include "rendering/integrator/particle/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/rendering_camera_worker.hpp"
@@ -76,7 +76,7 @@ void size() {
     print_size<ray>("ray", 64);
     print_size<scene::Ray>("scene::Ray", 80);
 
-    print_size<rendering::integrator::photon::Photon>("Photon", 48);
+    print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
 

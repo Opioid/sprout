@@ -10,7 +10,7 @@ struct Camera_sample;
 namespace rendering::sensor {
 
 template <class Base, class Clamp>
-class Unfiltered : public Base {
+class Unfiltered final : public Base {
   public:
     Unfiltered(int2 dimensions, float exposure, Clamp const& clamp) noexcept;
 
@@ -19,6 +19,9 @@ class Unfiltered : public Base {
     int4 isolated_tile(int4 const& tile) const noexcept override final;
 
     void add_sample(sampler::Camera_sample const& sample, float4 const& color, int4 const& isolated,
+                    int4 const& bounds) noexcept override final;
+
+    void add_sample(sampler::Camera_sample const& sample, float4 const& color,
                     int4 const& bounds) noexcept override final;
 
   private:

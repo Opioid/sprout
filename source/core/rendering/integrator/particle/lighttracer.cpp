@@ -5,6 +5,9 @@
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/sensor/sensor.hpp"
+#include "sampler/camera_sample.hpp"
+#include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
@@ -16,7 +19,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-namespace rendering::integrator::surface {
+namespace rendering::integrator::particle {
 
 Lighttracer::Lighttracer(rnd::Generator& rng, take::Settings const& take_settings,
                          Settings const& settings) noexcept
@@ -43,85 +46,20 @@ void Lighttracer::start_pixel() noexcept {
     }
 }
 
-float4 Lighttracer::li(Ray& ray, Intersection& intersection, Worker& worker,
-                       Interface_stack const& initial_stack) noexcept {
-    static uint32_t constexpr Max_bounces = 16;
+void Lighttracer::li(int4 const& bounds, Worker& worker,
+                     Interface_stack const& /*initial_stack*/) noexcept {
+    scene::camera::Camera const& camera = worker.camera();
 
-    worker.reset_interface_stack(initial_stack);
+    //   scene::prop::Prop const* camera_prop = scene_->prop(camera.entity());
 
-    Filter filter = Filter::Undefined;
+    auto& sensor = camera.sensor();
 
-    Bxdf_sample sample_result;
+    Camera_sample camera_sample;
 
-    float3 throughput(1.f);
+    camera_sample.pixel    = int2(4, 4);
+    camera_sample.pixel_uv = float2(0.5);
 
-    float3 result = float3(0.f);
-
-    bool const avoid_caustics = true;
-
-    for (uint32_t i = ray.depth;; ++i) {
-        float3 const wo = -ray.direction;
-
-        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
-                                                          worker);
-
-        if (material_sample.same_hemisphere(wo)) {
-            result += material_sample.radiance();
-        }
-
-        if (material_sample.is_pure_emissive()) {
-            return float4(result, 1.f);
-        }
-
-        material_sample.sample(material_sampler(ray.depth), sample_result);
-        if (0.f == sample_result.pdf) {
-            break;
-        }
-
-        if (!sample_result.type.test(Bxdf_type::Caustic)) {
-            result += throughput * worker.photon_li(intersection, material_sample);
-            break;
-        }
-
-        if (ray.depth >= Max_bounces - 1) {
-            break;
-        }
-
-        if (0.f == ray.wavelength) {
-            ray.wavelength = sample_result.wavelength;
-        }
-
-        if (material_sample.ior_greater_one()) {
-            throughput *= sample_result.reflection / sample_result.pdf;
-
-            ray.set_direction(sample_result.wi);
-            ++ray.depth;
-        }
-
-        ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-        ray.min_t  = 0.f;
-        ray.max_t  = scene::Ray_max_t;
-
-        if (sample_result.type.test(Bxdf_type::Transmission)) {
-            worker.interface_change(sample_result.wi, intersection);
-        }
-
-        if (!worker.interface_stack().empty()) {
-            float3     vli, vtr;
-            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
-
-            // result += throughput * vli;
-            throughput *= vtr;
-
-            if (Event::Abort == hit) {
-                break;
-            }
-        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
-            break;
-        }
-    }
-
-    return float4(result, 1.f);
+    sensor.add_sample(camera_sample, float4(1.f, 0.f, 0.f, 1.f), bounds);
 }
 
 bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
@@ -210,7 +148,7 @@ size_t Lighttracer::num_bytes() const noexcept {
 Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          uint32_t num_integrators, uint32_t min_bounces,
                                          uint32_t max_bounces) noexcept
-    : Factory(take_settings),
+    : take_settings_(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces} {}
 
@@ -218,12 +156,12 @@ Lighttracer_factory::~Lighttracer_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Integrator* Lighttracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Lighttracer* Lighttracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Lighttracer(rng, take_settings_, settings_);
 }
 
 uint32_t Lighttracer_factory::max_sample_depth() const noexcept {
-    return 2;
+    return 1;
 }
 
-}  // namespace rendering::integrator::surface
+}  // namespace rendering::integrator::particle

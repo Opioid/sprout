@@ -4,8 +4,9 @@
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/photon/photon_map.hpp"
-#include "rendering/integrator/photon/photon_mapper.hpp"
+#include "rendering/integrator/particle/lighttracer.hpp"
+#include "rendering/integrator/particle/photon/photon_map.hpp"
+#include "rendering/integrator/particle/photon/photon_mapper.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"
@@ -33,7 +34,7 @@ void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scen
                   uint32_t num_samples_per_pixel, Surface_factory& surface_factory,
                   Volume_factory& volume_factory, sampler::Factory& sampler_factory,
                   Photon_map* photon_map, take::Photon_settings const& photon_settings,
-                  Surface_factory* lighttracer_factory) noexcept {
+                  Lighttracer_factory* lighttracer_factory) noexcept {
     scene::Worker::init(id, settings, scene, camera, max_material_sample_size,
                         surface_factory.max_sample_depth());
 
@@ -91,6 +92,10 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
     } else {
         return float4(0.f);
     }
+}
+
+void Worker::particle_li(int4 const& bounds, Interface_stack const& interface_stack) noexcept {
+    lighttracer_->li(bounds, *this, interface_stack);
 }
 
 Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,

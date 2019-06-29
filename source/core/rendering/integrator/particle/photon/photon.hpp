@@ -1,10 +1,10 @@
-#ifndef SU_RENDERING_INTEGRATOR_PHOTON_HPP
-#define SU_RENDERING_INTEGRATOR_PHOTON_HPP
+#ifndef SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_HPP
+#define SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_HPP
 
 #include "base/flags/flags.hpp"
 #include "base/math/vector3.hpp"
 
-namespace rendering::integrator::photon {
+namespace rendering::integrator::particle::photon {
 
 struct Photon {
     float3 p;
@@ -23,6 +23,6 @@ struct Photon_ref {
 
 static uint32_t constexpr Num_refs = 4 * 4096;
 
-}  // namespace rendering::integrator::photon
+}  // namespace rendering::integrator::particle::photon
 
 #endif

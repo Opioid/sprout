@@ -1,5 +1,5 @@
-#ifndef SU_RENDERING_INTEGRATOR_PHOTON_SPARSE_GRID_HPP
-#define SU_RENDERING_INTEGRATOR_PHOTON_SPARSE_GRID_HPP
+#ifndef SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_SPARSE_GRID_HPP
+#define SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_SPARSE_GRID_HPP
 
 #include "base/math/aabb.hpp"
 #include "base/math/vector2.hpp"
@@ -23,7 +23,7 @@ class Worker;
 
 }  // namespace scene
 
-namespace rendering::integrator::photon {
+namespace rendering::integrator::particle::photon {
 
 struct Photon;
 struct Photon_ref;
@@ -106,6 +106,6 @@ class Sparse_grid {
     bool check_disk_;
 };
 
-}  // namespace rendering::integrator::photon
+}  // namespace rendering::integrator::particle::photon
 
 #endif

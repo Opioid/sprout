@@ -6,7 +6,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "image/encoding/png/png_writer.hpp"
 
-namespace rendering::integrator::photon {
+namespace rendering::integrator::particle::photon {
 
 static int32_t constexpr Dimensions = 256;
 
@@ -90,4 +90,4 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
     distribution_.init();
 }
 
-}  // namespace rendering::integrator::photon
+}  // namespace rendering::integrator::particle::photon

@@ -1,4 +1,4 @@
-add_subdirectory(photon)
+add_subdirectory(particle)
 add_subdirectory(surface)
 add_subdirectory(volume)
 

@@ -13,7 +13,7 @@
 #include <iostream>
 #include "base/math/print.hpp"
 
-namespace rendering::integrator::photon {
+namespace rendering::integrator::particle::photon {
 
 Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float coarse_search_radius,
          bool separate_indirect) noexcept
@@ -217,4 +217,4 @@ AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& pool) const noexcep
     return aabb;
 }
 
-}  // namespace rendering::integrator::photon
+}  // namespace rendering::integrator::particle::photon

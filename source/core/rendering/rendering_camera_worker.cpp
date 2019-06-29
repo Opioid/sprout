@@ -19,13 +19,11 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
                            uint32_t num_samples) noexcept {
     scene::camera::Camera const& camera = *camera_;
 
-    scene::prop::Prop const* camera_prop = scene_->prop(camera.entity());
-
-    auto& sensor = camera.sensor();
-
     int4 bounds = camera.view_bounds(view);
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
+
+    auto& sensor = camera.sensor();
 
     int4 isolated_bounds = sensor.isolated_tile(
         int4(bounds.xy() + tile.xy(), bounds.xy() + tile.zw()));
@@ -35,6 +33,8 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
     uint32_t const tile_index = tiles_.index(tile);
 
     rng_.start(0, tile_index);
+
+    scene::prop::Prop const* camera_prop = scene_->prop(camera.entity());
 
     for (int32_t y = tile[1], y_len = tile[3] + 1; y < y_len; ++y) {
         for (int32_t x = tile[0], x_len = tile[2] + 1; x < x_len; ++x) {
@@ -55,6 +55,16 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
             }
         }
     }
+}
+
+void Camera_worker::particles(uint32_t frame, uint32_t view) noexcept {
+    scene::camera::Camera const& camera = *camera_;
+
+    int4 bounds = camera.view_bounds(view);
+    bounds[2] -= bounds[0];
+    bounds[3] -= bounds[1];
+
+    particle_li(bounds, camera.interface_stack());
 }
 
 }  // namespace rendering

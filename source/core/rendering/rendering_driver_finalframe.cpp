@@ -80,6 +80,8 @@ void Driver_finalframe::render_frame(uint32_t frame) noexcept {
         thread_pool_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
+            worker.particles(frame_, iteration_);
+
             uint32_t const num_samples = view_.num_samples_per_pixel;
 
             for (int4 tile; tiles_.pop(tile);) {

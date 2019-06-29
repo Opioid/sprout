@@ -24,12 +24,18 @@ enum class Event;
 
 namespace integrator {
 
+namespace particle {
+
+class Lighttracer;
+class Lighttracer_factory;
+
 namespace photon {
 
 class Map;
 class Mapper;
 
 }  // namespace photon
+}  // namespace particle
 
 namespace surface {
 
@@ -48,13 +54,14 @@ class Factory;
 
 class Worker : public scene::Worker {
   public:
-    using Ray             = scene::Ray;
-    using Scene           = scene::Scene;
-    using Material_sample = scene::material::Sample;
-    using Surface_factory = integrator::surface::Factory;
-    using Volume_factory  = integrator::volume::Factory;
-    using Photon_map      = integrator::photon::Map;
-    using Photon_mapper   = integrator::photon::Mapper;
+    using Ray                 = scene::Ray;
+    using Scene               = scene::Scene;
+    using Material_sample     = scene::material::Sample;
+    using Surface_factory     = integrator::surface::Factory;
+    using Volume_factory      = integrator::volume::Factory;
+    using Lighttracer_factory = integrator::particle::Lighttracer_factory;
+    using Photon_map          = integrator::particle::photon::Map;
+    using Photon_mapper       = integrator::particle::photon::Mapper;
 
     ~Worker() noexcept;
 
@@ -63,9 +70,11 @@ class Worker : public scene::Worker {
               Surface_factory& surface_factory, Volume_factory& volume_factory,
               sampler::Factory& sampler_factory, Photon_map* photon_map,
               take::Photon_settings const& photon_settings_,
-              Surface_factory*             lighttracer_factory) noexcept;
+              Lighttracer_factory*         lighttracer_factory) noexcept;
 
     float4 li(Ray& ray, Interface_stack const& interface_stack) noexcept;
+
+    void particle_li(int4 const& bounds, Interface_stack const& interface_stack) noexcept;
 
     Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
                  float3& transmittance) noexcept;
@@ -94,7 +103,7 @@ class Worker : public scene::Worker {
     Photon_mapper* photon_mapper_ = nullptr;
     Photon_map*    photon_map_    = nullptr;
 
-    integrator::surface::Integrator* lighttracer_ = nullptr;
+    integrator::particle::Lighttracer* lighttracer_ = nullptr;
 };
 
 }  // namespace rendering

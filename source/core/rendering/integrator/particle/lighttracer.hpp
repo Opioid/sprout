@@ -1,14 +1,25 @@
-#ifndef SU_RENDERING_INTEGRATOR_SURFACE_Lighttracer_HPP
-#define SU_RENDERING_INTEGRATOR_SURFACE_Lighttracer_HPP
+#ifndef SU_RENDERING_INTEGRATOR_PARTICLE_LIGHTTRACER_HPP
+#define SU_RENDERING_INTEGRATOR_PARTICLE_LIGHTTRACER_HPP
 
+#include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
-#include "surface_integrator.hpp"
 
-namespace rendering::integrator::surface {
+namespace scene::prop {
+class Interface_stack;
+}
+
+namespace rendering {
+
+class Worker;
+
+namespace integrator::particle {
 
 class alignas(64) Lighttracer final : public Integrator {
   public:
+    using Interface_stack = scene::prop::Interface_stack;
+    using Camera_sample   = sampler::Camera_sample;
+
     struct Settings {
         uint32_t min_bounces;
         uint32_t max_bounces;
@@ -23,8 +34,7 @@ class alignas(64) Lighttracer final : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept override final;
+    void li(int4 const& bounds, Worker& worker, Interface_stack const& initial_stack) noexcept;
 
     size_t num_bytes() const noexcept override final;
 
@@ -45,23 +55,26 @@ class alignas(64) Lighttracer final : public Integrator {
     sampler::Golden_ratio material_samplers_[Num_material_samplers];
 };
 
-class Lighttracer_factory final : public Factory {
+class Lighttracer_factory final {
   public:
     Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
                         uint32_t min_bounces, uint32_t max_bounces) noexcept;
 
-    ~Lighttracer_factory() noexcept override final;
+    ~Lighttracer_factory() noexcept;
 
-    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Lighttracer* create(uint32_t id, rnd::Generator& rng) const noexcept;
 
-    uint32_t max_sample_depth() const noexcept override final;
+    uint32_t max_sample_depth() const noexcept;
 
   private:
+    take::Settings const& take_settings_;
+
     Lighttracer* integrators_;
 
     Lighttracer::Settings settings_;
 };
 
-}  // namespace rendering::integrator::surface
+}  // namespace integrator::particle
+}  // namespace rendering
 
 #endif

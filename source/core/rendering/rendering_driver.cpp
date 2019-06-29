@@ -45,7 +45,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
         photon_infos_ = new Photon_info[num_workers];
     }
 
-    integrator::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
+    integrator::particle::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
 
     for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
         workers_[i].init(i, take.settings, scene, *take.view.camera, max_material_sample_size,

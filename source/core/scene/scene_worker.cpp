@@ -92,6 +92,10 @@ Scene const& Worker::scene() const noexcept {
     return *scene_;
 }
 
+camera::Camera const& Worker::camera() const noexcept {
+    return *camera_;
+}
+
 uint64_t Worker::absolute_time(uint32_t frame, float frame_delta) const noexcept {
     return camera_->absolute_time(frame, frame_delta);
 }

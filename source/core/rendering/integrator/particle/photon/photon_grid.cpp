@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-namespace rendering::integrator::photon {
+namespace rendering::integrator::particle::photon {
 
 using namespace scene;
 
@@ -575,4 +575,4 @@ static float3 scattering_coefficient(prop::Intersection const& intersection,
     }
 }
 
-}  // namespace rendering::integrator::photon
+}  // namespace rendering::integrator::particle::photon

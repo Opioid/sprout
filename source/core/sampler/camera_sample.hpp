@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_CAMERA_SAMPLE_HPP
+#define SU_CORE_SAMPLER_CAMERA_SAMPLE_HPP
 
 #include "base/math/vector2.hpp"
 
@@ -12,3 +13,5 @@ struct Camera_sample {
 };
 
 }  // namespace sampler
+
+#endif

@@ -220,7 +220,7 @@ Integrator* PM_factory::create(uint32_t id, rnd::Generator& rng) const noexcept 
 }
 
 uint32_t PM_factory::max_sample_depth() const noexcept {
-    return 2;
+    return 1;
 }
 
 }  // namespace rendering::integrator::surface
