@@ -57,7 +57,9 @@ Scene::~Scene() noexcept {
 
 void Scene::finish() noexcept {
     if (lights_.empty()) {
-        lights_.emplace_back(light::Light::Type::Null, prop::Null, prop::Null);
+        uint32_t const dummy = create_dummy();
+        prop_allocate_frames(dummy, 1, 1);
+        lights_.emplace_back(light::Light::Type::Null, dummy, prop::Null);
     }
 
     light_powers_.resize(lights_.size());
