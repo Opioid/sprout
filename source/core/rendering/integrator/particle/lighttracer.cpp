@@ -46,31 +46,47 @@ void Lighttracer::start_pixel() noexcept {
     }
 }
 
-void Lighttracer::li(int4 const& bounds, Worker& worker,
+void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                      Interface_stack const& /*initial_stack*/) noexcept {
     scene::camera::Camera const& camera = worker.camera();
 
     //   scene::prop::Prop const* camera_prop = scene_->prop(camera.entity());
 
-    auto& sensor = camera.sensor();
+    Filter const filter = Filter::Undefined;
+
+    Intersection intersection;
+
+    Sample_from light_sample;
+
+    Ray   ray;
+    Light light;
+    if (!generate_light_ray(frame, worker, ray, light, light_sample)) {
+        return;
+    }
+
+    if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+        return;
+    }
 
     Camera_sample camera_sample;
 
-    camera_sample.pixel    = int2(4, 4);
-    camera_sample.pixel_uv = float2(0.5);
+    camera.sample(ray.time, intersection.geo.p, camera_sample);
+
+    auto& sensor = camera.sensor();
 
     sensor.add_sample(camera_sample, float4(1.f, 0.f, 0.f, 1.f), bounds);
 }
 
-bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
-                                     float3& radiance) noexcept {
+bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
+                                     Sample_from& light_sample) noexcept {
     Scene const& scene = worker.scene();
 
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = scene.random_light(select);
 
-    scene::shape::Sample_from light_sample;
+    uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
+
     if (!light.ref.sample(time, sampler_, 0, scene.aabb(), worker, light_sample)) {
         return false;
     }
@@ -79,52 +95,15 @@ bool Lighttracer::generate_light_ray(uint64_t time, Worker& worker, Ray& ray,
     ray.set_direction(light_sample.dir);
     ray.min_t      = 0.f;
     ray.max_t      = scene::Ray_max_t;
+    ray.depth      = 0;
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker) /
-               (light.pdf * light_sample.pdf);
+    light_out = light.ref;
+
+    light_sample.pdf *= light.pdf;
 
     return true;
-}
-
-float3 Lighttracer::direct_light(Ray const& ray, Intersection const& intersection,
-                                 Material_sample const& material_sample, Filter filter,
-                                 Worker& worker) noexcept {
-    float3 result(0.f);
-
-    if (!material_sample.ior_greater_one()) {
-        return result;
-    }
-
-    Ray shadow_ray;
-    shadow_ray.origin = intersection.geo.p;
-    shadow_ray.min_t  = 0.f;
-    shadow_ray.depth  = ray.depth + 1;
-    shadow_ray.time   = ray.time;
-
-    for (uint32_t i = 1; i > 0; --i) {
-        auto const light = worker.scene().random_light(rng_.random_float());
-
-        scene::shape::Sample_to light_sample;
-        if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-                             material_sample.is_translucent(), sampler_, 0, worker, light_sample)) {
-            shadow_ray.set_direction(light_sample.wi);
-            shadow_ray.max_t = light_sample.t;
-
-            float3 tv;
-            if (worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection,
-                                              filter, tv)) {
-                auto const bxdf = material_sample.evaluate_f(light_sample.wi, true);
-
-                float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
-
-                result += (tv * radiance * bxdf.reflection) / (light.pdf * light_sample.pdf);
-            }
-        }
-    }
-
-    return result;
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {

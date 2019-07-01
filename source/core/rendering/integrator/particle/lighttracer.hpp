@@ -9,6 +9,14 @@ namespace scene::prop {
 class Interface_stack;
 }
 
+namespace scene::shape {
+struct Sample_from;
+}
+
+namespace scene::light {
+class Light;
+}
+
 namespace rendering {
 
 class Worker;
@@ -19,6 +27,7 @@ class alignas(64) Lighttracer final : public Integrator {
   public:
     using Interface_stack = scene::prop::Interface_stack;
     using Camera_sample   = sampler::Camera_sample;
+    using Sample_from     = scene::shape::Sample_from;
 
     struct Settings {
         uint32_t min_bounces;
@@ -34,16 +43,14 @@ class alignas(64) Lighttracer final : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    void li(int4 const& bounds, Worker& worker, Interface_stack const& initial_stack) noexcept;
+    void li(uint32_t frame, int4 const& bounds, Worker& worker,
+            Interface_stack const& initial_stack) noexcept;
 
     size_t num_bytes() const noexcept override final;
 
   private:
-    bool generate_light_ray(uint64_t time, Worker& worker, Ray& ray, float3& radiance) noexcept;
-
-    float3 direct_light(Ray const& ray, Intersection const& intersection,
-                        Material_sample const& material_sample, Filter filter,
-                        Worker& worker) noexcept;
+    bool generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
+                            Sample_from& light_sample) noexcept;
 
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 

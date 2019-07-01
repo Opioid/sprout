@@ -94,8 +94,9 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
     }
 }
 
-void Worker::particle_li(int4 const& bounds, Interface_stack const& interface_stack) noexcept {
-    lighttracer_->li(bounds, *this, interface_stack);
+void Worker::particle_li(uint32_t frame, int4 const& bounds,
+                         Interface_stack const& interface_stack) noexcept {
+    lighttracer_->li(frame, bounds, *this, interface_stack);
 }
 
 Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,

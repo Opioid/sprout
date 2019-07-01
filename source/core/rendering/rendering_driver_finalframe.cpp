@@ -75,12 +75,18 @@ void Driver_finalframe::render_frame(uint32_t frame) noexcept {
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         iteration_ = v;
 
+        if (lighttracing_) {
+            thread_pool_.run_parallel([this](uint32_t index) noexcept {
+                auto& worker = workers_[index];
+
+                worker.particles(frame_, iteration_);
+            });
+        }
+
         tiles_.restart();
 
         thread_pool_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
-
-            worker.particles(frame_, iteration_);
 
             uint32_t const num_samples = view_.num_samples_per_pixel;
 

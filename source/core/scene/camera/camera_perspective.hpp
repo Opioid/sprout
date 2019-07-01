@@ -35,7 +35,8 @@ class Perspective final : public Camera {
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
 
-    bool sample(float3 const& p) const noexcept override final;
+    bool sample(uint64_t time, float3 const& p, Camera_sample& sample) const
+        noexcept override final;
 
     void set_fov(float fov) noexcept;
 

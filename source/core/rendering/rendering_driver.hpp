@@ -79,6 +79,8 @@ class Driver {
 
     image::Float4 target_;
 
+    bool lighttracing_;
+
     take::Photon_settings photon_settings_;
 
     integrator::particle::photon::Map photon_map_;

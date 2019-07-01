@@ -95,7 +95,8 @@ bool Cubic::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t
     return true;
 }
 
-bool Cubic::sample(float3 const& /*p*/) const noexcept {
+bool Cubic::sample(uint64_t /*time*/, float3 const& /*p*/, Camera_sample& /*sample*/) const
+    noexcept {
     return false;
 }
 
