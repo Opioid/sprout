@@ -60,8 +60,8 @@ bool Spherical::generate_ray(Prop const* self, Camera_sample const& sample, uint
     return true;
 }
 
-bool Spherical::sample(uint64_t /*time*/, float3 const& /*p*/, Camera_sample& /*sample*/) const
-    noexcept {
+bool Spherical::sample(Prop const* /*self*/, uint64_t /*time*/, float3 const& /*p*/,
+                       Scene const& /*scene*/, Camera_sample_to& /*sample*/) const noexcept {
     return false;
 }
 

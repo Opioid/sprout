@@ -48,11 +48,15 @@ void Lighttracer::start_pixel() noexcept {
 
 void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                      Interface_stack const& /*initial_stack*/) noexcept {
+    worker.interface_stack().clear();
+
     scene::camera::Camera const& camera = worker.camera();
 
-    //   scene::prop::Prop const* camera_prop = scene_->prop(camera.entity());
+    scene::prop::Prop const* camera_prop = worker.scene().prop(camera.entity());
 
     Filter const filter = Filter::Undefined;
+
+    bool const avoid_caustics = false;
 
     Intersection intersection;
 
@@ -68,13 +72,38 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         return;
     }
 
-    Camera_sample camera_sample;
+    Camera_sample_to camera_sample;
 
-    camera.sample(ray.time, intersection.geo.p, camera_sample);
+    camera.sample(camera_prop, ray.time, intersection.geo.p, worker.scene(), camera_sample);
+
+    float const t = distance(intersection.geo.p, camera_sample.p);
+
+    Ray visibility_ray;
+    visibility_ray.origin = intersection.geo.p;
+    visibility_ray.set_direction(-camera_sample.dir);
+    visibility_ray.min_t = scene::offset_f(0.f);
+    visibility_ray.max_t = t;
+    visibility_ray.depth = ray.depth;
+    visibility_ray.time  = ray.time;
+
+    float mv;
+    if (!worker.masked_visibility(visibility_ray, filter, mv)) {
+        return;
+    }
+
+    float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
+
+    float3 const wo = -ray.direction;
+
+    auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
+                                                      worker);
+
+    float3 const wi   = -camera_sample.dir;
+    auto const   bxdf = material_sample.evaluate_b(wi, true);
 
     auto& sensor = camera.sensor();
 
-    sensor.add_sample(camera_sample, float4(1.f, 0.f, 0.f, 1.f), bounds);
+    sensor.add_sample(camera_sample, float4(radiance * bxdf.reflection, 1.f), bounds);
 }
 
 bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,

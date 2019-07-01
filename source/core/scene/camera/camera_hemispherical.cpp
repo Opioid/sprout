@@ -66,8 +66,8 @@ bool Hemispherical::generate_ray(Prop const* self, Camera_sample const& sample, 
     return true;
 }
 
-bool Hemispherical::sample(uint64_t /*time*/, float3 const& /*p*/, Camera_sample& /*sample*/) const
-    noexcept {
+bool Hemispherical::sample(Prop const* /*self*/, uint64_t /*time*/, float3 const& /*p*/,
+                           Scene const& /*scene*/, Camera_sample_to& /*sample*/) const noexcept {
     return false;
 }
 

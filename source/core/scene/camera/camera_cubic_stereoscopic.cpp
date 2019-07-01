@@ -107,8 +107,9 @@ bool Cubic_stereoscopic::generate_ray(Prop const* self, sampler::Camera_sample c
     return true;
 }
 
-bool Cubic_stereoscopic::sample(uint64_t /*time*/, float3 const& /*p*/,
-                                Camera_sample& /*sample*/) const noexcept {
+bool Cubic_stereoscopic::sample(Prop const* /*self*/, uint64_t /*time*/, float3 const& /*p*/,
+                                Scene const& /*scene*/, Camera_sample_to& /*sample*/) const
+    noexcept {
     return false;
 }
 

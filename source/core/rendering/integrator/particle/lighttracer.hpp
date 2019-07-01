@@ -5,6 +5,10 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 
+namespace sampler {
+struct Camera_sample_to;
+}
+
 namespace scene::prop {
 class Interface_stack;
 }
@@ -25,9 +29,9 @@ namespace integrator::particle {
 
 class alignas(64) Lighttracer final : public Integrator {
   public:
-    using Interface_stack = scene::prop::Interface_stack;
-    using Camera_sample   = sampler::Camera_sample;
-    using Sample_from     = scene::shape::Sample_from;
+    using Interface_stack  = scene::prop::Interface_stack;
+    using Camera_sample_to = sampler::Camera_sample_to;
+    using Sample_from      = scene::shape::Sample_from;
 
     struct Settings {
         uint32_t min_bounces;

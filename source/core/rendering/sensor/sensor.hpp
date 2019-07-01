@@ -11,13 +11,15 @@ class Pool;
 
 namespace sampler {
 struct Camera_sample;
-}
+struct Camera_sample_to;
+}  // namespace sampler
 
 namespace rendering::sensor {
 
 class Sensor {
   public:
-    using Camera_sample = sampler::Camera_sample;
+    using Camera_sample    = sampler::Camera_sample;
+    using Camera_sample_to = sampler::Camera_sample_to;
 
     Sensor(int2 dimensions, float exposure) noexcept;
 
@@ -36,7 +38,7 @@ class Sensor {
     virtual void add_sample(Camera_sample const& sample, float4 const& color, int4 const& isolated,
                             int4 const& bounds) noexcept = 0;
 
-    virtual void add_sample(Camera_sample const& sample, float4 const& color,
+    virtual void add_sample(Camera_sample_to const& sample, float4 const& color,
                             int4 const& bounds) noexcept = 0;
 
     virtual bool has_alpha_transparency() const noexcept = 0;

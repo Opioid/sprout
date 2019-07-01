@@ -21,8 +21,8 @@ class Spherical_stereoscopic final : public Stereoscopic {
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
 
-    bool sample(uint64_t time, float3 const& p, Camera_sample& sample) const
-        noexcept override final;
+    bool sample(Prop const* self, uint64_t time, float3 const& p, Scene const& scene,
+                Camera_sample_to& sample) const noexcept override final;
 
   private:
     void on_update(Prop const* self, uint64_t time, Worker& worker) noexcept override final;

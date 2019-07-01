@@ -9,7 +9,8 @@
 
 namespace sampler {
 struct Camera_sample;
-}
+struct Camera_sample_to;
+}  // namespace sampler
 
 namespace rendering::sensor {
 class Sensor;
@@ -29,10 +30,11 @@ namespace camera {
 
 class Camera {
   public:
-    using Prop           = prop::Prop;
-    using Transformation = entity::Composed_transformation;
-    using Camera_sample  = sampler::Camera_sample;
-    using Sensor         = rendering::sensor::Sensor;
+    using Prop             = prop::Prop;
+    using Transformation   = entity::Composed_transformation;
+    using Camera_sample    = sampler::Camera_sample;
+    using Camera_sample_to = sampler::Camera_sample_to;
+    using Sensor           = rendering::sensor::Sensor;
 
     Camera(int2 resolution) noexcept;
 
@@ -55,7 +57,8 @@ class Camera {
     virtual bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
                               uint32_t view, Scene const& scene, Ray& ray) const noexcept = 0;
 
-    virtual bool sample(uint64_t time, float3 const& p, Camera_sample& sample) const noexcept = 0;
+    virtual bool sample(Prop const* self, uint64_t time, float3 const& p, Scene const& scene,
+                        Camera_sample_to& sample) const noexcept = 0;
 
     void set_parameters(json::Value const& parameters) noexcept;
 

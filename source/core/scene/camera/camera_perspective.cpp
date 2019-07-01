@@ -72,9 +72,26 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
     return true;
 }
 
-bool Perspective::sample(uint64_t time, float3 const& p, Camera_sample& sample) const noexcept {
-    sample.pixel    = int2(4, 4);
-    sample.pixel_uv = float2(0.5);
+bool Perspective::sample(Prop const* self, uint64_t time, float3 const& p, Scene const& scene,
+                         Camera_sample_to& sample) const noexcept {
+    Transformation temp;
+    auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
+
+    float3 const po = transformation.world_to_object_point(p);
+
+    float3 const dir = normalize(po);
+
+    float3 const pd = left_top_[2] * (dir / dir[2]);
+
+    float3 const offset = pd - left_top_;
+
+    float const x = offset[0] / d_x_[0];
+    float const y = offset[1] / d_y_[1];
+
+    sample.pixel    = int2(static_cast<int32_t>(x), static_cast<int32_t>(y));
+    sample.pixel_uv = float2(frac(x), frac(y));
+    sample.p        = transformation.position;
+    sample.dir      = transformation.object_to_world_vector(dir);
 
     return true;
 }
@@ -84,13 +101,13 @@ void Perspective::set_fov(float fov) noexcept {
 }
 
 void Perspective::set_lens(Lens const& lens) noexcept {
-    float const a = math::degrees_to_radians(lens.angle);
+    float const a = degrees_to_radians(lens.angle);
     float const c = std::cos(a);
     float const s = std::sin(a);
 
     float3 const axis(c, s, 0.f);
     float const  tilt = math::degrees_to_radians(lens.tilt);
-    math::set_rotation(lens_tilt_, axis, tilt);
+    set_rotation(lens_tilt_, axis, tilt);
 
     float const shift = 2.f * lens.shift;
 

@@ -5,7 +5,8 @@
 
 namespace sampler {
 struct Camera_sample;
-}
+struct Camera_sample_to;
+}  // namespace sampler
 
 namespace rendering::sensor {
 
@@ -21,7 +22,7 @@ class Unfiltered final : public Base {
     void add_sample(sampler::Camera_sample const& sample, float4 const& color, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void add_sample(sampler::Camera_sample const& sample, float4 const& color,
+    void add_sample(sampler::Camera_sample_to const& sample, float4 const& color,
                     int4 const& bounds) noexcept override final;
 
   private:

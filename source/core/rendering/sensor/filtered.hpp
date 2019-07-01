@@ -9,7 +9,8 @@ class Texture;
 
 namespace sampler {
 struct Camera_sample;
-}
+struct Camera_sample_to;
+}  // namespace sampler
 
 namespace rendering::sensor {
 
@@ -54,9 +55,10 @@ class Filtered : public Base {
 template <class Base, class Clamp, class F>
 class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
   public:
-    using Camera_sample = sampler::Camera_sample;
-    using Filter        = filter::Filter;
-    using Texture       = image::texture::Texture;
+    using Camera_sample    = sampler::Camera_sample;
+    using Camera_sample_to = sampler::Camera_sample_to;
+    using Filter           = filter::Filter;
+    using Texture          = image::texture::Texture;
 
     Filtered_1p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
@@ -66,16 +68,17 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void add_sample(Camera_sample const& sample, float4 const&,
-                    int4 const&          bounds) noexcept override final;
+    void add_sample(Camera_sample_to const& sample, float4 const&,
+                    int4 const&             bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
 class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
   public:
-    using Camera_sample = sampler::Camera_sample;
-    using Filter        = filter::Filter;
-    using Texture       = image::texture::Texture;
+    using Camera_sample    = sampler::Camera_sample;
+    using Camera_sample_to = sampler::Camera_sample_to;
+    using Filter           = filter::Filter;
+    using Texture          = image::texture::Texture;
 
     Filtered_2p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
@@ -85,16 +88,17 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void add_sample(Camera_sample const& sample, float4 const&,
-                    int4 const&          bounds) noexcept override final;
+    void add_sample(Camera_sample_to const& sample, float4 const&,
+                    int4 const&             bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
 class Filtered_inf final : public Filtered<Base, Clamp, F> {
   public:
-    using Camera_sample = sampler::Camera_sample;
-    using Filter        = filter::Filter;
-    using Texture       = image::texture::Texture;
+    using Camera_sample    = sampler::Camera_sample;
+    using Camera_sample_to = sampler::Camera_sample_to;
+    using Filter           = filter::Filter;
+    using Texture          = image::texture::Texture;
 
     Filtered_inf(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
@@ -104,8 +108,8 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void add_sample(Camera_sample const& sample, float4 const&,
-                    int4 const&          bounds) noexcept override final;
+    void add_sample(Camera_sample_to const& sample, float4 const&,
+                    int4 const&             bounds) noexcept override final;
 };
 
 }  // namespace rendering::sensor
