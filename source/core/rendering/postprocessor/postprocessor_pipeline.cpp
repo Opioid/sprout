@@ -45,6 +45,18 @@ bool Pipeline::has_alpha_transparency(bool alpha_in) const {
     return alpha_in;
 }
 
+void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool) {
+    if (postprocessors_.empty()) {
+        sensor.resolve(pool, target);
+    } else {
+        if (0 == postprocessors_.size() % 2) {
+            sensor.resolve(pool, target);
+        } else {
+            sensor.resolve(pool, scratch_);
+        }
+    }
+}
+
 void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool) {
     if (postprocessors_.empty()) {
         sensor.resolve(pool, target);
@@ -60,6 +72,30 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread
         }
 
         sensor.resolve(pool, *targets[0]);
+
+        for (auto pp : postprocessors_) {
+            pp->apply(*targets[0], *targets[1], pool);
+            std::swap(targets[0], targets[1]);
+        }
+    }
+}
+
+void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
+                                thread::Pool& pool) {
+    if (postprocessors_.empty()) {
+        sensor.resolve_accumulate(pool, target);
+    } else {
+        image::Float4* targets[2];
+
+        if (0 == postprocessors_.size() % 2) {
+            targets[0] = &target;
+            targets[1] = &scratch_;
+        } else {
+            targets[0] = &scratch_;
+            targets[1] = &target;
+        }
+
+        sensor.resolve_accumulate(pool, *targets[0]);
 
         for (auto pp : postprocessors_) {
             pp->apply(*targets[0], *targets[1], pool);

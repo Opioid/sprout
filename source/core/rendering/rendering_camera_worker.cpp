@@ -64,7 +64,7 @@ void Camera_worker::particles(uint32_t frame, uint32_t view) noexcept {
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
 
-    for (uint32_t i = 0; i < 16 * 1024; ++i) {
+    for (uint32_t i = 0; i < 1024 * 1024; ++i) {
         particle_li(frame, bounds, camera.interface_stack());
     }
 }

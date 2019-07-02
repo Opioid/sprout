@@ -47,6 +47,17 @@ void Opaque::add_pixel_atomic(int2 pixel, float4 const& color, float weight) noe
     atomic::add_assign(value[3], weight);
 }
 
+void Opaque::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept {
+    auto const d = dimensions();
+
+    auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
+    atomic::add_assign(value[0], weight * color[0]);
+    atomic::add_assign(value[1], weight * color[1]);
+    atomic::add_assign(value[2], weight * color[2]);
+
+    value[3] = 1.f;
+}
+
 void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept {
     float const exposure_factor = exposure_factor_;
 
@@ -56,6 +67,20 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const no
         float3 const color = value[3] > 0.f ? value.xyz() / value[3] : value.xyz();
 
         target.store(i, float4(exposure_factor * color, 1.f));
+    }
+}
+
+void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const noexcept {
+    float const exposure_factor = exposure_factor_;
+
+    for (int32_t i = begin; i < end; ++i) {
+        auto const& value = pixels_[i];
+
+        float3 const color = value[3] > 0.f ? value.xyz() / value[3] : value.xyz();
+
+        float3 const old = target.load(i).xyz();
+
+        target.store(i, float4(old + exposure_factor * color, 1.f));
     }
 }
 

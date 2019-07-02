@@ -29,6 +29,8 @@ class Sensor {
 
     void resolve(thread::Pool& pool, image::Float4& target) const noexcept;
 
+    void resolve_accumulate(thread::Pool& pool, image::Float4& target) const noexcept;
+
     virtual int32_t filter_radius_int() const noexcept = 0;
 
     virtual int4 isolated_tile(int4 const& tile) const noexcept = 0;
@@ -50,7 +52,12 @@ class Sensor {
 
     virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept = 0;
 
+    virtual void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept = 0;
+
     virtual void resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept = 0;
+
+    virtual void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
+        noexcept = 0;
 
     int2 dimensions_;
 

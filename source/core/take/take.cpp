@@ -1,6 +1,7 @@
 #include "take.hpp"
 #include "base/memory/array.inl"
 #include "exporting/exporting_sink.hpp"
+#include "rendering/integrator/particle/lighttracer.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"

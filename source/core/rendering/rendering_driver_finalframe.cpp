@@ -40,12 +40,12 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         sensor.clear();
 
-        progressor_.start(progress_range);
-
         uint64_t const start = current_frame * camera.frame_step();
         scene_.simulate(start, start + camera.frame_duration(), thread_pool_);
 
         camera.update(scene_, start, workers_[0]);
+
+        progressor_.start(progress_range);
 
         render_frame(current_frame);
 
@@ -56,7 +56,11 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         auto const export_start = std::chrono::high_resolution_clock::now();
 
-        view_.pipeline.apply(sensor, target_, thread_pool_);
+        if (lighttracing_) {
+            view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
+        } else {
+            view_.pipeline.apply(sensor, target_, thread_pool_);
+        }
 
         for (auto& e : exporters) {
             e->write(target_, current_frame, thread_pool_);
@@ -72,16 +76,24 @@ void Driver_finalframe::render_frame(uint32_t frame) noexcept {
 
     frame_ = frame;
 
-    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
-        iteration_ = v;
+    if (lighttracing_) {
+        for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+            iteration_ = v;
 
-        if (lighttracing_) {
             thread_pool_.run_parallel([this](uint32_t index) noexcept {
                 auto& worker = workers_[index];
 
                 worker.particles(frame_, iteration_);
             });
         }
+
+        view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
+
+        view_.camera->sensor().clear();
+    }
+
+    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+        iteration_ = v;
 
         tiles_.restart();
 

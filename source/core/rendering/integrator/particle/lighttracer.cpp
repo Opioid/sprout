@@ -56,11 +56,17 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     Filter const filter = Filter::Undefined;
 
+    Bxdf_sample sample_result;
+
+    float3 throughput(1.f);
+
     bool const avoid_caustics = false;
 
     Intersection intersection;
 
     Sample_from light_sample;
+
+    bool caustic_ray = false;
 
     Ray   ray;
     Light light;
@@ -72,38 +78,77 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         return;
     }
 
-    Camera_sample_to camera_sample;
-
-    camera.sample(camera_prop, ray.time, intersection.geo.p, worker.scene(), camera_sample);
-
-    float const t = distance(intersection.geo.p, camera_sample.p);
-
-    Ray visibility_ray;
-    visibility_ray.origin = intersection.geo.p;
-    visibility_ray.set_direction(-camera_sample.dir);
-    visibility_ray.min_t = scene::offset_f(0.f);
-    visibility_ray.max_t = t;
-    visibility_ray.depth = ray.depth;
-    visibility_ray.time  = ray.time;
-
-    float mv;
-    if (!worker.masked_visibility(visibility_ray, filter, mv)) {
-        return;
-    }
-
     float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
 
-    float3 const wo = -ray.direction;
+    for (;;) {
+        float3 const wo = -ray.direction;
 
-    auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
-                                                      worker);
+        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
+                                                          worker);
 
-    float3 const wi   = -camera_sample.dir;
-    auto const   bxdf = material_sample.evaluate_b(wi, true);
+        if (material_sample.is_pure_emissive()) {
+            break;
+        }
 
-    auto& sensor = camera.sensor();
+        material_sample.sample(sampler_, sample_result);
+        if (0.f == sample_result.pdf) {
+            break;
+        }
 
-    sensor.add_sample(camera_sample, float4(radiance * bxdf.reflection, 1.f), bounds);
+        if (material_sample.ior_greater_one()) {
+            if (sample_result.type.test(Bxdf_type::Caustic)) {
+                caustic_ray = true;
+            } else {
+                if (!caustic_ray) {
+                    break;
+                }
+
+                if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
+                    ((caustic_ray &&
+                      worker.interface_stack().top_is_vacuum_or_not_scattering(worker)))) {
+                    direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
+                                  material_sample, filter, worker);
+                }
+            }
+        }
+
+        if (ray.depth >= settings_.max_bounces) {
+            break;
+        }
+
+        if (material_sample.ior_greater_one()) {
+            //   transparent &= sample_result.type.test(Bxdf_type::Pass_through);
+
+            radiance *= sample_result.reflection / sample_result.pdf;
+
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t  = 0.f;
+            ray.set_direction(sample_result.wi);
+            ++ray.depth;
+        } else {
+            ray.min_t = scene::offset_f(ray.max_t);
+        }
+
+        ray.max_t = scene::Ray_max_t;
+
+        if (sample_result.type.test(Bxdf_type::Transmission)) {
+            worker.interface_change(sample_result.wi, intersection);
+        }
+
+        if (!worker.interface_stack().empty()) {
+            float3     vli, vtr;
+            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
+
+            //   result += throughput * vli;
+            throughput *= vtr;
+
+            if (Event::Abort == hit || Event::Absorb == hit) {
+                break;
+            }
+        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+            break;
+        }
+    }
 }
 
 bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
@@ -133,6 +178,37 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
     light_sample.pdf *= light.pdf;
 
     return true;
+}
+
+void Lighttracer::direct_camera(scene::camera::Camera const& camera,
+                                scene::prop::Prop const* camera_prop, int4 const& bounds,
+                                float3 const& radiance, Ray const& history,
+                                Intersection const&    intersection,
+                                Material_sample const& material_sample, Filter filter,
+                                Worker& worker) const noexcept {
+    Camera_sample_to camera_sample;
+
+    camera.sample(camera_prop, history.time, intersection.geo.p, worker.scene(), camera_sample);
+
+    float const t = distance(intersection.geo.p, camera_sample.p);
+
+    Ray visibility_ray;
+    visibility_ray.origin = intersection.geo.p;
+    visibility_ray.set_direction(-camera_sample.dir);
+    visibility_ray.min_t = scene::offset_f(0.f);
+    visibility_ray.max_t = t;
+    visibility_ray.depth = history.depth;
+    visibility_ray.time  = history.time;
+
+    float mv;
+    if (worker.masked_visibility(visibility_ray, filter, mv)) {
+        float3 const wi   = -camera_sample.dir;
+        auto const   bxdf = material_sample.evaluate_f(wi, true);
+
+        auto& sensor = camera.sensor();
+
+        sensor.add_sample(camera_sample, float4(0.01f * radiance * bxdf.reflection, 1.f), bounds);
+    }
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {

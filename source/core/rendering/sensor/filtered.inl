@@ -50,11 +50,10 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 con
 
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 const& color,
-
                                             int4 const& bounds) noexcept {
     if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2]) &&
         static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
-        Base::add_pixel_atomic(pixel, color, weight);
+        Base::splat_pixel_atomic(pixel, color, weight);
     }
 }
 

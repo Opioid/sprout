@@ -37,7 +37,11 @@ class Pipeline {
 
     bool has_alpha_transparency(bool alpha_in) const;
 
+    void seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool);
+
     void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool);
+
+    void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool);
 
     size_t num_bytes() const;
 

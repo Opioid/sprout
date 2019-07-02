@@ -67,13 +67,14 @@
 
 namespace take {
 
-using Scene               = scene::Scene;
-using Sensor_filter       = rendering::sensor::filter::Filter;
-using Sensor_ptr          = rendering::sensor::Sensor*;
-using Surface_factory_ptr = rendering::integrator::surface::Factory*;
-using Volume_factory_ptr  = rendering::integrator::volume::Factory*;
-using Postprocessor_ptr   = rendering::postprocessor::Postprocessor*;
-using Light_sampling      = rendering::integrator::Light_sampling;
+using Scene                = scene::Scene;
+using Sensor_filter        = rendering::sensor::filter::Filter;
+using Sensor_ptr           = rendering::sensor::Sensor*;
+using Surface_factory_ptr  = rendering::integrator::surface::Factory*;
+using Volume_factory_ptr   = rendering::integrator::volume::Factory*;
+using Particle_factory_ptr = rendering::integrator::particle::Lighttracer_factory*;
+using Postprocessor_ptr    = rendering::postprocessor::Postprocessor*;
+using Light_sampling       = rendering::integrator::Light_sampling;
 
 static bool load_camera(json::Value const& camera_value, Take& take, Scene& scene) noexcept;
 
@@ -99,6 +100,10 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
                                                          Settings const&    settings,
                                                          uint32_t           num_workers) noexcept;
+
+static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
+                                                             Settings const&    settings,
+                                                             uint32_t num_workers) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
@@ -554,11 +559,11 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
                                                                             num_workers);
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.photon_settings);
+        } else if ("particle" == n.name) {
+            take.lighttracer_factory = load_particle_integrator_factory(n.value, take.settings,
+                                                                        num_workers);
         }
     }
-
-    take.lighttracer_factory = new rendering::integrator::particle::Lighttracer_factory(
-        take.settings, num_workers, 1, 1);
 }
 
 static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
@@ -687,6 +692,12 @@ static Volume_factory_ptr load_volume_integrator_factory(json::Value const& inte
     }
 
     return nullptr;
+}
+
+static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
+                                                             Settings const&    settings,
+                                                             uint32_t num_workers) noexcept {
+    return new rendering::integrator::particle::Lighttracer_factory(settings, num_workers, 1, 16);
 }
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {

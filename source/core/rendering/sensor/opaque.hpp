@@ -22,7 +22,12 @@ class Opaque : public Sensor {
 
     void add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept override final;
 
+    void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept override final;
+
     void resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept override final;
+
+    void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
+        noexcept override final;
 
     // weight_sum is saved in pixel.w
     float4* pixels_;

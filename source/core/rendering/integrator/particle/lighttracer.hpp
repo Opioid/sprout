@@ -9,9 +9,16 @@ namespace sampler {
 struct Camera_sample_to;
 }
 
-namespace scene::prop {
+namespace scene {
+
+namespace camera {
+class Camera;
+}
+
+namespace prop {
 class Interface_stack;
 }
+}  // namespace scene
 
 namespace scene::shape {
 struct Sample_from;
@@ -55,6 +62,11 @@ class alignas(64) Lighttracer final : public Integrator {
   private:
     bool generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
                             Sample_from& light_sample) noexcept;
+
+    void direct_camera(scene::camera::Camera const& camera, scene::prop::Prop const* camera_prop,
+                       int4 const& bounds, float3 const& radiance, Ray const& history,
+                       Intersection const& intersection, Material_sample const& material_sample,
+                       Filter filter, Worker& worker) const noexcept;
 
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 

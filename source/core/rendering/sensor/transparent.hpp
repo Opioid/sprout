@@ -23,7 +23,12 @@ class Transparent : public Sensor {
 
     void add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept override final;
 
+    void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept override final;
+
     void resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept override final;
+
+    void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
+        noexcept override final;
 
     struct Pixel {
         float4 color;
