@@ -99,15 +99,16 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
             if (sample_result.type.test(Bxdf_type::Caustic)) {
                 caustic_ray = true;
             } else {
-                if (!caustic_ray) {
-                    break;
-                }
-
                 if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
                     ((caustic_ray &&
-                      worker.interface_stack().top_is_vacuum_or_not_scattering(worker)))) {
+                      worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
+                     settings_.full_light_path)) {
                     direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
                                   material_sample, filter, worker);
+
+                    if (!settings_.indirect_caustics) {
+                        break;
+                    }
                 }
             }
         }
@@ -231,10 +232,11 @@ size_t Lighttracer::num_bytes() const noexcept {
 
 Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          uint32_t num_integrators, uint32_t min_bounces,
-                                         uint32_t max_bounces) noexcept
+                                         uint32_t max_bounces, bool indirect_caustics,
+                                         bool full_light_path) noexcept
     : take_settings_(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces} {}
+      settings_{min_bounces, max_bounces, indirect_caustics, full_light_path} {}
 
 Lighttracer_factory::~Lighttracer_factory() noexcept {
     memory::free_aligned(integrators_);

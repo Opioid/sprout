@@ -697,7 +697,13 @@ static Volume_factory_ptr load_volume_integrator_factory(json::Value const& inte
 static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
                                                              Settings const&    settings,
                                                              uint32_t num_workers) noexcept {
-    return new rendering::integrator::particle::Lighttracer_factory(settings, num_workers, 1, 16);
+    using namespace rendering::integrator::particle;
+
+    bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
+    bool const full_light_path   = json::read_bool(integrator_value, "full_light_path", false);
+
+    return new Lighttracer_factory(settings, num_workers, 1, 16, indirect_caustics,
+                                   full_light_path);
 }
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {
