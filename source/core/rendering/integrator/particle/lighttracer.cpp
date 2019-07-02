@@ -208,7 +208,7 @@ void Lighttracer::direct_camera(scene::camera::Camera const& camera,
 
         auto& sensor = camera.sensor();
 
-        sensor.add_sample(camera_sample, float4(0.01f * radiance * bxdf.reflection, 1.f), bounds);
+        sensor.add_sample(camera_sample, float4(radiance * bxdf.reflection, 1.f), bounds);
     }
 }
 

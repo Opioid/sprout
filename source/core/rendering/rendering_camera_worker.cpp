@@ -57,14 +57,14 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
     }
 }
 
-void Camera_worker::particles(uint32_t frame, uint32_t view) noexcept {
+void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t num_particles) noexcept {
     scene::camera::Camera const& camera = *camera_;
 
     int4 bounds = camera.view_bounds(view);
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
 
-    for (uint32_t i = 0; i < 1024 * 1024; ++i) {
+    for (uint32_t i = 0; i < num_particles; ++i) {
         particle_li(frame, bounds, camera.interface_stack());
     }
 }

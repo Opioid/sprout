@@ -103,7 +103,8 @@ static Volume_factory_ptr load_volume_integrator_factory(json::Value const& inte
 
 static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
                                                              Settings const&    settings,
-                                                             uint32_t num_workers) noexcept;
+                                                             uint32_t           num_workers,
+                                                             uint32_t& num_particles) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
@@ -560,8 +561,8 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.photon_settings);
         } else if ("particle" == n.name) {
-            take.lighttracer_factory = load_particle_integrator_factory(n.value, take.settings,
-                                                                        num_workers);
+            take.lighttracer_factory = load_particle_integrator_factory(
+                n.value, take.settings, num_workers, take.num_particles);
         }
     }
 }
@@ -696,11 +697,14 @@ static Volume_factory_ptr load_volume_integrator_factory(json::Value const& inte
 
 static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
                                                              Settings const&    settings,
-                                                             uint32_t num_workers) noexcept {
+                                                             uint32_t           num_workers,
+                                                             uint32_t& num_particles) noexcept {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
     bool const full_light_path   = json::read_bool(integrator_value, "full_light_path", false);
+
+    num_particles = json::read_uint(integrator_value, "num_particles", 1024);
 
     return new Lighttracer_factory(settings, num_workers, 1, 16, indirect_caustics,
                                    full_light_path);

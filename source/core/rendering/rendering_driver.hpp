@@ -79,7 +79,7 @@ class Driver {
 
     image::Float4 target_;
 
-    bool lighttracing_;
+    uint32_t num_particles_;
 
     take::Photon_settings photon_settings_;
 

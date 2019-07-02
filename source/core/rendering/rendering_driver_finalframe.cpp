@@ -56,7 +56,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         auto const export_start = std::chrono::high_resolution_clock::now();
 
-        if (lighttracing_) {
+        if (num_particles_ > 0) {
             view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
         } else {
             view_.pipeline.apply(sensor, target_, thread_pool_);
@@ -76,14 +76,21 @@ void Driver_finalframe::render_frame(uint32_t frame) noexcept {
 
     frame_ = frame;
 
-    if (lighttracing_) {
+    if (num_particles_ > 0) {
         for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
             iteration_ = v;
 
             thread_pool_.run_parallel([this](uint32_t index) noexcept {
                 auto& worker = workers_[index];
 
-                worker.particles(frame_, iteration_);
+                uint32_t const nt = thread_pool_.num_threads();
+
+                uint32_t const chunk = num_particles_ / nt + std::min(num_particles_ % nt, 1u);
+
+                uint32_t const num_particles = index < nt - 1 ? chunk
+                                                              : num_particles_ - (nt - 1) * (chunk);
+
+                worker.particles(frame_, iteration_, num_particles);
             });
         }
 
