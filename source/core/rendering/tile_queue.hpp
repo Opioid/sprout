@@ -36,6 +36,28 @@ class Tile_queue {
     std::atomic<uint32_t> current_consume_;
 };
 
+class Scalar_queue {
+  public:
+    Scalar_queue(uint32_t total, uint32_t chunk_size) noexcept;
+
+    ~Scalar_queue() noexcept;
+
+    uint32_t size() const noexcept;
+
+    void restart() noexcept;
+
+    bool pop(uint32_t& chunk) noexcept;
+
+  private:
+    uint32_t const total_;
+
+    uint32_t const chunk_size_;
+
+    uint32_t const num_chunks_;
+
+    std::atomic<uint32_t> current_consume_;
+};
+
 }  // namespace rendering
 
 #endif

@@ -12,7 +12,9 @@ void Std_out::start(uint32_t resolution) {
 }
 
 void Std_out::end() {
-    std::cout << std::endl;
+    if (progress_ > 0) {
+        std::cout << std::endl;
+    }
 }
 
 void Std_out::tick() {

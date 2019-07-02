@@ -19,10 +19,7 @@ namespace rendering {
 
 Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                                      uint32_t max_sample_size, progress::Sink& progressor) noexcept
-    : Driver(take, scene, thread_pool, max_sample_size),
-      progressor_(progressor)
-
-{}
+    : Driver(take, scene, thread_pool, max_sample_size), progressor_(progressor) {}
 
 void Driver_finalframe::render(Exporters& exporters) noexcept {
     photons_baked_ = false;
@@ -30,7 +27,8 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
     auto& camera = *view_.camera;
     auto& sensor = camera.sensor();
 
-    uint32_t const progress_range = tiles_.size() * camera.num_views();
+    uint32_t const forward_progress_range  = tiles_.size() * camera.num_views();
+    uint32_t const backward_progress_range = particles_.size() * camera.num_views();
 
     for (uint32_t f = 0; f < view_.num_frames; ++f) {
         uint32_t const current_frame = view_.start_frame + f;
@@ -45,9 +43,17 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         camera.update(scene_, start, workers_[0]);
 
-        progressor_.start(progress_range);
+        bake_photons(current_frame);
 
-        render_frame(current_frame);
+        progressor_.start(backward_progress_range);
+
+        render_frame_backward(current_frame);
+
+        progressor_.end();
+
+        progressor_.start(forward_progress_range);
+
+        render_frame_forward(current_frame);
 
         progressor_.end();
 
@@ -56,7 +62,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         auto const export_start = std::chrono::high_resolution_clock::now();
 
-        if (num_particles_ > 0) {
+        if (particles_.size() > 0) {
             view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
         } else {
             view_.pipeline.apply(sensor, target_, thread_pool_);
@@ -71,33 +77,12 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
     }
 }
 
-void Driver_finalframe::render_frame(uint32_t frame) noexcept {
-    bake_photons(frame);
+void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
+    if (particles_.size() > 0) {
+        logging::info("Tracing camera rays...");
+    }
 
     frame_ = frame;
-
-    if (num_particles_ > 0) {
-        for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
-            iteration_ = v;
-
-            thread_pool_.run_parallel([this](uint32_t index) noexcept {
-                auto& worker = workers_[index];
-
-                uint32_t const nt = thread_pool_.num_threads();
-
-                uint32_t const chunk = num_particles_ / nt + std::min(num_particles_ % nt, 1u);
-
-                uint32_t const num_particles = index < nt - 1 ? chunk
-                                                              : num_particles_ - (nt - 1) * (chunk);
-
-                worker.particles(frame_, iteration_, num_particles);
-            });
-        }
-
-        view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
-
-        view_.camera->sensor().clear();
-    }
 
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         iteration_ = v;
@@ -115,6 +100,34 @@ void Driver_finalframe::render_frame(uint32_t frame) noexcept {
                 progressor_.tick();
             }
         });
+    }
+}
+
+void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
+    frame_ = frame;
+
+    if (particles_.size() > 0) {
+        logging::info("Tracing light rays...");
+
+        for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+            iteration_ = v;
+
+            particles_.restart();
+
+            thread_pool_.run_parallel([this](uint32_t index) noexcept {
+                auto& worker = workers_[index];
+
+                for (uint32_t chunk; particles_.pop(chunk);) {
+                    worker.particles(frame_, iteration_, chunk);
+
+                    progressor_.tick();
+                }
+            });
+        }
+
+        view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
+
+        view_.camera->sensor().clear();
     }
 }
 

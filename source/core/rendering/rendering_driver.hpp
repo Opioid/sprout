@@ -77,9 +77,9 @@ class Driver {
 
     Tile_queue tiles_;
 
-    image::Float4 target_;
+    Scalar_queue particles_;
 
-    uint32_t num_particles_;
+    image::Float4 target_;
 
     take::Photon_settings photon_settings_;
 
