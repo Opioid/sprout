@@ -37,6 +37,7 @@ namespace integrator::particle {
 class alignas(64) Lighttracer final : public Integrator {
   public:
     using Interface_stack  = scene::prop::Interface_stack;
+    using Camera           = scene::camera::Camera;
     using Camera_sample_to = sampler::Camera_sample_to;
     using Sample_from      = scene::shape::Sample_from;
 
@@ -66,10 +67,10 @@ class alignas(64) Lighttracer final : public Integrator {
     bool generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
                             Sample_from& light_sample) noexcept;
 
-    void direct_camera(scene::camera::Camera const& camera, scene::prop::Prop const* camera_prop,
-                       int4 const& bounds, float3 const& radiance, Ray const& history,
-                       Intersection const& intersection, Material_sample const& material_sample,
-                       Filter filter, Worker& worker) const noexcept;
+    void direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
+                       float3 const& radiance, Ray const& history, Intersection const& intersection,
+                       Material_sample const& material_sample, Filter filter, Worker& worker) const
+        noexcept;
 
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 

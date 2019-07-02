@@ -50,9 +50,9 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                      Interface_stack const& /*initial_stack*/) noexcept {
     worker.interface_stack().clear();
 
-    scene::camera::Camera const& camera = worker.camera();
+    Camera const& camera = worker.camera();
 
-    scene::prop::Prop const* camera_prop = worker.scene().prop(camera.entity());
+    Prop const* camera_prop = worker.scene().prop(camera.entity());
 
     Filter const filter = Filter::Undefined;
 
@@ -181,8 +181,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
     return true;
 }
 
-void Lighttracer::direct_camera(scene::camera::Camera const& camera,
-                                scene::prop::Prop const* camera_prop, int4 const& bounds,
+void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
                                 float3 const& radiance, Ray const& history,
                                 Intersection const&    intersection,
                                 Material_sample const& material_sample, Filter filter,
@@ -193,22 +192,22 @@ void Lighttracer::direct_camera(scene::camera::Camera const& camera,
 
     float const t = distance(intersection.geo.p, camera_sample.p);
 
-    Ray visibility_ray;
-    visibility_ray.origin = intersection.geo.p;
-    visibility_ray.set_direction(-camera_sample.dir);
-    visibility_ray.min_t = scene::offset_f(0.f);
-    visibility_ray.max_t = t;
-    visibility_ray.depth = history.depth;
-    visibility_ray.time  = history.time;
+    Ray ray;
+    ray.origin = intersection.geo.p;
+    ray.set_direction(-camera_sample.dir);
+    ray.min_t = scene::offset_f(0.f);
+    ray.max_t = t;
+    ray.depth = history.depth;
+    ray.time  = history.time;
 
     float mv;
-    if (worker.masked_visibility(visibility_ray, filter, mv)) {
+    if (worker.masked_visibility(ray, filter, mv)) {
         float3 const wi   = -camera_sample.dir;
         auto const   bxdf = material_sample.evaluate_f(wi, true);
 
         auto& sensor = camera.sensor();
 
-        sensor.add_sample(camera_sample, float4(radiance * bxdf.reflection, 1.f), bounds);
+        sensor.add_sample(camera_sample, float4(0.0075f * radiance * bxdf.reflection, 1.f), bounds);
     }
 }
 
