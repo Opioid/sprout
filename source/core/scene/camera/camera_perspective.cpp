@@ -88,10 +88,17 @@ bool Perspective::sample(Prop const* self, uint64_t time, float3 const& p, Scene
     float const x = offset[0] / d_x_[0];
     float const y = offset[1] / d_y_[1];
 
+	float const cos_theta = dir[2];
+
+	float const lens_area = 1.f;
+
+	float const w = 1.f / (a_ * lens_area * cos_theta * cos_theta * cos_theta);
+
     sample.pixel    = int2(static_cast<int32_t>(x), static_cast<int32_t>(y));
     sample.pixel_uv = float2(frac(x), frac(y));
     sample.p        = transformation.position;
     sample.dir      = transformation.object_to_world_vector(dir);
+	sample.pdf      = w;
 
     return true;
 }
@@ -147,6 +154,11 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     d_y_      = (left_bottom - left_top) / fr[1];
 
     update_focus(self, time, worker);
+
+	float3 const nlb = left_bottom / left_bottom[2];
+	float3 const nrt = right_top / right_top[2];
+
+	a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
 }
 
 void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) noexcept {
