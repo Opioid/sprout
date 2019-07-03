@@ -106,7 +106,7 @@ void Driver_progressive::restart() {
     schedule_.restart = false;
 
     view_.camera->update(scene_, 0, workers_[0]);
-    view_.camera->sensor().clear();
+    view_.camera->sensor().clear(0.f);
     iteration_ = 0;
 }
 

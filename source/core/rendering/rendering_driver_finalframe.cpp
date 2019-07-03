@@ -36,8 +36,6 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         auto const render_start = std::chrono::high_resolution_clock::now();
 
-        sensor.clear();
-
         uint64_t const start = current_frame * camera.frame_step();
         scene_.simulate(start, start + camera.frame_duration(), thread_pool_);
 
@@ -78,9 +76,15 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 }
 
 void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
+    if (0 == view_.num_samples_per_pixel) {
+        return;
+    }
+
     if (particles_.size() > 0) {
         logging::info("Tracing camera rays...");
     }
+
+    view_.camera->sensor().clear(0.f);
 
     frame_ = frame;
 
@@ -104,31 +108,33 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
 }
 
 void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
+    if (0 == particles_.size()) {
+        return;
+    }
+
     frame_ = frame;
 
-    if (particles_.size() > 0) {
-        logging::info("Tracing light rays...");
+    logging::info("Tracing light rays...");
 
-        for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
-            iteration_ = v;
+    view_.camera->sensor().clear(1.f);
 
-            particles_.restart();
+    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+        iteration_ = v;
 
-            thread_pool_.run_parallel([this](uint32_t index) noexcept {
-                auto& worker = workers_[index];
+        particles_.restart();
 
-                for (uint32_t chunk; particles_.pop(chunk);) {
-                    worker.particles(frame_, iteration_, chunk);
+        thread_pool_.run_parallel([this](uint32_t index) noexcept {
+            auto& worker = workers_[index];
 
-                    progressor_.tick();
-                }
-            });
-        }
+            for (uint32_t chunk; particles_.pop(chunk);) {
+                worker.particles(frame_, iteration_, chunk);
 
-        view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
-
-        view_.camera->sensor().clear();
+                progressor_.tick();
+            }
+        });
     }
+
+    view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
 }
 
 void Driver_finalframe::bake_photons(uint32_t frame) noexcept {

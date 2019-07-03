@@ -12,7 +12,7 @@ class Transparent : public Sensor {
 
     ~Transparent() noexcept override;
 
-    void clear() noexcept override final;
+    void clear(float weigth) noexcept override final;
 
     bool has_alpha_transparency() const noexcept override final;
 
@@ -32,7 +32,7 @@ class Transparent : public Sensor {
 
     struct Pixel {
         float4 color;
-        float  weight_sum;
+        float  weight;
     };
 
     Pixel* pixels_;
