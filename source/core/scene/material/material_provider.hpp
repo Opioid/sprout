@@ -18,7 +18,7 @@ struct Sampler_settings;
 
 class Provider final : public resource::Provider<Material> {
   public:
-    Provider() noexcept;
+    Provider(bool force_debug_material) noexcept;
 
     ~Provider() noexcept override final;
 
@@ -63,6 +63,8 @@ class Provider final : public resource::Provider<Material> {
                               resource::Manager& manager) noexcept;
 
     debug::Material fallback_material_;
+
+    bool force_debug_material_;
 
   public:
     static uint32_t max_sample_size() noexcept;

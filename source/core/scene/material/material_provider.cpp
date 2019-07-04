@@ -89,8 +89,9 @@ static float3 read_color(json::Value const& color_value) noexcept;
 
 static float3 read_spectrum(json::Value const& spectrum_value) noexcept;
 
-Provider::Provider() noexcept
-    : fallback_material_(Sampler_settings(Sampler_settings::Filter::Linear)) {
+Provider::Provider(bool force_debug_material) noexcept
+    : fallback_material_(Sampler_settings(Sampler_settings::Filter::Linear)),
+      force_debug_material_(force_debug_material) {
     Material::init_rainbow();
 }
 
@@ -148,30 +149,38 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
     json::Value const& rendering_value = rendering_node->value;
 
     for (auto const& n : rendering_value.GetObject()) {
-        if ("Cloth" == n.name) {
-            material = load_cloth(n.value, manager);
-        } else if ("Debug" == n.name) {
-            material = load_debug(n.value, manager);
-        } else if ("Display" == n.name) {
-            material = load_display(n.value, manager);
-        } else if ("Glass" == n.name) {
-            material = load_glass(n.value, manager);
-        } else if ("Light" == n.name) {
-            material = load_light(n.value, manager);
-        } else if ("Matte" == n.name) {
-            material = load_matte(n.value, manager);
-        } else if ("Metal" == n.name) {
-            material = load_metal(n.value, manager);
-        } else if ("Metallic_paint" == n.name) {
-            material = load_metallic_paint(n.value, manager);
-        } else if ("Mix" == n.name) {
-            material = load_mix(n.value, manager);
-        } else if ("Sky" == n.name) {
-            material = load_sky(n.value, manager);
-        } else if ("Substitute" == n.name) {
-            material = load_substitute(n.value, manager);
-        } else if ("Volumetric" == n.name) {
-            material = load_volumetric(n.value, manager);
+        if (force_debug_material_) {
+            if ("Light" == n.name) {
+                material = load_light(n.value, manager);
+            } else {
+                material = new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
+            }
+        } else {
+            if ("Cloth" == n.name) {
+                material = load_cloth(n.value, manager);
+            } else if ("Debug" == n.name) {
+                material = load_debug(n.value, manager);
+            } else if ("Display" == n.name) {
+                material = load_display(n.value, manager);
+            } else if ("Glass" == n.name) {
+                material = load_glass(n.value, manager);
+            } else if ("Light" == n.name) {
+                material = load_light(n.value, manager);
+            } else if ("Matte" == n.name) {
+                material = load_matte(n.value, manager);
+            } else if ("Metal" == n.name) {
+                material = load_metal(n.value, manager);
+            } else if ("Metallic_paint" == n.name) {
+                material = load_metallic_paint(n.value, manager);
+            } else if ("Mix" == n.name) {
+                material = load_mix(n.value, manager);
+            } else if ("Sky" == n.name) {
+                material = load_sky(n.value, manager);
+            } else if ("Substitute" == n.name) {
+                material = load_substitute(n.value, manager);
+            } else if ("Volumetric" == n.name) {
+                material = load_volumetric(n.value, manager);
+            }
         }
 
         if (material) {

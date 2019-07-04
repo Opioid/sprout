@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    scene::material::Provider material_provider;
+    scene::material::Provider material_provider(args.debug_material);
     resource_manager.register_provider(material_provider);
 
     scene::shape::triangle::Provider mesh_provider;

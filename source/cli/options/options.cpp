@@ -71,6 +71,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.progressive = true;
     } else if ("no-textures" == command) {
         result.no_textures = true;
+    } else if ("debug-material" == command) {
+        result.debug_material = true;
     } else if ("verbose" == command || "v" == command) {
         result.verbose = true;
     } else {
