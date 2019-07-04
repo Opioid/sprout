@@ -1,6 +1,7 @@
 #include "rendering_camera_worker.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
+#include "rendering/integrator/particle/lighttracer.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "rendering/sensor/sensor.hpp"
@@ -13,7 +14,8 @@
 
 namespace rendering {
 
-Camera_worker::Camera_worker(Tile_queue const& tiles) : tiles_(tiles) {}
+Camera_worker::Camera_worker(Tile_queue const& tiles, Range_queue const& ranges)
+    : tiles_(tiles), ranges_(ranges) {}
 
 void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
                            uint32_t num_samples) noexcept {
@@ -57,14 +59,20 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
     }
 }
 
-void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t num_particles) noexcept {
+void Camera_worker::particles(uint32_t frame, uint32_t view, uint2 range) noexcept {
     scene::camera::Camera const& camera = *camera_;
+
+    uint32_t const range_index = ranges_.index(range);
+
+    rng_.start(0, range_index);
+
+    lighttracer_->start_pixel();
 
     int4 bounds = camera.view_bounds(view);
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
 
-    for (uint32_t i = 0; i < num_particles; ++i) {
+    for (uint32_t i = range[0]; i < range[1]; ++i) {
         particle_li(frame, bounds, camera.interface_stack());
     }
 }

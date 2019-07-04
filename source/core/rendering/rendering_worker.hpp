@@ -70,7 +70,7 @@ class Worker : public scene::Worker {
               Surface_factory& surface_factory, Volume_factory& volume_factory,
               sampler::Factory& sampler_factory, Photon_map* photon_map,
               take::Photon_settings const& photon_settings_,
-              Lighttracer_factory*         lighttracer_factory) noexcept;
+              Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk) noexcept;
 
     float4 li(Ray& ray, Interface_stack const& interface_stack) noexcept;
 

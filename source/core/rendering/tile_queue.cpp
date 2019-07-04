@@ -87,36 +87,42 @@ void Tile_queue::push(int4 const& tile) noexcept {
     tiles_[current] = tile;
 }
 
-Scalar_queue::Scalar_queue(uint32_t total, uint32_t chunk_size) noexcept
+Range_queue::Range_queue(uint32_t total, uint32_t range_size) noexcept
     : total_(total),
-      chunk_size_(chunk_size),
-      num_chunks_(static_cast<uint32_t>(
-          std::ceil(static_cast<float>(total) / static_cast<float>(chunk_size)))) {}
+      range_size_(range_size),
+      num_ranges_(static_cast<uint32_t>(
+          std::ceil(static_cast<float>(total) / static_cast<float>(range_size)))) {}
 
-Scalar_queue::~Scalar_queue() noexcept {}
+Range_queue::~Range_queue() noexcept {}
 
-uint32_t Scalar_queue::size() const noexcept {
-    return num_chunks_;
+uint32_t Range_queue::size() const noexcept {
+    return num_ranges_;
 }
 
-void Scalar_queue::restart() noexcept {
+void Range_queue::restart() noexcept {
     current_consume_ = 0;
 }
 
-bool Scalar_queue::pop(uint32_t& chunk) noexcept {
+bool Range_queue::pop(uint2& range) noexcept {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
-    if (current < num_chunks_ - 1) {
-        chunk = chunk_size_;
+    if (current < num_ranges_ - 1) {
+        uint32_t const start = current * range_size_;
+        range                = uint2(start, start + range_size_);
         return true;
     }
 
-    if (current < num_chunks_) {
-        chunk = total_ - current * chunk_size_;
+    if (current < num_ranges_) {
+        uint32_t const start = current * range_size_;
+        range                = uint2(start, total_);
         return true;
     }
 
     return false;
+}
+
+uint32_t Range_queue::index(uint2 const& range) const noexcept {
+    return range[0] / range_size_;
 }
 
 }  // namespace rendering

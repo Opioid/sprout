@@ -28,7 +28,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
     auto& sensor = camera.sensor();
 
     uint32_t const forward_progress_range  = tiles_.size() * camera.num_views();
-    uint32_t const backward_progress_range = particles_.size() * camera.num_views();
+    uint32_t const backward_progress_range = ranges_.size() * camera.num_views();
 
     for (uint32_t f = 0; f < view_.num_frames; ++f) {
         uint32_t const current_frame = view_.start_frame + f;
@@ -60,7 +60,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         auto const export_start = std::chrono::high_resolution_clock::now();
 
-        if (particles_.size() > 0) {
+        if (ranges_.size() > 0) {
             view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
         } else {
             view_.pipeline.apply(sensor, target_, thread_pool_);
@@ -80,7 +80,7 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
         return;
     }
 
-    if (particles_.size() > 0) {
+    if (ranges_.size() > 0) {
         logging::info("Tracing camera rays...");
     }
 
@@ -108,7 +108,7 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
 }
 
 void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
-    if (0 == particles_.size()) {
+    if (0 == ranges_.size()) {
         return;
     }
 
@@ -121,13 +121,13 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         iteration_ = v;
 
-        particles_.restart();
+        ranges_.restart();
 
         thread_pool_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
-            for (uint32_t chunk; particles_.pop(chunk);) {
-                worker.particles(frame_, iteration_, chunk);
+            for (uint2 range; ranges_.pop(range);) {
+                worker.particles(frame_, iteration_, range);
 
                 progressor_.tick();
             }

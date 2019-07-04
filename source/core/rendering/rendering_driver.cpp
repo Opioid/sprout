@@ -17,15 +17,18 @@ namespace rendering {
 
 using namespace image;
 
+static uint32_t constexpr Num_particles_per_chunk = 1024;
+
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                uint32_t max_material_sample_size) noexcept
     : scene_(scene),
       view_(take.view),
       thread_pool_(thread_pool),
-      workers_(memory::construct_array_aligned<Camera_worker>(thread_pool.num_threads(), tiles_)),
+      workers_(memory::construct_array_aligned<Camera_worker>(thread_pool.num_threads(), tiles_,
+                                                              ranges_)),
       tiles_(take.view.camera->resolution(), int2(32, 32),
              take.view.camera->sensor().filter_radius_int()),
-      particles_(take.lighttracer_factory ? take.num_particles : 0, 1024),
+      ranges_(take.lighttracer_factory ? take.num_particles : 0, Num_particles_per_chunk),
       target_(Description(take.view.camera->sensor_dimensions())),
       photon_settings_(take.photon_settings),
       photon_map_(take.photon_settings.num_photons, take.photon_settings.search_radius,
@@ -52,7 +55,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
         workers_[i].init(i, take.settings, scene, *take.view.camera, max_material_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
                          *take.volume_integrator_factory, *take.sampler_factory, photon_map,
-                         take.photon_settings, take.lighttracer_factory);
+                         take.photon_settings, take.lighttracer_factory, Num_particles_per_chunk);
     }
 }
 

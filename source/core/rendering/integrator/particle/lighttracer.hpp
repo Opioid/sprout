@@ -80,6 +80,8 @@ class alignas(64) Lighttracer final : public Integrator {
 
     sampler::Random sampler_;
 
+    sampler::Golden_ratio light_sampler_;
+
     static uint32_t constexpr Num_material_samplers = 3;
     sampler::Golden_ratio material_samplers_[Num_material_samplers];
 };

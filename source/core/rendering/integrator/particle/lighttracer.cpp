@@ -26,12 +26,15 @@ Lighttracer::Lighttracer(rnd::Generator& rng, take::Settings const& take_setting
     : Integrator(rng, take_settings),
       settings_(settings),
       sampler_(rng),
+      light_sampler_(rng),
       material_samplers_{rng, rng, rng} {}
 
 Lighttracer::~Lighttracer() noexcept {}
 
 void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+
+    light_sampler_.resize(num_samples_per_pixel, 1, 2, 3);
 
     for (auto& s : material_samplers_) {
         s.resize(num_samples_per_pixel, 1, 1, 1);
@@ -40,6 +43,8 @@ void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel
 
 void Lighttracer::start_pixel() noexcept {
     sampler_.start_pixel();
+
+    light_sampler_.start_pixel();
 
     for (auto& s : material_samplers_) {
         s.start_pixel();
@@ -95,7 +100,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
             break;
         }
 
-        material_sample.sample(sampler_, sample_result);
+        material_sample.sample(material_sampler(ray.depth), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -118,7 +123,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
             }
         }
 
-        if (ray.depth >= settings_.max_bounces) {
+        if (ray.depth >= settings_.max_bounces - 1) {
             break;
         }
 
@@ -161,13 +166,13 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
                                      Sample_from& light_sample) noexcept {
     Scene const& scene = worker.scene();
 
-    float const select = sampler_.generate_sample_1D(1);
+    float const select = light_sampler_.generate_sample_1D(1);
 
     auto const light = scene.random_light(select);
 
-    uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
+    uint64_t const time = worker.absolute_time(frame, light_sampler_.generate_sample_1D(2));
 
-    if (!light.ref.sample(time, sampler_, 0, scene.aabb(), worker, light_sample)) {
+    if (!light.ref.sample(time, light_sampler_, 1, scene.aabb(), worker, light_sample)) {
         return false;
     }
 

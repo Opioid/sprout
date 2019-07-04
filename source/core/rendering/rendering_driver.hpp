@@ -77,7 +77,7 @@ class Driver {
 
     Tile_queue tiles_;
 
-    Scalar_queue particles_;
+    Range_queue ranges_;
 
     image::Float4 target_;
 

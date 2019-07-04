@@ -36,24 +36,26 @@ class Tile_queue {
     std::atomic<uint32_t> current_consume_;
 };
 
-class Scalar_queue {
+class Range_queue {
   public:
-    Scalar_queue(uint32_t total, uint32_t chunk_size) noexcept;
+    Range_queue(uint32_t total, uint32_t range_size) noexcept;
 
-    ~Scalar_queue() noexcept;
+    ~Range_queue() noexcept;
 
     uint32_t size() const noexcept;
 
     void restart() noexcept;
 
-    bool pop(uint32_t& chunk) noexcept;
+    bool pop(uint2& range) noexcept;
+
+    uint32_t index(uint2 const& range) const noexcept;
 
   private:
     uint32_t const total_;
 
-    uint32_t const chunk_size_;
+    uint32_t const range_size_;
 
-    uint32_t const num_chunks_;
+    uint32_t const num_ranges_;
 
     std::atomic<uint32_t> current_consume_;
 };
