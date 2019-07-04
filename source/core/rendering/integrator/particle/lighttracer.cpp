@@ -78,7 +78,12 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         return;
     }
 
-    float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
+    int2 const d = camera.sensor().dimensions();
+
+    float const weight = static_cast<float>(d[0] * d[1]) / settings_.num_light_paths;
+
+    float3 radiance = weight * light.evaluate(light_sample, Filter::Nearest, worker) /
+                      (light_sample.pdf);
 
     for (;;) {
         float3 const wo = -ray.direction;
@@ -103,7 +108,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                     ((caustic_ray &&
                       worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                      settings_.full_light_path)) {
-                    direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
+                    direct_camera(camera, camera_prop, bounds, radiance, ray, intersection.geo.p,
                                   material_sample, filter, worker);
 
                     if (!settings_.indirect_caustics) {
@@ -182,21 +187,19 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
 }
 
 void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
-                                float3 const& radiance, Ray const& history,
-                                Intersection const&    intersection,
+                                float3 const& radiance, Ray const& history, float3 const& p,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) const noexcept {
     Camera_sample_to camera_sample;
-
-    camera.sample(camera_prop, history.time, intersection.geo.p, worker.scene(), camera_sample);
-
-    float const t = distance(intersection.geo.p, camera_sample.p);
+    if (!camera.sample(camera_prop, history.time, p, worker.scene(), camera_sample)) {
+        return;
+    }
 
     Ray ray;
-    ray.origin = intersection.geo.p;
+    ray.origin = material_sample.offset_p(p);
     ray.set_direction(-camera_sample.dir);
-    ray.min_t = scene::offset_f(0.f);
-    ray.max_t = t;
+    ray.min_t = 0.f;
+    ray.max_t = camera_sample.t;
     ray.depth = history.depth;
     ray.time  = history.time;
 
@@ -207,7 +210,9 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
 
         auto& sensor = camera.sensor();
 
-		sensor.add_sample(camera_sample, float4(camera_sample.pdf * 0.0375f * radiance * bxdf.reflection, 1.f), bounds);
+        float3 const result = camera_sample.pdf * radiance * bxdf.reflection;
+
+        sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
     }
 }
 
@@ -231,11 +236,12 @@ size_t Lighttracer::num_bytes() const noexcept {
 
 Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          uint32_t num_integrators, uint32_t min_bounces,
-                                         uint32_t max_bounces, bool indirect_caustics,
-                                         bool full_light_path) noexcept
+                                         uint32_t max_bounces, uint32_t num_light_paths,
+                                         bool indirect_caustics, bool full_light_path) noexcept
     : take_settings_(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, indirect_caustics, full_light_path} {}
+      settings_{min_bounces, max_bounces, static_cast<float>(num_light_paths), indirect_caustics,
+                full_light_path} {}
 
 Lighttracer_factory::~Lighttracer_factory() noexcept {
     memory::free_aligned(integrators_);

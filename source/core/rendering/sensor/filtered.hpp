@@ -68,8 +68,8 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void add_sample(Camera_sample_to const& sample, float4 const&,
-                    int4 const&             bounds) noexcept override final;
+    void splat_sample(Camera_sample_to const& sample, float4 const&,
+                      int4 const&             bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
@@ -88,8 +88,8 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void add_sample(Camera_sample_to const& sample, float4 const&,
-                    int4 const&             bounds) noexcept override final;
+    void splat_sample(Camera_sample_to const& sample, float4 const&,
+                      int4 const&             bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
@@ -108,8 +108,8 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void add_sample(Camera_sample_to const& sample, float4 const&,
-                    int4 const&             bounds) noexcept override final;
+    void splat_sample(Camera_sample_to const& sample, float4 const&,
+                      int4 const&             bounds) noexcept override final;
 };
 
 }  // namespace rendering::sensor

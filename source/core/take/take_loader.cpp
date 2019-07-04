@@ -706,7 +706,7 @@ static Particle_factory_ptr load_particle_integrator_factory(json::Value const& 
 
     num_particles = json::read_uint(integrator_value, "num_particles", 1024);
 
-    return new Lighttracer_factory(settings, num_workers, 1, 16, indirect_caustics,
+    return new Lighttracer_factory(settings, num_workers, 1, 16, num_particles, indirect_caustics,
                                    full_light_path);
 }
 

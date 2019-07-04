@@ -45,6 +45,8 @@ class alignas(64) Lighttracer final : public Integrator {
         uint32_t min_bounces;
         uint32_t max_bounces;
 
+        float num_light_paths;
+
         bool indirect_caustics;
         bool full_light_path;
     };
@@ -68,7 +70,7 @@ class alignas(64) Lighttracer final : public Integrator {
                             Sample_from& light_sample) noexcept;
 
     void direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
-                       float3 const& radiance, Ray const& history, Intersection const& intersection,
+                       float3 const& radiance, Ray const& history, float3 const& p,
                        Material_sample const& material_sample, Filter filter, Worker& worker) const
         noexcept;
 
@@ -85,8 +87,8 @@ class alignas(64) Lighttracer final : public Integrator {
 class Lighttracer_factory final {
   public:
     Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                        uint32_t min_bounces, uint32_t max_bounces, bool indirect_caustics,
-                        bool full_light_path) noexcept;
+                        uint32_t min_bounces, uint32_t max_bounces, uint32_t num_light_paths,
+                        bool indirect_caustics, bool full_light_path) noexcept;
 
     ~Lighttracer_factory() noexcept;
 

@@ -28,8 +28,8 @@ void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, f
 }
 
 template <class Base, class Clamp>
-void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample_to const& sample,
-                                         float4 const& color, int4 const& bounds) noexcept {
+void Unfiltered<Base, Clamp>::splat_sample(sampler::Camera_sample_to const& sample,
+                                           float4 const& color, int4 const& bounds) noexcept {
     Base::splat_pixel_atomic(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 

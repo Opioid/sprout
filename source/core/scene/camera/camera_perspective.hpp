@@ -68,7 +68,7 @@ class Perspective final : public Camera {
     Focus focus_;
     float focus_distance_;
 
-	float a_;
+    float a_;
 };
 
 }  // namespace scene::camera

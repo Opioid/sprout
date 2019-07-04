@@ -18,7 +18,8 @@ struct Camera_sample_to {
     float2 pixel_uv;
     float3 p;
     float3 dir;
-	float  pdf;
+    float  t;
+    float  pdf;
 };
 
 }  // namespace sampler
