@@ -92,15 +92,9 @@ bool Perspective::sample(Prop const* self, uint64_t time, float3 const& p, Scene
 
     float const cos_theta = dir[2];
 
-    float const lens_area = 1.f;
+    //   float const lens_area = 1.f;
 
-    //    float const w = 1.f / (/*a_ * */lens_area * cos_theta * cos_theta * cos_theta);
-
-    //       float const le = left_top_[2] / dir[2];
-
-    //       float const w = 1.f / (a_ * cos_theta * cos_theta * cos_theta / (le * le));
-
-    float const w = 1.f / (cos_theta * cos_theta * cos_theta);
+    float const w = 1.f / ((t * t) * (cos_theta * cos_theta * cos_theta));
 
     sample.pixel    = int2(static_cast<int32_t>(x), static_cast<int32_t>(y));
     sample.pixel_uv = float2(frac(x), frac(y));
@@ -164,8 +158,8 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
 
     update_focus(self, time, worker);
 
-    float3 const nlb = left_bottom;  // / left_bottom[2];
-    float3 const nrt = right_top;    // / right_top[2];
+    float3 const nlb = left_bottom / left_bottom[2];
+    float3 const nrt = right_top / right_top[2];
 
     a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
 }
