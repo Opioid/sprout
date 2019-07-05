@@ -196,7 +196,7 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) const noexcept {
     Camera_sample_to camera_sample;
-    if (!camera.sample(camera_prop, history.time, p, worker.scene(), camera_sample)) {
+    if (!camera.sample(camera_prop, bounds, history.time, p, worker.scene(), camera_sample)) {
         return;
     }
 

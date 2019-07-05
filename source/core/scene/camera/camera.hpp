@@ -57,8 +57,8 @@ class Camera {
     virtual bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
                               uint32_t view, Scene const& scene, Ray& ray) const noexcept = 0;
 
-    virtual bool sample(Prop const* self, uint64_t time, float3 const& p, Scene const& scene,
-                        Camera_sample_to& sample) const noexcept = 0;
+    virtual bool sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
+                        Scene const& scene, Camera_sample_to& sample) const noexcept = 0;
 
     void set_parameters(json::Value const& parameters) noexcept;
 

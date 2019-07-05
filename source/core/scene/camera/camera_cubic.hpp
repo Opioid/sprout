@@ -24,8 +24,8 @@ class Cubic final : public Camera {
     bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
 
-    bool sample(Prop const* self, uint64_t time, float3 const& p, Scene const& scene,
-                Camera_sample_to& sample) const noexcept override final;
+    bool sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
+                Scene const& scene, Camera_sample_to& sample) const noexcept override final;
 
   private:
     void on_update(Prop const* self, uint64_t time, Worker& worker) noexcept override final;

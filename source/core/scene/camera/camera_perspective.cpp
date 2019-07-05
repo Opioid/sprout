@@ -72,8 +72,8 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
     return true;
 }
 
-bool Perspective::sample(Prop const* self, uint64_t time, float3 const& p, Scene const& scene,
-                         Camera_sample_to& sample) const noexcept {
+bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
+                         Scene const& scene, Camera_sample_to& sample) const noexcept {
     Transformation temp;
     auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
 
@@ -83,6 +83,12 @@ bool Perspective::sample(Prop const* self, uint64_t time, float3 const& p, Scene
 
     float3 const dir = po / t;
 
+    float const cos_theta = dir[2];
+
+    if (cos_theta < 0.f) {
+        return false;
+    }
+
     float3 const pd = left_top_[2] * (dir / dir[2]);
 
     float3 const offset = pd - left_top_;
@@ -90,13 +96,17 @@ bool Perspective::sample(Prop const* self, uint64_t time, float3 const& p, Scene
     float const x = offset[0] / d_x_[0];
     float const y = offset[1] / d_y_[1];
 
-    float const cos_theta = dir[2];
-
+    int2 const pixel(static_cast<int32_t>(x), static_cast<int32_t>(y));
     //   float const lens_area = 1.f;
+
+    if (static_cast<uint32_t>(pixel[0] - bounds[0]) > static_cast<uint32_t>(bounds[2]) ||
+        static_cast<uint32_t>(pixel[1] - bounds[1]) > static_cast<uint32_t>(bounds[3])) {
+        return false;
+    }
 
     float const w = 1.f / ((t * t) * (cos_theta * cos_theta * cos_theta));
 
-    sample.pixel    = int2(static_cast<int32_t>(x), static_cast<int32_t>(y));
+    sample.pixel    = pixel;
     sample.pixel_uv = float2(frac(x), frac(y));
     sample.p        = transformation.position;
     sample.dir      = transformation.object_to_world_vector(dir);
