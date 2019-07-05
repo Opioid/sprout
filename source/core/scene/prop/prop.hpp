@@ -54,6 +54,8 @@ class alignas(64) Prop {
 
     math::Transformation const& local_frame_0() const noexcept;
 
+    uint32_t num_world_frames() const noexcept;
+
     // Only the returned reference is guaranteed to contain the actual transformation data.
     // This might or might not be the same reference which is passed as a parameter,
     // depending on whether the entity is animated or not.
@@ -62,6 +64,13 @@ class alignas(64) Prop {
     Transformation const& transformation_at(uint32_t self, uint64_t time,
                                             Transformation& transformation,
                                             Scene const&    scene) const noexcept;
+
+    shape::Shape const* shape() const noexcept;
+    shape::Shape*       shape() noexcept;
+
+    AABB const& aabb() const noexcept;
+
+    void set_shape_and_materials(Shape* shape, Material* const* materials) noexcept;
 
     void set_transformation(math::Transformation const& t) noexcept;
 
@@ -91,13 +100,6 @@ class alignas(64) Prop {
 
     bool intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const noexcept;
 
-    shape::Shape const* shape() const noexcept;
-    shape::Shape*       shape() noexcept;
-
-    AABB const& aabb() const noexcept;
-
-    void set_shape_and_materials(Shape* shape, Material* const* materials) noexcept;
-
     float opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const
         noexcept;
 
@@ -109,7 +111,7 @@ class alignas(64) Prop {
 
     size_t num_bytes() const noexcept;
 
-  public:
+  private:
     void propagate_transformation(uint32_t self, Scene& scene) noexcept;
 
     void inherit_transformation(uint32_t self, Keyframe const* frames, uint32_t num_frames,

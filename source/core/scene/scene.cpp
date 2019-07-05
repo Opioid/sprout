@@ -376,7 +376,7 @@ void Scene::prop_attach(uint32_t parent_id, uint32_t child_id) noexcept {
 
     if (0 == nt.num_local_frames) {
         // This is the case if n has no animation attached to it directly
-        prop_allocate_frames(child_id, prop(parent_id)->num_world_frames_, 1);
+        prop_allocate_frames(child_id, prop(parent_id)->num_world_frames(), 1);
     }
 
     if (prop::Null == st.child) {

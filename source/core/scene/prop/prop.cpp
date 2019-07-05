@@ -45,6 +45,10 @@ math::Transformation const& Prop::local_frame_0() const noexcept {
     return frames_[num_world_frames_].transformation;
 }
 
+uint32_t Prop::num_world_frames() const noexcept {
+    return num_world_frames_;
+}
+
 Prop::Transformation const& Prop::transformation_at(uint32_t self, uint64_t time,
                                                     Transformation& transformation,
                                                     Scene const&    scene) const noexcept {
@@ -70,6 +74,18 @@ Prop::Transformation const& Prop::transformation_at(uint32_t self, uint64_t time
     }
 
     return transformation;
+}
+
+shape::Shape const* Prop::shape() const noexcept {
+    return shape_;
+}
+
+shape::Shape* Prop::shape() noexcept {
+    return shape_;
+}
+
+AABB const& Prop::aabb() const noexcept {
+    return aabb_;
 }
 
 void Prop::set_transformation(math::Transformation const& t) noexcept {
@@ -210,18 +226,6 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
     auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
     return shape_->intersect_p(ray, transformation, worker.node_stack());
-}
-
-shape::Shape const* Prop::shape() const noexcept {
-    return shape_;
-}
-
-shape::Shape* Prop::shape() noexcept {
-    return shape_;
-}
-
-AABB const& Prop::aabb() const noexcept {
-    return aabb_;
 }
 
 void Prop::set_shape(Shape* shape) noexcept {
