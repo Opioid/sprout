@@ -17,6 +17,7 @@ struct alignas(64) Composed_transformation {
     float3 world_to_object_point(float3 const& p) const noexcept;
     float3 world_to_object_vector(float3 const& v) const noexcept;
 
+    float3 object_to_world_point(float3 const& v) const noexcept;
     float3 object_to_world_vector(float3 const& v) const noexcept;
 
     float4x4 world_to_object;

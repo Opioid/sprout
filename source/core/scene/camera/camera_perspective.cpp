@@ -62,10 +62,10 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
     Transformation temp;
     auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
 
-    float3 const origin_w = transform_point(transformation.object_to_world, origin);
+    float3 const origin_w = transformation.object_to_world_point(origin);
 
     direction                = normalize(direction);
-    float3 const direction_w = transform_vector(transformation.object_to_world, direction);
+    float3 const direction_w = transformation.object_to_world_vector(direction);
 
     ray = create_ray(origin_w, direction_w, time);
 
