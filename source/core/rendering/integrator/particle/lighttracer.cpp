@@ -127,6 +127,10 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
             break;
         }
 
+        if (0.f == ray.wavelength) {
+            ray.wavelength = sample_result.wavelength;
+        }
+
         if (material_sample.ior_greater_one()) {
             //   transparent &= sample_result.type.test(Bxdf_type::Pass_through);
 
@@ -200,13 +204,8 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
         return;
     }
 
-    Ray ray;
-    ray.origin = material_sample.offset_p(p);
-    ray.set_direction(-camera_sample.dir);
-    ray.min_t = 0.f;
-    ray.max_t = camera_sample.t;
-    ray.depth = history.depth;
-    ray.time  = history.time;
+    Ray const ray(material_sample.offset_p(p), -camera_sample.dir, 0.f, camera_sample.t,
+                  history.depth, history.time, history.wavelength);
 
     float mv;
     if (worker.masked_visibility(ray, filter, mv)) {
