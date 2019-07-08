@@ -704,10 +704,12 @@ static Particle_factory_ptr load_particle_integrator_factory(json::Value const& 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
     bool const full_light_path   = json::read_bool(integrator_value, "full_light_path", false);
 
+    uint32_t const max_bounces = json::read_uint(integrator_value, "max_bounces", 8);
+
     num_particles = json::read_uint(integrator_value, "num_particles", 1024);
 
-    return new Lighttracer_factory(settings, num_workers, 1, 16, num_particles, indirect_caustics,
-                                   full_light_path);
+    return new Lighttracer_factory(settings, num_workers, 1, max_bounces, num_particles,
+                                   indirect_caustics, full_light_path);
 }
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {
