@@ -23,7 +23,7 @@ Builder<T>::~Builder() noexcept {
 template <typename T>
 void Builder<T>::build(Tree<T>& tree, std::vector<uint32_t>& indices,
                        std::vector<T> const& props) noexcept {
-    if (props.empty()) {
+    if (indices.empty()) {
         nodes_ = tree.allocate_nodes(0);
     } else {
         num_nodes_ = 1;
@@ -50,6 +50,7 @@ template <typename T>
 void Builder<T>::Build_node::clear() noexcept {
     delete children[0];
     children[0] = nullptr;
+
     delete children[1];
     children[1] = nullptr;
 
