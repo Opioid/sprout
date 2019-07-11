@@ -104,14 +104,23 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
         return false;
     }
 
-    float const w = 1.f / ((t * t) * (cos_theta * cos_theta * cos_theta));
+    float const ratio = 1.f;  // 1280.f / 720.f;//720.f / 1280.f;
+
+    float const cos_theta_2 = cos_theta * cos_theta;
+
+    float const w = 1.f / ((t * t) * (cos_theta_2 * cos_theta_2));
+
+    float const factor = a_;  //(720.f / 1280.f) * 2.f * 2.f;
+
+    float const wa = 1.f / (t * t /** cos_theta*/);
+    float const wb = 1.f / (factor * cos_theta_2 * cos_theta_2);
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(frac(x), frac(y));
     sample.p        = transformation.position;
     sample.dir      = transformation.object_to_world_vector(dir);
     sample.t        = t;
-    sample.pdf      = w;
+    sample.pdf      = (wa * wb);
 
     return true;
 }
@@ -168,10 +177,14 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
 
     update_focus(self, time, worker);
 
-    float3 const nlb = left_bottom / left_bottom[2];
-    float3 const nrt = right_top / right_top[2];
+    float const myz = /*degrees_to_radians(33.75f)*/ (0.5f * Pi - 1.f) / fov_ * 2.f * ratio;
+
+    float3 const nlb = left_bottom / myz;
+    float3 const nrt = right_top / myz;
 
     a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
+
+    return;
 }
 
 void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) noexcept {
