@@ -188,7 +188,9 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
         return true;
     }
 
-    return false;
+    expected_object_ = Object::Undefined;
+
+    return true;
 }
 
 bool Json_handler::EndObject(size_t /*memberCount*/) {
