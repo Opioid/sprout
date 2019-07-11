@@ -89,7 +89,7 @@ class alignas(64) Lighttracer final : public Integrator {
 class Lighttracer_factory final {
   public:
     Lighttracer_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                        uint32_t min_bounces, uint32_t max_bounces, uint32_t num_light_paths,
+                        uint32_t min_bounces, uint32_t max_bounces, uint64_t num_light_paths,
                         bool indirect_caustics, bool full_light_path) noexcept;
 
     ~Lighttracer_factory() noexcept;

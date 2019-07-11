@@ -240,7 +240,7 @@ size_t Lighttracer::num_bytes() const noexcept {
 
 Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          uint32_t num_integrators, uint32_t min_bounces,
-                                         uint32_t max_bounces, uint32_t num_light_paths,
+                                         uint32_t max_bounces, uint64_t num_light_paths,
                                          bool indirect_caustics, bool full_light_path) noexcept
     : take_settings_(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),

@@ -59,7 +59,7 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
     }
 }
 
-void Camera_worker::particles(uint32_t frame, uint32_t view, uint2 range) noexcept {
+void Camera_worker::particles(uint32_t frame, uint32_t view, ulong2 const& range) noexcept {
     scene::camera::Camera const& camera = *camera_;
 
     uint32_t const range_index = ranges_.index(range);
@@ -72,7 +72,7 @@ void Camera_worker::particles(uint32_t frame, uint32_t view, uint2 range) noexce
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
 
-    for (uint32_t i = range[0]; i < range[1]; ++i) {
+    for (uint64_t i = range[0]; i < range[1]; ++i) {
         particle_li(frame, bounds, camera.interface_stack());
     }
 }

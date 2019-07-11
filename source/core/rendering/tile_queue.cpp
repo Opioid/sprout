@@ -87,7 +87,7 @@ void Tile_queue::push(int4 const& tile) noexcept {
     tiles_[current] = tile;
 }
 
-Range_queue::Range_queue(uint32_t total, uint32_t range_size) noexcept
+Range_queue::Range_queue(uint64_t total, uint32_t range_size) noexcept
     : total_(total),
       range_size_(range_size),
       num_ranges_(static_cast<uint32_t>(
@@ -103,26 +103,26 @@ void Range_queue::restart() noexcept {
     current_consume_ = 0;
 }
 
-bool Range_queue::pop(uint2& range) noexcept {
+bool Range_queue::pop(ulong2& range) noexcept {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
     if (current < num_ranges_ - 1) {
-        uint32_t const start = current * range_size_;
-        range                = uint2(start, start + range_size_);
+        uint64_t const start = static_cast<uint64_t>(current) * static_cast<uint64_t>(range_size_);
+        range                = ulong2(start, start + range_size_);
         return true;
     }
 
     if (current < num_ranges_) {
-        uint32_t const start = current * range_size_;
-        range                = uint2(start, total_);
+        uint64_t const start = static_cast<uint64_t>(current) * static_cast<uint64_t>(range_size_);
+        range                = ulong2(start, total_);
         return true;
     }
 
     return false;
 }
 
-uint32_t Range_queue::index(uint2 const& range) const noexcept {
-    return range[0] / range_size_;
+uint32_t Range_queue::index(ulong2 const& range) const noexcept {
+    return static_cast<uint32_t>(range[0] / static_cast<uint64_t>(range_size_));
 }
 
 }  // namespace rendering

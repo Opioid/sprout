@@ -24,6 +24,7 @@ using byte2  = math::Vector2<uint8_t>;
 using float2 = math::Vector2<float>;
 using int2   = math::Vector2<int32_t>;
 using uint2  = math::Vector2<uint32_t>;
+using ulong2 = math::Vector2<uint64_t>;
 
 using byte3 = math::Vector3<uint8_t>;
 

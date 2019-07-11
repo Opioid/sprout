@@ -43,7 +43,7 @@ struct Take {
 
     Photon_settings photon_settings;
 
-    uint32_t num_particles;
+    uint64_t num_particles;
 
     rendering::integrator::surface::Factory*              surface_integrator_factory = nullptr;
     rendering::integrator::volume::Factory*               volume_integrator_factory  = nullptr;

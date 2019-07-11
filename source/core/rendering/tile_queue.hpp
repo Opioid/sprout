@@ -38,7 +38,7 @@ class Tile_queue {
 
 class Range_queue {
   public:
-    Range_queue(uint32_t total, uint32_t range_size) noexcept;
+    Range_queue(uint64_t total, uint32_t range_size) noexcept;
 
     ~Range_queue() noexcept;
 
@@ -46,12 +46,12 @@ class Range_queue {
 
     void restart() noexcept;
 
-    bool pop(uint2& range) noexcept;
+    bool pop(ulong2& range) noexcept;
 
-    uint32_t index(uint2 const& range) const noexcept;
+    uint32_t index(ulong2 const& range) const noexcept;
 
   private:
-    uint32_t const total_;
+    uint64_t const total_;
 
     uint32_t const range_size_;
 

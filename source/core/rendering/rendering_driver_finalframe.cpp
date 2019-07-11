@@ -126,7 +126,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
         thread_pool_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
-            for (uint2 range; ranges_.pop(range);) {
+            for (ulong2 range; ranges_.pop(range);) {
                 worker.particles(frame_, iteration_, range);
 
                 progressor_.tick();
