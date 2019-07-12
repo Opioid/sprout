@@ -41,6 +41,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
     auto stream_pointer = manager.filesystem().read_stream(filename);
     if (!stream_pointer) {
         logging::error("Loading mesh %S: ", filename);
+        return nullptr;
     }
 
     file::Type const type = file::query_type(*stream_pointer);
