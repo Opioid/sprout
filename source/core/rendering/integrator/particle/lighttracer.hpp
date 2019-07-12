@@ -70,7 +70,7 @@ class alignas(64) Lighttracer final : public Integrator {
                             Sample_from& light_sample) noexcept;
 
     void direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
-                       float3 const& radiance, Ray const& history, float3 const& p,
+                       float3 const& radiance, Ray const& history, Intersection const& intersection,
                        Material_sample const& material_sample, Filter filter, Worker& worker) const
         noexcept;
 

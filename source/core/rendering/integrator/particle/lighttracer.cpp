@@ -63,8 +63,6 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     Bxdf_sample sample_result;
 
-    float3 throughput(1.f);
-
     bool const avoid_caustics = false;
 
     Intersection intersection;
@@ -113,7 +111,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                     ((caustic_ray &&
                       worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                      settings_.full_light_path)) {
-                    direct_camera(camera, camera_prop, bounds, radiance, ray, intersection.geo.p,
+                    direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
                                   material_sample, filter, worker);
 
                     if (!settings_.indirect_caustics) {
@@ -155,7 +153,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             //   result += throughput * vli;
-            throughput *= vtr;
+            radiance *= vtr;
 
             if (Event::Abort == hit || Event::Absorb == hit) {
                 break;
@@ -196,28 +194,33 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
 }
 
 void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
-                                float3 const& radiance, Ray const& history, float3 const& p,
+                                float3 const& radiance, Ray const& history,
+                                Intersection const&    intersection,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) const noexcept {
+    float3 const p = material_sample.offset_p(intersection.geo.p);
+
     Camera_sample_to camera_sample;
     if (!camera.sample(camera_prop, bounds, history.time, p, worker.scene(), camera_sample)) {
         return;
     }
 
-    Ray const ray(material_sample.offset_p(p), -camera_sample.dir, 0.f, camera_sample.t,
-                  history.depth, history.time, history.wavelength);
+    Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.time,
+            history.wavelength);
 
-    float mv;
-    if (worker.masked_visibility(ray, filter, mv)) {
-        float3 const wi   = -camera_sample.dir;
-        auto const   bxdf = material_sample.evaluate_f(wi, true);
-
-        auto& sensor = camera.sensor();
-
-        float3 const result = camera_sample.pdf * radiance * bxdf.reflection;
-
-        sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
+    float3 tv;
+    if (!worker.transmitted_visibility(ray, material_sample.wo(), intersection, filter, tv)) {
+        return;
     }
+
+    float3 const wi   = -camera_sample.dir;
+    auto const   bxdf = material_sample.evaluate_f(wi, true);
+
+    auto& sensor = camera.sensor();
+
+    float3 const result = camera_sample.pdf * tv * radiance * bxdf.reflection;
+
+    sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
