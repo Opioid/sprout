@@ -222,16 +222,11 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                 ray.max_t = ray_max_t;
 
                 if (scene_->thin_absorption(ray, filter, *this, tv)) {
-                    // Veach's compensation for "Non-symmetry due to shading normals".
-                    // See e.g. CorrectShadingNormal() at:
-                    // https://github.com/mmp/pbrt-v3/blob/master/src/integrators/bdpt.cpp#L55
-
                     float3 const wi = ray.direction;
 
-                    float const numer = std::abs(dot(wo, normals.geo_n) * dot(wi, normals.n));
-                    float const denom = std::abs(dot(wo, normals.n) * dot(wi, normals.geo_n));
+                    float const nsc = non_symmetry_compensation(wi, wo, normals.geo_n, normals.n);
 
-                    tv *= (numer / std::max(denom, 0.01f)) * tr;
+                    tv *= nsc * tr;
 
                     return true;
                 }
