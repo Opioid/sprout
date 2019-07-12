@@ -35,7 +35,7 @@ class Sensor {
 
     virtual int4 isolated_tile(int4 const& tile) const noexcept = 0;
 
-    virtual void clear(float weigth) = 0;
+    virtual void clear(float weight) = 0;
 
     virtual void add_sample(Camera_sample const& sample, float4 const& color, int4 const& isolated,
                             int4 const& bounds) noexcept = 0;

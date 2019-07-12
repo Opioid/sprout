@@ -14,10 +14,10 @@ Opaque::~Opaque() noexcept {
     memory::free_aligned(pixels_);
 }
 
-void Opaque::clear(float weigth) noexcept {
+void Opaque::clear(float weight) noexcept {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
-        pixels_[i] = float4(0.f, 0.f, 0.f, weigth);
+        pixels_[i] = float4(0.f, 0.f, 0.f, weight);
     }
 }
 

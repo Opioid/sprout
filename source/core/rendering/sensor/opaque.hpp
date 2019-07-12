@@ -11,7 +11,7 @@ class Opaque : public Sensor {
 
     ~Opaque() noexcept override;
 
-    void clear(float weigth) noexcept override final;
+    void clear(float weight) noexcept override final;
 
     bool has_alpha_transparency() const noexcept override final;
 
