@@ -104,7 +104,7 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
         return false;
     }
 
-    float const ratio = 1.f;  // 1280.f / 720.f;//720.f / 1280.f;
+    float const ratio = 720.f / 1280.f;
 
     float const cos_theta_2 = cos_theta * cos_theta;
 
@@ -113,7 +113,7 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     float const factor = a_;  //(720.f / 1280.f) * 2.f * 2.f;
 
     float const wa = 1.f / (t * t /** cos_theta*/);
-    float const wb = 1.f / (factor * cos_theta_2 * cos_theta_2);
+    float const wb = 1.f / (factor * cos_theta_2 /* * cos_theta_2*/);
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(frac(x), frac(y));
@@ -121,6 +121,10 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     sample.dir      = transformation.object_to_world_vector(dir);
     sample.t        = t;
     sample.pdf      = (wa * wb);
+
+  //  sample.pdf      = 1.f / ((t * t) / a_ * cos_theta_2);
+
+    const float thing = wa * wb;
 
     return true;
 }
@@ -177,12 +181,16 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
 
     update_focus(self, time, worker);
 
-    float const myz = /*degrees_to_radians(33.75f)*/ (0.5f * Pi - 1.f) / fov_ * 2.f * ratio;
+  //  float const myz = (0.5f * Pi - 1.f) / fov_ * 2.f * ratio;
+
+    float const myz = 1.f * z;// Pi / fov_ * 0.5f;// (0.62f) / fov_ * 2.f * ratio;
 
     float3 const nlb = left_bottom / myz;
     float3 const nrt = right_top / myz;
 
     a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
+
+ //   a_ = ratio * fov_ * 0.5f;
 
     return;
 }
