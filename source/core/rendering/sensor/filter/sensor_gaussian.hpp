@@ -18,6 +18,8 @@ class Gaussian {
 
     float evaluate(float2 p) const noexcept;
 
+    float integral() const noexcept;
+
   private:
     //  float gaussian(float d) const;
 
