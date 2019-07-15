@@ -104,16 +104,11 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
         return false;
     }
 
-    float const ratio = 720.f / 1280.f;
 
     float const cos_theta_2 = cos_theta * cos_theta;
 
-    float const w = 1.f / ((t * t) * (cos_theta_2 * cos_theta_2));
-
-    float const factor = a_;  //(720.f / 1280.f) * 2.f * 2.f;
-
-    float const wa = 1.f / (t * t /** cos_theta*/);
-    float const wb = 1.f / (factor * cos_theta_2 /* * cos_theta_2*/);
+    float const wa =  1.f/ ((t * t) / cos_theta);// / cos_theta);
+    float const wb =  1.f/ (a_ *  (cos_theta_2 * cos_theta));
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(frac(x), frac(y));
@@ -121,10 +116,6 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     sample.dir      = transformation.object_to_world_vector(dir);
     sample.t        = t;
     sample.pdf      = (wa * wb);
-
-  //  sample.pdf      = 1.f / ((t * t) / a_ * cos_theta_2);
-
-    const float thing = wa * wb;
 
     return true;
 }
