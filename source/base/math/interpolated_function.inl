@@ -68,6 +68,13 @@ void Interpolated_function<T>::from_array(float range_begin, float range_end, si
 }
 
 template <typename T>
+void Interpolated_function<T>::scale(T s) noexcept {
+    for (size_t i = 0, len = num_samples_; i < len; ++i) {
+        samples_[i] *= s;
+    }
+}
+
+template <typename T>
 T Interpolated_function<T>::operator()(float x) const noexcept {
     x = std::min(x, range_end_);
 

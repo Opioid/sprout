@@ -19,6 +19,8 @@ class Interpolated_function {
 
     void from_array(float range_begin, float range_end, size_t num_samples, T const t[]) noexcept;
 
+    void scale(T s) noexcept;
+
     T operator()(float x) const noexcept;
 
   private:

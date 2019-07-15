@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include "base/math/math.hpp"
 
 namespace math::filter {
 
@@ -13,8 +12,7 @@ class Gaussian_functor {
         : exp_(std::exp(-alpha * squared_radius)), alpha_(alpha) {}
 
     float operator()(float squared_d) const noexcept {
-        return /*1.f / (std::sqrt(2.f * Pi) * alpha_) **/
-            std::max(0.f, std::exp(-alpha_ * squared_d) - exp_);
+        return std::max(0.f, std::exp(-alpha_ * squared_d) - exp_);
     }
 
   private:
