@@ -17,7 +17,7 @@
 namespace scene::camera {
 
 Perspective::Perspective(int2 resolution) noexcept
-    : Camera(resolution), fov_(math::degrees_to_radians(60.f)) {}
+    : Camera(resolution), fov_(degrees_to_radians(60.f)) {}
 
 uint32_t Perspective::num_views() const noexcept {
     return 1;
@@ -161,15 +161,16 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     float2 const fr(resolution_);
     float const  ratio = fr[0] / fr[1];
 
-    float const z = ratio * Pi / fov_ * 0.5f;
+    float const t = fov_ * 0.5f;
+    float const z = std::cos(t) / std::sin(t);
 
-    //	float3 left_top   (-ratio,  1.f, z);
-    //	float3 right_top  ( ratio,  1.f, z);
-    //	float3 left_bottom(-ratio, -1.f, z);
+    //	float3 left_top   (-1.f,  ratio, z);
+    //	float3 right_top  ( 1.f,  ratio, z);
+    //	float3 left_bottom(-1.f, -ratio, z);
 
-    float3 left_top    = transform_vector(lens_tilt_, float3(-ratio, 1.f, 0.f));
-    float3 right_top   = transform_vector(lens_tilt_, float3(ratio, 1.f, 0.f));
-    float3 left_bottom = transform_vector(lens_tilt_, float3(-ratio, -1.f, 0.f));
+    float3 left_top    = transform_vector(lens_tilt_, float3(-1.f,  ratio, 0.f));
+    float3 right_top   = transform_vector(lens_tilt_, float3( 1.f,  ratio, 0.f));
+    float3 left_bottom = transform_vector(lens_tilt_, float3(-1.f, -ratio, 0.f));
 
     left_top[2] += z;
     right_top[2] += z;
@@ -181,18 +182,10 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
 
     update_focus(self, time, worker);
 
-  //  float const myz = (0.5f * Pi - 1.f) / fov_ * 2.f * ratio;
-
-    float const myz = 1.f * z;// Pi / fov_ * 0.5f;// (0.62f) / fov_ * 2.f * ratio;
-
-    float3 const nlb = left_bottom / myz;
-    float3 const nrt = right_top / myz;
+    float3 const nlb = left_bottom / z;
+    float3 const nrt = right_top / z;
 
     a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
-
- //   a_ = ratio * fov_ * 0.5f;
-
-    return;
 }
 
 void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) noexcept {
