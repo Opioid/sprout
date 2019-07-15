@@ -97,18 +97,16 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     float const y = offset[1] / d_y_[1];
 
     int2 const pixel(static_cast<int32_t>(x), static_cast<int32_t>(y));
-    //   float const lens_area = 1.f;
 
     if (static_cast<uint32_t>(pixel[0] - bounds[0]) > static_cast<uint32_t>(bounds[2]) ||
         static_cast<uint32_t>(pixel[1] - bounds[1]) > static_cast<uint32_t>(bounds[3])) {
         return false;
     }
 
-
     float const cos_theta_2 = cos_theta * cos_theta;
 
-    float const wa =  1.f/ ((t * t) / cos_theta);// / cos_theta);
-    float const wb =  1.f/ (a_ *  (cos_theta_2 * cos_theta));
+    float const wa = 1.f / ((t * t) / cos_theta);
+    float const wb = 1.f / (a_ * (cos_theta_2 * cos_theta_2));
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(frac(x), frac(y));
@@ -152,15 +150,14 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     float2 const fr(resolution_);
     float const  ratio = fr[1] / fr[0];
 
-    float const t = fov_ * 0.5f;
-    float const z = std::cos(t) / std::sin(t);
+    float const z = 1.f / std::tan(0.5f * fov_);
 
     //	float3 left_top   (-1.f,  ratio, z);
     //	float3 right_top  ( 1.f,  ratio, z);
     //	float3 left_bottom(-1.f, -ratio, z);
 
-    float3 left_top    = transform_vector(lens_tilt_, float3(-1.f,  ratio, 0.f));
-    float3 right_top   = transform_vector(lens_tilt_, float3( 1.f,  ratio, 0.f));
+    float3 left_top    = transform_vector(lens_tilt_, float3(-1.f, ratio, 0.f));
+    float3 right_top   = transform_vector(lens_tilt_, float3(1.f, ratio, 0.f));
     float3 left_bottom = transform_vector(lens_tilt_, float3(-1.f, -ratio, 0.f));
 
     left_top[2] += z;
@@ -176,7 +173,7 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     float3 const nlb = left_bottom / z;
     float3 const nrt = right_top / z;
 
-    a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
+    a_ = 2.f * std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
 }
 
 void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) noexcept {
