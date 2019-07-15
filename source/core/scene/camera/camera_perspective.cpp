@@ -159,7 +159,7 @@ void Perspective::set_focus(Focus const& focus) noexcept {
 
 void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noexcept {
     float2 const fr(resolution_);
-    float const  ratio = fr[0] / fr[1];
+    float const  ratio = fr[1] / fr[0];
 
     float const t = fov_ * 0.5f;
     float const z = std::cos(t) / std::sin(t);
