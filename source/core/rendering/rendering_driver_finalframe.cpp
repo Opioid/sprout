@@ -80,9 +80,9 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
         return;
     }
 
-    if (ranges_.size() > 0) {
-        logging::info("Tracing camera rays...");
-    }
+    logging::info("Tracing camera rays...");
+
+    auto const start = std::chrono::high_resolution_clock::now();
 
     view_.camera->sensor().clear(0.f);
 
@@ -105,6 +105,9 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
             }
         });
     }
+
+    auto const duration = chrono::seconds_since(start);
+    logging::info("Camera ray time " + string::to_string(duration) + " s");
 }
 
 void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
