@@ -96,7 +96,10 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     float const x = offset[0] / d_x_[0];
     float const y = offset[1] / d_y_[1];
 
-    int2 const pixel(static_cast<int32_t>(x), static_cast<int32_t>(y));
+    float const fx = std::floor(x);
+    float const fy = std::floor(y);
+
+    int2 const pixel(static_cast<int32_t>(fx), static_cast<int32_t>(fy));
 
     if (static_cast<uint32_t>(pixel[0] - bounds[0]) > static_cast<uint32_t>(bounds[2]) ||
         static_cast<uint32_t>(pixel[1] - bounds[1]) > static_cast<uint32_t>(bounds[3])) {
@@ -109,7 +112,7 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     float const wb = 1.f / (a_ * (cos_theta_2 * cos_theta_2));
 
     sample.pixel    = pixel;
-    sample.pixel_uv = float2(frac(x), frac(y));
+    sample.pixel_uv = float2(x - fx, y - fy);
     sample.p        = transformation.position;
     sample.dir      = transformation.object_to_world_vector(dir);
     sample.t        = t;
