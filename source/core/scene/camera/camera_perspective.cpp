@@ -7,6 +7,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
@@ -73,15 +74,30 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
 }
 
 bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
-                         Scene const& scene, Camera_sample_to& sample) const noexcept {
+                         Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
+                         Camera_sample_to& sample) const noexcept {
     Transformation temp;
     auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
 
     float3 const po = transformation.world_to_object_point(p);
 
-    float const t = length(po);
+    float t = length(po);
 
-    float3 const dir = po / t;
+    float3 dir = po / t;
+
+    if (lens_radius_ > 0.f) {
+        float2 const uv = sampler.generate_sample_2D(sampler_dimension);
+
+        float2 const lens = sample_disk_concentric(uv);
+
+        float3 const origin = (t / focus_distance_) * float3(lens_radius_ * lens, 0.f);
+
+        //   float const t = focus_distance_ / dir[2];
+
+        float3 const focus = 10.f / t * dir;
+
+        dir = normalize(po - origin);
+    }
 
     float const cos_theta = dir[2];
 
@@ -90,6 +106,7 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     }
 
     float3 const pd = left_top_[2] * (dir / dir[2]);
+    //  float3 const pd =  left_top_[2] * (dir / focus_distance_);
 
     float3 const offset = pd - left_top_;
 
@@ -131,7 +148,7 @@ void Perspective::set_lens(Lens const& lens) noexcept {
     float const s = std::sin(a);
 
     float3 const axis(c, s, 0.f);
-    float const  tilt = math::degrees_to_radians(lens.tilt);
+    float const  tilt = degrees_to_radians(lens.tilt);
     set_rotation(lens_tilt_, axis, tilt);
 
     float const shift = 2.f * lens.shift;

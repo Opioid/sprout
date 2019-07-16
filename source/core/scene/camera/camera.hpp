@@ -8,6 +8,7 @@
 #include "scene/scene_constants.hpp"
 
 namespace sampler {
+class Sampler;
 struct Camera_sample;
 struct Camera_sample_to;
 }  // namespace sampler
@@ -34,6 +35,7 @@ class Camera {
     using Transformation   = entity::Composed_transformation;
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
+    using Sampler          = sampler::Sampler;
     using Sensor           = rendering::sensor::Sensor;
 
     Camera(int2 resolution) noexcept;
@@ -58,7 +60,8 @@ class Camera {
                               uint32_t view, Scene const& scene, Ray& ray) const noexcept = 0;
 
     virtual bool sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
-                        Scene const& scene, Camera_sample_to& sample) const noexcept = 0;
+                        Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
+                        Camera_sample_to& sample) const noexcept = 0;
 
     void set_parameters(json::Value const& parameters) noexcept;
 

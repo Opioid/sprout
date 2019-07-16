@@ -22,7 +22,8 @@ class Perspective_stereoscopic final : public Stereoscopic {
                       Scene const& scene, Ray& ray) const noexcept override final;
 
     bool sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
-                Scene const& scene, Camera_sample_to& sample) const noexcept override final;
+                Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
+                Camera_sample_to& sample) const noexcept override final;
 
     void set_fov(float fov) noexcept;
 

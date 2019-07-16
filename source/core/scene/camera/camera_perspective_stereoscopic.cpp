@@ -57,9 +57,9 @@ bool Perspective_stereoscopic::generate_ray(Prop const* self, sampler::Camera_sa
 }
 
 bool Perspective_stereoscopic::sample(Prop const* /*self*/, int4 const& /*bounds*/,
-                                      uint64_t /*time*/, float3 const& /*p*/,
-                                      Scene const& /*scene*/, Camera_sample_to& /*sample*/) const
-    noexcept {
+                                      uint64_t /*time*/, float3 const& /*p*/, Sampler& /*sampler*/,
+                                      uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
+                                      Camera_sample_to& /*sample*/) const noexcept {
     return false;
 }
 
