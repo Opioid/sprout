@@ -116,6 +116,8 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
     logging::info("Tracing light rays...");
 
+    auto const start = std::chrono::high_resolution_clock::now();
+
     view_.camera->sensor().clear(1.f);
 
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
@@ -135,6 +137,9 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     }
 
     view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
+
+    auto const duration = chrono::seconds_since(start);
+    logging::info("Light ray time " + string::to_string(duration) + " s");
 }
 
 void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
