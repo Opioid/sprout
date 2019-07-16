@@ -222,8 +222,7 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
 
     auto const& layer = material_sample.base_layer();
 
-    float const nsc = rendering::non_symmetry_compensation(wo, wi, intersection.geo.geo_n,
-                                                           layer.n_);
+    float const nsc = non_symmetry_compensation(wo, wi, intersection.geo.geo_n, layer.n_);
 
     float3 const result = camera_sample.pdf * nsc * tv * radiance * bxdf.reflection;
 
