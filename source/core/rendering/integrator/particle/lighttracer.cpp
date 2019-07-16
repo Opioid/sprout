@@ -113,10 +113,10 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                      settings_.full_light_path)) {
                     direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
                                   material_sample, filter, worker);
+                }
 
-                    if (!settings_.indirect_caustics) {
-                        break;
-                    }
+                if (!settings_.indirect_caustics) {
+                    break;
                 }
             }
         }
@@ -145,7 +145,11 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         ray.max_t = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
-            worker.interface_change(sample_result.wi, intersection);
+            auto const ior = worker.interface_change_ior(sample_result.wi, intersection);
+
+            float const eta = ior.eta_i / ior.eta_t;
+
+            radiance *= eta * eta;
         }
 
         if (!worker.interface_stack().empty()) {
