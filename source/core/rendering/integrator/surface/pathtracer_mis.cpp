@@ -80,7 +80,8 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         Intersection split_intersection = intersection;
 
-        bool const integrate_photons = settings_.num_samples == i;
+        bool const integrate_photons = settings_.num_samples == i &&
+                                       settings_.photons_not_only_through_specular;
 
         Result const result = integrate(split_ray, split_intersection, worker, integrate_photons);
 
@@ -460,11 +461,12 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(take::Settings const& take_settings,
                                                uint32_t num_integrators, uint32_t num_samples,
                                                uint32_t min_bounces, uint32_t max_bounces,
-                                               Light_sampling light_sampling,
-                                               bool           enable_caustics) noexcept
+                                               Light_sampling light_sampling, bool enable_caustics,
+                                               bool photons_only_through_specular) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
-      settings_{num_samples, min_bounces, max_bounces, light_sampling, !enable_caustics} {}
+      settings_{num_samples,    min_bounces,      max_bounces,
+                light_sampling, !enable_caustics, !photons_only_through_specular} {}
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() noexcept {
     memory::free_aligned(integrators_);

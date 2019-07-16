@@ -95,7 +95,8 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
 
 static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
                                                            Settings const&    settings,
-                                                           uint32_t           num_workers) noexcept;
+                                                           uint32_t           num_workers,
+                                                           bool               lighttracer) noexcept;
 
 static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
                                                          Settings const&    settings,
@@ -217,7 +218,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
         take.surface_integrator_factory = new surface::Pathtracer_MIS_factory(
             take.settings, num_threads, num_samples, min_bounces, max_bounces, light_sampling,
-            enable_caustics);
+            enable_caustics, false);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
@@ -551,25 +552,30 @@ static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
 
 static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
                                       Take& take) noexcept {
+    json::Value::ConstMemberIterator const particle_node = integrator_value.FindMember("particle");
+
+    if (integrator_value.MemberEnd() != particle_node) {
+        take.lighttracer_factory = load_particle_integrator_factory(
+            particle_node->value, take.settings, num_workers, take.num_particles);
+    }
+
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
             take.surface_integrator_factory = load_surface_integrator_factory(
-                n.value, take.settings, num_workers);
+                n.value, take.settings, num_workers, nullptr != take.lighttracer_factory);
         } else if ("volume" == n.name) {
             take.volume_integrator_factory = load_volume_integrator_factory(n.value, take.settings,
                                                                             num_workers);
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.photon_settings);
-        } else if ("particle" == n.name) {
-            take.lighttracer_factory = load_particle_integrator_factory(
-                n.value, take.settings, num_workers, take.num_particles);
         }
     }
 }
 
 static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
                                                            Settings const&    settings,
-                                                           uint32_t num_workers) noexcept {
+                                                           uint32_t           num_workers,
+                                                           bool lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -639,8 +645,11 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
+            bool const photons_only_through_specular = lighttracer;
+
             return new Pathtracer_MIS_factory(settings, num_workers, num_samples, min_bounces,
-                                              max_bounces, light_sampling, enable_caustics);
+                                              max_bounces, light_sampling, enable_caustics,
+                                              photons_only_through_specular);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 
