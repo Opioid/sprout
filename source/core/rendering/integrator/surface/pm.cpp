@@ -78,7 +78,10 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (!sample_result.type.test(Bxdf_type::Caustic)) {
-            result += throughput * worker.photon_li(intersection, material_sample);
+            if (ray.depth > 0 || settings_.photons_not_only_through_specular) {
+                result += throughput * worker.photon_li(intersection, material_sample);
+            }
+
             break;
         }
 
@@ -123,70 +126,6 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, 1.f);
 }
 
-bool PM::generate_light_ray(uint64_t time, Worker& worker, Ray& ray, float3& radiance) noexcept {
-    Scene const& scene = worker.scene();
-
-    float const select = sampler_.generate_sample_1D(1);
-
-    auto const light = scene.random_light(select);
-
-    scene::shape::Sample_from light_sample;
-    if (!light.ref.sample(time, sampler_, 0, scene.aabb(), worker, light_sample)) {
-        return false;
-    }
-
-    ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);
-    ray.set_direction(light_sample.dir);
-    ray.min_t      = 0.f;
-    ray.max_t      = scene::Ray_max_t;
-    ray.time       = time;
-    ray.wavelength = 0.f;
-
-    radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker) /
-               (light.pdf * light_sample.pdf);
-
-    return true;
-}
-
-float3 PM::direct_light(Ray const& ray, Intersection const& intersection,
-                        Material_sample const& material_sample, Filter filter,
-                        Worker& worker) noexcept {
-    float3 result(0.f);
-
-    if (!material_sample.ior_greater_one()) {
-        return result;
-    }
-
-    Ray shadow_ray;
-    shadow_ray.origin = intersection.geo.p;
-    shadow_ray.min_t  = 0.f;
-    shadow_ray.depth  = ray.depth + 1;
-    shadow_ray.time   = ray.time;
-
-    for (uint32_t i = 1; i > 0; --i) {
-        auto const light = worker.scene().random_light(rng_.random_float());
-
-        scene::shape::Sample_to light_sample;
-        if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-                             material_sample.is_translucent(), sampler_, 0, worker, light_sample)) {
-            shadow_ray.set_direction(light_sample.wi);
-            shadow_ray.max_t = light_sample.t;
-
-            float3 tv;
-            if (worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection,
-                                              filter, tv)) {
-                auto const bxdf = material_sample.evaluate_f(light_sample.wi, true);
-
-                float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
-
-                result += (tv * radiance * bxdf.reflection) / (light.pdf * light_sample.pdf);
-            }
-        }
-    }
-
-    return result;
-}
-
 sampler::Sampler& PM::material_sampler(uint32_t bounce) noexcept {
     if (Num_material_samplers > bounce) {
         return material_samplers_[bounce];
@@ -206,10 +145,11 @@ size_t PM::num_bytes() const noexcept {
 }
 
 PM_factory::PM_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                       uint32_t min_bounces, uint32_t max_bounces) noexcept
+                       uint32_t min_bounces, uint32_t max_bounces,
+                       bool photons_only_through_specular) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<PM>(num_integrators)),
-      settings_{min_bounces, max_bounces} {}
+      settings_{min_bounces, max_bounces, !photons_only_through_specular} {}
 
 PM_factory::~PM_factory() noexcept {
     memory::free_aligned(integrators_);

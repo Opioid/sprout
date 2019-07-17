@@ -604,7 +604,10 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            return new PM_factory(settings, num_workers, min_bounces, max_bounces);
+            bool const photons_only_through_specular = lighttracer;
+
+            return new PM_factory(settings, num_workers, min_bounces, max_bounces,
+                                  photons_only_through_specular);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 

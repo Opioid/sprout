@@ -12,6 +12,8 @@ class alignas(64) PM final : public Integrator {
     struct Settings {
         uint32_t min_bounces;
         uint32_t max_bounces;
+
+        bool photons_not_only_through_specular;
     };
 
     PM(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
@@ -28,12 +30,6 @@ class alignas(64) PM final : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    bool generate_light_ray(uint64_t time, Worker& worker, Ray& ray, float3& radiance) noexcept;
-
-    float3 direct_light(Ray const& ray, Intersection const& intersection,
-                        Material_sample const& material_sample, Filter filter,
-                        Worker& worker) noexcept;
-
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
 
     Settings const settings_;
@@ -47,7 +43,7 @@ class alignas(64) PM final : public Integrator {
 class PM_factory final : public Factory {
   public:
     PM_factory(take::Settings const& take_settings, uint32_t num_integrators, uint32_t min_bounces,
-               uint32_t max_bounces) noexcept;
+               uint32_t max_bounces, bool photons_only_through_specular) noexcept;
 
     ~PM_factory() noexcept override final;
 
