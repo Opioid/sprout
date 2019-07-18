@@ -15,6 +15,9 @@
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene::camera {
 
 Perspective::Perspective(int2 resolution) noexcept
@@ -87,6 +90,13 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     float2 lens_uv;
 
+    float3 focus;
+
+    float3 out_dir;
+
+    float3 out_dir0;
+    float3 out_dir1;
+
     if (lens_radius_ > 0.f) {
         float2 const uv = sampler.generate_sample_2D(sampler_dimension);
         lens_uv = uv;
@@ -94,14 +104,29 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
         float3 const origin = float3(lens_radius_ * lens, 0.f);
 
-        float const t1 = focus_distance_ / po[2];//left_top_[2];
 
-        float3 dir2 = left_top_[2] * (dir / dir[2]);
 
-        float3 const focus = t1 * po;
+        dir = po - origin;
 
-        dir = normalize(focus - origin);
+
+        float const t1 = focus_distance_ / dir[2];//left_top_[2];
+
+        focus = t1 * dir;
+
+ //       std::cout << "focus a: " << focus << std::endl;
+
+        dir = focus;// - origin;
+
+        out_dir = normalize(focus - origin);
+
+        out_dir0 = normalize(focus);
+        out_dir1 = normalize(po - origin);
+
+
+        t = distance(origin, po);
     }
+
+
 
     float const cos_theta = dir[2];
 
@@ -109,7 +134,11 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
         return false;
     }
 
-    float3 const pd = left_top_[2] * (dir / dir[2]);
+
+
+    float3 const pd = /*left_top_[2] **/ (dir / dir[2]);
+
+ //   std::cout << "dir a: " << out_dir << std::endl;
 
     float3 const offset = pd - left_top_;
 
@@ -121,9 +150,9 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
 
 
- //   float3 const thing = one_way(float2(x, y), lens_uv);
+    float3 const thing = one_way(float2(x, y), lens_uv);
 
-
+//std::cout << "dir b: " << thing << std::endl;
 
     int2 const pixel(static_cast<int32_t>(fx), static_cast<int32_t>(fy));
 
@@ -139,9 +168,9 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(x - fx, y - fy);
-    sample.dir      = transformation.object_to_world_vector(dir);
+    sample.dir      = transformation.object_to_world_vector(out_dir);
     sample.t        = t;
-    sample.pdf      = (wa * wb);
+    sample.pdf      = (Pi * lens_radius_ * lens_radius_) * (wa * wb);
 
     return true;
 }
@@ -268,6 +297,9 @@ void Perspective::load_focus(json::Value const& focus_value, Focus& focus) noexc
 float3 Perspective::one_way(float2 coordinates, float2 lens_uv) const noexcept {
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
+//    std::cout << "dir b: " << direction << std::endl;
+
+
     float3 origin;
 
     if (lens_radius_ > 0.f) {
@@ -278,6 +310,8 @@ float3 Perspective::one_way(float2 coordinates, float2 lens_uv) const noexcept {
         float const t = focus_distance_ / direction[2];
 
         float3 const focus = t * direction;
+
+ //       std::cout << "focus b: " << focus << std::endl;
 
         direction = focus - origin;
     } else {
