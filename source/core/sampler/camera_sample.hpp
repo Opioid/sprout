@@ -16,7 +16,6 @@ struct Camera_sample {
 struct Camera_sample_to {
     int2   pixel;
     float2 pixel_uv;
-    float3 p;
     float3 dir;
     float  t;
     float  pdf;

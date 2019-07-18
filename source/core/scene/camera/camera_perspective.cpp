@@ -85,18 +85,22 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     float3 dir = po / t;
 
+    float2 lens_uv;
+
     if (lens_radius_ > 0.f) {
         float2 const uv = sampler.generate_sample_2D(sampler_dimension);
-
+        lens_uv = uv;
         float2 const lens = sample_disk_concentric(uv);
 
-        float3 const origin = (t / focus_distance_) * float3(lens_radius_ * lens, 0.f);
+        float3 const origin = float3(lens_radius_ * lens, 0.f);
 
-        //   float const t = focus_distance_ / dir[2];
+        float const t1 = focus_distance_ / po[2];//left_top_[2];
 
-        float3 const focus = 10.f / t * dir;
+        float3 dir2 = left_top_[2] * (dir / dir[2]);
 
-        dir = normalize(po - origin);
+        float3 const focus = t1 * po;
+
+        dir = normalize(focus - origin);
     }
 
     float const cos_theta = dir[2];
@@ -106,7 +110,6 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     }
 
     float3 const pd = left_top_[2] * (dir / dir[2]);
-    //  float3 const pd =  left_top_[2] * (dir / focus_distance_);
 
     float3 const offset = pd - left_top_;
 
@@ -115,6 +118,12 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     float const fx = std::floor(x);
     float const fy = std::floor(y);
+
+
+
+ //   float3 const thing = one_way(float2(x, y), lens_uv);
+
+
 
     int2 const pixel(static_cast<int32_t>(fx), static_cast<int32_t>(fy));
 
@@ -130,7 +139,6 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(x - fx, y - fy);
-    sample.p        = transformation.position;
     sample.dir      = transformation.object_to_world_vector(dir);
     sample.t        = t;
     sample.pdf      = (wa * wb);
@@ -255,6 +263,32 @@ void Perspective::load_focus(json::Value const& focus_value, Focus& focus) noexc
             focus.distance = json::read_float(n.value);
         }
     }
+}
+
+float3 Perspective::one_way(float2 coordinates, float2 lens_uv) const noexcept {
+    float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
+
+    float3 origin;
+
+    if (lens_radius_ > 0.f) {
+        float2 const lens = sample_disk_concentric(lens_uv);
+
+        origin = float3(lens_radius_ * lens, 0.f);
+
+        float const t = focus_distance_ / direction[2];
+
+        float3 const focus = t * direction;
+
+        direction = focus - origin;
+    } else {
+        origin = float3(0.f);
+    }
+
+    return normalize(direction);
+}
+
+float2 Perspective::other_way(float3 const& dir, float2 lens_uv) const noexcept {
+    return float2(0.f);
 }
 
 }  // namespace scene::camera
