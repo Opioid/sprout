@@ -136,7 +136,7 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
 
 
-    float3 const pd = /*left_top_[2] **/ (dir / dir[2]);
+    float3 const pd = left_top_[2] * (dir / dir[2]);
 
  //   std::cout << "dir a: " << out_dir << std::endl;
 
@@ -170,7 +170,7 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     sample.pixel_uv = float2(x - fx, y - fy);
     sample.dir      = transformation.object_to_world_vector(out_dir);
     sample.t        = t;
-    sample.pdf      = (Pi * lens_radius_ * lens_radius_) * (wa * wb);
+    sample.pdf      = (wa * wb);
 
     return true;
 }
