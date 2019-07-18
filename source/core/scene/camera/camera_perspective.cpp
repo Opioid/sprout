@@ -193,7 +193,7 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     float3 const nlb = left_bottom / z;
     float3 const nrt = right_top / z;
 
-    a_ = 2.f * std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
+    a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
 }
 
 void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) noexcept {

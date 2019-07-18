@@ -60,7 +60,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         auto const export_start = std::chrono::high_resolution_clock::now();
 
-        if (ranges_.size() > 0) {
+        if (ranges_.size() > 0 && view_.num_samples_per_pixel > 0) {
             view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
         } else {
             view_.pipeline.apply(sensor, target_, thread_pool_);
@@ -74,6 +74,45 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         logging::info("Export time " + string::to_string(export_duration) + " s");
     }
 }
+
+void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
+    if (0 == ranges_.size()) {
+        return;
+    }
+
+    frame_ = frame;
+
+    logging::info("Tracing light rays...");
+
+    auto const start = std::chrono::high_resolution_clock::now();
+
+    view_.camera->sensor().clear(1.f);
+
+    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+        iteration_ = v;
+
+        ranges_.restart();
+
+        thread_pool_.run_parallel([this](uint32_t index) noexcept {
+            auto& worker = workers_[index];
+
+            for (ulong2 range; ranges_.pop(range);) {
+                worker.particles(frame_, iteration_, range);
+
+                progressor_.tick();
+            }
+        });
+    }
+
+    // If there will be a forward pass later...
+    if (view_.num_samples_per_pixel > 0) {
+        view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
+    }
+
+    auto const duration = chrono::seconds_since(start);
+    logging::info("Light ray time " + string::to_string(duration) + " s");
+}
+
 
 void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
     if (0 == view_.num_samples_per_pixel) {
@@ -110,40 +149,6 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
     logging::info("Camera ray time " + string::to_string(duration) + " s");
 }
 
-void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
-    if (0 == ranges_.size()) {
-        return;
-    }
-
-    frame_ = frame;
-
-    logging::info("Tracing light rays...");
-
-    auto const start = std::chrono::high_resolution_clock::now();
-
-    view_.camera->sensor().clear(1.f);
-
-    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
-        iteration_ = v;
-
-        ranges_.restart();
-
-        thread_pool_.run_parallel([this](uint32_t index) noexcept {
-            auto& worker = workers_[index];
-
-            for (ulong2 range; ranges_.pop(range);) {
-                worker.particles(frame_, iteration_, range);
-
-                progressor_.tick();
-            }
-        });
-    }
-
-    view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
-
-    auto const duration = chrono::seconds_since(start);
-    logging::info("Light ray time " + string::to_string(duration) + " s");
-}
 
 void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     if (/*photons_baked_ || */ !photon_infos_) {

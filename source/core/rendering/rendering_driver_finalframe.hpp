@@ -28,9 +28,9 @@ class Driver_finalframe : public Driver {
     void render(Exporters& exporters) noexcept;
 
   private:
-    void render_frame_forward(uint32_t frame) noexcept;
-
     void render_frame_backward(uint32_t frame) noexcept;
+
+    void render_frame_forward(uint32_t frame) noexcept;
 
     void bake_photons(uint32_t frame) noexcept;
 
