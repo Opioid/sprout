@@ -101,12 +101,12 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
         float const d = focus_distance_ / axis[2];
 
-        dir = origin + d * axis;
-        t = length(axis);
+        dir     = origin + d * axis;
+        t       = length(axis);
         out_dir = axis / t;
     } else {
-        t = length(po);
-        dir = po / t;
+        t       = length(po);
+        dir     = po / t;
         out_dir = dir;
     }
 

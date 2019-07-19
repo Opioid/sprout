@@ -71,7 +71,6 @@ class Perspective final : public Camera {
 
     float a_;
 
-
     float3 one_way(float2 coordinates, float2 lens_uv) const noexcept;
     float2 other_way(float3 const& dir, float2 lens_uv) const noexcept;
 };

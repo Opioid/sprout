@@ -646,7 +646,8 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 
             load_light_sampling(n.value, light_sampling);
 
-            bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+            bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics) &&
+                                         !lighttracer;
 
             bool const photons_only_through_specular = lighttracer;
 
