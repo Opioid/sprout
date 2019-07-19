@@ -84,61 +84,39 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     float3 const po = transformation.world_to_object_point(p);
 
-    float t = length(po);
+    float t;
 
-    float3 dir = po / t;
-
-    float2 lens_uv;
-
-    float3 focus;
+    float3 dir;
 
     float3 out_dir;
 
-    float3 out_dir0;
-    float3 out_dir1;
-
     if (lens_radius_ > 0.f) {
         float2 const uv = sampler.generate_sample_2D(sampler_dimension);
-        lens_uv = uv;
+
         float2 const lens = sample_disk_concentric(uv);
 
         float3 const origin = float3(lens_radius_ * lens, 0.f);
 
+        float3 const axis = po - origin;
 
+        float const d = focus_distance_ / axis[2];
 
-        dir = po - origin;
-
-
-        float const t1 = focus_distance_ / dir[2];//left_top_[2];
-
-        focus = t1 * dir;
-
- //       std::cout << "focus a: " << focus << std::endl;
-
-        dir = focus;// - origin;
-
-        out_dir = normalize(focus - origin);
-
-        out_dir0 = normalize(focus);
-        out_dir1 = normalize(po - origin);
-
-
-        t = distance(origin, po);
+        dir = origin + d * axis;
+        t = length(axis);
+        out_dir = axis / t;
+    } else {
+        t = length(po);
+        dir = po / t;
+        out_dir = dir;
     }
 
-
-
-    float const cos_theta = dir[2];
+    float const cos_theta = out_dir[2];
 
     if (cos_theta < 0.f) {
         return false;
     }
 
-
-
     float3 const pd = left_top_[2] * (dir / dir[2]);
-
- //   std::cout << "dir a: " << out_dir << std::endl;
 
     float3 const offset = pd - left_top_;
 
@@ -147,12 +125,6 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     float const fx = std::floor(x);
     float const fy = std::floor(y);
-
-
-
-    float3 const thing = one_way(float2(x, y), lens_uv);
-
-//std::cout << "dir b: " << thing << std::endl;
 
     int2 const pixel(static_cast<int32_t>(fx), static_cast<int32_t>(fy));
 
@@ -292,37 +264,6 @@ void Perspective::load_focus(json::Value const& focus_value, Focus& focus) noexc
             focus.distance = json::read_float(n.value);
         }
     }
-}
-
-float3 Perspective::one_way(float2 coordinates, float2 lens_uv) const noexcept {
-    float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
-
-//    std::cout << "dir b: " << direction << std::endl;
-
-
-    float3 origin;
-
-    if (lens_radius_ > 0.f) {
-        float2 const lens = sample_disk_concentric(lens_uv);
-
-        origin = float3(lens_radius_ * lens, 0.f);
-
-        float const t = focus_distance_ / direction[2];
-
-        float3 const focus = t * direction;
-
- //       std::cout << "focus b: " << focus << std::endl;
-
-        direction = focus - origin;
-    } else {
-        origin = float3(0.f);
-    }
-
-    return normalize(direction);
-}
-
-float2 Perspective::other_way(float3 const& dir, float2 lens_uv) const noexcept {
-    return float2(0.f);
 }
 
 }  // namespace scene::camera
