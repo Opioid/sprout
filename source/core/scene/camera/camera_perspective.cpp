@@ -15,9 +15,6 @@
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace scene::camera {
 
 Perspective::Perspective(int2 resolution) noexcept
@@ -227,7 +224,7 @@ void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) 
 
 void Perspective::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("fov" == name) {
-        set_fov(math::degrees_to_radians(json::read_float(value)));
+        set_fov(degrees_to_radians(json::read_float(value)));
     } else if ("lens" == name) {
         Lens lens;
         load_lens(value, lens);

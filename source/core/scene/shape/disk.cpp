@@ -283,8 +283,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
     float3 const ws = transformation.position +
                       transform_vector(transformation.rotation, transformation.scale[0] * ls);
 
-    float3 const dir = math::sample_oriented_hemisphere_cosine(importance_uv,
-                                                               transformation.rotation);
+    float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, transformation.rotation);
 
     sample.p   = ws;
     sample.dir = dir;
