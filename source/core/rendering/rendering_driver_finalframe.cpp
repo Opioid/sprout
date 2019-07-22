@@ -113,7 +113,6 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     logging::info("Light ray time " + string::to_string(duration) + " s");
 }
 
-
 void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
     if (0 == view_.num_samples_per_pixel) {
         return;
@@ -148,7 +147,6 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
     auto const duration = chrono::seconds_since(start);
     logging::info("Camera ray time " + string::to_string(duration) + " s");
 }
-
 
 void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     if (/*photons_baked_ || */ !photon_infos_) {

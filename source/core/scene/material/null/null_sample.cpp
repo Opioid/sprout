@@ -22,7 +22,7 @@ void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
     result.wi         = -wo_;
     result.pdf        = 1.f;
     result.wavelength = 0.f;
-    result.type.clear(bxdf::Type::Pass_through_transmission);
+    result.type.clear(bxdf::Type::Straight_transmission);
 }
 
 bool Sample::ior_greater_one() const noexcept {

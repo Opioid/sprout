@@ -118,7 +118,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             }
 
             treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
-        } else if (sample_result.type.test_not(Bxdf_type::Pass_through)) {
+        } else if (sample_result.type.test_not(Bxdf_type::Straight)) {
             primary_ray       = false;
             filter            = Filter::Nearest;
             treat_as_singular = false;
@@ -129,7 +129,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (material_sample.ior_greater_one()) {
-            transparent &= sample_result.type.test(Bxdf_type::Pass_through);
+            transparent &= sample_result.type.test(Bxdf_type::Straight);
 
             throughput *= sample_result.reflection / sample_result.pdf;
 

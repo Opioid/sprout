@@ -178,7 +178,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             }
 
             treat_as_singular = sample_result.type.test(Bxdf_type::Specular);
-        } else if (sample_result.type.test_not(Bxdf_type::Pass_through)) {
+        } else if (sample_result.type.test_not(Bxdf_type::Straight)) {
             treat_as_singular = false;
 
             if (primary_ray) {
@@ -197,7 +197,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (material_sample.ior_greater_one()) {
-            transparent &= sample_result.type.test(Bxdf_type::Pass_through);
+            transparent &= sample_result.type.test(Bxdf_type::Straight);
 
             throughput *= sample_result.reflection / sample_result.pdf;
 
@@ -245,7 +245,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         SOFT_ASSERT(all_finite(result_li));
 
-        if (sample_result.type.test(Bxdf_type::Pass_through) && !treat_as_singular) {
+        if (sample_result.type.test(Bxdf_type::Straight) && !treat_as_singular) {
             sample_result.pdf = previous_bxdf_pdf;
         } else {
             is_translucent = material_sample.is_translucent();

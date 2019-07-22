@@ -130,7 +130,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         }
 
         if (material_sample.ior_greater_one()) {
-            //   transparent &= sample_result.type.test(Bxdf_type::Pass_through);
+            //   transparent &= sample_result.type.test(Bxdf_type::Straight);
 
             radiance *= sample_result.reflection / sample_result.pdf;
 

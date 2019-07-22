@@ -90,7 +90,7 @@ void Sample_thin::refract(float3 const& wo, float3 const& color, bxdf::Sample& r
     result.reflection = color;
     result.wi         = -wo;
     result.pdf        = 1.f;
-    result.type.clear(bxdf::Type::Pass_through);
+    result.type.clear(bxdf::Type::Straight);
 
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 }
