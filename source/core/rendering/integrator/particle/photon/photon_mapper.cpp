@@ -105,7 +105,7 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
     for (uint32_t i = 0; i < Max_iterations; ++i) {
         worker.interface_stack().clear();
 
-        bool caustic_ray = false;
+        bool caustic_path = false;
 
         Ray ray;
         //   Light const* light;
@@ -138,10 +138,10 @@ uint32_t Mapper::trace_photon(Map const& map, uint32_t frame, AABB const& bounds
 
             if (material_sample.ior_greater_one()) {
                 if (sample_result.type.test(Bxdf_type::Caustic)) {
-                    caustic_ray = true;
+                    caustic_path = true;
                 } else {
                     if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
-                        ((caustic_ray &&
+                        ((caustic_path &&
                           worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                          settings_.full_light_path)) {
                         if (!infinite_world || unnatural_limit.intersect(intersection.geo.p)) {
