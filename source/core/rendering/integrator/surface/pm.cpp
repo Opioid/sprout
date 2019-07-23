@@ -16,6 +16,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
+//#define ONLY_CAUSTICS
+
 namespace rendering::integrator::surface {
 
 PM::PM(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
@@ -65,7 +67,9 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
                                                           worker);
 
         if (material_sample.same_hemisphere(wo)) {
+#ifndef ONLY_CAUSTICS
             result += material_sample.radiance();
+#endif
         }
 
         if (material_sample.is_pure_emissive()) {
