@@ -16,6 +16,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
+// #define ONLY_CAUSTICS
+
 namespace rendering::integrator::surface {
 
 Pathtracer::Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
@@ -73,18 +75,29 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
     float3 throughput(1.f);
     float3 result(0.f);
 
+#ifdef ONLY_CAUSTICS
+    bool caustic_path = false;
+#endif
+
     for (;;) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_is_vacuum_or_not_scattering(
-                                        worker);
+        bool const maybe_caustic = !primary_ray &&
+                                   worker.interface_stack().top_is_vacuum_or_not_scattering(worker);
+
+        bool const avoid_caustics = settings_.avoid_caustics && maybe_caustic;
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
 
         if (material_sample.same_hemisphere(wo)) {
+#ifdef ONLY_CAUSTICS
+            if (caustic_path) {
+                result += throughput * material_sample.radiance();
+            }
+#else
             result += throughput * material_sample.radiance();
+#endif
         }
 
         if (material_sample.is_pure_emissive()) {
@@ -109,9 +122,13 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (sample_result.type.test(Bxdf_type::Caustic)) {
+#ifdef ONLY_CAUSTICS
+            caustic_path |= maybe_caustic;
+#else
             if (avoid_caustics) {
                 break;
             }
+#endif
         } else if (sample_result.type.test_not(Bxdf_type::Straight)) {
             primary_ray = false;
             filter      = Filter::Nearest;

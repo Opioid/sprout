@@ -727,7 +727,7 @@ static Particle_factory_ptr load_particle_integrator_factory(json::Value const& 
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {
     settings.num_photons          = json::read_uint(value, "num_photons", 0);
-    settings.max_bounces          = json::read_uint(value, "max_bounces", 2);
+    settings.max_bounces          = json::read_uint(value, "max_bounces", 4);
     settings.iteration_threshold  = json::read_float(value, "iteration_threshold", 1.f);
     settings.search_radius        = json::read_float(value, "search_radius", 0.002f);
     settings.merge_radius         = json::read_float(value, "merge_radius", 0.001f);

@@ -16,6 +16,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
+// #define ONLY_CAUSTICS
+
 namespace rendering::integrator::surface {
 
 PM::PM(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept
@@ -65,11 +67,13 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
                                                           worker);
 
         if (material_sample.same_hemisphere(wo)) {
-            result += material_sample.radiance();
+#ifndef ONLY_CAUSTICS
+            result += throughput * material_sample.radiance();
+#endif
         }
 
         if (material_sample.is_pure_emissive()) {
-            return float4(result, 1.f);
+            break;
         }
 
         material_sample.sample(material_sampler(ray.depth), sample_result);
@@ -96,13 +100,15 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
         if (material_sample.ior_greater_one()) {
             throughput *= sample_result.reflection / sample_result.pdf;
 
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t  = 0.f;
             ray.set_direction(sample_result.wi);
             ++ray.depth;
+        } else {
+            ray.min_t = scene::offset_f(ray.max_t);
         }
 
-        ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-        ray.min_t  = 0.f;
-        ray.max_t  = scene::Ray_max_t;
+        ray.max_t = scene::Ray_max_t;
 
         if (sample_result.type.test(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);

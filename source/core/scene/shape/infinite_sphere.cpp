@@ -250,7 +250,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     auto const [t, b] = orthonormal_basis(ws);
 
-    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+    float2 const r0 = importance_uv;//sampler.generate_sample_2D(sampler_dimension);
 
     float const radius_2 = squared_length(bounds.halfsize());
 
@@ -276,6 +276,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     sample.dir = ws;
     sample.p   = pli;
     sample.uv  = uv;
+    sample.xy  = importance_uv;
     // sin_theta because of the uv weight
     //  sample.pdf     = 1.f / ((4.f * Pi) * (1.f * Pi) * (sin_theta * radius_2));
     sample.pdf = 1.f / ((4.f * Pi) * (sin_theta * pe[0] * pe[1]));
