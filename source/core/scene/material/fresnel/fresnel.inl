@@ -26,6 +26,13 @@ static inline float3 schlick(float wo_dot_h, float3 const& f0) noexcept {
     // return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
+static inline float lazanyi_schlick_a(float f0, float f82) noexcept {
+    float constexpr cos_theta_max = 1.f / 7.f;
+
+    return (f0 + (1.f - f0 * pow5(1.f - cos_theta_max)) - f82) /
+            (cos_theta_max * pow6(1.f - cos_theta_max));
+}
+
 static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& k) noexcept {
     float3 tmp_f = eta * eta + k * k;
 
