@@ -29,7 +29,7 @@ static inline float3 schlick(float wo_dot_h, float3 const& f0) noexcept {
 static inline float lazanyi_schlick_a(float f0, float f82) noexcept {
     float constexpr cos_theta_max = 1.f / 7.f;
 
-    return (f0 + (1.f - f0 * pow5(1.f - cos_theta_max)) - f82) /
+    return (f0 + (1.f - f0) * pow5(1.f - cos_theta_max) - f82) /
             (cos_theta_max * pow6(1.f - cos_theta_max));
 }
 
