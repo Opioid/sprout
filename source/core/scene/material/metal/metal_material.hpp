@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_METAL_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_METAL_MATERIAL_HPP
 
 #include "scene/material/material.hpp"
 
@@ -13,6 +14,8 @@ class alignas(64) Material_isotropic : public Material {
         noexcept override final;
 
     float ior() const noexcept override final;
+
+    bool is_caustic() const noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
@@ -43,6 +46,8 @@ class alignas(64) Material_anisotropic : public Material {
 
     float ior() const noexcept override final;
 
+    bool is_caustic() const noexcept override final;
+
     size_t num_bytes() const noexcept override final;
 
     void set_normal_map(Texture_adapter const& normal_map) noexcept;
@@ -65,3 +70,5 @@ class alignas(64) Material_anisotropic : public Material {
 };
 
 }  // namespace scene::material::metal
+
+#endif

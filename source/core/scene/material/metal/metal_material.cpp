@@ -40,6 +40,10 @@ float Material_isotropic::ior() const noexcept {
     return ior_[0];
 }
 
+bool Material_isotropic::is_caustic() const noexcept {
+    return alpha_ <= ggx::Min_alpha;
+}
+
 size_t Material_isotropic::num_bytes() const noexcept {
     return sizeof(*this);
 }
@@ -101,6 +105,10 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
 
 float Material_anisotropic::ior() const noexcept {
     return ior_[0];
+}
+
+bool Material_anisotropic::is_caustic() const noexcept {
+    return roughness_[0] <= ggx::Min_roughness || roughness_[1] <= ggx::Min_roughness;
 }
 
 size_t Material_anisotropic::num_bytes() const noexcept {
