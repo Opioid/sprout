@@ -250,7 +250,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     auto const [t, b] = orthonormal_basis(ws);
 
-    float2 const r0 = importance_uv;//sampler.generate_sample_2D(sampler_dimension);
+    float2 const r0 = importance_uv;  // sampler.generate_sample_2D(sampler_dimension);
 
     float const radius_2 = squared_length(bounds.halfsize());
 

@@ -3,7 +3,7 @@
 #include <string_view>
 #include "core/logging/logging.hpp"
 
-namespace options {
+namespace di::options {
 
 static bool handle_all(std::string const&, std::string const& parameter, Options& result) noexcept;
 
@@ -61,20 +61,12 @@ bool handle_all(std::string const& command, std::string const& parameter,
 bool handle(std::string const& command, std::string const& parameter, Options& result) noexcept {
     if ("help" == command || "h" == command) {
         help();
-    } else if ("input" == command || "i" == command) {
-        result.take = parameter;
-    } else if ("mount" == command || "m" == command) {
-        result.mounts.push_back(parameter);
+    } else if ("image" == command || "i" == command) {
+        result.images.push_back(parameter);
+    } else if ("reference" == command || "r" == command) {
+        result.reference = parameter;
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
-    } else if ("progressive" == command || "p" == command) {
-        result.progressive = true;
-    } else if ("no-textures" == command) {
-        result.no_textures = true;
-    } else if ("debug-material" == command) {
-        result.debug_material = true;
-    } else if ("verbose" == command || "v" == command) {
-        result.verbose = true;
     } else {
         logging::warning("Option %S does not exist.", command);
     }
@@ -104,25 +96,22 @@ bool is_parameter(std::string_view text) noexcept {
 
 void help() noexcept {
     static std::string const text =
-        R"(sprout is a global illumination renderer experiment
+        R"(di is a difference image tool
 Usage:
-  sprout [OPTION...]
+  di [OPTION...]
 
-  -h, --help                       Print help.
-  -i, --input    json file/string  Path of the take file to render or json
-                                   string describing the take.
-  -m, --mount    directory path    Specifies a mount point for the data
-                                   directory. The default value is "../data/"
-  -t, --threads  integer           Specifies the number of threads used by sprout.
-                                   0 creates one thread for each logical CPU.
-                                   -x creates a number of threads equal to the
-                                   number of logical CPUs minus x.
-                                   The default value is 0.
-  -p, --progressive                Starts sprout in progressive mode.
-      --no-textures                Disables loading of all textures.
-  -v, --verbose                    Enables verbose logging.)";
+  -h, --help                   Print help.
+  -i, --image      image file  Path of an image,
+                               which should be compared to the reference.
+  -r, --reference  image file  Path of the reference image,
+                               which to compare other images to.
+  -t, --threads    integer     Specifies the number of threads used by di.
+                               0 creates one thread for each logical CPU.
+                               -x creates a number of threads equal to the
+                               number of logical CPUs minus x.
+                               The default value is 0.)";
 
     logging::info(text);
 }
 
-}  // namespace options
+}  // namespace di::options

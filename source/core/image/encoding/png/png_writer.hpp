@@ -29,6 +29,9 @@ class Writer : public image::Writer, Srgb {
     static bool write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions);
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions);
+
+    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                              float max_value);
 };
 
 class Writer_alpha : public image::Writer, Srgb_alpha {

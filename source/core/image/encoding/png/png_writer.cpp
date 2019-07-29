@@ -182,8 +182,9 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
         return false;
     }
 
-    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
-    byte3*         bytes = memory::allocate_aligned<byte3>(area);
+    uint32_t const area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+
+    byte3* bytes = memory::allocate_aligned<byte3>(area);
 
     uint32_t max_value = 0;
     for (uint32_t i = 0; i < area; ++i) {
@@ -217,18 +218,26 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
-    byte3*         bytes = memory::allocate_aligned<byte3>(area);
+    uint32_t const area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
 
     float max_value = 0.f;
     for (uint32_t i = 0; i < area; ++i) {
         max_value = std::max(data[i], max_value);
     }
+
+    return write_heatmap(name, data, dimensions, max_value);
+}
+
+bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                           float max_value) {
+    std::ofstream stream(name.data(), std::ios::binary);
+    if (!stream) {
+        return false;
+    }
+
+    uint32_t const area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+
+    byte3* bytes = memory::allocate_aligned<byte3>(area);
 
     float const im = max_value > 0.f ? 1.f / max_value : 1.f;
     for (uint32_t i = 0; i < area; ++i) {
