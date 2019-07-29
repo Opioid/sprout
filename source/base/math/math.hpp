@@ -75,13 +75,19 @@ static T constexpr pow3(T x) noexcept {
 
 template <typename T>
 static T constexpr pow4(T x) noexcept {
-    const T x2 = x * x;
+    T const x2 = x * x;
     return x2 * x2;
 }
 
 template <typename T>
 static T constexpr pow5(T x) noexcept {
     return pow4(x) * x;
+}
+
+template <typename T>
+static T constexpr pow6(T x) noexcept {
+    T const x2 = x * x;
+    return x2 * x2 * x2;
 }
 
 template <typename T>
