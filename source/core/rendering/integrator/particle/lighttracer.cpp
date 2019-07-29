@@ -202,6 +202,10 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
                                 Intersection const&    intersection,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) noexcept {
+    if (!worker.scene().prop(intersection.prop)->visible_in_camera()) {
+        return;
+    }
+
     float3 const p = material_sample.offset_p(intersection.geo.p);
 
     Camera_sample_to camera_sample;
