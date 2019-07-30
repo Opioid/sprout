@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-namespace di::options {
+namespace it::options {
 
 struct Options {
-    std::string reference;
+    bool diff = true;
 
     std::vector<std::string> images;
 
@@ -16,6 +16,6 @@ struct Options {
 
 Options parse(int argc, char* argv[]) noexcept;
 
-}  // namespace di::options
+}  // namespace it::options
 
 #endif

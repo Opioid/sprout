@@ -1,4 +1,4 @@
-target_sources(di
+target_sources(it
   PRIVATE
   "options.cpp"
   "options.hpp"

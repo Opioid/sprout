@@ -3,7 +3,7 @@
 #include <string_view>
 #include "core/logging/logging.hpp"
 
-namespace di::options {
+namespace it::options {
 
 static bool handle_all(std::string const&, std::string const& parameter, Options& result) noexcept;
 
@@ -61,10 +61,10 @@ bool handle_all(std::string const& command, std::string const& parameter,
 bool handle(std::string const& command, std::string const& parameter, Options& result) noexcept {
     if ("help" == command || "h" == command) {
         help();
+    } else if ("diff" == command || "d" == command) {
+        result.diff = true;
     } else if ("image" == command || "i" == command) {
         result.images.push_back(parameter);
-    } else if ("reference" == command || "r" == command) {
-        result.reference = parameter;
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
     } else {
@@ -96,22 +96,24 @@ bool is_parameter(std::string_view text) noexcept {
 
 void help() noexcept {
     static std::string const text =
-        R"(di is a difference image tool
+        R"(it is a image tool
 Usage:
-  di [OPTION...]
+  it [OPTION...]
 
-  -h, --help                   Print help.
-  -i, --image      image file  Path of an image,
-                               which should be compared to the reference.
-  -r, --reference  image file  Path of the reference image,
-                               which to compare other images to.
-  -t, --threads    integer     Specifies the number of threads used by di.
-                               0 creates one thread for each logical CPU.
-                               -x creates a number of threads equal to the
-                               number of logical CPUs minus x.
-                               The default value is 0.)";
+  -h, --help           Print help.
+  -d, --diff           Compute the difference between the first
+                       and subsequent images.
+                       This is the default behavior.
+  -i, --image    file  Path of an image.
+                       The first image is considered the reference,
+                       if multiple images are specified.
+  -t, --threads  int   Specifies the number of threads used by di.
+                       0 creates one thread for each logical CPU.
+                       -x creates a number of threads equal to the
+                       number of logical CPUs minus x.
+                       The default value is 0.)";
 
     logging::info(text);
 }
 
-}  // namespace di::options
+}  // namespace it::options

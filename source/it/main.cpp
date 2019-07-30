@@ -12,7 +12,7 @@
 #include "core/resource/resource_manager.inl"
 #include "options/options.hpp"
 
-using namespace di;
+using namespace it;
 using namespace image;
 
 using Texture = texture::Texture;
@@ -73,13 +73,8 @@ int main(int argc, char* argv[]) {
 
     auto const args = options::parse(argc, argv);
 
-    if (args.reference.empty()) {
-        logging::error("No reference image specified.");
-        return 1;
-    }
-
     if (args.images.empty()) {
-        logging::error("No comparison images specified.");
+        logging::error("No images specified.");
         return 1;
     }
 
@@ -108,7 +103,7 @@ int main(int argc, char* argv[]) {
     texture::Provider texture_provider;
     resource_manager.register_provider(texture_provider);
 
-    Texture* reference = resource_manager.load<Texture>(args.reference);
+    Texture* reference = resource_manager.load<Texture>(args.images[0]);
 
     if (!reference) {
         logging::error("Could not load reference image");
@@ -118,10 +113,12 @@ int main(int argc, char* argv[]) {
     int2 const dimensions = reference->dimensions_2();
 
     std::vector<Candidate> candidates;
-    candidates.reserve(args.images.size());
+    candidates.reserve(args.images.size() - 1);
 
-    for (auto i : args.images) {
-        Texture* image = resource_manager.load<Texture>(i);
+    for (size_t i = 1, len = args.images.size(); i < len; ++i) {
+        std::string const name = args.images[i];
+
+        Texture* image = resource_manager.load<Texture>(name);
 
         if (!image) {
             logging::error("Could not load comparison image");
@@ -133,7 +130,7 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        candidates.emplace_back(i, image);
+        candidates.emplace_back(name, image);
     }
 
     float max_dif = 0.f;

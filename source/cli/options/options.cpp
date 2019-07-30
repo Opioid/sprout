@@ -108,19 +108,19 @@ void help() noexcept {
 Usage:
   sprout [OPTION...]
 
-  -h, --help                       Print help.
-  -i, --input    json file/string  Path of the take file to render or json
-                                   string describing the take.
-  -m, --mount    directory path    Specifies a mount point for the data
-                                   directory. The default value is "../data/"
-  -t, --threads  integer           Specifies the number of threads used by sprout.
-                                   0 creates one thread for each logical CPU.
-                                   -x creates a number of threads equal to the
-                                   number of logical CPUs minus x.
-                                   The default value is 0.
-  -p, --progressive                Starts sprout in progressive mode.
-      --no-textures                Disables loading of all textures.
-  -v, --verbose                    Enables verbose logging.)";
+  -h, --help                  Print help.
+  -i, --input    file/string  Path of the take file to render,
+                              or json-string describing the take.
+  -m, --mount    directory    Specifies a mount point for the data
+                              directory. The default value is "../data/"
+  -t, --threads  int          Specifies the number of threads used by sprout.
+                              0 creates one thread for each logical CPU.
+                              -x creates a number of threads equal to the
+                              number of logical CPUs minus x.
+                              The default value is 0.
+  -p, --progressive           Starts sprout in progressive mode.
+      --no-textures           Disables loading of all textures.
+  -v, --verbose               Enables verbose logging.)";
 
     logging::info(text);
 }
