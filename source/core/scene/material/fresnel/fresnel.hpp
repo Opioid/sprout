@@ -26,6 +26,18 @@ class Schlick {
     float3 const f0_;
 };
 
+class Lazanyi_schlick {
+  public:
+    Lazanyi_schlick(float f0, float a) noexcept;
+    Lazanyi_schlick(float3 const& f0, float3 const& a) noexcept;
+
+    float3 operator()(float wo_dot_h) const noexcept;
+
+  private:
+    float3 const f0_;
+    float3 const a_;
+};
+
 class Thinfilm {
   public:
     Thinfilm(float external_ior, float thinfilm_ior, float internal_ior, float thickness) noexcept;

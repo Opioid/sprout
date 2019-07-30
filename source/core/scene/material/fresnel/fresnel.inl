@@ -33,6 +33,10 @@ static inline float lazanyi_schlick_a(float f0, float f82) noexcept {
            (cos_theta_max * pow6(1.f - cos_theta_max));
 }
 
+static inline float3 lazanyi_schlick(float wo_dot_h, float3 const& f0, float3 const& a) noexcept {
+    return schlick(wo_dot_h, f0) - wo_dot_h * pow6(1.f - wo_dot_h) * a;
+}
+
 static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& k) noexcept {
     float3 tmp_f = eta * eta + k * k;
 
@@ -154,6 +158,14 @@ inline Schlick::Schlick(float3 const& f0) noexcept : f0_(f0) {}
 
 inline float3 Schlick::operator()(float wo_dot_h) const noexcept {
     return schlick(wo_dot_h, f0_);
+}
+
+inline Lazanyi_schlick::Lazanyi_schlick(float f0, float a) noexcept : f0_(f0), a_(a) {}
+
+inline Lazanyi_schlick::Lazanyi_schlick(float3 const& f0, float3 const& a) noexcept : f0_(f0), a_(a) {}
+
+inline float3 Lazanyi_schlick::operator()(float wo_dot_h) const noexcept {
+    return lazanyi_schlick(wo_dot_h, f0_, a_);
 }
 
 inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior, float internal_ior,
