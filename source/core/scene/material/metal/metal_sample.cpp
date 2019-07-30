@@ -27,7 +27,7 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
 
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    const fresnel::Conductor conductor(ior_, absorption_);
+    fresnel::Conductor const conductor(ior_, absorption_);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, conductor,
                                                    sampler, result);
@@ -59,7 +59,7 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
 
     float const n_dot_h = saturate(dot(layer_.n_, h));
 
-    const fresnel::Conductor conductor(ior_, absorption_);
+    fresnel::Conductor const conductor(ior_, absorption_);
 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 conductor);
@@ -93,7 +93,7 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
 
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
-    const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
+    fresnel::Conductor const conductor(layer_.ior_, layer_.absorption_);
 
     float const n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor, sampler,
                                                      result);
@@ -115,7 +115,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const noexcept {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
+    fresnel::Conductor const conductor(layer_.ior_, layer_.absorption_);
 
     auto const ggx = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, layer_,
                                                   conductor);

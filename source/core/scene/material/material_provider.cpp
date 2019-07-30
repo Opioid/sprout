@@ -932,6 +932,14 @@ Material* load_substitute(json::Value const& substitute_value,
     for (auto const& n : substitute_value.GetObject()) {
         if ("color" == n.name) {
             color = read_color(n.value);
+        } else if ("metal_preset" == n.name) {
+            float3 ior;
+            float3 absorption;
+            metal::ior_and_absorption(n.value.GetString(), ior, absorption);
+
+            color = fresnel::conductor(1.f, ior, absorption);
+
+            metallic = 1.f;
         } else if ("absorption_color" == n.name) {
             use_absorption_color = true;
             absorption_color     = read_color(n.value);
