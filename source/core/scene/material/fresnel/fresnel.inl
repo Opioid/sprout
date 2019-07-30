@@ -33,6 +33,13 @@ static inline float lazanyi_schlick_a(float f0, float f82) noexcept {
            (cos_theta_max * pow6(1.f - cos_theta_max));
 }
 
+static inline float3 lazanyi_schlick_a(float3 const& f0, float3 const& f82) noexcept {
+    float constexpr cos_theta_max = 1.f / 7.f;
+
+    return (f0 + pow5(1.f - cos_theta_max) * (1.f - f0) - f82) /
+           (cos_theta_max * pow6(1.f - cos_theta_max));
+}
+
 static inline float3 lazanyi_schlick(float wo_dot_h, float3 const& f0, float3 const& a) noexcept {
     return schlick(wo_dot_h, f0) - wo_dot_h * pow6(1.f - wo_dot_h) * a;
 }
@@ -162,7 +169,8 @@ inline float3 Schlick::operator()(float wo_dot_h) const noexcept {
 
 inline Lazanyi_schlick::Lazanyi_schlick(float f0, float a) noexcept : f0_(f0), a_(a) {}
 
-inline Lazanyi_schlick::Lazanyi_schlick(float3 const& f0, float3 const& a) noexcept : f0_(f0), a_(a) {}
+inline Lazanyi_schlick::Lazanyi_schlick(float3 const& f0, float3 const& a) noexcept
+    : f0_(f0), a_(a) {}
 
 inline float3 Lazanyi_schlick::operator()(float wo_dot_h) const noexcept {
     return lazanyi_schlick(wo_dot_h, f0_, a_);
