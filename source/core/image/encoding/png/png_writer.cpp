@@ -37,6 +37,42 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool
     return true;
 }
 
+bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                           float max_value, thread::Pool& pool) noexcept {
+    std::ofstream stream(name.data(), std::ios::binary);
+    if (!stream) {
+        return false;
+    }
+
+    float const im = max_value > 0.f ? 1.f / max_value : 1.f;
+
+    pool.run_range(
+        [this, data, im](uint32_t /*id*/, int32_t begin, int32_t end) {
+            for (int32_t i = begin; i < end; ++i) {
+                float const n = data[i] * im;
+
+                float3 const hm = spectrum::heatmap(n);
+
+                rgb_[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
+            }
+        },
+        0, dimensions[0] * dimensions[1]);
+
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, dimensions[0], dimensions[1],
+                                                               3, &buffer_len);
+
+    if (!png_buffer) {
+        return false;
+    }
+
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
+
+    mz_free(png_buffer);
+
+    return true;
+}
+
 bool Writer::write(std::string_view name, Byte3 const& image) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {

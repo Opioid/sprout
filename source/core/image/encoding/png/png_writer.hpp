@@ -14,6 +14,9 @@ class Writer : public image::Writer, Srgb {
 
     bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) override final;
 
+    bool write_heatmap(std::string_view name, float const* data, int2 dimensions, float max_value,
+                       thread::Pool& pool) noexcept;
+
     static bool write(std::string_view name, Byte3 const& image);
 
     static bool write(std::string_view name, Byte1 const& image);
