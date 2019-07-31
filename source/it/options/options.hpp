@@ -9,6 +9,9 @@ namespace it::options {
 struct Options {
     bool diff = true;
 
+    float clamp = std::numeric_limits<float>::max();
+    float clip  = std::numeric_limits<float>::max();
+
     std::vector<std::string> images;
 
     int threads = 0;

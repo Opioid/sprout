@@ -30,7 +30,8 @@ class Candidate {
         return difference_;
     }
 
-    float calculate_difference(Texture const* other, float* max_difs, thread::Pool& pool) {
+    float calculate_difference(Texture const* other, float* max_difs, float clamp, float clip,
+                               thread::Pool& pool) {
         int2 const d = image_->dimensions_2();
 
         int32_t const num_pixel = d[0] * d[1];
@@ -41,9 +42,12 @@ class Candidate {
 
             float* difference;
             float* max_difs;
+
+            float clamp;
+            float clip;
         };
 
-        Args args = Args{image_, other, difference_, max_difs};
+        Args args = Args{image_, other, difference_, max_difs, clamp, clip};
 
         pool.run_range(
             [&args](uint32_t id, int32_t begin, int32_t end) {
@@ -53,7 +57,9 @@ class Candidate {
                     float3 const va = args.image->at_3(i);
                     float3 const vb = args.other->at_3(i);
 
-                    float const dif = distance(va, vb);
+                    float dif = distance(va, vb);
+
+                    dif = dif > args.clip ? 0.f : std::min(dif, args.clamp);
 
                     args.difference[i] = dif;
 
@@ -80,7 +86,7 @@ class Candidate {
     float* difference_;
 };
 
-uint32_t difference(std::vector<Item> const& items, thread::Pool& pool) {
+uint32_t difference(std::vector<Item> const& items, float clamp, float clip, thread::Pool& pool) {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
         return 0;
@@ -108,7 +114,8 @@ uint32_t difference(std::vector<Item> const& items, thread::Pool& pool) {
     float max_dif = 0.f;
 
     for (auto& c : candidates) {
-        max_dif = std::max(c.calculate_difference(reference, max_difs.data(), pool), max_dif);
+        max_dif = std::max(c.calculate_difference(reference, max_difs.data(), clamp, clip, pool),
+                           max_dif);
     }
 
     encoding::png::Writer writer(dimensions, false);
