@@ -66,6 +66,11 @@ void Material_base::set_color(float3 const& color) noexcept {
     color_ = color;
 }
 
+void Material_base::set_fresnel(float3 const& f0, float3 const& a) noexcept {
+    f0_ = f0;
+    a_  = a;
+}
+
 void Material_base::set_roughness(float roughness) noexcept {
     float const r = ggx::clamp_roughness(roughness);
 

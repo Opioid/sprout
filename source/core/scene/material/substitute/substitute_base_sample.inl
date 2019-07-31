@@ -17,10 +17,25 @@ void Base_closure<Diffuse>::set(float3 const& color, float3 const& radiance, flo
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
+    a_  = float3(0.f);
 
     emission_ = radiance;
 
     metallic_ = metallic;
+
+    alpha_ = alpha;
+}
+
+template <typename Diffuse>
+void Base_closure<Diffuse>::set(float3 const& f0, float3 const& a, float alpha) noexcept {
+    diffuse_color_ = float3(0.f);
+
+    f0_ = f0;
+    a_  = a;
+
+    emission_ = float3(0.f);
+
+    metallic_ = 1.f;
 
     alpha_ = alpha;
 }
@@ -46,10 +61,11 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
 
     float const n_dot_h = saturate(layer.n_dot(h));
 
-    fresnel::Schlick const schlick(f0_);
+    //   fresnel::Schlick const schlick(f0_);
+    fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                schlick);
+                                                /*schlick*/ ls);
 
     float const pdf = 0.5f * (d.pdf + ggx.pdf);
 
@@ -78,10 +94,11 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
     float const n_dot_h = saturate(layer.n_dot(h));
 
-    fresnel::Schlick const schlick(f0_);
+    //  fresnel::Schlick const schlick(f0_);
+    fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                schlick);
+                                                /*schlick*/ ls);
 
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
@@ -108,10 +125,11 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
     float const n_dot_h = saturate(layer.n_dot(result.h));
 
-    fresnel::Schlick const schlick(f0_);
+    //  fresnel::Schlick const schlick(f0_);
+    fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h,
-                                                alpha_, schlick);
+                                                alpha_, /*schlick*/ ls);
 
     result.reflection = n_dot_wi * (result.reflection + ggx.reflection);
     result.pdf        = 0.5f * (result.pdf + ggx.pdf);
@@ -122,10 +140,11 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
                                          bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    fresnel::Schlick const schlick(f0_);
+    //   fresnel::Schlick const schlick(f0_);
+    fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
-                                                   result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, /*schlick*/ ls,
+                                                   sampler, result);
 
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
 
@@ -139,10 +158,11 @@ void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, Layer const& lay
     noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    fresnel::Schlick const schlick(f0_);
+    //   fresnel::Schlick const schlick(f0_);
+    fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
-                                                   result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, /*schlick*/ ls,
+                                                   sampler, result);
     result.reflection *= n_dot_wi;
 }
 
