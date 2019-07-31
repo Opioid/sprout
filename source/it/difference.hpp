@@ -8,6 +8,8 @@ namespace resource {
 class Manager;
 }
 
-uint32_t difference(std::vector<std::string> const& images, resource::Manager& manager);
+struct Item;
+
+uint32_t difference(std::vector<Item> const& item, resource::Manager& manager);
 
 #endif

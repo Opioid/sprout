@@ -10,12 +10,10 @@
 #include "core/logging/logging.hpp"
 #include "core/resource/resource_manager.inl"
 #include "difference.hpp"
+#include "item.hpp"
 #include "options/options.hpp"
 
 using namespace it;
-using namespace image;
-
-using Texture = texture::Texture;
 
 int main(int argc, char* argv[]) {
     auto const total_start = std::chrono::high_resolution_clock::now();
@@ -57,7 +55,16 @@ int main(int argc, char* argv[]) {
     texture::Provider texture_provider;
     resource_manager.register_provider(texture_provider);
 
-    if (uint32_t num = difference(args.images, resource_manager); num) {
+    std::vector<Item> items;
+    items.reserve(args.images.size());
+
+    for (auto& i : args.images) {
+        if (Texture const* image = resource_manager.load<Texture>(i); image) {
+            items.emplace_back(Item{i, image});
+        }
+    }
+
+    if (uint32_t num = difference(items, resource_manager); num) {
         logging::info("diff " + string::to_string(num) + " images in " +
                       string::to_string(chrono::seconds_since(total_start)) + " s");
     }

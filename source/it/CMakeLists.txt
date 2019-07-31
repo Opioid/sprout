@@ -1,4 +1,4 @@
-add_executable(it "main.cpp" "difference.hpp" "difference.cpp")
+add_executable(it "main.cpp" "difference.hpp" "difference.cpp" "item.hpp")
 
 # set_target_properties(cli PROPERTIES OUTPUT_NAME "sprout")
 

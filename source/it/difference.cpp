@@ -4,6 +4,7 @@
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/resource/resource_manager.inl"
+#include "item.hpp"
 
 using namespace image;
 
@@ -11,9 +12,9 @@ using Texture = texture::Texture;
 
 class Candidate {
   public:
-    Candidate(std::string name, Texture const* image)
-        : name_(name.substr(0, name.find_last_of('.')) + "_dif.png"), image_(image) {
-        int2 const d = image->dimensions_2();
+    Candidate(Item const& item)
+        : name_(item.name.substr(0, item.name.find_last_of('.')) + "_dif.png"), image_(item.image) {
+        int2 const d = item.image->dimensions_2();
         difference_  = new float[d[0] * d[1]];
     }
 
@@ -79,35 +80,27 @@ class Candidate {
     float* difference_;
 };
 
-uint32_t difference(std::vector<std::string> const& images, resource::Manager& manager) {
-    Texture* reference = manager.load<Texture>(images[0]);
-
-    if (!reference) {
-        logging::error("Could not load reference image");
+uint32_t difference(std::vector<Item> const& items, resource::Manager& manager) {
+    if (items.size() < 2) {
+        logging::error("Need at least 2 images for diff.");
         return 0;
     }
 
-    int2 const dimensions = reference->dimensions_2();
+    Texture const* reference  = items[0].image;
+    int2 const     dimensions = reference->dimensions_2();
 
     std::vector<Candidate> candidates;
-    candidates.reserve(images.size() - 1);
+    candidates.reserve(items.size() - 1);
 
-    for (size_t i = 1, len = images.size(); i < len; ++i) {
-        std::string const name = images[i];
+    for (size_t i = 1, len = items.size(); i < len; ++i) {
+        Item const& item = items[i];
 
-        Texture* image = manager.load<Texture>(name);
-
-        if (!image) {
-            logging::error("Could not load comparison image");
+        if (item.image->dimensions_2() != dimensions) {
+            logging::error("%S does not match reference resolution", item.name);
             continue;
         }
 
-        if (image->dimensions_2() != dimensions) {
-            logging::error("Image resolutions do no match");
-            continue;
-        }
-
-        candidates.emplace_back(name, image);
+        candidates.emplace_back(item);
     }
 
     thread::Pool& pool = manager.thread_pool();
