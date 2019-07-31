@@ -15,6 +15,8 @@
 
 using namespace it;
 
+void comparison();
+
 int main(int argc, char* argv[]) {
     auto const total_start = std::chrono::high_resolution_clock::now();
 
@@ -64,7 +66,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (uint32_t num = difference(items, resource_manager); num) {
+    if (uint32_t num = difference(items, resource_manager.thread_pool()); num) {
         logging::info("diff " + string::to_string(num) + " images in " +
                       string::to_string(chrono::seconds_since(total_start)) + " s");
     }

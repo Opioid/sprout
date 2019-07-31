@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
-namespace resource {
-class Manager;
+namespace thread {
+class Pool;
 }
 
 struct Item;
 
-uint32_t difference(std::vector<Item> const& item, resource::Manager& manager);
+uint32_t difference(std::vector<Item> const& item, thread::Pool& pool);
 
 #endif

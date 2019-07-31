@@ -3,7 +3,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/texture/texture.inl"
-#include "core/resource/resource_manager.inl"
+#include "core/logging/logging.hpp"
 #include "item.hpp"
 
 using namespace image;
@@ -80,7 +80,7 @@ class Candidate {
     float* difference_;
 };
 
-uint32_t difference(std::vector<Item> const& items, resource::Manager& manager) {
+uint32_t difference(std::vector<Item> const& items, thread::Pool& pool) {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
         return 0;
@@ -102,8 +102,6 @@ uint32_t difference(std::vector<Item> const& items, resource::Manager& manager) 
 
         candidates.emplace_back(item);
     }
-
-    thread::Pool& pool = manager.thread_pool();
 
     memory::Array<float> max_difs(pool.num_threads(), 0.f);
 
