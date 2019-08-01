@@ -1,6 +1,7 @@
 #ifndef SU_IT_OPERATOR_CONCATENATE_HPP
 #define SU_IT_OPERATOR_CONCATENATE_HPP
 
+#include <cstdint>
 #include <vector>
 
 namespace thread {

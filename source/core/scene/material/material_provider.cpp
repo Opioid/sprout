@@ -935,6 +935,8 @@ Material* load_substitute(json::Value const& substitute_value,
     for (auto const& n : substitute_value.GetObject()) {
         if ("color" == n.name) {
             color = read_color(n.value);
+
+            f0 = color;
         } else if ("metal_preset" == n.name) {
             float3 eta;
             float3 k;
