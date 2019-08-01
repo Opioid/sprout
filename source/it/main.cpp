@@ -10,14 +10,15 @@
 #include "core/logging/logging.hpp"
 #include "core/resource/resource_manager.inl"
 #include "item.hpp"
+#include "operator/concatenate.hpp"
 #include "operator/difference.hpp"
 #include "options/options.hpp"
 
 using namespace it::options;
 
-void comparison(std::vector<Item> const& items);
+void comparison(std::vector<Item> const& items) noexcept;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) noexcept {
     auto const total_start = std::chrono::high_resolution_clock::now();
 
     logging::init(logging::Type::Std_out);
@@ -79,7 +80,12 @@ int main(int argc, char* argv[]) {
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Concat == args.op) {
-        logging::error("Concatenate not implemented.");
+        if (uint32_t const num = op::concatenate(items,
+                                                resource_manager.thread_pool());
+            num) {
+            logging::info("conc " + string::to_string(num) + " images in " +
+                          string::to_string(chrono::seconds_since(total_start)) + " s");
+        }
     }
 
     //   comparison(items);
@@ -87,7 +93,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-void comparison(std::vector<Item> const& items) {
+void comparison(std::vector<Item> const& items) noexcept {
     for (auto const& item : items) {
         int2 const d = item.image->dimensions_2();
 

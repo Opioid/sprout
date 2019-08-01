@@ -42,11 +42,11 @@
 
 static void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
                                    scene::Loader const& loader, scene::Scene const& scene,
-                                   size_t rendering_num_bytes);
+                                   size_t rendering_num_bytes) noexcept;
 
-static bool is_json(std::string const& text);
+static bool is_json(std::string const& text) noexcept;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) noexcept {
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
     //  scene::material::glass::testing::rough_refraction();
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
 
 void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
                             scene::Loader const& loader, scene::Scene const& scene,
-                            size_t rendering_num_bytes) {
+                            size_t rendering_num_bytes) noexcept {
     if (!logging::is_verbose()) {
         return;
     }
@@ -236,7 +236,7 @@ void log_memory_consumption(resource::Manager const& manager, take::Take const& 
     logging::verbose("\tTotal: " + string::print_bytes(total_num_bytes));
 }
 
-bool is_json(std::string const& text) {
+bool is_json(std::string const& text) noexcept {
     auto const it = text.find_first_not_of(" \t");
 
     if (std::string::npos != it) {

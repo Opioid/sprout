@@ -14,26 +14,26 @@ namespace op {
 
 class Candidate {
   public:
-    Candidate(Item const& item)
+    Candidate(Item const& item) noexcept
         : name_(item.name.substr(0, item.name.find_last_of('.')) + "_dif.png"), image_(item.image) {
         int2 const d = item.image->dimensions_2();
         difference_  = new float[d[0] * d[1]];
     }
 
-    ~Candidate() {
+    ~Candidate() noexcept {
         delete[] difference_;
     }
 
-    std::string name() const {
+    std::string name() const noexcept {
         return name_;
     }
 
-    float const* difference() const {
+    float const* difference() const noexcept {
         return difference_;
     }
 
     float calculate_difference(Texture const* other, float* max_difs, float clamp, float clip,
-                               thread::Pool& pool) {
+                               thread::Pool& pool) noexcept {
         int2 const d = image_->dimensions_2();
 
         int32_t const num_pixel = d[0] * d[1];
@@ -88,7 +88,7 @@ class Candidate {
     float* difference_;
 };
 
-uint32_t difference(std::vector<Item> const& items, float clamp, float clip, thread::Pool& pool) {
+uint32_t difference(std::vector<Item> const& items, float clamp, float clip, thread::Pool& pool) noexcept {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
         return 0;
