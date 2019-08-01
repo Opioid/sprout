@@ -9,8 +9,8 @@
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/logging.hpp"
 #include "core/resource/resource_manager.inl"
-#include "difference.hpp"
 #include "item.hpp"
+#include "operator/difference.hpp"
 #include "options/options.hpp"
 
 using namespace it;
@@ -66,7 +66,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (uint32_t num = difference(items, args.clamp, args.clip, resource_manager.thread_pool());
+    if (uint32_t const num = op::difference(items, args.clamp, args.clip,
+                                            resource_manager.thread_pool());
         num) {
         logging::info("diff " + string::to_string(num) + " images in " +
                       string::to_string(chrono::seconds_since(total_start)) + " s");

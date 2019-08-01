@@ -1,4 +1,4 @@
-add_executable(it "main.cpp" "difference.hpp" "difference.cpp" "item.hpp")
+add_executable(it "main.cpp" "item.hpp")
 
 # set_target_properties(cli PROPERTIES OUTPUT_NAME "sprout")
 
@@ -11,4 +11,5 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(it PRIVATE base core Threads::Threads)
 
+add_subdirectory(operator)
 add_subdirectory(options)

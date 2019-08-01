@@ -10,6 +10,8 @@ using namespace image;
 
 using Texture = texture::Texture;
 
+namespace op {
+
 class Candidate {
   public:
     Candidate(Item const& item)
@@ -126,3 +128,5 @@ uint32_t difference(std::vector<Item> const& items, float clamp, float clip, thr
 
     return static_cast<uint32_t>(candidates.size()) + 1;
 }
+
+}  // namespace op

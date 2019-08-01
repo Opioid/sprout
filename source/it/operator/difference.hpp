@@ -10,6 +10,8 @@ class Pool;
 
 struct Item;
 
+namespace op {
 uint32_t difference(std::vector<Item> const& item, float clamp, float clip, thread::Pool& pool);
+}
 
 #endif
