@@ -14,6 +14,7 @@
 #include "texture_byte_3_snorm.hpp"
 #include "texture_byte_3_srgb.hpp"
 #include "texture_byte_3_unorm.hpp"
+#include "texture_byte_4_srgb.hpp"
 #include "texture_encoding.hpp"
 #include "texture_float_1.hpp"
 #include "texture_float_3.hpp"
@@ -36,7 +37,9 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
 
     bool invert = false;
 
-    if (Usage::Mask == usage) {
+    if (Usage::Color_with_alpha == usage) {
+        channels = Channels::XYZW;
+    } else if (Usage::Mask == usage) {
         channels = Channels::W;
     } else if (Usage::Anisotropy == usage) {
         channels = Channels::XY;
@@ -47,6 +50,8 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
     } else if (Usage::Specularity == usage) {
         channels = Channels::X;
         invert   = true;
+    } else if (Usage::Normal == usage) {
+        channels = Channels::XYZ;
     }
 
     memory::Variant_map image_options;
@@ -81,6 +86,8 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         } else {
             return new Texture(Byte3_sRGB(image->byte3()));
         }
+    } else if (Image::Type::Byte4 == image->type()) {
+        return new Texture(Byte4_sRGB(image->byte4()));
     } else if (Image::Type::Float1 == image->type()) {
         return new Texture(Float1(image->float1()));
     } else if (Image::Type::Float1_sparse == image->type()) {

@@ -19,6 +19,8 @@ void copy(texture::Texture const& source, Float4& destination, int2 offset);
 
 uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row,
                      thread::Pool& pool) noexcept {
+    bool const alpha = any_has_alpha_channel(items);
+
     if (0 == num_per_row) {
         num_per_row = 0xFFFFFFFF;
     }
@@ -52,13 +54,17 @@ uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row,
         }
     }
 
-    encoding::png::Writer writer(dimensions, false);
-
     std::string const name = items[0].name_out.empty() ? "concat.png" : items[0].name_out;
 
     std::ofstream stream(name, std::ios::binary);
 
-    writer.write(stream, target, pool);
+    if (alpha) {
+        encoding::png::Writer_alpha writer(dimensions, false, false);
+        writer.write(stream, target, pool);
+    } else {
+        encoding::png::Writer writer(dimensions, false);
+        writer.write(stream, target, pool);
+    }
 
     return static_cast<uint32_t>(items.size());
 }

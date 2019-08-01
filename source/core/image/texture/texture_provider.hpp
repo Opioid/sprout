@@ -18,6 +18,7 @@ class Provider final : public resource::Provider<Texture> {
     enum class Usage {
         Undefined,
         Color,
+        Color_with_alpha,
         Normal,
         Anisotropy,
         Roughness,

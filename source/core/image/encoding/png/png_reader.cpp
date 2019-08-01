@@ -149,6 +149,8 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         case Channels::XYZ:
             num_channels = 3;
             break;
+        case Channels::XYZW:
+            num_channels = 4;
     }
 
     int2 dimensions;
@@ -234,6 +236,27 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
             }
 
             image->byte3().store(i, color);
+        }
+
+        return image;
+    } else if (4 == num_channels) {
+        Image* image = new Image(Byte4(Description(dimensions, num_elements)));
+
+        byte4 color(0, 0, 0, 255);
+
+        int32_t const max_channels = std::min(4, info.num_channels);
+
+        for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+            int32_t const o = i * info.num_channels;
+            for (int32_t c = 0; c < max_channels; ++c) {
+                color.v[c] = info.buffer[o + c];
+            }
+
+            if (swap_xy) {
+                std::swap(color[0], color[1]);
+            }
+
+            image->byte4().store(i, color);
         }
 
         return image;

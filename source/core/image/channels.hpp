@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_CHANNELS_HPP
+#define SU_CORE_IMAGE_CHANNELS_HPP
 
 namespace image {
 
@@ -9,9 +10,12 @@ enum class Channels {
     Z    = 1 << 2,
     W    = 1 << 3,
     XY   = X | Y,
-    XYZ  = XY | Z
+    XYZ  = XY | Z,
+    XYZW = XYZ | W
 };
 
 enum class Swizzle { XYZW, YXZW };
 
 }  // namespace image
+
+#endif

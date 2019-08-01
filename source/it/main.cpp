@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) noexcept {
 
     resource::Manager resource_manager(file_system, thread_pool);
 
-    Provider image_provider;
+    image::Provider image_provider;
     resource_manager.register_provider(image_provider);
 
     texture::Provider texture_provider;
@@ -61,9 +61,12 @@ int main(int argc, char* argv[]) noexcept {
     std::vector<Item> items;
     items.reserve(args.images.size());
 
+    memory::Variant_map options;
+    options.set("usage", texture::Provider::Usage::Color_with_alpha);
+
     uint32_t slot = Options::Operator::Diff == args.op ? 0xFFFFFFFF : 0;
     for (auto& i : args.images) {
-        if (Texture const* image = resource_manager.load<Texture>(i); image) {
+        if (Texture const* image = resource_manager.load<Texture>(i, options); image) {
             std::string const name_out = slot < args.outputs.size() ? args.outputs[slot] : "";
 
             items.emplace_back(Item{i, name_out, image});
