@@ -133,7 +133,7 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         return nullptr;
     }
 
-    uint32_t num_channels;
+    int32_t num_channels;
 
     switch (channels) {
         case Channels::X:
@@ -152,6 +152,8 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         case Channels::XYZW:
             num_channels = 4;
     }
+
+    num_channels = std::min(num_channels, info.num_channels);
 
     int2 dimensions;
 
@@ -206,11 +208,9 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
 
         byte2 color(0, 0);
 
-        int32_t const max_channels = std::min(2, info.num_channels);
-
         for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
             int32_t const o = i * info.num_channels;
-            for (int32_t c = 0; c < max_channels; ++c) {
+            for (int32_t c = 0; c < num_channels; ++c) {
                 color.v[c] = info.buffer[o + c];
             }
 
@@ -223,11 +223,9 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
 
         byte3 color(0, 0, 0);
 
-        int32_t const max_channels = std::min(3, info.num_channels);
-
         for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
             int32_t const o = i * info.num_channels;
-            for (int32_t c = 0; c < max_channels; ++c) {
+            for (int32_t c = 0; c < num_channels; ++c) {
                 color.v[c] = info.buffer[o + c];
             }
 
@@ -244,11 +242,9 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
 
         byte4 color(0, 0, 0, 255);
 
-        int32_t const max_channels = std::min(4, info.num_channels);
-
         for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
             int32_t const o = i * info.num_channels;
-            for (int32_t c = 0; c < max_channels; ++c) {
+            for (int32_t c = 0; c < num_channels; ++c) {
                 color.v[c] = info.buffer[o + c];
             }
 
