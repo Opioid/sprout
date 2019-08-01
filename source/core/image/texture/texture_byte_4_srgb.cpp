@@ -50,6 +50,11 @@ float3 Byte4_sRGB::at_3(int32_t x, int32_t y) const noexcept {
     return encoding::cached_srgb_to_float3(value);
 }
 
+float4 Byte4_sRGB::at_4(int32_t x, int32_t y) const noexcept {
+    auto const value = image_.load(x, y);
+    return encoding::cached_srgb_to_float4(value);
+}
+
 void Byte4_sRGB::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
     byte4 v[4];
     image_.gather(xy_xy1, v);

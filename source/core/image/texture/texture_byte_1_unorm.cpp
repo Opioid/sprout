@@ -48,6 +48,11 @@ float3 Byte1_unorm::at_3(int32_t x, int32_t y) const noexcept {
     return float3(encoding::cached_unorm_to_float(value), 0.f, 0.f);
 }
 
+float4 Byte1_unorm::at_4(int32_t x, int32_t y) const noexcept {
+    uint8_t value = image_.load(x, y);
+    return float4(encoding::cached_unorm_to_float(value), 0.f, 0.f, 1.f);
+}
+
 void Byte1_unorm::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
     uint8_t v[4];
     image_.gather(xy_xy1, v);

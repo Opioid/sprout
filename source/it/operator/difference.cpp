@@ -88,7 +88,8 @@ class Candidate {
     float* difference_;
 };
 
-uint32_t difference(std::vector<Item> const& items, float clamp, float clip, thread::Pool& pool) noexcept {
+uint32_t difference(std::vector<Item> const& items, float clamp, float clip,
+                    thread::Pool& pool) noexcept {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
         return 0;

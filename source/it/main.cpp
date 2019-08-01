@@ -80,9 +80,7 @@ int main(int argc, char* argv[]) noexcept {
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Concat == args.op) {
-        if (uint32_t const num = op::concatenate(items,
-                                                resource_manager.thread_pool());
-            num) {
+        if (uint32_t const num = op::concatenate(items, resource_manager.thread_pool()); num) {
             logging::info("conc " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }

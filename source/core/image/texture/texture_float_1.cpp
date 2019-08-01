@@ -53,6 +53,11 @@ float3 Float1_t<T>::at_3(int32_t x, int32_t y) const noexcept {
 }
 
 template <typename T>
+float4 Float1_t<T>::at_4(int32_t x, int32_t y) const noexcept {
+    return float4(image_.load(x, y), 0.f, 0.f, 1.f);
+}
+
+template <typename T>
 void Float1_t<T>::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
     image_.gather(xy_xy1, c);
 }

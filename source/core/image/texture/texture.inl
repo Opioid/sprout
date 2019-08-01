@@ -139,7 +139,13 @@ inline float2 Texture::at_2(int32_t x, int32_t y) const noexcept {
 inline float3 Texture::at_3(int32_t x, int32_t y) const noexcept {
     TEXTURE_DELEGATE(at_3, x, y)
 
-    return float3(0.);
+    return float3(0.f);
+}
+
+inline float4 Texture::at_4(int32_t x, int32_t y) const noexcept {
+    TEXTURE_DELEGATE(at_4, x, y)
+
+    return float4(0.f);
 }
 
 inline void Texture::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
