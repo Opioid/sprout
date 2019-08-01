@@ -63,14 +63,17 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         help();
     } else if ("diff" == command || "d" == command) {
         result.op = Options::Operator::Diff;
-    } else if ("concat" == command || "c" == command) {
-        result.op = Options::Operator::Concat;
+    } else if ("cat" == command || "c" == command) {
+        result.op                 = Options::Operator::Cat;
+        result.concat_num_per_row = static_cast<uint32_t>(std::atoi(parameter.data()));
     } else if ("clamp" == command) {
         result.clamp = std::stof(parameter.data());
     } else if ("clip" == command) {
         result.clip = std::stof(parameter.data());
     } else if ("image" == command || "i" == command) {
         result.images.push_back(parameter);
+    } else if ("out" == command || "o" == command) {
+        result.outputs.push_back(parameter);
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
     } else {
@@ -106,22 +109,31 @@ void help() noexcept {
 Usage:
   it [OPTION...]
 
-  -h, --help             Print help.
-  -d, --diff             Compute the difference between the first
-                         and subsequent images.
-                         This is the default behavior.
-  -c, --concat   string  Concatenate multiple images and save as
-                         a single image.
-      --clamp    float   Clamp to the given value.
-      --clip     float   Clip above the given value.
-  -i, --image    file    Path of an image.
-                         The first image is considered the reference,
-                         if multiple images are specified.
-  -t, --threads  int     Specifies the number of threads used by it.
-                         0 creates one thread for each logical CPU.
-                         -x creates as many threads as the number of
-                         logical CPUs minus x.
-                         The default value is 0.)";
+  -h, --help            Print help.
+  -d, --diff            Compute the difference between the first
+                        and subsequent images.
+                        This is the default behavior.
+  -c, --cat      int    Concatenate multiple images and save as
+                        a single image.
+                        Optionally specify after how many images
+                        a new row should be started.
+      --clamp    float  Clamp to the given value.
+      --clip     float  Clip above the given value.
+  -i, --image    file   File name of an image.
+                        For the diff operator, the first image is
+                        considered the reference, if multiple
+                        images are specified.
+  -o, --out      file   File name of an output image.
+                        In case of diff, as many outputs as
+                        images minus 1 can be specified.
+                        WARNING:
+                        In case of missing file names, it will pick
+                        defaults that could overwrite existing files!
+  -t, --threads  int    Specifies the number of threads used by it.
+                        0 creates one thread for each logical CPU.
+                        -x creates as many threads as the number of
+                        logical CPUs minus x.
+                        The default value is 0.)";
 
     logging::info(text);
 }

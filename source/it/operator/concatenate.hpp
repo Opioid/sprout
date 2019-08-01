@@ -11,7 +11,8 @@ class Pool;
 struct Item;
 
 namespace op {
-uint32_t concatenate(std::vector<Item> const& items, thread::Pool& pool) noexcept;
+uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row,
+                     thread::Pool& pool) noexcept;
 }
 
 #endif

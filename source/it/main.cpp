@@ -33,11 +33,6 @@ int main(int argc, char* argv[]) noexcept {
         return 1;
     }
 
-    if (Options::Operator::Undefined == args.op) {
-        logging::error("No operator specified.");
-        return 1;
-    }
-
     file::System file_system;
 
     uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
@@ -66,22 +61,29 @@ int main(int argc, char* argv[]) noexcept {
     std::vector<Item> items;
     items.reserve(args.images.size());
 
+    uint32_t slot = Options::Operator::Diff == args.op ? 0xFFFFFFFF : 0;
     for (auto& i : args.images) {
         if (Texture const* image = resource_manager.load<Texture>(i); image) {
-            items.emplace_back(Item{i, image});
+            std::string const name_out = slot < args.outputs.size() ? args.outputs[slot] : "";
+
+            items.emplace_back(Item{i, name_out, image});
         }
+
+        ++slot;
     }
 
-    if (Options::Operator::Diff == args.op) {
+    if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
         if (uint32_t const num = op::difference(items, args.clamp, args.clip,
                                                 resource_manager.thread_pool());
             num) {
             logging::info("diff " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
-    } else if (Options::Operator::Concat == args.op) {
-        if (uint32_t const num = op::concatenate(items, resource_manager.thread_pool()); num) {
-            logging::info("conc " + string::to_string(num) + " images in " +
+    } else if (Options::Operator::Cat == args.op) {
+        if (uint32_t const num = op::concatenate(items, args.concat_num_per_row,
+                                                 resource_manager.thread_pool());
+            num) {
+            logging::info("cat " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     }

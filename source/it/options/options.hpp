@@ -7,14 +7,18 @@
 namespace it::options {
 
 struct Options {
-    enum class Operator { Diff, Concat, Undefined };
+    enum class Operator { Diff, Cat, Undefined };
 
     Operator op = Operator::Undefined;
+
+    uint32_t concat_num_per_row = 0;
 
     float clamp = std::numeric_limits<float>::max();
     float clip  = std::numeric_limits<float>::max();
 
     std::vector<std::string> images;
+
+    std::vector<std::string> outputs;
 
     int threads = 0;
 };

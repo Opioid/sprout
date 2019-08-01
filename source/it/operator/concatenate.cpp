@@ -17,12 +17,13 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
 
 void copy(texture::Texture const& source, Float4& destination, int2 offset);
 
-uint32_t concatenate(std::vector<Item> const& items, thread::Pool& pool) noexcept {
-    uint32_t const num_per_row = 3u;
+uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row,
+                     thread::Pool& pool) noexcept {
+    if (0 == num_per_row) {
+        num_per_row = 0xFFFFFFFF;
+    }
 
     int2 const dimensions = calculate_dimensions(items, num_per_row);
-
-    std::cout << dimensions << std::endl;
 
     Float4 target = Float4(image::Description(dimensions));
 
@@ -53,11 +54,13 @@ uint32_t concatenate(std::vector<Item> const& items, thread::Pool& pool) noexcep
 
     encoding::png::Writer writer(dimensions, false);
 
-    std::ofstream stream("test.png", std::ios::binary);
+    std::string const name = items[0].name_out.empty() ? "concat.png" : items[0].name_out;
+
+    std::ofstream stream(name, std::ios::binary);
 
     writer.write(stream, target, pool);
 
-    return 0;
+    return static_cast<uint32_t>(items.size());
 }
 
 int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) noexcept {
