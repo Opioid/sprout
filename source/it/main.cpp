@@ -13,7 +13,7 @@
 #include "operator/difference.hpp"
 #include "options/options.hpp"
 
-using namespace it;
+using namespace it::options;
 
 void comparison(std::vector<Item> const& items);
 
@@ -25,10 +25,15 @@ int main(int argc, char* argv[]) {
     //    logging::info("Welcome to di (" + platform::build() + " - " + platform::revision() +
     //    ")!");
 
-    auto const args = options::parse(argc, argv);
+    auto const args = it::options::parse(argc, argv);
 
     if (args.images.empty()) {
         logging::error("No images specified.");
+        return 1;
+    }
+
+    if (Options::Operator::Undefined == args.op) {
+        logging::error("No operator specified.");
         return 1;
     }
 
@@ -66,11 +71,15 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (uint32_t const num = op::difference(items, args.clamp, args.clip,
-                                            resource_manager.thread_pool());
-        num) {
-        logging::info("diff " + string::to_string(num) + " images in " +
-                      string::to_string(chrono::seconds_since(total_start)) + " s");
+    if (Options::Operator::Diff == args.op) {
+        if (uint32_t const num = op::difference(items, args.clamp, args.clip,
+                                                resource_manager.thread_pool());
+            num) {
+            logging::info("diff " + string::to_string(num) + " images in " +
+                          string::to_string(chrono::seconds_since(total_start)) + " s");
+        }
+    } else if (Options::Operator::Concat == args.op) {
+        logging::error("Concatenate not implemented.");
     }
 
     //   comparison(items);

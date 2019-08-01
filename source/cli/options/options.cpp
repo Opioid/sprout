@@ -115,8 +115,8 @@ Usage:
                               directory. The default value is "../data/"
   -t, --threads  int          Specifies the number of threads used by sprout.
                               0 creates one thread for each logical CPU.
-                              -x creates a number of threads equal to the
-                              number of logical CPUs minus x.
+                              -x creates as many threads as the number of
+                              logical CPUs minus x.
                               The default value is 0.
   -p, --progressive           Starts sprout in progressive mode.
       --no-textures           Disables loading of all textures.

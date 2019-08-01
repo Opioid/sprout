@@ -1,5 +1,5 @@
-#ifndef SU_IT_DIFFERENCE_HPP
-#define SU_IT_DIFFERENCE_HPP
+#ifndef SU_IT_OPERATOR_DIFFERENCE_HPP
+#define SU_IT_OPERATOR_DIFFERENCE_HPP
 
 #include <string>
 #include <vector>

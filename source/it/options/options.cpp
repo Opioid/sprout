@@ -62,7 +62,9 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
     if ("help" == command || "h" == command) {
         help();
     } else if ("diff" == command || "d" == command) {
-        result.diff = true;
+        result.op = Options::Operator::Diff;
+    } else if ("concat" == command || "c" == command) {
+        result.op = Options::Operator::Concat;
     } else if ("clamp" == command) {
         result.clamp = std::stof(parameter.data());
     } else if ("clip" == command) {
@@ -104,20 +106,22 @@ void help() noexcept {
 Usage:
   it [OPTION...]
 
-  -h, --help            Print help.
-  -d, --diff            Compute the difference between the first
-                        and subsequent images.
-                        This is the default behavior.
-      --clamp    float  Clamp to this value.
-      --clip     float  Clip above this value.
-  -i, --image    file   Path of an image.
-                        The first image is considered the reference,
-                        if multiple images are specified.
-  -t, --threads  int    Specifies the number of threads used by di.
-                        0 creates one thread for each logical CPU.
-                        -x creates a number of threads equal to the
-                        number of logical CPUs minus x.
-                        The default value is 0.)";
+  -h, --help             Print help.
+  -d, --diff             Compute the difference between the first
+                         and subsequent images.
+                         This is the default behavior.
+  -c, --concat   string  Concatenate multiple images and save as
+                         a single image.
+      --clamp    float   Clamp to the given value.
+      --clip     float   Clip above the given value.
+  -i, --image    file    Path of an image.
+                         The first image is considered the reference,
+                         if multiple images are specified.
+  -t, --threads  int     Specifies the number of threads used by it.
+                         0 creates one thread for each logical CPU.
+                         -x creates as many threads as the number of
+                         logical CPUs minus x.
+                         The default value is 0.)";
 
     logging::info(text);
 }

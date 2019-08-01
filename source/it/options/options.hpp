@@ -7,7 +7,9 @@
 namespace it::options {
 
 struct Options {
-    bool diff = true;
+    enum class Operator { Diff, Concat, Undefined };
+
+    Operator op = Operator::Undefined;
 
     float clamp = std::numeric_limits<float>::max();
     float clip  = std::numeric_limits<float>::max();
