@@ -14,6 +14,7 @@ using Texture = texture::Texture;
 namespace op {
 
 struct Scratch {
+    float max_val;
     float max_dif;
     float dif_sum;
 };
@@ -45,6 +46,10 @@ class Candidate {
         return max_dif_;
     }
 
+    float psnr() const noexcept {
+        return psnr_;
+    }
+
     float rmse() const noexcept {
         return rmse_;
     }
@@ -71,13 +76,15 @@ class Candidate {
 
         pool.run_range(
             [&args](uint32_t id, int32_t begin, int32_t end) {
+                float max_val = 0.f;
                 float max_dif = 0.f;
-
                 float dif_sum = 0.f;
 
                 for (int32_t i = begin; i < end; ++i) {
                     float3 const va = args.image->at_3(i);
                     float3 const vb = args.other->at_3(i);
+
+                    max_val = std::max(max_val, max_component(va));
 
                     float dif = distance(va, vb);
 
@@ -91,23 +98,30 @@ class Candidate {
                     dif_sum += dif * dif;
                 }
 
+                args.scratch[id].max_val = max_val;
                 args.scratch[id].max_dif = max_dif;
                 args.scratch[id].dif_sum = dif_sum;
             },
             0, num_pixel);
 
+        float max_val = args.scratch[0].max_val;
         float max_dif = args.scratch[0].max_dif;
         float dif_sum = args.scratch[0].dif_sum;
 
         for (uint32_t i = 1, len = pool.num_threads(); i < len; ++i) {
+            max_val = std::max(max_val, args.scratch[i].max_val);
+
             max_dif = std::max(max_dif, args.scratch[i].max_dif);
 
             dif_sum += args.scratch[i].dif_sum;
         }
 
-        float const rmse = std::sqrt(dif_sum / static_cast<float>(num_pixel));
-
         max_dif_ = max_dif;
+
+        // * 3 because we compare the difference over 3 channels
+        float const rmse = std::sqrt(dif_sum / static_cast<float>(3 * num_pixel));
+
+        psnr_ = -20.f * std::log10(rmse / max_val);
 
         rmse_ = rmse;
     }
@@ -121,6 +135,7 @@ class Candidate {
 
     float max_dif_;
 
+    float psnr_;
     float rmse_;
 };
 
@@ -148,7 +163,7 @@ uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
         candidates.emplace_back(item);
     }
 
-    memory::Array<Scratch> scratch(pool.num_threads(), Scratch{0.f, 0.f});
+    memory::Array<Scratch> scratch(pool.num_threads(), Scratch{0.f, 0.f, 0.f});
 
     float max_dif = 0.f;
 
@@ -157,7 +172,9 @@ uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
 
         max_dif = std::max(c.max_dif(), max_dif);
 
-        logging::info("%S RMSE: " + string::to_string(c.rmse()), c.name());
+        logging::info("%S \n RMSE: " + string::to_string(c.rmse()) +
+                          "\n PSNR: " + string::to_string(c.psnr()) + " dB",
+                      c.name());
     }
 
     encoding::png::Writer writer(dimensions, false);
