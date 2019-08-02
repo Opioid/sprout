@@ -10,25 +10,25 @@ template <typename T>
 struct Vector2 {
     T v[2];
 
-    Vector2();
+    Vector2() noexcept;
 
-    explicit constexpr Vector2(T s);
+    explicit constexpr Vector2(T s) noexcept;
 
-    constexpr Vector2(T x, T y);
-
-    template <typename U>
-    explicit constexpr Vector2(U x, U y);
+    constexpr Vector2(T x, T y) noexcept : v{x, y} {}
 
     template <typename U>
-    explicit constexpr Vector2(Vector2<U> v);
+    explicit constexpr Vector2(U x, U y) noexcept;
 
-    constexpr Vector2 yx() const;
+    template <typename U>
+    explicit constexpr Vector2(Vector2<U> v) noexcept;
 
-    constexpr T operator[](uint32_t i) const;
+    constexpr Vector2 yx() const noexcept;
 
-    constexpr T& operator[](uint32_t i);
+    constexpr T operator[](uint32_t i) const noexcept;
 
-    static constexpr Vector2 identity();
+    constexpr T& operator[](uint32_t i) noexcept;
+
+    static constexpr Vector2 identity() noexcept;
 };
 
 }  // namespace math
