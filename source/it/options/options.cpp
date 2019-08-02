@@ -68,8 +68,10 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.concat_num_per_row = static_cast<uint32_t>(std::atoi(parameter.data()));
     } else if ("clamp" == command) {
         result.clamp = std::stof(parameter.data());
-    } else if ("clip" == command) {
-        result.clip = std::stof(parameter.data());
+    } else if ("clip-lo" == command) {
+        result.clip[0] = std::stof(parameter.data());
+    } else if ("clip-hi" == command) {
+        result.clip[1] = std::stof(parameter.data());
     } else if ("image" == command || "i" == command) {
         result.images.push_back(parameter);
     } else if ("out" == command || "o" == command) {
@@ -113,12 +115,13 @@ Usage:
   -d, --diff            Compute the difference between the first
                         and subsequent images.
                         This is the default behavior.
-  -c, --cat      int    Concatenate multiple images and save as
+  -c, --cat      int?   Concatenate multiple images and save as
                         a single image.
                         Optionally specify after how many images
                         a new row should be started.
       --clamp    float  Clamp to the given value.
-      --clip     float  Clip above the given value.
+      --clip-lo  float  Clip below the given value.
+      --clip-hi  float  Clip above the given value.
   -i, --image    file   File name of an image.
                         For the diff operator, the first image is
                         considered the reference, if multiple

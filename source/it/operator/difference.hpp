@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include "base/math/vector2.hpp"
 
 namespace thread {
 class Pool;
@@ -11,7 +12,7 @@ class Pool;
 struct Item;
 
 namespace op {
-uint32_t difference(std::vector<Item> const& items, float clamp, float clip,
+uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
                     thread::Pool& pool) noexcept;
 }
 

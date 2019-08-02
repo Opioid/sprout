@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) noexcept {
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Cat == args.op) {
-        if (uint32_t const num = op::concatenate(items, args.concat_num_per_row,
+        if (uint32_t const num = op::concatenate(items, args.concat_num_per_row, args.clip,
                                                  resource_manager.thread_pool());
             num) {
             logging::info("cat " + string::to_string(num) + " images in " +

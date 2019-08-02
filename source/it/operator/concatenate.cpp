@@ -15,9 +15,9 @@ using namespace image;
 
 int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) noexcept;
 
-void copy(texture::Texture const& source, Float4& destination, int2 offset);
+void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) noexcept;
 
-uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row,
+uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row, float2 clip,
                      thread::Pool& pool) noexcept {
     bool const alpha = any_has_alpha_channel(items);
 
@@ -35,7 +35,7 @@ uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row,
     int32_t  row_height = 0;
 
     for (auto const& i : items) {
-        copy(*i.image, target, offset);
+        copy(*i.image, target, offset, clip);
 
         int2 const d = i.image->dimensions_2();
 
@@ -100,12 +100,22 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
     return dimensions;
 }
 
-void copy(texture::Texture const& source, Float4& destination, int2 offset) {
+static inline float4 clip(float4 const& v, float2 clip) noexcept {
+    return float4((v[0] < clip[0] || v[0] > clip[1]) ? 0.f : v[0],
+                  (v[1] < clip[0] || v[1] > clip[1]) ? 0.f : v[1],
+                  (v[2] < clip[0] || v[2] > clip[1]) ? 0.f : v[2], v[3]);
+}
+
+void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) noexcept {
     int2 const sd = source.dimensions_2();
 
     for (int32_t y = 0; y < sd[1]; ++y) {
         for (int32_t x = 0; x < sd[0]; ++x) {
-            destination.store(offset[0] + x, offset[1] + y, source.at_4(x, y, 0));
+            float4 const s = source.at_4(x, y, 0);
+
+            float4 const d = op::clip(s, clip);
+
+            destination.store(offset[0] + x, offset[1] + y, d);
         }
     }
 }

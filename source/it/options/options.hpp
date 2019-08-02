@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "base/math/vector2.hpp"
 
 namespace it::options {
 
@@ -14,7 +15,8 @@ struct Options {
     uint32_t concat_num_per_row = 0;
 
     float clamp = std::numeric_limits<float>::max();
-    float clip  = std::numeric_limits<float>::max();
+
+    float2 clip = float2(0.f, std::numeric_limits<float>::max());
 
     std::vector<std::string> images;
 

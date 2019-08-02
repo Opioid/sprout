@@ -35,7 +35,7 @@ class Candidate {
         return difference_;
     }
 
-    float calculate_difference(Texture const* other, float* max_difs, float clamp, float clip,
+    float calculate_difference(Texture const* other, float* max_difs, float clamp, float2 clip,
                                thread::Pool& pool) noexcept {
         int2 const d = image_->dimensions_2();
 
@@ -48,8 +48,8 @@ class Candidate {
             float* difference;
             float* max_difs;
 
-            float clamp;
-            float clip;
+            float  clamp;
+            float2 clip;
         };
 
         Args args = Args{image_, other, difference_, max_difs, clamp, clip};
@@ -64,7 +64,8 @@ class Candidate {
 
                     float dif = distance(va, vb);
 
-                    dif = dif > args.clip ? 0.f : std::min(dif, args.clamp);
+                    dif = (dif < args.clip[0] || dif > args.clip[1]) ? 0.f
+                                                                     : std::min(dif, args.clamp);
 
                     args.difference[i] = dif;
 
@@ -91,7 +92,7 @@ class Candidate {
     float* difference_;
 };
 
-uint32_t difference(std::vector<Item> const& items, float clamp, float clip,
+uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
                     thread::Pool& pool) noexcept {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
