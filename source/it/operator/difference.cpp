@@ -1,5 +1,6 @@
 #include "difference.hpp"
 #include "base/memory/array.inl"
+#include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/texture/texture.inl"
@@ -11,6 +12,11 @@ using namespace image;
 using Texture = texture::Texture;
 
 namespace op {
+
+struct Scratch {
+    float max_dif;
+    float dif_sum;
+};
 
 class Candidate {
   public:
@@ -35,8 +41,16 @@ class Candidate {
         return difference_;
     }
 
-    float calculate_difference(Texture const* other, float* max_difs, float clamp, float2 clip,
-                               thread::Pool& pool) noexcept {
+    float max_dif() const noexcept {
+        return max_dif_;
+    }
+
+    float rmse() const noexcept {
+        return rmse_;
+    }
+
+    void calculate_difference(Texture const* other, Scratch* scratch, float clamp, float2 clip,
+                              thread::Pool& pool) noexcept {
         int2 const d = image_->dimensions_2();
 
         int32_t const num_pixel = d[0] * d[1];
@@ -46,17 +60,20 @@ class Candidate {
             Texture const* other;
 
             float* difference;
-            float* max_difs;
+
+            Scratch* scratch;
 
             float  clamp;
             float2 clip;
         };
 
-        Args args = Args{image_, other, difference_, max_difs, clamp, clip};
+        Args args = Args{image_, other, difference_, scratch, clamp, clip};
 
         pool.run_range(
             [&args](uint32_t id, int32_t begin, int32_t end) {
                 float max_dif = 0.f;
+
+                float dif_sum = 0.f;
 
                 for (int32_t i = begin; i < end; ++i) {
                     float3 const va = args.image->at_3(i);
@@ -70,18 +87,29 @@ class Candidate {
                     args.difference[i] = dif;
 
                     max_dif = std::max(max_dif, dif);
+
+                    dif_sum += dif * dif;
                 }
 
-                args.max_difs[id] = max_dif;
+                args.scratch[id].max_dif = max_dif;
+                args.scratch[id].dif_sum = dif_sum;
             },
             0, num_pixel);
 
-        float max_dif = max_difs[0];
+        float max_dif = args.scratch[0].max_dif;
+        float dif_sum = args.scratch[0].dif_sum;
+
         for (uint32_t i = 1, len = pool.num_threads(); i < len; ++i) {
-            max_dif = std::max(max_dif, max_difs[i]);
+            max_dif = std::max(max_dif, args.scratch[i].max_dif);
+
+            dif_sum += args.scratch[i].dif_sum;
         }
 
-        return max_dif;
+        float const rmse = std::sqrt(dif_sum / static_cast<float>(num_pixel));
+
+        max_dif_ = max_dif;
+
+        rmse_ = rmse;
     }
 
   private:
@@ -90,6 +118,10 @@ class Candidate {
     Texture const* image_;
 
     float* difference_;
+
+    float max_dif_;
+
+    float rmse_;
 };
 
 uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
@@ -116,13 +148,16 @@ uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
         candidates.emplace_back(item);
     }
 
-    memory::Array<float> max_difs(pool.num_threads(), 0.f);
+    memory::Array<Scratch> scratch(pool.num_threads(), Scratch{0.f, 0.f});
 
     float max_dif = 0.f;
 
     for (auto& c : candidates) {
-        max_dif = std::max(c.calculate_difference(reference, max_difs.data(), clamp, clip, pool),
-                           max_dif);
+        c.calculate_difference(reference, scratch.data(), clamp, clip, pool);
+
+        max_dif = std::max(c.max_dif(), max_dif);
+
+        logging::info("%S RMSE: " + string::to_string(c.rmse()), c.name());
     }
 
     encoding::png::Writer writer(dimensions, false);
