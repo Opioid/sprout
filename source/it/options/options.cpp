@@ -123,11 +123,11 @@ Usage:
       --clamp    float  Clamp to the given value.
       --clip-lo  float  Clip below the given value.
       --clip-hi  float  Clip above the given value.
-  -i, --image    file   File name of an image.
+  -i, --image    file+  File name of an image.
                         For the diff operator, the first image is
                         considered the reference, if multiple
                         images are specified.
-  -o, --out      file   File name of an output image.
+  -o, --out      file+  File name of an output image.
                         In case of diff, as many outputs as
                         images minus 1 can be specified.
                         WARNING:
