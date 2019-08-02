@@ -13,6 +13,10 @@
 
 namespace scene::material::substitute {
 
+static inline float3 f0_to_a(float3 const& f0) noexcept {
+    return 5.f * sqrt(0.95f * f0);
+}
+
 template <typename Sample>
 void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
                                Texture_sampler_2D const& sampler, Sample& sample) const noexcept {
