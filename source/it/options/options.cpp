@@ -1,6 +1,7 @@
 #include "options.hpp"
 #include <cctype>
 #include <string_view>
+#include "base/math/vector2.inl"
 #include "core/logging/logging.hpp"
 
 namespace it::options {
