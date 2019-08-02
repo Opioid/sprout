@@ -14,7 +14,7 @@
 namespace scene::material::substitute {
 
 static inline float3 f0_to_a(float3 const& f0) noexcept {
-    return 5.f * sqrt(0.95f * f0);
+    return 5.f * sqrt(max(0.95f * f0, 0.f));
 }
 
 template <typename Sample>

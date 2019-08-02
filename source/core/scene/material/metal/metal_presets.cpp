@@ -4,6 +4,10 @@
 namespace scene::material::metal {
 
 void ior_and_absorption(std::string const& name, float3& ior, float3& absorption) {
+    // Perhaps also look up this:
+    // https://refractiveindex.info/?shelf=3d&book=metals
+
+    // I can no longer access/find the following site, where I got the values from originally:
     // http://www.3delight.com/en/modules/forum/viewtopic.php?t=4205
     // R: 642nm G: 529nm B: 464nm
     // Table of wavelength-dependent values for ior and absorption (k)

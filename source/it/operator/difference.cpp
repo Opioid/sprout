@@ -19,6 +19,11 @@ struct Scratch {
     float dif_sum;
 };
 
+static inline float round(float x, uint32_t d) noexcept {
+    float const f = std::pow(10.f, static_cast<float>(d));
+    return static_cast<float>(static_cast<uint32_t>(x * f + 0.5f)) / f;
+}
+
 class Candidate {
   public:
     Candidate(Item const& item) noexcept
@@ -172,8 +177,8 @@ uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
 
         max_dif = std::max(c.max_dif(), max_dif);
 
-        logging::info("%S \n RMSE: " + string::to_string(c.rmse()) +
-                          "\n PSNR: " + string::to_string(c.psnr()) + " dB",
+        logging::info("%S \n RMSE: " + string::to_string(round(c.rmse(), 4)) +
+                          "\n PSNR: " + string::to_string(round(c.psnr(), 2)) + " dB",
                       c.name());
     }
 
