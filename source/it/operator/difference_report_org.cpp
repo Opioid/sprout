@@ -5,13 +5,28 @@
 
 namespace op {
 
-static inline float round(float x, uint32_t d) noexcept {
-    float const f = std::pow(10.f, static_cast<float>(d));
-    return static_cast<float>(static_cast<uint32_t>(x * f + 0.5f)) / f;
+void write_difference_report_org(std::vector<Difference_item> const& items,
+                                 std::ostream&                       stream) noexcept {
+    stream << "* Difference\n\n";
+
+    stream << "** Summary\n\n";
+    write_difference_summary_table_org(items, stream);
+
+    stream << "\n";
+    stream << "** Images\n\n";
+
+    for (auto const& i : items) {
+        stream << "*** " << i.name() << "\n\n";
+
+        stream << "RMSE: " << round(i.rmse(), 4) << "\n";
+        stream << "PSNR: " << round(i.psnr(), 2) << " dB\n\n";
+
+        stream << "[[file:" << i.name() << "]]\n\n";
+    }
 }
 
-void write_difference_overview_table_org(std::vector<Difference_item> const& items,
-                                         std::ostream&                       stream) noexcept {
+void write_difference_summary_table_org(std::vector<Difference_item> const& items,
+                                        std::ostream&                       stream) noexcept {
     size_t max_name_len = 0;
 
     for (auto const& i : items) {

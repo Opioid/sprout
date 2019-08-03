@@ -16,6 +16,8 @@ struct Item;
 
 namespace op {
 
+float round(float x, uint32_t d) noexcept;
+
 struct Scratch {
     float max_val;
     float max_dif;
@@ -36,9 +38,9 @@ class Difference_item {
 
     float max_dif() const noexcept;
 
-    float psnr() const noexcept;
-
     float rmse() const noexcept;
+
+    float psnr() const noexcept;
 
     void calculate_difference(Texture const* other, Scratch* scratch, float clamp, float2 clip,
                               thread::Pool& pool) noexcept;

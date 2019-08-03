@@ -1,4 +1,5 @@
 #include "difference.hpp"
+#include <fstream>
 #include <sstream>
 #include "base/memory/array.inl"
 #include "base/string/string.hpp"
@@ -54,9 +55,13 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     if ("." == options.report) {
         std::stringstream stream;
 
-        write_difference_overview_table_org(candidates, stream);
+        write_difference_summary_table_org(candidates, stream);
 
         logging::info(stream.str());
+    } else if (!options.report.empty()) {
+        std::ofstream stream(options.report);
+
+        write_difference_report_org(candidates, stream);
     }
 
     if (!options.no_export) {

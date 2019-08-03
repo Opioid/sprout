@@ -138,7 +138,9 @@ Usage:
                         In case of missing file names, it will pick
                         defaults that could overwrite existing files!
   -n, --no-export       Disables export of images.
-  -r, --report          Generate report.
+  -r, --report   file?  Generate report.
+                        Optionally the report can be written to a file,
+                        instead of being displayed in the terminal.
   -t, --threads  int    Specifies the number of threads used by it.
                         0 creates one thread for each logical CPU.
                         -x creates as many threads as the number of

@@ -5,6 +5,11 @@
 
 namespace op {
 
+float round(float x, uint32_t d) noexcept {
+    float const f = std::pow(10.f, static_cast<float>(d));
+    return static_cast<float>(static_cast<uint32_t>(x * f + 0.5f)) / f;
+}
+
 Difference_item::Difference_item(Item const& item) noexcept
     : name_(item.name_out.empty() ? item.name.substr(0, item.name.find_last_of('.')) + "_dif.png"
                                   : item.name_out),
@@ -29,12 +34,12 @@ float Difference_item::max_dif() const noexcept {
     return max_dif_;
 }
 
-float Difference_item::psnr() const noexcept {
-    return psnr_;
-}
-
 float Difference_item::rmse() const noexcept {
     return rmse_;
+}
+
+float Difference_item::psnr() const noexcept {
+    return psnr_;
 }
 
 void Difference_item::calculate_difference(Texture const* other, Scratch* scratch, float clamp,
