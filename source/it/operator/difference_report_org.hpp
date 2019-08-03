@@ -14,7 +14,8 @@ void write_difference_report_org(std::vector<Item> const&            items,
                                  std::vector<Difference_item> const& dif_items,
                                  std::ostream&                       stream) noexcept;
 
-void write_difference_summary_table_org(std::vector<Difference_item> const& items,
+void write_difference_summary_table_org(std::vector<Item> const&            items,
+                                        std::vector<Difference_item> const& dif_items,
                                         std::ostream&                       stream) noexcept;
 
 }  // namespace op

@@ -16,8 +16,6 @@ struct Item;
 
 namespace op {
 
-float round(float x, uint32_t d) noexcept;
-
 struct Scratch {
     float max_val;
     float max_dif;

@@ -57,7 +57,7 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     if ("." == options.report) {
         std::stringstream stream;
 
-        write_difference_summary_table_org(candidates, stream);
+        write_difference_summary_table_org(items, candidates, stream);
 
         logging::info(stream.str());
     } else if (!options.report.empty()) {

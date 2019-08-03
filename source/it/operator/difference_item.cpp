@@ -5,7 +5,7 @@
 
 namespace op {
 
-float round(float x, uint32_t d) noexcept {
+static inline float round(float x, uint32_t d) noexcept {
     float const f = std::pow(10.f, static_cast<float>(d));
     return static_cast<float>(static_cast<uint32_t>(x * f + 0.5f)) / f;
 }
@@ -35,11 +35,11 @@ float Difference_item::max_dif() const noexcept {
 }
 
 float Difference_item::rmse() const noexcept {
-    return rmse_;
+    return round(rmse_, 4);
 }
 
 float Difference_item::psnr() const noexcept {
-    return psnr_;
+    return round(psnr_, 2);
 }
 
 void Difference_item::calculate_difference(Texture const* other, Scratch* scratch, float clamp,
