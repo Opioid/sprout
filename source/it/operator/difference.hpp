@@ -9,10 +9,14 @@ namespace thread {
 class Pool;
 }
 
+namespace it::options {
+struct Options;
+}
+
 struct Item;
 
 namespace op {
-uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
+uint32_t difference(std::vector<Item> const& items, it::options::Options const& options,
                     thread::Pool& pool) noexcept;
 }
 

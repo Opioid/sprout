@@ -6,6 +6,7 @@
 #include "core/image/texture/texture.inl"
 #include "core/logging/logging.hpp"
 #include "item.hpp"
+#include "options/options.hpp"
 
 using namespace image;
 
@@ -144,7 +145,7 @@ class Candidate {
     float rmse_;
 };
 
-uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
+uint32_t difference(std::vector<Item> const& items, it::options::Options const& options,
                     thread::Pool& pool) noexcept {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
@@ -173,19 +174,23 @@ uint32_t difference(std::vector<Item> const& items, float clamp, float2 clip,
     float max_dif = 0.f;
 
     for (auto& c : candidates) {
-        c.calculate_difference(reference, scratch.data(), clamp, clip, pool);
+        c.calculate_difference(reference, scratch.data(), options.clamp, options.clip, pool);
 
         max_dif = std::max(c.max_dif(), max_dif);
 
-        logging::info("%S \n RMSE: " + string::to_string(round(c.rmse(), 4)) +
-                          "\n PSNR: " + string::to_string(round(c.psnr(), 2)) + " dB",
-                      c.name());
+        if ("." == options.report) {
+            logging::info("%S \n RMSE: " + string::to_string(round(c.rmse(), 4)) +
+                              "\n PSNR: " + string::to_string(round(c.psnr(), 2)) + " dB",
+                          c.name());
+        }
     }
 
-    encoding::png::Writer writer(dimensions, false);
+    if (!options.no_export) {
+        encoding::png::Writer writer(dimensions, false);
 
-    for (auto const& c : candidates) {
-        writer.write_heatmap(c.name(), c.difference(), dimensions, max_dif);
+        for (auto const& c : candidates) {
+            writer.write_heatmap(c.name(), c.difference(), dimensions, max_dif);
+        }
     }
 
     return static_cast<uint32_t>(candidates.size()) + 1;

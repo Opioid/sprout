@@ -22,6 +22,10 @@ struct Options {
 
     std::vector<std::string> outputs;
 
+    bool no_export = false;
+
+    std::string report;
+
     int threads = 0;
 };
 

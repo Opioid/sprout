@@ -76,9 +76,7 @@ int main(int argc, char* argv[]) noexcept {
     }
 
     if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
-        if (uint32_t const num = op::difference(items, args.clamp, args.clip,
-                                                resource_manager.thread_pool());
-            num) {
+        if (uint32_t const num = op::difference(items, args, resource_manager.thread_pool()); num) {
             logging::info("diff " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }

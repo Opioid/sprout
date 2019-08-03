@@ -50,7 +50,7 @@ bool handle_all(std::string const& command, std::string const& parameter,
     }
 
     for (size_t i = 0, len = command.size(); i < len; ++i) {
-        if (!handle(command.substr(i, i + 1), parameter, result)) {
+        if (!handle(command.substr(i, 1), parameter, result)) {
             return false;
         }
     }

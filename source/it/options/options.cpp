@@ -51,7 +51,7 @@ bool handle_all(std::string const& command, std::string const& parameter,
     }
 
     for (size_t i = 0, len = command.size(); i < len; ++i) {
-        if (!handle(command.substr(i, i + 1), parameter, result)) {
+        if (!handle(command.substr(i, 1), parameter, result)) {
             return false;
         }
     }
@@ -77,6 +77,10 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.images.push_back(parameter);
     } else if ("out" == command || "o" == command) {
         result.outputs.push_back(parameter);
+    } else if ("no-export" == command || "n" == command) {
+        result.no_export = true;
+    } else if ("report" == command || "r" == command) {
+        result.report = parameter.empty() ? "." : parameter;
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
     } else {
@@ -133,6 +137,8 @@ Usage:
                         WARNING:
                         In case of missing file names, it will pick
                         defaults that could overwrite existing files!
+  -n, --no-export       Disables export of images.
+  -r, --report          Generate report.
   -t, --threads  int    Specifies the number of threads used by it.
                         0 creates one thread for each logical CPU.
                         -x creates as many threads as the number of
