@@ -2,6 +2,10 @@ target_sources(it
   PRIVATE
   "concatenate.cpp"
   "concatenate.hpp"
+  "difference_item.cpp"
+  "difference_item.hpp"
+  "difference_report_org.cpp"
+  "difference_report_org.hpp"
   "difference.cpp"
   "difference.hpp"
 )

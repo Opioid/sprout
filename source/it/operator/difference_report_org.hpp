@@ -1,0 +1,16 @@
+#ifndef SU_IT_OPERATOR_DIFFERENCE_REPORT_ORG_HPP
+#define SU_IT_OPERATOR_DIFFERENCE_REPORT_ORG_HPP
+
+#include <iosfwd>
+#include <vector>
+
+namespace op {
+
+class Difference_item;
+
+void write_difference_overview_table_org(std::vector<Difference_item> const& items,
+                                         std::ostream&                       stream) noexcept;
+
+}  // namespace op
+
+#endif
