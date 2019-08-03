@@ -1,27 +1,32 @@
 #include "difference_report_org.hpp"
+#include "difference_item.hpp"
+#include "item.hpp"
+
 #include <cmath>
 #include <ostream>
-#include "difference_item.hpp"
 
 namespace op {
 
-void write_difference_report_org(std::vector<Difference_item> const& items,
+void write_difference_report_org(std::vector<Item> const&            items,
+                                 std::vector<Difference_item> const& dif_items,
                                  std::ostream&                       stream) noexcept {
-    stream << "* Difference\n\n";
+    stream << "* Difference " << items[0].name << "\n\n";
 
     stream << "** Summary\n\n";
-    write_difference_summary_table_org(items, stream);
+    write_difference_summary_table_org(dif_items, stream);
 
     stream << "\n";
     stream << "** Images\n\n";
 
-    for (auto const& i : items) {
-        stream << "*** " << i.name() << "\n\n";
+    for (size_t i = 0, len = dif_items.size(); i < len; ++i) {
+        auto const& item = dif_items[i];
 
-        stream << "RMSE: " << round(i.rmse(), 4) << "\n";
-        stream << "PSNR: " << round(i.psnr(), 2) << " dB\n\n";
+        stream << "*** " << items[i + 1].name << "\n\n";
 
-        stream << "[[file:" << i.name() << "]]\n\n";
+        stream << "RMSE: " << round(item.rmse(), 4) << "\n";
+        stream << "PSNR: " << round(item.psnr(), 2) << " dB\n\n";
+
+        stream << "[[file:" << item.name() << "]]\n\n";
     }
 }
 

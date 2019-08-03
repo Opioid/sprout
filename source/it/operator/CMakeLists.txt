@@ -4,6 +4,8 @@ target_sources(it
   "concatenate.hpp"
   "difference_item.cpp"
   "difference_item.hpp"
+  "difference_report_html.cpp"
+  "difference_report_html.hpp"
   "difference_report_org.cpp"
   "difference_report_org.hpp"
   "difference.cpp"

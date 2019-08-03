@@ -1,6 +1,4 @@
 #include "difference.hpp"
-#include <fstream>
-#include <sstream>
 #include "base/memory/array.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -8,9 +6,13 @@
 #include "core/image/texture/texture.inl"
 #include "core/logging/logging.hpp"
 #include "difference_item.hpp"
+#include "difference_report_html.hpp"
 #include "difference_report_org.hpp"
 #include "item.hpp"
 #include "options/options.hpp"
+
+#include <fstream>
+#include <sstream>
 
 using namespace image;
 
@@ -61,7 +63,14 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     } else if (!options.report.empty()) {
         std::ofstream stream(options.report);
 
-        write_difference_report_org(candidates, stream);
+        std::string_view suffix = string::suffix(options.report);
+
+        if ((3 == suffix.length() && "htm" == suffix) ||
+            (4 == suffix.length() && "html" == suffix)) {
+            write_difference_report_html(items, candidates, stream);
+        } else {
+            write_difference_report_org(items, candidates, stream);
+        }
     }
 
     if (!options.no_export) {
