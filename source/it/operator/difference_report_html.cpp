@@ -8,8 +8,8 @@
 namespace op {
 
 void write_difference_report_html(std::vector<Item> const&            items,
-                                  std::vector<Difference_item> const& dif_items,
-                                  std::ostream&                       stream) noexcept {
+                                  std::vector<Difference_item> const& dif_items, float max_dif,
+                                  std::ostream& stream) noexcept {
     stream << "<!DOCTYPE html>\n";
     stream << "<html>\n";
 
@@ -45,6 +45,8 @@ void write_difference_report_html(std::vector<Item> const&            items,
     stream << "<h1>Difference " << items[0].name << "</h1>\n";
 
     stream << "<h2>Summary</h2>\n";
+
+    stream << "<div>Max difference: " << max_dif << "</div>\n";
 
     stream << "<table>\n";
     stream << "<tr>\n";

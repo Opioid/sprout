@@ -11,12 +11,12 @@ namespace op {
 class Difference_item;
 
 void write_difference_report_org(std::vector<Item> const&            items,
-                                 std::vector<Difference_item> const& dif_items,
-                                 std::ostream&                       stream) noexcept;
+                                 std::vector<Difference_item> const& dif_items, float max_dif,
+                                 std::ostream& stream) noexcept;
 
-void write_difference_summary_table_org(std::vector<Item> const&            items,
-                                        std::vector<Difference_item> const& dif_items,
-                                        std::ostream&                       stream) noexcept;
+void write_difference_summary_org(std::vector<Item> const&            items,
+                                  std::vector<Difference_item> const& dif_items, float max_dif,
+                                  std::ostream& stream) noexcept;
 
 }  // namespace op
 

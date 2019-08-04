@@ -4,7 +4,7 @@
 
 namespace spectrum {
 
-float3 heatmap(float x) {
+float3 heatmap(float x) noexcept {
     // The last color is intentionally present twice, as a convenient way to catch (1.f == x) cases.
     static float3 constexpr colors[] = {{0.f, 0.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f},
                                         {1.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {1.f, 0.f, 0.f}};

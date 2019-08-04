@@ -31,7 +31,7 @@ float const* Difference_item::difference() const noexcept {
 }
 
 float Difference_item::max_dif() const noexcept {
-    return max_dif_;
+    return round(max_dif_, 4);
 }
 
 float Difference_item::rmse() const noexcept {

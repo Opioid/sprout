@@ -5,7 +5,7 @@
 
 namespace spectrum {
 
-float3 heatmap(float x);
+float3 heatmap(float x) noexcept;
 }
 
 #endif

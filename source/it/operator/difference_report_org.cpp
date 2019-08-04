@@ -2,18 +2,19 @@
 #include "difference_item.hpp"
 #include "item.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <ostream>
 
 namespace op {
 
 void write_difference_report_org(std::vector<Item> const&            items,
-                                 std::vector<Difference_item> const& dif_items,
-                                 std::ostream&                       stream) noexcept {
+                                 std::vector<Difference_item> const& dif_items, float max_dif,
+                                 std::ostream& stream) noexcept {
     stream << "* Difference " << items[0].name << "\n\n";
 
     stream << "** Summary\n\n";
-    write_difference_summary_table_org(items, dif_items, stream);
+    write_difference_summary_org(items, dif_items, max_dif, stream);
 
     stream << "\n";
     stream << "** Images\n\n";
@@ -30,9 +31,11 @@ void write_difference_report_org(std::vector<Item> const&            items,
     }
 }
 
-void write_difference_summary_table_org(std::vector<Item> const&            items,
-                                        std::vector<Difference_item> const& dif_items,
-                                        std::ostream&                       stream) noexcept {
+void write_difference_summary_org(std::vector<Item> const&            items,
+                                  std::vector<Difference_item> const& dif_items, float max_dif,
+                                  std::ostream& stream) noexcept {
+    stream << "Max difference: " << max_dif << "\n\n";
+
     size_t max_name_len = 0;
 
     for (size_t i = 1, len = items.size(); i < len; ++i) {
@@ -41,7 +44,8 @@ void write_difference_summary_table_org(std::vector<Item> const&            item
 
     // Image
     size_t constexpr len = 5;
-    max_name_len         = std::max(max_name_len, len);
+
+    max_name_len = std::max(max_name_len, len);
 
     max_name_len += 2;
 

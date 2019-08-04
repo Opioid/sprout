@@ -11,8 +11,8 @@ namespace op {
 class Difference_item;
 
 void write_difference_report_html(std::vector<Item> const&            items,
-                                  std::vector<Difference_item> const& dif_items,
-                                  std::ostream&                       stream) noexcept;
+                                  std::vector<Difference_item> const& dif_items, float max_dif,
+                                  std::ostream& stream) noexcept;
 
 }  // namespace op
 

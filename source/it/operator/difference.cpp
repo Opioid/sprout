@@ -57,7 +57,7 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     if ("." == options.report) {
         std::stringstream stream;
 
-        write_difference_summary_table_org(items, candidates, stream);
+        write_difference_summary_org(items, candidates, max_dif, stream);
 
         logging::info(stream.str());
     } else if (!options.report.empty()) {
@@ -67,9 +67,9 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
 
         if ((3 == suffix.length() && "htm" == suffix) ||
             (4 == suffix.length() && "html" == suffix)) {
-            write_difference_report_html(items, candidates, stream);
+            write_difference_report_html(items, candidates, max_dif, stream);
         } else {
-            write_difference_report_org(items, candidates, stream);
+            write_difference_report_org(items, candidates, max_dif, stream);
         }
     }
 
