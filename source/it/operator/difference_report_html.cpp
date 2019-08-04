@@ -20,7 +20,7 @@ void write_difference_report_html(std::vector<Item> const&            items,
     stream << R"(
     body {
         background-color: #272822;
-        color: #e6e5e2;
+		color: #e6e5e2;
         font-size: large;
     }
 
@@ -34,6 +34,14 @@ void write_difference_report_html(std::vector<Item> const&            items,
     .two {
         padding: 8px;
     }
+
+	#summary th{
+		background-color: #313228
+	}
+
+	#summary td{
+		background-color: #293026
+	}
     )";
 
     stream << "</style>\n";
@@ -48,7 +56,7 @@ void write_difference_report_html(std::vector<Item> const&            items,
 
     stream << "<div>Max difference: " << max_dif << "</div>\n";
 
-    stream << "<table>\n";
+	stream << "<table id=\"summary\">\n";
     stream << "<tr>\n";
     stream << "<th>Image</th><th>RMSE</th><th>PSNR</th>\n";
     stream << "</tr>\n";
