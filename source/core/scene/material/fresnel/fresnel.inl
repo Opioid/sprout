@@ -45,15 +45,15 @@ static inline float3 lazanyi_schlick(float wo_dot_h, float3 const& f0, float3 co
 }
 
 static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& k) noexcept {
-    float3 tmp_f = eta * eta + k * k;
+    float3 const tmp_f = eta * eta + k * k;
 
-    float  wo_dot_h2 = wo_dot_h * wo_dot_h;
-    float3 tmp       = wo_dot_h2 * tmp_f;
+    float const  wo_dot_h2 = wo_dot_h * wo_dot_h;
+    float3 const tmp       = wo_dot_h2 * tmp_f;
 
-    float3 a   = 2.f * wo_dot_h * eta;
-    float3 r_p = (tmp - a + 1.f) / (tmp + a + 1.f);
+    float3 const a   = 2.f * wo_dot_h * eta;
+    float3 const r_p = (tmp - a + 1.f) / (tmp + a + 1.f);
 
-    float3 r_o = (tmp_f - a + wo_dot_h2) / (tmp_f + a + wo_dot_h2);
+    float3 const r_o = (tmp_f - a + wo_dot_h2) / (tmp_f + a + wo_dot_h2);
 
     return 0.5f * (r_p + r_o);
 }

@@ -14,7 +14,7 @@
 namespace scene::material::substitute {
 
 static inline float3 f0_to_a(float3 const& f0) noexcept {
-    return 5.f * sqrt(max(0.95f * f0, 0.f));
+    return 5.f * sqrt(max(0.95f - f0, 0.0001f));
 }
 
 template <typename Sample>
@@ -56,7 +56,7 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
     }
 
     if (1.f == metallic_) {
-        sample.base_.set(f0_, a_, surface[0]);
+        sample.base_.set(f0_, f0_to_a(f0_)/*a_*/, surface[0]);
     } else {
         sample.base_.set(color, radiance, fresnel::schlick_f0(ior_, ior_outside), surface[0],
                          surface[1]);
