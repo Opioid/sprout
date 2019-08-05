@@ -73,8 +73,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.clip[0] = std::stof(parameter.data());
     } else if ("clip-hi" == command) {
         result.clip[1] = std::stof(parameter.data());
-	} else if ("max-dif" == command) {
-		result.max_dif = std::stof(parameter.data());
+    } else if ("max-dif" == command) {
+        result.max_dif = std::stof(parameter.data());
     } else if ("image" == command || "i" == command) {
         result.images.push_back(parameter);
     } else if ("out" == command || "o" == command) {

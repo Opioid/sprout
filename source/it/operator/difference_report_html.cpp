@@ -56,7 +56,7 @@ void write_difference_report_html(std::vector<Item> const&            items,
 
     stream << "<div>Max difference: " << max_dif << "</div>\n";
 
-	stream << "<table id=\"summary\">\n";
+    stream << "<table id=\"summary\">\n";
     stream << "<tr>\n";
     stream << "<th>Image</th><th>RMSE</th><th>PSNR</th>\n";
     stream << "</tr>\n";

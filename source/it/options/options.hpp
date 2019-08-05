@@ -18,7 +18,7 @@ struct Options {
 
     float2 clip = float2(0.f, std::numeric_limits<float>::max());
 
-	float max_dif = 0.f;
+    float max_dif = 0.f;
 
     std::vector<std::string> images;
 

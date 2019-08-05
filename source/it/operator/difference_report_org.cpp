@@ -43,9 +43,9 @@ void write_difference_summary_org(std::vector<Item> const&            items,
     }
 
     // Image
-    size_t constexpr len = 5;
+    size_t constexpr image_len = 5;
 
-    max_name_len = std::max(max_name_len, len);
+    max_name_len = std::max(max_name_len, image_len);
 
     max_name_len += 2;
 
@@ -54,9 +54,7 @@ void write_difference_summary_org(std::vector<Item> const&            items,
     {
         size_t const padding = max_name_len - 6;
 
-        for (size_t i = 0; i < padding; ++i) {
-            stream << " ";
-        }
+        std::fill_n(std::ostreambuf_iterator<char>(stream), padding, ' ');
     }
 
     stream << "|   RMSE | PSNR     |\n";
@@ -76,13 +74,37 @@ void write_difference_summary_org(std::vector<Item> const&            items,
 
         stream << "| " << source_name;
 
-        size_t const padding = (max_name_len - source_name.size() - 1);
+        {
+            size_t const padding = (max_name_len - source_name.size() - 1);
 
-        for (size_t i = 0; i < padding; ++i) {
-            stream << " ";
+            std::fill_n(std::ostreambuf_iterator<char>(stream), padding, ' ');
         }
 
-        stream << "| " << item.rmse() << " | " << item.psnr() << " dB |\n";
+        stream << "| ";
+
+        {
+            auto const o = stream.tellp();
+
+            stream << item.rmse();
+
+            auto const n = stream.tellp();
+
+            std::fill_n(std::ostreambuf_iterator<char>(stream), 7 - (n - o), ' ');
+        }
+
+        stream << "| ";
+
+        {
+            auto const o = stream.tellp();
+
+            stream << item.psnr() << " dB";
+
+            auto const n = stream.tellp();
+
+            std::fill_n(std::ostreambuf_iterator<char>(stream), 9 - (n - o), ' ');
+        }
+
+        stream << "|\n";
     }
 }
 

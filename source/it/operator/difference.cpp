@@ -76,9 +76,9 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     if (!options.no_export) {
         encoding::png::Writer writer(dimensions, false);
 
-		if (options.max_dif > 0.f) {
-			max_dif = options.max_dif;
-		}
+        if (options.max_dif > 0.f) {
+            max_dif = options.max_dif;
+        }
 
         for (auto const& c : candidates) {
             writer.write_heatmap(c.name(), c.difference(), dimensions, max_dif);
