@@ -135,7 +135,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
             return {float3(0.f), 0.f};
         }
 
-        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
         float const n_dot_h  = saturate(dot(layer_.n_, h));
 
@@ -150,7 +150,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
             return {color_ * ggx.reflection, ggx.pdf};
         }
     } else {
-        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
         float3 const h = normalize(wo_ + wi);

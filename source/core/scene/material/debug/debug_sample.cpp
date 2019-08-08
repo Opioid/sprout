@@ -18,7 +18,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
 
     bool const same_side = dot(n, layer_.n_) > 0.f;
 
-    float const n_dot_wi = layer_.clamp_n_dot(wi);
+    float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
 
     float3 const color = same_side ? color_front : color_back;
 
@@ -34,7 +34,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
 
     bool const same_side = dot(n, layer_.n_) > 0.f;
 
-    float const n_dot_wi = layer_.clamp_n_dot(wi);
+    float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
 
     float3 const color = same_side ? color_front : color_back;
 
@@ -56,7 +56,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
 
     float3 const wi = normalize(layer_.tangent_to_world(is));
 
-    float const n_dot_wi = layer_.clamp_n_dot(wi);
+    float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
 
     float3 const color = same_side ? color_front : color_back;
 

@@ -139,7 +139,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
             return {float3(0.f), 0.f};
         }
 
-        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
         float const n_dot_h  = saturate(dot(layer_.n_, h));
 

@@ -157,7 +157,7 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
             return {float3(0.f), 0.f};
         }
 
-        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
         float const n_dot_h  = saturate(dot(layer_.n_, h));
 
@@ -166,7 +166,7 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
         auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
                                                     base_.alpha_, ior, schlick);
 
-        float const coating_n_dot_wi = coating_.clamp_n_dot(wi);
+        float const coating_n_dot_wi = coating_.clamp_abs_n_dot(wi);
 
         float3 const attenuation = coating_.attenuation(coating_n_dot_wi);
 
@@ -251,7 +251,7 @@ float3 Sample_coating_subsurface_volumetric::fresnel_and_attenuation(float3 cons
 
     float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
 
-    float const n_dot_wi = coating_.clamp_n_dot(wi);
+    float const n_dot_wi = coating_.clamp_abs_n_dot(wi);
 
     float3 const attenuation = coating_.attenuation(n_dot_wi);
 

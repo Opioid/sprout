@@ -46,7 +46,7 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
                                                   float3 const& h, float wo_dot_h,
                                                   Layer const& layer, bool avoid_caustics) const
     noexcept {
-    float const n_dot_wi = layer.clamp_n_dot(wi);
+    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
@@ -89,7 +89,7 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
         return {float3(0.f), 0.f};
     }
 
-    float const n_dot_wi = layer.clamp_n_dot(wi);
+    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float const n_dot_h = saturate(layer.n_dot(h));

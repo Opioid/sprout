@@ -120,7 +120,7 @@ void Sample::Base_layer::set(float3 const& color_a, float3 const& color_b, float
 template <bool Forward>
 bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                           float wo_dot_h) const noexcept {
-    float const n_dot_wi = clamp_n_dot(wi);
+    float const n_dot_wi = clamp_abs_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     float const f = n_dot_wo;
@@ -167,7 +167,7 @@ void Sample::Flakes_layer::set(float3 const& ior, float3 const& absorption, floa
 template <bool Forward>
 bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                             float wo_dot_h, float3& fresnel_result) const noexcept {
-    float const n_dot_wi = clamp_n_dot(wi);
+    float const n_dot_wi = clamp_abs_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     float const n_dot_h = saturate(dot(n_, h));
