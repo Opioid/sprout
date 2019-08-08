@@ -42,7 +42,7 @@ inline float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& l
 
     float const h_dot_wi = clamp_dot(h, wi);
 
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
 
     result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, alpha, color);
     result.wi         = wi;
@@ -103,7 +103,7 @@ inline float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Lay
 
     float const h_dot_wi = clamp_dot(h, wi);
 
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
 
     result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, alpha, color);
     result.wi         = wi;

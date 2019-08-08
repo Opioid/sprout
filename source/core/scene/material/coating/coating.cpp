@@ -42,7 +42,7 @@ float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const noexcept {
 
 Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                              Layer const& layer, bool avoid_caustics) const noexcept {
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float3 const attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
@@ -63,7 +63,7 @@ Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h
 
 Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                              Layer const& layer, bool avoid_caustics) const noexcept {
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float3 const attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
@@ -109,7 +109,7 @@ float3 Thinfilm::attenuation(float /*n_dot*/) const noexcept {
 
 Result Thinfilm::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                             Layer const& layer, bool /*avoid_caustics*/) const noexcept {
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float const n_dot_h = saturate(dot(layer.n_, h));
@@ -127,7 +127,7 @@ Result Thinfilm::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h,
 
 Result Thinfilm::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                             Layer const& layer, bool /*avoid_caustics*/) const noexcept {
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float const n_dot_h = saturate(dot(layer.n_, h));

@@ -174,7 +174,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, f
 
     float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
 
     float const alpha2 = alpha * alpha;
 
@@ -353,7 +353,7 @@ inline float Isotropic::reflect(float3 const& wo, float3 const& h, float n_dot_w
                                 bxdf::Sample& result) noexcept {
     float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
 
     float const alpha2 = alpha * alpha;
 
@@ -463,7 +463,7 @@ float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
 
     float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
 
     float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.alpha2_, layer.axy_);
     float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);

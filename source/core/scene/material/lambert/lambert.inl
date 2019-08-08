@@ -33,7 +33,7 @@ inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler
 
     float3 const wi = normalize(layer.tangent_to_world(is));
 
-    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
 
     result.reflection = Pi_inv * color;
     result.wi         = wi;

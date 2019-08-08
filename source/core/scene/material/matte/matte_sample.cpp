@@ -12,7 +12,7 @@ material::Layer const& Sample::base_layer() const noexcept {
 }
 
 bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
-    float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     float3 const h = normalize(wo_ + wi);
@@ -25,7 +25,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
 }
 
 bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
-    float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
+    float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     float3 const h = normalize(wo_ + wi);
