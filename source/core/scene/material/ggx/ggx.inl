@@ -287,26 +287,6 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, f
 
     SOFT_ASSERT(testing::check(result, wo, layer));
 
-    //      std::cout << "refract:" << std::endl;
-    //      std::cout << "h: " << h << std::endl;
-    //      std::cout << "d: " << d << std::endl;
-    //      std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
-    //      std::cout << "n_dot_wo: " << n_dot_wo << std::endl;
-    //      std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-    //      std::cout << "wi_dot_h: " << wi_dot_h << std::endl;
-    //      std::cout << "n_dot_h: " << n_dot_h << std::endl;
-    //    	std::cout << "alpha2: " << alpha2 << std::endl;
-    //    	std::cout << "fresnel: " << f << std::endl;
-    //    	std::cout << "factor: " << factor << std::endl;
-    //    	std::cout << "eta_t_2: " << eta_t_2 << std::endl;
-    //    	std::cout << "refraction: " << refraction << std::endl;
-    //    	std::cout << "denom: " << denom << std::endl;
-
-    {
-        //        bxdf::Result control = refraction2(wi, wo, h, layer, alpha, ior, fresnel,
-        //                                           result.reflection[0]);
-    }
-
     return n_dot_wi;
 }
 
@@ -402,19 +382,12 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
     result.wi         = wi;
     result.h          = h;
 
-    float const pdf = pdf_visible_refract(n_dot_wo, std::abs(wo_dot_h), d, alpha2);
-    result.pdf      = pdf * (std::abs(wi_dot_h) * sqr_eta_t / denom);
+    float const pdf = pdf_visible_refract(n_dot_wo, abs_wo_dot_h, d, alpha2);
+    result.pdf      = pdf * (abs_wi_dot_h * sqr_eta_t / denom);
 
     result.h_dot_wi = wi_dot_h;
     result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_transmission
                                          : bxdf::Type::Glossy_transmission);
-
-    //            {
-    //                bxdf::Result control = refraction2(wi, wo, layer, alpha, ior,
-    //                        result.reflection[0], result.pdf);
-
-    //                result.reflection = control.reflection;
-    //            }
 
     return n_dot_wi;
 }
