@@ -255,7 +255,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, f
 
     float3 const wi = normalize((eta * wo_dot_h - wi_dot_h) * h - eta * wo);
 
-    float const n_dot_wi = layer.clamp_reverse_n_dot(wi);
+    float const n_dot_wi = layer.clamp_abs_n_dot(wi);
 
     float const alpha2 = alpha * alpha;
 

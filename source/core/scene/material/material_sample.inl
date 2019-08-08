@@ -56,11 +56,6 @@ inline float Layer::clamp_abs_n_dot(float3 const& v) const noexcept {
     return clamp_abs_dot(n_, v);
 }
 
-inline float Layer::clamp_reverse_n_dot(float3 const& v) const noexcept {
-    // return std::max(-dot(n, v), Dot_min);
-    return clamp_reverse_dot(n_, v);
-}
-
 inline float3 const& Layer::shading_normal() const noexcept {
     return n_;
 }

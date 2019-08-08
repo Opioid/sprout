@@ -31,7 +31,6 @@ struct Layer {
 
     float clamp_n_dot(float3 const& v) const noexcept;
     float clamp_abs_n_dot(float3 const& v) const noexcept;
-    float clamp_reverse_n_dot(float3 const& v) const noexcept;
 
     float3 const& shading_normal() const noexcept;
 

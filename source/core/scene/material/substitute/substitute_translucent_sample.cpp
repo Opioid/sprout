@@ -84,14 +84,14 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool /*include_back*
     // then we don't need to calculate the reflection.
     // In the other case, transmission won't be visible and we only need reflection.
     if (thickness_ > 0.f && !same_hemisphere(wi)) {
-        float const n_dot_wi = layer_.clamp_reverse_n_dot(wi);
+        float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
 
         float const approximated_distance = thickness_ / n_dot_wi;
 
         float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 
         // This is the least attempt we can do at energy conservation
-        float const n_dot_wo = layer_.clamp_reverse_n_dot(wo_);
+        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
         float const f = base_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
