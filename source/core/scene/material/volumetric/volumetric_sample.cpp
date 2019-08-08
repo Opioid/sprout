@@ -13,7 +13,7 @@ static inline float phase_hg(float cos_theta, float g) noexcept {
     return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
 }
 
-const material::Layer& Sample::base_layer() const noexcept {
+material::Layer const& Sample::base_layer() const noexcept {
     return layer_;
 }
 

@@ -9,7 +9,7 @@
 
 namespace scene::material::metallic_paint {
 
-const material::Layer& Sample::base_layer() const noexcept {
+material::Layer const& Sample::base_layer() const noexcept {
     return base_;
 }
 

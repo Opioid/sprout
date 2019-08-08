@@ -6,7 +6,7 @@
 
 namespace scene::material::light {
 
-const material::Layer& Sample::base_layer() const noexcept {
+material::Layer const& Sample::base_layer() const noexcept {
     return layer_;
 }
 

@@ -181,7 +181,7 @@ float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_d
     return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
 }
 
-inline const material::Layer& Sample_base::base_layer() const noexcept {
+inline material::Layer const& Sample_base::base_layer() const noexcept {
     return layer_;
 }
 

@@ -9,7 +9,7 @@ namespace scene::material::debug {
 static float3 constexpr color_front(0.4f, 0.9f, 0.1f);
 static float3 constexpr color_back(0.9f, 0.1f, 0.4f);
 
-const material::Layer& Sample::base_layer() const noexcept {
+material::Layer const& Sample::base_layer() const noexcept {
     return layer_;
 }
 

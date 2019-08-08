@@ -7,7 +7,7 @@
 
 namespace scene::material::display {
 
-const material::Layer& Sample::base_layer() const noexcept {
+material::Layer const& Sample::base_layer() const noexcept {
     return layer_;
 }
 
