@@ -73,7 +73,6 @@ class Sample {
     float3 const& wo() const noexcept;
 
     float clamp_geo_n_dot(float3 const& v) const noexcept;
-    float clamp_reverse_geo_n_dot(float3 const& v) const noexcept;
 
     float3 const& geometric_normal() const noexcept;
 

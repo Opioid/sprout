@@ -110,10 +110,6 @@ inline float Sample::clamp_geo_n_dot(float3 const& v) const noexcept {
     return clamp_dot(geo_n_, v);
 }
 
-inline float Sample::clamp_reverse_geo_n_dot(float3 const& v) const noexcept {
-    return clamp_reverse_dot(geo_n_, v);
-}
-
 inline float3 const& Sample::geometric_normal() const noexcept {
     return geo_n_;
 }

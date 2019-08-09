@@ -23,10 +23,6 @@ static inline float clamp_dot(float3 const& a, float3 const& b) noexcept {
     return std::clamp(dot(a, b), Dot_min, 1.f);
 }
 
-static inline float clamp_reverse_dot(float3 const& a, float3 const& b) noexcept {
-    return std::clamp(-dot(a, b), Dot_min, 1.f);
-}
-
 static inline float clamp_abs_dot(float3 const& a, float3 const& b) noexcept {
     return std::clamp(std::abs(dot(a, b)), Dot_min, 1.f);
 }
