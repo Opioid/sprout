@@ -59,8 +59,7 @@ struct Texture_description {
 static void read_sampler_settings(json::Value const& sampler_value,
                                   Sampler_settings&  settings) noexcept;
 
-static void read_texture_description(json::Value const&   texture_value,
-                                     Texture_description& description) noexcept;
+static Texture_description read_texture_description(json::Value const& texture_value) noexcept;
 
 static Texture_adapter create_texture(const Texture_description& description,
                                       memory::Variant_map&       options,
@@ -218,8 +217,7 @@ Material* Provider::load_cloth(json::Value const& cloth_value,
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto const& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -262,8 +260,7 @@ Material* Provider::load_debug(json::Value const& debug_value,
     for (auto const& n : debug_value.GetObject()) {
         if ("textures" == n.name) {
             for (auto const& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -318,8 +315,7 @@ Material* Provider::load_display(json::Value const& display_value,
             animation_duration = scene::time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -402,8 +398,7 @@ Material* Provider::load_glass(json::Value const& glass_value,
             thickness = json::read_float(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -502,8 +497,7 @@ Material* Provider::load_light(json::Value const& light_value,
             animation_duration = time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -577,8 +571,7 @@ Material* Provider::load_matte(json::Value const& matte_value,
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -641,8 +634,7 @@ Material* Provider::load_metal(json::Value const& metal_value,
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -742,8 +734,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
             read_coating_description(n.value, coating);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -823,8 +814,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
             }
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -875,8 +865,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -976,8 +965,7 @@ Material* load_substitute(json::Value const& substitute_value,
             read_coating_description(n.value, coating);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -998,6 +986,9 @@ Material* load_substitute(json::Value const& substitute_value,
                     surface_map = create_texture(texture_description, options, manager);
                 } else if ("Gloss" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Gloss);
+                    surface_map = create_texture(texture_description, options, manager);
+                } else if ("Gloss_in_alpha" == texture_description.usage) {
+                    options.set("usage", image::texture::Provider::Usage::Gloss_in_alpha);
                     surface_map = create_texture(texture_description, options, manager);
                 } else if ("Emission" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Color);
@@ -1209,8 +1200,7 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
             b = json::read_float(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -1317,8 +1307,9 @@ void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& s
     }
 }
 
-void read_texture_description(json::Value const&   texture_value,
-                              Texture_description& description) noexcept {
+Texture_description read_texture_description(json::Value const& texture_value) noexcept {
+    Texture_description description;
+
     description.filename     = "";
     description.usage        = "Color";
     description.swizzle      = image::Swizzle::XYZW;
@@ -1341,6 +1332,8 @@ void read_texture_description(json::Value const&   texture_value,
             description.num_elements = json::read_int(n.value);
         }
     }
+
+    return description;
 }
 
 Texture_adapter create_texture(const Texture_description& description, memory::Variant_map& options,
@@ -1378,8 +1371,7 @@ void read_coating_description(json::Value const&   coating_value,
             description.in_nm = ("nm" == json::read_string(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;

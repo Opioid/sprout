@@ -50,6 +50,9 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
     } else if (Usage::Gloss == usage) {
         channels = Channels::X;
         invert   = true;
+    } else if (Usage::Gloss_in_alpha == usage) {
+        channels = Channels::W;
+        invert   = true;
     } else if (Usage::Normal == usage) {
         channels = Channels::XYZ;
     }
