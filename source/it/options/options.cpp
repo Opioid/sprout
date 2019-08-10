@@ -119,7 +119,7 @@ bool is_parameter(std::string_view text) noexcept {
 
 void help() noexcept {
     static std::string const text =
-        R"(it is a image tool
+        R"(it is an image tool
 Usage:
   it [OPTION...]
 
