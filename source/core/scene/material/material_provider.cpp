@@ -996,8 +996,8 @@ Material* load_substitute(json::Value const& substitute_value,
                 } else if ("Roughness" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Roughness);
                     surface_map = create_texture(texture_description, options, manager);
-                } else if ("Specularity" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Specularity);
+                } else if ("Gloss" == texture_description.usage) {
+                    options.set("usage", image::texture::Provider::Usage::Gloss);
                     surface_map = create_texture(texture_description, options, manager);
                 } else if ("Emission" == texture_description.usage) {
                     options.set("usage", image::texture::Provider::Usage::Color);
