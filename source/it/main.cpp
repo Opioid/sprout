@@ -10,6 +10,7 @@
 #include "core/logging/logging.hpp"
 #include "core/resource/resource_manager.inl"
 #include "item.hpp"
+#include "operator/average.hpp"
 #include "operator/concatenate.hpp"
 #include "operator/difference.hpp"
 #include "options/options.hpp"
@@ -77,7 +78,12 @@ int main(int argc, char* argv[]) noexcept {
         ++slot;
     }
 
-    if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
+    if (Options::Operator::Average == args.op) {
+        if (uint32_t const num = op::average(items, args, resource_manager.thread_pool()); num) {
+            logging::verbose("average " + string::to_string(num) + " images in " +
+                             string::to_string(chrono::seconds_since(total_start)) + " s");
+        }
+    } else if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
         if (uint32_t const num = op::difference(items, args, resource_manager.thread_pool()); num) {
             logging::verbose("diff " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");

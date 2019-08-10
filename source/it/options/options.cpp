@@ -62,11 +62,14 @@ bool handle_all(std::string const& command, std::string const& parameter,
 bool handle(std::string const& command, std::string const& parameter, Options& result) noexcept {
     if ("help" == command || "h" == command) {
         help();
+    } else if ("average" == command || "a" == command) {
+        result.op = Options::Operator::Average;
+    } else if ("cat" == command || "c" == command) {
+        result.op = Options::Operator::Cat;
+
+        result.concat_num_per_row = static_cast<uint32_t>(std::atoi(parameter.data()));
     } else if ("diff" == command || "d" == command) {
         result.op = Options::Operator::Diff;
-    } else if ("cat" == command || "c" == command) {
-        result.op                 = Options::Operator::Cat;
-        result.concat_num_per_row = static_cast<uint32_t>(std::atoi(parameter.data()));
     } else if ("clamp" == command) {
         result.clamp = std::stof(parameter.data());
     } else if ("clip-lo" == command) {
@@ -121,9 +124,7 @@ Usage:
   it [OPTION...]
 
   -h, --help            Print help.
-  -d, --diff            Compute the difference between the first
-                        and subsequent images.
-                        This is the default behavior.
+  -a, --average         Calculate the average of an image.
   -c, --cat      int?   Concatenate multiple images and save as
                         a single image.
                         Optionally specify after how many images
@@ -131,6 +132,9 @@ Usage:
       --clamp    float  Clamp to the given value.
       --clip-lo  float  Clip below the given value.
       --clip-hi  float  Clip above the given value.
+  -d, --diff            Compute the difference between the first
+                        and subsequent images.
+                        This is the default behavior.
 	  --max-dif  float  Override the calculated max difference
 						for coloring the difference images.
   -i, --image    file+  File name of an image.
