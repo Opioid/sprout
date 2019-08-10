@@ -84,8 +84,6 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
             SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
 
             return new Texture(Byte3_snorm(image->byte3()));
-        } else if (Usage::Surface == usage) {
-            return new Texture(Byte3_unorm(image->byte3()));
         } else {
             return new Texture(Byte3_sRGB(image->byte3()));
         }
