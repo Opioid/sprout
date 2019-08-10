@@ -193,7 +193,7 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
             int32_t const o = i * info.num_channels;
 
-            int8_t color = info.buffer[o + c];
+            uint8_t color = info.buffer[o + c];
 
             if (invert) {
                 color = 255 - color;
