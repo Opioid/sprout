@@ -28,6 +28,8 @@ int main(int argc, char* argv[]) noexcept {
 
     auto const args = it::options::parse(argc, argv);
 
+    logging::set_verbose(args.verbose);
+
     if (args.images.empty()) {
         logging::error("No images specified.");
         return 1;
@@ -77,15 +79,15 @@ int main(int argc, char* argv[]) noexcept {
 
     if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
         if (uint32_t const num = op::difference(items, args, resource_manager.thread_pool()); num) {
-            logging::info("diff " + string::to_string(num) + " images in " +
-                          string::to_string(chrono::seconds_since(total_start)) + " s");
+            logging::verbose("diff " + string::to_string(num) + " images in " +
+                             string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Cat == args.op) {
         if (uint32_t const num = op::concatenate(items, args.concat_num_per_row, args.clip,
                                                  resource_manager.thread_pool());
             num) {
-            logging::info("cat " + string::to_string(num) + " images in " +
-                          string::to_string(chrono::seconds_since(total_start)) + " s");
+            logging::verbose("cat " + string::to_string(num) + " images in " +
+                             string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     }
 

@@ -24,11 +24,12 @@ struct Options {
 
     std::vector<std::string> outputs;
 
-    bool no_export = false;
-
     std::string report;
 
     int threads = 0;
+
+    bool no_export = false;
+    bool verbose   = false;
 };
 
 Options parse(int argc, char* argv[]) noexcept;
