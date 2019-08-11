@@ -1,4 +1,4 @@
-add_executable(cli "main.cpp")
+add_executable(cli "main.cpp" "any_key.cpp" "any_key.hpp")
 
 set_target_properties(cli PROPERTIES OUTPUT_NAME "sprout")
 

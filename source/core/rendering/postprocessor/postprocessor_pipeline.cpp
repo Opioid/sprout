@@ -7,25 +7,33 @@
 
 namespace rendering::postprocessor {
 
-Pipeline::Pipeline() : scratch_(image::Description()) {}
+Pipeline::Pipeline() noexcept : scratch_(image::Description()) {}
 
-Pipeline::~Pipeline() {
+Pipeline::~Pipeline() noexcept {
     for (auto pp : postprocessors_) {
         delete pp;
     }
 }
 
-void Pipeline::reserve(size_t num_pps) {
+void Pipeline::clear() noexcept {
+    for (auto pp : postprocessors_) {
+        delete pp;
+    }
+
+    postprocessors_.clear();
+}
+
+void Pipeline::reserve(size_t num_pps) noexcept {
     postprocessors_.reserve(num_pps);
 }
 
-void Pipeline::add(Postprocessor* pp) {
+void Pipeline::add(Postprocessor* pp) noexcept {
     if (pp) {
         postprocessors_.push_back(pp);
     }
 }
 
-void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) {
+void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) noexcept {
     if (postprocessors_.empty()) {
         return;
     }
@@ -37,7 +45,7 @@ void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     }
 }
 
-bool Pipeline::has_alpha_transparency(bool alpha_in) const {
+bool Pipeline::has_alpha_transparency(bool alpha_in) const noexcept {
     for (auto const pp : postprocessors_) {
         alpha_in = pp->alpha_out(alpha_in);
     }
@@ -45,7 +53,8 @@ bool Pipeline::has_alpha_transparency(bool alpha_in) const {
     return alpha_in;
 }
 
-void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool) {
+void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target,
+                    thread::Pool& pool) noexcept {
     if (postprocessors_.empty()) {
         sensor.resolve(pool, target);
     } else {
@@ -57,7 +66,8 @@ void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target, thread:
     }
 }
 
-void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool) {
+void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target,
+                     thread::Pool& pool) noexcept {
     if (postprocessors_.empty()) {
         sensor.resolve(pool, target);
     } else {
@@ -81,7 +91,7 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread
 }
 
 void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
-                                thread::Pool& pool) {
+                                thread::Pool& pool) noexcept {
     if (postprocessors_.empty()) {
         sensor.resolve_accumulate(pool, target);
     } else {
@@ -104,7 +114,7 @@ void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& tar
     }
 }
 
-size_t Pipeline::num_bytes() const {
+size_t Pipeline::num_bytes() const noexcept {
     size_t num_bytes = 0;
     for (auto const pp : postprocessors_) {
         num_bytes += pp->num_bytes();

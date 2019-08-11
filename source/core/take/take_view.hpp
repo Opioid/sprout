@@ -14,6 +14,8 @@ struct View {
 
     ~View() noexcept;
 
+    void clear() noexcept;
+
     void init(thread::Pool& pool) noexcept;
 
     scene::camera::Camera* camera = nullptr;

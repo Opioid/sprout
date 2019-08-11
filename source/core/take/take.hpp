@@ -1,10 +1,11 @@
 #ifndef SU_CORE_TAKE_TAKE_HPP
 #define SU_CORE_TAKE_TAKE_HPP
 
-#include <string>
 #include "base/memory/array.hpp"
 #include "take_settings.hpp"
 #include "take_view.hpp"
+
+#include <string>
 
 namespace exporting {
 class Sink;
@@ -34,6 +35,8 @@ struct Take {
     Take() noexcept;
 
     ~Take() noexcept;
+
+    void clear() noexcept;
 
     Settings settings;
 

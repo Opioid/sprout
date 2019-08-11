@@ -78,6 +78,8 @@ class Scene {
 
     ~Scene() noexcept;
 
+    void clear() noexcept;
+
     void finish() noexcept;
 
     AABB const& aabb() const noexcept;
