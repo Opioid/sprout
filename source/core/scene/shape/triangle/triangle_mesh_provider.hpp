@@ -31,7 +31,7 @@ class Provider : public resource::Provider<Shape> {
     ~Provider() noexcept override;
 
     Shape* load(std::string const& filename, memory::Variant_map const& options,
-                resource::Manager& manager) noexcept override final;
+                resource::Manager& manager, std::string& resolved_name) noexcept override final;
 
     Shape* load(void const* data, std::string_view mount_folder, memory::Variant_map const& options,
                 resource::Manager& manager) noexcept override final;

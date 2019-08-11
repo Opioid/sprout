@@ -37,6 +37,23 @@ T* Manager::load(std::string const& filename, Variant_map const& options) noexce
 }
 
 template <typename T>
+T* Manager::load(std::string const& filename, Variant_map const& options,
+                 std::string& resolved_name) noexcept {
+    if (filename.empty()) {
+        return nullptr;
+    }
+
+    Typed_cache<T>* cache = typed_cache<T>();
+
+    // a provider for this resource type was never registered
+    if (!cache) {
+        return nullptr;
+    }
+
+    return cache->load(filename, options, *this, resolved_name);
+}
+
+template <typename T>
 T* Manager::load(std::string const& name, void const* data, std::string_view mount_folder,
                  Variant_map const& options) noexcept {
     if (name.empty()) {

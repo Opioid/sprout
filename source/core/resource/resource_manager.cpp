@@ -20,4 +20,10 @@ thread::Pool& Manager::thread_pool() noexcept {
     return thread_pool_;
 }
 
+void Manager::increment_generation() noexcept {
+    for (auto c : caches_) {
+        c.second->increment_generation();
+    }
+}
+
 }  // namespace resource

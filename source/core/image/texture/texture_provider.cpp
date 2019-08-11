@@ -29,7 +29,7 @@ Provider::Provider() noexcept {
 }
 
 Texture* Provider::load(std::string const& filename, Variant_map const& options,
-                        resource::Manager& manager) noexcept {
+                        resource::Manager& manager, std::string& resolved_name) noexcept {
     Channels channels = Channels::XYZ;
 
     Usage usage = Usage::Undefined;
@@ -65,7 +65,7 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         image_options.set("invert", invert);
     }
 
-    auto const image = manager.load<Image>(filename, image_options);
+    auto const image = manager.load<Image>(filename, image_options, resolved_name);
     if (!image) {
         logging::error("Loading texture %S: ", filename);
         return nullptr;

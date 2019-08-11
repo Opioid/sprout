@@ -99,9 +99,8 @@ Provider::Provider(bool force_debug_material) noexcept
 Provider::~Provider() noexcept {}
 
 Material* Provider::load(std::string const& filename, Variant_map const& /*options*/,
-                         resource::Manager& manager) noexcept {
-    std::string resolved_name;
-    auto        stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
+                         resource::Manager& manager, std::string& resolved_name) noexcept {
+    auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         return nullptr;
     }

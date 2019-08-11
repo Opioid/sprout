@@ -1,10 +1,11 @@
 #ifndef SU_BASE_STRING_STRING_HPP
 #define SU_BASE_STRING_STRING_HPP
 
+#include "math/print.hpp"
+
 #include <iomanip>
 #include <sstream>
 #include <string>
-#include "math/print.hpp"
 
 namespace string {
 

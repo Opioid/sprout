@@ -1,7 +1,8 @@
 #include "options.hpp"
+#include "core/logging/logging.hpp"
+
 #include <cctype>
 #include <string_view>
-#include "core/logging/logging.hpp"
 
 namespace options {
 

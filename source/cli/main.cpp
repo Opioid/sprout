@@ -209,6 +209,8 @@ int main(int argc, char* argv[]) noexcept {
         if ('q' == key) {
             break;
         }
+
+        resource_manager.increment_generation();
     }
 
     return 0;
