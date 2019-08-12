@@ -29,6 +29,7 @@ void Sky::set_parameters(json::Value const& parameters, Scene& scene) noexcept {
     for (auto& n : parameters.GetObject()) {
         if ("sun" == n.name) {
             float3 const angles = json::read_float3(n.value, "rotation", float3(0.f));
+
             sun_rotation_       = json::create_rotation_matrix(angles);
             implicit_rotation_  = false;
         } else if ("ground_albedo" == n.name) {
@@ -100,7 +101,7 @@ void Sky::private_update(Scene& scene) noexcept {
     model_.set_ground_albedo(ground_albedo_);
     model_.set_turbidity(turbidity_);
 
-    math::Transformation transformation{float3(0.f), float3(Model::radius()),
+    math::Transformation const transformation{float3(0.f), float3(Model::radius()),
                                         math::quaternion::create(sun_rotation_)};
 
     scene.prop_set_transformation(sun_, transformation);
