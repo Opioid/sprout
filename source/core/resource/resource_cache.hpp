@@ -42,7 +42,7 @@ class Typed_cache : public Cache {
             std::string& resolved_name) noexcept;
 
     T* load(std::string const& name, void const* data, std::string_view mount_folder,
-            memory::Variant_map const& options, Manager& manager) noexcept;
+            std::string source_name, memory::Variant_map const& options, Manager& manager) noexcept;
 
     T* get(std::string const& filename, memory::Variant_map const& options) noexcept;
 

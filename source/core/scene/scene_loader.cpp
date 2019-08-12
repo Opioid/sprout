@@ -155,7 +155,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 
     if (auto const materials_node = root->FindMember("materials");
         root->MemberEnd() != materials_node) {
-        read_materials(materials_node->value, local_materials);
+        read_materials(materials_node->value, resolved_name, local_materials);
     }
 
     filesystem.push_mount(mount_folder);
@@ -171,11 +171,13 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     return true;
 }
 
-void Loader::read_materials(json::Value const& materials_value,
-                            Local_materials&   local_materials) const noexcept {
+void Loader::read_materials(json::Value const& materials_value, std::string const& source_name,
+                            Local_materials& local_materials) const noexcept {
     if (!materials_value.IsArray()) {
         return;
     }
+
+    local_materials.source_name = source_name;
 
     for (auto const& m : materials_value.GetArray()) {
         auto const name_node = m.FindMember("name");
@@ -185,7 +187,7 @@ void Loader::read_materials(json::Value const& materials_value,
 
         std::string const name = name_node->value.GetString();
 
-        local_materials[name] = &m;
+        local_materials.materials[name] = &m;
     }
 }
 
@@ -441,11 +443,12 @@ material::Material* Loader::load_material(std::string const& name, std::string_v
     }
 
     // Otherwise, see if it is among the locally defined materials.
-    if (auto const material_node = local_materials.find(name);
-        local_materials.end() != material_node) {
+    if (auto const material_node = local_materials.materials.find(name);
+        local_materials.materials.end() != material_node) {
         void const* data = reinterpret_cast<void const*>(material_node->second);
 
-        if (auto material = resource_manager_.load<material::Material>(name, data, mount_folder);
+        if (auto material = resource_manager_.load<material::Material>(name, data, mount_folder,
+                                                                       local_materials.source_name);
             material) {
             if (material->is_animated()) {
                 scene.add_material(material);

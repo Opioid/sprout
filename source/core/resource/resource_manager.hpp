@@ -50,7 +50,7 @@ class Manager {
 
     template <typename T>
     T* load(std::string const& name, void const* data, std::string_view mount_folder,
-            Variant_map const& options = Variant_map()) noexcept;
+            std::string source_name, Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>
     T* get(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;

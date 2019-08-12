@@ -83,13 +83,17 @@ class Loader {
     size_t num_bytes() const noexcept;
 
   private:
-    using Local_materials = std::map<std::string, json::Value const*>;
+    struct Local_materials {
+        std::string source_name;
+
+        std::map<std::string, json::Value const*> materials;
+    };
 
     bool load(std::string const& filename, std::string_view take_mount_folder, uint32_t parent_id,
               Scene& scene) noexcept;
 
-    void read_materials(json::Value const& materials_value, Local_materials& local_materials) const
-        noexcept;
+    void read_materials(json::Value const& materials_value, std::string const& source_name,
+                        Local_materials& local_materials) const noexcept;
 
     void load_entities(json::Value const& entities_value, uint32_t parent_id,
                        std::string_view mount_folder, Local_materials const& local_materials,
@@ -129,7 +133,8 @@ class Loader {
 
     Material& fallback_material_;
 
-    std::map<std::string, Extension_provider*>         extension_providers_;
+    std::map<std::string, Extension_provider*> extension_providers_;
+
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 };
 
