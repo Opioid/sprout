@@ -1,5 +1,7 @@
 target_sources(it
   PRIVATE
+  "average.cpp"
+  "average.hpp"
   "concatenate.cpp"
   "concatenate.hpp"
   "difference_item.cpp"
@@ -10,4 +12,5 @@ target_sources(it
   "difference_report_org.hpp"
   "difference.cpp"
   "difference.hpp"
+  "operator_helper.inl"
 )

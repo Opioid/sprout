@@ -42,6 +42,8 @@
 
 namespace scene::material {
 
+using Texture_usage = image::texture::Provider::Usage;
+
 static Material* load_substitute(json::Value const& substitute_value,
                                  resource::Manager& manager) noexcept;
 
@@ -59,8 +61,7 @@ struct Texture_description {
 static void read_sampler_settings(json::Value const& sampler_value,
                                   Sampler_settings&  settings) noexcept;
 
-static void read_texture_description(json::Value const&   texture_value,
-                                     Texture_description& description) noexcept;
+static Texture_description read_texture_description(json::Value const& texture_value) noexcept;
 
 static Texture_adapter create_texture(const Texture_description& description,
                                       memory::Variant_map&       options,
@@ -98,9 +99,8 @@ Provider::Provider(bool force_debug_material) noexcept
 Provider::~Provider() noexcept {}
 
 Material* Provider::load(std::string const& filename, Variant_map const& /*options*/,
-                         resource::Manager& manager) noexcept {
-    std::string resolved_name;
-    auto        stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
+                         resource::Manager& manager, std::string& resolved_name) noexcept {
+    auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         return nullptr;
     }
@@ -218,8 +218,7 @@ Material* Provider::load_cloth(json::Value const& cloth_value,
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto const& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -227,13 +226,13 @@ Material* Provider::load_cloth(json::Value const& cloth_value,
 
                 memory::Variant_map options;
                 if ("Color" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Color);
+                    options.set("usage", Texture_usage::Color);
                     color_map = create_texture(texture_description, options, manager);
                 } else if ("Normal" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Normal);
+                    options.set("usage", Texture_usage::Normal);
                     normal_map = create_texture(texture_description, options, manager);
                 } else if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -262,8 +261,7 @@ Material* Provider::load_debug(json::Value const& debug_value,
     for (auto const& n : debug_value.GetObject()) {
         if ("textures" == n.name) {
             for (auto const& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -271,7 +269,7 @@ Material* Provider::load_debug(json::Value const& debug_value,
 
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -318,8 +316,7 @@ Material* Provider::load_display(json::Value const& display_value,
             animation_duration = scene::time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -328,10 +325,10 @@ Material* Provider::load_display(json::Value const& display_value,
                 memory::Variant_map options;
 
                 if ("Emission" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Color);
+                    options.set("usage", Texture_usage::Color);
                     emission_map = create_texture(texture_description, options, manager);
                 } else if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -402,8 +399,7 @@ Material* Provider::load_glass(json::Value const& glass_value,
             thickness = json::read_float(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -412,13 +408,13 @@ Material* Provider::load_glass(json::Value const& glass_value,
                 memory::Variant_map options;
 
                 if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 } else if ("Normal" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Normal);
+                    options.set("usage", Texture_usage::Normal);
                     normal_map = create_texture(texture_description, options, manager);
                 } else if ("Roughness" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Roughness);
+                    options.set("usage", Texture_usage::Roughness);
                     roughness_map = create_texture(texture_description, options, manager);
                 }
             }
@@ -502,8 +498,7 @@ Material* Provider::load_light(json::Value const& light_value,
             animation_duration = time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -512,10 +507,10 @@ Material* Provider::load_light(json::Value const& light_value,
                 memory::Variant_map options;
 
                 if ("Emission" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Color);
+                    options.set("usage", Texture_usage::Color);
                     emission_map = create_texture(texture_description, options, manager);
                 } else if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -577,8 +572,7 @@ Material* Provider::load_matte(json::Value const& matte_value,
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -586,12 +580,12 @@ Material* Provider::load_matte(json::Value const& matte_value,
 
                 memory::Variant_map options;
                 /*if ("Normal" == texture_description.usage) {
-                        options.insert("usage", image::texture::Provider::Usage::Normal);
+                        options.insert("usage", Texture_usage::Normal);
                         normal_map = manager.load<image::texture::Texture(
                                                 texture_description.filename, options);
                 } else*/
                 if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -641,8 +635,7 @@ Material* Provider::load_metal(json::Value const& metal_value,
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -650,13 +643,13 @@ Material* Provider::load_metal(json::Value const& metal_value,
 
                 memory::Variant_map options;
                 if ("Normal" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Normal);
+                    options.set("usage", Texture_usage::Normal);
                     normal_map = create_texture(texture_description, options, manager);
                 } else if ("Anisotropy" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Anisotropy);
+                    options.set("usage", Texture_usage::Anisotropy);
                     direction_map = create_texture(texture_description, options, manager);
                 } else if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -742,8 +735,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
             read_coating_description(n.value, coating);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -751,7 +743,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
 
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -768,11 +760,11 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
     options.set("density", flakes_density);
 
     texture_description.filename = "proc:flakes";
-    options.set("usage", image::texture::Provider::Usage::Normal);
+    options.set("usage", Texture_usage::Normal);
     flakes_normal_map = create_texture(texture_description, options, manager);
 
     texture_description.filename = "proc:flakes_mask";
-    options.set("usage", image::texture::Provider::Usage::Mask);
+    options.set("usage", Texture_usage::Mask);
     flakes_mask = create_texture(texture_description, options, manager);
 
     auto material = new metallic_paint::Material(sampler_settings, two_sided);
@@ -823,8 +815,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
             }
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -832,7 +823,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
 
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -875,8 +866,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -884,7 +874,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
 
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 }
             }
@@ -976,8 +966,7 @@ Material* load_substitute(json::Value const& substitute_value,
             read_coating_description(n.value, coating);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -985,28 +974,31 @@ Material* load_substitute(json::Value const& substitute_value,
 
                 memory::Variant_map options;
                 if ("Color" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Color);
+                    options.set("usage", Texture_usage::Color);
                     color_map = create_texture(texture_description, options, manager);
                 } else if ("Normal" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Normal);
+                    options.set("usage", Texture_usage::Normal);
                     normal_map = create_texture(texture_description, options, manager);
                 } else if ("Surface" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Surface);
+                    options.set("usage", Texture_usage::Surface);
                     surface_map = create_texture(texture_description, options, manager);
                 } else if ("Roughness" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Roughness);
+                    options.set("usage", Texture_usage::Roughness);
                     surface_map = create_texture(texture_description, options, manager);
-                } else if ("Specularity" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Specularity);
+                } else if ("Gloss" == texture_description.usage) {
+                    options.set("usage", Texture_usage::Gloss);
+                    surface_map = create_texture(texture_description, options, manager);
+                } else if ("Gloss_in_alpha" == texture_description.usage) {
+                    options.set("usage", Texture_usage::Gloss_in_alpha);
                     surface_map = create_texture(texture_description, options, manager);
                 } else if ("Emission" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Color);
+                    options.set("usage", Texture_usage::Color);
                     emission_map = create_texture(texture_description, options, manager);
                 } else if ("Mask" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, manager);
                 } else if ("Density" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     density_map = create_texture(texture_description, options, manager);
                 }
             }
@@ -1039,14 +1031,14 @@ Material* load_substitute(json::Value const& substitute_value,
 
         if (!coating.thickness_map_description.filename.empty()) {
             memory::Variant_map options;
-            options.set("usage", image::texture::Provider::Usage::Mask);
+            options.set("usage", Texture_usage::Mask);
             coating_thickness_map = create_texture(coating.thickness_map_description, options,
                                                    manager);
         }
 
         if (!coating.normal_map_description.filename.empty()) {
             memory::Variant_map options;
-            options.set("usage", image::texture::Provider::Usage::Normal);
+            options.set("usage", Texture_usage::Normal);
             coating_normal_map = create_texture(coating.normal_map_description, options, manager);
         }
 
@@ -1209,8 +1201,7 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
             b = json::read_float(n.value);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;
@@ -1218,15 +1209,15 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
 
                 memory::Variant_map options;
                 if ("Density" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Mask);
+                    options.set("usage", Texture_usage::Mask);
                     density_map = create_texture(texture_description, options, manager);
                 } else if ("Color" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Color);
+                    options.set("usage", Texture_usage::Color);
                     color_map = create_texture(texture_description, options, manager);
                 }
 
                 /*else if ("Emission" == texture_description.usage) {
-                    options.set("usage", image::texture::Provider::Usage::Color);
+                    options.set("usage", Texture_usage::Color);
                     emission_map = create_texture(texture_description, options, manager);
                 }*/
             }
@@ -1317,8 +1308,9 @@ void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& s
     }
 }
 
-void read_texture_description(json::Value const&   texture_value,
-                              Texture_description& description) noexcept {
+Texture_description read_texture_description(json::Value const& texture_value) noexcept {
+    Texture_description description;
+
     description.filename     = "";
     description.usage        = "Color";
     description.swizzle      = image::Swizzle::XYZW;
@@ -1341,6 +1333,8 @@ void read_texture_description(json::Value const&   texture_value,
             description.num_elements = json::read_int(n.value);
         }
     }
+
+    return description;
 }
 
 Texture_adapter create_texture(const Texture_description& description, memory::Variant_map& options,
@@ -1378,8 +1372,7 @@ void read_coating_description(json::Value const&   coating_value,
             description.in_nm = ("nm" == json::read_string(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
-                Texture_description texture_description;
-                read_texture_description(tn, texture_description);
+                Texture_description const texture_description = read_texture_description(tn);
 
                 if (texture_description.filename.empty()) {
                     continue;

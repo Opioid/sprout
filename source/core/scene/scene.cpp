@@ -41,18 +41,43 @@ Scene::Scene() noexcept {
 }
 
 Scene::~Scene() noexcept {
+    clear();
+}
+
+void Scene::clear() noexcept {
     for (auto& m : prop_materials_) {
         memory::free_aligned(m.parts);
         memory::free_aligned(m.materials);
     }
 
+    prop_materials_.clear();
+
+    prop_world_transformations_.clear();
+
+    lights_.clear();
+
+    infinite_volumes_.clear();
+    volumes_.clear();
+
+    infinite_props_.clear();
+    finite_props_.clear();
+    props_.clear();
+
+    materials_.clear();
+
     for (auto a : animations_) {
         delete a;
     }
 
+    animations_.clear();
+
+    animation_stages_.clear();
+
     for (auto e : extensions_) {
         delete e;
     }
+
+    extensions_.clear();
 }
 
 void Scene::finish() noexcept {

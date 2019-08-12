@@ -37,8 +37,8 @@ Provider::Provider() noexcept {}
 Provider::~Provider() noexcept {}
 
 Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
-                      resource::Manager& manager) noexcept {
-    auto stream_pointer = manager.filesystem().read_stream(filename);
+                      resource::Manager& manager, std::string& resolved_name) noexcept {
+    auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         logging::error("Loading mesh %S: ", filename);
         return nullptr;

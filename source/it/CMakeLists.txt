@@ -11,5 +11,9 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(it PRIVATE base core Threads::Threads)
 
+if (NOT WIN32)
+    target_link_libraries(it PRIVATE stdc++fs)
+endif()
+
 add_subdirectory(operator)
 add_subdirectory(options)

@@ -29,7 +29,7 @@ Provider::Provider() noexcept {
 }
 
 Texture* Provider::load(std::string const& filename, Variant_map const& options,
-                        resource::Manager& manager) noexcept {
+                        resource::Manager& manager, std::string& resolved_name) noexcept {
     Channels channels = Channels::XYZ;
 
     Usage usage = Usage::Undefined;
@@ -47,8 +47,11 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         channels = Channels::XY;
     } else if (Usage::Roughness == usage) {
         channels = Channels::X;
-    } else if (Usage::Specularity == usage) {
+    } else if (Usage::Gloss == usage) {
         channels = Channels::X;
+        invert   = true;
+    } else if (Usage::Gloss_in_alpha == usage) {
+        channels = Channels::W;
         invert   = true;
     } else if (Usage::Normal == usage) {
         channels = Channels::XYZ;
@@ -62,7 +65,7 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         image_options.set("invert", invert);
     }
 
-    auto const image = manager.load<Image>(filename, image_options);
+    auto const image = manager.load<Image>(filename, image_options, resolved_name);
     if (!image) {
         logging::error("Loading texture %S: ", filename);
         return nullptr;
@@ -81,8 +84,6 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
             SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
 
             return new Texture(Byte3_snorm(image->byte3()));
-        } else if (Usage::Surface == usage) {
-            return new Texture(Byte3_unorm(image->byte3()));
         } else {
             return new Texture(Byte3_sRGB(image->byte3()));
         }

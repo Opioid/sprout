@@ -1,5 +1,6 @@
 #include "take_loader.hpp"
 #include "base/json/json.hpp"
+#include "base/math/interpolated_function.inl"
 #include "base/math/math.hpp"
 #include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
@@ -62,8 +63,6 @@
 #include "scene/prop/prop.hpp"
 #include "scene/scene.hpp"
 #include "take.hpp"
-
-#include "base/math/interpolated_function.inl"
 
 namespace take {
 

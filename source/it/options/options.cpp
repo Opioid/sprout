@@ -62,11 +62,14 @@ bool handle_all(std::string const& command, std::string const& parameter,
 bool handle(std::string const& command, std::string const& parameter, Options& result) noexcept {
     if ("help" == command || "h" == command) {
         help();
+    } else if ("average" == command || "a" == command) {
+        result.op = Options::Operator::Average;
+    } else if ("cat" == command || "c" == command) {
+        result.op = Options::Operator::Cat;
+
+        result.concat_num_per_row = static_cast<uint32_t>(std::atoi(parameter.data()));
     } else if ("diff" == command || "d" == command) {
         result.op = Options::Operator::Diff;
-    } else if ("cat" == command || "c" == command) {
-        result.op                 = Options::Operator::Cat;
-        result.concat_num_per_row = static_cast<uint32_t>(std::atoi(parameter.data()));
     } else if ("clamp" == command) {
         result.clamp = std::stof(parameter.data());
     } else if ("clip-lo" == command) {
@@ -85,6 +88,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.report = parameter.empty() ? "." : parameter;
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
+    } else if ("verbose" == command || "v" == command) {
+        result.verbose = true;
     } else {
         logging::warning("Option %S does not exist.", command);
     }
@@ -114,14 +119,12 @@ bool is_parameter(std::string_view text) noexcept {
 
 void help() noexcept {
     static std::string const text =
-        R"(it is a image tool
+        R"(it is an image tool
 Usage:
   it [OPTION...]
 
   -h, --help            Print help.
-  -d, --diff            Compute the difference between the first
-                        and subsequent images.
-                        This is the default behavior.
+  -a, --average         Calculate the average of an image.
   -c, --cat      int?   Concatenate multiple images and save as
                         a single image.
                         Optionally specify after how many images
@@ -129,6 +132,9 @@ Usage:
       --clamp    float  Clamp to the given value.
       --clip-lo  float  Clip below the given value.
       --clip-hi  float  Clip above the given value.
+  -d, --diff            Compute the difference between the first
+                        and subsequent images.
+                        This is the default behavior.
 	  --max-dif  float  Override the calculated max difference
 						for coloring the difference images.
   -i, --image    file+  File name of an image.
@@ -149,7 +155,8 @@ Usage:
                         0 creates one thread for each logical CPU.
                         -x creates as many threads as the number of
                         logical CPUs minus x.
-                        The default value is 0.)";
+                        The default value is 0.
+  -v, --verbose         Enables verbose logging.)";
 
     logging::info(text);
 }

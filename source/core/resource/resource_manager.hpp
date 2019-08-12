@@ -1,9 +1,10 @@
 #ifndef SU_CORE_RESOURCE_MANAGER_HPP
 #define SU_CORE_RESOURCE_MANAGER_HPP
 
+#include "base/memory/variant_map.hpp"
+
 #include <map>
 #include <string>
-#include "base/memory/variant_map.hpp"
 
 namespace file {
 class System;
@@ -35,11 +36,17 @@ class Manager {
 
     thread::Pool& thread_pool() noexcept;
 
+    void increment_generation() noexcept;
+
     template <typename T>
     void register_provider(Provider<T>& provider) noexcept;
 
     template <typename T>
     T* load(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;
+
+    template <typename T>
+    T* load(std::string const& filename, Variant_map const& options,
+            std::string& resolved_name) noexcept;
 
     template <typename T>
     T* load(std::string const& name, void const* data, std::string_view mount_folder,

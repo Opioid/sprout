@@ -20,8 +20,8 @@ class Provider {
 
     virtual ~Provider() noexcept;
 
-    virtual T* load(std::string const& filename, Variant_map const& options,
-                    Manager& manager) noexcept = 0;
+    virtual T* load(std::string const& filename, Variant_map const& options, Manager& manager,
+                    std::string& resolved_name) noexcept = 0;
 
     virtual T* load(void const* data, std::string_view mount_folder, Variant_map const& options,
                     Manager& manager) noexcept = 0;

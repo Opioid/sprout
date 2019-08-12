@@ -1,40 +1,63 @@
 #ifndef SU_CORE_RESOURCE_CACHE_HPP
 #define SU_CORE_RESOURCE_CACHE_HPP
 
+#include "resource_provider.hpp"
+
+#include <experimental/filesystem>
 #include <map>
 #include <string>
 #include <utility>
-#include "resource_provider.hpp"
 
 namespace resource {
 
 class Cache {
   public:
-    virtual ~Cache();
+    Cache() noexcept;
+
+    virtual ~Cache() noexcept;
+
+    void increment_generation() noexcept;
+
+  protected:
+    uint32_t generation_;
 };
 
 template <typename T>
 class Typed_cache : public Cache {
   public:
-    Typed_cache(Provider<T>& provider);
+    Typed_cache(Provider<T>& provider) noexcept;
 
-    ~Typed_cache() override final;
+    ~Typed_cache() noexcept override final;
 
-    T* load(std::string const& filename, memory::Variant_map const& options, Manager& manager);
+    T* load(std::string const& filename, memory::Variant_map const& options,
+            Manager& manager) noexcept;
+
+    T* load(std::string const& filename, memory::Variant_map const& options, Manager& manager,
+            std::string& resolved_name) noexcept;
 
     T* load(std::string const& name, void const* data, std::string_view mount_folder,
-            memory::Variant_map const& options, Manager& manager);
+            memory::Variant_map const& options, Manager& manager) noexcept;
 
-    T* get(std::string const& filename, memory::Variant_map const& options);
+    T* get(std::string const& filename, memory::Variant_map const& options) noexcept;
 
     void store(std::string const& name, memory::Variant_map const& options, T* resource) noexcept;
 
     size_t num_bytes() const noexcept;
 
   private:
+    struct Entry {
+        T* data;
+
+        std::string resolved_name;
+
+        uint32_t generation;
+
+        std::experimental::filesystem::file_time_type last_write;
+    };
+
     Provider<T>& provider_;
 
-    std::map<std::pair<std::string, memory::Variant_map>, T*> resources_;
+    std::map<std::pair<std::string, memory::Variant_map>, Entry> resources_;
 };
 
 }  // namespace resource

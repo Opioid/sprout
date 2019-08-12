@@ -1,5 +1,4 @@
-#include <istream>
-#include <sstream>
+#include "any_key.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
@@ -29,6 +28,10 @@
 #include "extension/procedural/sky/sky_provider.hpp"
 #include "options/options.hpp"
 
+#include <iostream>
+#include <istream>
+#include <sstream>
+
 //#include "extension/procedural/starburst/starburst.hpp"
 //#include "core/scene/material/substitute/substitute_test.hpp"
 //#include "core/scene/material/glass/glass_test.hpp"
@@ -37,8 +40,6 @@
 //#include "core/testing/testing_size.hpp"
 //#include "core/testing/testing_spectrum.hpp"
 //#include "core/sampler/sampler_test.hpp"
-
-//#include <iostream>
 
 static void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
                                    scene::Loader const& loader, scene::Scene const& scene,
@@ -64,8 +65,6 @@ int main(int argc, char* argv[]) noexcept {
     //  sampler::testing::test();
 
     //  return 1;
-
-    auto const total_start = std::chrono::high_resolution_clock::now();
 
     logging::init(logging::Type::Std_out);
 
@@ -105,18 +104,6 @@ int main(int argc, char* argv[]) noexcept {
 
     thread::Pool thread_pool(num_workers);
 
-    //	auto starburst_start = std::chrono::high_resolution_clock::now();
-    //	procedural::starburst::create(thread_pool);
-    //	logging::info("Starburst time " +
-    //				  string::to_string(chrono::seconds_since(starburst_start))
-    //+ " s");
-
-    //	return 0;
-
-    logging::info("Loading...");
-
-    auto const loading_start = std::chrono::high_resolution_clock::now();
-
     resource::Manager resource_manager(file_system, thread_pool);
 
     image::Provider image_provider;
@@ -127,81 +114,104 @@ int main(int argc, char* argv[]) noexcept {
         resource_manager.register_provider(texture_provider);
     }
 
-    scene::Scene scene;
-
-    std::string take_name;
-
-    take::Take take;
-
-    auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
-                                     : file_system.read_stream(args.take, take_name);
-
-    if (!stream || !take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
-        logging::error("Loading take %S: ", args.take);
-        return 1;
-    }
-
     scene::material::Provider material_provider(args.debug_material);
     resource_manager.register_provider(material_provider);
 
     scene::shape::triangle::Provider mesh_provider;
     resource_manager.register_provider(mesh_provider);
 
-    // The scene loader must be alive during rendering,
-    // otherwise some resources might be released prematurely.
-    // This is confusing and should be adressed.
+    scene::Scene scene;
+
+    std::string take_name;
+
+    take::Take take;
+
     scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
-        logging::error("Loading scene %S: ", take.scene_filename);
-        return 1;
-    }
-
-    logging::info("Loading time " + string::to_string(chrono::seconds_since(loading_start)) + " s");
-
-    logging::info("Rendering...");
-
     uint32_t const max_sample_size = material_provider.max_sample_size();
 
-    size_t rendering_num_bytes = 0;
+    for (;;) {
+        logging::info("Loading...");
 
-    if (args.progressive) {
-        rendering_num_bytes = controller::progressive(take, scene, resource_manager, thread_pool,
-                                                      max_sample_size);
-    } else {
-        progress::Std_out progressor;
+        auto const loading_start = std::chrono::high_resolution_clock::now();
 
-        auto const rendering_start = std::chrono::high_resolution_clock::now();
+        take.clear();
+        scene.clear();
 
-        if (take.view.camera) {
-            rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size,
-                                                progressor);
+        {
+            auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
+                                             : file_system.read_stream(args.take, take_name);
 
-            rendering_num_bytes += driver.num_bytes();
-
-            driver.render(take.exporters);
-        } else {
-            //			baking::Driver
-            // driver(take->surface_integrator_factory,
-            //								  take->volume_integrator_factory,
-            //								  take->sampler_factory);
-
-            //			driver.render(scene, take->view, thread_pool,
-            //*take->exporter, progressor);
-            logging::error("No camera specified.");
+            if (!stream || !take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
+                logging::error("Loading take %S: ", args.take);
+                continue;
+            }
         }
 
-        logging::info("Total render time " +
-                      string::to_string(chrono::seconds_since(rendering_start)) + " s");
+        if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
+            logging::error("Loading scene %S: ", take.scene_filename);
+            continue;
+        }
 
-        logging::info("Total elapsed time " +
-                      string::to_string(chrono::seconds_since(total_start)) + " s");
+        std::string const str_loading = string::to_string(chrono::seconds_since(loading_start));
+        logging::info("Loading time " + str_loading + " s");
+
+        logging::info("Rendering...");
+
+        size_t rendering_num_bytes = 0;
+
+        if (args.progressive) {
+            rendering_num_bytes = controller::progressive(take, scene, resource_manager,
+                                                          thread_pool, max_sample_size);
+        } else {
+            progress::Std_out progressor;
+
+            auto const rendering_start = std::chrono::high_resolution_clock::now();
+
+            if (take.view.camera) {
+                rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size,
+                                                    progressor);
+
+                rendering_num_bytes += driver.num_bytes();
+
+                driver.render(take.exporters);
+            } else {
+                //			baking::Driver
+                // driver(take->surface_integrator_factory,
+                //								  take->volume_integrator_factory,
+                //								  take->sampler_factory);
+
+                //			driver.render(scene, take->view, thread_pool,
+                //*take->exporter, progressor);
+                logging::error("No camera specified.");
+            }
+
+            std::string const str_rend = string::to_string(chrono::seconds_since(rendering_start));
+            logging::info("Total render time " + str_rend + " s");
+
+            std::string const str_total = string::to_string(chrono::seconds_since(loading_start));
+            logging::info("Total elapsed time " + str_total + " s");
+        }
+
+        log_memory_consumption(resource_manager, take, scene_loader, scene, rendering_num_bytes);
+
+        if (args.quit) {
+            break;
+        }
+
+        std::cout << "Press 'q' to quit, or any other key to render again." << std::endl;
+
+        char const key = read_key();
+
+        if ('q' == key) {
+            break;
+        }
+
+        resource_manager.increment_generation();
     }
-
-    log_memory_consumption(resource_manager, take, scene_loader, scene, rendering_num_bytes);
 
     return 0;
 }

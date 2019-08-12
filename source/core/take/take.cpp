@@ -11,9 +11,15 @@ namespace take {
 Take::Take() noexcept {}
 
 Take::~Take() noexcept {
+    clear();
+}
+
+void Take::clear() noexcept {
     for (auto e : exporters) {
         delete e;
     }
+
+    exporters.clear();
 
     delete sampler_factory;
 
@@ -22,6 +28,8 @@ Take::~Take() noexcept {
     delete volume_integrator_factory;
 
     delete surface_integrator_factory;
+
+    view.clear();
 }
 
 }  // namespace take

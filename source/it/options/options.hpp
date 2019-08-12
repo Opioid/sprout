@@ -8,7 +8,7 @@
 namespace it::options {
 
 struct Options {
-    enum class Operator { Diff, Cat, Undefined };
+    enum class Operator { Average, Cat, Diff, Undefined };
 
     Operator op = Operator::Undefined;
 
@@ -24,11 +24,12 @@ struct Options {
 
     std::vector<std::string> outputs;
 
-    bool no_export = false;
-
     std::string report;
 
     int threads = 0;
+
+    bool no_export = false;
+    bool verbose   = false;
 };
 
 Options parse(int argc, char* argv[]) noexcept;

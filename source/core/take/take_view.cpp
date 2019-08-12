@@ -9,6 +9,14 @@ View::~View() noexcept {
     delete camera;
 }
 
+void View::clear() noexcept {
+    delete camera;
+
+    camera = nullptr;
+
+    pipeline.clear();
+}
+
 void View::init(thread::Pool& pool) noexcept {
     if (camera) {
         pipeline.init(*camera, pool);

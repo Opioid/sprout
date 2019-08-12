@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <vector>
-#include "base/math/vector2.hpp"
 
 namespace thread {
 class Pool;

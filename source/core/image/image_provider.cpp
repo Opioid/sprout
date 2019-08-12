@@ -22,14 +22,14 @@ Provider::Provider() noexcept {}
 Provider::~Provider() noexcept {}
 
 Image* Provider::load(std::string const& filename, Variant_map const& options,
-                      resource::Manager& manager) noexcept {
+                      resource::Manager& manager, std::string& resolved_name) noexcept {
     if ("proc:flakes" == filename) {
         return flakes_provider_.create_normal_map(options);
     } else if ("proc:flakes_mask" == filename) {
         return flakes_provider_.create_mask(options);
     }
 
-    auto stream_pointer = manager.filesystem().read_stream(filename);
+    auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         return nullptr;
     }
