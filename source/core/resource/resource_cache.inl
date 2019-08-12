@@ -37,12 +37,7 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
     if (auto cached = resources_.find(key); resources_.end() != cached) {
         auto const& entry = cached->second;
 
-        if (entry.generation == generation_ || entry.resolved_name.empty()) {
-            return entry.data;
-        }
-
-        auto const last_write = std::filesystem::last_write_time(entry.resolved_name);
-        if (last_write == entry.last_write) {
+        if (is_up_to_date(entry)) {
             return entry.data;
         }
     }
@@ -88,17 +83,11 @@ T* Typed_cache<T>::get(std::string const& filename, memory::Variant_map const& o
     if (auto cached = resources_.find(key); resources_.end() != cached) {
         auto const& entry = cached->second;
 
-        if (entry.generation < generation_ && !entry.resolved_name.empty()) {
-            auto const last_write = std::filesystem::last_write_time(
-                entry.resolved_name);
-
-            if (last_write > entry.last_write) {
-                // the entry is outdated
-                return nullptr;
-            }
+        if (is_up_to_date(entry)) {
+            return entry.data;
         }
 
-        return entry.data;
+        return nullptr;
     }
 
     return nullptr;
@@ -124,6 +113,20 @@ size_t Typed_cache<T>::num_bytes() const noexcept {
     num_bytes += provider_.num_bytes();
 
     return num_bytes;
+}
+
+template <typename T>
+bool Typed_cache<T>::is_up_to_date(Entry const& entry) const noexcept {
+    if (entry.generation == generation_ || entry.source_name.empty()) {
+        return true;
+    }
+
+    auto const last_write = std::filesystem::last_write_time(entry.source_name);
+    if (last_write == entry.last_write) {
+        return true;
+    }
+
+    return false;
 }
 
 }  // namespace resource

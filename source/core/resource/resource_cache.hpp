@@ -54,12 +54,14 @@ class Typed_cache : public Cache {
     struct Entry {
         T* data;
 
-        std::string resolved_name;
+        std::string source_name;
 
         uint32_t generation;
 
         std::filesystem::file_time_type last_write;
     };
+
+    bool is_up_to_date(Entry const& entry) const noexcept;
 
     Provider<T>& provider_;
 
