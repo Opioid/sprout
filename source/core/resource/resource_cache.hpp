@@ -7,7 +7,7 @@
 #include <filesystem>
 #else
 #include <experimental/filesystem>
-using std::filesystem = std::experimental::filesystem;
+namespace std::filesystem = std::experimental::filesystem;
 #endif
 
 #include <map>
