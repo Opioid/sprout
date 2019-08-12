@@ -5,7 +5,7 @@
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <Windows.h>
 #undef min
 #undef max
 
@@ -33,7 +33,7 @@ char read_key() noexcept {
     // Restore the original console mode
     SetConsoleMode(hstdin, mode);
 
-    return inrec.Event.KeyEvent.wVirtualKeyCode;
+    return inrec.Event.KeyEvent.uChar.AsciiChar;
 }
 
 #else

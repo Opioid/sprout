@@ -3,7 +3,13 @@
 
 #include "resource_provider.hpp"
 
+#ifdef _WIN32
+#include <filesystem>
+#else
 #include <experimental/filesystem>
+using std::filesystem = std::experimental::filesystem;
+#endif
+
 #include <map>
 #include <string>
 #include <utility>
@@ -52,7 +58,7 @@ class Typed_cache : public Cache {
 
         uint32_t generation;
 
-        std::experimental::filesystem::file_time_type last_write;
+        std::filesystem::file_time_type last_write;
     };
 
     Provider<T>& provider_;

@@ -41,7 +41,7 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
             return entry.data;
         }
 
-        auto const last_write = std::experimental::filesystem::last_write_time(entry.resolved_name);
+        auto const last_write = std::filesystem::last_write_time(entry.resolved_name);
         if (last_write == entry.last_write) {
             return entry.data;
         }
@@ -52,7 +52,7 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
         return nullptr;
     }
 
-    auto const last_write = std::experimental::filesystem::last_write_time(resolved_name);
+    auto const last_write = std::filesystem::last_write_time(resolved_name);
 
     resources_.insert_or_assign(key, Entry{resource, resolved_name, generation_, last_write});
 
@@ -76,7 +76,7 @@ T* Typed_cache<T>::load(std::string const& name, void const* data, std::string_v
     }
 
     resources_.insert_or_assign(
-        key, Entry{resource, "", generation_, std::experimental::filesystem::file_time_type()});
+        key, Entry{resource, "", generation_, std::filesystem::file_time_type()});
 
     return resource;
 }
@@ -89,7 +89,7 @@ T* Typed_cache<T>::get(std::string const& filename, memory::Variant_map const& o
         auto const& entry = cached->second;
 
         if (entry.generation < generation_ && !entry.resolved_name.empty()) {
-            auto const last_write = std::experimental::filesystem::last_write_time(
+            auto const last_write = std::filesystem::last_write_time(
                 entry.resolved_name);
 
             if (last_write > entry.last_write) {
@@ -110,7 +110,7 @@ void Typed_cache<T>::store(std::string const& name, memory::Variant_map const& o
     auto const key = std::make_pair(name, options);
 
     resources_.insert_or_assign(
-        key, Entry{resource, "", generation_, std::experimental::filesystem::file_time_type()});
+        key, Entry{resource, "", generation_, std::filesystem::file_time_type()});
 }
 
 template <typename T>
