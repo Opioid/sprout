@@ -155,7 +155,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 
     if (auto const materials_node = root->FindMember("materials");
         root->MemberEnd() != materials_node) {
-        read_materials(materials_node->value, resolved_name, mount_folder, local_materials);
+        read_materials(materials_node->value, resolved_name, local_materials);
     }
 
     filesystem.push_mount(mount_folder);
@@ -172,14 +172,12 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 }
 
 void Loader::read_materials(json::Value const& materials_value, std::string const& source_name,
-                            std::string_view mount_folder, Local_materials& local_materials) const
-    noexcept {
+                            Local_materials& local_materials) const noexcept {
     if (!materials_value.IsArray()) {
         return;
     }
 
-    local_materials.source_name  = source_name;
-    local_materials.mount_folder = mount_folder;
+    local_materials.source_name = source_name;
 
     for (auto const& m : materials_value.GetArray()) {
         auto const name_node = m.FindMember("name");
@@ -447,8 +445,8 @@ material::Material* Loader::load_material(std::string const&     name,
         local_materials.materials.end() != material_node) {
         void const* data = reinterpret_cast<void const*>(material_node->second);
 
-        if (auto material = resource_manager_.load<material::Material>(
-                name, data, local_materials.mount_folder, local_materials.source_name);
+        if (auto material = resource_manager_.load<material::Material>(name, data,
+                                                                       local_materials.source_name);
             material) {
             if (material->is_animated()) {
                 scene.add_material(material);

@@ -115,11 +115,11 @@ Material* Provider::load(std::string const& filename, Variant_map const& /*optio
     return load(*root, string::parent_directory(resolved_name), manager);
 }
 
-Material* Provider::load(void const* data, std::string_view                 mount_folder,
+Material* Provider::load(void const* data, std::string const&               source_name,
                          Variant_map const& /*options*/, resource::Manager& manager) noexcept {
     json::Value const* value = reinterpret_cast<json::Value const*>(data);
 
-    return load(*value, mount_folder, manager);
+    return load(*value, string::parent_directory(source_name), manager);
 }
 
 size_t Provider::num_bytes() const noexcept {

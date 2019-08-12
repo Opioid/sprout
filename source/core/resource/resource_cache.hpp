@@ -7,7 +7,9 @@
 #include <filesystem>
 #else
 #include <experimental/filesystem>
-namespace std::filesystem = std::experimental::filesystem;
+namespace std {
+    namespace filesystem = std::experimental::filesystem;
+}
 #endif
 
 #include <map>
@@ -41,8 +43,8 @@ class Typed_cache : public Cache {
     T* load(std::string const& filename, memory::Variant_map const& options, Manager& manager,
             std::string& resolved_name) noexcept;
 
-    T* load(std::string const& name, void const* data, std::string_view mount_folder,
-            std::string source_name, memory::Variant_map const& options, Manager& manager) noexcept;
+    T* load(std::string const& name, void const* data, std::string const& source_name,
+            memory::Variant_map const& options, Manager& manager) noexcept;
 
     T* get(std::string const& filename, memory::Variant_map const& options) noexcept;
 

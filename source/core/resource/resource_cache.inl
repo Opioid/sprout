@@ -61,12 +61,11 @@ T* Typed_cache<T>::load(std::string const& filename, memory::Variant_map const& 
 }
 
 template <typename T>
-T* Typed_cache<T>::load(std::string const& name, void const* data, std::string_view mount_folder,
-                        std::string source_name, memory::Variant_map const& options,
-                        Manager& manager) noexcept {
+T* Typed_cache<T>::load(std::string const& name, void const* data, std::string const& source_name,
+                        memory::Variant_map const& options, Manager& manager) noexcept {
     auto const key = std::make_pair(name, options);
 
-    auto resource = provider_.load(data, mount_folder, options, manager);
+    auto resource = provider_.load(data, source_name, options, manager);
     if (!resource) {
         return nullptr;
     }

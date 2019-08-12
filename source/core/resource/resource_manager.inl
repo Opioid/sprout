@@ -54,8 +54,8 @@ T* Manager::load(std::string const& filename, Variant_map const& options,
 }
 
 template <typename T>
-T* Manager::load(std::string const& name, void const* data, std::string_view mount_folder,
-                 std::string source_name, Variant_map const& options) noexcept {
+T* Manager::load(std::string const& name, void const* data, std::string const& source_name,
+                 Variant_map const& options) noexcept {
     if (name.empty()) {
         return nullptr;
     }
@@ -67,7 +67,7 @@ T* Manager::load(std::string const& name, void const* data, std::string_view mou
         return nullptr;
     }
 
-    return cache->load(name, data, mount_folder, source_name, options, *this);
+    return cache->load(name, data, source_name, options, *this);
 }
 
 template <typename T>

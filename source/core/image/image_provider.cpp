@@ -69,7 +69,7 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
     return nullptr;
 }
 
-Image* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
+Image* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
                       Variant_map const& /*options*/, resource::Manager& /*manager*/) noexcept {
     return nullptr;
 }

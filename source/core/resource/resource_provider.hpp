@@ -23,7 +23,7 @@ class Provider {
     virtual T* load(std::string const& filename, Variant_map const& options, Manager& manager,
                     std::string& resolved_name) noexcept = 0;
 
-    virtual T* load(void const* data, std::string_view mount_folder, Variant_map const& options,
+    virtual T* load(void const* data, std::string const& source_name, Variant_map const& options,
                     Manager& manager) noexcept = 0;
 
     virtual size_t num_bytes() const noexcept = 0;

@@ -145,7 +145,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
     return mesh;
 }
 
-Shape* Provider::load(void const* /*data*/, std::string_view /*mount_folder*/,
+Shape* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
                       memory::Variant_map const& /*options*/,
                       resource::Manager& /*manager*/) noexcept {
     return nullptr;
