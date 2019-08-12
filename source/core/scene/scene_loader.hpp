@@ -86,6 +86,8 @@ class Loader {
     struct Local_materials {
         std::string source_name;
 
+        std::string_view mount_folder;
+
         std::map<std::string, json::Value const*> materials;
     };
 
@@ -93,18 +95,17 @@ class Loader {
               Scene& scene) noexcept;
 
     void read_materials(json::Value const& materials_value, std::string const& source_name,
-                        Local_materials& local_materials) const noexcept;
+                        std::string_view mount_folder, Local_materials& local_materials) const
+        noexcept;
 
     void load_entities(json::Value const& entities_value, uint32_t parent_id,
-                       std::string_view mount_folder, Local_materials const& local_materials,
-                       Scene& scene) noexcept;
+                       Local_materials const& local_materials, Scene& scene) noexcept;
 
     static void set_visibility(uint32_t prop, json::Value const& visibility_value,
                                Scene& scene) noexcept;
 
     uint32_t load_prop(json::Value const& prop_value, std::string const& name,
-                       std::string_view mount_folder, Local_materials const& local_materials,
-                       Scene& scene) noexcept;
+                       Local_materials const& local_materials, Scene& scene) noexcept;
 
     uint32_t load_extension(std::string const& type, json::Value const& extension_value,
                             std::string const& name, Scene& scene) noexcept;
@@ -113,12 +114,11 @@ class Loader {
 
     Shape* shape(std::string const& type, json::Value const& shape_value) const noexcept;
 
-    void load_materials(json::Value const& materials_value, std::string_view mount_folder,
-                        Local_materials const& local_materials, Scene& scene,
-                        Materials& materials) const noexcept;
+    void load_materials(json::Value const& materials_value, Local_materials const& local_materials,
+                        Scene& scene, Materials& materials) const noexcept;
 
-    Material* load_material(std::string const& name, std::string_view mount_folder,
-                            Local_materials const& local_materials, Scene& scene) const noexcept;
+    Material* load_material(std::string const& name, Local_materials const& local_materials,
+                            Scene& scene) const noexcept;
 
     resource::Manager& resource_manager_;
 

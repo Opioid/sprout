@@ -155,14 +155,14 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 
     if (auto const materials_node = root->FindMember("materials");
         root->MemberEnd() != materials_node) {
-        read_materials(materials_node->value, resolved_name, local_materials);
+        read_materials(materials_node->value, resolved_name, mount_folder, local_materials);
     }
 
     filesystem.push_mount(mount_folder);
 
     for (auto const& n : root->GetObject()) {
         if ("entities" == n.name) {
-            load_entities(n.value, parent_id, mount_folder, local_materials, scene);
+            load_entities(n.value, parent_id, local_materials, scene);
         }
     }
 
@@ -172,12 +172,14 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 }
 
 void Loader::read_materials(json::Value const& materials_value, std::string const& source_name,
-                            Local_materials& local_materials) const noexcept {
+                            std::string_view mount_folder, Local_materials& local_materials) const
+    noexcept {
     if (!materials_value.IsArray()) {
         return;
     }
 
-    local_materials.source_name = source_name;
+    local_materials.source_name  = source_name;
+    local_materials.mount_folder = mount_folder;
 
     for (auto const& m : materials_value.GetArray()) {
         auto const name_node = m.FindMember("name");
@@ -192,8 +194,7 @@ void Loader::read_materials(json::Value const& materials_value, std::string cons
 }
 
 void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id,
-                           std::string_view mount_folder, Local_materials const& local_materials,
-                           Scene& scene) noexcept {
+                           Local_materials const& local_materials, Scene& scene) noexcept {
     if (!entities_value.IsArray()) {
         return;
     }
@@ -218,7 +219,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         uint32_t entity_id = prop::Null;
 
         if ("Light" == type_name) {
-            uint32_t const prop_id = load_prop(e, name, mount_folder, local_materials, scene);
+            uint32_t const prop_id = load_prop(e, name, local_materials, scene);
 
             if (prop::Null != prop_id && scene.prop(prop_id)->visible_in_reflection()) {
                 create_light(prop_id, scene);
@@ -226,7 +227,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
             entity_id = prop_id;
         } else if ("Prop" == type_name) {
-            uint32_t const prop_id = load_prop(e, name, mount_folder, local_materials, scene);
+            uint32_t const prop_id = load_prop(e, name, local_materials, scene);
 
             entity_id = prop_id;
         } else if ("Dummy" == type_name) {
@@ -285,7 +286,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (children) {
-            load_entities(*children, entity_id, mount_folder, local_materials, scene);
+            load_entities(*children, entity_id, local_materials, scene);
         }
     }
 }
@@ -310,8 +311,7 @@ void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value,
 }
 
 uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
-                           std::string_view mount_folder, Local_materials const& local_materials,
-                           Scene& scene) noexcept {
+                           Local_materials const& local_materials, Scene& scene) noexcept {
     logging::verbose("Loading prop...");
 
     Shape* shape = nullptr;
@@ -338,7 +338,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
     materials.reserve(shape->num_parts());
 
     if (materials_value) {
-        load_materials(*materials_value, mount_folder, local_materials, scene, materials);
+        load_materials(*materials_value, local_materials, scene, materials);
     }
 
     if (1 == materials.size() && 1.f == materials[0]->ior()) {
@@ -418,7 +418,7 @@ Scene::Shape* Loader::shape(std::string const& type, json::Value const& shape_va
     return nullptr;
 }
 
-void Loader::load_materials(json::Value const& materials_value, std::string_view mount_folder,
+void Loader::load_materials(json::Value const&     materials_value,
                             Local_materials const& local_materials, Scene& scene,
                             Materials& materials) const noexcept {
     if (!materials_value.IsArray()) {
@@ -426,7 +426,7 @@ void Loader::load_materials(json::Value const& materials_value, std::string_view
     }
 
     for (auto const& m : materials_value.GetArray()) {
-        materials.push_back(load_material(m.GetString(), mount_folder, local_materials, scene));
+        materials.push_back(load_material(m.GetString(), local_materials, scene));
 
         if (materials.full()) {
             break;
@@ -434,7 +434,7 @@ void Loader::load_materials(json::Value const& materials_value, std::string_view
     }
 }
 
-material::Material* Loader::load_material(std::string const& name, std::string_view mount_folder,
+material::Material* Loader::load_material(std::string const&     name,
                                           Local_materials const& local_materials,
                                           Scene&                 scene) const noexcept {
     // First, check if we maybe already have cached the material.
@@ -447,8 +447,8 @@ material::Material* Loader::load_material(std::string const& name, std::string_v
         local_materials.materials.end() != material_node) {
         void const* data = reinterpret_cast<void const*>(material_node->second);
 
-        if (auto material = resource_manager_.load<material::Material>(name, data, mount_folder,
-                                                                       local_materials.source_name);
+        if (auto material = resource_manager_.load<material::Material>(
+                name, data, local_materials.mount_folder, local_materials.source_name);
             material) {
             if (material->is_animated()) {
                 scene.add_material(material);
