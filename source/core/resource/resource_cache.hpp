@@ -8,7 +8,7 @@
 #else
 #include <experimental/filesystem>
 namespace std {
-    namespace filesystem = std::experimental::filesystem;
+namespace filesystem = std::experimental::filesystem;
 }
 #endif
 
@@ -67,7 +67,9 @@ class Typed_cache : public Cache {
 
     Provider<T>& provider_;
 
-    std::map<std::pair<std::string, memory::Variant_map>, Entry> resources_;
+    using Key = std::pair<std::string, memory::Variant_map>;
+
+    std::map<Key, Entry> resources_;
 };
 
 }  // namespace resource

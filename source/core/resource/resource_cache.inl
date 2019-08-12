@@ -70,8 +70,9 @@ T* Typed_cache<T>::load(std::string const& name, void const* data, std::string c
         return nullptr;
     }
 
-    resources_.insert_or_assign(
-        key, Entry{resource, source_name, generation_, std::filesystem::file_time_type()});
+    auto const last_write = std::filesystem::last_write_time(source_name);
+
+    resources_.insert_or_assign(key, Entry{resource, source_name, generation_, last_write});
 
     return resource;
 }
@@ -121,8 +122,7 @@ bool Typed_cache<T>::is_up_to_date(Entry const& entry) const noexcept {
         return true;
     }
 
-    auto const last_write = std::filesystem::last_write_time(entry.source_name);
-    if (last_write == entry.last_write) {
+    if (std::filesystem::last_write_time(entry.source_name) == entry.last_write) {
         return true;
     }
 
