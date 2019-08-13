@@ -15,7 +15,18 @@
 #include "base/debug/assert.hpp"
 #include "scene/material/material_test.hpp"
 
+#include <iostream>
+
 namespace scene::material::ggx {
+
+#include "ggx_energy_preservation.inl"
+
+static inline float lookup_e(float alpha, float n_dot_wo) noexcept {
+    uint32_t const a = std::min(static_cast<uint32_t>(alpha * E_scale), E_max);
+    uint32_t const b = std::min(static_cast<uint32_t>(n_dot_wo * E_scale), E_max);
+
+    return E[a][b];
+}
 
 float constexpr Min_roughness = 0.01314f;
 

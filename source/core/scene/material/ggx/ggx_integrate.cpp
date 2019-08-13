@@ -71,7 +71,7 @@ float f_ss(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h, float 
     float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
     //   float const f = fresnel::schlick(wo_dot_h, 1.f);
 
-    return d * g[0];  // * f;
+    return n_dot_wi * d * g[0];  // * f;
 }
 
 float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
@@ -110,57 +110,54 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
 void integrate() noexcept {
     std::cout << "random integrate: " << integrate_f_ss(1.f, 0.5f, 1024) << std::endl;
 
-    uint32_t constexpr Num_samples = 32;
+    uint32_t constexpr Num_samples = 16;
 
     std::ofstream stream("../source/core/scene/material/ggx/ggx_energy_preservation.inl");
 
-    stream << "#ifndef SU_CORE_SCENE_MATERIAL_GGX_ENERGY_PRESERVATION_INL" << std::endl;
-    stream << "#define SU_CORE_SCENE_MATERIAL_GGX_ENERGY_PRESERVATION_INL" << std::endl;
+    stream << "uint32_t constexpr E_max = " << Num_samples - 1 << ";\n\n";
 
-    stream << std::endl;
+    stream << "float constexpr E_scale = " << Num_samples << ".f;\n\n";
 
-    stream << "namespace scene::material::ggx {" << std::endl;
-
-    stream << std::endl;
-
-    stream << "float constexpr E[] = {" << std::endl;
-
-    stream << "\t// alpha 1.0" << std::endl;
-    stream << "\t";
+    stream << "float constexpr E[" << Num_samples << "][" << Num_samples << "] = {\n";
 
     float constexpr step = 1.f / static_cast<float>(Num_samples);
 
-    float n_dot_wo = 0.5f * step;
+    float alpha = 0.5f * step;
 
-    for (uint32_t i = 0; i < Num_samples; ++i) {
-        std::cout << n_dot_wo << std::endl;
+    for (uint32_t a = 0; a < Num_samples; ++a) {
+        stream << "\t// alpha " << alpha << std::endl;
+        stream << "\t{\n\t\t";
 
-        float const e = integrate_f_ss(1.f, n_dot_wo, 1024);
+        float n_dot_wo = 0.5f * step;
 
-        stream << e << "f";
+        for (uint32_t i = 0; i < Num_samples; ++i) {
+            float const e = integrate_f_ss(alpha, n_dot_wo, 1024);
 
-        if (i < Num_samples - 1) {
-            stream << ", ";
+            stream << e << "f";
+
+            if (i < Num_samples - 1) {
+                stream << ", ";
+
+                if (i > 0 && 0 == ((i + 1) % 8)) {
+                    stream << "\n\t\t";
+                }
+
+                n_dot_wo += step;
+            } else {
+                stream << "\n\t}";
+            }
+        }
+
+        if (a < Num_samples - 1) {
+            stream << ",\n\n";
         } else {
-            stream << std::endl;
+            stream << "\n";
         }
 
-        if (i > 0 && 0 == ((i + 1) % 8)) {
-            stream << "\n\t";
-        }
-
-        n_dot_wo += step;
+        alpha += step;
     }
 
     stream << "};" << std::endl;
-
-    stream << std::endl;
-
-    stream << "}" << std::endl;
-
-    stream << std::endl;
-
-    stream << "#endif" << std::endl;
 }
 
 }  // namespace scene::material::ggx
