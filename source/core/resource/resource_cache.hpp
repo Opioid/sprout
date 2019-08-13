@@ -3,15 +3,7 @@
 
 #include "resource_provider.hpp"
 
-#ifdef _WIN32
 #include <filesystem>
-#else
-#include <experimental/filesystem>
-namespace std {
-namespace filesystem = std::experimental::filesystem;
-}
-#endif
-
 #include <map>
 #include <string>
 #include <utility>
