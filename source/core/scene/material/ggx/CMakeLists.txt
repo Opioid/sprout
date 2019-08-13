@@ -1,6 +1,8 @@
 target_sources(core
-  PRIVATE
-  "ggx_test.hpp"
-  "ggx.hpp"
-  "ggx.inl"
-) 
+    PRIVATE
+    "ggx.hpp"
+    "ggx.inl"
+    "ggx_integrate.cpp"
+    "ggx_integrate.hpp"
+    "ggx_test.hpp"
+    )
