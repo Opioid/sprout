@@ -56,7 +56,7 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
 void integrate() noexcept {
     uint32_t constexpr Num_samples = 32;
 
-    std::ofstream stream("../source/core/scene/material/ggx/ggx_energy_preservation.inl");
+    std::ofstream stream("../source/core/scene/material/ggx/ggx_integral.inl");
 
     stream.precision(6);
     stream << std::fixed;

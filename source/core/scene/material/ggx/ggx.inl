@@ -17,7 +17,7 @@
 
 namespace scene::material::ggx {
 
-#include "ggx_energy_preservation.inl"
+#include "ggx_integral.inl"
 
 static inline float lookup_e(float alpha, float n_dot_wo) noexcept {
     uint32_t const a = std::min(static_cast<uint32_t>(alpha * E_scale), E_max);
