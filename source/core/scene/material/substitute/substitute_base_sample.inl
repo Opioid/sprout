@@ -60,15 +60,13 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
     }
 
     float const n_dot_h = saturate(layer.n_dot(h));
-    /*
-        //   fresnel::Schlick const schlick(f0_);
-        fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-        auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                    ls);
-                                                    */
+    fresnel::Schlick const schlick(f0_);
+    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, f0_);
+    auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick);
+
+    ggx.reflection *= ggx::filament_ep(f0_, n_dot_wo, alpha_);
 
     float const pdf = 0.5f * (d.pdf + ggx.pdf);
 
@@ -97,14 +95,13 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
     float const n_dot_h = saturate(layer.n_dot(h));
 
-    /*
-    //  fresnel::Schlick const schlick(f0_);
-    fresnel::Lazanyi_schlick const ls(f0_, a_);
+    fresnel::Schlick const schlick(f0_);
+    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                 ls);
-    */
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, f0_);
+    auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick);
+
+    ggx.reflection *= ggx::filament_ep(f0_, n_dot_wo, alpha_);
+    ;
 
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
@@ -131,11 +128,13 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
     float const n_dot_h = saturate(layer.n_dot(result.h));
 
-    //  fresnel::Schlick const schlick(f0_);
-    fresnel::Lazanyi_schlick const ls(f0_, a_);
+    fresnel::Schlick const schlick(f0_);
+    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h,
-                                                alpha_, /*schlick*/ ls);
+    auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h, alpha_,
+                                          schlick);
+
+    ggx.reflection *= ggx::filament_ep(f0_, n_dot_wo, alpha_);
 
     result.reflection = n_dot_wi * (result.reflection + ggx.reflection);
     result.pdf        = 0.5f * (result.pdf + ggx.pdf);
@@ -146,11 +145,13 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
                                          bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    //   fresnel::Schlick const schlick(f0_);
-    fresnel::Lazanyi_schlick const ls(f0_, a_);
+    fresnel::Schlick const schlick(f0_);
+    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, /*schlick*/ ls,
-                                                   sampler, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
+                                                   result);
+
+    result.reflection *= ggx::filament_ep(f0_, n_dot_wo, alpha_);
 
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
 
@@ -164,12 +165,14 @@ void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, Layer const& lay
     noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    //   fresnel::Schlick const schlick(f0_);
-    fresnel::Lazanyi_schlick const ls(f0_, a_);
+    fresnel::Schlick const schlick(f0_);
+    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, /*schlick*/ ls,
-                                                   sampler, result);
-    result.reflection *= n_dot_wi;
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
+                                                   result);
+
+    result.reflection *= n_dot_wi * ggx::filament_ep(f0_, n_dot_wo, alpha_);
+    ;
 }
 
 template <typename Diffuse>

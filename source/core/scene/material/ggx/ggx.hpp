@@ -24,19 +24,6 @@ using Sampler = sampler::Sampler;
 
 class Isotropic {
   public:
-    static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, float3 const& f0) noexcept;
-
-    static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, float3 const& f0, float3& fresnel_result) noexcept;
-
-    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         float3 const& f0, Sampler& sampler, bxdf::Sample& result) noexcept;
-
-    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         float3 const& f0, Sampler& sampler, float3& fresnel_result,
-                         bxdf::Sample& result) noexcept;
-
     template <typename Fresnel>
     static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
                                    float alpha, Fresnel const& fresnel) noexcept;

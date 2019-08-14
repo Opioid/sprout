@@ -37,49 +37,51 @@ void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) noexcept {
 
     // vertical
 
-    pool.run_range([&target, d, this ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-        for (int32_t y = begin; y < end; ++y) {
-            for (int32_t x = 0; x < d[0]; ++x) {
-                T     accum(0.f);
-                float weight_sum = 0.f;
-                for (auto k : kernel_) {
-                    int32_t kx = x + k.o;
+    pool.run_range(
+        [&target, d, this ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t y = begin; y < end; ++y) {
+                for (int32_t x = 0; x < d[0]; ++x) {
+                    T     accum(0.f);
+                    float weight_sum = 0.f;
+                    for (auto k : kernel_) {
+                        int32_t kx = x + k.o;
 
-                    if (kx >= 0 && kx < d[0]) {
-                        T v = target.load(kx, y);
-                        accum += k.w * v;
-                        weight_sum += k.w;
+                        if (kx >= 0 && kx < d[0]) {
+                            T v = target.load(kx, y);
+                            accum += k.w * v;
+                            weight_sum += k.w;
+                        }
                     }
-                }
 
-                scratch_.store(x, y, accum / weight_sum);
+                    scratch_.store(x, y, accum / weight_sum);
+                }
             }
-        }
-    },
-                   0, d[1]);
+        },
+        0, d[1]);
 
     // horizontal
 
-    pool.run_range([&target, d, this ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-        for (int32_t y = begin; y < end; ++y) {
-            for (int32_t x = 0; x < d[0]; ++x) {
-                T     accum(0.f);
-                float weight_sum = 0.f;
-                for (auto k : kernel_) {
-                    int32_t ky = y + k.o;
+    pool.run_range(
+        [&target, d, this ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t y = begin; y < end; ++y) {
+                for (int32_t x = 0; x < d[0]; ++x) {
+                    T     accum(0.f);
+                    float weight_sum = 0.f;
+                    for (auto k : kernel_) {
+                        int32_t ky = y + k.o;
 
-                    if (ky >= 0 && ky < d[1]) {
-                        T v = scratch_.load(x, ky);
-                        accum += k.w * v;
-                        weight_sum += k.w;
+                        if (ky >= 0 && ky < d[1]) {
+                            T v = scratch_.load(x, ky);
+                            accum += k.w * v;
+                            weight_sum += k.w;
+                        }
                     }
-                }
 
-                target.store(x, y, accum / weight_sum);
+                    target.store(x, y, accum / weight_sum);
+                }
             }
-        }
-    },
-                   0, d[1]);
+        },
+        0, d[1]);
 }
 
 }  // namespace image::filter
