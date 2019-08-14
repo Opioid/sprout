@@ -26,6 +26,10 @@ static inline float lookup_e(float alpha, float n_dot_wo) noexcept {
     return E[a][b];
 }
 
+static inline float3 filament_ep(float3 const& f0, float n_dot_wo, float alpha) {
+    return 1.f + (1.f / lookup_e(alpha, n_dot_wo) - 1.f) * f0;
+}
+
 float constexpr Min_roughness = 0.01314f;
 
 float constexpr Min_alpha  = Min_roughness * Min_roughness;
@@ -154,11 +158,11 @@ inline bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float 
 
     fresnel_result = f;
 
-    float3 const filament_ep = 1.f + (1.f / lookup_e(alpha, n_dot_wo) - 1.f) * f0;
+    float3 const ep = filament_ep(f0, n_dot_wo, alpha);
 
-    //  float3 const filament_ep(1.f);
+    //  float3 const ep(1.f);
 
-    float3 const reflection = (d * g[0]) * (f * filament_ep);
+    float3 const reflection = (d * g[0]) * (f * ep);
 
     float const pdf = pdf_visible(d, g[1]);
 
