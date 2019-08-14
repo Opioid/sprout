@@ -1,6 +1,6 @@
 #include "sensor_gaussian.hpp"
 #include "base/math/filter/gaussian.hpp"
-#include "base/math/interpolated_function.inl"
+#include "base/math/interpolated_function_1d.inl"
 #include "math/vector3.inl"
 
 namespace rendering::sensor::filter {

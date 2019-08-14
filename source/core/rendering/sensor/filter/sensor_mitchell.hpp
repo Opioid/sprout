@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_FILTER_MITCHELL_HPP
 #define SU_CORE_RENDERING_SENSOR_FILTER_MITCHELL_HPP
 
-#include "base/math/interpolated_function.hpp"
+#include "base/math/interpolated_function_1d.hpp"
 #include "base/math/vector3.hpp"
 
 namespace rendering::sensor::filter {
@@ -24,7 +24,7 @@ class Mitchell {
     float radius_;
     float radius_inv_;
 
-    Interpolated_function<float> mitchell_;
+    Interpolated_function_1D<float> mitchell_;
 };
 
 }  // namespace rendering::sensor::filter

@@ -1,7 +1,7 @@
 #ifndef SU_EXTENSION_PROCEDURAL_SKY_SUN_MATERIAL_HPP
 #define SU_EXTENSION_PROCEDURAL_SKY_SUN_MATERIAL_HPP
 
-#include "base/math/interpolated_function.hpp"
+#include "base/math/interpolated_function_1d.hpp"
 #include "sky_material_base.hpp"
 
 namespace procedural::sky {
@@ -48,7 +48,7 @@ class Sun_baked_material : public Material {
     size_t num_bytes() const noexcept override final;
 
   private:
-    math::Interpolated_function<float3> emission_;
+    math::Interpolated_function_1D<float3> emission_;
 };
 
 }  // namespace procedural::sky

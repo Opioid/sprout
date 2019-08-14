@@ -1,17 +1,17 @@
-#ifndef SU_BASE_MATH_INTERPOLATED_FUNCTION_INL
-#define SU_BASE_MATH_INTERPOLATED_FUNCTION_INL
+#ifndef SU_BASE_MATH_INTERPOLATED_FUNCTION_1D_INL
+#define SU_BASE_MATH_INTERPOLATED_FUNCTION_1D_INL
 
-#include "interpolated_function.hpp"
+#include "interpolated_function_1d.hpp"
 #include "math/math.hpp"
 #include "memory/align.hpp"
 
 namespace math {
 
 template <typename T>
-Interpolated_function<T>::Interpolated_function() noexcept {}
+Interpolated_function_1D<T>::Interpolated_function_1D() noexcept {}
 
 template <typename T>
-Interpolated_function<T>::Interpolated_function(Interpolated_function&& other) noexcept
+Interpolated_function_1D<T>::Interpolated_function_1D(Interpolated_function_1D&& other) noexcept
     : range_end_(other.range_end_),
       inverse_interval_(other.inverse_interval_),
       num_samples_(other.num_samples_),
@@ -21,8 +21,8 @@ Interpolated_function<T>::Interpolated_function(Interpolated_function&& other) n
 
 template <typename T>
 template <typename F>
-Interpolated_function<T>::Interpolated_function(float range_begin, float range_end,
-                                                size_t num_samples, F f) noexcept
+Interpolated_function_1D<T>::Interpolated_function_1D(float range_begin, float range_end,
+													  uint32_t num_samples, F f) noexcept
     : range_end_(range_end),
       num_samples_(num_samples),
       samples_(memory::allocate_aligned<T>(num_samples)) {
@@ -39,13 +39,13 @@ Interpolated_function<T>::Interpolated_function(float range_begin, float range_e
 }
 
 template <typename T>
-Interpolated_function<T>::~Interpolated_function() noexcept {
+Interpolated_function_1D<T>::~Interpolated_function_1D() noexcept {
     memory::free_aligned(samples_);
 }
 
 template <typename T>
-void Interpolated_function<T>::from_array(float range_begin, float range_end, size_t num_samples,
-                                          T const t[]) noexcept {
+void Interpolated_function_1D<T>::from_array(float range_begin, float range_end, uint32_t num_samples,
+                                             T const t[]) noexcept {
     if (num_samples_ != num_samples) {
         memory::free_aligned(samples_);
 
@@ -62,20 +62,20 @@ void Interpolated_function<T>::from_array(float range_begin, float range_end, si
 
     inverse_interval_ = 1.f / interval;
 
-    for (size_t i = 0; i < num_samples; ++i) {
+	for (uint32_t i = 0; i < num_samples; ++i) {
         samples_[i] = t[i];
     }
 }
 
 template <typename T>
-void Interpolated_function<T>::scale(T s) noexcept {
-    for (size_t i = 0, len = num_samples_; i < len; ++i) {
+void Interpolated_function_1D<T>::scale(T s) noexcept {
+	for (uint32_t i = 0, len = num_samples_; i < len; ++i) {
         samples_[i] *= s;
     }
 }
 
 template <typename T>
-T Interpolated_function<T>::operator()(float x) const noexcept {
+T Interpolated_function_1D<T>::operator()(float x) const noexcept {
     x = std::min(x, range_end_);
 
     float const o = x * inverse_interval_;
