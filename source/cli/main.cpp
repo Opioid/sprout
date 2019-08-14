@@ -40,12 +40,17 @@
 //#include "core/testing/testing_size.hpp"
 //#include "core/testing/testing_spectrum.hpp"
 //#include "core/sampler/sampler_test.hpp"
+//#include "core/scene/material/ggx/ggx_integrate.hpp"
 
 static void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
                                    scene::Loader const& loader, scene::Scene const& scene,
                                    size_t rendering_num_bytes) noexcept;
 
 static bool is_json(std::string const& text) noexcept;
+
+using time_point = std::chrono::high_resolution_clock::time_point;
+
+static std::string str_seconds_since(time_point point) noexcept;
 
 int main(int argc, char* argv[]) noexcept {
     //	scene::material::substitute::testing::test();
@@ -63,6 +68,8 @@ int main(int argc, char* argv[]) noexcept {
     //	testing::spectrum();
     //	testing::cdf::test_1D();
     //  sampler::testing::test();
+
+    //  scene::material::ggx::integrate();
 
     //  return 1;
 
@@ -141,62 +148,64 @@ int main(int argc, char* argv[]) noexcept {
         take.clear();
         scene.clear();
 
+        bool success = true;
+
         {
             auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
                                              : file_system.read_stream(args.take, take_name);
 
             if (!stream || !take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
                 logging::error("Loading take %S: ", args.take);
-                continue;
+                success = false;
             }
         }
 
-        if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
+        if (success && !scene_loader.load(take.scene_filename, take_name, take, scene)) {
             logging::error("Loading scene %S: ", take.scene_filename);
-            continue;
+            success = false;
         }
 
-        std::string const str_loading = string::to_string(chrono::seconds_since(loading_start));
-        logging::info("Loading time " + str_loading + " s");
+        if (success) {
+            logging::info("Loading time " + str_seconds_since(loading_start) + " s");
 
-        logging::info("Rendering...");
+            logging::info("Rendering...");
 
-        size_t rendering_num_bytes = 0;
+            size_t rendering_num_bytes = 0;
 
-        if (args.progressive) {
-            rendering_num_bytes = controller::progressive(take, scene, resource_manager,
-                                                          thread_pool, max_sample_size);
-        } else {
-            progress::Std_out progressor;
-
-            auto const rendering_start = std::chrono::high_resolution_clock::now();
-
-            if (take.view.camera) {
-                rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size,
-                                                    progressor);
-
-                rendering_num_bytes += driver.num_bytes();
-
-                driver.render(take.exporters);
+            if (args.progressive) {
+                rendering_num_bytes = controller::progressive(take, scene, resource_manager,
+                                                              thread_pool, max_sample_size);
             } else {
-                //			baking::Driver
-                // driver(take->surface_integrator_factory,
-                //								  take->volume_integrator_factory,
-                //								  take->sampler_factory);
+                progress::Std_out progressor;
 
-                //			driver.render(scene, take->view, thread_pool,
-                //*take->exporter, progressor);
-                logging::error("No camera specified.");
+                auto const rendering_start = std::chrono::high_resolution_clock::now();
+
+                if (take.view.camera) {
+                    rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size,
+                                                        progressor);
+
+                    rendering_num_bytes += driver.num_bytes();
+
+                    driver.render(take.exporters);
+                } else {
+                    //			baking::Driver
+                    // driver(take->surface_integrator_factory,
+                    //								  take->volume_integrator_factory,
+                    //								  take->sampler_factory);
+
+                    //			driver.render(scene, take->view, thread_pool,
+                    //*take->exporter, progressor);
+                    logging::error("No camera specified.");
+                }
+
+                logging::info("Total render time " + str_seconds_since(rendering_start) + " s");
+
+                logging::info("Total elapsed time " + str_seconds_since(loading_start) + " s");
             }
 
-            std::string const str_rend = string::to_string(chrono::seconds_since(rendering_start));
-            logging::info("Total render time " + str_rend + " s");
-
-            std::string const str_total = string::to_string(chrono::seconds_since(loading_start));
-            logging::info("Total elapsed time " + str_total + " s");
+            log_memory_consumption(resource_manager, take, scene_loader, scene,
+                                   rendering_num_bytes);
         }
-
-        log_memory_consumption(resource_manager, take, scene_loader, scene, rendering_num_bytes);
 
         if (args.quit) {
             break;
@@ -254,4 +263,8 @@ bool is_json(std::string const& text) noexcept {
     }
 
     return false;
+}
+
+std::string str_seconds_since(time_point point) noexcept {
+    return string::to_string(chrono::seconds_since(point));
 }
