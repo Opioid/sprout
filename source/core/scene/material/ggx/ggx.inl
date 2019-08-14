@@ -20,17 +20,11 @@ namespace scene::material::ggx {
 
 #include "ggx_integral.inl"
 
-Interpolated_function_2D<float> const E_tex(float2(0.f), float2(1.f), uint2(E_max + 1), &E[0][0]);
-
-static inline float lookup_e(float alpha, float n_dot_wo) noexcept {
-    uint32_t const a = std::min(static_cast<uint32_t>(alpha * E_scale), E_max);
-    uint32_t const b = std::min(static_cast<uint32_t>(n_dot_wo * E_scale), E_max);
-
-    return E[a][b];
-}
+Interpolated_function_2D<float> const E_tex(float2(0.f), float2(1.f), uint2(E_size), &E[0][0]);
 
 static inline float3 filament_ep(float3 const& f0, float n_dot_wo, float alpha) {
-    return 1.f + (1.f / lookup_e(alpha, n_dot_wo) - 1.f) * f0;
+    return float3(1.);
+//    return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
 }
 
 float constexpr Min_roughness = 0.01314f;

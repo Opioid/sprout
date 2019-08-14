@@ -1,7 +1,7 @@
 #include "ggx_integrate.hpp"
 #include "base/math/sample_distribution.inl"
 #include "ggx.inl"
-
+#include "scene/material/material_sample.inl"
 #include "image/encoding/png/png_writer.hpp"
 
 #include <fstream>
@@ -61,15 +61,13 @@ void integrate() noexcept {
     stream.precision(6);
     stream << std::fixed;
 
-    stream << "uint32_t constexpr E_max = " << Num_samples - 1 << ";\n\n";
-
-    stream << "float constexpr E_scale = " << Num_samples << ".f;\n\n";
+    stream << "uint32_t constexpr E_size = " << Num_samples << ";\n\n";
 
     stream << "float constexpr E[" << Num_samples << "][" << Num_samples << "] = {\n";
 
-    float constexpr step = 1.f / static_cast<float>(Num_samples);
+    float constexpr step = 1.f / static_cast<float>(Num_samples - 1);
 
-    float alpha = /*0.f;//*/ 0.5f * step;
+    float alpha = 0.f;
 
     for (uint32_t a = 0; a < Num_samples; ++a) {
         stream << "\t// alpha " << alpha << std::endl;

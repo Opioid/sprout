@@ -85,8 +85,8 @@ T Interpolated_function_2D<T>::operator()(float x, float y) const noexcept {
     uint32_t i00 = offset[0] + row;
     uint32_t i10 = std::min(offset[0] + 1, back_[0]) + row;
 
-    std::cout << offset[0] << ", " << offset[1] << std::endl;
-    std::cout << samples_[i00] << ", " << samples_[i10] << std::endl;
+ //   std::cout << offset[0] << ", " << offset[1] << std::endl;
+ //   std::cout << samples_[i00] << ", " << samples_[i10] << std::endl;
 
     return lerp(samples_[i00], samples_[i10], t[0]);
 
