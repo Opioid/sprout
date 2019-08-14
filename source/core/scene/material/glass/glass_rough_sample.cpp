@@ -41,8 +41,10 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
     IoR const ior = ior_.swapped(same_side);
 
+    float2 const xi = sampler.generate_sample_2D();
+
     float        n_dot_h;
-    float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, sampler, n_dot_h);
+    float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 

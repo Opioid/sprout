@@ -24,6 +24,19 @@ using Sampler = sampler::Sampler;
 
 class Isotropic {
   public:
+    static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+                                   float alpha, float3 const& f0) noexcept;
+
+    static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+                                   float alpha, float3 const& f0, float3& fresnel_result) noexcept;
+
+    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
+                         float3 const& f0, Sampler& sampler, bxdf::Sample& result) noexcept;
+
+    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
+                         float3 const& f0, Sampler& sampler, float3& fresnel_result,
+                         bxdf::Sample& result) noexcept;
+
     template <typename Fresnel>
     static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
                                    float alpha, Fresnel const& fresnel) noexcept;
@@ -52,8 +65,8 @@ class Isotropic {
                          IoR const& ior, Fresnel const& fresnel, Sampler& sampler,
                          bxdf::Sample& result) noexcept;
 
-    static float3 sample(float3 const& wo, Layer const& layer, float alpha,
-                         sampler::Sampler& sampler, float& n_dot_h) noexcept;
+    static float3 sample(float3 const& wo, Layer const& layer, float alpha, float2 xi,
+                         float& n_dot_h) noexcept;
 
     static float reflect(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
                          float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,

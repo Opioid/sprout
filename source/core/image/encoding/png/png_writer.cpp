@@ -119,7 +119,8 @@ bool Writer::write(std::string_view name, Byte1 const& image) {
     return true;
 }
 
-bool Writer::write(std::string_view name, float const* data, int2 dimensions, float scale) {
+bool Writer::write(std::string_view name, float const* data, int2 dimensions, float scale,
+                   bool srgb) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -129,7 +130,13 @@ bool Writer::write(std::string_view name, float const* data, int2 dimensions, fl
     uint8_t*       bytes = memory::allocate_aligned<uint8_t>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
-        bytes[i] = static_cast<uint8_t>(scale * data[i]);
+        float scaled = scale * data[i];
+
+        if (srgb) {
+            scaled = spectrum::linear_to_gamma_sRGB(scaled);
+        }
+
+        bytes[i] = ::encoding::float_to_unorm(scaled);
     }
 
     size_t buffer_len = 0;

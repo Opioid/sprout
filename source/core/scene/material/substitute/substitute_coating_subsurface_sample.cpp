@@ -65,8 +65,10 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
 
         IoR const ior = ior_.swapped();
 
+        float2 const xi = sampler.generate_sample_2D();
+
         float        n_dot_h;
-        float3 const h = ggx::Isotropic::sample(wo_, layer, base_.alpha_, sampler, n_dot_h);
+        float3 const h = ggx::Isotropic::sample(wo_, layer, base_.alpha_, xi, n_dot_h);
 
         float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 

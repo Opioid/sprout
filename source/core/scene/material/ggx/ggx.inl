@@ -15,8 +15,6 @@
 #include "base/debug/assert.hpp"
 #include "scene/material/material_test.hpp"
 
-#include <iostream>
-
 namespace scene::material::ggx {
 
 #include "ggx_energy_preservation.inl"
@@ -139,6 +137,78 @@ static inline float pdf_visible(float d, float g1_wo) noexcept {
     return (0.5f * d) / g1_wo;
 }
 
+inline bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h,
+                                          float n_dot_h, float alpha, float3 const& f0) noexcept {
+    float3 fresnel_result;
+    return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, f0, fresnel_result);
+}
+
+inline bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h,
+                                          float n_dot_h, float alpha, float3 const& f0,
+                                          float3& fresnel_result) noexcept {
+    float const alpha2 = alpha * alpha;
+
+    float const  d = distribution_isotropic(n_dot_h, alpha2);
+    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    float3 const f = fresnel::schlick(wo_dot_h, f0);
+
+    fresnel_result = f;
+
+    float3 const filament_ep = 1.f + (1.f / lookup_e(alpha, n_dot_wo) - 1.f) * f0;
+
+    //  float3 const filament_ep(1.f);
+
+    float3 const reflection = (d * g[0]) * (f * filament_ep);
+
+    float const pdf = pdf_visible(d, g[1]);
+
+    SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf));
+
+    return {reflection, pdf};
+}
+
+inline float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
+                                float3 const& f0, Sampler& sampler, bxdf::Sample& result) noexcept {
+    float3 fresnel_result;
+    return reflect(wo, n_dot_wo, layer, alpha, f0, sampler, fresnel_result, result);
+}
+
+inline float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
+                                float3 const& f0, Sampler& sampler, float3& fresnel_result,
+                                bxdf::Sample& result) noexcept {
+    float2 const xi = sampler.generate_sample_2D();
+
+    float        n_dot_h;
+    float3 const h = sample(wo, layer, alpha, xi, n_dot_h);
+
+    float const wo_dot_h = clamp_dot(wo, h);
+
+    float3 const wi = normalize(2.f * wo_dot_h * h - wo);
+
+    float const n_dot_wi = layer.clamp_n_dot(wi);
+
+    float const alpha2 = alpha * alpha;
+
+    float const  d = distribution_isotropic(n_dot_h, alpha2);
+    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    float3 const f = fresnel::schlick(wo_dot_h, f0);
+
+    fresnel_result = f;
+
+    result.reflection = d * g[0] * f;
+    result.wi         = wi;
+    result.h          = h;
+    result.pdf        = pdf_visible(d, g[1]);
+    result.h_dot_wi   = wo_dot_h;
+    //    result.type.clear(bxdf::Type::Glossy_reflection);
+    result.type.clear(alpha <= Min_alpha ? bxdf::Type::Specular_reflection
+                                         : bxdf::Type::Glossy_reflection);
+
+    SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer));
+
+    return n_dot_wi;
+}
+
 template <typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
                                    float alpha, Fresnel const& fresnel) noexcept {
@@ -178,8 +248,10 @@ template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, Sampler& sampler, float3& fresnel_result,
                          bxdf::Sample& result) noexcept {
+    float2 const xi = sampler.generate_sample_2D();
+
     float        n_dot_h;
-    float3 const h = sample(wo, layer, alpha, sampler, n_dot_h);
+    float3 const h = sample(wo, layer, alpha, xi, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -248,8 +320,10 @@ template <typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          IoR const& ior, Fresnel const& fresnel, Sampler& sampler,
                          bxdf::Sample& result) noexcept {
+    float2 const xi = sampler.generate_sample_2D();
+
     float        n_dot_h;
-    float3 const h = sample(wo, layer, alpha, sampler, n_dot_h);
+    float3 const h = sample(wo, layer, alpha, xi, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -301,10 +375,8 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, f
     return n_dot_wi;
 }
 
-inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alpha,
-                                sampler::Sampler& sampler, float& n_dot_h) noexcept {
-    float2 const xi = sampler.generate_sample_2D();
-
+inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alpha, float2 xi,
+                                float& n_dot_h) noexcept {
     float3 const lwo = layer.world_to_tangent(wo);
 
     // stretch view

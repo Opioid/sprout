@@ -60,12 +60,15 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
     }
 
     float const n_dot_h = saturate(layer.n_dot(h));
+    /*
+        //   fresnel::Schlick const schlick(f0_);
+        fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    //   fresnel::Schlick const schlick(f0_);
-    fresnel::Lazanyi_schlick const ls(f0_, a_);
+        auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                                    ls);
+                                                    */
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                /*schlick*/ ls);
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, f0_);
 
     float const pdf = 0.5f * (d.pdf + ggx.pdf);
 
@@ -94,11 +97,14 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
     float const n_dot_h = saturate(layer.n_dot(h));
 
+    /*
     //  fresnel::Schlick const schlick(f0_);
     fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                /*schlick*/ ls);
+                                                 ls);
+    */
+    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, f0_);
 
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
