@@ -15,6 +15,7 @@ Interpolated_function_1D<T>::Interpolated_function_1D(Interpolated_function_1D&&
     : range_end_(other.range_end_),
       inverse_interval_(other.inverse_interval_),
       num_samples_(other.num_samples_),
+      back_(other.back_),
       samples_(other.samples_) {
     other.samples_ = nullptr;
 }
@@ -22,9 +23,10 @@ Interpolated_function_1D<T>::Interpolated_function_1D(Interpolated_function_1D&&
 template <typename T>
 template <typename F>
 Interpolated_function_1D<T>::Interpolated_function_1D(float range_begin, float range_end,
-													  uint32_t num_samples, F f) noexcept
+                                                      uint32_t num_samples, F f) noexcept
     : range_end_(range_end),
       num_samples_(num_samples),
+      back_(num_samples - 1),
       samples_(memory::allocate_aligned<T>(num_samples)) {
     float const range = range_end - range_begin;
 
@@ -44,12 +46,14 @@ Interpolated_function_1D<T>::~Interpolated_function_1D() noexcept {
 }
 
 template <typename T>
-void Interpolated_function_1D<T>::from_array(float range_begin, float range_end, uint32_t num_samples,
-                                             T const t[]) noexcept {
+void Interpolated_function_1D<T>::from_array(float range_begin, float range_end,
+                                             uint32_t num_samples, T const t[]) noexcept {
     if (num_samples_ != num_samples) {
         memory::free_aligned(samples_);
 
         num_samples_ = num_samples;
+
+        back_ = num_samples - 1;
 
         samples_ = memory::allocate_aligned<T>(num_samples);
     }
@@ -62,14 +66,14 @@ void Interpolated_function_1D<T>::from_array(float range_begin, float range_end,
 
     inverse_interval_ = 1.f / interval;
 
-	for (uint32_t i = 0; i < num_samples; ++i) {
+    for (uint32_t i = 0; i < num_samples; ++i) {
         samples_[i] = t[i];
     }
 }
 
 template <typename T>
 void Interpolated_function_1D<T>::scale(T s) noexcept {
-	for (uint32_t i = 0, len = num_samples_; i < len; ++i) {
+    for (uint32_t i = 0, len = num_samples_; i < len; ++i) {
         samples_[i] *= s;
     }
 }
@@ -84,7 +88,7 @@ T Interpolated_function_1D<T>::operator()(float x) const noexcept {
 
     float const t = o - static_cast<float>(offset);
 
-    return lerp(samples_[offset], samples_[offset + 1], t);
+    return lerp(samples_[offset], samples_[std::min(offset + 1, back_)], t);
 }
 
 }  // namespace math

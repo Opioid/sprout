@@ -1,6 +1,6 @@
 #include "take_loader.hpp"
 #include "base/json/json.hpp"
-#include "base/math/interpolated_function.inl"
+#include "base/math/interpolated_function_1d.inl"
 #include "base/math/math.hpp"
 #include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"

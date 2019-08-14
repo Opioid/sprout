@@ -13,11 +13,12 @@ class Interpolated_function_1D {
     Interpolated_function_1D(Interpolated_function_1D&& other) noexcept;
 
     template <typename F>
-	Interpolated_function_1D(float range_begin, float range_end, uint32_t num_samples, F f) noexcept;
+    Interpolated_function_1D(float range_begin, float range_end, uint32_t num_samples,
+                             F f) noexcept;
 
     ~Interpolated_function_1D() noexcept;
 
-	void from_array(float range_begin, float range_end, uint32_t num_samples, T const t[]) noexcept;
+    void from_array(float range_begin, float range_end, uint32_t num_samples, T const t[]) noexcept;
 
     void scale(T s) noexcept;
 
@@ -28,7 +29,8 @@ class Interpolated_function_1D {
 
     float inverse_interval_;
 
-	uint32_t num_samples_ = 0;
+    uint32_t num_samples_ = 0;
+    uint32_t back_        = 0;
 
     T* samples_ = nullptr;
 };

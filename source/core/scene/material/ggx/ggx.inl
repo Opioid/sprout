@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_MATERIAL_GGX_INL
 #define SU_CORE_SCENE_MATERIAL_GGX_INL
 
+#include "base/math/interpolated_function_2d.inl"
 #include "base/math/math.hpp"
 #include "base/math/sampling.inl"
 #include "base/math/sincos.hpp"
@@ -18,6 +19,8 @@
 namespace scene::material::ggx {
 
 #include "ggx_integral.inl"
+
+Interpolated_function_2D<float> const E_tex(float2(0.f), float2(1.f), uint2(E_max + 1), &E[0][0]);
 
 static inline float lookup_e(float alpha, float n_dot_wo) noexcept {
     uint32_t const a = std::min(static_cast<uint32_t>(alpha * E_scale), E_max);

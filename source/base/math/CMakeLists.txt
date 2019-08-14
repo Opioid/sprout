@@ -11,6 +11,8 @@ target_sources(base
     "frustum.hpp"
     "interpolated_function_1d.hpp"
     "interpolated_function_1d.inl"
+    "interpolated_function_2d.hpp"
+    "interpolated_function_2d.inl"
     "mapping.hpp"
     "mapping.inl"
     "math.hpp"
