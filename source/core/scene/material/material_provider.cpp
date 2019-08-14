@@ -1052,6 +1052,7 @@ Material* load_substitute(json::Value const& substitute_value,
             material->set_emission_map(emission_map);
 
             material->set_color(color);
+            material->set_fresnel(f0, a);
             material->set_ior(ior);
             material->set_roughness(roughness);
             material->set_metallic(metallic);
@@ -1074,6 +1075,7 @@ Material* load_substitute(json::Value const& substitute_value,
                 material->set_density_map(density_map);
 
                 material->set_color(color);
+                material->set_fresnel(f0, a);
                 material->set_attenuation(use_absorption_color ? absorption_color : color,
                                           use_scattering_color ? scattering_color : color,
                                           attenuation_distance);
@@ -1102,6 +1104,7 @@ Material* load_substitute(json::Value const& substitute_value,
             material->set_emission_map(emission_map);
 
             material->set_color(color);
+            material->set_fresnel(f0, a);
             material->set_ior(ior);
             material->set_roughness(roughness);
             material->set_metallic(metallic);
@@ -1127,6 +1130,7 @@ Material* load_substitute(json::Value const& substitute_value,
         material->set_density_map(density_map);
 
         material->set_color(color);
+        material->set_fresnel(f0, a);
         material->set_attenuation(use_absorption_color ? absorption_color : color,
                                   use_scattering_color ? scattering_color : color,
                                   attenuation_distance);

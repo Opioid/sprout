@@ -1,8 +1,8 @@
 #include "ggx_integrate.hpp"
 #include "base/math/sample_distribution.inl"
 #include "ggx.inl"
-#include "scene/material/material_sample.inl"
 #include "image/encoding/png/png_writer.hpp"
+#include "scene/material/material_sample.inl"
 
 #include <fstream>
 

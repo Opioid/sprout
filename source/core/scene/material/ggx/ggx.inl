@@ -23,8 +23,7 @@ namespace scene::material::ggx {
 Interpolated_function_2D<float> const E_tex(float2(0.f), float2(1.f), uint2(E_size), &E[0][0]);
 
 static inline float3 filament_ep(float3 const& f0, float n_dot_wo, float alpha) {
-    return float3(1.);
-//    return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
+    return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
 }
 
 float constexpr Min_roughness = 0.01314f;
