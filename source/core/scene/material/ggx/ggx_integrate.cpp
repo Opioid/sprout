@@ -22,7 +22,20 @@ float f_ss(float n_dot_wi, float n_dot_wo, float n_dot_h, float alpha) noexcept 
     return (n_dot_wi * d * g[0]) / pdf;
 }
 
-float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
+float f_r_ss(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h, float alpha,
+             float f0) noexcept {
+    float const alpha2 = std::max(alpha * alpha, Min_alpha2);
+
+    float const  d = distribution_isotropic(n_dot_h, alpha2);
+    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    float const  f = fresnel::schlick(wo_dot_h, f0);
+
+    float const pdf = pdf_visible(d, g[1]);
+
+    return (n_dot_wi * d * g[0] * f) / pdf;
+}
+
+float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) noexcept {
     if (alpha < Min_alpha) {
         return 1.f;
     }
@@ -57,13 +70,43 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
     return f / static_cast<float>(num_samples);
 }
 
-void integrate() noexcept {
+float integrate_f_r_ss(float alpha, float ior, float n_dot_wo, uint32_t num_samples) noexcept {
+    float const f0 = fresnel::schlick_f0(1.f, ior);
+
+    Layer layer;
+    layer.set_tangent_frame(float3(1.f, 0.f, 0.f), float3(0.f, 1.f, 0.f), float3(0.f, 0.f, 1.f));
+
+    n_dot_wo = clamp(n_dot_wo);
+
+    // (sin, 0, cos)
+    float3 const wo(std::sqrt(1.f - n_dot_wo * n_dot_wo), 0.f, n_dot_wo);
+
+    float f = 0.f;
+
+    for (uint32_t i = 0; i < num_samples; ++i) {
+        float2 const xi = hammersley(i, num_samples, 0);
+
+        float        n_dot_h;
+        float3 const h = Isotropic::sample(wo, layer, alpha, xi, n_dot_h);
+
+        float3 const wi = normalize(2.f * dot(wo, h) * h - wo);
+
+        if (wi[2] < 0.f) {
+            continue;
+        }
+
+        float const n_dot_wi = clamp(wi[2]);
+
+        float const wo_dot_h = clamp_dot(wo, h);
+
+        f += f_r_ss(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, f0);
+    }
+
+    return f / static_cast<float>(num_samples);
+}
+
+void make_f_ss_table(std::ostream& stream) noexcept {
     uint32_t constexpr Num_samples = 32;
-
-    std::ofstream stream("../source/core/scene/material/ggx/ggx_integral.inl");
-
-    stream.precision(6);
-    stream << std::fixed;
 
     stream << "uint32_t constexpr E_size = " << Num_samples << ";\n\n";
 
@@ -109,6 +152,68 @@ void integrate() noexcept {
     stream << "};" << std::endl;
 
     //    image::encoding::png::Writer::write("e.png", &E[0][0], int2(Num_samples), 1.f, false);
+}
+
+void make_f_r_ss_table(std::ostream& stream) noexcept {
+    uint32_t constexpr Num_samples = 32;
+
+    stream << "uint32_t constexpr E_r_size = " << Num_samples << ";\n\n";
+
+    stream << "float constexpr E_r[" << Num_samples << "][" << Num_samples << "] = {\n";
+
+    float constexpr step = 1.f / static_cast<float>(Num_samples - 1);
+
+    float alpha = 0.f;
+
+    float ior = 1.5f;
+
+    for (uint32_t a = 0; a < Num_samples; ++a) {
+        stream << "\t// alpha " << alpha << std::endl;
+        stream << "\t{\n\t\t";
+
+        float n_dot_wo = 0.5f * step;
+
+        for (uint32_t i = 0; i < Num_samples; ++i) {
+            float const e = integrate_f_r_ss(alpha, ior, n_dot_wo, 1024);
+
+            stream << e << "f";
+
+            if (i < Num_samples - 1) {
+                stream << ", ";
+
+                if (i > 0 && 0 == ((i + 1) % 8)) {
+                    stream << "\n\t\t";
+                }
+
+                n_dot_wo += step;
+            } else {
+                stream << "\n\t}";
+            }
+        }
+
+        if (a < Num_samples - 1) {
+            stream << ",\n\n";
+        } else {
+            stream << "\n";
+        }
+
+        alpha += step;
+    }
+
+    stream << "};" << std::endl;
+}
+
+void integrate() noexcept {
+    std::ofstream stream("../source/core/scene/material/ggx/ggx_integral.inl");
+
+    stream.precision(6);
+    stream << std::fixed;
+
+    make_f_ss_table(stream);
+
+    stream << std::endl;
+
+    make_f_r_ss_table(stream);
 }
 
 }  // namespace scene::material::ggx
