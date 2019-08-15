@@ -6,8 +6,6 @@
 #include "memory/align.hpp"
 #include "vector2.inl"
 
-#include <iostream>
-
 namespace math {
 
 template <typename T>
@@ -70,6 +68,14 @@ void Interpolated_function_2D<T>::scale(T s) noexcept {
 }
 
 template <typename T>
+static inline T bilinear(T c00, T c10, T c01, T c11, float s, float t) noexcept {
+    float const _s = 1.f - s;
+    float const _t = 1.f - t;
+
+    return _t * (_s * c00 + s * c10) + t * (_s * c01 + s * c11);
+}
+
+template <typename T>
 T Interpolated_function_2D<T>::operator()(float x, float y) const noexcept {
     x = std::min(x, range_end_[0]);
     y = std::min(y, range_end_[1]);
@@ -80,12 +86,17 @@ T Interpolated_function_2D<T>::operator()(float x, float y) const noexcept {
 
     float2 const t = o - float2(offset);
 
-    uint32_t const row = offset[1] * num_samples_[0];
+    uint32_t const col1 = std::min(offset[0] + 1, back_[0]);
 
-    uint32_t i00 = offset[0] + row;
-    uint32_t i10 = std::min(offset[0] + 1, back_[0]) + row;
+    uint32_t const row0 = offset[1] * num_samples_[0];
+    uint32_t const row1 = std::min(offset[1] + 1, back_[1]) * num_samples_[0];
 
-    return lerp(samples_[i00], samples_[i10], t[0]);
+    T const c00 = samples_[offset[0] + row0];
+    T const c10 = samples_[col1 + row0];
+    T const c01 = samples_[offset[0] + row1];
+    T const c11 = samples_[col1 + row1];
+
+    return bilinear(c00, c10, c01, c11, t[0], t[1]);
 }
 
 }  // namespace math
