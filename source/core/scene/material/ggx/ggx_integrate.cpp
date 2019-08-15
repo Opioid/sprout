@@ -23,6 +23,10 @@ float f_ss(float n_dot_wi, float n_dot_wo, float n_dot_h, float alpha) noexcept 
 }
 
 float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
+    if (alpha < Min_alpha) {
+        return 1.f;
+    }
+
     Layer layer;
     layer.set_tangent_frame(float3(1.f, 0.f, 0.f), float3(0.f, 1.f, 0.f), float3(0.f, 0.f, 1.f));
 
