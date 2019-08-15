@@ -12,7 +12,7 @@
 namespace scene::material::ggx {
 
 float f_ss(float n_dot_wi, float n_dot_wo, float n_dot_h, float alpha) noexcept {
-    float const alpha2 = std::max(alpha * alpha, Min_alpha2);
+    float const alpha2 = alpha * alpha;
 
     float const  d = distribution_isotropic(n_dot_h, alpha2);
     float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
@@ -24,15 +24,21 @@ float f_ss(float n_dot_wi, float n_dot_wo, float n_dot_h, float alpha) noexcept 
 
 float f_r_ss(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h, float alpha,
              float f0) noexcept {
-    float const alpha2 = std::max(alpha * alpha, Min_alpha2);
+    fresnel::Schlick const schlick(f0);
 
-    float const  d = distribution_isotropic(n_dot_h, alpha2);
-    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
-    float const  f = fresnel::schlick(wo_dot_h, f0);
+    auto const ggx = Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
 
-    float const pdf = pdf_visible(d, g[1]);
+    return (n_dot_wi * ggx.reflection[0]) / ggx.pdf;
+}
 
-    return (n_dot_wi * d * g[0] * f) / pdf;
+float f_t_ss(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h, float n_dot_h,
+             float alpha, IoR ior, float f0) noexcept {
+    fresnel::Schlick1 const schlick(f0);
+
+    auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
+                                                alpha, ior, schlick);
+
+    return (std::min(n_dot_wi, n_dot_wo) * ggx.reflection[0]) / ggx.pdf;
 }
 
 float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) noexcept {
@@ -71,6 +77,8 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) noexcept
 }
 
 float integrate_f_r_ss(float alpha, float ior, float n_dot_wo, uint32_t num_samples) noexcept {
+    alpha = std::max(Min_alpha, alpha);
+
     float const f0 = fresnel::schlick_f0(1.f, ior);
 
     Layer layer;
