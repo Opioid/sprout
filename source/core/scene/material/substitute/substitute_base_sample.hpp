@@ -12,8 +12,6 @@ struct Base_closure {
     void set(float3 const& color, float3 const& radiance, float f0, float alpha,
              float metallic) noexcept;
 
-    void set(float3 const& f0, float3 const& a, float alpha) noexcept;
-
     template <bool Forward>
     bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                                Layer const& layer, bool avoid_caustics) const noexcept;

@@ -29,8 +29,6 @@ class Material_base : public material::Material {
 
     void set_color(float3 const& color) noexcept;
 
-    void set_fresnel(float3 const& f0, float3 const& a) noexcept;
-
     void set_roughness(float roughness) noexcept;
     void set_metallic(float metallic) noexcept;
     void set_emission_factor(float emission_factor) noexcept;
@@ -53,9 +51,6 @@ class Material_base : public material::Material {
     float alpha_;
     float metallic_;
     float emission_factor_;
-
-    float3 f0_;
-    float3 a_;
 };
 
 }  // namespace scene::material::substitute

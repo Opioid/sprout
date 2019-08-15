@@ -17,25 +17,11 @@ void Base_closure<Diffuse>::set(float3 const& color, float3 const& radiance, flo
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
-    a_  = float3(0.f);
+    a_  = float3(0.f);  // f0_to_a_b(color);
 
     emission_ = radiance;
 
     metallic_ = metallic;
-
-    alpha_ = alpha;
-}
-
-template <typename Diffuse>
-void Base_closure<Diffuse>::set(float3 const& f0, float3 const& a, float alpha) noexcept {
-    diffuse_color_ = float3(0.f);
-
-    f0_ = f0;
-    a_  = a;
-
-    emission_ = float3(0.f);
-
-    metallic_ = 1.f;
 
     alpha_ = alpha;
 }
