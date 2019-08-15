@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_LAMBERT_HPP
+#define SU_CORE_SCENE_MATERIAL_LAMBERT_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -29,3 +30,5 @@ class Isotropic {
 
 }  // namespace lambert
 }  // namespace scene::material
+
+#endif

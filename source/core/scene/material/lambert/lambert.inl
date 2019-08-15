@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_LAMBERT_INL
+#define SU_CORE_SCENE_MATERIAL_LAMBERT_INL
 
 #include "base/math/math.hpp"
 #include "base/math/sampling.inl"
@@ -46,3 +47,5 @@ inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler
 }
 
 }  // namespace scene::material::lambert
+
+#endif
