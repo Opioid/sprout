@@ -5,7 +5,6 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "disney.hpp"
-#include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample_helper.hpp"
 
@@ -32,11 +31,9 @@ inline bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float 
 }
 
 inline float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                                float3 const& color, Sampler& sampler,
-                                bxdf::Sample& result) noexcept {
-    float2 const s2d = sampler.generate_sample_2D();
-    float3 const is  = sample_hemisphere_cosine(s2d);
-    float3 const wi  = normalize(layer.tangent_to_world(is));
+                                float3 const& color, float2 xi, bxdf::Sample& result) noexcept {
+    float3 const is = sample_hemisphere_cosine(xi);
+    float3 const wi = normalize(layer.tangent_to_world(is));
 
     float3 const h = normalize(wo + wi);
 
@@ -92,12 +89,10 @@ inline bxdf::Result Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot
 }
 
 inline float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                                           float alpha, float3 const& color,
-                                           sampler::Sampler& sampler,
-                                           bxdf::Sample&     result) noexcept {
-    float2 const s2d = sampler.generate_sample_2D();
-    float3 const is  = sample_hemisphere_cosine(s2d);
-    float3 const wi  = normalize(layer.tangent_to_world(is));
+                                           float alpha, float3 const& color, float2 xi,
+                                           bxdf::Sample& result) noexcept {
+    float3 const is = sample_hemisphere_cosine(xi);
+    float3 const wi = normalize(layer.tangent_to_world(is));
 
     float3 const h = normalize(wo + wi);
 

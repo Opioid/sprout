@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_GGX_INL
 
 #include "base/math/interpolated_function_2d.inl"
+#include "base/math/interpolated_function_3d.inl"
 #include "base/math/math.hpp"
 #include "base/math/sampling.inl"
 #include "base/math/sincos.hpp"
@@ -22,16 +23,20 @@ namespace scene::material::ggx {
 SU_GLOBALCONST(Interpolated_function_2D<float>)
 E_tex(float2(0.f), float2(1.f), uint2(E_size), &E[0][0]);
 
-SU_GLOBALCONST(Interpolated_function_2D<float>)
-E_s_tex(float2(0.f), float2(1.f), uint2(E_s_size), &E_s[15][0][0]);
+SU_GLOBALCONST(Interpolated_function_3D<float>)
+E_s_tex(float3(0.f), float3(1.f), uint3(E_s_size), &E_s[0][0][0]);
 
 static inline float3 ilm_ep_conductor(float3 const& f0, float n_dot_wo, float alpha) noexcept {
     return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
 }
 
-static inline float ilm_ep_dielectric(float n_dot_wo, float alpha) noexcept {
-    return 1.f / E_s_tex(n_dot_wo, alpha);
+static inline float ilm_ep_dielectric(float n_dot_wo, float alpha, float ior) noexcept {
+    return 1.f / E_s_tex(n_dot_wo, alpha, ior - 1.f);
 }
+
+// static inline float ilm_ep_dielectric_diffuse(float n_dot_wo, float alpha, float ior) noexcept {
+//    return 1.f / E_sd_tex(n_dot_wo, alpha, ior - 1.f);
+//}
 
 float constexpr Min_roughness = 0.01314f;
 

@@ -126,6 +126,14 @@ static inline float copysign1(float x) noexcept {
     return _mm_cvtss_f32(_mm_or_ps(result, simd::One));
 }
 
+template <typename T>
+static inline T bilinear(T c00, T c10, T c01, T c11, float s, float t) noexcept {
+    float const _s = 1.f - s;
+    float const _t = 1.f - t;
+
+    return _t * (_s * c00 + s * c10) + t * (_s * c01 + s * c11);
+}
+
 }  // namespace math
 
 #endif

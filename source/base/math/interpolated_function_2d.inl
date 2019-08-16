@@ -68,14 +68,6 @@ void Interpolated_function_2D<T>::scale(T s) noexcept {
 }
 
 template <typename T>
-static inline T bilinear(T c00, T c10, T c01, T c11, float s, float t) noexcept {
-    float const _s = 1.f - s;
-    float const _t = 1.f - t;
-
-    return _t * (_s * c00 + s * c10) + t * (_s * c01 + s * c11);
-}
-
-template <typename T>
 T Interpolated_function_2D<T>::operator()(float x, float y) const noexcept {
     x = std::min(x, range_end_[0]);
     y = std::min(y, range_end_[1]);

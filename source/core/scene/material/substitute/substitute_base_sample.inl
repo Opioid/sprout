@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_INL
 
 #include "base/math/vector3.inl"
+#include "sampler/sampler.hpp"
 #include "scene/material/coating/coating.inl"
 #include "scene/material/disney/disney.inl"
 #include "scene/material/fresnel/fresnel.inl"
@@ -103,7 +104,10 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
                                            bool avoid_caustics, bxdf::Sample& result) const
     noexcept {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
-    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_, diffuse_color_, sampler,
+
+    float2 const xi = sampler.generate_sample_2D();
+
+    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_, diffuse_color_, xi,
                                             result);
 
     if (avoid_caustics && alpha_ <= ggx::Min_alpha) {

@@ -1,4 +1,5 @@
 #include "matte_sample.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/material/disney/disney.inl"
 #include "scene/material/material_sample.inl"
 // #include "scene/material/lambert/lambert.inl"
@@ -40,8 +41,10 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
+    float2 const xi = sampler.generate_sample_2D();
+
     float const n_dot_wi = disney::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, diffuse_color_,
-                                                      sampler, result);
+                                                      xi, result);
 
     result.reflection *= n_dot_wi;
 

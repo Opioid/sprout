@@ -13,6 +13,8 @@ target_sources(base
     "interpolated_function_1d.inl"
     "interpolated_function_2d.hpp"
     "interpolated_function_2d.inl"
+    "interpolated_function_3d.hpp"
+    "interpolated_function_3d.inl"
     "mapping.hpp"
     "mapping.inl"
     "math.hpp"
