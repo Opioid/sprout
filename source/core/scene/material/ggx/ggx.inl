@@ -8,7 +8,6 @@
 #include "base/math/vector3.inl"
 #include "ggx.hpp"
 #include "ggx_test.hpp"
-#include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/material_sample_helper.hpp"
@@ -23,8 +22,15 @@ namespace scene::material::ggx {
 SU_GLOBALCONST(Interpolated_function_2D<float>)
 E_tex(float2(0.f), float2(1.f), uint2(E_size), &E[0][0]);
 
+SU_GLOBALCONST(Interpolated_function_2D<float>)
+E_s_tex(float2(0.f), float2(1.f), uint2(E_s_size), &E_s[0][0]);
+
 static inline float3 ilm_ep_conductor(float3 const& f0, float n_dot_wo, float alpha) noexcept {
     return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
+}
+
+static inline float ilm_ep_dielectric(float n_dot_wo, float alpha) noexcept {
+    return 1.f / E_s_tex(n_dot_wo, alpha);
 }
 
 float constexpr Min_roughness = 0.01314f;
@@ -168,17 +174,15 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 
 template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, Sampler& sampler, bxdf::Sample& result) noexcept {
+                         Fresnel const& fresnel, float2 xi, bxdf::Sample& result) noexcept {
     float3 fresnel_result;
-    return reflect(wo, n_dot_wo, layer, alpha, fresnel, sampler, fresnel_result, result);
+    return reflect(wo, n_dot_wo, layer, alpha, fresnel, xi, fresnel_result, result);
 }
 
 template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, Sampler& sampler, float3& fresnel_result,
+                         Fresnel const& fresnel, float2 xi, float3& fresnel_result,
                          bxdf::Sample& result) noexcept {
-    float2 const xi = sampler.generate_sample_2D();
-
     float        n_dot_h;
     float3 const h = sample(wo, layer, alpha, xi, n_dot_h);
 
@@ -247,10 +251,8 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
 template <typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         IoR const& ior, Fresnel const& fresnel, Sampler& sampler,
+                         IoR const& ior, Fresnel const& fresnel, float2 xi,
                          bxdf::Sample& result) noexcept {
-    float2 const xi = sampler.generate_sample_2D();
-
     float        n_dot_h;
     float3 const h = sample(wo, layer, alpha, xi, n_dot_h);
 
@@ -427,10 +429,7 @@ bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_do
 
 template <typename Layer, typename Fresnel>
 float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                           Fresnel const& fresnel, Sampler& sampler,
-                           bxdf::Sample& result) noexcept {
-    float2 const xi = sampler.generate_sample_2D();
-
+                           Fresnel const& fresnel, float2 xi, bxdf::Sample& result) noexcept {
     float const phi     = (2.f * Pi) * xi[0];
     float const sin_phi = std::sin(phi);
     float const cos_phi = std::cos(phi);

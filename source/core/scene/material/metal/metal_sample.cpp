@@ -29,8 +29,10 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, conductor,
-                                                   sampler, result);
+    float2 const xi = sampler.generate_sample_2D();
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, conductor, xi,
+                                                   result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
@@ -95,8 +97,9 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
 
     fresnel::Conductor const conductor(layer_.ior_, layer_.absorption_);
 
-    float const n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor, sampler,
-                                                     result);
+    float2 const xi = sampler.generate_sample_2D();
+
+    float const n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor, xi, result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;

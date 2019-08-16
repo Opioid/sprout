@@ -203,8 +203,10 @@ void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample&
 
     fresnel::Schlick1 const schlick(base_.f0_[0]);
 
+    float2 const xi = sampler.generate_sample_2D();
+
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, base_.alpha_, ior_,
-                                                   schlick, sampler, result);
+                                                   schlick, xi, result);
 
     float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);
 

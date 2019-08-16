@@ -133,7 +133,9 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
     fresnel::Schlick const schlick(f0_);
     // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
+    float2 const xi = sampler.generate_sample_2D();
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
                                                    result);
 
     result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha_);
@@ -153,7 +155,9 @@ void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, Layer const& lay
     fresnel::Schlick const schlick(f0_);
     // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
+    float2 const xi = sampler.generate_sample_2D();
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
                                                    result);
 
     result.reflection *= n_dot_wi * ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha_);

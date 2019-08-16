@@ -71,14 +71,7 @@ int main(int argc, char* argv[]) noexcept {
 
     //  scene::material::ggx::integrate();
 
-    //    float const alpha    = 0.95f;
-    //    float const n_dot_wo = 0.95f;
-
-    //    float const e = scene::material::ggx::E_tex(alpha, n_dot_wo);
-
-    //    std::cout << e << std::endl;
-
-    //    return 1;
+    //  return 1;
 
     logging::init(logging::Type::Std_out);
 

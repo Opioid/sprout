@@ -1,5 +1,6 @@
 #include "coating.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
@@ -88,7 +89,9 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, f
 
     fresnel::Schlick const schlick(f0_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, sampler,
+    float2 const xi = sampler.generate_sample_2D();
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
                                                    result);
 
     attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
@@ -149,7 +152,9 @@ void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, fl
 
     fresnel::Thinfilm const thinfilm(1.f, ior_, ior_internal_, thickness_);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, thinfilm, sampler,
+    float2 const xi = sampler.generate_sample_2D();
+
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, thinfilm, xi,
                                                    attenuation, result);
 
     attenuation = (1.f - attenuation);

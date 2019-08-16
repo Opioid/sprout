@@ -90,6 +90,8 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
         result.type.set(bxdf::Type::Caustic);
     }
 
+    result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_);
+
     result.wavelength = 0.f;
 }
 
@@ -143,8 +145,10 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 
         fresnel::Schlick1 const schlick(f0_);
 
-        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
-                                                    alpha_, ior, schlick);
+        auto ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
+                                              alpha_, ior, schlick);
+
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_);
 
         if constexpr (Forward) {
             return {std::min(n_dot_wi, n_dot_wo) * color_ * ggx.reflection, ggx.pdf};
@@ -162,9 +166,12 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
 
         fresnel::Schlick const schlick(f0_);
 
-        float3     fresnel;
-        auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                    schlick, fresnel);
+        float3 fresnel;
+
+        auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
+                                              schlick, fresnel);
+
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_);
 
         if constexpr (Forward) {
             return {n_dot_wi * ggx.reflection, fresnel[0] * ggx.pdf};

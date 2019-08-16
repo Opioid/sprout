@@ -184,8 +184,10 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
 
     fresnel::Schlick1 const schlick(base_.f0_[0]);
 
+    float2 const xi = sampler.generate_sample_2D();
+
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, base_.alpha_, ior_,
-                                                   schlick, sampler, result);
+                                                   schlick, xi, result);
 
     result.reflection *= n_dot_wi;
     result.type.set(bxdf::Type::Caustic);
