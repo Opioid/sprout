@@ -54,7 +54,7 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) noexcept
 }
 
 float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_samples) noexcept {
-    if (alpha < Min_alpha) {
+    if (alpha < Min_alpha || ior_t <= 1.f) {
         return 1.f;
     }
 
@@ -181,45 +181,58 @@ void make_f_s_ss_table(std::ostream& stream) noexcept {
 
     stream << "uint32_t constexpr E_s_size = " << Num_samples << ";\n\n";
 
-    stream << "float constexpr E_s[" << Num_samples << "][" << Num_samples << "] = {\n";
+    stream << "float constexpr E_s[" << Num_samples << "][" << Num_samples << "][" << Num_samples
+           << "] = {\n";
 
     float constexpr step = 1.f / static_cast<float>(Num_samples - 1);
 
-    float alpha = 0.f;
+    float ior = 1.f;
 
-    float ior = 1.5f;
+    for (uint32_t z = 0; z < Num_samples; ++z) {
+        stream << "\t// IoR " << ior << std::endl;
+        stream << "\t{\n\t";
 
-    for (uint32_t a = 0; a < Num_samples; ++a) {
-        stream << "\t// alpha " << alpha << std::endl;
-        stream << "\t{\n\t\t";
+        float alpha = 0.f;
+        for (uint32_t a = 0; a < Num_samples; ++a) {
+            stream << "\t// alpha " << alpha << std::endl;
+            stream << "\t\t{\n\t\t\t";
 
-        float n_dot_wo = 0.f;
+            float n_dot_wo = 0.f;
 
-        for (uint32_t i = 0; i < Num_samples; ++i) {
-            float const e_s = integrate_f_s_ss(alpha, ior, n_dot_wo, 1024);
+            for (uint32_t i = 0; i < Num_samples; ++i) {
+                float const e_s = integrate_f_s_ss(alpha, ior, n_dot_wo, 1024);
 
-            stream << e_s << "f";
+                stream << e_s << "f";
 
-            if (i < Num_samples - 1) {
-                stream << ", ";
+                if (i < Num_samples - 1) {
+                    stream << ", ";
 
-                if (i > 0 && 0 == ((i + 1) % 8)) {
-                    stream << "\n\t\t";
+                    if (i > 0 && 0 == ((i + 1) % 8)) {
+                        stream << "\n\t\t\t";
+                    }
+
+                    n_dot_wo += step;
+                } else {
+                    stream << "\n\t\t}";
                 }
+            }
 
-                n_dot_wo += step;
+            if (a < Num_samples - 1) {
+                stream << ",\n\n\t";
             } else {
                 stream << "\n\t}";
             }
+
+            alpha += step;
         }
 
-        if (a < Num_samples - 1) {
+        if (z < Num_samples - 1) {
             stream << ",\n\n";
         } else {
             stream << "\n";
         }
 
-        alpha += step;
+        ior += step;
     }
 
     stream << "};" << std::endl;
@@ -227,6 +240,8 @@ void make_f_s_ss_table(std::ostream& stream) noexcept {
 
 void integrate() noexcept {
     std::ofstream stream("../source/core/scene/material/ggx/ggx_integral.inl");
+
+    stream << "#include <cstdint>\n\n";
 
     stream.precision(6);
     stream << std::fixed;

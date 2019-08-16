@@ -23,7 +23,7 @@ SU_GLOBALCONST(Interpolated_function_2D<float>)
 E_tex(float2(0.f), float2(1.f), uint2(E_size), &E[0][0]);
 
 SU_GLOBALCONST(Interpolated_function_2D<float>)
-E_s_tex(float2(0.f), float2(1.f), uint2(E_s_size), &E_s[0][0]);
+E_s_tex(float2(0.f), float2(1.f), uint2(E_s_size), &E_s[15][0][0]);
 
 static inline float3 ilm_ep_conductor(float3 const& f0, float n_dot_wo, float alpha) noexcept {
     return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
