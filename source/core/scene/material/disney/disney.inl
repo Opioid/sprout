@@ -68,7 +68,7 @@ inline float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo
 
     // More energy conserving variant
     float const energy_bias   = lerp(0.f, 0.5f, alpha);
-    float const energy_factor = lerp(1.f, 1.f / 1.51f, alpha);
+    float const energy_factor = lerp(1.f, 1.f / 1.53f, alpha);
 
     float const f_D90 = energy_bias + (2.f * alpha) * (h_dot_wi * h_dot_wi);
     float const fmo   = f_D90 - 1.f;
@@ -119,7 +119,7 @@ inline float Isotropic_no_lambert::reflect(float3 const& wo, float n_dot_wo, Lay
 
 inline float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
                                              float alpha, float3 const& color) noexcept {
-    float const energy_factor = lerp(1.f, 1.f / 1.51f, alpha);
+    float const energy_factor = lerp(1.f, 1.f / 1.53f, alpha);
 
     float const fl = pow5(1.f - n_dot_wi);
     float const fv = pow5(1.f - n_dot_wo);
