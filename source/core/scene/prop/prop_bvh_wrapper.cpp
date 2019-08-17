@@ -399,8 +399,9 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
             }
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                float3         tta;
                 uint32_t const p = finite_props[i];
+
+				float3         tta;
                 if (!props[p].thin_absorption(p, ray, filter, worker, tta)) {
                     return false;
                 }
@@ -415,8 +416,9 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
     uint32_t const* infinite_props = infinite_props_;
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-        float3         tta;
         uint32_t const p = infinite_props[i];
+
+		float3         tta;
         if (!props[p].thin_absorption(p, ray, filter, worker, tta)) {
             return false;
         }
