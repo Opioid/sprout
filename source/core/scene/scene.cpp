@@ -29,6 +29,7 @@ Scene::Scene() noexcept {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_materials_.reserve(Num_reserved_props);
+    prop_topology_.reserve(Num_reserved_props);
     finite_props_.reserve(Num_reserved_props);
     infinite_props_.reserve(3);
     volumes_.reserve(Num_reserved_props);
@@ -51,6 +52,7 @@ void Scene::clear() noexcept {
     }
 
     prop_materials_.clear();
+    prop_topology_.clear();
 
     prop_world_transformations_.clear();
 
