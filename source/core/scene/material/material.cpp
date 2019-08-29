@@ -94,6 +94,11 @@ float3 Material::thin_absorption(float3 const& /*wi*/, float3 const& /*n*/, floa
     return float3(1.f - opacity(uv, time, filter, worker));
 }
 
+float Material::volume_border_hack(float3 const& /*wi*/, float3 const& /*n*/,
+                                   Worker const& /*worker*/) const noexcept {
+    return 1.f;
+}
+
 float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
                                         Worker const& /*worker*/) const noexcept {
     return float3(0.f);

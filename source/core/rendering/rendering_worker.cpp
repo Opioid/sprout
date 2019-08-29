@@ -211,7 +211,9 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
 
 bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
                                Filter filter, float3& tv) noexcept {
-    if (intersection.subsurface && intersection.material(*this)->ior() > 1.f) {
+    auto const& material = *intersection.material(*this);
+
+    if (intersection.subsurface && material.ior() > 1.f) {
         float const ray_max_t = ray.max_t;
 
         if (scene::shape::Normals normals; intersect(ray, normals)) {
@@ -224,9 +226,11 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                 if (scene_->thin_absorption(ray, filter, *this, tv)) {
                     float3 const wi = ray.direction;
 
+                    float const vbh = material.volume_border_hack(wi, normals.n, *this);
+
                     float const nsc = non_symmetry_compensation(wi, wo, normals.geo_n, normals.n);
 
-                    tv *= nsc * tr;
+                    tv *= vbh * nsc * tr;
 
                     return true;
                 }

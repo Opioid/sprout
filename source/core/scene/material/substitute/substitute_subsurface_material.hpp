@@ -16,6 +16,9 @@ class Material_subsurface final : public Material_base {
                                    Filter filter, Sampler& sampler, Worker const& worker) const
         noexcept override final;
 
+    float volume_border_hack(float3 const& wi, float3 const& n, Worker const& worker) const
+        noexcept override final;
+
     size_t num_bytes() const noexcept override final;
 
     void set_density_map(Texture_adapter const& density_map) noexcept;

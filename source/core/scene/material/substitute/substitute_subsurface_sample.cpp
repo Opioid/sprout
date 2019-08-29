@@ -94,6 +94,8 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
             result.reflection *= n_dot_wi;
         }
 
+        result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, base_.alpha_, ior_.eta_t);
+
         result.type.set(bxdf::Type::Caustic);
     }
 
@@ -147,8 +149,10 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
 
         fresnel::Schlick1 const schlick(base_.f0_[0]);
 
-        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
-                                                    base_.alpha_, ior, schlick);
+        auto ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
+                                              base_.alpha_, ior, schlick);
+
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, base_.alpha_, ior_.eta_t);
 
         if (Forward) {
             return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf};
@@ -193,49 +197,9 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
     result.type.set(bxdf::Type::Caustic);
 }
 
-bxdf::Result Sample_subsurface_volumetric::evaluate_f(float3 const& wi, bool /*include_back*/) const
-    noexcept {
-    bxdf::Result result = volumetric::Sample::evaluate_f(wi, true);
-
-    float const f = fresnel(wi);
-
-    result.reflection *= f;
-
-    return result;
-}
-
-bxdf::Result Sample_subsurface_volumetric::evaluate_b(float3 const& wi, bool /*include_back*/) const
-    noexcept {
-    bxdf::Result result = volumetric::Sample::evaluate_b(wi, true);
-
-    float const f = fresnel(wi);
-
-    result.reflection *= f;
-
-    return result;
-}
-
-float Sample_subsurface_volumetric::fresnel(float3 const& wi) const noexcept {
-    // Fresnel is only part of evaluate() because it tries to compensate for the fact,
-    // that direct light calculations for SSS in the integrators are ignoring one surface.
-    float3 const h = normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_abs_dot(wo_, h);
-
-    float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
-
-    return f;
-}
-
 bool Sample_subsurface_volumetric::do_evaluate_back(bool /*previously*/, bool /*same_side*/) const
     noexcept {
     return false;
-}
-
-void Sample_subsurface_volumetric::set(float anisotropy, float f0) noexcept {
-    volumetric::Sample::set(anisotropy);
-
-    f0_ = f0;
 }
 
 }  // namespace scene::material::substitute

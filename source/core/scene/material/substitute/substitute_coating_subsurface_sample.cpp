@@ -221,9 +221,9 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,
     noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_f(wi, true);
 
-    float3 const attenuation = fresnel_and_attenuation(wi);
+    float3 const a = attenuation(wi);
 
-    result.reflection *= attenuation;
+    result.reflection *= a;
 
     return result;
 }
@@ -233,9 +233,9 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
     noexcept {
     bxdf::Result result = volumetric::Sample::evaluate_b(wi, true);
 
-    float3 const attenuation = fresnel_and_attenuation(wi);
+    float3 const a = attenuation(wi);
 
-    result.reflection *= attenuation;
+    result.reflection *= a;
 
     return result;
 }
@@ -245,27 +245,12 @@ bool Sample_coating_subsurface_volumetric::do_evaluate_back(bool /*previously*/,
     return false;
 }
 
-float3 Sample_coating_subsurface_volumetric::fresnel_and_attenuation(float3 const& wi) const
-    noexcept {
-    // Fresnel is only part of evaluate() because it tries to compensate for the fact,
-    // that direct light calculations for SSS in the integrators are ignoring one surface.
-    float3 const h = normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_abs_dot(wo_, h);
-
-    float const f = 1.f - fresnel::schlick(wo_dot_h, f0_);
-
+float3 Sample_coating_subsurface_volumetric::attenuation(float3 const& wi) const noexcept {
     float const n_dot_wi = coating_.clamp_n_dot(wi);
 
     float3 const attenuation = coating_.attenuation(n_dot_wi);
 
-    return f * attenuation;
-}
-
-void Sample_coating_subsurface_volumetric::set(float anisotropy, float f0) noexcept {
-    volumetric::Sample::set(anisotropy);
-
-    f0_ = f0;
+    return attenuation;
 }
 
 }  // namespace scene::material::substitute

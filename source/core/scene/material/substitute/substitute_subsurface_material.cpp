@@ -40,7 +40,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
 
         sample.set_basis(rs.geo_n, wo);
 
-        sample.set(anisotropy_, fresnel::schlick_f0(ior_, rs.ior));
+        sample.set(anisotropy_);
 
         return sample;
     }
@@ -54,6 +54,17 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
     sample.set_volumetric(anisotropy_, ior_, rs.ior);
 
     return sample;
+}
+
+float Material_subsurface::volume_border_hack(float3 const& wi, float3 const& n,
+                                              Worker const& /*worker*/) const noexcept {
+    const float f0 = fresnel::schlick_f0(ior_, 1.f);
+
+    float const n_dot_wi = clamp_dot(n, wi);
+
+    float const f = 1.f - fresnel::schlick(n_dot_wi, f0);
+
+    return n_dot_wi * (f / (0.45f * Pi));
 }
 
 size_t Material_subsurface::num_bytes() const noexcept {

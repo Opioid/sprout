@@ -58,7 +58,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
 
         sample.set_basis(rs.geo_n, wo);
 
-        sample.set(anisotropy_, fresnel::schlick_f0(ior_, rs.ior));
+        sample.set(anisotropy_);
 
         set_coating_basis(wo, rs, sampler, sample);
 

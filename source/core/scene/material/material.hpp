@@ -108,6 +108,9 @@ class Material {
     virtual float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                                    Filter filter, Worker const& worker) const noexcept;
 
+    virtual float volume_border_hack(float3 const& wi, float3 const& n, Worker const& worker) const
+        noexcept;
+
     virtual float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
         noexcept;
 

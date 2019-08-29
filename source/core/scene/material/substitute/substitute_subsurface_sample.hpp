@@ -34,18 +34,7 @@ class Sample_subsurface final : public Sample_base {
 
 class Sample_subsurface_volumetric final : public volumetric::Sample {
   public:
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
-
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
-
     bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
-
-    void set(float anisotropy, float f0) noexcept;
-
-  private:
-    float fresnel(float3 const& wi) const noexcept;
-
-    float f0_;
 };
 
 }  // namespace scene::material::substitute
