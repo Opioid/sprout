@@ -1,12 +1,14 @@
-#include "photon_importance.hpp"
+#include "particle_importance.hpp"
 #include "base/atomic/atomic.hpp"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/vector2.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/encoding/png/png_writer.hpp"
+#include "scene/light/light.hpp"
+#include "scene/scene.hpp"
 
-namespace rendering::integrator::particle::photon {
+namespace rendering::integrator::particle {
 
 static int32_t constexpr Dimensions = 256;
 
@@ -15,7 +17,7 @@ Importance::Importance() noexcept
       importance_(memory::allocate_aligned<uint32_t>(Dimensions * Dimensions)),
       dimensions_back_(Dimensions - 1),
       dimensions_float_(float2(Dimensions)) {
-    for (int32_t i = 0, len = dimensions_[i] * dimensions_[1]; i < len; ++i) {
+    for (int32_t i = 0, len = dimensions_[0] * dimensions_[1]; i < len; ++i) {
         importance_[i] = 0;
     }
 }
@@ -90,4 +92,36 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
     distribution_.init();
 }
 
-}  // namespace rendering::integrator::particle::photon
+Importance_cache::Importance_cache() noexcept : num_importances_(0), importances_(nullptr) {}
+
+Importance_cache::~Importance_cache() noexcept {
+    memory::destroy_aligned(importances_, num_importances_);
+}
+
+void Importance_cache::init(scene::Scene const& scene) noexcept {
+    num_importances_ = static_cast<uint32_t>(scene.lights().size());
+
+    importances_ = memory::construct_array_aligned<Importance>(scene.lights().size());
+}
+
+void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
+    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
+        importances_[i].prepare_sampling(pool);
+    }
+}
+
+void Importance_cache::increment_importance(uint32_t light_id, float2 uv) noexcept {
+    importances_[light_id].increment(uv);
+}
+
+Importance const& Importance_cache::importance(uint32_t light_id) const noexcept {
+    return importances_[light_id];
+}
+
+void Importance_cache::export_importances() const noexcept {
+    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
+        importances_[i].export_heatmap("particle_importance_" + std::to_string(i) + ".png");
+    }
+}
+
+}  // namespace rendering::integrator::particle

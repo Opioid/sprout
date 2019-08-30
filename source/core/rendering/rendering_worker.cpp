@@ -34,8 +34,8 @@ void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scen
                   uint32_t num_samples_per_pixel, Surface_factory& surface_factory,
                   Volume_factory& volume_factory, sampler::Factory& sampler_factory,
                   Photon_map* photon_map, take::Photon_settings const& photon_settings,
-                  Lighttracer_factory* lighttracer_factory,
-                  uint32_t             num_particles_per_chunk) noexcept {
+                  Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk,
+                  Particle_importance* particle_importance) noexcept {
     scene::Worker::init(id, settings, scene, camera, max_material_sample_size,
                         surface_factory.max_sample_depth());
 
@@ -63,6 +63,8 @@ void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scen
         lighttracer_ = lighttracer_factory->create(id, rng_);
         lighttracer_->prepare(scene, num_particles_per_chunk);
     }
+
+    particle_importance_ = particle_importance;
 }
 
 float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
@@ -135,6 +137,10 @@ float3 Worker::photon_li(Intersection const& intersection, Material_sample const
     }
 
     return float3(0.f);
+}
+
+Worker::Particle_importance& Worker::particle_importance() const noexcept {
+    return *particle_importance_;
 }
 
 size_t Worker::num_bytes() const noexcept {

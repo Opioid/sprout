@@ -28,6 +28,7 @@ namespace particle {
 
 class Lighttracer;
 class Lighttracer_factory;
+class Importance_cache;
 
 namespace photon {
 
@@ -62,6 +63,7 @@ class Worker : public scene::Worker {
     using Lighttracer_factory = integrator::particle::Lighttracer_factory;
     using Photon_map          = integrator::particle::photon::Map;
     using Photon_mapper       = integrator::particle::photon::Mapper;
+    using Particle_importance = integrator::particle::Importance_cache;
 
     ~Worker() noexcept;
 
@@ -70,7 +72,8 @@ class Worker : public scene::Worker {
               Surface_factory& surface_factory, Volume_factory& volume_factory,
               sampler::Factory& sampler_factory, Photon_map* photon_map,
               take::Photon_settings const& photon_settings_,
-              Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk) noexcept;
+              Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk,
+              Particle_importance* particle_importance) noexcept;
 
     float4 li(Ray& ray, Interface_stack const& interface_stack) noexcept;
 
@@ -87,6 +90,8 @@ class Worker : public scene::Worker {
 
     float3 photon_li(Intersection const& intersection, Material_sample const& sample) const
         noexcept;
+
+    Particle_importance& particle_importance() const noexcept;
 
     size_t num_bytes() const noexcept;
 
@@ -105,6 +110,8 @@ class Worker : public scene::Worker {
     Photon_map*    photon_map_    = nullptr;
 
     integrator::particle::Lighttracer* lighttracer_ = nullptr;
+
+    Particle_importance* particle_importance_ = nullptr;
 };
 
 }  // namespace rendering

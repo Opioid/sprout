@@ -12,8 +12,6 @@ class Scene;
 
 namespace rendering::integrator::particle::photon {
 
-class Importance;
-
 class Map {
   public:
     using Intersection    = scene::prop::Intersection;
@@ -24,22 +22,16 @@ class Map {
 
     ~Map() noexcept;
 
-    void init(scene::Scene const& scene, uint32_t num_workers) noexcept;
+    void init(uint32_t num_workers) noexcept;
 
     void start() noexcept;
 
     void insert(Photon const& photon, uint32_t index) noexcept;
 
-    void increment_importance(uint32_t light_id, float2 uv) noexcept;
-
-    Importance const& importance(uint32_t light_id) const noexcept;
-
     uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths,
                                thread::Pool& pool) noexcept;
 
     void compile_finalize() noexcept;
-
-    void export_importances() const noexcept;
 
     float3 li(Intersection const& intersection, Material_sample const& sample,
               scene::Worker const& worker) const noexcept;
@@ -75,9 +67,6 @@ class Map {
     Grid coarse_grid_;
 
     Photon_ref* photon_refs_;
-
-    uint32_t    num_importances_;
-    Importance* importances_;
 };
 
 }  // namespace rendering::integrator::particle::photon

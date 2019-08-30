@@ -4,6 +4,7 @@
 #include "base/math/vector2.hpp"
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"
+#include "integrator/particle/particle_importance.hpp"
 #include "integrator/particle/photon/photon_map.hpp"
 #include "take/take_settings.hpp"
 #include "tile_queue.hpp"
@@ -84,6 +85,8 @@ class Driver {
     take::Photon_settings photon_settings_;
 
     integrator::particle::photon::Map photon_map_;
+
+    integrator::particle::Importance_cache particle_importance_;
 
     struct Photon_info {
         uint32_t num_paths;

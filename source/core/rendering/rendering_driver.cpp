@@ -39,7 +39,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
     if (num_photons) {
         uint32_t const num_workers = thread_pool.num_threads();
 
-        photon_map_.init(scene, num_workers);
+        photon_map_.init(num_workers);
 
         uint32_t range = num_photons / num_workers;
         if (num_photons % num_workers) {
@@ -51,11 +51,16 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
 
     integrator::particle::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
 
+    if (num_photons > 0 || take.lighttracer_factory) {
+        particle_importance_.init(scene);
+    }
+
     for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
         workers_[i].init(i, take.settings, scene, *take.view.camera, max_material_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
                          *take.volume_integrator_factory, *take.sampler_factory, photon_map,
-                         take.photon_settings, take.lighttracer_factory, Num_particles_per_chunk);
+                         take.photon_settings, take.lighttracer_factory, Num_particles_per_chunk,
+                         &particle_importance_);
     }
 }
 

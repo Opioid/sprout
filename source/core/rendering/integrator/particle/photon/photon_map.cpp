@@ -5,7 +5,7 @@
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "photon.hpp"
-#include "photon_importance.hpp"
+#include "rendering/integrator/particle/particle_importance.hpp"
 #include "scene/light/light.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_worker.hpp"
@@ -25,27 +25,20 @@ Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float co
       num_reduced_(nullptr),
       fine_grid_(search_radius, 1.5f, false),
       coarse_grid_(coarse_search_radius, 1.1f, true),
-      photon_refs_(nullptr),
-      num_importances_(0),
-      importances_(nullptr) {}
+      photon_refs_(nullptr) {}
 
 Map::~Map() noexcept {
-    memory::destroy_aligned(importances_, num_importances_);
     memory::free_aligned(photon_refs_);
     memory::free_aligned(num_reduced_);
     memory::free_aligned(aabbs_);
     memory::free_aligned(photons_);
 }
 
-void Map::init(scene::Scene const& scene, uint32_t num_workers) noexcept {
+void Map::init(uint32_t num_workers) noexcept {
     photons_     = memory::allocate_aligned<Photon>(num_photons_);
     aabbs_       = memory::allocate_aligned<AABB>(num_photons_);
     num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
     photon_refs_ = memory::allocate_aligned<Photon_ref>(num_workers * Num_refs);
-
-    num_importances_ = static_cast<uint32_t>(scene.lights().size());
-
-    importances_ = memory::construct_array_aligned<Importance>(scene.lights().size());
 }
 
 void Map::start() noexcept {
@@ -56,14 +49,6 @@ void Map::start() noexcept {
 
 void Map::insert(Photon const& photon, uint32_t index) noexcept {
     photons_[index] = photon;
-}
-
-void Map::increment_importance(uint32_t light_id, float2 uv) noexcept {
-    importances_[light_id].increment(uv);
-}
-
-Importance const& Map::importance(uint32_t light_id) const noexcept {
-    return importances_[light_id];
 }
 
 uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
@@ -150,10 +135,6 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
         num_reduced = red_num_caustics;
     }
 
-    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-        importances_[i].prepare_sampling(pool);
-    }
-
     return num_reduced;
 }
 
@@ -164,12 +145,6 @@ void Map::compile_finalize() noexcept {
     if (separate_indirect_) {
         coarse_grid_.init_cells(red_num_coarse_, photons_ + red_num_fine_);
         coarse_grid_.set_num_paths(num_indirect_paths_);
-    }
-}
-
-void Map::export_importances() const noexcept {
-    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-        importances_[i].export_heatmap("photon_importance_" + std::to_string(i) + ".png");
     }
 }
 

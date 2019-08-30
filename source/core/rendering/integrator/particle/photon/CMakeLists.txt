@@ -3,8 +3,6 @@ target_sources(core
     "photon.hpp"
     "photon_grid.hpp"
     "photon_grid.cpp"
-    "photon_importance.hpp"
-    "photon_importance.cpp"
     "photon_map.hpp"
     "photon_map.cpp"
     "photon_mapper.hpp"

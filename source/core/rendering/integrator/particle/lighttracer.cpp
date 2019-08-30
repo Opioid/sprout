@@ -4,6 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "rendering/integrator/particle/particle_importance.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
@@ -71,9 +72,10 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     bool caustic_ray = false;
 
-    Ray   ray;
-    Light light;
-    if (!generate_light_ray(frame, worker, ray, light, light_sample)) {
+    Ray      ray;
+    Light    light;
+    uint32_t light_id;
+    if (!generate_light_ray(frame, worker, ray, light, light_id, light_sample)) {
         return;
     }
 
@@ -111,8 +113,11 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                     ((caustic_ray &&
                       worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                      settings_.full_light_path)) {
-                    direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
-                                  material_sample, filter, worker);
+                    if (direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
+                                      material_sample, filter, worker)) {
+                        worker.particle_importance().increment_importance(light_id,
+                                                                          light_sample.xy);
+                    }
                 }
 
                 if (!settings_.indirect_caustics) {
@@ -169,7 +174,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 }
 
 bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
-                                     Sample_from& light_sample) noexcept {
+                                     uint32_t& light_id, Sample_from& light_sample) noexcept {
     Scene const& scene = worker.scene();
 
     float const select = light_sampler_.generate_sample_1D(1);
@@ -191,19 +196,20 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
     ray.wavelength = 0.f;
 
     light_out = light.ref;
+    light_id  = light.id;
 
     light_sample.pdf *= light.pdf;
 
     return true;
 }
 
-void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
+bool Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, int4 const& bounds,
                                 float3 const& radiance, Ray const& history,
                                 Intersection const&    intersection,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) noexcept {
     if (!worker.scene().prop(intersection.prop)->visible_in_camera()) {
-        return;
+        return false;
     }
 
     float3 const p = material_sample.offset_p(intersection.geo.p);
@@ -211,7 +217,7 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
     Camera_sample_to camera_sample;
     if (!camera.sample(camera_prop, bounds, history.time, p, sampler_, 0, worker.scene(),
                        camera_sample)) {
-        return;
+        return false;
     }
 
     Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.time,
@@ -219,7 +225,7 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
 
     float3 tv;
     if (!worker.transmitted_visibility(ray, material_sample.wo(), intersection, filter, tv)) {
-        return;
+        return false;
     }
 
     float3 const wi   = -camera_sample.dir;
@@ -236,6 +242,8 @@ void Lighttracer::direct_camera(Camera const& camera, Prop const* camera_prop, i
     float3 const result = camera_sample.pdf * nsc * tv * radiance * bxdf.reflection;
 
     sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
+
+    return true;
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {

@@ -114,7 +114,6 @@ class Scene {
     std::vector<light::Light> const& lights() const noexcept;
 
     struct Light {
-        //   light::Light const& ref;
         light::Light const& ref;
 
         float    pdf;

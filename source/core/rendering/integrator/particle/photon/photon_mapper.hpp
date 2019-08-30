@@ -55,13 +55,13 @@ class Mapper : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    uint32_t trace_photon(Map const& map, uint32_t frame, AABB const& bounds, bool infinite_world,
+    uint32_t trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
                           bool caustics_only, Worker& worker, uint32_t max_photons, Photon* photons,
                           uint32_t& num_photons, uint32_t& light_id,
                           Sample_from& light_sample) noexcept;
 
-    bool generate_light_ray(Map const& map, uint32_t frame, AABB const& bounds, Worker& worker,
-                            Ray& ray, Light& light_out, uint32_t& light_id,
+    bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
+                            Light& light_out, uint32_t& light_id,
                             Sample_from& light_sample) noexcept;
 
     Settings const settings_;
