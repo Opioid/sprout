@@ -166,8 +166,8 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
 
 bool Canopy::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
                     bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                    float2 const& /*importance_uv*/, AABB const& /*bounds*/,
-                    Node_stack& /*node_stack*/, Sample_from& /*sample*/) const noexcept {
+                    float2 /*importance_uv*/, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                    Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
@@ -192,7 +192,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
         return false;
     }
 
-    float3 const dir = math::disk_to_hemisphere_equidistant(disk);
+    float3 const dir = disk_to_hemisphere_equidistant(disk);
 
     sample.wi  = transform_vector(transformation.rotation, dir);
     sample.uvw = float3(uv);
@@ -210,7 +210,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*
 
 bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
                     float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                    uint32_t /*sampler_dimension*/, float2 const& importance_uv, AABB const& bounds,
+                    uint32_t /*sampler_dimension*/, float2 importance_uv, AABB const& bounds,
                     Sample_from& sample) const noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 

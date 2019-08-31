@@ -92,7 +92,7 @@ class Shape {
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
                         bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                        float2 const& importance_uv, AABB const& bounds, Node_stack& node_stack,
+                        float2 importance_uv, AABB const& bounds, Node_stack& node_stack,
                         Sample_from& sample) const noexcept = 0;
 
     // All pdf functions implicitely assume that the passed
@@ -116,7 +116,7 @@ class Shape {
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
                         bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                        float2 const& importance_uv, AABB const& bounds, Sample_from& sample) const
+                        float2 importance_uv, AABB const& bounds, Sample_from& sample) const
         noexcept = 0;
 
     virtual float pdf_uv(Ray const& ray, Intersection const& intersection,

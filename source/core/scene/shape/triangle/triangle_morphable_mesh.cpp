@@ -194,7 +194,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/,
 
 bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
                             float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                            uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
+                            uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
                             AABB const& /*bounds*/, Node_stack& /*node_stack*/,
                             Sample_from& /*sample*/) const noexcept {
     return false;
@@ -227,7 +227,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const
 bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                            uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
+                            uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
                             AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }

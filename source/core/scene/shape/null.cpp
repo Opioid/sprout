@@ -72,8 +72,8 @@ bool Null::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& 
 
 bool Null::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
                   bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                  float2 const& /*importance_uv*/, AABB const& /*bounds*/,
-                  Node_stack& /*node_stack*/, Sample_from& /*sample*/) const noexcept {
+                  float2 /*importance_uv*/, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                  Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
@@ -102,8 +102,8 @@ bool Null::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
 
 bool Null::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                   float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
-                  AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
+                  uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

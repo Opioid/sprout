@@ -203,7 +203,7 @@ float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& transf
                                                     float2                uv) noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-    float3 const dir = math::disk_to_hemisphere_equidistant(disk);
+    float3 const dir = disk_to_hemisphere_equidistant(disk);
 
     return transform_vector(transformation.rotation, dir);
 }

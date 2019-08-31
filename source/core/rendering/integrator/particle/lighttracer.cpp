@@ -183,8 +183,19 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
 
     uint64_t const time = worker.absolute_time(frame, light_sampler_.generate_sample_1D(2));
 
-    if (!light.ref.sample(time, light_sampler_, 1, scene.aabb(), worker, light_sample)) {
-        return false;
+    Importance const& importance = worker.particle_importance().importance(light.id);
+
+    if (importance.distribution().empty()) {
+        if (!light.ref.sample(time, light_sampler_, 0, scene.aabb(), worker, light_sample)) {
+            return false;
+        }
+    } else {
+        if (!light.ref.sample(time, light_sampler_, 0, importance.distribution(), scene.aabb(),
+                              worker, light_sample)) {
+            return false;
+        }
+
+        light_sample.pdf *= importance.denormalization_factor();
     }
 
     ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);

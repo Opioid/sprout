@@ -189,8 +189,8 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
 
 bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                             bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                            float2 const& importance_uv, AABB const& bounds,
-                            Node_stack& /*node_stack*/, Sample_from& sample) const noexcept {
+                            float2 importance_uv, AABB const& bounds, Node_stack& /*node_stack*/,
+                            Sample_from& sample) const noexcept {
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = sample_disk_concentric(r2);
 
@@ -252,7 +252,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const
 bool Celestial_disk::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, Sampler& /*sampler*/,
-                            uint32_t /*sampler_dimension*/, float2 const& /*importance_uv*/,
+                            uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
                             AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }

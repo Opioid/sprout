@@ -109,8 +109,8 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
         float const ef = emission_factor_;
 
         pool.run_range(
-            [&conditional, &artws, &shape, &texture, d, idf, element, ef](
-                uint32_t id, int32_t begin, int32_t end) {
+            [conditional, &artws, &shape, &texture, d, idf, element, ef](uint32_t id, int32_t begin,
+                                                                         int32_t end) {
                 float* luminance = memory::allocate_aligned<float>(d[0]);
 
                 float4 artw(0.f);

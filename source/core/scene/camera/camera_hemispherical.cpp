@@ -49,7 +49,7 @@ bool Hemispherical::generate_ray(Prop const* self, Camera_sample const& sample, 
         return false;
     }
 
-    float3 dir = math::disk_to_hemisphere_equidistant(float2(x, y));
+    float3 dir = disk_to_hemisphere_equidistant(float2(x, y));
 
     uint64_t const time = absolute_time(frame, sample.time);
 

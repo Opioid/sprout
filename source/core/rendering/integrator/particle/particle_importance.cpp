@@ -8,6 +8,8 @@
 #include "scene/light/light.hpp"
 #include "scene/scene.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::particle {
 
 static int32_t constexpr Dimensions = 256;
@@ -50,25 +52,25 @@ void Importance::export_heatmap(std::string_view name) const noexcept {
 }
 
 void Importance::prepare_sampling(thread::Pool& pool) noexcept {
-    return;
+    //    return;
 
     if (!distribution_.empty()) {
         return;
     }
 
-    Distribution_2D::Distribution_impl* conditional = distribution_.allocate(Dimensions);
+    distribution_.allocate(Dimensions);
 
     uint32_t maxi = 0;
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
         maxi = std::max(importance_[i], maxi);
     }
 
-    uint32_t mini = maxi / 16 + 1;
-
     float const max = static_cast<float>(maxi);
 
     pool.run_range(
-        [this, &conditional, max, mini](uint32_t /*id*/, int32_t begin, int32_t end) {
+        [this, max](uint32_t /*id*/, int32_t begin, int32_t end) {
+            Distribution_2D::Distribution_impl* conditional = distribution_.conditional();
+
             float* weights = memory::allocate_aligned<float>(Dimensions);
 
             for (int32_t y = begin; y < end; ++y) {
@@ -77,7 +79,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float const weight = static_cast<float>(std::max(importance_[i], mini)) / max;
+                    float const weight = std::max(static_cast<float>(importance_[i]) / max, 0.01f);
 
                     weights[x] = weight;
                 }

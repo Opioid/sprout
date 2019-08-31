@@ -17,6 +17,8 @@ class Distribution_t_2D {
 
     Distribution_impl* allocate(uint32_t num) noexcept;
 
+    Distribution_impl* conditional() noexcept;
+
     bool empty() const noexcept;
 
     void init() noexcept;

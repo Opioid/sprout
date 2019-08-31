@@ -121,8 +121,9 @@ bool Range_queue::pop(ulong2& range) noexcept {
     return false;
 }
 
-uint32_t Range_queue::index(ulong2 const& range) const noexcept {
-    return static_cast<uint32_t>(range[0] / static_cast<uint64_t>(range_size_));
+uint32_t Range_queue::index(ulong2 const& range, uint32_t iteration) const noexcept {
+    return static_cast<uint32_t>(range[0] / static_cast<uint64_t>(range_size_)) +
+           iteration * num_ranges_;
 }
 
 }  // namespace rendering

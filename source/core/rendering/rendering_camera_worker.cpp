@@ -59,10 +59,11 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
     }
 }
 
-void Camera_worker::particles(uint32_t frame, uint32_t view, ulong2 const& range) noexcept {
+void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t iteration,
+                              ulong2 const& range) noexcept {
     scene::camera::Camera const& camera = *camera_;
 
-    uint32_t const range_index = ranges_.index(range);
+    uint32_t const range_index = ranges_.index(range, iteration);
 
     rng_.start(0, range_index);
 

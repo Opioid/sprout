@@ -27,6 +27,11 @@ typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::allocate
 }
 
 template <typename T>
+typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::conditional() noexcept {
+    return conditional_;
+}
+
+template <typename T>
 bool Distribution_t_2D<T>::empty() const noexcept {
     return 0 == conditional_size_;
 }
