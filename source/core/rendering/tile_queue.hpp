@@ -38,7 +38,7 @@ class Tile_queue {
 
 class Range_queue {
   public:
-    Range_queue(uint64_t total, uint32_t range_size) noexcept;
+    Range_queue(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept;
 
     ~Range_queue() noexcept;
 
@@ -46,16 +46,18 @@ class Range_queue {
 
     void restart() noexcept;
 
-    bool pop(ulong2& range) noexcept;
+    bool pop(uint32_t iteration, ulong2& range) noexcept;
 
     uint32_t index(ulong2 const& range, uint32_t iteration) const noexcept;
 
   private:
-    uint64_t const total_;
+    uint64_t const total0_;
+    uint64_t const total1_;
 
     uint32_t const range_size_;
 
-    uint32_t const num_ranges_;
+    uint32_t const num_ranges0_;
+    uint32_t const num_ranges1_;
 
     std::atomic<uint32_t> current_consume_;
 };

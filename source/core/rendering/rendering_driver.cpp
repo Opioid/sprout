@@ -19,6 +19,14 @@ using namespace image;
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
 
+static uint64_t head(uint64_t total) noexcept {
+    return static_cast<uint64_t>(0.1f * static_cast<float>(total));
+}
+
+static uint64_t tail(uint64_t total) noexcept {
+    return total - head(total);
+}
+
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                uint32_t max_material_sample_size) noexcept
     : scene_(scene),
@@ -28,7 +36,9 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
                                                               ranges_)),
       tiles_(take.view.camera->resolution(), int2(32, 32),
              take.view.camera->sensor().filter_radius_int()),
-      ranges_(take.lighttracer_factory ? take.num_particles : 0, Num_particles_per_chunk),
+      ranges_(take.lighttracer_factory ? take.num_particles : 0, 0, Num_particles_per_chunk),
+      //   ranges_(take.lighttracer_factory ? head(take.num_particles) : 0, take.lighttracer_factory
+      //   ? tail(take.num_particles) : 0, Num_particles_per_chunk),
       target_(Description(take.view.camera->sensor_dimensions())),
       photon_settings_(take.photon_settings),
       photon_map_(take.photon_settings.num_photons, take.photon_settings.search_radius,

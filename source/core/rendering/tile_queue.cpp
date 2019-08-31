@@ -87,34 +87,41 @@ void Tile_queue::push(int4 const& tile) noexcept {
     tiles_[current] = tile;
 }
 
-Range_queue::Range_queue(uint64_t total, uint32_t range_size) noexcept
-    : total_(total),
+Range_queue::Range_queue(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept
+    : total0_(total0),
+      total1_(total1),
       range_size_(range_size),
-      num_ranges_(static_cast<uint32_t>(
-          std::ceil(static_cast<float>(total) / static_cast<float>(range_size)))) {}
+      num_ranges0_(static_cast<uint32_t>(
+          std::ceil(static_cast<float>(total0) / static_cast<float>(range_size)))),
+      num_ranges1_(static_cast<uint32_t>(
+          std::ceil(static_cast<float>(total1) / static_cast<float>(range_size))))
+
+{}
 
 Range_queue::~Range_queue() noexcept {}
 
 uint32_t Range_queue::size() const noexcept {
-    return num_ranges_;
+    return num_ranges0_ + num_ranges1_;
 }
 
 void Range_queue::restart() noexcept {
     current_consume_ = 0;
 }
 
-bool Range_queue::pop(ulong2& range) noexcept {
+bool Range_queue::pop(uint32_t iteration, ulong2& range) noexcept {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
-    if (current < num_ranges_ - 1) {
-        uint64_t const start = static_cast<uint64_t>(current) * static_cast<uint64_t>(range_size_);
-        range                = ulong2(start, start + range_size_);
+    uint64_t const start = static_cast<uint64_t>(current) * static_cast<uint64_t>(range_size_);
+
+    uint32_t const num_ranges = 0 == iteration ? num_ranges0_ : num_ranges1_;
+
+    if (current < num_ranges - 1) {
+        range = ulong2(start, start + range_size_);
         return true;
     }
 
-    if (current < num_ranges_) {
-        uint64_t const start = static_cast<uint64_t>(current) * static_cast<uint64_t>(range_size_);
-        range                = ulong2(start, total_);
+    if (current < num_ranges) {
+        range = ulong2(start, 0 == iteration ? total0_ : total1_);
         return true;
     }
 
@@ -123,7 +130,7 @@ bool Range_queue::pop(ulong2& range) noexcept {
 
 uint32_t Range_queue::index(ulong2 const& range, uint32_t iteration) const noexcept {
     return static_cast<uint32_t>(range[0] / static_cast<uint64_t>(range_size_)) +
-           iteration * num_ranges_;
+           iteration * num_ranges0_;
 }
 
 }  // namespace rendering

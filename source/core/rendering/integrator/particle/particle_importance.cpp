@@ -107,9 +107,11 @@ void Importance_cache::init(scene::Scene const& scene) noexcept {
 }
 
 void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
-    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-        importances_[i].prepare_sampling(pool);
-    }
+    importances_[1].prepare_sampling(pool);
+
+    //    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
+    //        importances_[i].prepare_sampling(pool);
+    //    }
 }
 
 void Importance_cache::increment_importance(uint32_t light_id, float2 uv) noexcept {
