@@ -33,7 +33,13 @@ int4 Perspective::view_bounds(uint32_t /*view*/) const noexcept {
 }
 
 float Perspective::pixel_solid_angle() const noexcept {
-    return fov_ / static_cast<float>(resolution_[0]);
+	float2 const fr(resolution_);
+	float const  ratio = fr[1] / fr[0];
+
+	float const v = fov_ / fr[0];
+	float const h = (fov_ * ratio) / fr[1];
+
+	return v * h;
 }
 
 bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
