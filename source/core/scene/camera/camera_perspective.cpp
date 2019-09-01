@@ -29,17 +29,14 @@ int2 Perspective::sensor_dimensions() const noexcept {
 }
 
 int4 Perspective::view_bounds(uint32_t /*view*/) const noexcept {
-    return int4(int2(0, 0), resolution_ - int2(1));
+	return int4(int2(0), resolution_ - int2(1));
 }
 
 float Perspective::pixel_solid_angle() const noexcept {
-	float2 const fr(resolution_);
-	float const  ratio = fr[1] / fr[0];
+	// Assume square pixels...
+	float const x = fov_ / static_cast<float>(resolution_[0]);
 
-	float const v = fov_ / fr[0];
-	float const h = (fov_ * ratio) / fr[1];
-
-	return v * h;
+	return x * x;
 }
 
 bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
