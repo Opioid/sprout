@@ -108,6 +108,10 @@ void Importance_cache::set_eye_position(float3 const& eye) noexcept {
     eye_ = eye;
 }
 
+void Importance_cache::set_training(bool training) noexcept {
+    training_ = training;
+}
+
 void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
     importances_[1].prepare_sampling(pool);
 
@@ -117,14 +121,18 @@ void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
 }
 
 void Importance_cache::increment_importance(uint32_t light_id, float2 uv) noexcept {
-    importances_[light_id].increment(uv, 1.f);
+    if (training_) {
+        importances_[light_id].increment(uv, 1.f);
+    }
 }
 
 void Importance_cache::increment_importance(uint32_t light_id, float2 uv,
                                             float3 const& p) noexcept {
-    float const d = std::max(squared_distance(p, eye_), 1.f);
+    if (training_) {
+        float const d = std::max(squared_distance(p, eye_), 1.f);
 
-    importances_[light_id].increment(uv, 1.f / d);
+        importances_[light_id].increment(uv, 1.f / d);
+    }
 }
 
 Importance const& Importance_cache::importance(uint32_t light_id) const noexcept {

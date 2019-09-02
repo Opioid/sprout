@@ -51,6 +51,8 @@ class Importance_cache {
 
     void set_eye_position(float3 const& eye) noexcept;
 
+    void set_training(bool training) noexcept;
+
     void prepare_sampling(thread::Pool& pool) noexcept;
 
     void increment_importance(uint32_t light_id, float2 uv) noexcept;
@@ -62,6 +64,8 @@ class Importance_cache {
 
   private:
     float3 eye_;
+
+    bool training_;
 
     uint32_t    num_importances_;
     Importance* importances_;

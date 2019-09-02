@@ -92,6 +92,12 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
     view_.camera->sensor().clear(1.f);
 
+#ifdef PARTICLE_TRAINING
+    particle_importance_.set_training(true);
+#else
+    particle_importance_.set_training(false);
+#endif
+
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         iteration_ = v;
 
@@ -108,7 +114,10 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
         });
     }
 
+#ifdef PARTICLE_TRAINING
+
     particle_importance_.prepare_sampling(thread_pool_);
+    particle_importance_.set_training(false);
 
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         iteration_ = v;
@@ -125,6 +134,8 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
             }
         });
     }
+
+#endif
 
     // If there will be a forward pass later...
     if (view_.num_samples_per_pixel > 0) {
