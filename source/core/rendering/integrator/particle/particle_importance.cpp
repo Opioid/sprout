@@ -16,11 +16,11 @@ static int32_t constexpr Dimensions = 256;
 
 Importance::Importance() noexcept
     : dimensions_(Dimensions),
-      importance_(memory::allocate_aligned<uint32_t>(Dimensions * Dimensions)),
+      importance_(memory::allocate_aligned<float>(Dimensions * Dimensions)),
       dimensions_back_(Dimensions - 1),
       dimensions_float_(float2(Dimensions)) {
     for (int32_t i = 0, len = dimensions_[0] * dimensions_[1]; i < len; ++i) {
-        importance_[i] = 0;
+        importance_[i] = 0.f;
     }
 }
 
@@ -28,7 +28,7 @@ Importance::~Importance() noexcept {
     memory::free_aligned(importance_);
 }
 
-void Importance::increment(float2 uv) noexcept {
+void Importance::increment(float2 uv, float weight) noexcept {
     int32_t const x = std::min(static_cast<int32_t>(uv[0] * dimensions_float_[0]),
                                dimensions_back_[0]);
     int32_t const y = std::min(static_cast<int32_t>(uv[1] * dimensions_float_[1]),
@@ -36,7 +36,7 @@ void Importance::increment(float2 uv) noexcept {
 
     int32_t const id = y * dimensions_[0] + x;
 
-    atomic::add_assign(importance_[id], 1);
+    atomic::add_assign(importance_[id], weight);
 }
 
 Distribution_2D const& Importance::distribution() const noexcept {
@@ -60,12 +60,10 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
 
     distribution_.allocate(Dimensions);
 
-    uint32_t maxi = 0;
+    float max = 0;
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
-        maxi = std::max(importance_[i], maxi);
+        max = std::max(importance_[i], max);
     }
-
-    float const max = static_cast<float>(maxi);
 
     pool.run_range(
         [this, max](uint32_t /*id*/, int32_t begin, int32_t end) {
@@ -106,6 +104,10 @@ void Importance_cache::init(scene::Scene const& scene) noexcept {
     importances_ = memory::construct_array_aligned<Importance>(scene.lights().size());
 }
 
+void Importance_cache::set_eye_position(float3 const& eye) noexcept {
+    eye_ = eye;
+}
+
 void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
     importances_[1].prepare_sampling(pool);
 
@@ -115,7 +117,14 @@ void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
 }
 
 void Importance_cache::increment_importance(uint32_t light_id, float2 uv) noexcept {
-    importances_[light_id].increment(uv);
+    importances_[light_id].increment(uv, 1.f);
+}
+
+void Importance_cache::increment_importance(uint32_t light_id, float2 uv,
+                                            float3 const& p) noexcept {
+    float const d = std::max(squared_distance(p, eye_), 1.f);
+
+    importances_[light_id].increment(uv, 1.f / d);
 }
 
 Importance const& Importance_cache::importance(uint32_t light_id) const noexcept {

@@ -3,7 +3,7 @@
 
 #include <string_view>
 #include "base/math/distribution/distribution_2d.hpp"
-#include "base/math/vector2.hpp"
+#include "base/math/vector3.hpp"
 
 namespace scene {
 class Scene;
@@ -21,7 +21,7 @@ class Importance {
 
     ~Importance() noexcept;
 
-    void increment(float2 uv) noexcept;
+    void increment(float2 uv, float weight) noexcept;
 
     Distribution_2D const& distribution() const noexcept;
 
@@ -32,8 +32,8 @@ class Importance {
     void prepare_sampling(thread::Pool& pool) noexcept;
 
   private:
-    int2      dimensions_;
-    uint32_t* importance_;
+    int2   dimensions_;
+    float* importance_;
 
     int2   dimensions_back_;
     float2 dimensions_float_;
@@ -49,15 +49,20 @@ class Importance_cache {
 
     void init(scene::Scene const& scene) noexcept;
 
+    void set_eye_position(float3 const& eye) noexcept;
+
     void prepare_sampling(thread::Pool& pool) noexcept;
 
     void increment_importance(uint32_t light_id, float2 uv) noexcept;
+    void increment_importance(uint32_t light_id, float2 uv, float3 const& p) noexcept;
 
     Importance const& importance(uint32_t light_id) const noexcept;
 
     void export_importances() const noexcept;
 
   private:
+    float3 eye_;
+
     uint32_t    num_importances_;
     Importance* importances_;
 };

@@ -115,8 +115,8 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                      settings_.full_light_path)) {
                     if (direct_camera(camera, camera_prop, bounds, radiance, ray, intersection,
                                       material_sample, filter, worker)) {
-                        worker.particle_importance().increment_importance(light_id,
-                                                                          light_sample.xy);
+                        worker.particle_importance().increment_importance(light_id, light_sample.xy,
+                                                                          intersection.geo.p);
                     }
                 }
 

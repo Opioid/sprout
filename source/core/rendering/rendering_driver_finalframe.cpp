@@ -12,6 +12,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
+#include "scene/entity/composed_transformation.hpp"
 #include "scene/scene.hpp"
 #include "take/take_view.hpp"
 
@@ -40,6 +41,9 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         scene_.simulate(start, start + camera.frame_duration(), thread_pool_);
 
         camera.update(scene_, start, workers_[0]);
+
+        particle_importance_.set_eye_position(
+            scene_.prop_world_transformation(camera.entity()).position);
 
         bake_photons(current_frame);
 
@@ -104,26 +108,24 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
         });
     }
 
-    //   view_.camera->sensor().clear(1.f);
-    /*
-            particle_importance_.prepare_sampling(thread_pool_);
+    particle_importance_.prepare_sampling(thread_pool_);
 
-            for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
-                iteration_ = v;
+    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+        iteration_ = v;
 
-                ranges_.restart();
+        ranges_.restart();
 
-                thread_pool_.run_parallel([this](uint32_t index) noexcept {
-                    auto& worker = workers_[index];
+        thread_pool_.run_parallel([this](uint32_t index) noexcept {
+            auto& worker = workers_[index];
 
-                    for (ulong2 range; ranges_.pop(1, range);) {
-                        worker.particles(frame_, iteration_, 1, range);
+            for (ulong2 range; ranges_.pop(1, range);) {
+                worker.particles(frame_, iteration_, 1, range);
 
-                        progressor_.tick();
-                    }
-                });
+                progressor_.tick();
             }
-    */
+        });
+    }
+
     // If there will be a forward pass later...
     if (view_.num_samples_per_pixel > 0) {
         view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
