@@ -31,6 +31,8 @@ class Importance {
 
     void prepare_sampling(thread::Pool& pool) noexcept;
 
+    void bogus() noexcept;
+
   private:
     int2   dimensions_;
     float* importance_;
