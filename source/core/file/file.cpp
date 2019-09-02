@@ -8,21 +8,21 @@ Type query_type(std::istream& stream) {
     char header[4];
     stream.read(header, sizeof(header));
 
-    Type type = Type::Undefined;
-
-    if (!strncmp("\037\213", header, 2)) {
-        type = Type::GZIP;
-    } else if (!strncmp("\211PNG", header, 4)) {
-        type = Type::PNG;
-    } else if (!strncmp("#?", header, 2)) {
-        type = Type::RGBE;
-    } else if (!strncmp("SUB\000", header, 4)) {
-        type = Type::SUB;
-    }
-
     stream.seekg(0);
 
-    return type;
+    if (!strncmp("\x76\x2f\x31\x01", header, 4)) {
+        return Type::EXR;
+    } else if (!strncmp("\037\213", header, 2)) {
+        return Type::GZIP;
+    } else if (!strncmp("\211PNG", header, 4)) {
+        return Type::PNG;
+    } else if (!strncmp("#?", header, 2)) {
+        return Type::RGBE;
+    } else if (!strncmp("SUB\000", header, 4)) {
+        return Type::SUB;
+    } else {
+        return Type::Undefined;
+    }
 }
 
 }  // namespace file

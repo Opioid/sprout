@@ -5,7 +5,7 @@
 
 namespace file {
 
-enum class Type { Undefined, GZIP, PNG, RGBE, SUB };
+enum class Type { Undefined, EXR, GZIP, PNG, RGBE, SUB };
 
 Type query_type(std::istream& stream);
 

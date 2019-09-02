@@ -78,6 +78,10 @@ int main(int argc, char* argv[]) noexcept {
         ++slot;
     }
 
+    if (items.empty()) {
+        return 1;
+    }
+
     if (Options::Operator::Average == args.op) {
         if (uint32_t const num = op::average(items, args, resource_manager.thread_pool()); num) {
             logging::verbose("average " + string::to_string(num) + " images in " +

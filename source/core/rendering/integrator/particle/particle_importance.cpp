@@ -103,11 +103,10 @@ void Importance::bogus() noexcept {
 
     for (int32_t y = 0; y < Dimensions; ++y) {
         int32_t const d = Dimensions - y;
-        float const w = static_cast<float>(d * d);
+        float const   w = static_cast<float>(d * d);
 
         for (int32_t x = 0; x < Dimensions; ++x) {
-                weights[x] = w;
-
+            weights[x] = w;
         }
 
         conditional[y].init(weights, Dimensions);
@@ -139,13 +138,13 @@ void Importance_cache::set_training(bool training) noexcept {
 }
 
 void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
- //   importances_[0].bogus();
+    //   importances_[0].bogus();
 
     importances_[1].prepare_sampling(pool);
 
-//        for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-//            importances_[i].prepare_sampling(pool);
-//        }
+    //        for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
+    //            importances_[i].prepare_sampling(pool);
+    //        }
 }
 
 void Importance_cache::increment_importance(uint32_t light_id, float2 uv) noexcept {

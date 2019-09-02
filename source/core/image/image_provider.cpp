@@ -38,7 +38,10 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
 
     file::Type const type = file::query_type(stream);
 
-    if (file::Type::PNG == type) {
+    if (file::Type::EXR == type) {
+        logging::push_error("EXR loader not implemented.");
+        return nullptr;
+    } else if (file::Type::PNG == type) {
         Channels channels = Channels::None;
         options.query("channels", channels);
 
