@@ -1,5 +1,4 @@
 #include "png_reader.hpp"
-#include <array>
 #include <cstring>
 #include <istream>
 #include "base/math/vector4.inl"
@@ -92,16 +91,17 @@ static uint32_t byteswap(uint32_t v) noexcept;
 
 static uint32_t constexpr Signature_size = 8;
 
-static constexpr std::array<uint8_t, Signature_size> Signature = {
-    {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}};
+static uint8_t constexpr Signature[Signature_size] = {0x89, 0x50, 0x4E, 0x47,
+                                                      0x0D, 0x0A, 0x1A, 0x0A};
 
 Image* Reader::read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
                     bool invert) noexcept {
-    std::array<uint8_t, Signature_size> signature;
+    uint8_t signature[Signature_size];
 
-    stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
+    stream.read(reinterpret_cast<char*>(signature), Signature_size);
 
-    if (Signature != signature) {
+    if (memcmp(reinterpret_cast<const void*>(Signature), reinterpret_cast<void*>(signature),
+               Signature_size)) {
         logging::push_error("Bad PNG signature");
         return nullptr;
     }

@@ -1,6 +1,6 @@
-#pragma once
+#ifndef SU_CORE_GZIP_READ_STREAM
+#define SU_CORE_GZIP_READ_STREAM
 
-#include <array>
 #include <istream>
 #include <streambuf>
 #include "miniz/miniz.hpp"
@@ -52,9 +52,11 @@ class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
 
     mz_stream z_stream_;
 
-    std::array<char_type, 8192> read_buffer_;
+    static size_t constexpr Buffer_size = 8192;
 
-    std::array<char_type, 8192> buffer_;
+    char_type read_buffer_[Buffer_size];
+
+    char_type buffer_[Buffer_size];
 };
 
 class Read_stream : public std::basic_istream<char, std::char_traits<char>> {
@@ -96,3 +98,5 @@ class Read_stream : public std::basic_istream<char, std::char_traits<char>> {
 };
 
 }  // namespace gzip
+
+#endif

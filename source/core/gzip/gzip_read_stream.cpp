@@ -100,19 +100,19 @@ Filebuffer::int_type Filebuffer::underflow() {
 
     while (0 == uncompressed_bytes) {
         if (0 == z_stream_.avail_in) {
-            stream_->read(read_buffer_.data(), read_buffer_.size());
+            stream_->read(read_buffer_, Buffer_size);
 
-            size_t read_bytes = *stream_ ? read_buffer_.size() : stream_->gcount();
+            size_t read_bytes = *stream_ ? Buffer_size : stream_->gcount();
 
             z_stream_.avail_in = static_cast<uint32_t>(read_bytes);
-            z_stream_.next_in  = reinterpret_cast<uint8_t*>(read_buffer_.data());
+            z_stream_.next_in  = reinterpret_cast<uint8_t*>(read_buffer_);
         }
 
         if (0 == z_stream_.avail_out) {
-            z_stream_.avail_out = static_cast<uint32_t>(buffer_.size());
-            z_stream_.next_out  = reinterpret_cast<uint8_t*>(buffer_.data());
+            z_stream_.avail_out = static_cast<uint32_t>(Buffer_size);
+            z_stream_.next_out  = reinterpret_cast<uint8_t*>(buffer_);
 
-            current = &*buffer_.begin();
+            current = buffer_;
         }
 
         uint32_t avail_out = z_stream_.avail_out;
@@ -130,7 +130,7 @@ Filebuffer::int_type Filebuffer::underflow() {
         }
     }
 
-    setg(&*buffer_.begin(), current, current + uncompressed_bytes);
+    setg(buffer_, current, current + uncompressed_bytes);
 
     return traits_type::to_int_type(*current);
 }
@@ -156,7 +156,7 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
 
         init_z_stream();
 
-        setg(&*buffer_.begin(), &*buffer_.begin(), &*buffer_.begin());
+        setg(buffer_, buffer_, buffer_);
     }
 
     return pos;
