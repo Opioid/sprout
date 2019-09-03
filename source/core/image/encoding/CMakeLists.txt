@@ -1,3 +1,4 @@
+add_subdirectory("exr")
 add_subdirectory("json")
 add_subdirectory("png")
 add_subdirectory("raw")

@@ -13,6 +13,7 @@
 #include "exporting/exporting_sink_image_sequence.hpp"
 #include "exporting/exporting_sink_null.hpp"
 #include "exporting/exporting_sink_statistics.hpp"
+#include "image/encoding/exr/exr_writer.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/encoding/rgbe/rgbe_writer.hpp"
 #include "image/texture/texture.inl"
@@ -890,7 +891,13 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
 
             image::Writer* writer;
 
-            if ("RGBE" == format) {
+            if ("EXR" == format) {
+                bool const transparent_sensor = camera.sensor().has_alpha_transparency();
+
+                bool const alpha = view.pipeline.has_alpha_transparency(transparent_sensor);
+
+                writer = new exr::Writer(alpha);
+            } else if ("RGBE" == format) {
                 writer = new rgbe::Writer();
             } else {
                 bool const transparent_sensor = camera.sensor().has_alpha_transparency();

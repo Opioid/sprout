@@ -2,6 +2,7 @@
 #include <istream>
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
+#include "encoding/exr/exr_reader.hpp"
 #include "encoding/json/json_reader.hpp"
 #include "encoding/png/png_reader.hpp"
 #include "encoding/raw/raw_reader.hpp"
@@ -39,8 +40,7 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
     file::Type const type = file::query_type(stream);
 
     if (file::Type::EXR == type) {
-        logging::push_error("EXR loader not implemented.");
-        return nullptr;
+        return encoding::exr::Reader::read(stream);
     } else if (file::Type::PNG == type) {
         Channels channels = Channels::None;
         options.query("channels", channels);
