@@ -1,5 +1,4 @@
 #include "png_writer.hpp"
-#include <fstream>
 #include "base/encoding/encoding.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
@@ -8,6 +7,8 @@
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"
 #include "miniz/miniz.hpp"
+
+#include <fstream>
 
 namespace image::encoding::png {
 
@@ -194,6 +195,7 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
     }
 
     uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+
     byte3*         bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {

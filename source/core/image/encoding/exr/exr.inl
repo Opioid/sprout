@@ -18,6 +18,17 @@ struct Channel {
     Type type;
 };
 
+enum class Compression : uint8_t {
+    No,
+    RLE,
+    ZIPS,
+    ZIP,
+    PIZ,
+    PXR24,
+    B44,
+    B44A
+};
+
 }  // namespace image::encoding::exr
 
 #endif

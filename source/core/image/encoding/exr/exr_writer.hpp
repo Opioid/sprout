@@ -14,6 +14,10 @@ class Writer : public image::Writer {
     bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) override final;
 
   private:
+    bool no_compression(std::ostream& stream, Float4 const& image) const noexcept;
+
+    bool zip_compression(std::ostream& stream, Float4 const& image) const noexcept;
+
     bool alpha_;
 };
 
