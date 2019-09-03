@@ -1,6 +1,6 @@
 #include "exr_writer.hpp"
 #include <fstream>
-#include "base/math/vector2.inl"
+#include "base/math/vector4.inl"
 #include "exr.inl"
 #include "image/image.hpp"
 
@@ -16,6 +16,7 @@ std::string Writer::file_extension() const {
 
 static void w(std::ostream& stream, uint32_t i) noexcept;
 static void w(std::ostream& stream, float f) noexcept;
+static void w(std::ostream& stream, int64_t i) noexcept;
 static void w(std::ostream& stream, std::string const& s) noexcept;
 static void w(std::ostream& stream, Channel const& c) noexcept;
 
@@ -43,10 +44,13 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
         //        w(stream, Channel{"R", Channel::Type::Float});
         //        stream.put(0x00);
 
-        uint32_t const size = 1 * (2 + 4 + 4 + 4 + 4) + 1;
+        uint32_t const size = 3 * (2 + 4 + 4 + 4 + 4) + 1;
         w(stream, size);
 
+        w(stream, Channel{"B", Channel::Type::Float});
+        w(stream, Channel{"G", Channel::Type::Float});
         w(stream, Channel{"R", Channel::Type::Float});
+
         stream.put(0x00);
     }
 
@@ -86,7 +90,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
         w(stream, "lineOrder");
         w(stream, "lineOrder");
         w(stream, 1u);
-        stream.put(0x02);
+        stream.put(0x00);
     }
 
     {
@@ -100,8 +104,8 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
         w(stream, "screenWindowCenter");
         w(stream, "v2f");
         w(stream, 8u);
-        w(stream, 1.f);
-        w(stream, 1.f);
+        w(stream, 0.f);
+        w(stream, 0.f);
     }
 
     {
@@ -113,19 +117,34 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
 
     stream.put(0x00);
 
-    size_t const current = stream.tellp() + static_cast<int64_t>(d[1] * 4);
+    int64_t const scanline_offset = stream.tellp() + static_cast<int64_t>(d[1] * 8);
+
+    int32_t const pixel_row_size = d[0] * (4 + 4 + 4);
+
+    int32_t const row_size = 4 + 4 + pixel_row_size;
 
     for (int32_t y = 0; y < d[1]; ++y) {
-        w(stream, static_cast<uint32_t>(current + y * d[0] * 4));
+        w(stream, scanline_offset + y * row_size);
     }
 
     for (int32_t y = 0; y < d[1]; ++y) {
         w(stream, static_cast<uint32_t>(y));
 
-        w(stream, static_cast<uint32_t>(d[0] * 4));
+        w(stream, static_cast<uint32_t>(pixel_row_size));
 
         for (int32_t x = 0; x < d[0]; ++x) {
-            w(stream, 0.f);
+            float const b = image.at(x, y)[2];
+            w(stream, b);
+        }
+
+        for (int32_t x = 0; x < d[0]; ++x) {
+            float const g = image.at(x, y)[1];
+            w(stream, g);
+        }
+
+        for (int32_t x = 0; x < d[0]; ++x) {
+            float const r = image.at(x, y)[0];
+            w(stream, r);
         }
     }
 
@@ -138,6 +157,10 @@ static void w(std::ostream& stream, uint32_t i) noexcept {
 
 static void w(std::ostream& stream, float f) noexcept {
     stream.write(reinterpret_cast<const char*>(&f), 4);
+}
+
+static void w(std::ostream& stream, int64_t i) noexcept {
+    stream.write(reinterpret_cast<const char*>(&i), 8);
 }
 
 static void w(std::ostream& stream, std::string const& s) noexcept {
