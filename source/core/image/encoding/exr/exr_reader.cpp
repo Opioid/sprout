@@ -1,10 +1,12 @@
 #include "exr_reader.hpp"
-#include <cstdint>
-#include <fstream>
 #include "base/math/vector2.inl"
 #include "exr.inl"
 #include "image/image.hpp"
 #include "logging/logging.hpp"
+
+#include <cstdint>
+#include <cstring>
+#include <fstream>
 
 #include <iostream>
 #include "base/math/print.hpp"
