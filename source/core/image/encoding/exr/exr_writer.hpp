@@ -16,6 +16,7 @@ class Writer : public image::Writer {
   private:
     bool no_compression(std::ostream& stream, Float4 const& image) const noexcept;
 
+    bool zips_compression(std::ostream& stream, Float4 const& image) const noexcept;
     bool zip_compression(std::ostream& stream, Float4 const& image) const noexcept;
 
     bool alpha_;
