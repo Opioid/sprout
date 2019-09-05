@@ -143,7 +143,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 
                 float2 const idf = 1.f / float2(Bake_dimensions);
 
-                float* luminance = memory::allocate_aligned<float>(Bake_dimensions[0]);
+                auto luminance = memory::Buffer<float>(Bake_dimensions[0]);
 
                 float4 artw(0.f);
 
@@ -168,12 +168,10 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
                         artw += float4(wli, uv_weight);
                     }
 
-                    conditional[y].init(luminance, Bake_dimensions[0]);
+                    conditional[y].init(luminance.data(), Bake_dimensions[0]);
                 }
 
                 artws[id] += artw;
-
-                memory::free_aligned(luminance);
             },
             0, Bake_dimensions[1]);
 

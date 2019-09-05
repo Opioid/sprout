@@ -111,7 +111,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
         pool.run_range(
             [conditional, &artws, &shape, &texture, d, idf, element, ef](uint32_t id, int32_t begin,
                                                                          int32_t end) {
-                float* luminance = memory::allocate_aligned<float>(d[0]);
+                auto luminance = memory::Buffer<float>(d[0]);
 
                 float4 artw(0.f);
 
@@ -132,12 +132,10 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                         luminance[x] = spectrum::luminance(wr);
                     }
 
-                    conditional[y].init(luminance, d[0]);
+                    conditional[y].init(luminance.data(), d[0]);
                 }
 
                 artws[id] += artw;
-
-                memory::free_aligned(luminance);
             },
             0, d[1]);
 

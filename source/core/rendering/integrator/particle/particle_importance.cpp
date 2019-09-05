@@ -69,7 +69,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
         [this, max](uint32_t /*id*/, int32_t begin, int32_t end) {
             Distribution_2D::Distribution_impl* conditional = distribution_.conditional();
 
-            float* weights = memory::allocate_aligned<float>(Dimensions);
+            auto weights = memory::Buffer<float>(Dimensions);
 
             for (int32_t y = begin; y < end; ++y) {
                 int32_t const row = y * Dimensions;
@@ -82,10 +82,8 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
                     weights[x] = weight;
                 }
 
-                conditional[y].init(weights, Dimensions);
+                conditional[y].init(weights.data(), Dimensions);
             }
-
-            memory::free_aligned(weights);
         },
         0, Dimensions);
 
@@ -99,7 +97,7 @@ void Importance::bogus() noexcept {
 
     Distribution_2D::Distribution_impl* conditional = distribution_.allocate(Dimensions);
 
-    float* weights = memory::allocate_aligned<float>(Dimensions);
+    auto weights = memory::Buffer<float>(Dimensions);
 
     for (int32_t y = 0; y < Dimensions; ++y) {
         int32_t const d = Dimensions - y;
@@ -109,10 +107,8 @@ void Importance::bogus() noexcept {
             weights[x] = w;
         }
 
-        conditional[y].init(weights, Dimensions);
+        conditional[y].init(weights.data(), Dimensions);
     }
-
-    memory::free_aligned(weights);
 
     distribution_.init();
 }
