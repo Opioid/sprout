@@ -229,22 +229,22 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
 
     uint32_t const buffer_size = uint32_t(mz_deflateBound(&zip, pixel_row_size));
 
-    uint8_t* buffer = memory::allocate_aligned<uint8_t>(uint32_t(d[1]) * buffer_size);
+    auto buffer = memory::Buffer<uint8_t>(uint32_t(d[1]) * buffer_size);
 
-    uint8_t* tmp_buffer = memory::allocate_aligned<uint8_t>(pixel_row_size);
+    auto tmp_buffer = memory::Buffer<uint8_t>(pixel_row_size);
 
-    uint8_t* scanline_buffer = memory::allocate_aligned<uint8_t>(pixel_row_size);
+    auto scanline_buffer = memory::Buffer<uint8_t>(pixel_row_size);
 
     struct Compressed_scanline {
         uint32_t size;
         uint8_t* buffer;
     };
 
-    Compressed_scanline* cs = memory::allocate_aligned<Compressed_scanline>(uint32_t(d[1]));
+    auto cs = memory::Buffer<Compressed_scanline>(uint32_t(d[1]));
 
-    uint8_t* current_buffer = buffer;
+    uint8_t* current_buffer = buffer.data();
 
-    float* floats = reinterpret_cast<float*>(scanline_buffer);
+    float* floats = reinterpret_cast<float*>(scanline_buffer.data());
 
     for (int32_t y = 0, i = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x, ++i) {
@@ -255,16 +255,16 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
             floats[d[0] * 2 + x] = c[0];
         }
 
-        reorder(tmp_buffer, scanline_buffer, pixel_row_size);
+        reorder(tmp_buffer.data(), scanline_buffer.data(), pixel_row_size);
 
-        zip.next_in  = tmp_buffer;
+        zip.next_in  = tmp_buffer.data();
         zip.avail_in = pixel_row_size;
 
         zip.next_out  = current_buffer;
         zip.avail_out = buffer_size;
 
         if (MZ_STREAM_END != mz_deflate(&zip, MZ_FINISH)) {
-            std::cout << "Oh no" << std::endl;
+            return false;
         }
 
         uint32_t const compressed_size = buffer_size - zip.avail_out;
@@ -296,11 +296,6 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
         stream.write(reinterpret_cast<const char*>(&b.size), 4);
         stream.write(reinterpret_cast<char*>(b.buffer), b.size);
     }
-
-    memory::free_aligned(cs);
-    memory::free_aligned(buffer);
-    memory::free_aligned(tmp_buffer);
-    memory::free_aligned(scanline_buffer);
 
     return true;
 }

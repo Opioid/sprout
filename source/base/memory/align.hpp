@@ -55,6 +55,31 @@ void destroy_aligned(T* objects, size_t count) noexcept {
     free_aligned(objects);
 }
 
+template <typename T>
+class Buffer {
+  public:
+    Buffer(size_t size) noexcept : data_(allocate_aligned<T>(size)) {}
+
+    ~Buffer() noexcept {
+        free_aligned(data_);
+    }
+
+    T* data() noexcept {
+        return data_;
+    }
+
+    T const& operator[](size_t i) const noexcept {
+        return data_[i];
+    }
+
+    T& operator[](size_t i) noexcept {
+        return data_[i];
+    }
+
+  private:
+    T* data_;
+};
+
 }  // namespace memory
 
 #endif
