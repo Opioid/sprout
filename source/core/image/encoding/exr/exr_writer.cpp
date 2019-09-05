@@ -175,7 +175,6 @@ bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noe
 
 static void reorder(uint8_t* destination, const uint8_t* source, uint32_t len) noexcept {
     // Reorder the pixel data.
-
     {
         uint8_t* t1 = destination;
         uint8_t* t2 = destination + (len + 1) / 2;
@@ -197,18 +196,19 @@ static void reorder(uint8_t* destination, const uint8_t* source, uint32_t len) n
         }
     }
 
-    // Predictor.
-
+    // Predictor
     {
-        uint8_t* t    = destination + 1;
-        uint8_t* stop = destination + len;
+        uint8_t* t = destination + 1;
 
-        uint32_t p = t[-1];
+        uint8_t const* stop = destination + len;
+
+        uint32_t p = uint32_t(t[-1]);
 
         for (; t < stop;) {
             uint32_t const d = uint32_t(t[0]) - p + (128 + 256);
-            p                = t[0];
-            t[0]             = uint8_t(d);
+
+            p    = t[0];
+            t[0] = uint8_t(d);
             ++t;
         }
     }
@@ -250,7 +250,7 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
         for (int32_t x = 0; x < d[0]; ++x, ++i) {
             float3 const c = image.at(i).xyz();
 
-            floats[d[0] * 0 + x] = 0.f;  // c[2];
+            floats[d[0] * 0 + x] = c[2];
             floats[d[0] * 1 + x] = c[1];
             floats[d[0] * 2 + x] = c[0];
         }
