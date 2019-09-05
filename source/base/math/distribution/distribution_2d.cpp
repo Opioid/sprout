@@ -64,7 +64,7 @@ typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuou
     noexcept {
     auto const v = marginal_.sample_continuous(r2[1]);
 
-    uint32_t const i = static_cast<uint32_t>(v.offset * conditional_sizef_);
+    uint32_t const i = uint32_t(v.offset * conditional_sizef_);
     uint32_t const c = std::min(i, conditional_max_);
 
     auto const u = conditional_[c].sample_continuous(r2[0]);
@@ -76,7 +76,7 @@ template <typename T>
 float Distribution_t_2D<T>::pdf(float2 uv) const noexcept {
     float const v_pdf = marginal_.pdf(uv[1]);
 
-    uint32_t const i = static_cast<uint32_t>(uv[1] * conditional_sizef_);
+    uint32_t const i = uint32_t(uv[1] * conditional_sizef_);
     uint32_t const c = std::min(i, conditional_max_);
 
     float const u_pdf = conditional_[c].pdf(uv[0]);

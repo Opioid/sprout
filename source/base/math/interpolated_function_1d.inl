@@ -84,7 +84,7 @@ T Interpolated_function_1D<T>::operator()(float x) const noexcept {
 
     float const o = x * inverse_interval_;
 
-    uint32_t const offset = static_cast<uint32_t>(o);
+    uint32_t const offset = uint32_t(o);
 
     float const t = o - static_cast<float>(offset);
 

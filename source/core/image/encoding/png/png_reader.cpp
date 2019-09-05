@@ -307,7 +307,7 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
     info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
     info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
-    uint32_t const depth = static_cast<uint32_t>(chunk.data[8]);
+    uint32_t const depth = uint32_t(chunk.data[8]);
     if (8 != depth) {
         return header_error(string::to_string(depth) + " PNG bit depth not supported.", info);
     }
@@ -443,7 +443,7 @@ uint8_t prior(int column, const Info& info) noexcept {
 }
 
 uint8_t average(uint8_t a, uint8_t b) noexcept {
-    return static_cast<uint8_t>((static_cast<uint32_t>(a) + static_cast<uint32_t>(b)) >> 1);
+    return static_cast<uint8_t>((uint32_t(a) + uint32_t(b)) >> 1);
 }
 
 uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) noexcept {

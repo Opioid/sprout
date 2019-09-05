@@ -20,7 +20,7 @@ void Morph_target_collection::add_swap_vertices(std::vector<Vertex>& vertices) n
 }
 
 uint32_t Morph_target_collection::num_vertices() const noexcept {
-    return static_cast<uint32_t>(morph_targets_[0].size());
+    return uint32_t(morph_targets_[0].size());
 }
 
 void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool,

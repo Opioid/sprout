@@ -27,7 +27,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
     {
         float const log2_num_triangles = std::log2(static_cast<float>(num_triangles));
 
-        spatial_split_threshold_ = static_cast<uint32_t>(log2_num_triangles / 2.f + 0.5f);
+        spatial_split_threshold_ = uint32_t(log2_num_triangles / 2.f + 0.5f);
 
         References references(num_triangles);
 

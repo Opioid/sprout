@@ -67,7 +67,7 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
     } else if ("cat" == command || "c" == command) {
         result.op = Options::Operator::Cat;
 
-        result.concat_num_per_row = static_cast<uint32_t>(std::atoi(parameter.data()));
+        result.concat_num_per_row = uint32_t(std::atoi(parameter.data()));
     } else if ("diff" == command || "d" == command) {
         result.op = Options::Operator::Diff;
     } else if ("clamp" == command) {

@@ -127,7 +127,7 @@ bool Writer::write(std::string_view name, float const* data, int2 dimensions, fl
         return false;
     }
 
-    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    uint32_t const area  = uint32_t(dimensions[0] * dimensions[1]);
     uint8_t*       bytes = memory::allocate_aligned<uint8_t>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
@@ -163,7 +163,7 @@ bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, f
         return false;
     }
 
-    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    uint32_t const area  = uint32_t(dimensions[0] * dimensions[1]);
     byte3*         bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
@@ -194,9 +194,9 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
         return false;
     }
 
-    uint32_t const area  = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
-    byte3*         bytes = memory::allocate_aligned<byte3>(area);
+    byte3* bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
@@ -227,7 +227,7 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
         return false;
     }
 
-    uint32_t const area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
     byte3* bytes = memory::allocate_aligned<byte3>(area);
 
@@ -263,7 +263,7 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions) {
-    uint32_t const area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
     float max_value = 0.f;
     for (uint32_t i = 0; i < area; ++i) {
@@ -280,7 +280,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         return false;
     }
 
-    uint32_t const area = static_cast<uint32_t>(dimensions[0] * dimensions[1]);
+    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
     byte3* bytes = memory::allocate_aligned<byte3>(area);
 

@@ -166,17 +166,17 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     {
         int64_t previous_index = 0;
         for (auto const& t : handler.triangles()) {
-            int64_t const a = static_cast<int64_t>(t.i[0]);
+            int64_t const a = int64_t(t.i[0]);
 
             int64_t delta_index = a - previous_index;
             max_index_delta     = std::max(delta_index, max_index_delta);
 
-            int64_t const b = static_cast<int64_t>(t.i[1]);
+            int64_t const b = int64_t(t.i[1]);
 
             delta_index     = b - a;
             max_index_delta = std::max(delta_index, max_index_delta);
 
-            int64_t const c = static_cast<int64_t>(t.i[2]);
+            int64_t const c = int64_t(t.i[2]);
 
             delta_index     = c - b;
             max_index_delta = std::max(delta_index, max_index_delta);

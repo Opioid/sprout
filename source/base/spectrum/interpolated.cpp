@@ -29,7 +29,7 @@ float Interpolated::end_wavelength() const noexcept {
 float Interpolated::evaluate(float wl) const noexcept {
     auto const result = std::equal_range(wavelengths_, wavelengths_ + num_elements_, wl);
 
-    uint32_t const index = static_cast<uint32_t>(result.first - wavelengths_);
+    uint32_t const index = uint32_t(result.first - wavelengths_);
 
     if (result.first == result.second) {
         float const wl0 = wavelengths_[index - 1];
@@ -61,7 +61,7 @@ float Interpolated::integrate(float a, float b) const noexcept {
 
     auto const it = std::lower_bound(wavelengths_, wavelengths_ + len, start);
 
-    uint32_t index = std::max(static_cast<uint32_t>(it - wavelengths_), 1u) - 1;
+    uint32_t index = std::max(uint32_t(it - wavelengths_), 1u) - 1;
 
     float integral = 0.f;
     for (; index + 1 < len && end >= wavelengths_[index]; ++index) {

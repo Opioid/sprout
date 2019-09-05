@@ -157,7 +157,7 @@ Image* Reader::read(std::istream& stream) noexcept {
                         float density;
                         stream.read(reinterpret_cast<char*>(&density), sizeof(float));
 
-                        image->float1_sparse().store_sequentially(static_cast<int64_t>(i), density);
+                        image->float1_sparse().store_sequentially(int64_t(i), density);
                     }
                 }
 

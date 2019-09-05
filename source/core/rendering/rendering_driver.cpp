@@ -22,7 +22,7 @@ static uint32_t constexpr Num_particles_per_chunk = 1024;
 #ifdef PARTICLE_TRAINING
 
 static uint64_t head(uint64_t total) noexcept {
-    return static_cast<uint64_t>(0.1f * static_cast<float>(total));
+    return uint64_t(0.1f * static_cast<float>(total));
 }
 
 static uint64_t tail(uint64_t total) noexcept {

@@ -244,10 +244,10 @@ void Glare2::init(scene::camera::Camera const& camera, thread::Pool& pool) {
 }
 
 size_t Glare2::num_bytes() const {
-    size_t const kernel_size = static_cast<size_t>(kernel_dimensions_[0] * kernel_dimensions_[1]);
+    size_t const kernel_size = size_t(kernel_dimensions_[0] * kernel_dimensions_[1]);
 
-    size_t const kernel_dft_size = static_cast<size_t>(math::dft_size(kernel_dimensions_[0]) *
-                                                       kernel_dimensions_[1]);
+    size_t const kernel_dft_size = size_t(math::dft_size(kernel_dimensions_[0]) *
+                                          kernel_dimensions_[1]);
 
     return sizeof(*this) + kernel_size * sizeof(float) * 3 + kernel_dft_size * sizeof(float2) * 7;
 }

@@ -75,7 +75,7 @@ void Message_handler::handle(std::string const& message) noexcept {
                 scene::prop::Prop* prop = driver_.scene().prop(index_string);
                 handle_prop(prop, value, parameters, true);
             } else {
-                uint32_t const index_number = static_cast<uint32_t>(std::stoul(index));
+                uint32_t const index_number = uint32_t(std::stoul(index));
 
                 scene::prop::Prop* prop = driver_.scene().prop(index_number);
                 handle_prop(prop, value, parameters, true);

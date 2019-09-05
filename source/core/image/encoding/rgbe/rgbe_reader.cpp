@@ -113,8 +113,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
             return true;
         }
 
-        if ((static_cast<uint32_t>(rgbe[2]) << 8 | static_cast<uint32_t>(rgbe[3])) !=
-            scanline_width) {
+        if ((uint32_t(rgbe[2]) << 8 | uint32_t(rgbe[3])) != scanline_width) {
             logging::push_error("Wrong scanline width.");
             return false;
         }
@@ -128,7 +127,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
                 if (buf[0] > 128) {
                     // a run of the same value
-                    uint32_t count = static_cast<uint32_t>(buf[0]) - 128;
+                    uint32_t count = uint32_t(buf[0]) - 128;
 
                     if (count == 0 || count > end - index) {
                         logging::push_error("Bad scanline data.");
@@ -140,7 +139,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
                     }
                 } else {
                     // a non-run
-                    uint32_t count = static_cast<uint32_t>(buf[0]);
+                    uint32_t count = uint32_t(buf[0]);
 
                     if (count == 0 || count > end - index) {
                         logging::push_error("Bad scanline data.");

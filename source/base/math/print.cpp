@@ -1,8 +1,8 @@
 #include "print.hpp"
 
 std::ostream& operator<<(std::ostream& stream, const math::Vector3<uint8_t>& v) noexcept {
-    return stream << "[" << static_cast<uint32_t>(v[0]) << ", " << static_cast<uint32_t>(v[1])
-                  << ", " << static_cast<uint32_t>(v[2]) << "]";
+    return stream << "[" << uint32_t(v[0]) << ", " << uint32_t(v[1]) << ", " << uint32_t(v[2])
+                  << "]";
 }
 
 std::ostream& operator<<(std::ostream& stream, const math::Vector3f_a& v) noexcept {

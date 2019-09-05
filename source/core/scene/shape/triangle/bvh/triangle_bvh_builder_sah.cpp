@@ -185,7 +185,7 @@ void Builder_SAH::split(Build_node* node, References& references, AABB const& aa
                         uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool) {
     node->aabb = aabb;
 
-    uint32_t const num_primitives = static_cast<uint32_t>(references.size());
+    uint32_t const num_primitives = uint32_t(references.size());
 
     if (num_primitives <= max_primitives) {
         assign(node, references);
@@ -246,7 +246,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(References const& refe
 
     split_candidates_.clear();
 
-    uint32_t const num_triangles = static_cast<uint32_t>(references.size());
+    uint32_t const num_triangles = uint32_t(references.size());
 
     float3 const halfsize = aabb.halfsize();
     float3 const position = aabb.position();
@@ -340,7 +340,7 @@ void Builder_SAH::assign(Build_node* node, References const& references) {
     }
 
     node->start_index = num_references_;
-    num_references_ += static_cast<uint32_t>(num_references);
+    num_references_ += uint32_t(num_references);
     node->end_index = num_references_;
 }
 

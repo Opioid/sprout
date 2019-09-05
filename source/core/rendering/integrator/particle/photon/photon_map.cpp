@@ -73,8 +73,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
             photons_, photons_ + num_photons_,
             [](Photon const& p) { return p.properties.test(Photon::Property::First_hit); });
 
-        uint32_t const num_caustics = static_cast<uint32_t>(
-            std::distance(photons_, indirect_photons));
+        uint32_t const num_caustics = uint32_t(std::distance(photons_, indirect_photons));
 
         uint32_t const num_indirect = num_photons_ - num_caustics;
 
@@ -87,7 +86,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
                                           static_cast<float>(num_caustics);
 
         std::cout << red_num_caustics << " caustics left of " << num_caustics << " ("
-                  << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
+                  << uint32_t(100.f * percentage_caustics) << "%)" << std::endl;
 
         red_num_fine_ = red_num_caustics;
 
@@ -107,7 +106,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
                                           static_cast<float>(num_indirect);
 
         std::cout << red_num_indirect << " indirect left of " << num_indirect << " ("
-                  << static_cast<uint32_t>(100.f * percentage_indirect) << "%)" << std::endl;
+                  << uint32_t(100.f * percentage_indirect) << "%)" << std::endl;
 
         if (red_num_indirect <= red_num_coarse_) {
             caustic_only_ = true;
@@ -128,7 +127,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
                                           static_cast<float>(num_photons_);
 
         std::cout << red_num_caustics << " total left of " << num_photons_ << " ("
-                  << static_cast<uint32_t>(100.f * percentage_caustics) << "%)" << std::endl;
+                  << uint32_t(100.f * percentage_caustics) << "%)" << std::endl;
 
         red_num_fine_ = red_num_caustics;
 

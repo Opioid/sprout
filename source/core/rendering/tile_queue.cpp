@@ -8,10 +8,10 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
     : tile_dimensions_(tile_dimensions),
       tiles_per_row_(static_cast<int32_t>(
           std::ceil(static_cast<float>(resolution[0]) / static_cast<float>(tile_dimensions[0])))),
-      num_tiles_(static_cast<uint32_t>(std::ceil(static_cast<float>(resolution[0]) /
-                                                 static_cast<float>(tile_dimensions[0]))) *
-                 static_cast<uint32_t>(std::ceil(static_cast<float>(resolution[1]) /
-                                                 static_cast<float>(tile_dimensions[1])))),
+      num_tiles_(uint32_t(std::ceil(static_cast<float>(resolution[0]) /
+                                    static_cast<float>(tile_dimensions[0]))) *
+                 uint32_t(std::ceil(static_cast<float>(resolution[1]) /
+                                    static_cast<float>(tile_dimensions[1])))),
       tiles_(memory::allocate_aligned<int4>(num_tiles_)),
       current_consume_(num_tiles_) {
     int2 current_pixel(0, 0);
@@ -78,7 +78,7 @@ uint32_t Tile_queue::index(int4 const& tile) const noexcept {
     int32_t const x = std::max(tile[0], 0) / tile_dimensions_[0];
     int32_t const y = std::max(tile[1], 0) / tile_dimensions_[1];
 
-    return static_cast<uint32_t>(y * tiles_per_row_ + x);
+    return uint32_t(y * tiles_per_row_ + x);
 }
 
 void Tile_queue::push(int4 const& tile) noexcept {
@@ -91,10 +91,9 @@ Range_queue::Range_queue(uint64_t total0, uint64_t total1, uint32_t range_size) 
     : total0_(total0),
       total1_(total1),
       range_size_(range_size),
-      num_ranges0_(static_cast<uint32_t>(
-          std::ceil(static_cast<float>(total0) / static_cast<float>(range_size)))),
-      num_ranges1_(static_cast<uint32_t>(
-          std::ceil(static_cast<float>(total1) / static_cast<float>(range_size))))
+      num_ranges0_(
+          uint32_t(std::ceil(static_cast<float>(total0) / static_cast<float>(range_size)))),
+      num_ranges1_(uint32_t(std::ceil(static_cast<float>(total1) / static_cast<float>(range_size))))
 
 {}
 
@@ -111,7 +110,7 @@ void Range_queue::restart() noexcept {
 bool Range_queue::pop(uint32_t iteration, ulong2& range) noexcept {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
-    uint64_t const start = static_cast<uint64_t>(current) * static_cast<uint64_t>(range_size_);
+    uint64_t const start = uint64_t(current) * uint64_t(range_size_);
 
     uint32_t const num_ranges = 0 == iteration ? num_ranges0_ : num_ranges1_;
 
@@ -129,8 +128,7 @@ bool Range_queue::pop(uint32_t iteration, ulong2& range) noexcept {
 }
 
 uint32_t Range_queue::index(ulong2 const& range, uint32_t iteration) const noexcept {
-    return static_cast<uint32_t>(range[0] / static_cast<uint64_t>(range_size_)) +
-           iteration * num_ranges0_;
+    return uint32_t(range[0] / uint64_t(range_size_)) + iteration * num_ranges0_;
 }
 
 }  // namespace rendering

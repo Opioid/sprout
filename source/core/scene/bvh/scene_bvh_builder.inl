@@ -67,7 +67,7 @@ void Builder<T>::split(Build_node* node, index begin, index end, const_index ori
                        std::vector<T> const& props, uint32_t max_shapes) noexcept {
     node->aabb = aabb(begin, end, props);
 
-    if (static_cast<uint32_t>(std::distance(begin, end)) <= max_shapes) {
+    if (uint32_t(std::distance(begin, end)) <= max_shapes) {
         assign(node, begin, end, origin);
     } else {
         Split_candidate<T> sp = splitting_plane(node->aabb, begin, end, props);
@@ -150,9 +150,9 @@ uint32_t Builder<T>::current_node_index() const noexcept {
 template <typename T>
 void Builder<T>::assign(Build_node* node, const_index begin, const_index end,
                         const_index origin) noexcept {
-    node->offset = static_cast<uint32_t>(begin - origin);
+    node->offset = uint32_t(begin - origin);
 
-    node->props_end = static_cast<uint32_t>(end - origin);
+    node->props_end = uint32_t(end - origin);
 }
 
 template <typename T>

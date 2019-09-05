@@ -81,7 +81,7 @@ Provider::Properties::Properties(memory::Variant_map const& options) noexcept
 
     radius = 0.5f * size;
 
-    num_flakes = static_cast<uint32_t>(density / (size * size) + 0.5f);
+    num_flakes = uint32_t(density / (size * size) + 0.5f);
 }
 
 Provider::Flake Provider::random_flake(uint32_t index, uint32_t seed, Properties const& props,

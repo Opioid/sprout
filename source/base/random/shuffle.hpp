@@ -21,8 +21,8 @@ void biased_shuffle(T* data, uint32_t count, Generator& rng) noexcept {
     // (Upper variant has bias as well!)
     // More related information:
     // http://www.pcg-random.org/posts/bounded-rands.html
-    for (uint64_t i = static_cast<uint64_t>(count - 1); i > 0; --i) {
-        uint64_t const r     = static_cast<uint64_t>(rng.random_uint());
+    for (uint64_t i = uint64_t(count - 1); i > 0; --i) {
+        uint64_t const r     = uint64_t(rng.random_uint());
         uint64_t const m     = r * (i + 1);
         uint64_t const other = m >> 32;
 

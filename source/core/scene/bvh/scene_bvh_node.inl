@@ -35,7 +35,7 @@ inline uint32_t Node::indices_start() const noexcept {
 }
 
 inline uint32_t Node::indices_end() const noexcept {
-    return min_.next_or_data + static_cast<uint32_t>(max_.num_primitives);
+    return min_.next_or_data + uint32_t(max_.num_primitives);
 }
 
 inline void Node::set_aabb(float const* min, float const* max) noexcept {

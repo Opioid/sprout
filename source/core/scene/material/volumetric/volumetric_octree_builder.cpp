@@ -22,7 +22,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& cm,
 
     num_cells += math::min(d - (num_cells << Gridtree::Log2_cell_dim), 1);
 
-    uint32_t const cell_len = static_cast<uint32_t>(num_cells[0] * num_cells[1] * num_cells[2]);
+    uint32_t const cell_len = uint32_t(num_cells[0] * num_cells[1] * num_cells[2]);
 
     Build_node* grid = new Build_node[cell_len];
 

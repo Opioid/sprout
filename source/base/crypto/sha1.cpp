@@ -44,7 +44,7 @@ std::vector<uint8_t> SHA1::final() {
 
     // Padding
     buffer_ += '\x80';
-    uint32_t orig_size = static_cast<uint32_t>(buffer_.size());
+    uint32_t orig_size = uint32_t(buffer_.size());
 
     while (buffer_.size() < Block_bytes) {
         buffer_ += '\x00';
@@ -62,8 +62,8 @@ std::vector<uint8_t> SHA1::final() {
     }
 
     // Append total_bits, split this uint64 into two uint32
-    block[Block_ints - 1] = static_cast<uint32_t>(total_bits);
-    block[Block_ints - 2] = static_cast<uint32_t>(total_bits >> 32);
+    block[Block_ints - 1] = uint32_t(total_bits);
+    block[Block_ints - 2] = uint32_t(total_bits >> 32);
     transform(block);
 
     /*

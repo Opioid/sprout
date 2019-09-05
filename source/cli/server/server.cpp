@@ -57,7 +57,7 @@ void Server::write(image::Float4 const& image, uint32_t frame, thread::Pool& poo
                                   int32_t end) { srgb_.to_sRGB(image, begin, end); },
                    0, d[0] * d[1]);
 
-    size_t const buffer_len = static_cast<size_t>(d[0] * d[1]) * sizeof(byte4);
+    size_t const buffer_len = size_t(d[0] * d[1]) * sizeof(byte4);
 
     std::string message;
 

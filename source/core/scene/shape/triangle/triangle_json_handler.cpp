@@ -32,7 +32,7 @@ void Json_handler::clear(bool read_indices) {
 }
 
 void Json_handler::create_part() {
-    parts_.push_back(Part{0, 0, 3 * static_cast<uint32_t>(triangles_.size())});
+    parts_.push_back(Part{0, 0, 3 * uint32_t(triangles_.size())});
 }
 
 bool Json_handler::Null() {
@@ -138,7 +138,7 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
                 auto& p = parts_.back();
 
                 uint32_t const num_triangles = (p.start_index + p.num_indices) / 3;
-                vertices_.reserve(static_cast<size_t>(0.7f * static_cast<float>(num_triangles)));
+                vertices_.reserve(size_t(0.7f * static_cast<float>(num_triangles)));
             }
         } else if ("material_index" == name && Object::Part == expected_object_) {
             expected_number_ = Number::Material_index;

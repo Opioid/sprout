@@ -57,22 +57,22 @@ void test_1D() {
     //	}
 
     math::Distribution_1D a;
-    a.init(values.data(), static_cast<uint32_t>(values.size()));
+    a.init(values.data(), uint32_t(values.size()));
 
     math::Distribution_lut_1D b;
-    b.init(values.data(), static_cast<uint32_t>(values.size()));
+    b.init(values.data(), uint32_t(values.size()));
 
     math::Distribution_implicit_pdf_lut_1D c;
-    c.init(values.data(), static_cast<uint32_t>(values.size()));
+    c.init(values.data(), uint32_t(values.size()));
 
     //	math::Distribution_implicit_pdf_lut_1D d;
-    //	d.init(values.data(), static_cast<uint32_t>(values.size()), 8);
+    //	d.init(values.data(), uint32_t(values.size()), 8);
 
     math::Distribution_implicit_pdf_lut_lin_1D e;
-    e.init(values.data(), static_cast<uint32_t>(values.size()));
+    e.init(values.data(), uint32_t(values.size()));
 
     //	math::Distribution_implicit_pdf_lut_lin_1D f;
-    //	f.init(values.data(), static_cast<uint32_t>(values.size()), 8);
+    //	f.init(values.data(), uint32_t(values.size()), 8);
 
     //	std::cout << "Distribution_1D" << std::endl;
     //	test_distribution(a, samples);

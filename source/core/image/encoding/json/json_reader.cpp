@@ -92,7 +92,7 @@ Image* Reader::read(std::istream& stream, std::string const& filename) noexcept 
         for (auto const& v : data_node->value.GetArray()) {
             volume->store(i++, ::encoding::float_to_unorm(v.GetFloat()));
 
-            ostream << static_cast<uint32_t>(::encoding::float_to_unorm(v.GetFloat()));
+            ostream << uint32_t(::encoding::float_to_unorm(v.GetFloat()));
 
             if (i < len) {
                 ostream << ",";

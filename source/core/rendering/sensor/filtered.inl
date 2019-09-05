@@ -35,12 +35,10 @@ template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 const& color,
                                             int4 const& isolated_bounds,
                                             int4 const& bounds) noexcept {
-    if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2]) &&
-        static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
-        if (static_cast<uint32_t>(pixel[0] - isolated_bounds[0]) <=
-                static_cast<uint32_t>(isolated_bounds[2]) &&
-            static_cast<uint32_t>(pixel[1] - isolated_bounds[1]) <=
-                static_cast<uint32_t>(isolated_bounds[3])) {
+    if (uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2]) &&
+        uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3])) {
+        if (uint32_t(pixel[0] - isolated_bounds[0]) <= uint32_t(isolated_bounds[2]) &&
+            uint32_t(pixel[1] - isolated_bounds[1]) <= uint32_t(isolated_bounds[3])) {
             Base::add_pixel(pixel, color, weight);
         } else {
             Base::add_pixel_atomic(pixel, color, weight);
@@ -51,8 +49,8 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 con
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 const& color,
                                             int4 const& bounds) noexcept {
-    if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2]) &&
-        static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
+    if (uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2]) &&
+        uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3])) {
         Base::splat_pixel_atomic(pixel, color, weight);
     }
 }
@@ -63,14 +61,12 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
                                               int4 const& bounds) noexcept {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
-    if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2]) &&
-        static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
+    if (uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2]) &&
+        uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3])) {
         float const weight = filter_.evaluate(relative_offset);
 
-        if (static_cast<uint32_t>(pixel[0] - isolated_bounds[0]) <=
-                static_cast<uint32_t>(isolated_bounds[2]) &&
-            static_cast<uint32_t>(pixel[1] - isolated_bounds[1]) <=
-                static_cast<uint32_t>(isolated_bounds[3])) {
+        if (uint32_t(pixel[0] - isolated_bounds[0]) <= uint32_t(isolated_bounds[2]) &&
+            uint32_t(pixel[1] - isolated_bounds[1]) <= uint32_t(isolated_bounds[3])) {
             Base::add_pixel(pixel, color, weight);
         } else {
             Base::add_pixel_atomic(pixel, color, weight);
@@ -83,8 +79,8 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
                                               float4 const& color, int4 const& bounds) noexcept {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
-    if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2]) &&
-        static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
+    if (uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2]) &&
+        uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3])) {
         float const weight = filter_.evaluate(relative_offset);
 
         Base::add_pixel_atomic(pixel, color, weight);

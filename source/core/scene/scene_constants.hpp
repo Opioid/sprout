@@ -18,7 +18,7 @@ uint64_t constexpr Units_per_second = 705600000;
 uint64_t constexpr Static_time = 0xffffffffffffffff;
 
 static inline uint64_t constexpr time(double dtime) noexcept {
-    return static_cast<uint64_t>(static_cast<double>(Units_per_second) * dtime);
+    return uint64_t(static_cast<double>(Units_per_second) * dtime);
 }
 
 // The following block implements the ray offset technique described in

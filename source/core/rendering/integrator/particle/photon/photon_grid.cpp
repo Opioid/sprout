@@ -70,7 +70,7 @@ void Grid::resize(AABB const& aabb) noexcept {
         int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2] + 1;
 
         memory::free_aligned(grid_);
-        grid_ = memory::allocate_aligned<int32_t>(static_cast<uint32_t>(num_cells));
+        grid_ = memory::allocate_aligned<int32_t>(uint32_t(num_cells));
 
         int32_t const area = dimensions[0] * dimensions[1];
 
@@ -409,7 +409,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 size_t Grid::num_bytes() const noexcept {
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
 
-    size_t const num_bytes = static_cast<size_t>(num_cells) * sizeof(int32_t);
+    size_t const num_bytes = size_t(num_cells) * sizeof(int32_t);
 
     return num_bytes;
 }

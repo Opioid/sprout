@@ -920,7 +920,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
             uint32_t framerate = json::read_uint(n.value, "framerate");
 
             if (0 == framerate) {
-                framerate = static_cast<uint32_t>(1.f / camera.frame_step() + 0.5f);
+                framerate = uint32_t(1.f / camera.frame_step() + 0.5f);
             }
 
             bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);

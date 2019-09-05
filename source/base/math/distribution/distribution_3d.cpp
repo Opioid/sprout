@@ -45,7 +45,7 @@ float Distribution_3D::integral() const noexcept {
 Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3) const noexcept {
     auto const w = marginal_.sample_continuous(r3[2]);
 
-    uint32_t const i = static_cast<uint32_t>(w.offset * conditional_sizef_);
+    uint32_t const i = uint32_t(w.offset * conditional_sizef_);
     uint32_t const c = std::min(i, conditional_max_);
 
     auto const uv = conditional_[c].sample_continuous(r3.xy());
@@ -56,7 +56,7 @@ Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3)
 float Distribution_3D::pdf(float3 const& uvw) const noexcept {
     float const w_pdf = marginal_.pdf(uvw[2]);
 
-    uint32_t const i = static_cast<uint32_t>(uvw[2] * conditional_sizef_);
+    uint32_t const i = uint32_t(uvw[2] * conditional_sizef_);
     uint32_t const c = std::min(i, conditional_max_);
 
     float const uv_pdf = conditional_[c].pdf(uvw.xy());

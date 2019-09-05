@@ -7,8 +7,7 @@
 namespace image::encoding {
 
 Srgb::Srgb(int2 dimensions, bool error_diffusion)
-    : rgb_(new byte3[static_cast<size_t>(dimensions[0] * dimensions[1])]),
-      error_diffusion_(error_diffusion) {}
+    : rgb_(new byte3[size_t(dimensions[0] * dimensions[1])]), error_diffusion_(error_diffusion) {}
 
 Srgb::~Srgb() {
     delete[] rgb_;
@@ -50,7 +49,7 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
 }
 
 Srgb_alpha::Srgb_alpha(int2 dimensions, bool error_diffusion, bool pre_multiplied_alpha)
-    : rgba_(new byte4[static_cast<size_t>(dimensions[0] * dimensions[1])]),
+    : rgba_(new byte4[size_t(dimensions[0] * dimensions[1])]),
       error_diffusion_(error_diffusion),
       pre_multiplied_alpha_(pre_multiplied_alpha) {}
 

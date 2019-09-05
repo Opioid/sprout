@@ -85,7 +85,7 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
         }
     }
 
-    return static_cast<uint32_t>(candidates.size()) + 1;
+    return uint32_t(candidates.size()) + 1;
 }
 
 }  // namespace op

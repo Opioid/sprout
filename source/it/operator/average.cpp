@@ -24,7 +24,7 @@ uint32_t average(std::vector<Item> const& items, it::options::Options const& /*o
         }
     }
 
-    return static_cast<uint32_t>(items.size());
+    return uint32_t(items.size());
 }
 
 }  // namespace op

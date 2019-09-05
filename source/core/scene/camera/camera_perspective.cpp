@@ -128,8 +128,8 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
 
     int2 const pixel(static_cast<int32_t>(fx), static_cast<int32_t>(fy));
 
-    if (static_cast<uint32_t>(pixel[0] - bounds[0]) > static_cast<uint32_t>(bounds[2]) ||
-        static_cast<uint32_t>(pixel[1] - bounds[1]) > static_cast<uint32_t>(bounds[3])) {
+    if (uint32_t(pixel[0] - bounds[0]) > uint32_t(bounds[2]) ||
+        uint32_t(pixel[1] - bounds[1]) > uint32_t(bounds[3])) {
         return false;
     }
 

@@ -44,9 +44,9 @@ int main(int argc, char* argv[]) noexcept {
     if (args.threads <= 0) {
         int32_t const num_threads = static_cast<int32_t>(available_threads) + args.threads;
 
-        num_workers = static_cast<uint32_t>(std::max(num_threads, 1));
+        num_workers = uint32_t(std::max(num_threads, 1));
     } else {
-        num_workers = std::min(available_threads, static_cast<uint32_t>(std::max(args.threads, 1)));
+        num_workers = std::min(available_threads, uint32_t(std::max(args.threads, 1)));
     }
 
     //   logging::info("#Threads " + string::to_string(num_workers));

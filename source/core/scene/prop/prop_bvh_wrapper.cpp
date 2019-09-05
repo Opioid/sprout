@@ -18,7 +18,7 @@ void BVH_wrapper::set_props(std::vector<uint32_t> const& finite_props,
                             std::vector<Prop> const&     props) noexcept {
     finite_props_ = finite_props.data();
 
-    num_infinite_props_ = static_cast<uint32_t>(infinite_props.size());
+    num_infinite_props_ = uint32_t(infinite_props.size());
     infinite_props_     = infinite_props.data();
 
     props_ = props.data();

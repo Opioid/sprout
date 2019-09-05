@@ -247,7 +247,7 @@ float3 Material::spectrum_at_wavelength(float lambda, float value) noexcept {
 
     float const u = ((lambda - start) / (end - start)) * nb;
 
-    uint32_t const id = static_cast<uint32_t>(u);
+    uint32_t const id = uint32_t(u);
 
     float const frac = u - static_cast<float>(id);
 

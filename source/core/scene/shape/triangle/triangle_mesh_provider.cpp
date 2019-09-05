@@ -113,7 +113,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     auto mesh = new Mesh;
 
-    mesh->tree().allocate_parts(static_cast<uint32_t>(handler->parts().size()));
+    mesh->tree().allocate_parts(uint32_t(handler->parts().size()));
 
     manager.thread_pool().run_async([mesh, handler_raw{handler.release()}, &manager]() {
         logging::verbose("Started asynchronously building triangle mesh BVH.");
@@ -131,10 +131,9 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
         auto const& vertices = handler_raw->vertices();
 
-        Vertex_stream_interleaved vertex_stream(static_cast<uint32_t>(vertices.size()),
-                                                vertices.data());
+        Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
 
-        build_bvh(*mesh, static_cast<uint32_t>(triangles.size()), triangles.data(), vertex_stream,
+        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream,
                   manager.thread_pool());
 
         delete handler_raw;
@@ -172,11 +171,10 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
 
     thread_pool.run_async([mesh, triangles_in{std::move(triangles)},
                            vertices_in{std::move(vertices)}, &thread_pool]() {
-        Vertex_stream_interleaved vertex_stream(static_cast<uint32_t>(vertices_in.size()),
-                                                vertices_in.data());
+        Vertex_stream_interleaved vertex_stream(uint32_t(vertices_in.size()), vertices_in.data());
 
-        build_bvh(*mesh, static_cast<uint32_t>(triangles_in.size()), triangles_in.data(),
-                  vertex_stream, thread_pool);
+        build_bvh(*mesh, uint32_t(triangles_in.size()), triangles_in.data(), vertex_stream,
+                  thread_pool);
     });
 
     //	build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
@@ -253,7 +251,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
         return nullptr;
     }
 
-    uint32_t const num_parts = static_cast<uint32_t>(handler.parts().size());
+    uint32_t const num_parts = uint32_t(handler.parts().size());
 
     auto mesh = new Morphable_mesh(collection, num_parts);
 
@@ -310,9 +308,9 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
         for (uint32_t j = triangles_start; j < triangles_end; ++j) {
             Index_triangle& t = triangles[j];
 
-            t.i[0] = static_cast<uint32_t>(indices[j * 3 + 0]);
-            t.i[1] = static_cast<uint32_t>(indices[j * 3 + 1]);
-            t.i[2] = static_cast<uint32_t>(indices[j * 3 + 2]);
+            t.i[0] = uint32_t(indices[j * 3 + 0]);
+            t.i[1] = uint32_t(indices[j * 3 + 1]);
+            t.i[2] = uint32_t(indices[j * 3 + 2]);
 
             t.material_index = p.material_index;
         }
@@ -423,7 +421,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 
-    uint32_t const num_vertices = static_cast<uint32_t>(vertices_size / sizeof(Vertex));
+    uint32_t const num_vertices = uint32_t(vertices_size / sizeof(Vertex));
 
     Vertex_stream* vertex_stream = nullptr;
 
@@ -488,8 +486,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         delete[] indices;
         delete[] parts;
 
-        build_bvh(*mesh, static_cast<uint32_t>(triangles.size()), triangles.data(), *vertex_stream,
-                  thread_pool);
+        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), *vertex_stream, thread_pool);
 
         vertex_stream->release();
 

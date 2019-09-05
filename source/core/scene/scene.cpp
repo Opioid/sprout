@@ -219,7 +219,7 @@ Scene::Light Scene::random_light(float random) const noexcept {
 
     auto const l = light_distribution_.sample_discrete(random);
 
-    SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
+    SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
 
     return {lights_[l.offset], l.pdf, l.offset};
 }
@@ -280,13 +280,13 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     volume_bvh_.set_props(volumes_, infinite_volumes_, props_);
 
     // re-sort lights PDF
-    for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
+    for (uint32_t i = 0, len = uint32_t(lights_.size()); i < len; ++i) {
         auto& l = lights_[i];
         l.prepare_sampling(i, time, *this, pool);
         light_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
     }
 
-    light_distribution_.init(light_powers_.data(), static_cast<uint32_t>(light_powers_.size()));
+    light_distribution_.init(light_powers_.data(), uint32_t(light_powers_.size()));
 
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }
@@ -554,7 +554,7 @@ Scene::Prop_ref Scene::allocate_prop() noexcept {
     prop_materials_.emplace_back();
     prop_topology_.emplace_back();
 
-    uint32_t const prop_id = static_cast<uint32_t>(props_.size()) - 1;
+    uint32_t const prop_id = uint32_t(props_.size()) - 1;
 
     prop::Prop* prop = &props_[prop_id];
 
@@ -633,7 +633,7 @@ static inline bool matching(uint64_t a, uint64_t b) noexcept {
 }
 
 uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept {
-    uint32_t const a = std::max(static_cast<uint32_t>(frame_duration / tick_duration_), 1u);
+    uint32_t const a = std::max(uint32_t(frame_duration / tick_duration_), 1u);
     uint32_t const b = matching(frame_step, tick_duration_) ? 0 : 1;
     uint32_t const c = matching(frame_duration, tick_duration_) ? 0 : 1;
 

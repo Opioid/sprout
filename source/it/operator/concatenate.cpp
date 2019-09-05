@@ -66,7 +66,7 @@ uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row, float
         writer.write(stream, target, pool);
     }
 
-    return static_cast<uint32_t>(items.size());
+    return uint32_t(items.size());
 }
 
 int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) noexcept {

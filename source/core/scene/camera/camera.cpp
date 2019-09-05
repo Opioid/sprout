@@ -69,14 +69,14 @@ void Camera::set_parameters(json::Value const& parameters) noexcept {
 
     for (auto& n : parameters.GetObject()) {
         if ("frame_step" == n.name) {
-            frame_step_ = static_cast<uint64_t>(static_cast<float>(scene::Units_per_second) *
-                                                json::read_float(n.value));
+            frame_step_ = uint64_t(static_cast<float>(scene::Units_per_second) *
+                                   json::read_float(n.value));
         } else if ("frames_per_second" == n.name) {
             float const fps = json::read_float(n.value);
             if (0.f == fps) {
                 frame_step_ = 0;
             } else {
-                frame_step_ = scene::Units_per_second / static_cast<uint64_t>(fps);
+                frame_step_ = scene::Units_per_second / uint64_t(fps);
             }
         } else if ("motion_blur" == n.name) {
             motion_blur = json::read_bool(n.value);
@@ -116,9 +116,9 @@ uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept
     double const delta    = static_cast<double>(frame_delta);
     double const duration = static_cast<double>(frame_duration_);
 
-    uint64_t const fdi = static_cast<uint64_t>(delta * duration + 0.5);
+    uint64_t const fdi = uint64_t(delta * duration + 0.5);
 
-    return static_cast<uint64_t>(frame) * frame_step_ + fdi;
+    return uint64_t(frame) * frame_step_ + fdi;
 }
 
 Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept {

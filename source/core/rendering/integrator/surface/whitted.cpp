@@ -21,7 +21,7 @@ Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings,
     : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
 void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
-    uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
+    uint32_t num_lights = uint32_t(scene.lights().size());
     sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
 }
 
@@ -97,7 +97,7 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     shadow_ray.time   = ray.time;
 
     auto const& lights = worker.scene().lights();
-    for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
+    for (uint32_t l = 0, len = uint32_t(lights.size()); l < len; ++l) {
         //   auto const light = lights[l];
         auto const& light = lights[l];
         for (uint32_t i = 0, nls = settings_.num_light_samples; i < nls; ++i) {

@@ -57,7 +57,7 @@ static inline float2 sample_triangle_uniform_heitz(float2 uv) noexcept {
 
 // https://pharr.org/matt/blog/2019/02/27/triangle-sampling-1.html
 static inline float2 sample_triangle_uniform(float u) noexcept {
-    uint32_t const ui = static_cast<uint32_t>(u * (1ull << 32));
+    uint32_t const ui = uint32_t(u * (1ull << 32));
 
     float2 a(1.f, 0.f);
     float2 b(0.f, 1.f);

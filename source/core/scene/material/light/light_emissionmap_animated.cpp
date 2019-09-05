@@ -64,8 +64,8 @@ void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*
                                             Transformation const& /*transformation*/,
                                             float /*area*/, bool importance_sampling,
                                             thread::Pool& pool) noexcept {
-    int32_t const element = static_cast<int32_t>(
-        (time / frame_length_) % static_cast<uint64_t>(emission_map_.texture().num_elements()));
+    int32_t const element = static_cast<int32_t>((time / frame_length_) %
+                                                 uint64_t(emission_map_.texture().num_elements()));
 
     if (element == element_) {
         return;
@@ -84,8 +84,7 @@ void Emissionmap_animated::set_emission_map(Texture_adapter const& emission_map,
                                             uint64_t               animation_duration) noexcept {
     emission_map_ = emission_map;
 
-    frame_length_ = animation_duration /
-                    static_cast<uint64_t>(emission_map.texture().num_elements());
+    frame_length_ = animation_duration / uint64_t(emission_map.texture().num_elements());
 }
 
 size_t Emissionmap_animated::num_bytes() const noexcept {

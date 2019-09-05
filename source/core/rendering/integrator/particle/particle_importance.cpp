@@ -124,7 +124,7 @@ Importance_cache::~Importance_cache() noexcept {
 }
 
 void Importance_cache::init(scene::Scene const& scene) noexcept {
-    num_importances_ = static_cast<uint32_t>(scene.lights().size());
+    num_importances_ = uint32_t(scene.lights().size());
 
     importances_ = memory::construct_array_aligned<Importance>(scene.lights().size());
 }

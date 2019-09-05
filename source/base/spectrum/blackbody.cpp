@@ -49,7 +49,7 @@ float3 blackbody(float temperature) {
     static float constexpr wl_max  = 780.f;
     static float constexpr wl_step = 5.f;
 
-    static uint32_t constexpr num_steps = static_cast<uint32_t>((wl_max - wl_min) / wl_step) + 1;
+    static uint32_t constexpr num_steps = uint32_t((wl_max - wl_min) / wl_step) + 1;
 
     float3 xyz(0.f);
     for (uint32_t k = 0; k < num_steps; ++k) {

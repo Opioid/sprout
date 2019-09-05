@@ -1401,8 +1401,7 @@ float3 read_hex_RGB(std::string const& text) noexcept {
 
     char const* buffer = &text.data()[1];
     for (uint32_t i = 0, j = 0; i < 3; ++i, j += 2) {
-        elements[i] = (hex_table[static_cast<uint32_t>(buffer[j])] << 4) +
-                      hex_table[static_cast<uint32_t>(buffer[j + 1])];
+        elements[i] = (hex_table[uint32_t(buffer[j])] << 4) + hex_table[uint32_t(buffer[j + 1])];
     }
 
     return float3(static_cast<float>(elements[0]) / 255.f, static_cast<float>(elements[1]) / 255.f,
@@ -1466,7 +1465,7 @@ uint32_t Provider::max_sample_size() noexcept {
 
     num_bytes += num_bytes % 64;
 
-    return static_cast<uint32_t>(num_bytes);
+    return uint32_t(num_bytes);
 }
 
 }  // namespace scene::material

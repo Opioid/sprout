@@ -33,7 +33,7 @@ Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_s
 Pathtracer_MIS::~Pathtracer_MIS() {}
 
 void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
-    uint32_t const num_lights = static_cast<uint32_t>(scene.lights().size());
+    uint32_t const num_lights = uint32_t(scene.lights().size());
 
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
@@ -308,7 +308,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
         }
     } else {
         auto const& lights = worker.scene().lights();
-        for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
+        for (uint32_t l = 0, len = uint32_t(lights.size()); l < len; ++l) {
             //   auto const& light = *lights[l];
             auto const& light = lights[l];
             for (uint32_t i = num_samples; i > 0; --i) {

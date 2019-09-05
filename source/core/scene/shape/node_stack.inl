@@ -33,7 +33,7 @@ inline uint32_t Node_stack::pop() noexcept {
 }
 
 inline size_t Node_stack::num_bytes() const noexcept {
-    return sizeof(*this) + static_cast<size_t>(num_elements_) * sizeof(uint32_t);
+    return sizeof(*this) + size_t(num_elements_) * sizeof(uint32_t);
 }
 
 }  // namespace scene::shape

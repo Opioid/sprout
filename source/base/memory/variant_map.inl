@@ -98,7 +98,7 @@ inline bool Variant_map::query(std::string_view key, float& value) const noexcep
 
 template <typename T>
 void Variant_map::set(std::string const& key, T value) noexcept {
-    map_.emplace(key, static_cast<uint32_t>(value));
+    map_.emplace(key, uint32_t(value));
 }
 
 inline void Variant_map::set(std::string const& key, bool value) noexcept {

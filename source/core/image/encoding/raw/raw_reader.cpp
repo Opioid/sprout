@@ -34,9 +34,8 @@ Image* Reader::read(std::istream& stream) noexcept {
 
     auto volume = new Image(Float1(description));
 
-    uint64_t const num_voxels = static_cast<uint64_t>(dimensions[0]) *
-                                static_cast<uint64_t>(dimensions[1]) *
-                                static_cast<uint64_t>(dimensions[2]);
+    uint64_t const num_voxels = uint64_t(dimensions[0]) * uint64_t(dimensions[1]) *
+                                uint64_t(dimensions[2]);
 
     stream.read(reinterpret_cast<char*>(volume->float1().data()), num_voxels * sizeof(float));
 
