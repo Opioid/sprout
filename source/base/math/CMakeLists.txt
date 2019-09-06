@@ -9,6 +9,8 @@ target_sources(base
     "exp.hpp"
     "frustum.cpp"
     "frustum.hpp"
+    "half.hpp"
+    "half.inl"
     "interpolated_function_1d.hpp"
     "interpolated_function_1d.inl"
     "interpolated_function_2d.hpp"

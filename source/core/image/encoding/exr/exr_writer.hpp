@@ -20,6 +20,7 @@ class Writer : public image::Writer {
     bool zip_compression(std::ostream& stream, Float4 const& image, Compression compression) const
         noexcept;
 
+    bool half_ = true;
     bool alpha_;
 };
 

@@ -1,4 +1,5 @@
 #include "exr_writer.hpp"
+#include "base/math/half.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "image/image.hpp"
@@ -19,6 +20,7 @@ std::string Writer::file_extension() const {
     return "exr";
 }
 
+static void w(std::ostream& stream, int16_t i) noexcept;
 static void w(std::ostream& stream, uint32_t i) noexcept;
 static void w(std::ostream& stream, int32_t i) noexcept;
 static void w(std::ostream& stream, float f) noexcept;
@@ -42,13 +44,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
         w(stream, "channels");
         w(stream, "chlist");
 
-        //        uint32_t const size = 3 * (2 + 4 + 4 + 4 + 4) + 1;
-        //        w(stream, size);
-
-        //        w(stream, Channel{"B", Channel::Type::Float});
-        //        w(stream, Channel{"G", Channel::Type::Float});
-        //        w(stream, Channel{"R", Channel::Type::Float});
-        //        stream.put(0x00);
+        Channel::Type type = half_ ? Channel::Type::Half : Channel::Type::Float;
 
         uint32_t const num_channels = alpha_ ? 4 : 3;
 
@@ -56,12 +52,12 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
         w(stream, size);
 
         if (alpha_) {
-            w(stream, Channel{"A", Channel::Type::Float});
+            w(stream, Channel{"A", type});
         }
 
-        w(stream, Channel{"B", Channel::Type::Float});
-        w(stream, Channel{"G", Channel::Type::Float});
-        w(stream, Channel{"R", Channel::Type::Float});
+        w(stream, Channel{"B", type});
+        w(stream, Channel{"G", type});
+        w(stream, Channel{"R", type});
 
         stream.put(0x00);
     }
@@ -142,6 +138,23 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
     return false;
 }
 
+static inline void write_scanline(std::ostream& stream, Float4 const& image, int32_t y,
+                                  uint32_t channel, bool half) noexcept {
+    int32_t const width = image.description().dimensions2()[0];
+
+    if (half) {
+        for (int32_t x = 0; x < width; ++x) {
+            float const s = image.at(x, y)[channel];
+            w(stream, float_to_half(s));
+        }
+    } else {
+        for (int32_t x = 0; x < width; ++x) {
+            float const s = image.at(x, y)[channel];
+            w(stream, s);
+        }
+    }
+}
+
 bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noexcept {
     int2 const d = image.description().dimensions2();
 
@@ -149,7 +162,9 @@ bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noe
 
     int32_t const num_channels = alpha_ ? 4 : 3;
 
-    int32_t const bytes_per_row = d[0] * num_channels * 4;
+    int32_t const scalar_size = half_ ? 2 : 4;
+
+    int32_t const bytes_per_row = d[0] * num_channels * scalar_size;
 
     int32_t const row_size = 4 + 4 + bytes_per_row;
 
@@ -163,26 +178,14 @@ bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noe
         w(stream, bytes_per_row);
 
         if (alpha_) {
-            for (int32_t x = 0; x < d[0]; ++x) {
-                float const a = image.at(x, y)[3];
-                w(stream, a);
-            }
+            write_scanline(stream, image, y, 3, half_);
         }
 
-        for (int32_t x = 0; x < d[0]; ++x) {
-            float const b = image.at(x, y)[2];
-            w(stream, b);
-        }
+        write_scanline(stream, image, y, 2, half_);
 
-        for (int32_t x = 0; x < d[0]; ++x) {
-            float const g = image.at(x, y)[1];
-            w(stream, g);
-        }
+        write_scanline(stream, image, y, 1, half_);
 
-        for (int32_t x = 0; x < d[0]; ++x) {
-            float const r = image.at(x, y)[0];
-            w(stream, r);
-        }
+        write_scanline(stream, image, y, 0, half_);
     }
 
     return true;
@@ -229,6 +232,62 @@ static void reorder(uint8_t* destination, uint8_t const* source, uint32_t len) n
     }
 }
 
+static inline void put_block_half(uint8_t* destination, Float4 const& image, int32_t num_channels,
+                                  int32_t num_rows, int32_t i) noexcept {
+    int32_t const width = image.description().dimensions2()[0];
+
+    int16_t* halfs = reinterpret_cast<int16_t*>(destination);
+
+    for (int32_t row = 0; row < num_rows; ++row) {
+        int32_t const o = row * width * num_channels;
+        for (int32_t x = 0; x < width; ++x, ++i) {
+            if (4 == num_channels) {
+                float4 const c = image.at(i);
+
+                halfs[o + width * 0 + x] = float_to_half(c[3]);
+                halfs[o + width * 1 + x] = float_to_half(c[2]);
+                halfs[o + width * 2 + x] = float_to_half(c[1]);
+                halfs[o + width * 3 + x] = float_to_half(c[0]);
+
+            } else {
+                float3 const c = image.at(i).xyz();
+
+                halfs[o + width * 0 + x] = float_to_half(c[2]);
+                halfs[o + width * 1 + x] = float_to_half(c[1]);
+                halfs[o + width * 2 + x] = float_to_half(c[0]);
+            }
+        }
+    }
+}
+
+static inline void put_block_float(uint8_t* destination, Float4 const& image, int32_t num_channels,
+                                   int32_t num_rows, int32_t i) noexcept {
+    int32_t const width = image.description().dimensions2()[0];
+
+    float* floats = reinterpret_cast<float*>(destination);
+
+    for (int32_t row = 0; row < num_rows; ++row) {
+        int32_t const o = row * width * num_channels;
+        for (int32_t x = 0; x < width; ++x, ++i) {
+            if (4 == num_channels) {
+                float4 const c = image.at(i);
+
+                floats[o + width * 0 + x] = c[3];
+                floats[o + width * 1 + x] = c[2];
+                floats[o + width * 2 + x] = c[1];
+                floats[o + width * 3 + x] = c[0];
+
+            } else {
+                float3 const c = image.at(i).xyz();
+
+                floats[o + width * 0 + x] = c[2];
+                floats[o + width * 1 + x] = c[1];
+                floats[o + width * 2 + x] = c[0];
+            }
+        }
+    }
+}
+
 bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
                              Compression compression) const noexcept {
     mz_stream zip;
@@ -246,7 +305,9 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
 
     int32_t const num_channels = alpha_ ? 4 : 3;
 
-    uint32_t const bytes_per_row = uint32_t(d[0] * num_channels * 4);
+    int32_t const scalar_size = half_ ? 2 : 4;
+
+    uint32_t const bytes_per_row = uint32_t(d[0] * num_channels * scalar_size);
 
     uint32_t const bytes_per_block = bytes_per_row * uint32_t(rows_per_block);
 
@@ -265,30 +326,16 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
 
     uint8_t* current_buffer = image_buffer.data();
 
-    float* floats = reinterpret_cast<float*>(block_buffer.data());
-
     for (int32_t y = 0, i = 0; y < row_blocks; ++y) {
         int32_t const num_rows_here = std::min(d[1] - (y * rows_per_block), rows_per_block);
 
-        for (int32_t row = 0; row < num_rows_here; ++row) {
-            int32_t const o = row * d[0] * num_channels;
-            for (int32_t x = 0; x < d[0]; ++x, ++i) {
-                if (alpha_) {
-                    float4 const c = image.at(i);
-
-                    floats[o + d[0] * 0 + x] = c[3];
-                    floats[o + d[0] * 1 + x] = c[2];
-                    floats[o + d[0] * 2 + x] = c[1];
-                    floats[o + d[0] * 3 + x] = c[0];
-                } else {
-                    float3 const c = image.at(i).xyz();
-
-                    floats[o + d[0] * 0 + x] = c[2];
-                    floats[o + d[0] * 1 + x] = c[1];
-                    floats[o + d[0] * 2 + x] = c[0];
-                }
-            }
+        if (half_) {
+            put_block_half(block_buffer, image, num_channels, num_rows_here, i);
+        } else {
+            put_block_float(block_buffer, image, num_channels, num_rows_here, i);
         }
+
+        i += num_rows_here * d[0];
 
         uint32_t const bytes_here = uint32_t(num_rows_here) * bytes_per_row;
 
@@ -340,6 +387,10 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
     }
 
     return true;
+}
+
+static void w(std::ostream& stream, int16_t i) noexcept {
+    stream.write(reinterpret_cast<const char*>(&i), 2);
 }
 
 static void w(std::ostream& stream, uint32_t i) noexcept {
