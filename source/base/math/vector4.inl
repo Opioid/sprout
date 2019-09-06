@@ -87,7 +87,7 @@ static constexpr bool operator==(const Vector4<T>& a, const Vector4<T>& b) noexc
 
 template <typename T>
 static constexpr bool operator!=(const Vector4<T>& a, const Vector4<T>& b) noexcept {
-    return a[0] != b[0] && a[1] != b[1] && a[2] != b[2] && a[3] != b[3];
+    return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
 template <typename T>
@@ -261,6 +261,10 @@ static inline constexpr Vector4i_a& operator-=(Vector4i_a& a, Vector4i_a const& 
     a[2] -= b[2];
     a[3] -= b[3];
     return a;
+}
+
+static inline constexpr bool operator!=(Vector4i_a const& a, Vector4i_a const& b) noexcept {
+    return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
 }  // namespace math

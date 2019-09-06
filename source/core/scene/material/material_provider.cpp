@@ -1262,7 +1262,7 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
 }
 
 Sampler_settings::Address read_address(json::Value const& address_value) noexcept {
-    std::string address = json::read_string(address_value);
+    std::string const address = json::read_string(address_value);
 
     if ("Clamp" == address) {
         return Sampler_settings::Address::Clamp;

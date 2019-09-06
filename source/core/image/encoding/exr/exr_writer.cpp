@@ -1,7 +1,7 @@
 #include "exr_writer.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
-#include "exr.inl"
+#include "exr.hpp"
 #include "image/image.hpp"
 #include "miniz/miniz.hpp"
 
@@ -315,7 +315,7 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image) const no
         return false;
     }
 
-    int32_t const num_scanline_blocks = d[1] % 16 ? d[1] / 16 + 1 : d[1] / 16;
+    int32_t const num_scanline_blocks = exr::num_scanline_blocks(d[1], Compression::ZIP);
 
     uint32_t buffer_size = mz_deflateBound(&mzs, uint32_t(block_size));
 

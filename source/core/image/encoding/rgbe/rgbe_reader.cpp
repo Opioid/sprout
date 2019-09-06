@@ -98,7 +98,7 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
     uint8_t  rgbe[4];
     uint8_t  buf[2];
 
-    memory::Array<uint8_t> scanline_buffer(4 * scanline_width);
+    memory::Buffer<uint8_t> scanline_buffer(4 * scanline_width);
 
     for (; num_scanlines > 0; --num_scanlines) {
         stream.read(reinterpret_cast<char*>(rgbe), sizeof(rgbe));

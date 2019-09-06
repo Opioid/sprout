@@ -1,7 +1,7 @@
 #include "exr_reader.hpp"
-#include "base/math/vector2.inl"
+#include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
-#include "exr.inl"
+#include "exr.hpp"
 #include "image/image.hpp"
 #include "logging/logging.hpp"
 #include "miniz/miniz.hpp"
@@ -15,68 +15,11 @@
 
 namespace image::encoding::exr {
 
-void channel_list(std::istream &stream) noexcept;
-void compression(std::istream &stream) noexcept;
-void chromaticities(std::istream &stream) noexcept;
+static void        channel_list(std::istream &stream) noexcept;
+static Compression compression(std::istream &stream) noexcept;
+static void        chromaticities(std::istream &stream) noexcept;
 
-static void reconstruct_scalar(char *buf, size_t outSize) {
-    unsigned char *t    = (unsigned char *)buf + 1;
-    unsigned char *stop = (unsigned char *)buf + outSize;
-
-    while (t < stop) {
-        int d = int(t[-1]) + int(t[0]) - 128;
-        t[0]  = d;
-        ++t;
-    }
-}
-
-static void interleave_scalar(const char *source, size_t outSize, char *out) {
-    const char *t1   = source;
-    const char *t2   = source + (outSize + 1) / 2;
-    char *      s    = out;
-    char *const stop = s + outSize;
-
-    while (true) {
-        if (s < stop)
-            *(s++) = *(t1++);
-        else
-            break;
-
-        if (s < stop)
-            *(s++) = *(t2++);
-        else
-            break;
-    }
-}
-
-static void interleave_sse2(const char *source, size_t outSize, char *out) {
-    static const size_t bytesPerChunk = 2 * sizeof(__m128i);
-
-    const size_t vOutSize = outSize / bytesPerChunk;
-
-    const __m128i *v1   = reinterpret_cast<const __m128i *>(source);
-    const __m128i *v2   = reinterpret_cast<const __m128i *>(source + (outSize + 1) / 2);
-    __m128i *      vOut = reinterpret_cast<__m128i *>(out);
-
-    for (size_t i = 0; i < vOutSize; ++i) {
-        __m128i a = _mm_loadu_si128(v1++);
-        __m128i b = _mm_loadu_si128(v2++);
-
-        __m128i lo = _mm_unpacklo_epi8(a, b);
-        __m128i hi = _mm_unpackhi_epi8(a, b);
-
-        _mm_storeu_si128(vOut++, lo);
-        _mm_storeu_si128(vOut++, hi);
-    }
-
-    const char *t1   = reinterpret_cast<const char *>(v1);
-    const char *t2   = reinterpret_cast<const char *>(v2);
-    char *      sOut = reinterpret_cast<char *>(vOut);
-
-    for (size_t i = vOutSize * bytesPerChunk; i < outSize; ++i) {
-        *(sOut++) = (i % 2 == 0) ? *(t1++) : *(t2++);
-    }
-}
+static Image *read_zip(std::istream &stream, int2 dimensions) noexcept;
 
 Image *Reader::read(std::istream &stream) noexcept {
     uint8_t header[Signature_size];
@@ -96,38 +39,51 @@ Image *Reader::read(std::istream &stream) noexcept {
     std::cout << uint32_t(header[0]) << " " << uint32_t(header[1]) << " " << uint32_t(header[2])
               << " " << uint32_t(header[3]) << std::endl;
 
-    std::string attribute;
+    std::string attribute_name;
+    std::string attribute_type;
+
+    Compression compression = Compression::Undefined;
+
+    int4 data_window;
+    int4 display_window;
 
     for (;;) {
-        std::getline(stream, attribute, '\0');
+        std::getline(stream, attribute_name, '\0');
 
-        if (attribute.empty()) {
+        if (attribute_name.empty()) {
             break;
         }
 
-        std::cout << attribute << ": ";
+        std::cout << attribute_name << ": ";
 
-        if ("channels" == attribute) {
+        if ("channels" == attribute_name) {
         }
 
-        std::getline(stream, attribute, '\0');
+        std::getline(stream, attribute_type, '\0');
 
-        std::cout << attribute << ": ";
+        std::cout << attribute_type << ": ";
 
         int32_t attribute_size;
         stream.read(reinterpret_cast<char *>(&attribute_size), sizeof(int32_t));
 
         std::cout << attribute_size << ": ";
 
-        if ("box2i" == attribute) {
+        if ("box2i" == attribute_type) {
             int4 box;
             stream.read(reinterpret_cast<char *>(&box), sizeof(int4));
             std::cout << box;
-        } else if ("chlist" == attribute) {
+
+            if ("dataWindow" == attribute_name) {
+                data_window = box;
+            } else if ("displayWindow" == attribute_name) {
+                display_window = box;
+            }
+
+        } else if ("chlist" == attribute_type) {
             channel_list(stream);
-        } else if ("compression" == attribute) {
-            compression(stream);
-        } else if ("chromaticities" == attribute) {
+        } else if ("compression" == attribute_type) {
+            compression = exr::compression(stream);
+        } else if ("chromaticities" == attribute_type) {
             chromaticities(stream);
         } else {
             stream.seekg(attribute_size, std::ios_base::cur);
@@ -136,90 +92,62 @@ Image *Reader::read(std::istream &stream) noexcept {
         std::cout << std::endl;
     }
 
-    std::cout << "scanline offset table:" << std::endl;
+    if (data_window != display_window) {
+        logging::push_error("dataWindow != displayWindow");
+        return nullptr;
+    }
 
-    int64_t v;
-    stream.read(reinterpret_cast<char *>(&v), sizeof(int64_t));
-    std::cout << v << std::endl;
-
-    std::cout << "scanlines:" << std::endl;
-
-    {
-        int32_t y;
-        stream.read(reinterpret_cast<char *>(&y), sizeof(int32_t));
-
-        int32_t size;
-        stream.read(reinterpret_cast<char *>(&size), sizeof(int32_t));
-
-        std::cout << "y: " << y << std::endl;
-        std::cout << "size: " << size << std::endl;
-
-        uint8_t *compressed = memory::allocate_aligned<uint8_t>(size);
-
-        stream.read(reinterpret_cast<char *>(compressed), size);
-
-        float *data = memory::allocate_aligned<float>(4 * 3);
-
-        float *outdata = memory::allocate_aligned<float>(4 * 3);
-
-        mz_stream mzs;
-        mzs.zalloc = nullptr;
-        mzs.zfree  = nullptr;
-
-        if (MZ_OK != mz_inflateInit(&mzs)) {
-            return nullptr;
-        }
-
-        mzs.next_in  = compressed;
-        mzs.avail_in = size;
-
-        mzs.next_out  = reinterpret_cast<uint8_t *>(data);
-        mzs.avail_out = 4 * 3 * 4;
-
-        mz_inflate(&mzs, MZ_FINISH);
-
-        mz_inflateEnd(&mzs);
-
-        reconstruct_scalar(reinterpret_cast<char *>(data), 4 * 3 * 4);
-
-        interleave_sse2(reinterpret_cast<char *>(data), 4 * 3 * 4,
-                        reinterpret_cast<char *>(outdata));
-
-        for (uint32_t i = 0; i < 12; ++i) {
-            std::cout << outdata[i] << std::endl;
-        }
-
-        memory::free_aligned(data);
-        memory::free_aligned(compressed);
+    if (Compression::ZIP == compression) {
+        return read_zip(stream, data_window.zw() + 1);
     }
 
     return nullptr;
 }
 
-void compression(std::istream &stream) noexcept {
-    uint8_t type;
+static Compression compression(std::istream &stream) noexcept {
+    Compression type;
     stream.read(reinterpret_cast<char *>(&type), sizeof(uint8_t));
 
-    if (0 == type) {
-        std::cout << "NO_COMPRESSION";
-    } else if (1 == type) {
-        std::cout << "RLE_COMPRESSION";
-    } else if (2 == type) {
-        std::cout << "ZIPS_COMPRESSION";
-    } else if (3 == type) {
-        std::cout << "ZIP_COMPRESSION";
-    } else if (4 == type) {
-        std::cout << "PIZ_COMPRESSION";
-    } else if (5 == type) {
-        std::cout << "PXR24_COMPRESSION";
-    } else if (6 == type) {
-        std::cout << "B44_COMPRESSION";
-    } else if (7 == type) {
-        std::cout << "B44A_COMPRESSION";
+    switch (type) {
+        case Compression::No:
+            std::cout << "NO_COMPRESSION";
+            break;
+
+        case Compression::RLE:
+            std::cout << "RLE_COMPRESSION";
+            break;
+
+        case Compression::ZIPS:
+            std::cout << "ZIPS_COMPRESSION";
+            break;
+
+        case Compression::ZIP:
+            std::cout << "ZIP_COMPRESSION";
+            break;
+
+        case Compression::PIZ:
+            std::cout << "PIZ_COMPRESSION";
+            break;
+
+        case Compression::PXR24:
+            std::cout << "PXR24_COMPRESSION";
+            break;
+
+        case Compression::B44:
+            std::cout << "B44_COMPRESSION";
+            break;
+
+        case Compression::B44A:
+            std::cout << "B44A_COMPRESSION";
+            break;
+        default:
+            break;
     }
+
+    return type;
 }
 
-void chromaticities(std::istream &stream) noexcept {
+static void chromaticities(std::istream &stream) noexcept {
     float c[8];
     stream.read(reinterpret_cast<char *>(c), sizeof(float) * 8);
 
@@ -236,7 +164,7 @@ void chromaticities(std::istream &stream) noexcept {
     std::cout << " ]";
 }
 
-void channel_list(std::istream &stream) noexcept {
+static void channel_list(std::istream &stream) noexcept {
     std::cout << "[ ";
 
     for (int32_t i = 0;; ++i) {
@@ -273,6 +201,139 @@ void channel_list(std::istream &stream) noexcept {
     }
 
     std::cout << " ]";
+}
+
+static void reconstruct_scalar(uint8_t *buf, size_t len) {
+    uint8_t *t    = buf + 1;
+    uint8_t *stop = buf + len;
+
+    while (t < stop) {
+        uint32_t const d = uint32_t(t[-1]) + uint32_t(t[0]) - 128;
+        t[0]             = uint8_t(d);
+        ++t;
+    }
+}
+
+static void interleave_scalar(const uint8_t *source, size_t len, uint8_t *out) {
+    const uint8_t *t1   = source;
+    const uint8_t *t2   = source + (len + 1) / 2;
+    uint8_t *      s    = out;
+    uint8_t *const stop = s + len;
+
+    while (true) {
+        if (s < stop)
+            *(s++) = *(t1++);
+        else
+            break;
+
+        if (s < stop)
+            *(s++) = *(t2++);
+        else
+            break;
+    }
+}
+
+static void interleave_sse2(uint8_t const *source, size_t len, uint8_t *out) {
+    static const size_t bytesPerChunk = 2 * sizeof(__m128i);
+
+    const size_t vOutSize = len / bytesPerChunk;
+
+    const __m128i *v1   = reinterpret_cast<const __m128i *>(source);
+    const __m128i *v2   = reinterpret_cast<const __m128i *>(source + (len + 1) / 2);
+    __m128i *      vOut = reinterpret_cast<__m128i *>(out);
+
+    for (size_t i = 0; i < vOutSize; ++i) {
+        __m128i a = _mm_loadu_si128(v1++);
+        __m128i b = _mm_loadu_si128(v2++);
+
+        __m128i lo = _mm_unpacklo_epi8(a, b);
+        __m128i hi = _mm_unpackhi_epi8(a, b);
+
+        _mm_storeu_si128(vOut++, lo);
+        _mm_storeu_si128(vOut++, hi);
+    }
+
+    const uint8_t *t1   = reinterpret_cast<const uint8_t *>(v1);
+    const uint8_t *t2   = reinterpret_cast<const uint8_t *>(v2);
+    uint8_t *      sOut = reinterpret_cast<uint8_t *>(vOut);
+
+    for (size_t i = vOutSize * bytesPerChunk; i < len; ++i) {
+        *(sOut++) = (i % 2 == 0) ? *(t1++) : *(t2++);
+    }
+}
+
+static Image *read_zip(std::istream &stream, int2 dimensions) noexcept {
+    uint32_t const num_scanlines_per_block = exr::num_scanlines_per_block(Compression::ZIP);
+    uint32_t const num_scanline_blocks = exr::num_scanline_blocks(dimensions[1], Compression::ZIP);
+
+    uint32_t const bytes_per_scanline = dimensions[0] * 3 * 4;
+
+    uint32_t const bytes_per_scanline_block = bytes_per_scanline * num_scanlines_per_block;
+
+    std::cout << "scanline offset table [" << num_scanline_blocks << "] :" << std::endl;
+
+    auto image = new Image(Float3(Description(dimensions)));
+
+    auto &image_f3 = image->float3();
+
+    for (int32_t i = 0, p = 0; i < num_scanline_blocks; ++i) {
+        int64_t v;
+        stream.read(reinterpret_cast<char *>(&v), sizeof(int64_t));
+        //   std::cout << v << std::endl;
+    }
+
+    //   std::cout << "scanlines [" << num_scanline_blocks << "] :" << std::endl;
+
+    uint32_t const max_compressed_size = num_scanlines_per_block * bytes_per_scanline;
+
+    memory::Buffer<uint8_t> compressed(max_compressed_size);
+
+    memory::Buffer<uint8_t> uncomressed(bytes_per_scanline_block);
+
+    memory::Buffer<uint8_t> outdata(bytes_per_scanline_block);
+
+    for (int32_t i = 0, p = 0; i < num_scanline_blocks; ++i) {
+        int32_t row;
+        stream.read(reinterpret_cast<char *>(&row), sizeof(int32_t));
+
+        int32_t size;
+        stream.read(reinterpret_cast<char *>(&size), sizeof(int32_t));
+
+        //          std::cout << "y: " << row << std::endl;
+        //          std::cout << "size: " << size << std::endl;
+
+        stream.read(reinterpret_cast<char *>(compressed.data()), size);
+
+        unsigned long uncompressed_size = bytes_per_scanline_block;
+        if (MZ_OK !=
+            mz_uncompress(uncomressed.data(), &uncompressed_size, compressed.data(), size)) {
+            return nullptr;
+        }
+
+        int32_t const num_scanlines_here = std::min(dimensions[1] - row,
+                                                    int32_t(num_scanlines_per_block));
+
+        int32_t const num_pixels_here = num_scanlines_here * dimensions[0];
+
+        reconstruct_scalar(uncomressed.data(), num_pixels_here * 3 * 4);
+
+        interleave_sse2(uncomressed.data(), num_pixels_here * 3 * 4, outdata.data());
+
+        float *floats = reinterpret_cast<float *>(outdata.data());
+
+        for (int32_t y = 0; y < num_scanlines_here; ++y) {
+            int32_t const o = 3 * y * dimensions[0];
+            for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
+                float const r = floats[o + 2 * dimensions[0] + x];
+                float const g = floats[o + 1 * dimensions[0] + x];
+                float const b = floats[o + 0 * dimensions[0] + x];
+
+                image_f3.store(p, packed_float3(r, g, b));
+            }
+        }
+    }
+
+    return image;
 }
 
 }  // namespace image::encoding::exr

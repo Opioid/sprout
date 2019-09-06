@@ -1,6 +1,7 @@
 target_sources(core
     PRIVATE
-    "exr.inl"
+    "exr.cpp"
+    "exr.hpp"
     "exr_reader.cpp"
     "exr_reader.hpp"
     "exr_writer.cpp"

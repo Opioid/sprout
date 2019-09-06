@@ -1,5 +1,5 @@
-#ifndef SU_CORE_IMAGE_ENCODING_EXR_INL
-#define SU_CORE_IMAGE_ENCODING_EXR_INL
+#ifndef SU_CORE_IMAGE_ENCODING_EXR_HPP
+#define SU_CORE_IMAGE_ENCODING_EXR_HPP
 
 #include <cstdint>
 #include <string>
@@ -18,7 +18,11 @@ struct Channel {
     Type type;
 };
 
-enum class Compression : uint8_t { No, RLE, ZIPS, ZIP, PIZ, PXR24, B44, B44A };
+enum class Compression : uint8_t { No, RLE, ZIPS, ZIP, PIZ, PXR24, B44, B44A, Undefined };
+
+uint32_t num_scanlines_per_block(Compression compression) noexcept;
+
+uint32_t num_scanline_blocks(uint32_t num_scanlines, Compression compression) noexcept;
 
 }  // namespace image::encoding::exr
 
