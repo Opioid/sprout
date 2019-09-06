@@ -5,12 +5,10 @@
 #include "image/image.hpp"
 #include "miniz/miniz.hpp"
 
-// Some code is based on
-// https://github.com/openexr/openexr/blob/master/OpenEXR/IlmImf/ImfZip.cpp
-
 #include <fstream>
 
-#include <iostream>
+// Some code is based on
+// https://github.com/openexr/openexr/blob/master/OpenEXR/IlmImf/ImfZip.cpp
 
 namespace image::encoding::exr {
 
@@ -44,12 +42,12 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
         w(stream, "channels");
         w(stream, "chlist");
 
-        Channel::Type type = half_ ? Channel::Type::Half : Channel::Type::Float;
-
         uint32_t const num_channels = alpha_ ? 4 : 3;
 
         uint32_t const size = num_channels * (2 + 4 + 4 + 4 + 4) + 1;
         w(stream, size);
+
+        Channel::Type const type = half_ ? Channel::Type::Half : Channel::Type::Float;
 
         if (alpha_) {
             w(stream, Channel{"A", type});

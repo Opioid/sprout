@@ -5,13 +5,11 @@
 
 namespace math {
 
-static int16_t float_to_half(float f) noexcept;
+//struct half {
+//    half(float s) noexcept;
 
-struct half {
-    half(float s) noexcept;
-
-    int16_t h;
-};
+//    int16_t h;
+//};
 
 }  // namespace math
 
