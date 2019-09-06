@@ -262,6 +262,7 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
         zip.avail_out = bytes_per_row;
 
         mz_deflate(&zip, MZ_FINISH);
+        mz_deflateReset(&zip);
 
         uint32_t const compressed_size = bytes_per_row - zip.avail_out;
 
@@ -278,8 +279,6 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
 
             current_buffer += compressed_size;
         }
-
-        mz_deflateReset(&zip);
     }
 
     mz_deflateEnd(&zip);
@@ -304,137 +303,97 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
 }
 
 bool Writer::zip_compression(std::ostream& stream, Float4 const& image) const noexcept {
-    int2 const d = image.description().dimensions2();
+    mz_stream zip;
+    zip.zalloc = nullptr;
+    zip.zfree  = nullptr;
 
-    int32_t const pixel_row_size = d[0] * (4 + 4 + 4);
-
-    int32_t const block_size = 16 * pixel_row_size;
-
-    mz_stream mzs;
-    mzs.zalloc = nullptr;
-    mzs.zfree  = nullptr;
-
-    if (MZ_OK != mz_deflateInit(&mzs, 8)) {
+    if (MZ_OK != mz_deflateInit(&zip, MZ_DEFAULT_COMPRESSION)) {
         return false;
     }
 
-    int32_t const num_scanline_blocks = exr::num_scanline_blocks(d[1], Compression::ZIP);
+    int2 const d = image.description().dimensions2();
 
-    uint32_t buffer_size = mz_deflateBound(&mzs, uint32_t(block_size));
+    int32_t const rows_per_block = exr::num_scanlines_per_block(Compression::ZIP);
+    int32_t const row_blocks     = exr::num_scanline_blocks(d[1], Compression::ZIP);
 
-    uint8_t* buffer = memory::allocate_aligned<uint8_t>(uint32_t(num_scanline_blocks) *
-                                                        buffer_size);
+    int32_t const bytes_per_row = d[0] * 3 * 4;
 
-    uint8_t* scanline_block = memory::allocate_aligned<uint8_t>(block_size);
+    int32_t const bytes_per_row_block = bytes_per_row * rows_per_block;
 
-    struct Compressed_scanline_block {
+    memory::Buffer<uint8_t> image_buffer(uint32_t(d[1] * bytes_per_row));
+
+    memory::Buffer<uint8_t> tmp_buffer(bytes_per_row_block);
+
+    memory::Buffer<uint8_t> block_buffer(bytes_per_row_block);
+
+    struct Compressed_block {
         uint32_t size;
         uint8_t* buffer;
     };
 
-    Compressed_scanline_block* csb = memory::allocate_aligned<Compressed_scanline_block>(
-        num_scanline_blocks);
+    memory::Buffer<Compressed_block> cb(d[1]);
 
-    int32_t block = 0;
+    uint8_t* current_buffer = image_buffer.data();
 
-    uint8_t* current_buffer = buffer;
+    float* floats = reinterpret_cast<float*>(block_buffer.data());
 
-    int32_t const floats_per_row = 3 * d[0];
+    for (int32_t y = 0, i = 0; y < row_blocks; ++y) {
+        int32_t const num_rows_here = std::min(d[1] - y, rows_per_block);
 
-    float* floats = reinterpret_cast<float*>(scanline_block);
 
-    floats[0] = 1.f;
-    floats[1] = 0.f;
-    floats[2] = 0.f;
+        /*
+        for (int32_t x = 0; x < d[0]; ++x, ++i) {
+            float3 const c = image.at(i).xyz();
 
-    floats[3] = 0.f;
-    floats[4] = 0.f;
-    floats[5] = 0.f;
-
-    floats[6] = 0.f;
-    floats[7] = 0.f;
-    floats[8] = 0.f;
-
-    floats[9]  = 0.f;
-    floats[10] = 0.f;
-    floats[11] = 0.f;
-
-    for (int32_t y = 0, block_row = 0; y < d[1]; ++y) {
-        int32_t const o = block_row * floats_per_row;
-
-        for (int32_t x = 0; x < d[0]; ++x) {
-            //    float3 const c = image.at(x, y).xyz();
-
-            int32_t a = o + 0 * d[0] + x;
-            int32_t b = o + 1 * d[0] + x;
-            int32_t c = o + 2 * d[0] + x;
-
-            //       floats[o + 0 * d[0] + x] = 0.f;//c[2];
-            //       floats[o + 1 * d[0] + x] = 0.f;//c[1];
-            //\       floats[o + 2 * d[0] + x] = 0.f;//c[0];
+            floats[d[0] * 0 + x] = c[2];
+            floats[d[0] * 1 + x] = c[1];
+            floats[d[0] * 2 + x] = c[0];
         }
 
-        //        for (int32_t x = 0; x < d[0]; ++x) {
-        //            float3 const c = image.at(x, y).xyz();
+        reorder(tmp_buffer, row_buffer, bytes_per_row);
 
-        //             floats[0 * 16 * d[0] + block_row * d[0] + x] = 0.f;
-        //             floats[4 * 16 * d[0] + block_row * d[0] + x] = 0.f;
-        //             floats[8 * 16 * d[0] + block_row * d[0] + x] = 0.f;
+        zip.next_in  = tmp_buffer;
+        zip.avail_in = bytes_per_row;
 
-        //        }
+        zip.next_out  = current_buffer;
+        zip.avail_out = bytes_per_row;
 
-        if (0 == (y + 1) % 16 || y == d[1] - 1) {
-            //    std::cout << y << std::endl;
+        mz_deflate(&zip, MZ_FINISH);
+        mz_deflateReset(&zip);
 
-            mzs.next_in  = scanline_block;
-            mzs.avail_in = (block_row + 1) * pixel_row_size;  // block_size;
+        uint32_t const compressed_size = bytes_per_row - zip.avail_out;
 
-            mzs.next_out  = current_buffer;
-            mzs.avail_out = buffer_size;
+        if (compressed_size >= bytes_per_row) {
+            cs[y].size   = bytes_per_row;
+            cs[y].buffer = current_buffer;
 
-            if (MZ_STREAM_END != mz_deflate(&mzs, MZ_FINISH)) {
-                std::cout << "Oh no" << std::endl;
-            }
+            std::copy(row_buffer.data(), row_buffer + bytes_per_row, current_buffer);
 
-            block_row = 0;
-
-            uint32_t const compressed_size = buffer_size - mzs.avail_out;
-
-            std::cout << compressed_size << std::endl;
-
-            csb[block].size   = compressed_size;
-            csb[block].buffer = current_buffer;
-
-            ++block;
+            current_buffer += bytes_per_row;
+        } else {
+            cs[y].size   = compressed_size;
+            cs[y].buffer = current_buffer;
 
             current_buffer += compressed_size;
-
-            //   std::cout << uint64_t(current_buffer) << std::endl;
-
-            mz_deflateReset(&mzs);
-        } else {
-            ++block_row;
         }
+        */
     }
 
-    mz_deflateEnd(&mzs);
+    mz_deflateEnd(&zip);
 
-    int64_t scanline_offset = stream.tellp() + int64_t(num_scanline_blocks * 8);
+    int64_t scanline_offset = stream.tellp() + int64_t(row_blocks * 8);
 
-    for (int32_t y = 0; y < num_scanline_blocks; ++y) {
-        //   std::cout << scanline_offset << std::endl;
-
+    for (int32_t y = 0; y < row_blocks; ++y) {
         w(stream, scanline_offset);
 
-        scanline_offset += 4 + 4 + csb[y].size;
+        scanline_offset += 4 + 4 + cb[y].size;
     }
 
-    for (int32_t y = 0; y < num_scanline_blocks; ++y) {
-        Compressed_scanline_block const& b = csb[y];
+    for (int32_t y = 0; y < row_blocks; ++y) {
+        Compressed_block const& b = cb[y];
 
-        int32_t row = y * 16;
-
-        stream.write(reinterpret_cast<char*>(&row), 4);
+        int32_t const row = y * rows_per_block;
+        stream.write(reinterpret_cast<const char*>(&row), 4);
         stream.write(reinterpret_cast<const char*>(&b.size), 4);
         stream.write(reinterpret_cast<char*>(b.buffer), b.size);
     }

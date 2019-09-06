@@ -300,7 +300,7 @@ static Image *read_zip(std::istream &stream, int2 dimensions) noexcept {
 
         stream.read(reinterpret_cast<char *>(compressed.data()), size);
 
-        int32_t const num_rows_here = std::min(dimensions[1] - row, int32_t(rows_per_block));
+        int32_t const num_rows_here = std::min(dimensions[1] - row, rows_per_block);
 
         int32_t const num_pixels_here = num_rows_here * dimensions[0];
 
