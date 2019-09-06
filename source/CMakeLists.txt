@@ -26,7 +26,7 @@ if (LINUX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti -fno-exceptions")
 
 	if (${Valgrind})
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse3")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -mf16c")
 	else ()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif ()
