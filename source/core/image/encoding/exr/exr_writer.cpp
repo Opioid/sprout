@@ -20,6 +20,7 @@ std::string Writer::file_extension() const {
 }
 
 static void w(std::ostream& stream, uint32_t i) noexcept;
+static void w(std::ostream& stream, int32_t i) noexcept;
 static void w(std::ostream& stream, float f) noexcept;
 static void w(std::ostream& stream, int64_t i) noexcept;
 static void w(std::ostream& stream, std::string const& s) noexcept;
@@ -49,8 +50,14 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
         //        w(stream, Channel{"R", Channel::Type::Float});
         //        stream.put(0x00);
 
-        uint32_t const size = 3 * (2 + 4 + 4 + 4 + 4) + 1;
+        uint32_t const num_channels = alpha_ ? 4 : 3;
+
+        uint32_t const size = num_channels * (2 + 4 + 4 + 4 + 4) + 1;
         w(stream, size);
+
+        if (alpha_) {
+            w(stream, Channel{"A", Channel::Type::Float});
+        }
 
         w(stream, Channel{"B", Channel::Type::Float});
         w(stream, Channel{"G", Channel::Type::Float});
@@ -140,9 +147,11 @@ bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noe
 
     int64_t const scanline_offset = stream.tellp() + int64_t(d[1] * 8);
 
-    int32_t const pixel_row_size = d[0] * (4 + 4 + 4);
+    int32_t const num_channels = alpha_ ? 4 : 3;
 
-    int32_t const row_size = 4 + 4 + pixel_row_size;
+    int32_t const bytes_per_row = d[0] * num_channels * 4;
+
+    int32_t const row_size = 4 + 4 + bytes_per_row;
 
     for (int32_t y = 0; y < d[1]; ++y) {
         w(stream, scanline_offset + y * row_size);
@@ -151,7 +160,14 @@ bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noe
     for (int32_t y = 0; y < d[1]; ++y) {
         w(stream, uint32_t(y));
 
-        w(stream, uint32_t(pixel_row_size));
+        w(stream, bytes_per_row);
+
+        if (alpha_) {
+            for (int32_t x = 0; x < d[0]; ++x) {
+                float const a = image.at(x, y)[3];
+                w(stream, a);
+            }
+        }
 
         for (int32_t x = 0; x < d[0]; ++x) {
             float const b = image.at(x, y)[2];
@@ -228,7 +244,9 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
     int32_t const rows_per_block = exr::num_scanlines_per_block(compression);
     int32_t const row_blocks     = exr::num_scanline_blocks(d[1], compression);
 
-    uint32_t const bytes_per_row = uint32_t(d[0] * 3 * 4);
+    int32_t const num_channels = alpha_ ? 4 : 3;
+
+    uint32_t const bytes_per_row = uint32_t(d[0] * num_channels * 4);
 
     uint32_t const bytes_per_block = bytes_per_row * uint32_t(rows_per_block);
 
@@ -253,13 +271,22 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
         int32_t const num_rows_here = std::min(d[1] - (y * rows_per_block), rows_per_block);
 
         for (int32_t row = 0; row < num_rows_here; ++row) {
-            int32_t const o = row * d[0] * 3;
+            int32_t const o = row * d[0] * num_channels;
             for (int32_t x = 0; x < d[0]; ++x, ++i) {
-                float3 const c = image.at(i).xyz();
+                if (alpha_) {
+                    float4 const c = image.at(i);
 
-                floats[o + d[0] * 0 + x] = c[2];
-                floats[o + d[0] * 1 + x] = c[1];
-                floats[o + d[0] * 2 + x] = c[0];
+                    floats[o + d[0] * 0 + x] = c[3];
+                    floats[o + d[0] * 1 + x] = c[2];
+                    floats[o + d[0] * 2 + x] = c[1];
+                    floats[o + d[0] * 3 + x] = c[0];
+                } else {
+                    float3 const c = image.at(i).xyz();
+
+                    floats[o + d[0] * 0 + x] = c[2];
+                    floats[o + d[0] * 1 + x] = c[1];
+                    floats[o + d[0] * 2 + x] = c[0];
+                }
             }
         }
 
@@ -316,6 +343,10 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
 }
 
 static void w(std::ostream& stream, uint32_t i) noexcept {
+    stream.write(reinterpret_cast<const char*>(&i), 4);
+}
+
+static void w(std::ostream& stream, int32_t i) noexcept {
     stream.write(reinterpret_cast<const char*>(&i), 4);
 }
 
