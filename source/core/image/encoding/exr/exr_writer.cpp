@@ -173,7 +173,7 @@ bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noe
     return true;
 }
 
-static void reorder(uint8_t* destination, const uint8_t* source, uint32_t len) noexcept {
+static void reorder(uint8_t* destination, uint8_t const* source, uint32_t len) noexcept {
     // Reorder the pixel data.
     {
         uint8_t* t1 = destination;
@@ -215,36 +215,34 @@ static void reorder(uint8_t* destination, const uint8_t* source, uint32_t len) n
 }
 
 bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const noexcept {
-    int2 const d = image.description().dimensions2();
-
-    uint32_t const pixel_row_size = uint32_t(d[0] * (4 + 4 + 4));
-
     mz_stream zip;
     zip.zalloc = nullptr;
     zip.zfree  = nullptr;
 
-    if (MZ_OK != mz_deflateInit(&zip, 6)) {
+    if (MZ_OK != mz_deflateInit(&zip, MZ_DEFAULT_COMPRESSION)) {
         return false;
     }
 
-    uint32_t const buffer_size = uint32_t(mz_deflateBound(&zip, pixel_row_size));
+    int2 const d = image.description().dimensions2();
 
-    auto buffer = memory::Buffer<uint8_t>(uint32_t(d[1]) * buffer_size);
+    uint32_t const bytes_per_row = uint32_t(d[0] * (4 + 4 + 4));
 
-    auto tmp_buffer = memory::Buffer<uint8_t>(pixel_row_size);
+    memory::Buffer<uint8_t> image_buffer(uint32_t(d[1]) * bytes_per_row);
 
-    auto scanline_buffer = memory::Buffer<uint8_t>(pixel_row_size);
+    memory::Buffer<uint8_t> tmp_buffer(bytes_per_row);
+
+    memory::Buffer<uint8_t> row_buffer(bytes_per_row);
 
     struct Compressed_scanline {
         uint32_t size;
         uint8_t* buffer;
     };
 
-    auto cs = memory::Buffer<Compressed_scanline>(uint32_t(d[1]));
+    memory::Buffer<Compressed_scanline> cs(d[1]);
 
-    uint8_t* current_buffer = buffer.data();
+    uint8_t* current_buffer = image_buffer.data();
 
-    float* floats = reinterpret_cast<float*>(scanline_buffer.data());
+    float* floats = reinterpret_cast<float*>(row_buffer.data());
 
     for (int32_t y = 0, i = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x, ++i) {
@@ -255,26 +253,31 @@ bool Writer::zips_compression(std::ostream& stream, Float4 const& image) const n
             floats[d[0] * 2 + x] = c[0];
         }
 
-        reorder(tmp_buffer.data(), scanline_buffer.data(), pixel_row_size);
+        reorder(tmp_buffer, row_buffer, bytes_per_row);
 
-        zip.next_in  = tmp_buffer.data();
-        zip.avail_in = pixel_row_size;
+        zip.next_in  = tmp_buffer;
+        zip.avail_in = bytes_per_row;
 
         zip.next_out  = current_buffer;
-        zip.avail_out = buffer_size;
+        zip.avail_out = bytes_per_row;
 
-        if (MZ_STREAM_END != mz_deflate(&zip, MZ_FINISH)) {
-            return false;
+        mz_deflate(&zip, MZ_FINISH);
+
+        uint32_t const compressed_size = bytes_per_row - zip.avail_out;
+
+        if (compressed_size >= bytes_per_row) {
+            cs[y].size   = bytes_per_row;
+            cs[y].buffer = current_buffer;
+
+            std::copy(row_buffer.data(), row_buffer + bytes_per_row, current_buffer);
+
+            current_buffer += bytes_per_row;
+        } else {
+            cs[y].size   = compressed_size;
+            cs[y].buffer = current_buffer;
+
+            current_buffer += compressed_size;
         }
-
-        uint32_t const compressed_size = buffer_size - zip.avail_out;
-
-        std::cout << compressed_size << std::endl;
-
-        cs[y].size   = compressed_size;
-        cs[y].buffer = current_buffer;
-
-        current_buffer += compressed_size;
 
         mz_deflateReset(&zip);
     }

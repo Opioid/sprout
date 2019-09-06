@@ -20,9 +20,9 @@ struct Channel {
 
 enum class Compression : uint8_t { No, RLE, ZIPS, ZIP, PIZ, PXR24, B44, B44A, Undefined };
 
-uint32_t num_scanlines_per_block(Compression compression) noexcept;
+int32_t num_scanlines_per_block(Compression compression) noexcept;
 
-uint32_t num_scanline_blocks(uint32_t num_scanlines, Compression compression) noexcept;
+int32_t num_scanline_blocks(int32_t num_scanlines, Compression compression) noexcept;
 
 }  // namespace image::encoding::exr
 
