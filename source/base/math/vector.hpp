@@ -21,6 +21,7 @@ struct alignas(16) Vector4i_a;
 }  // namespace math
 
 using byte2  = math::Vector2<uint8_t>;
+using short2 = math::Vector2<int16_t>;
 using float2 = math::Vector2<float>;
 using int2   = math::Vector2<int32_t>;
 using uint2  = math::Vector2<uint32_t>;
@@ -30,6 +31,8 @@ using byte3 = math::Vector3<uint8_t>;
 
 // using float3 = math::Vector3<float>;
 using float3 = math::Vector3f_a;
+
+using short3 = math::Vector3<int16_t>;
 
 using int3          = math::Vector3<int32_t>;
 using uint3         = math::Vector3<uint32_t>;

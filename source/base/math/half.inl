@@ -3,6 +3,7 @@
 
 #include "half.hpp"
 #include "simd/simd.hpp"
+#include "vector3.inl"
 
 #include <cstring>
 
@@ -68,6 +69,14 @@ static inline float half_to_float2(int16_t h) noexcept {
     float out;
     std::memcpy(&out, &fbits, sizeof(float));
     return out;
+}
+
+static inline float2 half_to_float(short2 h) noexcept {
+    return float2(half_to_float(h[0]), half_to_float(h[1]));
+}
+
+static inline float3 half_to_float(short3 h) noexcept {
+    return float3(half_to_float(h[0]), half_to_float(h[1]), half_to_float(h[2]));
 }
 
 // inline half::half(float s) noexcept

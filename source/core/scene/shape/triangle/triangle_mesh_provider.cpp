@@ -324,7 +324,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
 
     memory::Array<char> json_string(json_size + 1);
-    stream.read(json_string.data(), static_cast<std::streamsize>(json_size * sizeof(char)));
+    stream.read(json_string.data(), std::streamsize(json_size * sizeof(char)));
     json_string[json_size] = 0;
 
     std::string error;

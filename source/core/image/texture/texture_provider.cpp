@@ -89,6 +89,8 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         }
     } else if (Image::Type::Byte4 == image->type()) {
         return new Texture(Byte4_sRGB(image->byte4()));
+    } else if (Image::Type::Short3 == image->type()) {
+        return new Texture(Half3(image->short3()));
     } else if (Image::Type::Float1 == image->type()) {
         return new Texture(Float1(image->float1()));
     } else if (Image::Type::Float1_sparse == image->type()) {

@@ -31,7 +31,7 @@ Image* Reader::read(std::istream& stream) noexcept {
     stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
 
     memory::Array<char> json_string(json_size + 1);
-    stream.read(json_string.data(), static_cast<std::streamsize>(json_size * sizeof(char)));
+    stream.read(json_string.data(), std::streamsize(json_size * sizeof(char)));
     json_string[json_size] = 0;
 
     std::string error;
@@ -116,8 +116,7 @@ Image* Reader::read(std::istream& stream) noexcept {
             memory::Bitfield field(description.num_pixels());
 
             stream.seekg(static_cast<std::streamoff>(binary_start + topology_offset));
-            stream.read(reinterpret_cast<char*>(field.data()),
-                        static_cast<std::streamsize>(field.num_bytes()));
+            stream.read(reinterpret_cast<char*>(field.data()), std::streamsize(field.num_bytes()));
 
             stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
@@ -144,8 +143,7 @@ Image* Reader::read(std::istream& stream) noexcept {
             memory::Bitfield field(description.num_pixels());
 
             stream.seekg(static_cast<std::streamoff>(binary_start + topology_offset));
-            stream.read(reinterpret_cast<char*>(field.data()),
-                        static_cast<std::streamsize>(field.num_bytes()));
+            stream.read(reinterpret_cast<char*>(field.data()), std::streamsize(field.num_bytes()));
 
             stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
 
@@ -189,7 +187,7 @@ Image* Reader::read(std::istream& stream) noexcept {
             auto image = new Image(Byte1(description));
 
             stream.read(reinterpret_cast<char*>(image->byte1().data()),
-                        static_cast<std::streamsize>(pixels_size));
+                        std::streamsize(pixels_size));
 
             return image;
         } else /*if (Image::Type::Float1 == type)*/ {
@@ -198,7 +196,7 @@ Image* Reader::read(std::istream& stream) noexcept {
             auto image = new Image(Float1(description));
 
             stream.read(reinterpret_cast<char*>(image->float1().data()),
-                        static_cast<std::streamsize>(pixels_size));
+                        std::streamsize(pixels_size));
 
             return image;
         }

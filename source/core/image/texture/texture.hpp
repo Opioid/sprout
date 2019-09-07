@@ -13,6 +13,7 @@
 #include "texture_float_1.hpp"
 #include "texture_float_2.hpp"
 #include "texture_float_3.hpp"
+#include "texture_half_3.hpp"
 
 namespace image::texture {
 
@@ -27,6 +28,7 @@ class alignas(64) Texture {
     Texture(Byte3_unorm const& texture) noexcept;
     Texture(Byte3_sRGB const& texture) noexcept;
     Texture(Byte4_sRGB const& texture) noexcept;
+    Texture(Half3 const& texture) noexcept;
     Texture(Float1 const& texture) noexcept;
     Texture(Float1_sparse const& texture) noexcept;
     Texture(Float2 const& texture) noexcept;
@@ -79,6 +81,7 @@ class alignas(64) Texture {
         Byte3_unorm,
         Byte3_sRGB,
         Byte4_sRGB,
+        Half3,
         Float1,
         Float1_sparse,
         Float2,
@@ -99,6 +102,7 @@ class alignas(64) Texture {
         Byte3_unorm const   byte3_unorm_;
         Byte3_sRGB const    byte3_srgb_;
         Byte4_sRGB const    byte4_srgb_;
+        Half3 const         half3_;
         Float1 const        float1_;
         Float1_sparse const float1_sparse_;
         Float2 const        float2_;

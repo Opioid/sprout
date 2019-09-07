@@ -170,10 +170,10 @@ void Writer::write(std::string const& filename, Image const& image) {
 
         stream.write(reinterpret_cast<char const*>(&json_size), sizeof(uint64_t));
         stream.write(reinterpret_cast<char const*>(json_string.data()),
-                     static_cast<std::streamsize>(json_size * sizeof(char)));
+                     std::streamsize(json_size * sizeof(char)));
 
         stream.write(reinterpret_cast<char const*>(field.data()),
-                     static_cast<std::streamsize>(field.num_bytes()));
+                     std::streamsize(field.num_bytes()));
 
         if (Image::Type::Byte1 == image.type()) {
             image::Byte1 const& typed = image.byte1();
@@ -229,18 +229,16 @@ void Writer::write(std::string const& filename, Image const& image) {
 
         stream.write(reinterpret_cast<char const*>(&json_size), sizeof(uint64_t));
         stream.write(reinterpret_cast<char const*>(json_string.data()),
-                     static_cast<std::streamsize>(json_size * sizeof(char)));
+                     std::streamsize(json_size * sizeof(char)));
 
         if (Image::Type::Byte1 == image.type()) {
             image::Byte1 const& typed = image.byte1();
 
-            stream.write(reinterpret_cast<char const*>(typed.data()),
-                         static_cast<std::streamsize>(pixels_size));
+            stream.write(reinterpret_cast<char const*>(typed.data()), std::streamsize(pixels_size));
         } else {
             image::Float1 const& typed = image.float1();
 
-            stream.write(reinterpret_cast<char const*>(typed.data()),
-                         static_cast<std::streamsize>(pixels_size));
+            stream.write(reinterpret_cast<char const*>(typed.data()), std::streamsize(pixels_size));
         }
     }
 }

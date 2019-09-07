@@ -19,6 +19,8 @@ namespace image {
             return byte3_.NAME(__VA_ARGS__);         \
         case Type::Byte4:                            \
             return byte4_.NAME(__VA_ARGS__);         \
+        case Type::Short3:                           \
+            return short3_.NAME(__VA_ARGS__);        \
         case Type::Float1:                           \
             return float1_.NAME(__VA_ARGS__);        \
         case Type::Float1_sparse:                    \
@@ -39,6 +41,7 @@ IMAGE_CONSTRUCTOR(Byte1, byte1_)
 IMAGE_CONSTRUCTOR(Byte2, byte2_)
 IMAGE_CONSTRUCTOR(Byte3, byte3_)
 IMAGE_CONSTRUCTOR(Byte4, byte4_)
+IMAGE_CONSTRUCTOR(Short3, short3_)
 IMAGE_CONSTRUCTOR(Float1, float1_)
 IMAGE_CONSTRUCTOR(Float1_sparse, float1_sparse_)
 IMAGE_CONSTRUCTOR(Float2, float2_)
@@ -58,6 +61,9 @@ Image::~Image() {
             break;
         case Type::Byte4:
             byte4_.~Byte4();
+            break;
+        case Type::Short3:
+            short3_.~Short3();
             break;
         case Type::Float1:
             float1_.~Float1();
@@ -103,6 +109,10 @@ Byte4 const& Image::byte4() const noexcept {
     return byte4_;
 }
 
+Short3 const& Image::short3() const noexcept {
+    return short3_;
+}
+
 Float1 const& Image::float1() const noexcept {
     return float1_;
 }
@@ -137,6 +147,10 @@ Byte3& Image::byte3() noexcept {
 
 Byte4& Image::byte4() noexcept {
     return byte4_;
+}
+
+Short3& Image::short3() noexcept {
+    return short3_;
 }
 
 Float1& Image::float1() noexcept {
