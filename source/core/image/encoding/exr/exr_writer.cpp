@@ -2,6 +2,7 @@
 #include "base/math/half.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "image/image.hpp"
 #include "miniz/miniz.hpp"
 
@@ -26,7 +27,7 @@ static void w(std::ostream& stream, int64_t i) noexcept;
 static void w(std::ostream& stream, std::string const& s) noexcept;
 static void w(std::ostream& stream, Channel const& c) noexcept;
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*pool*/) {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
     stream.write(reinterpret_cast<const char*>(Signature), Signature_size);
 
     uint8_t version[4];
@@ -128,9 +129,9 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*po
     if (Compression::No == compression) {
         return no_compression(stream, image);
     } else if (Compression::ZIPS == compression) {
-        return zip_compression(stream, image, Compression::ZIPS);
+        return zip_compression(stream, image, Compression::ZIPS, pool);
     } else if (Compression::ZIP == compression) {
-        return zip_compression(stream, image, Compression::ZIP);
+        return zip_compression(stream, image, Compression::ZIP, pool);
     }
 
     return false;
@@ -230,25 +231,24 @@ static void reorder(uint8_t* destination, uint8_t const* source, uint32_t len) n
     }
 }
 
-static inline void put_block_half(uint8_t* destination, Float4 const& image, int32_t num_channels,
-                                  int32_t num_rows, int32_t i) noexcept {
+static inline void block_half(uint8_t* destination, Float4 const& image, int32_t num_channels,
+                              int32_t num_rows, int32_t pixel) noexcept {
     int32_t const width = image.description().dimensions2()[0];
 
     int16_t* halfs = reinterpret_cast<int16_t*>(destination);
 
     for (int32_t row = 0; row < num_rows; ++row) {
         int32_t const o = row * width * num_channels;
-        for (int32_t x = 0; x < width; ++x, ++i) {
+        for (int32_t x = 0; x < width; ++x, ++pixel) {
             if (4 == num_channels) {
-                float4 const c = image.at(i);
+                float4 const c = image.at(pixel);
 
                 halfs[o + width * 0 + x] = float_to_half(c[3]);
                 halfs[o + width * 1 + x] = float_to_half(c[2]);
                 halfs[o + width * 2 + x] = float_to_half(c[1]);
                 halfs[o + width * 3 + x] = float_to_half(c[0]);
-
             } else {
-                float3 const c = image.at(i).xyz();
+                float3 const c = image.at(pixel).xyz();
 
                 halfs[o + width * 0 + x] = float_to_half(c[2]);
                 halfs[o + width * 1 + x] = float_to_half(c[1]);
@@ -258,25 +258,24 @@ static inline void put_block_half(uint8_t* destination, Float4 const& image, int
     }
 }
 
-static inline void put_block_float(uint8_t* destination, Float4 const& image, int32_t num_channels,
-                                   int32_t num_rows, int32_t i) noexcept {
+static inline void block_float(uint8_t* destination, Float4 const& image, int32_t num_channels,
+                               int32_t num_rows, int32_t pixel) noexcept {
     int32_t const width = image.description().dimensions2()[0];
 
     float* floats = reinterpret_cast<float*>(destination);
 
     for (int32_t row = 0; row < num_rows; ++row) {
         int32_t const o = row * width * num_channels;
-        for (int32_t x = 0; x < width; ++x, ++i) {
+        for (int32_t x = 0; x < width; ++x, ++pixel) {
             if (4 == num_channels) {
-                float4 const c = image.at(i);
+                float4 const c = image.at(pixel);
 
                 floats[o + width * 0 + x] = c[3];
                 floats[o + width * 1 + x] = c[2];
                 floats[o + width * 2 + x] = c[1];
                 floats[o + width * 3 + x] = c[0];
-
             } else {
-                float3 const c = image.at(i).xyz();
+                float3 const c = image.at(pixel).xyz();
 
                 floats[o + width * 0 + x] = c[2];
                 floats[o + width * 1 + x] = c[1];
@@ -286,34 +285,23 @@ static inline void put_block_float(uint8_t* destination, Float4 const& image, in
     }
 }
 
-bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
-                             Compression compression) const noexcept {
-    mz_stream zip;
-    zip.zalloc = nullptr;
-    zip.zfree  = nullptr;
-
-    if (MZ_OK != mz_deflateInit(&zip, MZ_DEFAULT_COMPRESSION)) {
-        return false;
-    }
-
+bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
+                             thread::Pool& pool) const noexcept {
     int2 const d = image.description().dimensions2();
 
     int32_t const rows_per_block = exr::num_scanlines_per_block(compression);
     int32_t const row_blocks     = exr::num_scanline_blocks(d[1], compression);
 
     int32_t const num_channels = alpha_ ? 4 : 3;
+    int32_t const scalar_size  = half_ ? 2 : 4;
 
-    int32_t const scalar_size = half_ ? 2 : 4;
-
-    uint32_t const bytes_per_row = uint32_t(d[0] * num_channels * scalar_size);
-
-    uint32_t const bytes_per_block = bytes_per_row * uint32_t(rows_per_block);
+    uint32_t const bytes_per_row   = uint32_t(d[0] * num_channels * scalar_size);
+    uint32_t const bytes_per_block = round_up(bytes_per_row * uint32_t(rows_per_block),
+                                              uint32_t(memory::L1_cache_line_size));
 
     memory::Buffer<uint8_t> image_buffer(uint32_t(d[1]) * bytes_per_row);
-
-    memory::Buffer<uint8_t> tmp_buffer(bytes_per_block);
-
-    memory::Buffer<uint8_t> block_buffer(bytes_per_block);
+    memory::Buffer<uint8_t> tmp_buffer(bytes_per_block * pool.num_threads());
+    memory::Buffer<uint8_t> block_buffer(bytes_per_block * pool.num_threads());
 
     struct Compressed_block {
         uint32_t size;
@@ -322,50 +310,93 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image,
 
     memory::Buffer<Compressed_block> cb(static_cast<uint32_t>(row_blocks));
 
-    uint8_t* current_buffer = image_buffer.data();
+    struct Args {
+        int32_t rows_per_block;
+        int32_t row_blocks;
 
-    for (int32_t y = 0, i = 0; y < row_blocks; ++y) {
-        int32_t const num_rows_here = std::min(d[1] - (y * rows_per_block), rows_per_block);
+        int32_t num_channels;
 
-        if (half_) {
-            put_block_half(block_buffer, image, num_channels, num_rows_here, i);
-        } else {
-            put_block_float(block_buffer, image, num_channels, num_rows_here, i);
-        }
+        uint32_t bytes_per_row;
+        uint32_t bytes_per_block;
 
-        i += num_rows_here * d[0];
+        bool half;
 
-        uint32_t const bytes_here = uint32_t(num_rows_here) * bytes_per_row;
+        uint8_t* image_buffer;
+        uint8_t* tmp_buffer;
+        uint8_t* block_buffer;
 
-        reorder(tmp_buffer, block_buffer, bytes_here);
+        Compressed_block* cb;
 
-        zip.next_in  = tmp_buffer;
-        zip.avail_in = bytes_here;
+        Float4 const& image;
+    };
 
-        zip.next_out  = current_buffer;
-        zip.avail_out = bytes_here;
+    Args const args{rows_per_block,  row_blocks, num_channels, bytes_per_row,
+                    bytes_per_block, half_,      image_buffer, tmp_buffer,
+                    block_buffer,    cb,         image};
 
-        mz_deflate(&zip, MZ_FINISH);
-        mz_deflateReset(&zip);
+    pool.run_range(
+        [&args](uint32_t id, int32_t begin, int32_t end) {
+            mz_stream zip;
+            zip.zalloc = nullptr;
+            zip.zfree  = nullptr;
 
-        uint32_t const compressed_size = bytes_here - zip.avail_out;
+            if (MZ_OK != mz_deflateInit(&zip, MZ_DEFAULT_COMPRESSION)) {
+                return;
+            }
 
-        if (compressed_size >= bytes_here) {
-            cb[y].size   = bytes_here;
-            cb[y].buffer = current_buffer;
+            int32_t const width = args.image.description().dimensions2()[0];
 
-            std::copy(block_buffer.data(), block_buffer + bytes_here, current_buffer);
+            uint32_t const offset = id * args.bytes_per_block;
 
-            current_buffer += bytes_here;
-        } else {
-            cb[y].size   = compressed_size;
-            cb[y].buffer = current_buffer;
+            uint8_t* tmp_buffer   = args.tmp_buffer + offset;
+            uint8_t* block_buffer = args.block_buffer + offset;
 
-            current_buffer += compressed_size;
-        }
-    }
+            for (int32_t y = begin; y < end; ++y) {
+                int32_t const num_rows_here = std::min(width - (y * args.rows_per_block),
+                                                       args.rows_per_block);
 
-    mz_deflateEnd(&zip);
+                int32_t const pixel = y * args.rows_per_block * width;
+
+                if (args.half) {
+                    block_half(block_buffer, args.image, args.num_channels, num_rows_here, pixel);
+                } else {
+                    block_float(block_buffer, args.image, args.num_channels, num_rows_here, pixel);
+                }
+
+                uint32_t const bytes_here = uint32_t(num_rows_here) * args.bytes_per_row;
+
+                reorder(tmp_buffer, block_buffer, bytes_here);
+
+                uint8_t* const image_buffer = args.image_buffer +
+                                              uint32_t(y) * args.bytes_per_block;
+
+                zip.next_in  = tmp_buffer;
+                zip.avail_in = bytes_here;
+
+                zip.next_out  = image_buffer;
+                zip.avail_out = bytes_here;
+
+                mz_deflate(&zip, MZ_FINISH);
+                mz_deflateReset(&zip);
+
+                uint32_t const compressed_size = bytes_here - zip.avail_out;
+
+                Compressed_block& cb = args.cb[y];
+
+                if (compressed_size >= bytes_here) {
+                    cb.size   = bytes_here;
+                    cb.buffer = image_buffer;
+
+                    std::copy(block_buffer, block_buffer + bytes_here, image_buffer);
+                } else {
+                    cb.size   = compressed_size;
+                    cb.buffer = image_buffer;
+                }
+            }
+
+            mz_deflateEnd(&zip);
+        },
+        0, row_blocks);
 
     int64_t scanline_offset = stream.tellp() + int64_t(row_blocks * 8);
 

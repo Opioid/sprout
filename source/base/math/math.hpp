@@ -134,6 +134,11 @@ static inline T bilinear(T c00, T c10, T c01, T c11, float s, float t) noexcept 
     return _t * (_s * c00 + s * c10) + t * (_s * c01 + s * c11);
 }
 
+template <typename T>
+static inline T round_up(T x, T m) noexcept {
+    return ((x + m - 1) / m) * m;
+}
+
 }  // namespace math
 
 #endif

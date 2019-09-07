@@ -78,13 +78,7 @@ using Light_sampling       = rendering::integrator::Light_sampling;
 
 static bool load_camera(json::Value const& camera_value, Take& take, Scene& scene) noexcept;
 
-template <typename Base>
-static Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
-                                       Sensor_filter const* filter) noexcept;
-
 static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept;
-
-static Sensor_filter const* load_filter(json::Value const& filter_value) noexcept;
 
 static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
                                               uint32_t           num_workers,
@@ -480,7 +474,6 @@ static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) 
         } else if ("clamp" == n.name) {
             clamp_max = json::read_float3(n.value);
         } else if ("filter" == n.name) {
-            //    filter = load_filter(n.value);
             filter_value = &n.value;
             filter_type  = read_filter_type(n.value);
         }

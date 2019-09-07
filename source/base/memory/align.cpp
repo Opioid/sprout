@@ -9,8 +9,6 @@
 namespace memory {
 
 void* allocate_aligned(size_t size) noexcept {
-    constexpr size_t L1_cache_line_size = 64;
-
 #ifdef _WIN32
     return _aligned_malloc(size, L1_cache_line_size);
 #else
