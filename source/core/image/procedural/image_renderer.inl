@@ -37,7 +37,7 @@ template <typename T>
 void Typed_renderer<T>::draw_circle(float2 pos, float radius) {
     int2 sample(pos * dimensions_f_);
 
-    int32_t x   = static_cast<int>(radius * dimensions_f_[0]);
+    int32_t x   = int32_t(radius * dimensions_f_[0]);
     int32_t y   = 0;
     int32_t err = 0;
 
@@ -67,7 +67,7 @@ void Typed_renderer<T>::resolve(Typed_image<T>& image) const {
     } else {
         int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
 
-        float n = 1.f / static_cast<float>(num_samples);
+        float n = 1.f / float(num_samples);
 
         auto i_d = image.description().dimensions;
 

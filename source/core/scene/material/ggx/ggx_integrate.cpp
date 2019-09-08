@@ -41,7 +41,7 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) noexcept
         accum += (n_dot_wi * result.reflection[0]) / result.pdf;
     }
 
-    return accum / static_cast<float>(num_samples);
+    return accum / float(num_samples);
 }
 
 float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_samples) noexcept {
@@ -115,7 +115,7 @@ float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_sa
         }
     }
 
-    return accum / static_cast<float>(num_samples);
+    return accum / float(num_samples);
 }
 
 float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_samples) noexcept {
@@ -195,7 +195,7 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
         }
     }
 
-    return std::min(accum / static_cast<float>(num_samples), 1.f);
+    return std::min(accum / float(num_samples), 1.f);
 }
 
 void make_f_ss_table(std::ostream& stream) noexcept {
@@ -205,7 +205,7 @@ void make_f_ss_table(std::ostream& stream) noexcept {
 
     stream << "float constexpr E[" << Num_samples << "][" << Num_samples << "] = {\n";
 
-    float constexpr step = 1.f / static_cast<float>(Num_samples - 1);
+    float constexpr step = 1.f / float(Num_samples - 1);
 
     float alpha = 0.f;
 
@@ -255,7 +255,7 @@ void make_f_s_ss_table(std::ostream& stream) noexcept {
     stream << "float constexpr E_s[" << Num_samples << "][" << Num_samples << "][" << Num_samples
            << "] = {\n";
 
-    float constexpr step = 1.f / static_cast<float>(Num_samples - 1);
+    float constexpr step = 1.f / float(Num_samples - 1);
 
     float ior = 1.f;
 
@@ -317,7 +317,7 @@ void make_f_sd_ss_table(std::ostream& stream) noexcept {
     stream << "float constexpr E_sd[" << Num_samples << "][" << Num_samples << "][" << Num_samples
            << "] = {\n";
 
-    float constexpr step = 1.f / static_cast<float>(Num_samples - 1);
+    float constexpr step = 1.f / float(Num_samples - 1);
 
     float ior = 1.f;
 

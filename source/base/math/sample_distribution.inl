@@ -24,7 +24,7 @@ static inline float radical_inverse_vdC(uint32_t bits, uint32_t r) noexcept {
 
     bits ^= r;
 
-    return static_cast<float>(bits) * 2.3283064365386963e-10f;  // / 0x100000000
+    return float(bits) * 2.3283064365386963e-10f;  // / 0x100000000
 }
 
 static inline float radical_inverse_S(uint32_t i, uint32_t r) noexcept {
@@ -34,7 +34,7 @@ static inline float radical_inverse_S(uint32_t i, uint32_t r) noexcept {
         }
     }
 
-    return static_cast<float>(r) * 2.3283064365386963e-10f;  // / 0x100000000
+    return float(r) * 2.3283064365386963e-10f;  // / 0x100000000
 }
 
 static inline float radical_inverse_LP(uint32_t i, uint32_t r) noexcept {
@@ -44,12 +44,11 @@ static inline float radical_inverse_LP(uint32_t i, uint32_t r) noexcept {
         }
     }
 
-    return static_cast<float>(r) * 2.3283064365386963e-10f;  // / 0x100000000
+    return float(r) * 2.3283064365386963e-10f;  // / 0x100000000
 }
 
 static inline float2 hammersley(uint32_t i, uint32_t num_samples, uint32_t r) noexcept {
-    return float2(static_cast<float>(i) / static_cast<float>(num_samples),
-                  radical_inverse_vdC(i, r));
+    return float2(float(i) / float(num_samples), radical_inverse_vdC(i, r));
 }
 
 static inline float2 ems(uint32_t i, uint32_t r_0, uint32_t r_1) noexcept {
@@ -57,8 +56,7 @@ static inline float2 ems(uint32_t i, uint32_t r_0, uint32_t r_1) noexcept {
 }
 
 static inline float2 thing(uint32_t i, uint32_t num_samples, uint32_t r) noexcept {
-    return float2(static_cast<float>(i) / static_cast<float>(num_samples),
-                  radical_inverse_LP(i, r));
+    return float2(float(i) / float(num_samples), radical_inverse_LP(i, r));
 }
 
 static inline void vdC(float* samples, uint32_t num_samples, uint32_t r) noexcept {

@@ -101,7 +101,7 @@ class Row {
             [this, half_m, sqrt_m, i_sqrt_m, dk, cot, csc, sx](uint32_t /*id*/, int32_t begin,
                                                                int32_t end) {
                 for (int32_t x = begin, num_samples = num_samples_; x < end; ++x) {
-                    float const coordinates = static_cast<float>(x) + 0.5f;
+                    float const coordinates = float(x) + 0.5f;
                     float const u           = (coordinates - half_m) * i_sqrt_m;
                     float const cscu        = csc * u;
                     uint32_t    ss          = 0;

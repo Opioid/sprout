@@ -6,8 +6,8 @@
 
 namespace scene::shape::triangle {
 
-// float constexpr F22 = static_cast<float>(1 << 22);
-float constexpr FN = static_cast<float>((1 << 23) - 1);
+// float constexpr F22 = float(1 << 22);
+float constexpr FN = float((1 << 23) - 1);
 
 inline void Norm23x2_Sign1x2::decode(packed_float3& v, float& s) const {
     uint32_t const a = (uint32_t(data[1]) & 0b01111111) << 16;
@@ -20,11 +20,11 @@ inline void Norm23x2_Sign1x2::decode(packed_float3& v, float& s) const {
     uint32_t const d = (uint32_t(data[2]) >> 14) & 0x1;
     uint32_t const e = (uint32_t(data[2]) >> 15) & 0x1;
 
-    //	float const fx = static_cast<float>(x) / F22 - 1.f;
-    //	float const fy = static_cast<float>(y) / F22 - 1.f;
+    //	float const fx = float(x) / F22 - 1.f;
+    //	float const fy = float(y) / F22 - 1.f;
 
-    float const fx = (2.f * (static_cast<float>(x) / FN)) - 1.f;
-    float const fy = (2.f * (static_cast<float>(y) / FN)) - 1.f;
+    float const fx = (2.f * (float(x) / FN)) - 1.f;
+    float const fy = (2.f * (float(y) / FN)) - 1.f;
 
     float const signs[2] = {1.f, -1.f};
 

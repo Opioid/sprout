@@ -47,7 +47,7 @@ void Pathtracer::start_pixel() noexcept {
 
 float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
                       Interface_stack const& initial_stack) noexcept {
-    float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
+    float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
 
     float4 result = float4(0.f);
 

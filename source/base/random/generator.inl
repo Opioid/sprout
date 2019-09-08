@@ -39,7 +39,7 @@ inline float Generator::random_float() noexcept {
 
     return uint_as_float(bits) - 1.f;
 
-    //   return 2.3283064365386963e-10f * static_cast<float>(bits);
+    //   return 2.3283064365386963e-10f * float(bits);
 }
 
 inline uint32_t Generator::advance_pcg32() noexcept {

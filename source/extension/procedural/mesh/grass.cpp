@@ -33,7 +33,7 @@ scene::shape::Shape* Grass::create_mesh(json::Value const& /*mesh_value*/,
             r = math::degrees_to_radians(90.f);
 
             for (uint32_t i = 0; i < 10; ++i) {
-                    l = 0.1f * static_cast<float>(i);
+                    l = 0.1f * float(i);
                     add_blade(packed_float3(-0.1f, 0.f, 0.f),
                                       r, l, w, h, i * num_vertices, triangles, vertices);
             }
@@ -260,7 +260,7 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
     }
 
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {
-        vertices[i].n = normalize(normals[i].sum / static_cast<float>(normals[i].num));
+        vertices[i].n = normalize(normals[i].sum / float(normals[i].num));
     }
 }
 

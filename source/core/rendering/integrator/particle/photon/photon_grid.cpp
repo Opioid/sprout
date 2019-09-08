@@ -306,10 +306,10 @@ static inline float conely_filter(float squared_distance, float inv_squared_radi
 
 void Grid::set_num_paths(uint64_t num_paths) noexcept {
     float const radius_2   = search_radius_ * search_radius_;
-    surface_normalization_ = 1.f / (((1.f / 2.f) * Pi) * static_cast<float>(num_paths) * radius_2);
+    surface_normalization_ = 1.f / (((1.f / 2.f) * Pi) * float(num_paths) * radius_2);
 
     float const radius_3  = search_radius_ * radius_2;
-    volume_normalization_ = 1.f / (((4.f / 3.f) * Pi) * (radius_3 * static_cast<float>(num_paths)));
+    volume_normalization_ = 1.f / (((4.f / 3.f) * Pi) * (radius_3 * float(num_paths)));
 }
 
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
@@ -394,13 +394,13 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
         }
 
         // cone_filter
-        //  result /= ((1.f / 3.f) * Pi) * static_cast<float>(num_paths) * radius_2;
+        //  result /= ((1.f / 3.f) * Pi) * float(num_paths) * radius_2;
 
         // conely_filter
         result *= surface_normalization_;
 
         // unfiltered
-        //   result /= Pi * static_cast<float>(num_paths) * radius_2;
+        //   result /= Pi * float(num_paths) * radius_2;
     }
 
     return result;

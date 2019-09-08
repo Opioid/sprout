@@ -2,10 +2,13 @@
 #include <cmath>
 #include <istream>
 #include <string>
+#include "base/math/half.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/array.inl"
 #include "image/image.hpp"
 #include "logging/logging.hpp"
+
+#include <type_traits>
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 
@@ -20,11 +23,13 @@ struct Header {
 
 static Header read_header(std::istream& stream) noexcept;
 
+template <class Image>
 static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-                            Float3& image) noexcept;
+                            Image& image) noexcept;
 
-static void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
-                        uint32_t offset) noexcept;
+template <class Image>
+static void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image,
+                        int32_t offset) noexcept;
 
 using image_float3 = packed_float3;
 
@@ -39,14 +44,27 @@ Image* Reader::read(std::istream& stream) noexcept {
 
     int2 const dimensions(header.width, header.height);
 
-    auto image = new Image(Float3(Description(dimensions)));
+    static bool constexpr half_precision = true;
 
-    if (!read_pixels_RLE(stream, header.width, header.height, image->float3())) {
-        delete image;
-        return nullptr;
+    if (half_precision) {
+        auto image = new Image(Short3(Description(dimensions)));
+
+        if (!read_pixels_RLE(stream, header.width, header.height, image->short3())) {
+            delete image;
+            return nullptr;
+        }
+
+        return image;
+    } else {
+        auto image = new Image(Float3(Description(dimensions)));
+
+        if (!read_pixels_RLE(stream, header.width, header.height, image->float3())) {
+            delete image;
+            return nullptr;
+        }
+
+        return image;
     }
-
-    return image;
 }
 
 Header read_header(std::istream& stream) noexcept {
@@ -87,16 +105,18 @@ Header read_header(std::istream& stream) noexcept {
     return header;
 }
 
-bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-                     Float3& image) noexcept {
+template <class Image>
+static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+                            Image& image) noexcept {
     if (scanline_width < 8 || scanline_width > 0x7fff) {
         read_pixels(stream, scanline_width * num_scanlines, image, 0);
         return true;
     }
 
-    uint32_t offset = 0;
-    uint8_t  rgbe[4];
-    uint8_t  buf[2];
+    int32_t offset = 0;
+
+    uint8_t rgbe[4];
+    uint8_t buf[2];
 
     memory::Buffer<uint8_t> scanline_buffer(4 * scanline_width);
 
@@ -105,11 +125,21 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
 
         if (rgbe[0] != 2 || rgbe[1] != 2 || (rgbe[2] & 0x80) != 0) {
             // this file is not run length encoded
-            image_float3 const color = rgbe_to_float3(rgbe);
 
-            image.store(0, color);
+            if constexpr (std::is_same<Image, Short3>::value) {
+                short3 const color = float_to_half(rgbe_to_float3(rgbe));
 
-            read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
+                image.store(0, color);
+
+                read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
+            } else {
+                image_float3 const color = rgbe_to_float3(rgbe);
+
+                image.store(0, color);
+
+                read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
+            }
+
             return true;
         }
 
@@ -164,15 +194,21 @@ bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num
             rgbe[2] = scanline_buffer[i + 2 * scanline_width];
             rgbe[3] = scanline_buffer[i + 3 * scanline_width];
 
-            image.store(offset++, rgbe_to_float3(rgbe));
+            packed_float3 const c = rgbe_to_float3(rgbe);
+
+            if constexpr (std::is_same<Image, Short3>::value) {
+                image.store(offset++, float_to_half(c));
+            } else {
+                image.store(offset++, c);
+            }
         }
     }
 
     return true;
 }
 
-void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
-                 uint32_t offset) noexcept {
+template <class Image>
+void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image, int32_t offset) noexcept {
     uint8_t rgbe[4];
 
     for (; num_pixels > 0; --num_pixels) {
@@ -180,16 +216,20 @@ void read_pixels(std::istream& stream, uint32_t num_pixels, Float3& image,
 
         image_float3 const color = rgbe_to_float3(rgbe);
 
-        image.store(offset++, color);
+        if constexpr (std::is_same<Image, Short3>::value) {
+            image.store(offset++, float_to_half(color));
+        } else {
+            image.store(offset++, color);
+        }
     }
 }
 
 image_float3 rgbe_to_float3(uint8_t rgbe[4]) noexcept {
     if (rgbe[3] > 0) {
         // nonzero pixel
-        float const f = std::ldexp(1.f, static_cast<int>(rgbe[3]) - (128 + 8));
-        return image_float3(static_cast<float>(rgbe[0]) * f, static_cast<float>(rgbe[1]) * f,
-                            static_cast<float>(rgbe[2]) * f);
+        float const f = std::ldexp(1.f, int32_t(rgbe[3]) - (128 + 8));
+
+        return image_float3(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
     } else {
         return image_float3(0.f);
     }

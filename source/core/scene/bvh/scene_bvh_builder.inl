@@ -107,7 +107,7 @@ Split_candidate<T> Builder<T>::splitting_plane(AABB const& /*aabb*/, index begin
         average += props[*i].aabb().position();
     }
 
-    average /= static_cast<float>(std::distance(begin, end));
+    average /= float(std::distance(begin, end));
 
     split_candidates_.emplace_back(uint8_t(0), average, begin, end, props);
     split_candidates_.emplace_back(uint8_t(1), average, begin, end, props);

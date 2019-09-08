@@ -12,7 +12,7 @@
 namespace scene::camera {
 
 Cubic::Cubic(Layout layout, int2 resolution) noexcept : Camera(int2(resolution[0], resolution[1])) {
-    float f = static_cast<float>(resolution[0]);
+    float f = float(resolution[0]);
 
     left_top_ = float3(-1.f, 1.f, 1.f);
 

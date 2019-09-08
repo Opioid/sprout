@@ -44,7 +44,7 @@ bool Json_handler::Bool(bool /*b*/) {
 }
 
 bool Json_handler::Int(int i) {
-    handle_vertex(static_cast<float>(i));
+    handle_vertex(float(i));
 
     return true;
 }
@@ -66,7 +66,7 @@ bool Json_handler::Uint(unsigned i) {
         case Number::Ignore:
             break;
         default:
-            handle_vertex(static_cast<float>(i));
+            handle_vertex(float(i));
             break;
     }
 
@@ -82,7 +82,7 @@ bool Json_handler::Uint64(uint64_t /*i*/) {
 }
 
 bool Json_handler::Double(double d) {
-    handle_vertex(static_cast<float>(d));
+    handle_vertex(float(d));
 
     return true;
 }
@@ -138,7 +138,7 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
                 auto& p = parts_.back();
 
                 uint32_t const num_triangles = (p.start_index + p.num_indices) / 3;
-                vertices_.reserve(size_t(0.7f * static_cast<float>(num_triangles)));
+                vertices_.reserve(size_t(0.7f * float(num_triangles)));
             }
         } else if ("material_index" == name && Object::Part == expected_object_) {
             expected_number_ = Number::Material_index;

@@ -95,8 +95,8 @@ void Renderer::draw_disk(float2 pos, float3 const& normal, float radius) {
 
     for (int32_t y = start[1]; y < end[1]; ++y) {
         for (int32_t x = start[0]; x < end[0]; ++x) {
-            float2 const sample((static_cast<float>(x) + 0.5f) / dimensions_f_[0],
-                                (static_cast<float>(y) + 0.5f) / dimensions_f_[1]);
+            float2 const sample((float(x) + 0.5f) / dimensions_f_[0],
+                                (float(y) + 0.5f) / dimensions_f_[1]);
             if (intersect_disk(pos, normal, radius, sample)) {
                 set_sample(x, y, brush_);
             }
@@ -108,12 +108,12 @@ void Renderer::draw_disk(float2 pos, float3 const& normal, float radius, int32_t
     int2 const start((pos - radius) * dimensions_f_ - 1.f);
     int2 const end((pos + radius) * dimensions_f_ + 1.5f);
 
-    float const padded_radius = radius + static_cast<float>(border) / dimensions_f_[0];
+    float const padded_radius = radius + float(border) / dimensions_f_[0];
 
     for (int32_t y = start[1]; y < end[1]; ++y) {
         for (int32_t x = start[0]; x < end[0]; ++x) {
-            float2 const sample((static_cast<float>(x) + 0.5f) / dimensions_f_[0],
-                                (static_cast<float>(y) + 0.5f) / dimensions_f_[1]);
+            float2 const sample((float(x) + 0.5f) / dimensions_f_[0],
+                                (float(y) + 0.5f) / dimensions_f_[1]);
             if (intersect_disk(pos, normal, padded_radius, sample)) {
                 set_sample(x, y, brush_);
             }
@@ -127,8 +127,8 @@ void Renderer::draw_n_gon(float2 pos, float angle, float radius, uint32_t num_ve
 
     for (int32_t y = start[1]; y < end[1]; ++y) {
         for (int32_t x = start[0]; x < end[0]; ++x) {
-            float2 const sample((static_cast<float>(x) + 0.5f) / dimensions_f_[0],
-                                (static_cast<float>(y) + 0.5f) / dimensions_f_[1]);
+            float2 const sample((float(x) + 0.5f) / dimensions_f_[0],
+                                (float(y) + 0.5f) / dimensions_f_[1]);
             if (intersect_n_gon(pos, angle, radius, num_vertices, sample)) {
                 set_sample(x, y, brush_);
             }
@@ -147,7 +147,7 @@ void Renderer::resolve_sRGB(Byte3& image) const {
     } else {
         int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
 
-        float const n = 1.f / static_cast<float>(num_samples);
+        float const n = 1.f / float(num_samples);
 
         auto const i_d = image.description().dimensions;
 
@@ -184,7 +184,7 @@ void Renderer::resolve(Byte3& image) const {
     } else {
         int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
 
-        float const n = 1.f / static_cast<float>(num_samples);
+        float const n = 1.f / float(num_samples);
 
         auto const i_d = image.description().dimensions;
 
@@ -219,7 +219,7 @@ void Renderer::resolve(Byte1& image) const {
     } else {
         int32_t const num_samples = sqrt_num_samples_ * sqrt_num_samples_;
 
-        float const n = 1.f / static_cast<float>(num_samples);
+        float const n = 1.f / float(num_samples);
 
         auto const i_d = image.description().dimensions;
 
@@ -282,8 +282,8 @@ bool Renderer::intersect_n_gon(float2 pos, float angle, float radius, uint32_t n
     float2 const p = sample - pos;
 
     for (uint32_t i = 0; i < num_vertices; ++i) {
-        float const delta = (2.f * Pi) / static_cast<float>(num_vertices);
-        float const start = static_cast<float>(i) * delta + angle;
+        float const delta = (2.f * Pi) / float(num_vertices);
+        float const start = float(i) * delta + angle;
 
         auto const [sin_start, cos_start] = sincos(start);
 

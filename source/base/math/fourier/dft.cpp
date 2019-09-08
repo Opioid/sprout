@@ -13,7 +13,7 @@ int32_t dft_size(int32_t num) {
 }
 
 void dft_1d(float2* result, float const* source, int32_t num) {
-    float const af = (-2.f * Pi) / static_cast<float>(num);
+    float const af = (-2.f * Pi) / float(num);
 
     int32_t const r  = num % 4;
     int32_t const m4 = num - r;
@@ -22,7 +22,7 @@ void dft_1d(float2* result, float const* source, int32_t num) {
     Vector const zv   = simd::load_float4(zott.v);
 
     for (int32_t k = 0, len = num / 2; k <= len; ++k) {
-        float const as = af * static_cast<float>(k);
+        float const as = af * float(k);
 
         // Use SSE to work on blocks of 4
         Vector const a = simd::set_float4(as);
@@ -31,7 +31,7 @@ void dft_1d(float2* result, float const* source, int32_t num) {
         Vector sum_y = simd::Zero;
 
         for (int32_t x = 0; x < m4; x += 4) {
-            Vector const xf = simd::set_float4(static_cast<float>(x));
+            Vector const xf = simd::set_float4(float(x));
             Vector const xv = math::add(xf, zv);
             Vector const b  = math::mul(a, xv);
             Vector       sin_b;
@@ -46,7 +46,7 @@ void dft_1d(float2* result, float const* source, int32_t num) {
 
         // Use scalar operations to handle the rest
         for (int32_t x = m4; x < num; ++x) {
-            float const b = as * static_cast<float>(x);
+            float const b = as * float(x);
 
             auto const [sin_b, cos_b] = sincos(b);
 
@@ -59,23 +59,23 @@ void dft_1d(float2* result, float const* source, int32_t num) {
 }
 
 void idft_1d(float* result, float2 const* source, int32_t num) {
-    float const af = (-2.f * Pi) / static_cast<float>(num);
+    float const af = (-2.f * Pi) / float(num);
 
     for (int32_t x = 0; x < num; ++x) {
         float sum = source[0][0];
 
-        float const a = af * static_cast<float>(x);
+        float const a = af * float(x);
 
         int32_t const len = num / 2;
         for (int32_t k = 1; k < len; ++k) {
-            float const b = a * static_cast<float>(k);
+            float const b = a * float(k);
 
             auto const [sin_b, cos_b] = sincos(b);
 
             sum += 2.f * (source[k][0] * cos_b + source[k][1] * sin_b);
         }
 
-        float const b = a * static_cast<float>(len);
+        float const b = a * float(len);
 
         auto const [sin_b, cos_b] = sincos(b);
 
@@ -112,15 +112,15 @@ void dft_2d(float2* result, float const* source, float2* tmp, int32_t width, int
 
     pool.run_range(
         [tmp, result, row_size, height](uint32_t /*id*/, int32_t begin, int32_t end) {
-            float const af = (-2.f * Pi) / static_cast<float>(height);
+            float const af = (-2.f * Pi) / float(height);
             for (int32_t x = begin; x < end; ++x) {
                 for (int32_t k = 0; k < height; ++k) {
                     float2 sum(0.f);
 
-                    float const a = af * static_cast<float>(k);
+                    float const a = af * float(k);
 
                     for (int32_t t = 0; t < height; ++t) {
-                        float const angle = a * static_cast<float>(t);
+                        float const angle = a * float(t);
 
                         auto const [sin_a, cos_a] = sincos(angle);
 
@@ -143,15 +143,15 @@ void idft_2d(float* result, float2 const* source, float2* tmp, int32_t width, in
 
     pool.run_range(
         [tmp, source, row_size, height](uint32_t /*id*/, int32_t begin, int32_t end) {
-            float const af = (2.f * Pi) / static_cast<float>(height);
+            float const af = (2.f * Pi) / float(height);
             for (int32_t x = begin; x < end; ++x) {
                 for (int32_t k = 0; k < height; ++k) {
                     float2 sum(0.f);
 
-                    float const a = af * static_cast<float>(k);
+                    float const a = af * float(k);
 
                     for (int32_t t = 0; t < height; ++t) {
-                        float const angle = a * static_cast<float>(t);
+                        float const angle = a * float(t);
 
                         auto const [sin_a, cos_a] = sincos(angle);
 
@@ -161,7 +161,7 @@ void idft_2d(float* result, float2 const* source, float2* tmp, int32_t width, in
                     }
 
                     int32_t const c = k * row_size + x;
-                    tmp[c]          = sum;  // / static_cast<float>(height);
+                    tmp[c]          = sum;  // / float(height);
                 }
             }
         },

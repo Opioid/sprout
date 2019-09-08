@@ -44,7 +44,7 @@ Distribution_2D const& Importance::distribution() const noexcept {
 }
 
 float Importance::denormalization_factor() const noexcept {
-    return static_cast<float>(Dimensions * Dimensions);
+    return float(Dimensions * Dimensions);
 }
 
 void Importance::export_heatmap(std::string_view name) const noexcept {
@@ -77,7 +77,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float const weight = std::max(static_cast<float>(importance_[i]) / max, 0.01f);
+                    float const weight = std::max(float(importance_[i]) / max, 0.01f);
 
                     weights[x] = weight;
                 }
@@ -101,7 +101,7 @@ void Importance::bogus() noexcept {
 
     for (int32_t y = 0; y < Dimensions; ++y) {
         int32_t const d = Dimensions - y;
-        float const   w = static_cast<float>(d * d);
+        float const   w = float(d * d);
 
         for (int32_t x = 0; x < Dimensions; ++x) {
             weights[x] = w;

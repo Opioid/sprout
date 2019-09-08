@@ -34,7 +34,7 @@ int4 Perspective::view_bounds(uint32_t /*view*/) const noexcept {
 
 float Perspective::pixel_solid_angle() const noexcept {
     // Assume square pixels...
-    float const x = fov_ / static_cast<float>(resolution_[0]);
+    float const x = fov_ / float(resolution_[0]);
 
     return x * x;
 }
@@ -169,8 +169,8 @@ void Perspective::set_lens(Lens const& lens) noexcept {
 void Perspective::set_focus(Focus const& focus) noexcept {
     focus_ = focus;
 
-    focus_.point[0] *= static_cast<float>(resolution_[0]);
-    focus_.point[1] *= static_cast<float>(resolution_[1]);
+    focus_.point[0] *= float(resolution_[0]);
+    focus_.point[1] *= float(resolution_[1]);
 
     focus_distance_ = focus_.distance;
 }

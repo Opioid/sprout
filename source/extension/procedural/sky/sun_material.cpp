@@ -107,7 +107,7 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
     auto cache = memory::Buffer<float3>(num_samples);
 
     for (uint32_t i = 0; i < num_samples; ++i) {
-        float const v = static_cast<float>(i) / static_cast<float>(num_samples - 1);
+        float const v = float(i) / float(num_samples - 1);
 
         float3 const radiance = sky_.model().evaluate_sky_and_sun(sky_.sun_wi(v));
 

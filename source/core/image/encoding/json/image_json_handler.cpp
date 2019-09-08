@@ -18,7 +18,7 @@ void Byte1_handler::add(float value) {
 Float1_handler::Float1_handler(Float1& image) : image_(image) {}
 
 void Float1_handler::add(uint32_t value) {
-    image_.store(current_texel_++, static_cast<float>(value));
+    image_.store(current_texel_++, float(value));
 }
 
 void Float1_handler::add(float value) {
@@ -65,7 +65,7 @@ bool Json_handler::Bool(bool /*b*/) {
 }
 
 bool Json_handler::Int(int /*i*/) {
-    // handle_vertex(static_cast<float>(i));
+    // handle_vertex(float(i));
 
     return true;
 }
@@ -94,7 +94,7 @@ bool Json_handler::Uint64(uint64_t /*i*/) {
 }
 
 bool Json_handler::Double(double d) {
-    image_handler_->add(static_cast<float>(d));
+    image_handler_->add(float(d));
 
     return true;
 }

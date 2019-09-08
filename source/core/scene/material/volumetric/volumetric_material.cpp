@@ -86,19 +86,19 @@ size_t Material::sample_size() noexcept {
 void Material::set_similarity_relation_range(uint32_t low, uint32_t high) {
     SR_low       = low;
     SR_high      = high;
-    SR_inv_range = 1.f / static_cast<float>(high - low);
+    SR_inv_range = 1.f / float(high - low);
 }
 
 uint32_t Material::SR_low  = 16;
 uint32_t Material::SR_high = 64;
 
-float Material::SR_inv_range = 1.f / static_cast<float>(Material::SR_high - Material::SR_low);
+float Material::SR_inv_range = 1.f / float(Material::SR_high - Material::SR_low);
 
 float Material::van_de_hulst_anisotropy(uint32_t depth) const noexcept {
     if (depth < SR_low) {
         return anisotropy_;
     } else if (depth < SR_high) {
-        float const towards_zero = SR_inv_range * static_cast<float>(depth - SR_low);
+        float const towards_zero = SR_inv_range * float(depth - SR_low);
 
         return lerp(anisotropy_, 0.f, towards_zero);
     }

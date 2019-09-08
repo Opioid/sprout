@@ -18,7 +18,7 @@ byte3 const* Srgb::data() const {
 }
 
 static inline float golden_ratio(int32_t n) noexcept {
-    return frac(static_cast<float>(n) * 0.618033988749894f);
+    return frac(float(n) * 0.618033988749894f);
 }
 
 void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {

@@ -51,10 +51,10 @@ void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
                     for (int32_t x = 0; x < dimensions[0]; ++x) {
                     //	worker.sampler()->start_pixel(0, rng);
 
-                            float3 offset((static_cast<float>(x) + 0.5f) *
+                            float3 offset((float(x) + 0.5f) *
                                                        (bake_quad_range[0] /
-       static_cast<float>(dimensions[0])), 0.f, (static_cast<float>(y) + 0.5f) * (bake_quad_range[2]
-       / static_cast<float>(dimensions[1])));
+       float(dimensions[0])), 0.f, (float(y) + 0.5f) * (bake_quad_range[2]
+       / float(dimensions[1])));
 
                             float3 origin = bake_quad_origin + offset;
 
@@ -77,7 +77,7 @@ void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
                                     irradiance += worker.li(ray).xyz();
                             }
 
-                            irradiance /= static_cast<float>(num_samples);
+                            irradiance /= float(num_samples);
 
                             auto& pixel = target.at(x, y);
 

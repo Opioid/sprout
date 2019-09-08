@@ -49,6 +49,10 @@ static inline int16_t float_to_half2(float f) noexcept {
     return int16_t(sign);
 }
 
+static inline short3 float_to_half(packed_float3 const& f) noexcept {
+    return short3(float_to_half(f[0]), float_to_half(f[1]), float_to_half(f[2]));
+}
+
 static inline float half_to_float(int16_t h) noexcept {
     return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(h)));
 }

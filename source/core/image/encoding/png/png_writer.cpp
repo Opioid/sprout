@@ -236,9 +236,9 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
         max_value = std::max(data[i], max_value);
     }
 
-    float const im = max_value > 0 ? 1.f / static_cast<float>(max_value) : 1.f;
+    float const im = max_value > 0 ? 1.f / float(max_value) : 1.f;
     for (uint32_t i = 0; i < area; ++i) {
-        float const n = static_cast<float>(data[i]) * im;
+        float const n = float(data[i]) * im;
 
         float3 const hm = spectrum::heatmap(n);
 

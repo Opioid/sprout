@@ -535,7 +535,7 @@ static inline Vector interpolate_normal(FVector u, FVector v, const Shading_vert
 }
 
 inline float xnorm_to_float(int16_t xnorm) noexcept {
-    return static_cast<float>(xnorm) / 511.f;
+    return float(xnorm) / 511.f;
 }
 
 inline int16_t float_to_xnorm(float x) noexcept {

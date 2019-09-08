@@ -54,7 +54,7 @@ float3 blackbody(float temperature) {
     float3 xyz(0.f);
     for (uint32_t k = 0; k < num_steps; ++k) {
         // convert to nanometer
-        float const wl = (wl_min + static_cast<float>(k) * wl_step) * 1e-9f;
+        float const wl = (wl_min + float(k) * wl_step) * 1e-9f;
         float const p  = planck(temperature, wl);
 
         xyz[0] += p * color_matching[k][0];

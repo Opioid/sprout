@@ -102,7 +102,7 @@ void Difference_item::calculate_difference(Texture const* other, Scratch* scratc
     max_dif_ = max_dif;
 
     // * 3 because we compare the difference over 3 channels
-    float const rmse = std::sqrt(dif_sum / static_cast<float>(3 * num_pixel));
+    float const rmse = std::sqrt(dif_sum / float(3 * num_pixel));
 
     psnr_ = -20.f * std::log10(rmse / max_val);
 

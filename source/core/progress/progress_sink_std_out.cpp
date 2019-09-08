@@ -20,8 +20,7 @@ void Std_out::tick() {
 
     ++progress_;
 
-    if (float const p = static_cast<float>(progress_) / static_cast<float>(resolution_) * 100.f;
-        p >= threshold_) {
+    if (float const p = float(progress_) / float(resolution_) * 100.f; p >= threshold_) {
         threshold_ += step_;
 
         std::cout << uint32_t(p) << "%\r" << std::flush;

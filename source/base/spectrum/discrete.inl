@@ -107,11 +107,11 @@ float3 constexpr Discrete_spectral_power_distribution<N>::normalized_XYZ() const
 template <int32_t N>
 void Discrete_spectral_power_distribution<N>::init(float start_wavelength,
                                                    float end_wavelength) noexcept {
-    float const step = (end_wavelength - start_wavelength) / static_cast<float>(N);
+    float const step = (end_wavelength - start_wavelength) / float(N);
 
     // initialize the wavelengths ranges of the bins
     for (int32_t i = 0; i < N + 1; ++i) {
-        wavelengths_[i] = start_wavelength + static_cast<float>(i) * step;
+        wavelengths_[i] = start_wavelength + float(i) * step;
     }
 
     step_ = step;

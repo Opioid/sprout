@@ -30,7 +30,7 @@ Interpolated_function_1D<T>::Interpolated_function_1D(float range_begin, float r
       samples_(memory::allocate_aligned<T>(num_samples)) {
     float const range = range_end - range_begin;
 
-    float const interval = range / static_cast<float>(num_samples - 1);
+    float const interval = range / float(num_samples - 1);
 
     inverse_interval_ = 1.f / interval;
 
@@ -62,7 +62,7 @@ void Interpolated_function_1D<T>::from_array(float range_begin, float range_end,
 
     float const range = range_end - range_begin;
 
-    float const interval = range / static_cast<float>(num_samples - 1);
+    float const interval = range / float(num_samples - 1);
 
     inverse_interval_ = 1.f / interval;
 
@@ -86,7 +86,7 @@ T Interpolated_function_1D<T>::operator()(float x) const noexcept {
 
     uint32_t const offset = uint32_t(o);
 
-    float const t = o - static_cast<float>(offset);
+    float const t = o - float(offset);
 
     return lerp(samples_[offset], samples_[std::min(offset + 1, back_)], t);
 }

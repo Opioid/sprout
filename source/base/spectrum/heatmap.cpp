@@ -11,8 +11,8 @@ float3 heatmap(float x) noexcept {
 
     static int32_t constexpr max_color = static_cast<int32_t>(std::size(colors) - 2);
 
-    int32_t const id = static_cast<int32_t>(x * static_cast<float>(max_color));
-    float const   ip = x * static_cast<float>(max_color) - static_cast<float>(id);
+    int32_t const id = static_cast<int32_t>(x * float(max_color));
+    float const   ip = x * float(max_color) - float(id);
 
     return lerp(colors[id], colors[id + 1], ip);
 }

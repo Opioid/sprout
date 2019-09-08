@@ -92,7 +92,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
         split_photon |= result.split_photon;
     }
 
-    float const num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
+    float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
 
     if (split_photon) {
         return num_samples_reciprocal * float4(li.xyz() + photon_li, li[3]);
@@ -291,7 +291,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     uint32_t const num_samples = settings_.light_sampling.num_samples;
 
-    float const num_light_samples_reciprocal = 1.f / static_cast<float>(num_samples);
+    float const num_light_samples_reciprocal = 1.f / float(num_samples);
 
     float3 const p = material_sample.offset_p(intersection.geo.p);
 

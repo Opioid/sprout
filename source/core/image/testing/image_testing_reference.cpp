@@ -47,7 +47,7 @@ float3 reference_normal(float2 p, float2 range) {
 void create_reference_normal_map(int2 dimensions) {
     byte3* rgb = new byte3[dimensions[0] * dimensions[1]];
 
-    float2 range(2.f / static_cast<float>(dimensions[0]), 2.f / static_cast<float>(dimensions[1]));
+    float2 range(2.f / float(dimensions[0]), 2.f / float(dimensions[1]));
 
     int2 aa(16, 16);
 
@@ -58,27 +58,27 @@ void create_reference_normal_map(int2 dimensions) {
         for (int32_t x = 0; x < dimensions[0]; ++x) {
             auto& pixel = rgb[y * dimensions[0] + x];
 
-            float fx = static_cast<float>(x);
-            float fy = static_cast<float>(y);
+            float fx = float(x);
+            float fy = float(y);
 
             float3 v = float3(0.f);
 
             for (int32_t ay = 0; ay < aa[1]; ++ay) {
                 for (int32_t ax = 0; ax < aa[0]; ++ax) {
-                    float2 p(fx + aa_offset[0] + static_cast<float>(ax) * aa_delta[0],
-                             fy + aa_offset[1] + static_cast<float>(ay) * aa_delta[1]);
+                    float2 p(fx + aa_offset[0] + float(ax) * aa_delta[0],
+                             fy + aa_offset[1] + float(ay) * aa_delta[1]);
 
                     v += reference_normal(p, range);
                 }
             }
 
-            //			v = normalize(v / static_cast<float>(aa.x * aa.y));
+            //			v = normalize(v / float(aa.x * aa.y));
 
             //			pixel.x = spectrum::float_to_snorm(v.x);
             //			pixel.y = spectrum::float_to_snorm(v.y);
             //			pixel.z = spectrum::float_to_snorm(v.z);
 
-            v = v / static_cast<float>(aa[0] * aa[1]);
+            v = v / float(aa[0] * aa[1]);
 
             pixel[0] = static_cast<uint8_t>(v[0] * 255.f);
             pixel[1] = static_cast<uint8_t>(v[1] * 255.f);

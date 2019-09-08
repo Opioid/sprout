@@ -22,7 +22,7 @@ Gaussian<T>::Gaussian(float radius, float alpha) noexcept : scratch_(Description
     for (int32_t x = 0; x < width; ++x) {
         int32_t const o = -ir + x;
 
-        float const fo = static_cast<float>(o);
+        float const fo = float(o);
         float const w  = gauss(fo * fo);
 
         kernel_[x] = K{o, w};

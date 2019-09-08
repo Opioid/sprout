@@ -45,9 +45,9 @@ static inline float gamma_to_linear_sRGB(float c) {
 
 // convert sRGB gamma color to sRGB linear color
 static inline float3 gamma_to_linear_sRGB(byte3 c) {
-    return float3(gamma_to_linear_sRGB(static_cast<float>(c[0]) / 255.f),
-                  gamma_to_linear_sRGB(static_cast<float>(c[1]) / 255.f),
-                  gamma_to_linear_sRGB(static_cast<float>(c[2]) / 255.f));
+    return float3(gamma_to_linear_sRGB(float(c[0]) / 255.f),
+                  gamma_to_linear_sRGB(float(c[1]) / 255.f),
+                  gamma_to_linear_sRGB(float(c[2]) / 255.f));
 }
 
 // convert sRGB gamma color to sRGB linear color
@@ -57,10 +57,9 @@ static inline float3 gamma_to_linear_sRGB(float3 const& c) {
 }
 
 static inline float4 gamma_to_linear_sRGB(byte4 c) {
-    return float4(gamma_to_linear_sRGB(static_cast<float>(c[0]) / 255.f),
-                  gamma_to_linear_sRGB(static_cast<float>(c[1]) / 255.f),
-                  gamma_to_linear_sRGB(static_cast<float>(c[2]) / 255.f),
-                  static_cast<float>(c[3]) / 255.f);
+    return float4(gamma_to_linear_sRGB(float(c[0]) / 255.f),
+                  gamma_to_linear_sRGB(float(c[1]) / 255.f),
+                  gamma_to_linear_sRGB(float(c[2]) / 255.f), float(c[3]) / 255.f);
 }
 
 // convert linear color to gamma color

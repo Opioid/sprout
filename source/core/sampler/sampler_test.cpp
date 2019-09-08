@@ -173,7 +173,7 @@ void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, 
 
     uint32_t const segment_len = num_samples / 4;
 
-    float const n = 1.f / static_cast<float>(segment_len);
+    float const n = 1.f / float(segment_len);
 
     sampler.start_pixel();
 

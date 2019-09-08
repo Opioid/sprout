@@ -61,8 +61,8 @@ float3 Model::evaluate_sky(float3 const& wi) const noexcept {
     for (int32_t i = 0; i < Num_bands; ++i) {
         float const wl_center = Spectrum::wavelength_center(i);
         radiance.set_bin(
-            i, static_cast<float>(arhosekskymodel_radiance(
-                   skymodel_states_[i], wi_dot_z, sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
+            i, float(arhosekskymodel_radiance(skymodel_states_[i], wi_dot_z, sqrt_cos_theta, gamma,
+                                              wi_dot_s, wl_center)));
     }
 
     return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
@@ -85,9 +85,9 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
     Spectrum radiance;
     for (int32_t i = 0; i < Num_bands; ++i) {
         float const wl_center = Spectrum::wavelength_center(i);
-        radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(
-                                skymodel_states_[i], &temp, wi_dot_z, sqrt_cos_theta, gamma,
-                                wi_dot_s, wl_center)));
+        radiance.set_bin(
+            i, float(arhosekskymodel_solar_radiance(skymodel_states_[i], &temp, wi_dot_z,
+                                                    sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
     }
 
     return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);

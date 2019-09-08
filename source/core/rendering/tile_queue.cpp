@@ -6,12 +6,10 @@ namespace rendering {
 
 Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius) noexcept
     : tile_dimensions_(tile_dimensions),
-      tiles_per_row_(static_cast<int32_t>(
-          std::ceil(static_cast<float>(resolution[0]) / static_cast<float>(tile_dimensions[0])))),
-      num_tiles_(uint32_t(std::ceil(static_cast<float>(resolution[0]) /
-                                    static_cast<float>(tile_dimensions[0]))) *
-                 uint32_t(std::ceil(static_cast<float>(resolution[1]) /
-                                    static_cast<float>(tile_dimensions[1])))),
+      tiles_per_row_(
+          static_cast<int32_t>(std::ceil(float(resolution[0]) / float(tile_dimensions[0])))),
+      num_tiles_(uint32_t(std::ceil(float(resolution[0]) / float(tile_dimensions[0]))) *
+                 uint32_t(std::ceil(float(resolution[1]) / float(tile_dimensions[1])))),
       tiles_(memory::allocate_aligned<int4>(num_tiles_)),
       current_consume_(num_tiles_) {
     int2 current_pixel(0, 0);
@@ -91,9 +89,8 @@ Range_queue::Range_queue(uint64_t total0, uint64_t total1, uint32_t range_size) 
     : total0_(total0),
       total1_(total1),
       range_size_(range_size),
-      num_ranges0_(
-          uint32_t(std::ceil(static_cast<float>(total0) / static_cast<float>(range_size)))),
-      num_ranges1_(uint32_t(std::ceil(static_cast<float>(total1) / static_cast<float>(range_size))))
+      num_ranges0_(uint32_t(std::ceil(float(total0) / float(range_size)))),
+      num_ranges1_(uint32_t(std::ceil(float(total1) / float(range_size))))
 
 {}
 

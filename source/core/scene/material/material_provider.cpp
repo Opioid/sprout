@@ -1404,8 +1404,8 @@ float3 read_hex_RGB(std::string const& text) noexcept {
         elements[i] = (hex_table[uint32_t(buffer[j])] << 4) + hex_table[uint32_t(buffer[j + 1])];
     }
 
-    return float3(static_cast<float>(elements[0]) / 255.f, static_cast<float>(elements[1]) / 255.f,
-                  static_cast<float>(elements[2]) / 255.f);
+    return float3(float(elements[0]) / 255.f, float(elements[1]) / 255.f,
+                  float(elements[2]) / 255.f);
 }
 
 float3 read_color(json::Value const& color_value) noexcept {

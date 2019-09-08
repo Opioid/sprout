@@ -206,7 +206,7 @@ void test_distribution(T const& d, const std::vector<float>& samples) {
     float accumulated_r   = 0.f;
     float accumulated_pdf = 0.f;
 
-    float const inv_num_samples = 1.f / static_cast<float>(samples.size());
+    float const inv_num_samples = 1.f / float(samples.size());
 
     for (size_t i = 0, len = samples.size(); i < len; ++i) {
         float       pdf;
@@ -231,7 +231,7 @@ void test_distribution(T const& d, const std::vector<float2>& samples) {
     float2 accumulated_r   = 0.f;
     float  accumulated_pdf = 0.f;
 
-    float const inv_num_samples = 1.f / static_cast<float>(samples.size());
+    float const inv_num_samples = 1.f / float(samples.size());
 
     for (size_t i = 0, len = samples.size(); i < len; ++i) {
         auto const r = d.sample_continuous(samples[i]);

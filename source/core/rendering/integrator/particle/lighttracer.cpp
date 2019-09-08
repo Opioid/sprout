@@ -85,7 +85,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     int2 const d = camera.sensor().dimensions();
 
-    float const weight = static_cast<float>(d[0] * d[1]) / settings_.num_light_paths;
+    float const weight = float(d[0] * d[1]) / settings_.num_light_paths;
 
     float3 radiance = weight * light.evaluate(light_sample, Filter::Nearest, worker) /
                       (light_sample.pdf);
@@ -281,7 +281,7 @@ Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
                                          bool indirect_caustics, bool full_light_path) noexcept
     : take_settings_(take_settings),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, static_cast<float>(num_light_paths), indirect_caustics,
+      settings_{min_bounces, max_bounces, float(num_light_paths), indirect_caustics,
                 full_light_path} {}
 
 Lighttracer_factory::~Lighttracer_factory() noexcept {

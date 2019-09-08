@@ -133,7 +133,7 @@ Whitted_factory::Whitted_factory(take::Settings const& take_settings, uint32_t n
                                  uint32_t num_light_samples) noexcept
     : Factory(take_settings), integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {
     settings_.num_light_samples            = num_light_samples;
-    settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
+    settings_.num_light_samples_reciprocal = 1.f / float(num_light_samples);
 }
 
 Whitted_factory::~Whitted_factory() noexcept {

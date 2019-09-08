@@ -7,7 +7,7 @@
 namespace encoding {
 
 static inline float constexpr unorm_to_float(uint8_t byte) {
-    return static_cast<float>(byte) * (1.f / 255.f);
+    return float(byte) * (1.f / 255.f);
 }
 
 static inline float3 constexpr unorm_to_float(byte3 c) {
@@ -47,7 +47,7 @@ static inline constexpr byte4 float_to_unorm(float4 const& c) {
 }
 
 static inline float constexpr snorm_to_float(uint8_t byte) {
-    return static_cast<float>(byte) * (1.f / 128.f) - 1.f;
+    return float(byte) * (1.f / 128.f) - 1.f;
 }
 
 static inline uint8_t constexpr float_to_snorm(float x) {
@@ -60,7 +60,7 @@ static inline byte3 constexpr float_to_snorm(float3 const& c) {
 }
 
 static inline float constexpr snorm16_to_float(int16_t snorm) {
-    return static_cast<float>(snorm) * (1.f / 32767.f);
+    return float(snorm) * (1.f / 32767.f);
 }
 
 static inline constexpr int16_t float_to_snorm16(float x) {

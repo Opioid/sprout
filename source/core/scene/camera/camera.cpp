@@ -69,8 +69,7 @@ void Camera::set_parameters(json::Value const& parameters) noexcept {
 
     for (auto& n : parameters.GetObject()) {
         if ("frame_step" == n.name) {
-            frame_step_ = uint64_t(static_cast<float>(scene::Units_per_second) *
-                                   json::read_float(n.value));
+            frame_step_ = uint64_t(float(scene::Units_per_second) * json::read_float(n.value));
         } else if ("frames_per_second" == n.name) {
             float const fps = json::read_float(n.value);
             if (0.f == fps) {

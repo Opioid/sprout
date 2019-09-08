@@ -6,7 +6,7 @@
 namespace string {
 
 bool is_space(char c) noexcept {
-    return std::isspace(static_cast<int>(c)) != 0;
+    return std::isspace(int32_t(c)) != 0;
 }
 
 void trim(std::string& text) noexcept {
@@ -46,13 +46,13 @@ std::string print_bytes(size_t num_bytes) noexcept {
         stream << num_bytes;
         stream << " B";
     } else if (num_bytes < 1024 * 1024) {
-        stream << static_cast<float>(num_bytes) / 1024.f;
+        stream << float(num_bytes) / 1024.f;
         stream << " KiB";
     } else if (num_bytes < 1024 * 1024 * 1024) {
-        stream << static_cast<float>(num_bytes) / (1024.f * 1024.f);
+        stream << float(num_bytes) / (1024.f * 1024.f);
         stream << " MiB";
     } else {
-        stream << static_cast<float>(num_bytes) / (1024.f * 1024.f * 1024.f);
+        stream << float(num_bytes) / (1024.f * 1024.f * 1024.f);
         stream << " GiB";
     }
 

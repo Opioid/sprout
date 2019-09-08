@@ -43,7 +43,7 @@ Socket::Socket(std::string const& service) : socket_(Invalid_socket) {
             return;
         }
 
-        if (-1 == bind(socket_, p->ai_addr, static_cast<int>(p->ai_addrlen))) {
+        if (-1 == bind(socket_, p->ai_addr, int32_t(p->ai_addrlen))) {
             close();
             continue;
         }
@@ -105,7 +105,7 @@ Socket Socket::accept() const {
 }
 
 int Socket::receive(char* buffer, uint32_t size) const {
-    return recv(socket_, buffer, static_cast<int>(size), 0);
+    return recv(socket_, buffer, int32_t(size), 0);
 }
 
 int Socket::send(char* buffer, uint32_t size) const {
@@ -115,7 +115,7 @@ int Socket::send(char* buffer, uint32_t size) const {
     int flags = MSG_NOSIGNAL;
 #endif
 
-    return ::send(socket_, buffer, static_cast<int>(size), flags);
+    return ::send(socket_, buffer, int32_t(size), flags);
 }
 
 bool Socket::init() {

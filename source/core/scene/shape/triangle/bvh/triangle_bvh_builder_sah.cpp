@@ -103,10 +103,10 @@ void Builder_SAH::Split_candidate::evaluate(References const& references, float 
 
     bool const empty_side = 0 == num_side_0 || 0 == num_side_1;
     if (empty_side) {
-        cost_ = 2.f + static_cast<float>(references.size());
+        cost_ = 2.f + float(references.size());
     } else {
-        float const weight_0 = static_cast<float>(num_side_0) * aabb_0_.surface_area();
-        float const weight_1 = static_cast<float>(num_side_1) * aabb_1_.surface_area();
+        float const weight_0 = float(num_side_0) * aabb_0_.surface_area();
+        float const weight_1 = float(num_side_1) * aabb_1_.surface_area();
         cost_                = 2.f + (weight_0 + weight_1) / aabb_surface_area;
     }
 
@@ -193,8 +193,7 @@ void Builder_SAH::split(Build_node* node, References& references, AABB const& aa
         bool                  exhausted;
         Split_candidate const sp = splitting_plane(references, aabb, depth, exhausted, thread_pool);
 
-        if (num_primitives <= 0xFF &&
-            (static_cast<float>(num_primitives) <= sp.cost() || exhausted)) {
+        if (num_primitives <= 0xFF && (float(num_primitives) <= sp.cost() || exhausted)) {
             assign(node, references);
         } else {
             node->axis = sp.axis();
@@ -265,9 +264,9 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(References const& refe
     } else {
         float3 const& min = aabb.min();
 
-        float3 const step = (2.f * halfsize) / static_cast<float>(num_slices_);
+        float3 const step = (2.f * halfsize) / float(num_slices_);
         for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
-            float const fi = static_cast<float>(i);
+            float const fi = float(i);
 
             float3 const slice_x(min[0] + fi * step[0], position[1], position[2]);
             split_candidates_.emplace_back(X, slice_x, false);

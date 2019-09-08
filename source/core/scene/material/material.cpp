@@ -208,7 +208,7 @@ void Material::init_rainbow() noexcept {
         sum_rgb += rgb;
     }
 
-    float3 const n = ((1.f / 3.f) * static_cast<float>(Num_bands)) / sum_rgb;
+    float3 const n = ((1.f / 3.f) * float(Num_bands)) / sum_rgb;
 
     // now we hack-normalize it
     for (uint32_t i = 0; i < Num_bands; ++i) {
@@ -227,7 +227,7 @@ void Material::init_rainbow() noexcept {
     float const wl_range = (Spectrum::end_wavelength() - Spectrum::start_wavelength()) / d[0];
 
     for (int32_t x = 0; x < d[0]; ++x) {
-        float const wl = Spectrum::start_wavelength() + static_cast<float>(x) * wl_range;
+        float const wl = Spectrum::start_wavelength() + float(x) * wl_range;
         byte3 const color =
         encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(spectrum_at_wavelength(wl, 1.f)));
 
@@ -243,13 +243,13 @@ void Material::init_rainbow() noexcept {
 float3 Material::spectrum_at_wavelength(float lambda, float value) noexcept {
     float const start = Spectrum::start_wavelength();
     float const end   = Spectrum::end_wavelength();
-    float const nb    = static_cast<float>(Num_bands);
+    float const nb    = float(Num_bands);
 
     float const u = ((lambda - start) / (end - start)) * nb;
 
     uint32_t const id = uint32_t(u);
 
-    float const frac = u - static_cast<float>(id);
+    float const frac = u - float(id);
 
     if (id >= Num_bands) {
         return rainbow_[Num_bands];

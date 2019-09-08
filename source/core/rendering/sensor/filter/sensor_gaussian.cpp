@@ -35,7 +35,7 @@ float Gaussian::evaluate(float2 p) const noexcept {
 }
 
 float Gaussian::integral(uint32_t num_samples) const noexcept {
-    float const interval = (2.f * radius_) / static_cast<float>(num_samples);
+    float const interval = (2.f * radius_) / float(num_samples);
 
     float s = -radius_ + 0.5f * interval;
 

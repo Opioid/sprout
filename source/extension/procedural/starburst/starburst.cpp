@@ -114,11 +114,11 @@ void create(thread::Pool& pool) {
                                         signal_a->store(i, float2(signal.load(i), 0.f));
                                 }
 
-                        //	float alpha = 0.2f + 0.5f * (static_cast<float>(b) /
-           static_cast<float>(Num_bands));
+                        //	float alpha = 0.2f + 0.5f * (float(b) /
+           float(Num_bands));
 
                                 float wl =
-                                static_cast<float>(spectral_data->wavelength_center(b));
+                                float(spectral_data->wavelength_center(b));
 
                                 float f = 12.f;
                                 float alpha = 0.15f * (wl / 400.f) * (f / 18.f);
@@ -193,7 +193,7 @@ void create(thread::Pool& pool) {
 
     //	write_signal("signal_after.png", signal);
 
-    float radius = static_cast<float>(resolution) * 0.0029296875f;  // 0.00390625f;
+    float radius = float(resolution) * 0.0029296875f;  // 0.00390625f;
     image::filter::Gaussian<packed_float3> gaussian(radius, radius * 0.0005f);
     gaussian.apply(float_image_a, pool);
 
@@ -260,7 +260,7 @@ void render_dirt(image::Float1& signal) {
 
     dirt.resolve(signal);
 
-    //	float radius = static_cast<float>(signal.description().dimensions[0]) * 0.00390625f;
+    //	float radius = float(signal.description().dimensions[0]) * 0.00390625f;
     //	image::filter::Gaussian<float> gaussian(radius, radius * 0.0005f);
     //	gaussian.apply(signal);
 }
@@ -269,29 +269,28 @@ void render_aperture(const Aperture& aperture, Float1& signal) {
     int32_t             num_sqrt_samples = 4;
     std::vector<float2> kernel(num_sqrt_samples * num_sqrt_samples);
 
-    float kd = 1.f / static_cast<float>(num_sqrt_samples);
+    float kd = 1.f / float(num_sqrt_samples);
 
     for (int32_t y = 0; y < num_sqrt_samples; ++y) {
         for (int32_t x = 0; x < num_sqrt_samples; ++x) {
-            float2 k(0.5f * kd + static_cast<float>(x) * kd,
-                     0.5f * kd + static_cast<float>(y) * kd);
+            float2 k(0.5f * kd + float(x) * kd, 0.5f * kd + float(y) * kd);
 
             kernel[y * num_sqrt_samples + x] = k;
         }
     }
 
     int32_t resolution = signal.description().dimensions[0];
-    float   fr         = static_cast<float>(resolution);
-    float   kn         = 1.f / static_cast<float>(kernel.size());
+    float   fr         = float(resolution);
+    float   kn         = 1.f / float(kernel.size());
 
-    float radius = static_cast<float>(resolution - 2) / fr;
+    float radius = float(resolution - 2) / fr;
 
     for (int32_t y = 0; y < resolution; ++y) {
         for (int32_t x = 0; x < resolution; ++x) {
             float s = signal.load(x, y);
 
-            float fx = static_cast<float>(x);
-            float fy = static_cast<float>(y);
+            float fx = float(x);
+            float fy = float(y);
 
             float a = 0.f;
             for (auto k : kernel) {
@@ -309,7 +308,7 @@ void centered_squared_magnitude(float* result, float2 const* source, int32_t wid
                                 int32_t height) {
     int32_t row_size = math::dft_size(width);
 
-    float fr            = static_cast<float>(width);
+    float fr            = float(width);
     float normalization = 2.f / fr;
 
     for (int32_t y = 0; y < height; ++y) {
@@ -401,7 +400,7 @@ void squared_magnitude_transposed(float* result, float2 const* source, int32_t d
 
 void diffraction(Spectrum* result, float const* squared_magnitude, int32_t bin,
                  int32_t resolution) {
-    float fr = static_cast<float>(resolution);
+    float fr = float(resolution);
 
     float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() - 1);
     //	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() / 2);
@@ -414,8 +413,7 @@ void diffraction(Spectrum* result, float const* squared_magnitude, int32_t bin,
 
     for (int32_t y = 0; y < resolution; ++y) {
         for (int32_t x = 0; x < resolution; ++x) {
-            float2 p(-1.f + 2.f * ((static_cast<float>(x) + 0.5f) / fr),
-                     1.f - 2.f * ((static_cast<float>(y) + 0.5f) / fr));
+            float2 p(-1.f + 2.f * ((float(x) + 0.5f) / fr), 1.f - 2.f * ((float(y) + 0.5f) / fr));
 
             float2 q = i_s * p;
 

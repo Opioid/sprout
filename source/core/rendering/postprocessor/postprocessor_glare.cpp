@@ -71,8 +71,8 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     static float constexpr wl_start         = 400.f;
     static float constexpr wl_end           = 700.f;
     static int32_t constexpr wl_num_samples = 64;
-    static float constexpr wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
-    float const wl_norm            = 1.f / CIE_Y.integrate(wl_start, wl_end);
+    static float constexpr wl_step          = (wl_end - wl_start) / float(wl_num_samples);
+    float const wl_norm                     = 1.f / CIE_Y.integrate(wl_start, wl_end);
 
     struct F {
         float  a;
@@ -116,7 +116,7 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
                     if (Adaption::Photopic != adaption_) {
                         float3 xyz(0.f);
                         for (int32_t k = 0; k < wl_num_samples; ++k) {
-                            float lambda = wl_start + static_cast<float>(k) * wl_step;
+                            float lambda = wl_start + float(k) * wl_step;
                             float val    = wl_norm * f3(theta, lambda);
                             xyz[0] += CIE_X.evaluate(lambda) * val;
                             xyz[1] += CIE_Y.evaluate(lambda) * val;

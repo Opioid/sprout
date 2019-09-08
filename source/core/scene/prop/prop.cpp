@@ -65,7 +65,7 @@ Prop::Transformation const& Prop::transformation_at(uint32_t self, uint64_t time
             uint64_t const range = b.time - a.time;
             uint64_t const delta = time - a.time;
 
-            float const t = static_cast<float>(delta) / static_cast<float>(range);
+            float const t = float(delta) / float(range);
 
             transformation.set(lerp(a.transformation, b.transformation, t));
 
@@ -259,7 +259,7 @@ void Prop::on_set_transformation(uint32_t self, Scene const& scene) noexcept {
     } else {
         static uint32_t constexpr Num_steps = 4;
 
-        static float constexpr Interval = 1.f / static_cast<float>(Num_steps);
+        static float constexpr Interval = 1.f / float(Num_steps);
 
         AABB aabb = shape_->transformed_aabb(frames_[0].transformation);
 

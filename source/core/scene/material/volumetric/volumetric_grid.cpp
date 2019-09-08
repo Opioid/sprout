@@ -159,7 +159,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
             ar += a;
         }
 
-        float const total_weight = static_cast<float>(d[0] * d[1] * d[2]);
+        float const total_weight = float(d[0] * d[1] * d[2]);
 
         average_emission_ = ar / total_weight;
 

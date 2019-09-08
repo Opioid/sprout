@@ -14,7 +14,7 @@ namespace scene::camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) noexcept
     : Stereoscopic(int2(resolution[0], resolution[0])) {
-    float const f = static_cast<float>(resolution[0]);
+    float const f = float(resolution[0]);
 
     left_top_ = float3(-1.f, 1.f, 1.f);
 

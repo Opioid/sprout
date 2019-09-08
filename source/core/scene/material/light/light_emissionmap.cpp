@@ -116,10 +116,10 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                 float4 artw(0.f);
 
                 for (int32_t y = begin; y < end; ++y) {
-                    float const v = idf[1] * (static_cast<float>(y) + 0.5f);
+                    float const v = idf[1] * (float(y) + 0.5f);
 
                     for (int32_t x = 0; x < d[0]; ++x) {
-                        float const u = idf[0] * (static_cast<float>(x) + 0.5f);
+                        float const u = idf[0] * (float(x) + 0.5f);
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 

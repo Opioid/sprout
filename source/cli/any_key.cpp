@@ -59,11 +59,11 @@ char read_key() noexcept {
     tcsetattr(STDIN_FILENO, TCSANOW, &settings);
 
     unsigned char keycodes[MAGIC_MAX_CHARS];
-    ssize_t const count = read(STDIN_FILENO, (void*)keycodes, MAGIC_MAX_CHARS);
+    ssize_t const count = read(STDIN_FILENO, reinterpret_cast<void*>(keycodes), MAGIC_MAX_CHARS);
 
     tcsetattr(STDIN_FILENO, TCSANOW, &initial_settings);
 
-    return static_cast<char>((count == 1) ? keycodes[0] : -static_cast<int>(keycodes[count - 1]));
+    return char((count == 1) ? keycodes[0] : -int(keycodes[count - 1]));
 }
 
 #endif

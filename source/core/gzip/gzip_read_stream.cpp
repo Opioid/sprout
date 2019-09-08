@@ -252,7 +252,7 @@ std::streamsize Filebuffer::showmanyc() {
 
     //	PHYSFS_sint64 fileSize = PHYSFS_fileLength(m_file);
 
-    //	return static_cast<int>(fileSize);
+    //	return int32_t(fileSize);
 
     return -1;
 }

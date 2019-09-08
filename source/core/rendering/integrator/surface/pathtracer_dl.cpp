@@ -217,7 +217,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         result += weight * (tv * radiance * bxdf.reflection);
     }
 
-    return result / static_cast<float>(settings_.num_light_samples);
+    return result / float(settings_.num_light_samples);
 }
 
 sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) noexcept {

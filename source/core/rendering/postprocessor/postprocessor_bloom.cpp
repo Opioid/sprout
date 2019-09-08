@@ -25,13 +25,13 @@ void Bloom::init(scene::camera::Camera const& camera, thread::Pool& /*pool*/) {
 
     kernel_.resize(width);
 
-    float const                    fr = static_cast<float>(radius) + 0.5f;
+    float const                    fr = float(radius) + 0.5f;
     math::filter::Gaussian_functor gauss(fr * fr, alpha_);
 
     for (int32_t x = 0; x < width; ++x) {
         int32_t o = -radius + x;
 
-        float fo = static_cast<float>(o);
+        float fo = float(o);
         float w  = gauss(fo * fo);
 
         kernel_[x] = K{o, w};

@@ -32,7 +32,7 @@ void Distribution_3D::init() noexcept {
 
     marginal_.init(integrals, num_conditional);
 
-    conditional_sizef_ = static_cast<float>(num_conditional);
+    conditional_sizef_ = float(num_conditional);
     conditional_max_   = num_conditional - 1;
 
     memory::free_aligned(integrals);
