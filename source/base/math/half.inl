@@ -10,8 +10,7 @@
 namespace math {
 
 static inline int16_t float_to_half(float f) noexcept {
-    return int16_t(_mm_cvtsi128_si32(
-        _mm_cvtps_ph(_mm_set_ss(f), _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC)));
+    return int16_t(_mm_cvtsi128_si32(_mm_cvtps_ph(_mm_set_ss(f), _MM_FROUND_TO_NEAREST_INT)));
 }
 
 static inline int16_t rounded(int32_t value, int32_t g, int32_t s) {
@@ -79,8 +78,18 @@ static inline float2 half_to_float(short2 h) noexcept {
     return float2(half_to_float(h[0]), half_to_float(h[1]));
 }
 
+// static inline float3 half_to_float(short3 h) noexcept {
+//    return float3(half_to_float(h[0]), half_to_float(h[1]), half_to_float(h[2]));
+//}
+
 static inline float3 half_to_float(short3 h) noexcept {
-    return float3(half_to_float(h[0]), half_to_float(h[1]), half_to_float(h[2]));
+    alignas(16) int32_t const i[4] = {int32_t(h[0]) | int32_t(h[1]) << 16, int32_t(h[2]), 0, 0};
+
+    __m128 const r = _mm_cvtph_ps(_mm_load_si128(reinterpret_cast<__m128i const*>(i)));
+
+    float3 result;
+    simd::store_float4(result.v, r);
+    return result;
 }
 
 // inline half::half(float s) noexcept

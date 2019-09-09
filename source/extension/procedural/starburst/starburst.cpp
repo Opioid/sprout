@@ -266,8 +266,9 @@ void render_dirt(image::Float1& signal) {
 }
 
 void render_aperture(const Aperture& aperture, Float1& signal) {
-    int32_t             num_sqrt_samples = 4;
-    std::vector<float2> kernel(num_sqrt_samples * num_sqrt_samples);
+    int32_t num_sqrt_samples = 4;
+
+    std::vector<float2> kernel(size_t(num_sqrt_samples * num_sqrt_samples));
 
     float kd = 1.f / float(num_sqrt_samples);
 
@@ -275,7 +276,7 @@ void render_aperture(const Aperture& aperture, Float1& signal) {
         for (int32_t x = 0; x < num_sqrt_samples; ++x) {
             float2 k(0.5f * kd + float(x) * kd, 0.5f * kd + float(y) * kd);
 
-            kernel[y * num_sqrt_samples + x] = k;
+            kernel[uint32_t(y * num_sqrt_samples + x)] = k;
         }
     }
 
@@ -442,7 +443,7 @@ void diffraction(Spectrum* result, float const* squared_magnitude, int32_t bin,
     }
 }
 
-void write_signal(std::string const& name, Float1 const& signal) {
+void write_signal(std::string const& /*name*/, Float1 const& /*signal*/) {
     //    auto const d = signal.description().dimensions;
 
     //    Byte1 image(Image::Description(Image::Type::Byte1, d));

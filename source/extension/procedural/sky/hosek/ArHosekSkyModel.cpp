@@ -472,7 +472,7 @@ hk_real arhosekskymodel_radiance(ArHosekSkyModelState* state,
                                  //	hk_real                  theta,
                                  hk_real cos_theta, hk_real sqrt_cos_theta, hk_real gamma,
                                  hk_real cos_gamma, hk_real wavelength) {
-    int low_wl = int32_t((wavelength - hk_real(320)) / hk_real(40));
+    int low_wl = int((wavelength - hk_real(320)) / hk_real(40));
 
     if (low_wl < 0 || low_wl >= 11) {
         return 0.0f;
@@ -486,7 +486,7 @@ hk_real arhosekskymodel_radiance(ArHosekSkyModelState* state,
                                                           cos_gamma) *
                       state->radiances[low_wl] * state->emission_correction_factor_sky[low_wl];
 
-    if (interp < 1e-6) return val_low;
+    if (interp < hk_real(1e-6)) return val_low;
 
     hk_real result = (hk_real(1) - interp) * val_low;
 
