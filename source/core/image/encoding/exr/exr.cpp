@@ -2,8 +2,20 @@
 
 namespace image::encoding::exr {
 
+int32_t Channel::byte_size() const noexcept {
+    switch (type) {
+        case Type::Half:
+            return 2;
+        case Type::Uint:
+        case Type::Float:
+            return 4;
+    }
+}
+
 int32_t num_scanlines_per_block(Compression compression) noexcept {
     switch (compression) {
+        case Compression::Undefined:
+            return 0;
         case Compression::No:
         case Compression::RLE:
         case Compression::ZIPS:
@@ -16,8 +28,6 @@ int32_t num_scanlines_per_block(Compression compression) noexcept {
         case Compression::B44A:
             return 32;
     }
-
-    return 1;
 }
 
 int32_t num_scanline_blocks(int32_t num_scanlines, Compression compression) noexcept {

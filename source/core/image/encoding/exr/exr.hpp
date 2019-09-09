@@ -11,6 +11,8 @@ static uint32_t constexpr Signature_size = 4;
 static uint8_t constexpr Signature[Signature_size] = {0x76, 0x2f, 0x31, 0x01};
 
 struct Channel {
+    int32_t byte_size() const noexcept;
+
     std::string name;
 
     enum class Type { Uint = 0, Half, Float };
