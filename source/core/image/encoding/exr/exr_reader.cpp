@@ -305,11 +305,9 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
         stream.read(reinterpret_cast<char*>(&v), sizeof(int64_t));
     }
 
-    memory::Buffer<uint8_t> compressed(static_cast<uint64_t>(bytes_per_row_block));
+    memory::Buffer<uint8_t> buffer(static_cast<uint64_t>(bytes_per_row_block));
 
     memory::Buffer<uint8_t> uncompressed(static_cast<uint64_t>(bytes_per_row_block));
-
-    memory::Buffer<uint8_t> outdata(static_cast<uint64_t>(bytes_per_row_block));
 
     Image* image = nullptr;
 
@@ -326,34 +324,25 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
         int32_t size;
         stream.read(reinterpret_cast<char*>(&size), sizeof(int32_t));
 
-        stream.read(reinterpret_cast<char*>(compressed.data()), size);
+        stream.read(reinterpret_cast<char*>(buffer.data()), size);
 
         int32_t const num_rows_here = std::min(dimensions[1] - row, rows_per_block);
 
         int32_t const num_pixels_here = num_rows_here * dimensions[0];
 
-        bool const is_compressed = size < bytes_per_row_block;
-
-        uint8_t* data_here;
-
-        if (is_compressed) {
+        if (size < bytes_per_row_block) {
             unsigned long uncompressed_size = uint32_t(bytes_per_row_block);
-            if (MZ_OK !=
-                mz_uncompress(uncompressed, &uncompressed_size, compressed, uint32_t(size))) {
+            if (MZ_OK != mz_uncompress(uncompressed, &uncompressed_size, buffer, uint32_t(size))) {
                 return nullptr;
             }
 
             reconstruct_scalar(uncompressed, num_pixels_here * bytes_per_pixel);
 
-            interleave_sse2(uncompressed, num_pixels_here * bytes_per_pixel, outdata.data());
-
-            data_here = outdata;
-        } else {
-            data_here = compressed;
+            interleave_sse2(uncompressed, num_pixels_here * bytes_per_pixel, buffer.data());
         }
 
         if (Channel::Type::Half == channels.channels[0].type) {
-            int16_t* const shorts = reinterpret_cast<int16_t* const>(data_here);
+            int16_t* const shorts = reinterpret_cast<int16_t* const>(buffer.data());
 
             auto& image_s3 = image->short3();
 
@@ -368,7 +357,7 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
                 }
             }
         } else {
-            float* const floats = reinterpret_cast<float* const>(data_here);
+            float* const floats = reinterpret_cast<float* const>(buffer.data());
 
             auto& image_f3 = image->float3();
 
