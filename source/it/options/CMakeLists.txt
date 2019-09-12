@@ -1,5 +1,5 @@
 target_sources(it
-  PRIVATE
-  "options.cpp"
-  "options.hpp"
+    PRIVATE
+    "options.cpp"
+    "options.hpp"
 )  
