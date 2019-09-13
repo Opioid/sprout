@@ -1,8 +1,10 @@
 #include "rgbe_writer.hpp"
+#include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
+#include "image/typed_image.hpp"
+
 #include <cmath>
 #include <ostream>
-#include "base/math/vector4.inl"
-#include "image/typed_image.hpp"
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 
@@ -44,16 +46,16 @@ void Writer::write_pixels_rle(std::ostream& stream, Float4 const& image) {
         return write_pixels(stream, image);
     }
 
-    uint8_t* buffer = new uint8_t[scanline_width * 4];
+    memory::Buffer<uint8_t> buffer(uint32_t(scanline_width * 4));
 
-    uint32_t current_pixel = 0;
+    int32_t current_pixel = 0;
 
     while (num_scanlines-- > 0) {
         byte4 rgbe;
         rgbe[0] = 2;
         rgbe[1] = 2;
-        rgbe[2] = static_cast<uint8_t>(scanline_width >> 8);
-        rgbe[3] = static_cast<uint8_t>(scanline_width & 0xFF);
+        rgbe[2] = uint8_t(scanline_width >> 8);
+        rgbe[3] = uint8_t(scanline_width & 0xFF);
 
         stream.write(reinterpret_cast<char*>(&rgbe), sizeof(byte4));
 
@@ -74,8 +76,6 @@ void Writer::write_pixels_rle(std::ostream& stream, Float4 const& image) {
             write_bytes_rle(stream, &buffer[i * scanline_width], scanline_width);
         }
     }
-
-    delete[] buffer;
 }
 
 // The code below is only needed for the run-length encoded files.
@@ -108,7 +108,7 @@ void Writer::write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t
 
         // if data before next big run is a short run then write it as such
         if (old_run_count > 1 && old_run_count == begin_run - current) {
-            buffer[0] = static_cast<uint8_t>(128 + old_run_count);  // write short run
+            buffer[0] = uint8_t(128 + old_run_count);  // write short run
             buffer[1] = data[current];
 
             stream.write(reinterpret_cast<char*>(&buffer), sizeof(uint8_t) * 2);
@@ -124,7 +124,7 @@ void Writer::write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t
                 nonrun_count = 128;
             }
 
-            buffer[0] = static_cast<uint8_t>(nonrun_count);
+            buffer[0] = uint8_t(nonrun_count);
 
             stream.write(reinterpret_cast<char*>(&buffer), sizeof(uint8_t));
 
@@ -136,7 +136,7 @@ void Writer::write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t
 
         // write out next run if one was found
         if (run_count >= min_run_length) {
-            buffer[0] = static_cast<uint8_t>(128 + run_count);
+            buffer[0] = uint8_t(128 + run_count);
             buffer[1] = data[begin_run];
 
             stream.write(reinterpret_cast<char*>(&buffer), sizeof(uint8_t) * 2);
@@ -160,13 +160,12 @@ byte4 Writer::float_to_rgbe(float4 const& c) {
     if (v < 1e-32f) {
         return byte4(0, 0, 0, 0);
     } else {
-        int   e;
-        float f = std::frexp(v, &e);
+        int         e;
+        float const f = std::frexp(v, &e);
 
         v = f * 256.f / v;
 
-        return byte4(static_cast<uint8_t>(c[0] * v), static_cast<uint8_t>(c[1] * v),
-                     static_cast<uint8_t>(c[2] * v), static_cast<uint8_t>(e + 128));
+        return byte4(uint8_t(c[0] * v), uint8_t(c[1] * v), uint8_t(c[2] * v), uint8_t(e + 128));
     }
 }
 

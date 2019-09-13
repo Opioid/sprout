@@ -14,11 +14,11 @@ void init() noexcept {
     }
 
     for (uint32_t i = 0; i < 256; ++i) {
-        snorm_float[i] = ::encoding::snorm_to_float(static_cast<uint8_t>(i));
+        snorm_float[i] = ::encoding::snorm_to_float(uint8_t(i));
     }
 
     for (uint32_t i = 0; i < 256; ++i) {
-        unorm_float[i] = ::encoding::unorm_to_float(static_cast<uint8_t>(i));
+        unorm_float[i] = ::encoding::unorm_to_float(uint8_t(i));
     }
 }
 

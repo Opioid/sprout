@@ -8,11 +8,11 @@ namespace image::encoding::json {
 Byte1_handler::Byte1_handler(Byte1& image) : image_(image) {}
 
 void Byte1_handler::add(uint32_t value) {
-    image_.store(current_texel_++, static_cast<uint8_t>(value));
+    image_.store(current_texel_++, uint8_t(value));
 }
 
 void Byte1_handler::add(float value) {
-    image_.store(current_texel_++, static_cast<uint8_t>(value));
+    image_.store(current_texel_++, uint8_t(value));
 }
 
 Float1_handler::Float1_handler(Float1& image) : image_(image) {}

@@ -62,7 +62,7 @@ Image* Reader::read(std::istream& stream, std::string const& filename) noexcept 
 
         int32_t i = 0;
         for (auto const& v : data_node->value.GetArray()) {
-            volume->store(i++, static_cast<uint8_t>(v.GetUint()));
+            volume->store(i++, uint8_t(v.GetUint()));
         }
 
         return volume;

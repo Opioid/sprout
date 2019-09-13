@@ -118,9 +118,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Vector ray_min_t = simd::load_float(&ray.min_t);
     Vector ray_max_t = simd::load_float(&ray.max_t);
 
-    Intersection pi;
-    if (tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t, ray_max_t,
-                        ray_signs, node_stack, pi)) {
+    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
+                                         ray_max_t, ray_signs, node_stack, pi)) {
         float const tray_max_t = simd::get_x(ray_max_t);
         ray.max_t              = tray_max_t;
 
@@ -477,7 +476,7 @@ Mesh::Distribution::~Distribution() {
 void Mesh::Distribution::init(uint32_t part, const Tree& tree) noexcept {
     uint32_t const num = tree.num_triangles(part);
 
-    float* areas = memory::allocate_aligned<float>(num);
+    memory::Buffer<float> areas(num);
 
     num_triangles = num;
 
@@ -485,15 +484,15 @@ void Mesh::Distribution::init(uint32_t part, const Tree& tree) noexcept {
 
     for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_material_index(t) == part) {
-            areas[mt]            = tree.triangle_area(t);
+            areas[mt] = tree.triangle_area(t);
+
             triangle_mapping[mt] = t;
+
             ++mt;
         }
     }
 
     distribution.init(areas, num_triangles);
-
-    memory::free_aligned(areas);
 }
 
 bool Mesh::Distribution::empty() const noexcept {

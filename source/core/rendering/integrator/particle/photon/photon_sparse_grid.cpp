@@ -600,8 +600,8 @@ int3 Sparse_grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) c
 
     float3 const d = r - static_cast<float3>(c);
 
-    adjacents = static_cast<uint8_t>(adjacent(d[0], cell_bound) << 4);
-    adjacents |= static_cast<uint8_t>(adjacent(d[1], cell_bound) << 2);
+    adjacents = uint8_t(adjacent(d[0], cell_bound) << 4);
+    adjacents |= uint8_t(adjacent(d[1], cell_bound) << 2);
     adjacents |= adjacent(d[2], cell_bound);
 
     return c + 1;

@@ -20,11 +20,11 @@ static inline float4 constexpr unorm_to_float(byte4 c) {
 }
 
 static inline uint8_t constexpr float_to_unorm(float x) {
-    return static_cast<uint8_t>(x * 255.f + 0.5f);
+    return uint8_t(x * 255.f + 0.5f);
 }
 
 static inline uint8_t constexpr float_to_unorm(float x, float dither) {
-    return static_cast<uint8_t>(x * 255.f + dither);
+    return uint8_t(x * 255.f + dither);
 }
 
 static inline byte3 constexpr float_to_unorm(float3 const& c) {
@@ -51,8 +51,8 @@ static inline float constexpr snorm_to_float(uint8_t byte) {
 }
 
 static inline uint8_t constexpr float_to_snorm(float x) {
-    //	return static_cast<uint8_t>((x + 1.f) * (0.5f * 255.f));
-    return static_cast<uint8_t>((x + 1.f) * (x > 0.f ? 127.5f : 128.f));
+    //	return uint8_t((x + 1.f) * (0.5f * 255.f));
+    return uint8_t((x + 1.f) * (x > 0.f ? 127.5f : 128.f));
 }
 
 static inline byte3 constexpr float_to_snorm(float3 const& c) {

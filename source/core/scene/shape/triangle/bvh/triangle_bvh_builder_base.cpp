@@ -38,7 +38,7 @@ void Builder_base::serialize(Build_node* node) {
 
         serialize(node->children[1]);
     } else {
-        uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+        uint8_t num_primitives = uint8_t(node->end_index - node->start_index);
         n.set_leaf_node(node->start_index, num_primitives);
     }
 }

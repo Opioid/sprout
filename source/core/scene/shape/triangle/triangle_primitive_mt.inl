@@ -172,12 +172,12 @@ static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, 
 
     //	return false;
 
-    uint8_t ca = static_cast<uint8_t>(u > 0.f);
-    uint8_t cb = static_cast<uint8_t>(u < 1.f);
-    uint8_t cc = static_cast<uint8_t>(v > 0.f);
-    uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
-    uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
-    uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
+    uint8_t ca = uint8_t(u > 0.f);
+    uint8_t cb = uint8_t(u < 1.f);
+    uint8_t cc = uint8_t(v > 0.f);
+    uint8_t cd = uint8_t(u + v < 1.f);
+    uint8_t ce = uint8_t(hit_t > ray.min_t);
+    uint8_t cf = uint8_t(hit_t < ray.max_t);
 
     if (0 != (ca & cb & cc & cd & ce & cf)) {
         ray.max_t = hit_t;
@@ -319,12 +319,12 @@ static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c
 
     float hit_t = dot(e2, qvec) * inv_det;
 
-    uint8_t ca = static_cast<uint8_t>(u > 0.f);
-    uint8_t cb = static_cast<uint8_t>(u < 1.f);
-    uint8_t cc = static_cast<uint8_t>(v > 0.f);
-    uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
-    uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
-    uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
+    uint8_t ca = uint8_t(u > 0.f);
+    uint8_t cb = uint8_t(u < 1.f);
+    uint8_t cc = uint8_t(v > 0.f);
+    uint8_t cd = uint8_t(u + v < 1.f);
+    uint8_t ce = uint8_t(hit_t > ray.min_t);
+    uint8_t cf = uint8_t(hit_t < ray.max_t);
 
     return 0 != (ca & cb & cc & cd & ce & cf);
 }

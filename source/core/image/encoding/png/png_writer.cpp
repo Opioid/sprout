@@ -167,8 +167,7 @@ bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, f
     byte3*         bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
-        bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
-                         static_cast<uint8_t>(scale * data[i][1]), 0);
+        bytes[i] = byte3(uint8_t(scale * data[i][0]), uint8_t(scale * data[i][1]), 0);
     }
 
     size_t buffer_len = 0;
@@ -199,9 +198,8 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
     byte3* bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
-        bytes[i] = byte3(static_cast<uint8_t>(scale * data[i][0]),
-                         static_cast<uint8_t>(scale * data[i][1]),
-                         static_cast<uint8_t>(scale * data[i][2]));
+        bytes[i] = byte3(uint8_t(scale * data[i][0]), uint8_t(scale * data[i][1]),
+                         uint8_t(scale * data[i][2]));
     }
 
     size_t buffer_len = 0;

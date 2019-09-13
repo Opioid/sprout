@@ -80,9 +80,9 @@ void create_reference_normal_map(int2 dimensions) {
 
             v = v / float(aa[0] * aa[1]);
 
-            pixel[0] = static_cast<uint8_t>(v[0] * 255.f);
-            pixel[1] = static_cast<uint8_t>(v[1] * 255.f);
-            pixel[2] = static_cast<uint8_t>(v[2] * 255.f);
+            pixel[0] = uint8_t(v[0] * 255.f);
+            pixel[1] = uint8_t(v[1] * 255.f);
+            pixel[2] = uint8_t(v[2] * 255.f);
         }
     }
 

@@ -132,7 +132,7 @@ void Builder<T>::serialize(Build_node* node) noexcept {
 
         serialize(node->children[1]);
     } else {
-        uint8_t const num_primitives = static_cast<uint8_t>(node->props_end - node->offset);
+        uint8_t const num_primitives = uint8_t(node->props_end - node->offset);
         n.set_leaf_node(node->offset, num_primitives);
     }
 }
