@@ -209,6 +209,9 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     jstream << ",";
 
     newline(jstream, 3);
+    jstream << "\"num_indices\":" << num_indices << ",";
+
+    newline(jstream, 3);
     jstream << "\"encoding\":";
 
     if (4 == index_bytes) {
