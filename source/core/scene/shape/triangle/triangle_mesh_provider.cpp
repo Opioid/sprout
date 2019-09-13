@@ -352,6 +352,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     uint64_t indices_size   = 0;
     uint64_t index_bytes    = 0;
 
+    uint32_t num_vertices = 0;
+
     bool delta_indices = false;
 
     bool interleaved_vertex_stream = true;
@@ -378,6 +380,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
                 if ("binary" == vn.name) {
                     vertices_offset = json::read_uint(vn.value, "offset");
                     vertices_size   = json::read_uint(vn.value, "size");
+                } else if ("num_vertices" == vn.name) {
+                    num_vertices = json::read_uint(vn.value);
                 } else if ("layout" == vn.name) {
                     for (auto const& ln : vn.value.GetArray()) {
                         if ("Bitangent_sign" == json::read_string(ln, "semantic_name")) {
@@ -421,7 +425,10 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 
-    uint32_t const num_vertices = uint32_t(vertices_size / sizeof(Vertex));
+    if (0 == num_vertices) {
+        // Handle legacy files, that curiously work because of Gzip_stream quirk?!
+        num_vertices = uint32_t(vertices_size / sizeof(Vertex));
+    }
 
     Vertex_stream* vertex_stream = nullptr;
 

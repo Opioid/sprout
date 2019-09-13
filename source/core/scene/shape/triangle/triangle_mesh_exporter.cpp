@@ -76,13 +76,20 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
 
     newline(jstream, 3);
 
+    static bool constexpr interleaved_vertex_stream = false;
+
     auto const& vertices = handler.vertices();
 
-    size_t num_vertices  = vertices.size();
-    size_t vertices_size = num_vertices * sizeof(Vertex);
+    uint64_t const num_vertices  = vertices.size();
+    uint64_t const vertices_size = interleaved_vertex_stream
+                                       ? num_vertices * sizeof(Vertex)
+                                       : num_vertices * (3 * 4 + 3 * 4 + 3 * 4 + 2 * 4 + 1);
 
     binary_tag(jstream, 0, vertices_size);
     jstream << ",";
+
+    newline(jstream, 3);
+    jstream << "\"num_vertices\":" << num_vertices << ",";
 
     newline(jstream, 3);
     jstream << "\"layout\":[";
@@ -90,8 +97,6 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     Vertex_layout_description::Element element;
 
     using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
-
-    static bool constexpr interleaved_vertex_stream = false;
 
     if (interleaved_vertex_stream) {
         newline(jstream, 4);
