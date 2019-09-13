@@ -20,7 +20,7 @@ static void newline(std::ostream& stream, uint32_t num_tabs) noexcept {
     }
 }
 
-static void binary_tag(std::ostream& stream, size_t offset, size_t size) noexcept {
+static void binary_tag(std::ostream& stream, uint64_t offset, uint64_t size) noexcept {
     stream << "\"binary\":{\"offset\":" << offset << ",\"size\":" << size << "}";
 }
 
@@ -204,7 +204,7 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     }
 
     newline(jstream, 3);
-    size_t const num_indices = handler.triangles().size() * 3;
+    uint64_t const num_indices = handler.triangles().size() * 3;
     binary_tag(jstream, vertices_size, num_indices * index_bytes);
     jstream << ",";
 
@@ -288,17 +288,17 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
         int32_t previous_index = 0;
         for (auto const& t : triangles) {
             if (delta_indices) {
-                int32_t const a = static_cast<int32_t>(t.i[0]);
+                int32_t const a = int32_t(t.i[0]);
 
                 int32_t delta_index = a - previous_index;
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
 
-                int32_t const b = static_cast<int32_t>(t.i[1]);
+                int32_t const b = int32_t(t.i[1]);
 
                 delta_index = b - a;
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
 
-                int32_t const c = static_cast<int32_t>(t.i[2]);
+                int32_t const c = int32_t(t.i[2]);
 
                 delta_index = c - b;
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int32_t));
@@ -312,19 +312,19 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
         int32_t previous_index = 0;
         for (auto const& t : triangles) {
             if (delta_indices) {
-                int32_t const a = static_cast<int32_t>(t.i[0]);
+                int32_t const a = int32_t(t.i[0]);
 
-                int16_t delta_index = static_cast<int16_t>(a - previous_index);
+                int16_t delta_index = int16_t(a - previous_index);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
-                int32_t const b = static_cast<int32_t>(t.i[1]);
+                int32_t const b = int32_t(t.i[1]);
 
-                delta_index = static_cast<int16_t>(b - a);
+                delta_index = int16_t(b - a);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
-                int32_t const c = static_cast<int32_t>(t.i[2]);
+                int32_t const c = int32_t(t.i[2]);
 
-                delta_index = static_cast<int16_t>(c - b);
+                delta_index = int16_t(c - b);
                 stream.write(reinterpret_cast<char const*>(&delta_index), sizeof(int16_t));
 
                 previous_index = c;
