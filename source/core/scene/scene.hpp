@@ -153,6 +153,7 @@ class Scene {
     void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
     Transformation const& prop_world_transformation(uint32_t entity) const noexcept;
+
     void prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
     void prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
@@ -162,6 +163,7 @@ class Scene {
                          uint32_t num_frames) noexcept;
 
     entity::Morphing const& prop_morphing(uint32_t entity) const noexcept;
+
     void prop_set_morphing(uint32_t entity, entity::Morphing const& morphing) noexcept;
 
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
@@ -175,13 +177,15 @@ class Scene {
                                       thread::Pool& pool) noexcept;
 
     material::Material* const* prop_materials(uint32_t entity) const noexcept;
-    material::Material const*  prop_material(uint32_t entity, uint32_t part) const noexcept;
+
+    material::Material const* prop_material(uint32_t entity, uint32_t part) const noexcept;
 
     prop::Prop_topology const& prop_topology(uint32_t entity) const noexcept;
 
     uint32_t prop_light_id(uint32_t entity, uint32_t part) const noexcept;
 
     float prop_area(uint32_t entity, uint32_t part) const noexcept;
+
     float prop_volume(uint32_t entity, uint32_t part) const noexcept;
 
     void add_material(Material* material) noexcept;
