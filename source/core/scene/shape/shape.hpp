@@ -48,14 +48,18 @@ class Shape {
 
     virtual ~Shape() noexcept;
 
-    virtual float3 object_to_texture_point(float3 const& p) const noexcept  = 0;
+    virtual float3 object_to_texture_point(float3 const& p) const noexcept = 0;
+
     virtual float3 object_to_texture_vector(float3 const& v) const noexcept = 0;
 
     virtual AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
-        noexcept                                                                = 0;
+        noexcept = 0;
+
     virtual AABB transformed_aabb(math::Transformation const& t) const noexcept = 0;
 
     virtual uint32_t num_parts() const noexcept;
+
+    virtual uint32_t part_id_to_material_id(uint32_t part) const noexcept;
 
     virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                            Intersection& intersection) const noexcept = 0;

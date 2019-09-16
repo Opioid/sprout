@@ -137,7 +137,7 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) no
     properties_.set(Property::Visible_in_shadow, in_shadow);
 }
 
-void Prop::set_shape_and_materials(Shape* shape, Material* const* materials) noexcept {
+void Prop::configure(Shape* shape, Material* const* materials) noexcept {
     set_shape(shape);
 
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {

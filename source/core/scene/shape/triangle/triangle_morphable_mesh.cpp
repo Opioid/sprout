@@ -21,10 +21,9 @@ Morphable_mesh::Morphable_mesh(Morph_target_collection* collection, uint32_t num
 }
 
 Morphable_mesh::~Morphable_mesh() {
+    memory::free_aligned(vertices_);
     delete collection_;
 }
-
-void Morphable_mesh::init() noexcept {}
 
 float3 Morphable_mesh::object_to_texture_point(float3 const& p) const noexcept {
     return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
@@ -272,8 +271,6 @@ void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& p
     bvh::Builder_SAH builder(16, 64);
     builder.build(tree_, uint32_t(collection_->triangles().size()), collection_->triangles().data(),
                   vertices, 4, pool);
-
-    init();
 }
 
 size_t Morphable_mesh::num_bytes() const noexcept {

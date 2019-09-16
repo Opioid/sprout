@@ -16,20 +16,25 @@
 
 namespace scene::shape::triangle {
 
-Mesh::Mesh() noexcept : distributions_(nullptr) {}
+Mesh::Mesh() noexcept : distributions_(nullptr), part_materials_(nullptr) {}
 
 Mesh::~Mesh() noexcept {
+    memory::free_aligned(part_materials_);
     memory::destroy_aligned(distributions_, tree_.num_parts());
-}
-
-bool Mesh::init() noexcept {
-    distributions_ = memory::construct_array_aligned<Distribution>(tree_.num_parts());
-
-    return 0 != tree_.num_parts();
 }
 
 Tree& Mesh::tree() noexcept {
     return tree_;
+}
+
+void Mesh::allocate_parts(uint32_t num_parts) noexcept {
+    distributions_ = memory::construct_array_aligned<Distribution>(num_parts);
+
+    part_materials_ = memory::allocate_aligned<uint32_t>(num_parts);
+}
+
+void Mesh::set_material_for_part(uint32_t part, uint32_t material) noexcept {
+    part_materials_[part] = material;
 }
 
 float3 Mesh::object_to_texture_point(float3 const& p) const noexcept {
@@ -50,6 +55,10 @@ AABB Mesh::transformed_aabb(math::Transformation const& t) const noexcept {
 
 uint32_t Mesh::num_parts() const noexcept {
     return tree_.num_parts();
+}
+
+uint32_t Mesh::part_id_to_material_id(uint32_t part) const noexcept {
+    return part_materials_[part];
 }
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,

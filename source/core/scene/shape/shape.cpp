@@ -11,26 +11,12 @@ std::string Shape::identifier() noexcept {
 
 Shape::~Shape() noexcept {}
 
-/*
-float3 Shape::object_to_texture_point(float3 const& p) const noexcept {
-    return (p - aabb_.bounds[0]) * inv_extent_;
-}
-
-float3 Shape::object_to_texture_vector(float3 const& v) const noexcept {
-    return v * inv_extent_;
-}
-
-AABB Shape::transformed_aabb(float4x4 const& m, math::Transformation const& t) const noexcept {
-    return aabb_.transform(m);
-}
-
-
-AABB Shape::transformed_aabb(math::Transformation const& t) const noexcept {
-    return transformed_aabb(float4x4(t), t);
-}
-*/
 uint32_t Shape::num_parts() const noexcept {
     return 1;
+}
+
+uint32_t Shape::part_id_to_material_id(uint32_t part) const noexcept {
+    return part;
 }
 
 bool Shape::sample(uint32_t part, float3 const& p, float3 const& /*n*/,

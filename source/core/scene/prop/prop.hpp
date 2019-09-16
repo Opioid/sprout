@@ -70,7 +70,7 @@ class alignas(64) Prop {
 
     AABB const& aabb() const noexcept;
 
-    void set_shape_and_materials(Shape* shape, Material* const* materials) noexcept;
+    void configure(Shape* shape, Material* const* materials) noexcept;
 
     void set_transformation(math::Transformation const& t) noexcept;
 

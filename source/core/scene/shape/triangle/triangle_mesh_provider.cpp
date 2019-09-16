@@ -113,20 +113,25 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     auto mesh = new Mesh;
 
-    mesh->tree().allocate_parts(uint32_t(handler->parts().size()));
+    mesh->allocate_parts(uint32_t(handler->parts().size()));
 
     manager.thread_pool().run_async([mesh, handler_raw{handler.release()}, &manager]() {
         logging::verbose("Started asynchronously building triangle mesh BVH.");
 
         auto& triangles = handler_raw->triangles();
 
+        uint32_t part = 0;
         for (auto const& p : handler_raw->parts()) {
             uint32_t const triangles_start = p.start_index / 3;
             uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
 
             for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-                triangles[i].material_index = p.material_index;
+                triangles[i].material_index = part;
             }
+
+            mesh->set_material_for_part(part, p.material_index);
+
+            ++part;
         }
 
         auto const& vertices = handler_raw->vertices();
@@ -167,7 +172,7 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
 
     auto mesh = new Mesh;
 
-    mesh->tree().allocate_parts(num_parts);
+    mesh->allocate_parts(num_parts);
 
     thread_pool.run_async([mesh, triangles_in{std::move(triangles)},
                            vertices_in{std::move(vertices)}, &thread_pool]() {
@@ -227,6 +232,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
         if (collection->triangles().empty()) {
             auto& triangles = handler.triangles();
 
+            uint32_t part = 0;
             for (auto& p : handler.parts()) {
                 uint32_t triangles_start = p.start_index / 3;
                 uint32_t triangles_end   = (p.start_index + p.num_indices) / 3;
@@ -236,8 +242,10 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
                     uint32_t b = triangles[i].i[1];
                     uint32_t c = triangles[i].i[2];
 
-                    collection->triangles().emplace_back(a, b, c, p.material_index);
+                    collection->triangles().emplace_back(a, b, c, part);
                 }
+
+                ++part;
             }
         }
 
@@ -262,13 +270,11 @@ void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle cons
                          Vertex_stream const& vertices, thread::Pool& thread_pool) noexcept {
     bvh::Builder_SAH builder(16, 64);
     builder.build(mesh.tree(), num_triangles, triangles, vertices, 4, thread_pool);
-
-    mesh.init();
 }
 
 template <typename Index>
-void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index const* const indices,
-                          Index_triangle* const triangles) noexcept {
+void fill_triangles_delta(Mesh& mesh, uint32_t num_parts, Part const* const parts,
+                          Index const* const indices, Index_triangle* const triangles) noexcept {
     int32_t previous_index(0);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
@@ -291,14 +297,16 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
 
             previous_index = c;
 
-            t.material_index = p.material_index;
+            t.material_index = i;
         }
+
+        mesh.set_material_for_part(i, p.material_index);
     }
 }
 
 template <typename Index>
-void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* const indices,
-                    Index_triangle* const triangles) noexcept {
+void fill_triangles(Mesh& mesh, uint32_t num_parts, Part const* const parts,
+                    Index const* const indices, Index_triangle* const triangles) noexcept {
     for (uint32_t i = 0; i < num_parts; ++i) {
         Part const& p = parts[i];
 
@@ -312,8 +320,10 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
             t.i[1] = uint32_t(indices[j * 3 + 1]);
             t.i[2] = uint32_t(indices[j * 3 + 2]);
 
-            t.material_index = p.material_index;
+            t.material_index = i;
         }
+
+        mesh.set_material_for_part(i, p.material_index);
     }
 }
 
@@ -353,6 +363,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     uint64_t index_bytes    = 0;
 
     uint32_t num_vertices = 0;
+    uint32_t num_indices  = 0;
 
     bool delta_indices = false;
 
@@ -402,6 +413,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
                 if ("binary" == in.name) {
                     indices_offset = json::read_uint(in.value, "offset");
                     indices_size   = json::read_uint(in.value, "size");
+                } else if ("num_indices" == in.name) {
+                    num_indices = json::read_uint(in.value);
                 } else if ("encoding" == in.name) {
                     if ("Int16" == json::read_string(in.value)) {
                         index_bytes   = 2;
@@ -457,7 +470,9 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         vertex_stream = new Vertex_stream_separate(num_vertices, p, n, t, uv, bts);
     }
 
-    uint64_t const num_indices = indices_size / index_bytes;
+    if (0 == num_indices) {
+        num_indices = indices_size / index_bytes;
+    }
 
     char* indices = new char[indices_size];
 
@@ -466,7 +481,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     auto mesh = new Mesh;
 
-    mesh->tree().allocate_parts(num_parts);
+    mesh->allocate_parts(num_parts);
 
     thread_pool.run_async([mesh, num_parts, parts, num_indices, indices, vertex_stream, index_bytes,
                            delta_indices, &thread_pool]() {
@@ -476,17 +491,17 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
             int32_t* indices32 = reinterpret_cast<int32_t*>(indices);
 
             if (delta_indices) {
-                fill_triangles_delta(num_parts, parts, indices32, triangles.data());
+                fill_triangles_delta(*mesh, num_parts, parts, indices32, triangles.data());
             } else {
-                fill_triangles(num_parts, parts, indices32, triangles.data());
+                fill_triangles(*mesh, num_parts, parts, indices32, triangles.data());
             }
         } else {
             int16_t* indices16 = reinterpret_cast<int16_t*>(indices);
 
             if (delta_indices) {
-                fill_triangles_delta(num_parts, parts, indices16, triangles.data());
+                fill_triangles_delta(*mesh, num_parts, parts, indices16, triangles.data());
             } else {
-                fill_triangles(num_parts, parts, indices16, triangles.data());
+                fill_triangles(*mesh, num_parts, parts, indices16, triangles.data());
             }
         }
 

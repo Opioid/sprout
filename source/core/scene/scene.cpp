@@ -299,7 +299,7 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
 uint32_t Scene::create_dummy() noexcept {
     auto const prop = allocate_prop();
 
-    prop.ref->set_shape_and_materials(&null_shape_, nullptr);
+    prop.ref->configure(&null_shape_, nullptr);
 
     return prop.id;
 }
@@ -315,19 +315,22 @@ uint32_t Scene::create_dummy(std::string const& name) noexcept {
 uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     auto const prop = allocate_prop();
 
-    prop.ref->set_shape_and_materials(shape, materials.data());
+    prop.ref->configure(shape, materials.data());
 
-    auto& m     = prop_materials_[prop.id];
-    m.parts     = memory::allocate_aligned<prop::Prop_material::Part>(shape->num_parts());
-    m.materials = memory::allocate_aligned<Material*>(shape->num_parts());
+    uint32_t const num_parts = shape->num_parts();
 
-    for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
+    auto& m = prop_materials_[prop.id];
+
+    m.parts     = memory::allocate_aligned<prop::Prop_material::Part>(num_parts);
+    m.materials = memory::allocate_aligned<Material*>(num_parts);
+
+    for (uint32_t i = 0; i < num_parts; ++i) {
         auto& p = m.parts[i];
 
         p.area     = 1.f;
         p.light_id = 0xFFFFFFFF;
 
-        m.materials[i] = materials[i];
+        m.materials[i] = materials[shape->part_id_to_material_id(i)];
     }
 
     if (shape->is_finite()) {

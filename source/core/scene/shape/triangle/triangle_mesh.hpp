@@ -13,11 +13,14 @@ class alignas(64) Mesh : public Shape {
 
     ~Mesh() noexcept override;
 
-    bool init() noexcept;
-
     Tree& tree() noexcept;
 
+    void allocate_parts(uint32_t num_parts) noexcept;
+
+    void set_material_for_part(uint32_t part, uint32_t material) noexcept;
+
     float3 object_to_texture_point(float3 const& p) const noexcept override final;
+
     float3 object_to_texture_vector(float3 const& v) const noexcept override final;
 
     AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
@@ -26,6 +29,8 @@ class alignas(64) Mesh : public Shape {
     AABB transformed_aabb(math::Transformation const& t) const noexcept override final;
 
     uint32_t num_parts() const noexcept override final;
+
+    uint32_t part_id_to_material_id(uint32_t part) const noexcept override final;
 
     bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                    shape::Intersection& intersection) const noexcept override final;
@@ -115,6 +120,8 @@ class alignas(64) Mesh : public Shape {
     };
 
     Distribution* distributions_;
+
+    uint32_t* part_materials_;
 };
 
 }  // namespace scene::shape::triangle

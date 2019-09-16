@@ -17,9 +17,8 @@ class alignas(64) Morphable_mesh : public Shape, public Morphable_shape {
 
     ~Morphable_mesh() override final;
 
-    void init() noexcept;
-
     float3 object_to_texture_point(float3 const& p) const noexcept override final;
+
     float3 object_to_texture_vector(float3 const& v) const noexcept override final;
 
     AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
