@@ -59,6 +59,8 @@ class Shape {
 
     virtual uint32_t num_parts() const noexcept;
 
+    virtual uint32_t num_materials() const noexcept;
+
     virtual uint32_t part_id_to_material_id(uint32_t part) const noexcept;
 
     virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,

@@ -28,6 +28,8 @@ Tree& Mesh::tree() noexcept {
 }
 
 void Mesh::allocate_parts(uint32_t num_parts) noexcept {
+    tree_.allocate_parts(num_parts);
+
     distributions_ = memory::construct_array_aligned<Distribution>(num_parts);
 
     part_materials_ = memory::allocate_aligned<uint32_t>(num_parts);
@@ -55,6 +57,16 @@ AABB Mesh::transformed_aabb(math::Transformation const& t) const noexcept {
 
 uint32_t Mesh::num_parts() const noexcept {
     return tree_.num_parts();
+}
+
+uint32_t Mesh::num_materials() const noexcept {
+    uint32_t id = 0;
+
+    for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
+        id = std::max(id, part_materials_[i]);
+    }
+
+    return id + 1;
 }
 
 uint32_t Mesh::part_id_to_material_id(uint32_t part) const noexcept {

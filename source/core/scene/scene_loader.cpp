@@ -332,8 +332,10 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
         return 0xFFFFFFFF;
     }
 
+    uint32_t const num_materials = shape->num_materials();
+
     Materials materials;
-    materials.reserve(shape->num_parts());
+    materials.reserve(num_materials);
 
     if (materials_value) {
         load_materials(*materials_value, local_materials, scene, materials);
@@ -341,7 +343,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
 
     if (1 == materials.size() && 1.f == materials[0]->ior()) {
     } else {
-        while (materials.size() < shape->num_parts()) {
+        while (materials.size() < num_materials) {
             materials.push_back(&fallback_material_);
         }
     }

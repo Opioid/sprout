@@ -15,6 +15,10 @@ uint32_t Shape::num_parts() const noexcept {
     return 1;
 }
 
+uint32_t Shape::num_materials() const noexcept {
+    return 1;
+}
+
 uint32_t Shape::part_id_to_material_id(uint32_t part) const noexcept {
     return part;
 }

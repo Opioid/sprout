@@ -30,6 +30,8 @@ class alignas(64) Mesh : public Shape {
 
     uint32_t num_parts() const noexcept override final;
 
+    uint32_t num_materials() const noexcept override final;
+
     uint32_t part_id_to_material_id(uint32_t part) const noexcept override final;
 
     bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
