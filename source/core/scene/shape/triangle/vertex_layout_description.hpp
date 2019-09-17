@@ -21,12 +21,6 @@ class Vertex_layout_description {
 
 }  // namespace scene::shape::triangle
 
-/*
-std::stringstream& operator<<(std::stringstream& stream,
-                                                          scene::shape::triangle::Vertex_layout_description::Encoding
-encoding);
-                                                          */
-
 std::stringstream& operator<<(
     std::stringstream&                                                stream,
     scene::shape::triangle::Vertex_layout_description::Element const& element);

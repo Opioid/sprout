@@ -52,7 +52,7 @@ class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
 
     mz_stream z_stream_;
 
-    static size_t constexpr Buffer_size = 8192;
+    static uint32_t constexpr Buffer_size = 8192;
 
     char_type read_buffer_[Buffer_size];
 

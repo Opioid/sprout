@@ -1,4 +1,5 @@
 #include "vertex_layout_description.hpp"
+
 #include <sstream>
 
 namespace scene::shape::triangle {}

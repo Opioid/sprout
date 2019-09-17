@@ -1,8 +1,9 @@
 #ifndef SU_BASE_MATH_VECTOR2_HPP
 #define SU_BASE_MATH_VECTOR2_HPP
 
-#include <cstdint>
 #include "vector.hpp"
+
+#include <cstdint>
 
 namespace math {
 

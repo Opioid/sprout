@@ -1,11 +1,13 @@
 #include "triangle_mesh_exporter.hpp"
-#include <fstream>
-#include <sstream>
+
 #include "base/math/vector3.inl"
 #include "base/string/string.hpp"
 #include "triangle_json_handler.hpp"
 #include "vertex_encoding.inl"
 #include "vertex_layout_description.hpp"
+
+#include <fstream>
+#include <sstream>
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -83,7 +85,7 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     uint64_t const num_vertices  = vertices.size();
     uint64_t const vertices_size = interleaved_vertex_stream
                                        ? num_vertices * sizeof(Vertex)
-                                       : num_vertices * (3 * 4 + 3 * 4 + 3 * 4 + 2 * 4 + 1);
+                                       : num_vertices * Vertex::unpadded_size();
 
     binary_tag(jstream, 0, vertices_size);
     jstream << ",";

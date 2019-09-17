@@ -1,10 +1,11 @@
 #ifndef SU_BASE_MATH_VECTOR3_HPP
 #define SU_BASE_MATH_VECTOR3_HPP
 
+#include "vector.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include "vector.hpp"
 
 namespace math {
 

@@ -102,9 +102,9 @@ Filebuffer::int_type Filebuffer::underflow() {
         if (0 == z_stream_.avail_in) {
             stream_->read(read_buffer_, Buffer_size);
 
-            size_t read_bytes = *stream_ ? Buffer_size : stream_->gcount();
+            uint32_t const read_bytes = *stream_ ? Buffer_size : uint32_t(stream_->gcount());
 
-            z_stream_.avail_in = uint32_t(read_bytes);
+            z_stream_.avail_in = read_bytes;
             z_stream_.next_in  = reinterpret_cast<uint8_t*>(read_buffer_);
         }
 
@@ -140,9 +140,9 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
         return pos_type(off_type(-1));
     }
 
-    off_type buffer_range  = egptr() - eback();
-    pos_type buffer_start  = z_stream_.total_out - buffer_range;
-    off_type buffer_offset = pos - buffer_start;
+    off_type const buffer_range  = egptr() - eback();
+    pos_type const buffer_start  = z_stream_.total_out - buffer_range;
+    off_type const buffer_offset = pos - buffer_start;
 
     if (buffer_offset >= 0 && buffer_offset < buffer_range) {
         // the new position is still in our current buffer
@@ -150,7 +150,6 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
     } else {
         if (buffer_offset < 0) {
             // start everything from scratch
-
             stream_->seekg(data_start_);
 
             mz_inflateEnd(&z_stream_);
