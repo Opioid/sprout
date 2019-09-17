@@ -140,7 +140,7 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) no
 void Prop::configure(Shape* shape, Material* const* materials) noexcept {
     set_shape(shape);
 
-    for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
+    for (uint32_t i = 0, len = shape->num_materials(); i < len; ++i) {
         auto const m = materials[i];
 
         if (m->is_masked()) {

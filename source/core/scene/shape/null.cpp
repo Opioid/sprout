@@ -29,6 +29,10 @@ uint32_t Null::num_parts() const noexcept {
     return 0;
 }
 
+uint32_t Null::num_materials() const noexcept {
+    return 0;
+}
+
 bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/,
                      Node_stack& /*node_stack*/, Intersection& /*intersection*/) const noexcept {
     return false;
