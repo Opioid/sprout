@@ -16,6 +16,8 @@ struct Vertex {
     uint8_t bitangent_sign;
 
     uint8_t pad[3];
+
+    static size_t unpadded_size() noexcept;
 };
 
 class Vertex_stream {

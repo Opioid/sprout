@@ -147,16 +147,24 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
     if (buffer_offset >= 0 && buffer_offset < buffer_range) {
         // the new position is still in our current buffer
         setg(eback(), eback() + buffer_offset, egptr());
-    } else if (buffer_offset < 0) {
-        // start everything from scratch
+    } else {
+        if (buffer_offset < 0) {
+            // start everything from scratch
 
-        stream_->seekg(data_start_);
+            stream_->seekg(data_start_);
 
-        mz_inflateEnd(&z_stream_);
+            mz_inflateEnd(&z_stream_);
 
-        init_z_stream();
+            init_z_stream();
+        }
 
-        setg(buffer_, buffer_, buffer_);
+        for (; z_stream_.total_out < pos;) {
+            underflow();
+        }
+
+        pos_type const difference = z_stream_.total_out - pos;
+
+        setg(eback(), egptr() - difference, egptr());
     }
 
     return pos;

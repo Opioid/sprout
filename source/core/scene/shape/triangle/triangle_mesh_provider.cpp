@@ -441,16 +441,22 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 
     if (0 == num_vertices) {
-        // Handle legacy files, that curiously work because of Gzip_stream quirk?!
+        // Handle legacy files, that curiously worked because of Gzip_stream bug!
+        // (seekg() was not implemented properly)
         num_vertices = uint32_t(vertices_size / sizeof(Vertex));
+
+        if (!interleaved_vertex_stream) {
+            indices_offset = num_vertices * Vertex::unpadded_size();
+        }
     }
+
+    stream.seekg(binary_start + vertices_offset);
 
     Vertex_stream* vertex_stream = nullptr;
 
     if (interleaved_vertex_stream) {
         Vertex* vertices = new Vertex[num_vertices];
 
-        stream.seekg(binary_start + vertices_offset);
         stream.read(reinterpret_cast<char*>(vertices), vertices_size);
 
         vertex_stream = new Vertex_stream_interleaved(num_vertices, vertices);
@@ -460,8 +466,6 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         packed_float3* t   = new packed_float3[num_vertices];
         float2*        uv  = new float2[num_vertices];
         uint8_t*       bts = new uint8_t[num_vertices];
-
-        stream.seekg(binary_start + vertices_offset);
 
         stream.read(reinterpret_cast<char*>(p), num_vertices * sizeof(packed_float3));
         stream.read(reinterpret_cast<char*>(n), num_vertices * sizeof(packed_float3));
@@ -473,7 +477,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
     }
 
     if (0 == num_indices) {
-        num_indices = indices_size / index_bytes;
+        num_indices = uint32_t(indices_size / index_bytes);
     }
 
     char* indices = new char[indices_size];
