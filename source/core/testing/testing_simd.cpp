@@ -1,11 +1,12 @@
 #include "testing_simd.hpp"
-#include <iostream>
 #include "base/chrono/chrono.hpp"
 #include "base/math/print.hpp"
 #include "base/math/simd_vector.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "base/string/string.hpp"
+
+#include <iostream>
 
 namespace testing {
 namespace simd {
@@ -39,8 +40,9 @@ void rsqrt() {
     }
 
     {
-        float a     = 0.f;
-        auto  start = std::chrono::high_resolution_clock::now();
+        float a = 0.f;
+
+        auto const start = std::chrono::high_resolution_clock::now();
 
         for (size_t i = 0; i < num_values; ++i) {
             float x = values[i];
@@ -477,6 +479,7 @@ inline float simd_dot_1(float3 const& a, float3 const& b) {
     return _mm_cvtss_f32(d);
 }
 
+/*
 inline float simd_dot_2(float3 const& a, float3 const& b) {
     Vector sa = ::simd::load_float4(a.v);
     Vector sb = ::simd::load_float4(b.v);
@@ -489,7 +492,7 @@ inline float simd_dot_2(float3 const& a, float3 const& b) {
 
     return _mm_cvtss_f32(d);
 }
-
+*/
 void dot() {
     std::cout << "testing::simd::dot()" << std::endl;
 
@@ -564,25 +567,25 @@ void dot() {
         std::cout << std::endl;
     }
 
-    {
-        std::cout << "simd_dot_2()" << std::endl;
-        std::cout << vectors[0] << " : " << simd_dot_2(vectors[0], vectors[1]) << std::endl;
+    //    {
+    //        std::cout << "simd_dot_2()" << std::endl;
+    //        std::cout << vectors[0] << " : " << simd_dot_2(vectors[0], vectors[1]) << std::endl;
 
-        auto start = std::chrono::high_resolution_clock::now();
+    //        auto start = std::chrono::high_resolution_clock::now();
 
-        float result = 0.f;
+    //        float result = 0.f;
 
-        for (size_t i = 0, len = num_values - 1; i < len; ++i) {
-            float3 a = vectors[i];
-            float3 b = vectors[i + 1];
-            float  r = simd_dot_2(a, b);
-            result += r;
-        }
+    //        for (size_t i = 0, len = num_values - 1; i < len; ++i) {
+    //            float3 a = vectors[i];
+    //            float3 b = vectors[i + 1];
+    //            float  r = simd_dot_2(a, b);
+    //            result += r;
+    //        }
 
-        auto const duration = chrono::seconds_since(start);
-        std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
-        std::cout << std::endl;
-    }
+    //        auto const duration = chrono::seconds_since(start);
+    //        std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+    //        std::cout << std::endl;
+    //    }
 
     {
         std::cout << "dotly()" << std::endl;

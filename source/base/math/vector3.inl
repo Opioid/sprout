@@ -153,26 +153,6 @@ bool Vector3<T>::operator!=(Vector3 const& a) const noexcept {
 }
 
 template <typename T>
-T Vector3<T>::absolute_max(uint32_t& i) const noexcept {
-    T ax = std::abs(v[0]);
-    T ay = std::abs(v[1]);
-    T az = std::abs(v[2]);
-
-    if (ax >= ay && ax >= az) {
-        i = 0;
-        return ax;
-    }
-
-    if (ay >= ax && ay >= az) {
-        i = 1;
-        return ay;
-    }
-
-    i = 2;
-    return az;
-}
-
-template <typename T>
 static Vector3<T> operator*(T s, Vector3<T> const& v) noexcept {
     return Vector3<T>(s * v[0], s * v[1], s * v[2]);
 }
@@ -334,6 +314,10 @@ template <typename T>
 constexpr Vector3f_a::Vector3f_a(Vector3<T> const& a) noexcept
     : v{float(a[0]), float(a[1]), float(a[2]), 0.f} {}
 
+inline Vector3f_a::Vector3f_a(Simd3f const& o) noexcept {
+    _mm_store_ps(v, o.v);
+}
+
 inline constexpr Vector2<float> Vector3f_a::xy() const noexcept {
     return Vector2<float>(v[0], v[1]);
 }
@@ -346,37 +330,11 @@ inline float constexpr& Vector3f_a::operator[](uint32_t i) noexcept {
     return v[i];
 }
 
-inline float Vector3f_a::absolute_max(uint32_t& i) const noexcept {
-    float const ax = std::abs(v[0]);
-    float const ay = std::abs(v[1]);
-    float const az = std::abs(v[2]);
-
-    if (ax >= ay && ax >= az) {
-        i = 0;
-        return ax;
-    }
-
-    if (ay >= ax && ay >= az) {
-        i = 1;
-        return ay;
-    }
-
-    i = 2;
-    return az;
-}
-
 static inline Vector3f_a constexpr operator+(Vector3f_a const& a, float s) noexcept {
     return Vector3f_a(a[0] + s, a[1] + s, a[2] + s);
 }
 
 static inline Vector3f_a constexpr operator+(Vector3f_a const& a, Vector3f_a const& b) noexcept {
-    //	__m128 ma = simd::load_float3(a.v);
-    //	__m128 mb = simd::load_float3(b.v);
-    //	__m128 mr = _mm_add_ps(ma, mb);
-    //	Vector3f_a r;
-    //	store_float4(r.v, mr);
-    //	return r;
-
     return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
 }
 
@@ -762,6 +720,84 @@ static inline bool all_finite(Vector3f_a const& v) noexcept {
 static inline bool all_finite_and_positive(Vector3f_a const& v) noexcept {
     return std::isfinite(v[0]) && v[0] >= 0.f && std::isfinite(v[1]) && v[1] >= 0.f &&
            std::isfinite(v[2]) && v[2] >= 0.f;
+}
+
+//==============================================================================
+// SIMD 3D float vector
+//==============================================================================
+
+inline Simd3f::Simd3f(__m128 m) noexcept : v(m) {}
+
+inline Simd3f::Simd3f(float s) noexcept : v(_mm_set1_ps(s)) {}
+
+inline Simd3f::Simd3f(float sx, float sy, float sz) noexcept {
+    __m128 x  = _mm_load_ss(&sx);
+    __m128 y  = _mm_load_ss(&sy);
+    __m128 z  = _mm_load_ss(&sz);
+    __m128 xy = _mm_unpacklo_ps(x, y);
+    v         = _mm_movelh_ps(xy, z);
+}
+
+inline Simd3f::Simd3f(Vector3f_a const& o) noexcept : v(_mm_load_ps(o.v)) {}
+
+static inline Simd3f operator+(float a, Simd3f const& b) noexcept {
+    __m128 const s = _mm_set1_ps(a);
+
+    return _mm_add_ps(s, b.v);
+}
+
+static inline Simd3f operator+(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_add_ps(a.v, b.v);
+}
+
+static inline Simd3f operator-(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_sub_ps(a.v, b.v);
+}
+
+static inline Simd3f operator*(float a, Simd3f const& b) noexcept {
+    __m128 const s = _mm_set1_ps(a);
+
+    return _mm_mul_ps(s, b.v);
+}
+
+static inline Simd3f operator*(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_mul_ps(a.v, b.v);
+}
+
+static inline Simd3f operator/(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_div_ps(a.v, b.v);
+}
+
+static inline Simd3f dot(Simd3f const& a, Simd3f const& b) noexcept {
+    Simd3f mul  = _mm_mul_ps(a.v, b.v);
+    Simd3f shuf = _mm_movehdup_ps(mul.v);
+    Simd3f sums = _mm_add_ss(mul.v, shuf.v);
+    shuf        = _mm_movehl_ps(shuf.v, sums.v);
+    Simd3f d    = _mm_add_ss(sums.v, shuf.v);
+    // Splat x
+    return SU_PERMUTE_PS(d.v, _MM_SHUFFLE(0, 0, 0, 0));
+}
+
+static inline Simd3f cross(Simd3f const& a, Simd3f const& b) noexcept {
+    Simd3f tmp0 = _mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(3, 0, 2, 1));
+    Simd3f tmp1 = _mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(3, 0, 2, 1));
+
+    tmp0 = _mm_mul_ps(tmp0.v, a.v);
+    tmp1 = _mm_mul_ps(tmp1.v, b.v);
+
+    Simd3f tmp2 = _mm_sub_ps(tmp0.v, tmp1.v);
+
+    return SU_PERMUTE_PS(tmp2.v, _MM_SHUFFLE(3, 0, 2, 1));
+}
+
+static inline Simd3f rsqrt(Simd3f const& x) noexcept {
+    Simd3f res  = _mm_rsqrt_ps(x.v);
+    Simd3f muls = _mm_mul_ps(_mm_mul_ps(x.v, res.v), res.v);
+    return _mm_mul_ps(_mm_mul_ps(simd::Half, res.v), _mm_sub_ps(simd::Three, muls.v));
+}
+
+static inline Simd3f normalize(Simd3f const& v) noexcept {
+    return rsqrt(dot(v, v)) * v;
 }
 
 }  // namespace math

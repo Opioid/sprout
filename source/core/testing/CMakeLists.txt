@@ -8,4 +8,6 @@ target_sources(core
 	"testing_size.hpp"
 	"testing_spectrum.cpp"
 	"testing_spectrum.hpp"
+	"testing_vector.cpp"
+	"testing_vector.hpp"
 	)     

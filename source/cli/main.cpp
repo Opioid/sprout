@@ -39,8 +39,9 @@
 //#include "core/testing/testing_simd.hpp"
 //#include "core/testing/testing_size.hpp"
 //#include "core/testing/testing_spectrum.hpp"
+//#include "core/testing/testing_vector.hpp"
 //#include "core/sampler/sampler_test.hpp"
-#include "core/scene/material/ggx/ggx_integrate.hpp"
+//#include "core/scene/material/ggx/ggx_integrate.hpp"
 
 static void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
                                    scene::Loader const& loader, scene::Scene const& scene,
@@ -57,15 +58,16 @@ int main(int argc, char* argv[]) noexcept {
     //	scene::material::glass::testing::test();
     //  scene::material::glass::testing::rough_refraction();
     //  testing::size();
-    //	testing::simd::rsqrt();
+    //  testing::simd::rsqrt();
     //	testing::simd::rcp();
-    //	testing::simd::normalize();
+    //  testing::simd::normalize();
     //	testing::simd::reciprocal();
     //	testing::simd::dot();
     //	testing::simd::minmax();
     //	testing::simd::unions();
     //	testing::simd::basis();
     //	testing::spectrum();
+    //  testing::vector();
     //	testing::cdf::test_1D();
     //  sampler::testing::test();
 

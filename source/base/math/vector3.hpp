@@ -1,6 +1,7 @@
 #ifndef SU_BASE_MATH_VECTOR3_HPP
 #define SU_BASE_MATH_VECTOR3_HPP
 
+#include "simd/simd.hpp"
 #include "vector.hpp"
 
 #include <algorithm>
@@ -75,15 +76,13 @@ struct Vector3 {
     bool operator==(Vector3 const& a) const noexcept;
 
     bool operator!=(Vector3 const& a) const noexcept;
-
-    //	explicit operator unsigned int() const;
-
-    T absolute_max(uint32_t& i) const noexcept;
 };
 
 //==============================================================================
 // Aligned 3D float vector
 //==============================================================================
+
+struct Simd3f;
 
 struct alignas(16) Vector3f_a {
     // 4 instead of 3 in order to hide pad warning
@@ -102,12 +101,30 @@ struct alignas(16) Vector3f_a {
     template <typename T>
     explicit constexpr Vector3f_a(Vector3<T> const& a) noexcept;
 
+    explicit Vector3f_a(Simd3f const& o) noexcept;
+
     constexpr Vector2<float> xy() const noexcept;
 
     float constexpr  operator[](uint32_t i) const noexcept;
     float constexpr& operator[](uint32_t i) noexcept;
+};
 
-    float absolute_max(uint32_t& i) const noexcept;
+//==============================================================================
+// SIMD 3D float vector
+//==============================================================================
+
+struct Simd3f {
+    Simd3f() noexcept = default;
+
+    Simd3f(__m128 m) noexcept;
+
+    explicit Simd3f(float s) noexcept;
+
+    Simd3f(float sx, float sy, float sz) noexcept;
+
+    Simd3f(Vector3f_a const& o) noexcept;
+
+    __m128 v;
 };
 
 }  // namespace math
