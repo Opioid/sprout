@@ -30,11 +30,11 @@ class Vertex_stream {
 
     virtual void release() noexcept = 0;
 
-    virtual packed_float3 p(uint32_t i) const noexcept = 0;
+    virtual float const* p(uint32_t i) const noexcept = 0;
 
-    virtual packed_float3 n(uint32_t i) const noexcept = 0;
+    virtual float const* n(uint32_t i) const noexcept = 0;
 
-    virtual packed_float3 t(uint32_t i) const noexcept = 0;
+    virtual float const* t(uint32_t i) const noexcept = 0;
 
     virtual float2 uv(uint32_t i) const noexcept = 0;
 
@@ -50,11 +50,11 @@ class Vertex_stream_interleaved final : public Vertex_stream {
 
     void release() noexcept override final;
 
-    packed_float3 p(uint32_t i) const noexcept override final;
+    float const* p(uint32_t i) const noexcept override final;
 
-    packed_float3 n(uint32_t i) const noexcept override final;
+    float const* n(uint32_t i) const noexcept override final;
 
-    packed_float3 t(uint32_t i) const noexcept override final;
+    float const* t(uint32_t i) const noexcept override final;
 
     float2 uv(uint32_t i) const noexcept override final;
 
@@ -71,11 +71,11 @@ class Vertex_stream_separate final : public Vertex_stream {
 
     void release() noexcept override final;
 
-    packed_float3 p(uint32_t i) const noexcept override final;
+    float const* p(uint32_t i) const noexcept override final;
 
-    packed_float3 n(uint32_t i) const noexcept override final;
+    float const* n(uint32_t i) const noexcept override final;
 
-    packed_float3 t(uint32_t i) const noexcept override final;
+    float const* t(uint32_t i) const noexcept override final;
 
     float2 uv(uint32_t i) const noexcept override final;
 

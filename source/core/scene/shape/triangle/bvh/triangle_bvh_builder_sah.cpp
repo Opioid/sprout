@@ -1,7 +1,6 @@
 #include "triangle_bvh_builder_sah.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
-#include "base/math/simd_aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 #include "logging/logging.hpp"
@@ -17,14 +16,14 @@ uint32_t Reference::primitive() const {
     return bounds[0].index;
 }
 
-void Reference::set_min_max_primitive(FVector min, FVector max, uint32_t primitive) {
-    float3 tmp;
-    simd::store_float4(tmp.v, min);
+void Reference::set_min_max_primitive(Simd3f const& min, Simd3f const& max, uint32_t primitive) {
+    float3 const tmp(min);
     bounds[0].v[0]  = tmp[0];
     bounds[0].v[1]  = tmp[1];
     bounds[0].v[2]  = tmp[2];
     bounds[0].index = primitive;
-    simd::store_float4(bounds[1].v, max);
+
+    simd::store_float4(bounds[1].v, max.v);
 }
 
 void Reference::clip_min(float d, uint8_t axis) {
@@ -53,12 +52,12 @@ void Builder_SAH::Split_candidate::evaluate(References const& references, float 
     uint32_t num_side_0 = 0;
     uint32_t num_side_1 = 0;
 
-    math::Simd_AABB box_0(aabb_0_);
-    math::Simd_AABB box_1(aabb_1_);
+    Simd_AABB box_0(aabb_0_);
+    Simd_AABB box_1(aabb_1_);
 
     if (spatial_) {
         for (auto const& r : references) {
-            math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
+            Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
             if (behind(r.bounds[1].v)) {
                 ++num_side_0;
@@ -84,7 +83,7 @@ void Builder_SAH::Split_candidate::evaluate(References const& references, float 
         aabb_1_.clip_min(d_, axis_);
     } else {
         for (auto const& r : references) {
-            math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
+            Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
             if (behind(r.bounds[1].v)) {
                 ++num_side_0;

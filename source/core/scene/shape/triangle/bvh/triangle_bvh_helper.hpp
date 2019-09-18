@@ -9,9 +9,9 @@ namespace scene::shape::triangle::bvh {
 float3 triangle_min(float3 const& a, float3 const& b, float3 const& c);
 float3 triangle_max(float3 const& a, float3 const& b, float3 const& c);
 
-Vector triangle_min(FVector a, FVector b, FVector c);
+Simd3f triangle_min(Simd3f const& a, Simd3f const& b, Simd3f const& c);
 
-Vector triangle_max(FVector a, FVector b, FVector c);
+Simd3f triangle_max(Simd3f const& a, Simd3f const& b, Simd3f const& c);
 
 float3 triangle_min(float3 const& a, float3 const& b, float3 const& c, float3 const& x);
 float3 triangle_max(float3 const& a, float3 const& b, float3 const& c, float3 const& x);

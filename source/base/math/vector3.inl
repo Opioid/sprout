@@ -740,6 +740,16 @@ inline Simd3f::Simd3f(float sx, float sy, float sz) noexcept {
 
 inline Simd3f::Simd3f(Vector3f_a const& o) noexcept : v(_mm_load_ps(o.v)) {}
 
+inline Simd3f Simd3f::create_from_3(float const* f) noexcept {
+    // Reads an extra float which is zero'd
+    __m128 v = _mm_load_ps(f);
+    return _mm_and_ps(v, simd::Mask3);
+}
+
+inline float Simd3f::x() const noexcept {
+    return _mm_cvtss_f32(v);
+}
+
 static inline Simd3f operator+(float a, Simd3f const& b) noexcept {
     __m128 const s = _mm_set1_ps(a);
 
@@ -798,6 +808,22 @@ static inline Simd3f rsqrt(Simd3f const& x) noexcept {
 
 static inline Simd3f normalize(Simd3f const& v) noexcept {
     return rsqrt(dot(v, v)) * v;
+}
+
+static inline Simd3f min(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_min_ps(a.v, b.v);
+}
+
+static inline Simd3f max(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_max_ps(a.v, b.v);
+}
+
+static inline Simd3f min1(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_min_ss(a.v, b.v);
+}
+
+static inline Simd3f max1(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_max_ss(a.v, b.v);
 }
 
 }  // namespace math

@@ -35,8 +35,6 @@ target_sources(base
     "ray.inl"
     "sample_distribution.inl"
     "sampling.inl"
-    "simd_aabb.hpp"
-    "simd_aabb.inl"
     "simd_matrix.hpp"
     "simd_matrix.inl"
     "simd_vector.inl"

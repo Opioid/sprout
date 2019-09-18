@@ -32,7 +32,7 @@ struct Reference {
 
     uint32_t primitive() const;
 
-    void set_min_max_primitive(FVector min, FVector max, uint32_t primitive);
+    void set_min_max_primitive(Simd3f const& min, Simd3f const& max, uint32_t primitive);
 
     void clip_min(float d, uint8_t axis);
     void clip_max(float d, uint8_t axis);

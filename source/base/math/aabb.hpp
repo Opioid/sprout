@@ -3,24 +3,25 @@
 
 #include "math/matrix.hpp"
 #include "math/vector3.hpp"
-#include "simd/simd.hpp"
 
 namespace math {
 
 struct ray;
 
 struct AABB {
-    AABB() noexcept = default;
+    AABB() noexcept;
 
     constexpr AABB(float3 const& min, float3 const& max) noexcept;
 
-    AABB(FVector min, FVector max) noexcept;
+    AABB(Simd3f const& min, Simd3f const& max) noexcept;
 
     float3 const& min() const noexcept;
     float3 const& max() const noexcept;
 
     float3 position() const noexcept;
+
     float3 halfsize() const noexcept;
+
     float3 extent() const noexcept;
 
     float surface_area() const noexcept;
@@ -31,9 +32,6 @@ struct AABB {
 
     bool intersect_p(ray const& ray) const noexcept;
 
-    bool intersect_p(FVector ray_origin, FVector ray_inv_direction, FVector ray_min_t,
-                     FVector ray_max_t) const noexcept;
-
     bool intersect_p(ray const& ray, float& hit_t) const noexcept;
 
     bool intersect_inside(ray const& ray, float& hit_t) const noexcept;
@@ -41,7 +39,7 @@ struct AABB {
     float3 normal(float3 const& p) const noexcept;
 
     void set_min_max(float3 const& min, float3 const& max) noexcept;
-    void set_min_max(FVector min, FVector max) noexcept;
+    void set_min_max(Simd3f const& min, Simd3f const& max) noexcept;
 
     void insert(float3 const& p) noexcept;
 
@@ -69,8 +67,23 @@ struct AABB {
     float3 bounds[2];
 };
 
+struct Simd_AABB {
+    Simd_AABB() noexcept;
+    Simd_AABB(AABB const& box) noexcept;
+    Simd_AABB(float const* min, float const* max) noexcept;
+    Simd_AABB(Simd3f const& min, Simd3f const& max) noexcept;
+
+    void merge_assign(Simd_AABB const& other) noexcept;
+
+    void merge_assign(Simd3f const& other_min, Simd3f const& other_max) noexcept;
+
+    Simd3f min;
+    Simd3f max;
+};
+
 }  // namespace math
 
-using AABB = math::AABB;
+using AABB      = math::AABB;
+using Simd_AABB = math::Simd_AABB;
 
 #endif

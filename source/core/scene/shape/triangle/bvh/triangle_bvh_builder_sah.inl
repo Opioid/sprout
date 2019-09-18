@@ -3,10 +3,8 @@
 
 #include "triangle_bvh_builder_sah.hpp"
 //#include "triangle_bvh_builder_base.inl"
-#include <vector>
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
-#include "base/math/simd_aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
@@ -16,6 +14,8 @@
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "triangle_bvh_helper.hpp"
 #include "triangle_bvh_tree.inl"
+
+#include <vector>
 
 namespace scene::shape::triangle::bvh {
 
@@ -35,17 +35,17 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
 
         thread_pool.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin, int32_t end) {
-                math::Simd_AABB aabb(AABB::empty());
+                Simd_AABB aabb(AABB::empty());
 
                 for (int32_t i = begin; i < end; ++i) {
-                    auto const a = simd::load_float3(vertices.p(triangles[i].i[0]));
-                    auto const b = simd::load_float3(vertices.p(triangles[i].i[1]));
-                    auto const c = simd::load_float3(vertices.p(triangles[i].i[2]));
+                    auto const a = Simd3f::create_from_3(vertices.p(triangles[i].i[0]));
+                    auto const b = Simd3f::create_from_3(vertices.p(triangles[i].i[1]));
+                    auto const c = Simd3f::create_from_3(vertices.p(triangles[i].i[2]));
 
-                    auto min = triangle_min(a, b, c);
-                    auto max = triangle_max(a, b, c);
+                    auto const min = triangle_min(a, b, c);
+                    auto const max = triangle_max(a, b, c);
 
-                    references[i].set_min_max_primitive(min, max, i);
+                    references[i].set_min_max_primitive(min, max, uint32_t(i));
 
                     aabb.merge_assign(min, max);
                 }
@@ -54,7 +54,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
             },
             0, num_triangles);
 
-        math::Simd_AABB aabb(AABB::empty());
+        Simd_AABB aabb(AABB::empty());
         for (auto& b : aabbs) {
             aabb.merge_assign(b);
         }

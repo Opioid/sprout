@@ -115,7 +115,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     mesh->allocate_parts(uint32_t(handler->parts().size()));
 
-    for (uint32_t p = 0, len = handler->parts().size(); p < len; ++p) {
+    for (uint32_t p = 0, len = uint32_t(handler->parts().size()); p < len; ++p) {
         mesh->set_material_for_part(p, handler->parts()[p].material_index);
     }
 

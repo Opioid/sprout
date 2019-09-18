@@ -21,16 +21,16 @@ void Vertex_stream_interleaved::release() noexcept {
     delete[] vertices_;
 }
 
-packed_float3 Vertex_stream_interleaved::p(uint32_t i) const noexcept {
-    return vertices_[i].p;
+float const* Vertex_stream_interleaved::p(uint32_t i) const noexcept {
+    return &vertices_[i].p.v[0];
 }
 
-packed_float3 Vertex_stream_interleaved::n(uint32_t i) const noexcept {
-    return vertices_[i].n;
+float const* Vertex_stream_interleaved::n(uint32_t i) const noexcept {
+    return &vertices_[i].n.v[0];
 }
 
-packed_float3 Vertex_stream_interleaved::t(uint32_t i) const noexcept {
-    return vertices_[i].t;
+float const* Vertex_stream_interleaved::t(uint32_t i) const noexcept {
+    return &vertices_[i].t.v[0];
 }
 
 float2 Vertex_stream_interleaved::uv(uint32_t i) const noexcept {
@@ -54,16 +54,16 @@ void Vertex_stream_separate::release() noexcept {
     delete[] bts_;
 }
 
-packed_float3 Vertex_stream_separate::p(uint32_t i) const noexcept {
-    return p_[i];
+float const* Vertex_stream_separate::p(uint32_t i) const noexcept {
+    return &p_[i].v[0];
 }
 
-packed_float3 Vertex_stream_separate::n(uint32_t i) const noexcept {
-    return n_[i];
+float const* Vertex_stream_separate::n(uint32_t i) const noexcept {
+    return &n_[i].v[0];
 }
 
-packed_float3 Vertex_stream_separate::t(uint32_t i) const noexcept {
-    return t_[i];
+float const* Vertex_stream_separate::t(uint32_t i) const noexcept {
+    return &t_[i].v[0];
 }
 
 float2 Vertex_stream_separate::uv(uint32_t i) const noexcept {

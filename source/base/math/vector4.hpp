@@ -65,6 +65,8 @@ struct alignas(16) Vector4f_a {
 
     explicit constexpr Vector4f_a(Vector3<float> const& xyz, float w = 1.f) noexcept;
 
+    explicit constexpr Vector4f_a(float const* a, float w = 1.f) noexcept;
+
     template <typename T>
     explicit constexpr Vector4f_a(Vector4<T> const& a) noexcept;
 

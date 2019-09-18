@@ -118,6 +118,9 @@ inline constexpr Vector4f_a::Vector4f_a(Vector3f_a const& xyz, float w) noexcept
 inline constexpr Vector4f_a::Vector4f_a(Vector3<float> const& xyz, float w) noexcept
     : v{xyz[0], xyz[1], xyz[2], w} {}
 
+inline constexpr Vector4f_a::Vector4f_a(float const* a, float w) noexcept
+    : v{a[0], a[1], a[2], w} {}
+
 inline Vector3f_a constexpr Vector4f_a::xyz() const noexcept {
     return Vector3f_a(v);
 }
