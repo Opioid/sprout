@@ -121,11 +121,11 @@ inline bool AABB::intersect_p(ray const& ray) const noexcept {
     Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
 
     // unfold back. try to hide the latency of the shufps & co.
-    max_t = math::min1(max_t, SU_ROTATE_LEFT(max_t.v));
-    min_t = math::max1(min_t, SU_ROTATE_LEFT(min_t.v));
+    max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));
+    min_t = max_scalar(min_t, SU_ROTATE_LEFT(min_t.v));
 
-    max_t = math::min1(max_t, SU_MUX_HIGH(max_t.v, max_t.v));
-    min_t = math::max1(min_t, SU_MUX_HIGH(min_t.v, min_t.v));
+    max_t = min_scalar(max_t, SU_MUX_HIGH(max_t.v, max_t.v));
+    min_t = max_scalar(min_t, SU_MUX_HIGH(min_t.v, min_t.v));
 
     return 0 != (_mm_comige_ss(max_t.v, ray_min_t.v) & _mm_comige_ss(ray_max_t.v, min_t.v) &
                  _mm_comige_ss(max_t.v, min_t.v));
@@ -157,11 +157,11 @@ inline bool AABB::intersect_p(ray const& ray, float& hit_t) const noexcept {
     Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
 
     // unfold back. try to hide the latency of the shufps & co.
-    max_t = math::min1(max_t, SU_ROTATE_LEFT(max_t.v));
-    min_t = math::max1(min_t, SU_ROTATE_LEFT(min_t.v));
+    max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));
+    min_t = max_scalar(min_t, SU_ROTATE_LEFT(min_t.v));
 
-    max_t = math::min1(max_t, SU_MUX_HIGH(max_t.v, max_t.v));
-    min_t = math::max1(min_t, SU_MUX_HIGH(min_t.v, min_t.v));
+    max_t = min_scalar(max_t, SU_MUX_HIGH(max_t.v, max_t.v));
+    min_t = max_scalar(min_t, SU_MUX_HIGH(min_t.v, min_t.v));
 
     float const min_out = min_t.x();
     float const max_out = max_t.x();
@@ -202,11 +202,11 @@ inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const noexcept 
     Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
 
     // unfold back. try to hide the latency of the shufps & co.
-    max_t = math::min1(max_t, SU_ROTATE_LEFT(max_t.v));
-    min_t = math::max1(min_t, SU_ROTATE_LEFT(min_t.v));
+    max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));
+    min_t = max_scalar(min_t, SU_ROTATE_LEFT(min_t.v));
 
-    max_t = math::min1(max_t, SU_MUX_HIGH(max_t.v, max_t.v));
-    min_t = math::max1(min_t, SU_MUX_HIGH(min_t.v, min_t.v));
+    max_t = min_scalar(max_t, SU_MUX_HIGH(max_t.v, max_t.v));
+    min_t = max_scalar(min_t, SU_MUX_HIGH(min_t.v, min_t.v));
 
     float const min_out = min_t.x();
     float const max_out = max_t.x();

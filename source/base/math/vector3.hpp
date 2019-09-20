@@ -130,6 +130,8 @@ struct Simd3f {
 
     float x() const noexcept;
 
+    Simd3f splat_x() const noexcept;
+
     __m128 v;
 };
 

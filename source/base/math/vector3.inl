@@ -754,6 +754,10 @@ inline float Simd3f::x() const noexcept {
     return _mm_cvtss_f32(v);
 }
 
+inline Simd3f Simd3f::splat_x() const noexcept {
+    return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+}
+
 static inline Simd3f operator+(float a, Simd3f const& b) noexcept {
     __m128 const s = _mm_set1_ps(a);
 
@@ -764,8 +768,16 @@ static inline Simd3f operator+(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_add_ps(a.v, b.v);
 }
 
+static inline Simd3f add_scalar(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_add_ss(a.v, b.v);
+}
+
 static inline Simd3f operator-(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_sub_ps(a.v, b.v);
+}
+
+static inline Simd3f operator-(__m128 a, Simd3f const& b) noexcept {
+    return _mm_sub_ps(a, b.v);
 }
 
 static inline Simd3f operator*(float a, Simd3f const& b) noexcept {
@@ -778,40 +790,68 @@ static inline Simd3f operator*(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_mul_ps(a.v, b.v);
 }
 
+static inline Simd3f mul_scalar(Simd3f const& a, Simd3f const& b) noexcept {
+    return _mm_mul_ss(a.v, b.v);
+}
+
 static inline Simd3f operator/(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_div_ps(a.v, b.v);
 }
 
+
+
 static inline Simd3f dot(Simd3f const& a, Simd3f const& b) noexcept {
-    Simd3f mul  = _mm_mul_ps(a.v, b.v);
-    Simd3f shuf = _mm_movehdup_ps(mul.v);
-    Simd3f sums = _mm_add_ss(mul.v, shuf.v);
-    shuf        = _mm_movehl_ps(shuf.v, sums.v);
-    Simd3f d    = _mm_add_ss(sums.v, shuf.v);
+    __m128 mul  = _mm_mul_ps(a.v, b.v);
+    __m128 shuf = _mm_movehdup_ps(mul);
+    __m128 sums = _mm_add_ss(mul, shuf);
+    shuf        = _mm_movehl_ps(shuf, sums);
+    __m128 d    = _mm_add_ss(sums, shuf);
     // Splat x
-    return SU_PERMUTE_PS(d.v, _MM_SHUFFLE(0, 0, 0, 0));
+    return SU_PERMUTE_PS(d, _MM_SHUFFLE(0, 0, 0, 0));
+}
+
+static inline Simd3f dot_scalar(Simd3f const& a, Simd3f const& b) noexcept {
+    __m128 mul  = _mm_mul_ps(a.v, b.v);
+    __m128 shuf = _mm_movehdup_ps(mul);
+    __m128 sums = _mm_add_ss(mul, shuf);
+    shuf        = _mm_movehl_ps(shuf, sums);
+    return _mm_add_ss(sums, shuf);
 }
 
 static inline Simd3f cross(Simd3f const& a, Simd3f const& b) noexcept {
-    Simd3f tmp0 = _mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(3, 0, 2, 1));
-    Simd3f tmp1 = _mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(3, 0, 2, 1));
+    __m128 tmp0 = _mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(3, 0, 2, 1));
+    __m128 tmp1 = _mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(3, 0, 2, 1));
 
-    tmp0 = _mm_mul_ps(tmp0.v, a.v);
-    tmp1 = _mm_mul_ps(tmp1.v, b.v);
+    tmp0 = _mm_mul_ps(tmp0, a.v);
+    tmp1 = _mm_mul_ps(tmp1, b.v);
 
-    Simd3f tmp2 = _mm_sub_ps(tmp0.v, tmp1.v);
+    __m128 tmp2 = _mm_sub_ps(tmp0, tmp1);
 
-    return SU_PERMUTE_PS(tmp2.v, _MM_SHUFFLE(3, 0, 2, 1));
+    return SU_PERMUTE_PS(tmp2, _MM_SHUFFLE(3, 0, 2, 1));
 }
 
 static inline Simd3f rsqrt(Simd3f const& x) noexcept {
-    Simd3f res  = _mm_rsqrt_ps(x.v);
-    Simd3f muls = _mm_mul_ps(_mm_mul_ps(x.v, res.v), res.v);
-    return _mm_mul_ps(_mm_mul_ps(simd::Half, res.v), _mm_sub_ps(simd::Three, muls.v));
+    __m128 const res  = _mm_rsqrt_ps(x.v);
+    __m128 const muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
+    return _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls));
 }
 
 static inline Simd3f normalize(Simd3f const& v) noexcept {
     return rsqrt(dot(v, v)) * v;
+}
+
+static inline Simd3f reciprocal(Simd3f const& v) noexcept {
+    __m128 rcp = _mm_rcp_ps(v.v);
+    rcp        = _mm_and_ps(rcp, simd::Mask3);
+    __m128 mul = _mm_mul_ps(v.v, _mm_mul_ps(rcp, rcp));
+
+    return _mm_sub_ps(_mm_add_ps(rcp, rcp), mul);
+}
+
+static inline Simd3f reciprocal_scalar(Simd3f const x) noexcept {
+    __m128 rcp  = _mm_rcp_ss(x.v);
+    __m128 muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), x.v);
+    return _mm_sub_ss(_mm_add_ss(rcp, rcp), muls);
 }
 
 static inline Simd3f min(Simd3f const& a, Simd3f const& b) noexcept {
@@ -822,12 +862,20 @@ static inline Simd3f max(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_max_ps(a.v, b.v);
 }
 
-static inline Simd3f min1(Simd3f const& a, Simd3f const& b) noexcept {
+static inline Simd3f min_scalar(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_min_ss(a.v, b.v);
 }
 
-static inline Simd3f max1(Simd3f const& a, Simd3f const& b) noexcept {
+static inline Simd3f max_scalar(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_max_ss(a.v, b.v);
+}
+
+static inline void sign(Simd3f const& v, uint32_t s[4]) noexcept {
+    __m128  const sm  = _mm_cmplt_ps(v.v, simd::Zero);
+
+    __m128i const smi = _mm_and_si128(_mm_castps_si128(sm), simd::Bool_mask);
+
+    _mm_store_si128(reinterpret_cast<__m128i*>(s), smi);
 }
 
 }  // namespace math

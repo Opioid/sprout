@@ -37,6 +37,18 @@ inline Vector SU_CALLCONV transform_vector(VMatrix3 m, FVector v) {
     return result;
 }
 
+static inline Simd3f transform_vector(VMatrix3 m, Simd3f const& v) {
+    __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
+    result        = _mm_mul_ps(result, m.r[0]);
+    __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
+    temp          = _mm_mul_ps(temp, m.r[1]);
+    result        = _mm_add_ps(result, temp);
+    temp          = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(2, 2, 2, 2));
+    temp          = _mm_mul_ps(temp, m.r[2]);
+    result        = _mm_add_ps(result, temp);
+    return result;
+}
+
 inline Vector SU_CALLCONV transform_vector(VMatrix4 m, FVector v) {
     Vector result = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
     result        = _mm_mul_ps(result, m.r[0]);
@@ -44,6 +56,18 @@ inline Vector SU_CALLCONV transform_vector(VMatrix4 m, FVector v) {
     temp          = _mm_mul_ps(temp, m.r[1]);
     result        = _mm_add_ps(result, temp);
     temp          = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
+    temp          = _mm_mul_ps(temp, m.r[2]);
+    result        = _mm_add_ps(result, temp);
+    return result;
+}
+
+static inline Simd3f transform_vector(VMatrix4 m, Simd3f const& v) {
+    __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
+    result        = _mm_mul_ps(result, m.r[0]);
+    __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
+    temp          = _mm_mul_ps(temp, m.r[1]);
+    result        = _mm_add_ps(result, temp);
+    temp          = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(2, 2, 2, 2));
     temp          = _mm_mul_ps(temp, m.r[2]);
     result        = _mm_add_ps(result, temp);
     return result;
@@ -61,6 +85,20 @@ inline Vector SU_CALLCONV transform_point(VMatrix4 m, FVector v) {
     result        = _mm_add_ps(result, m.r[3]);
     return result;
 }
+
+static inline Simd3f transform_point(VMatrix4 m, Simd3f const& v) {
+    __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
+    result        = _mm_mul_ps(result, m.r[0]);
+    __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
+    temp          = _mm_mul_ps(temp, m.r[1]);
+    result        = _mm_add_ps(result, temp);
+    temp          = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(2, 2, 2, 2));
+    temp          = _mm_mul_ps(temp, m.r[2]);
+    result        = _mm_add_ps(result, temp);
+    result        = _mm_add_ps(result, m.r[3]);
+    return result;
+}
+
 
 }  // namespace math
 
