@@ -115,6 +115,12 @@ struct alignas(16) Matrix3x3f_a {
     static Matrix3x3f_a constexpr identity() noexcept;
 };
 
+struct alignas(16) Simd3x3f {
+    Simd3f r[3];
+
+    Simd3x3f(Matrix3x3f_a const& source) noexcept;
+};
+
 }  // namespace math
 
 #endif

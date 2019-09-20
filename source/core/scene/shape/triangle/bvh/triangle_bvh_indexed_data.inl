@@ -656,21 +656,21 @@ float3 Hybrid_data<IV, SV>::normal(uint32_t index) const {
 }
 
 template <typename IV, typename SV>
-Vector Hybrid_data<IV, SV>::normal_v(uint32_t index) const {
+Simd3f Hybrid_data<IV, SV>::normal_v(uint32_t index) const {
     uint32_t const vi = index * 3;
 
     IV const& a = intersection_vertices_[vi + 0];
     IV const& b = intersection_vertices_[vi + 1];
     IV const& c = intersection_vertices_[vi + 2];
 
-    Vector const ap = simd::load_float4(a.p.v);
-    Vector const bp = simd::load_float4(b.p.v);
-    Vector const cp = simd::load_float4(c.p.v);
+    Simd3f const ap(a.p.v);
+    Simd3f const bp(b.p.v);
+    Simd3f const cp(c.p.v);
 
-    Vector const e1 = math::sub(bp, ap);
-    Vector const e2 = math::sub(cp, ap);
+    Simd3f const e1 = bp - ap;
+    Simd3f const e2 = cp - ap;
 
-    return math::normalized3(cross3(e1, e2));
+    return normalize(cross(e1, e2));
 }
 
 template <typename IV, typename SV>

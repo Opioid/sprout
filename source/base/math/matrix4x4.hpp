@@ -169,6 +169,12 @@ struct alignas(16) Matrix4x4f_a {
     Vector3f_a w() const noexcept;
 };
 
+struct alignas(16) Simd4x4f {
+    Simd3f r[4];
+
+    Simd4x4f(Matrix4x4f_a const& source) noexcept;
+};
+
 }  // namespace math
 
 #endif

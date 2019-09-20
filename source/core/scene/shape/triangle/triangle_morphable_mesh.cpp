@@ -1,7 +1,7 @@
 #include "triangle_morphable_mesh.hpp"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
-#include "base/math/simd_matrix.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "bvh/triangle_bvh_builder_sah.inl"
@@ -50,7 +50,7 @@ uint32_t Morphable_mesh::num_parts() const noexcept {
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
                                Node_stack& node_stack, shape::Intersection& intersection) const
     noexcept {
-    Matrix4 world_to_object = load_float4x4(transformation.world_to_object);
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin.v);
     ray_origin = transform_point(world_to_object, ray_origin);
@@ -73,7 +73,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
+        Simd4x4f object_to_world(transformation.object_to_world);
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -88,7 +88,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        Matrix3 rotation = load_float3x3(transformation.rotation);
+        Simd3x3f rotation(transformation.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);

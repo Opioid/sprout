@@ -1,8 +1,8 @@
 #include "triangle_mesh.hpp"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/math/sampling.inl"
-#include "base/math/simd_matrix.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "bvh/triangle_bvh_tree.inl"
@@ -123,7 +123,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
     */
 
-    Matrix4 world_to_object = load_float4x4(transformation.world_to_object);
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin.v);
     ray_origin = transform_point(world_to_object, ray_origin);
@@ -146,7 +146,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
+        Simd4x4f const object_to_world(transformation.object_to_world);
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -161,7 +161,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        Matrix3 rotation = load_float3x3(transformation.rotation);
+        Simd3x3f rotation(transformation.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
@@ -185,7 +185,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
 bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                           shape::Intersection& intersection) const noexcept {
-    Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin.v);
     ray_origin = transform_point(world_to_object, ray_origin);
@@ -208,7 +208,7 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
+        Simd4x4f const object_to_world(transformation.object_to_world);
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -218,8 +218,9 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        Matrix3 rotation = math::load_float3x3(transformation.rotation);
-        Simd3f  geo_n_w  = transform_vector(rotation, geo_n);
+        Simd3x3f rotation(transformation.rotation);
+
+        Simd3f geo_n_w = transform_vector(rotation, geo_n);
 
         intersection.p     = float3(p_w);
         intersection.geo_n = float3(geo_n_w);
@@ -234,7 +235,7 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                      Normals& normals) const noexcept {
-    const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin.v);
     ray_origin = transform_point(world_to_object, ray_origin);
@@ -258,7 +259,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
-        Matrix3 rotation = load_float3x3(transformation.rotation);
+        Simd3x3f rotation(transformation.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
@@ -282,7 +283,7 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 
     //	return tree_.intersect_p(tray, node_stack);
 
-    Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
+    Simd4x4f world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin.v);
     ray_origin = transform_point(world_to_object, ray_origin);

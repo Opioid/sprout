@@ -410,6 +410,23 @@ static inline Matrix3x3f_a constexpr clamp(Matrix3x3f_a const& m, float mi, floa
         std::min(std::max(m.r[2][2], mi), ma));
 }
 
+inline Simd3x3f::Simd3x3f(Matrix3x3f_a const& source) noexcept
+    :
+
+      r{Simd3f(source.r[0].v), Simd3f(source.r[1].v), Simd3f(source.r[2].v)} {}
+
+static inline Simd3f transform_vector(Simd3x3f const& m, Simd3f const& v) {
+    __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
+    result        = _mm_mul_ps(result, m.r[0].v);
+    __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
+    temp          = _mm_mul_ps(temp, m.r[1].v);
+    result        = _mm_add_ps(result, temp);
+    temp          = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(2, 2, 2, 2));
+    temp          = _mm_mul_ps(temp, m.r[2].v);
+    result        = _mm_add_ps(result, temp);
+    return result;
+}
+
 }  // namespace math
 
 #endif

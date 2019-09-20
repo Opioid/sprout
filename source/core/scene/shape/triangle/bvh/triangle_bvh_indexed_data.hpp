@@ -165,6 +165,7 @@ class Hybrid_data {
     ~Hybrid_data();
 
     uint32_t num_triangles() const;
+
     uint32_t current_triangle() const;
 
     bool intersect(uint32_t index, ray& ray, float2& uv) const;
@@ -198,7 +199,7 @@ class Hybrid_data {
 
     float3 normal(uint32_t index) const;
 
-    Vector normal_v(uint32_t index) const;
+    Simd3f normal_v(uint32_t index) const;
 
     float area(uint32_t index) const;
     float area(uint32_t index, float3 const& scale) const;

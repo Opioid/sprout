@@ -723,6 +723,35 @@ static inline void set_perspective(Matrix4x4f_a& m, float fov, float ratio) noex
     m.r[3][3] = 0.f;
 }
 
+inline Simd4x4f::Simd4x4f(Matrix4x4f_a const& source) noexcept
+    : r{Simd3f(source.r[0].v), Simd3f(source.r[1].v), Simd3f(source.r[2].v),
+        Simd3f(source.r[3].v)} {}
+
+static inline Simd3f transform_vector(Simd4x4f const& m, Simd3f const& v) {
+    __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
+    result        = _mm_mul_ps(result, m.r[0].v);
+    __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
+    temp          = _mm_mul_ps(temp, m.r[1].v);
+    result        = _mm_add_ps(result, temp);
+    temp          = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(2, 2, 2, 2));
+    temp          = _mm_mul_ps(temp, m.r[2].v);
+    result        = _mm_add_ps(result, temp);
+    return result;
+}
+
+static inline Simd3f transform_point(Simd4x4f const& m, Simd3f const& v) {
+    __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
+    result        = _mm_mul_ps(result, m.r[0].v);
+    __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
+    temp          = _mm_mul_ps(temp, m.r[1].v);
+    result        = _mm_add_ps(result, temp);
+    temp          = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(2, 2, 2, 2));
+    temp          = _mm_mul_ps(temp, m.r[2].v);
+    result        = _mm_add_ps(result, temp);
+    result        = _mm_add_ps(result, m.r[3].v);
+    return result;
+}
+
 }  // namespace math
 
 #endif
