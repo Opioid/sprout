@@ -125,54 +125,54 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
     Matrix4 world_to_object = load_float4x4(transformation.world_to_object);
 
-    Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = transform_point(world_to_object, ray_origin);
+    Simd3f ray_origin(ray.origin.v);
+    ray_origin = transform_point(world_to_object, ray_origin);
 
-    Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = transform_vector(world_to_object, ray_direction);
+    Simd3f ray_direction(ray.direction.v);
+    ray_direction = transform_vector(world_to_object, ray_direction);
 
-    Vector ray_inv_direction = math::reciprocal3(ray_direction);
+    Simd3f ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 
-    Vector ray_min_t = simd::load_float(&ray.min_t);
-    Vector ray_max_t = simd::load_float(&ray.max_t);
+    Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
+    Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
-                                         ray_max_t, ray_signs, node_stack, pi)) {
-        float const tray_max_t = simd::get_x(ray_max_t);
+    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
+                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+        float const tray_max_t = ray_max_t.x();
         ray.max_t              = tray_max_t;
 
-        Vector p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+        Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
         Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
 
-        Vector p_w = transform_point(object_to_world, p);
+        Simd3f p_w = transform_point(object_to_world, p);
 
-        Vector n;
-        Vector t;
+        Simd3f n;
+        Simd3f t;
         float2 uv;
-        tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
+        tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n.v, t.v, uv);
 
-        Vector geo_n = tree_.triangle_normal_v(pi.index);
+        Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
-        Vector bitangent_sign = simd::set_float4(tree_.triangle_bitangent_sign(pi.index));
+        Simd3f bitangent_sign = simd::set_float4(tree_.triangle_bitangent_sign(pi.index));
 
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
         Matrix3 rotation = load_float3x3(transformation.rotation);
 
-        Vector geo_n_w = transform_vector(rotation, geo_n);
-        Vector n_w     = transform_vector(rotation, n);
-        Vector t_w     = transform_vector(rotation, t);
-        Vector b_w     = mul(bitangent_sign, cross3(n_w, t_w));
+        Simd3f geo_n_w = transform_vector(rotation, geo_n);
+        Simd3f n_w     = transform_vector(rotation, n);
+        Simd3f t_w     = transform_vector(rotation, t);
+        Simd3f b_w     = bitangent_sign * cross(n_w, t_w);
 
-        simd::store_float4(intersection.p.v, p_w);
-        simd::store_float4(intersection.t.v, t_w);
-        simd::store_float4(intersection.b.v, b_w);
-        simd::store_float4(intersection.n.v, n_w);
-        simd::store_float4(intersection.geo_n.v, geo_n_w);
+        intersection.p     = float3(p_w);
+        intersection.t     = float3(t_w);
+        intersection.b     = float3(b_w);
+        intersection.n     = float3(n_w);
+        intersection.geo_n = float3(geo_n_w);
 
         intersection.uv   = uv;
         intersection.part = material_index;
@@ -187,44 +187,44 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
                           shape::Intersection& intersection) const noexcept {
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
-    Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = transform_point(world_to_object, ray_origin);
+    Simd3f ray_origin(ray.origin.v);
+    ray_origin = transform_point(world_to_object, ray_origin);
 
-    Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = transform_vector(world_to_object, ray_direction);
+    Simd3f ray_direction(ray.direction.v);
+    ray_direction = transform_vector(world_to_object, ray_direction);
 
-    Vector ray_inv_direction = math::reciprocal3(ray_direction);
+    Simd3f ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 
-    Vector ray_min_t = simd::load_float(&ray.min_t);
-    Vector ray_max_t = simd::load_float(&ray.max_t);
+    Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
+    Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
-                                         ray_max_t, ray_signs, node_stack, pi)) {
-        float tray_max_t = simd::get_x(ray_max_t);
+    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
+                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+        float tray_max_t = ray_max_t.x();
         ray.max_t        = tray_max_t;
 
-        Vector p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+        Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
         Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
 
-        Vector p_w = transform_point(object_to_world, p);
+        Simd3f p_w = transform_point(object_to_world, p);
 
         float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
 
-        Vector geo_n = tree_.triangle_normal_v(pi.index);
+        Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
         Matrix3 rotation = math::load_float3x3(transformation.rotation);
-        Vector  geo_n_w  = transform_vector(rotation, geo_n);
+        Simd3f  geo_n_w  = transform_vector(rotation, geo_n);
 
-        simd::store_float4(intersection.p.v, p_w);
-        simd::store_float4(intersection.geo_n.v, geo_n_w);
-        intersection.uv   = uv;
-        intersection.part = material_index;
+        intersection.p     = float3(p_w);
+        intersection.geo_n = float3(geo_n_w);
+        intersection.uv    = uv;
+        intersection.part  = material_index;
 
         return true;
     }
@@ -236,35 +236,35 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
                      Normals& normals) const noexcept {
     const Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
-    Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = transform_point(world_to_object, ray_origin);
+    Simd3f ray_origin(ray.origin.v);
+    ray_origin = transform_point(world_to_object, ray_origin);
 
-    Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = transform_vector(world_to_object, ray_direction);
+    Simd3f ray_direction(ray.direction.v);
+    ray_direction = transform_vector(world_to_object, ray_direction);
 
-    Vector const ray_inv_direction = math::reciprocal3(ray_direction);
+    Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 
-    Vector const ray_min_t = simd::load_float(&ray.min_t);
-    Vector       ray_max_t = simd::load_float(&ray.max_t);
+    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
+    Simd3f       ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
-                                         ray_max_t, ray_signs, node_stack, pi)) {
-        ray.max_t = simd::get_x(ray_max_t);
+    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
+                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+        ray.max_t = ray_max_t.x();
 
-        Vector n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
+        Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
 
-        Vector geo_n = tree_.triangle_normal_v(pi.index);
+        Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
         Matrix3 rotation = load_float3x3(transformation.rotation);
 
-        Vector geo_n_w = transform_vector(rotation, geo_n);
-        Vector n_w     = transform_vector(rotation, n);
+        Simd3f geo_n_w = transform_vector(rotation, geo_n);
+        Simd3f n_w     = transform_vector(rotation, n);
 
-        simd::store_float4(normals.geo_n.v, geo_n_w);
-        simd::store_float4(normals.n.v, n_w);
+        normals.geo_n = float3(geo_n_w);
+        normals.n     = float3(n_w);
 
         return true;
     }
@@ -284,40 +284,23 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 
     Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
 
-    Vector ray_origin = simd::load_float4(ray.origin.v);
-    ray_origin        = transform_point(world_to_object, ray_origin);
+    Simd3f ray_origin(ray.origin.v);
+    ray_origin = transform_point(world_to_object, ray_origin);
 
-    Vector ray_direction = simd::load_float4(ray.direction.v);
-    ray_direction        = transform_vector(world_to_object, ray_direction);
+    Simd3f ray_direction(ray.direction.v);
+    ray_direction = transform_vector(world_to_object, ray_direction);
 
-    Vector ray_inv_direction = math::reciprocal3(ray_direction);
+    Simd3f ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     math::sign(ray_inv_direction, ray_signs);
 
-    Vector ray_min_t = simd::load_float(&ray.min_t);
-    Vector ray_max_t = simd::load_float(&ray.max_t);
+    Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
+    Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    return tree_.intersect_p(ray_origin, ray_direction, ray_inv_direction, ray_min_t, ray_max_t,
-                             ray_signs, node_stack);
+    return tree_.intersect_p(ray_origin.v, ray_direction.v, ray_inv_direction.v, ray_min_t.v,
+                             ray_max_t.v, ray_signs, node_stack);
 }
-
-// bool Mesh::intersect_p(FVector ray_origin, FVector ray_direction,
-//					   FVector ray_min_t, FVector ray_max_t,
-//					   Transformation const& transformation,
-//					   Node_stack& node_stack) const noexcept {
-//	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-//	Vector tray_origin = transform_point(world_to_object, ray_origin);
-//	Vector tray_direction = transform_vector(world_to_object, ray_direction);
-
-//	Vector tray_inv_direction = math::reciprocal3(tray_direction);
-//	alignas(16) uint32_t ray_signs[4];
-//	math::sign(tray_inv_direction, ray_signs);
-
-//	return tree_.intersect_p(tray_origin, tray_direction, tray_inv_direction,
-//							 ray_min_t, ray_max_t, ray_signs,
-// node_stack);
-//}
 
 float Mesh::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
                     Filter filter, Worker const& worker) const noexcept {

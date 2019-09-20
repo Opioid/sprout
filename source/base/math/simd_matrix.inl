@@ -99,7 +99,6 @@ static inline Simd3f transform_point(VMatrix4 m, Simd3f const& v) {
     return result;
 }
 
-
 }  // namespace math
 
 #endif

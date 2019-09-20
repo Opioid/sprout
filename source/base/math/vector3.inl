@@ -798,8 +798,6 @@ static inline Simd3f operator/(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_div_ps(a.v, b.v);
 }
 
-
-
 static inline Simd3f dot(Simd3f const& a, Simd3f const& b) noexcept {
     __m128 mul  = _mm_mul_ps(a.v, b.v);
     __m128 shuf = _mm_movehdup_ps(mul);
@@ -871,7 +869,7 @@ static inline Simd3f max_scalar(Simd3f const& a, Simd3f const& b) noexcept {
 }
 
 static inline void sign(Simd3f const& v, uint32_t s[4]) noexcept {
-    __m128  const sm  = _mm_cmplt_ps(v.v, simd::Zero);
+    __m128 const sm = _mm_cmplt_ps(v.v, simd::Zero);
 
     __m128i const smi = _mm_and_si128(_mm_castps_si128(sm), simd::Bool_mask);
 
