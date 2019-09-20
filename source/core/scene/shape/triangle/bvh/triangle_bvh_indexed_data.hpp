@@ -42,7 +42,7 @@ class Indexed_data {
 
     float3 interpolate_p(float2 uv, uint32_t index) const noexcept;
 
-    Vector interpolate_p(FVector u, FVector v, uint32_t index) const noexcept;
+    Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
 
     void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const
         noexcept;
@@ -108,6 +108,7 @@ class Indexed_data_interleaved {
     ~Indexed_data_interleaved();
 
     uint32_t num_triangles() const;
+
     uint32_t current_triangle() const;
 
     bool intersect(uint32_t index, ray& ray, float2& uv) const;
@@ -118,12 +119,14 @@ class Indexed_data_interleaved {
 
     float2 interpolate_uv(uint32_t index, float2 uv) const;
 
-    float    bitangent_sign(uint32_t index) const;
+    float bitangent_sign(uint32_t index) const;
+
     uint32_t material_index(uint32_t index) const;
 
     float3 normal(uint32_t index) const;
 
     float area(uint32_t index) const;
+
     float area(uint32_t index, float3 const& scale) const;
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
@@ -180,18 +183,23 @@ class Hybrid_data {
                      uint32_t index) const;
 
     void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
+
     void interpolate_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
                           float2& tc) const;
+
     void interpolate_data(FVector u, FVector v, uint32_t index, Vector& n, Vector& t,
                           float2& tc) const;
 
     float2 interpolate_uv(uint32_t index, float2 uv) const;
+
     float2 interpolate_uv(FVector u, FVector v, uint32_t index) const;
 
-    float    bitangent_sign(uint32_t index) const;
+    float bitangent_sign(uint32_t index) const;
+
     uint32_t material_index(uint32_t index) const;
 
     float3 normal(uint32_t index) const;
+
     Vector normal_v(uint32_t index) const;
 
     float area(uint32_t index) const;

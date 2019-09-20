@@ -88,7 +88,7 @@ class Tree {
 
     float3 interpolate_p(float2 uv, uint32_t index) const noexcept;
 
-    Vector interpolate_p(FVector u, FVector v, uint32_t index) const noexcept;
+    Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
 
     void interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
                                    float2& tc) const noexcept;

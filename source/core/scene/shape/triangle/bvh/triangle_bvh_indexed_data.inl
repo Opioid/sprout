@@ -102,12 +102,13 @@ float3 Indexed_data<SV>::interpolate_p(float2 uv, uint32_t index) const noexcept
 }
 
 template <typename SV>
-Vector Indexed_data<SV>::interpolate_p(FVector u, FVector v, uint32_t index) const noexcept {
+Simd3f Indexed_data<SV>::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const
+    noexcept {
     auto const tri = triangles_[index];
 
-    Vector const ap = simd::load_float4(intersection_vertices_[tri.a].v);
-    Vector const bp = simd::load_float4(intersection_vertices_[tri.b].v);
-    Vector const cp = simd::load_float4(intersection_vertices_[tri.c].v);
+    Simd3f const ap(intersection_vertices_[tri.a].v);
+    Simd3f const bp(intersection_vertices_[tri.b].v);
+    Simd3f const cp(intersection_vertices_[tri.c].v);
 
     return triangle::interpolate_p(ap, bp, cp, u, v);
 }

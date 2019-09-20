@@ -363,10 +363,11 @@ static inline bool intersect_p(FVector origin, FVector direction, FVector min_t,
                  _mm_ucomige_ss(hit_t, min_t) & _mm_ucomige_ss(max_t, hit_t));
 }
 
-static inline Vector interpolate_p(FVector a, FVector b, FVector c, FVector u, FVector v) noexcept {
-    Vector const w = sub(sub(simd::One, u), v);
+static inline Simd3f interpolate_p(Simd3f const& a, Simd3f const& b, Simd3f const& c,
+                                   Simd3f const& u, Simd3f const& v) noexcept {
+    Simd3f const w = simd::One - u - v;
 
-    return add(add(mul(w, a), mul(u, b)), mul(v, c));
+    return w * a + u * b + v * c;
 }
 
 static inline void interpolate_p(float3 const& a, float3 const& b, float3 const& c, float2 uv,

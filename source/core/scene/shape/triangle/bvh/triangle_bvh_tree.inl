@@ -513,7 +513,7 @@ float3 Tree<Data>::interpolate_p(float2 uv, uint32_t index) const noexcept {
 }
 
 template <typename Data>
-Vector Tree<Data>::interpolate_p(FVector u, FVector v, uint32_t index) const noexcept {
+Simd3f Tree<Data>::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept {
     return data_.interpolate_p(u, v, index);
 }
 

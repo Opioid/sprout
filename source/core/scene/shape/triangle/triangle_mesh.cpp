@@ -153,7 +153,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         Simd3f n;
         Simd3f t;
         float2 uv;
-        tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n.v, t.v, uv);
+        tree_.interpolate_triangle_data(pi.u.v, pi.v.v, pi.index, n.v, t.v, uv);
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
@@ -212,7 +212,7 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 
         Simd3f p_w = transform_point(object_to_world, p);
 
-        float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
+        float2 const uv = tree_.interpolate_triangle_uv(pi.u.v, pi.v.v, pi.index);
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
@@ -254,7 +254,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
                                          ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
         ray.max_t = ray_max_t.x();
 
-        Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
+        Simd3f n = tree_.interpolate_shading_normal(pi.u.v, pi.v.v, pi.index);
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 

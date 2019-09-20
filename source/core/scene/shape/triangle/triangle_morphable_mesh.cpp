@@ -65,7 +65,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
         float3 t;
         float2 uv;
         //	tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
-        tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
+        tree_.interpolate_triangle_data(pi.u.v, pi.v.v, pi.index, n, t, uv);
 
         float3   geo_n          = tree_.triangle_normal(pi.index);
         float    bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
@@ -105,7 +105,7 @@ bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformati
 
         float3 p_w = ray.point(tray.max_t);
 
-        float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
+        float2 const uv = tree_.interpolate_triangle_uv(pi.u.v, pi.v.v, pi.index);
 
         float3 geo_n = tree_.triangle_normal(pi.index);
 
