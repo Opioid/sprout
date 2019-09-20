@@ -126,6 +126,8 @@ struct Simd3f {
 
     static Simd3f create_from_3(float const* f) noexcept;
 
+    static Simd3f create_scalar(float s) noexcept;
+
     float x() const noexcept;
 
     __m128 v;

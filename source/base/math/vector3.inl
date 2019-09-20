@@ -746,6 +746,10 @@ inline Simd3f Simd3f::create_from_3(float const* f) noexcept {
     return _mm_and_ps(v, simd::Mask3);
 }
 
+inline Simd3f Simd3f::create_scalar(float s) noexcept {
+    return _mm_load_ss(&s);
+}
+
 inline float Simd3f::x() const noexcept {
     return _mm_cvtss_f32(v);
 }
