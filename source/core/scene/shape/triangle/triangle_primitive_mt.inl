@@ -462,20 +462,22 @@ static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shad
                                     Simd3f& n, Simd3f& t, float2& tc) noexcept {
     Simd3f const w = simd::One - u - v;
 
-    Simd3f va = w * simd::load_float4(a.n_u.v);
-    Simd3f vb = u * simd::load_float4(b.n_u.v);
-    va        = va + vb;
-    Simd3f vc = v * simd::load_float4(c.n_u.v);
+    Simd3f va = w * Simd3f(a.n_u.v);
+    Simd3f vb = u * Simd3f(b.n_u.v);
+
+    va = va + vb;
+
+    Simd3f vc = v * Simd3f(c.n_u.v);
     Simd3f v0 = va + vc;
 
     n = normalize(v0);
 
-    va = w * simd::load_float4(a.t_v.v);
-    vb = u * simd::load_float4(b.t_v.v);
+    va = w * Simd3f(a.t_v.v);
+    vb = u * Simd3f(b.t_v.v);
     va = va + vb;
-    vc = v * simd::load_float4(c.t_v.v);
+    vc = v * Simd3f(c.t_v.v);
 
-    Simd3f v1 = va + vc;
+    Simd3f const v1 = va + vc;
 
     t = normalize(v1);
 
@@ -486,18 +488,20 @@ static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shad
     tc[1] = r[1];
 }
 
-static inline Vector interpolate_normal(FVector u, FVector v, const Shading_vertex_MTC& a,
-                                        const Shading_vertex_MTC& b,
+static inline Simd3f interpolate_normal(Simd3f const& u, Simd3f const& v,
+                                        const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
                                         const Shading_vertex_MTC& c) noexcept {
-    Vector const w = math::sub(math::sub(simd::One, u), v);
+    Simd3f const w = simd::One - u - v;
 
-    Vector va = math::mul(w, simd::load_float4(a.n_u.v));
-    Vector vb = math::mul(u, simd::load_float4(b.n_u.v));
-    va        = math::add(va, vb);
-    Vector vc = math::mul(v, simd::load_float4(c.n_u.v));
-    Vector v0 = math::add(va, vc);
+    Simd3f va = w * Simd3f(a.n_u.v);
+    Simd3f vb = u * Simd3f(b.n_u.v);
 
-    return math::normalized3(v0);
+    va = va + vb;
+
+    Simd3f vc = v * Simd3f(c.n_u.v);
+    Simd3f v0 = va + vc;
+
+    return normalize(v0);
 }
 
 inline float xnorm_to_float(int16_t xnorm) noexcept {

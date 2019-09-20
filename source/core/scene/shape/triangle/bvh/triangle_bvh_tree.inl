@@ -530,7 +530,8 @@ void Tree<Data>::interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uin
 }
 
 template <typename Data>
-Vector Tree<Data>::interpolate_shading_normal(FVector u, FVector v, uint32_t index) const noexcept {
+Simd3f Tree<Data>::interpolate_shading_normal(Simd3f const& u, Simd3f const& v,
+                                              uint32_t index) const noexcept {
     return data_.interpolate_shading_normal(u, v, index);
 }
 

@@ -740,9 +740,11 @@ inline Simd3f::Simd3f(float sx, float sy, float sz) noexcept {
 
 inline Simd3f::Simd3f(Vector3f_a const& o) noexcept : v(_mm_load_ps(o.v)) {}
 
+inline Simd3f::Simd3f(float const* a) noexcept : v(_mm_load_ps(a)) {}
+
 inline Simd3f Simd3f::create_from_3(float const* f) noexcept {
     // Reads an extra float which is zero'd
-    __m128 v = _mm_load_ps(f);
+    __m128 const v = _mm_load_ps(f);
     return _mm_and_ps(v, simd::Mask3);
 }
 

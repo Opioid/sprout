@@ -138,8 +138,8 @@ void Indexed_data<SV>::interpolate_data(Simd3f const& u, Simd3f const& v, uint32
 }
 
 template <typename SV>
-Vector Indexed_data<SV>::interpolate_shading_normal(FVector u, FVector v, uint32_t index) const
-    noexcept {
+Simd3f Indexed_data<SV>::interpolate_shading_normal(Simd3f const& u, Simd3f const& v,
+                                                    uint32_t index) const noexcept {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
