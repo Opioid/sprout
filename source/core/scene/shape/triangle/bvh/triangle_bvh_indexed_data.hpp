@@ -50,7 +50,7 @@ class Indexed_data {
     void interpolate_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
                           float2& tc) const noexcept;
 
-    void interpolate_data(FVector u, FVector v, uint32_t index, Vector& n, Vector& t,
+    void interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n, Simd3f& t,
                           float2& tc) const noexcept;
 
     Vector interpolate_shading_normal(FVector u, FVector v, uint32_t index) const noexcept;

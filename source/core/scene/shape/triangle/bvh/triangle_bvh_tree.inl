@@ -530,8 +530,8 @@ void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index,
 }
 
 template <typename Data>
-void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index, Vector& n,
-                                           Vector& t, float2& tc) const noexcept {
+void Tree<Data>::interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index,
+                                           Simd3f& n, Simd3f& t, float2& tc) const noexcept {
     data_.interpolate_data(u, v, index, n, t, tc);
 }
 

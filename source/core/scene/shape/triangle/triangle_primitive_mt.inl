@@ -492,30 +492,31 @@ static inline void interpolate_data(FVector u, FVector v, const Shading_vertex_M
     tc[1] = r[1];
 }
 
-static inline void interpolate_data(FVector u, FVector v, const Shading_vertex_MTC& a,
+static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c,
-                                    Vector& n, Vector& t, float2& tc) noexcept {
-    Vector const w = math::sub(math::sub(simd::One, u), v);
+                                    Simd3f& n, Simd3f& t, float2& tc) noexcept {
+    Simd3f const w = simd::One - u - v;
 
-    Vector va = math::mul(w, simd::load_float4(a.n_u.v));
-    Vector vb = math::mul(u, simd::load_float4(b.n_u.v));
-    va        = math::add(va, vb);
-    Vector vc = math::mul(v, simd::load_float4(c.n_u.v));
-    Vector v0 = math::add(va, vc);
+    Simd3f va = w * simd::load_float4(a.n_u.v);
+    Simd3f vb = u * simd::load_float4(b.n_u.v);
+    va        = va + vb;
+    Simd3f vc = v * simd::load_float4(c.n_u.v);
+    Simd3f v0 = va + vc;
 
-    n = math::normalized3(v0);
+    n = normalize(v0);
 
-    va        = math::mul(w, simd::load_float4(a.t_v.v));
-    vb        = math::mul(u, simd::load_float4(b.t_v.v));
-    va        = math::add(va, vb);
-    vc        = math::mul(v, simd::load_float4(c.t_v.v));
-    Vector v1 = math::add(va, vc);
+    va = w * simd::load_float4(a.t_v.v);
+    vb = u * simd::load_float4(b.t_v.v);
+    va = va + vb;
+    vc = v * simd::load_float4(c.t_v.v);
 
-    t = math::normalized3(v1);
+    Simd3f v1 = va + vc;
 
-    v0 = SU_MUX_HIGH(v0, v1);
+    t = normalize(v1);
+
+    v0 = SU_MUX_HIGH(v0.v, v1.v);
     float4 r;
-    simd::store_float4(r.v, v0);
+    simd::store_float4(r.v, v0.v);
     tc[0] = r[3];
     tc[1] = r[1];
 }
