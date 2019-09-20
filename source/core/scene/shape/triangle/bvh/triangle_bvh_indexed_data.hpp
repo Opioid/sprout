@@ -47,9 +47,6 @@ class Indexed_data {
     void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const
         noexcept;
 
-    void interpolate_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
-                          float2& tc) const noexcept;
-
     void interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n, Simd3f& t,
                           float2& tc) const noexcept;
 
@@ -57,7 +54,7 @@ class Indexed_data {
 
     float2 interpolate_uv(uint32_t index, float2 uv) const noexcept;
 
-    float2 interpolate_uv(FVector u, FVector v, uint32_t index) const noexcept;
+    float2 interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
 
     float bitangent_sign(uint32_t index) const noexcept;
 
@@ -65,7 +62,7 @@ class Indexed_data {
 
     float3 normal(uint32_t index) const noexcept;
 
-    Vector normal_v(uint32_t index) const noexcept;
+    Simd3f normal_v(uint32_t index) const noexcept;
 
     float area(uint32_t index) const noexcept;
 

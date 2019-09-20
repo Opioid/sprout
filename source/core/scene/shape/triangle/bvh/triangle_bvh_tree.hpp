@@ -93,9 +93,6 @@ class Tree {
     void interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
                                    float2& tc) const noexcept;
 
-    void interpolate_triangle_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
-                                   float2& tc) const noexcept;
-
     void interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n,
                                    Simd3f& t, float2& tc) const noexcept;
 
@@ -103,16 +100,18 @@ class Tree {
 
     float2 interpolate_triangle_uv(uint32_t index, float2 uv) const noexcept;
 
-    float2 interpolate_triangle_uv(FVector u, FVector v, uint32_t index) const noexcept;
+    float2 interpolate_triangle_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
 
     float triangle_bitangent_sign(uint32_t index) const noexcept;
 
     uint32_t triangle_material_index(uint32_t index) const noexcept;
 
     float3 triangle_normal(uint32_t index) const noexcept;
-    Vector triangle_normal_v(uint32_t index) const noexcept;
+
+    Simd3f triangle_normal_v(uint32_t index) const noexcept;
 
     float triangle_area(uint32_t index) const noexcept;
+
     float triangle_area(uint32_t index, float3 const& scale) const noexcept;
 
     //    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const noexcept;

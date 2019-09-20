@@ -1,6 +1,7 @@
 #include "triangle_morphable_mesh.hpp"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/simd_matrix.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "bvh/triangle_bvh_builder_sah.inl"
@@ -49,40 +50,59 @@ uint32_t Morphable_mesh::num_parts() const noexcept {
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
                                Node_stack& node_stack, shape::Intersection& intersection) const
     noexcept {
-    math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+    Matrix4 world_to_object = load_float4x4(transformation.world_to_object);
 
-    Intersection pi;
-    if (tree_.intersect(tray, node_stack, pi)) {
-        ray.max_t = tray.max_t;
+    Simd3f ray_origin(ray.origin.v);
+    ray_origin = transform_point(world_to_object, ray_origin);
 
-        float3 p_w = ray.point(tray.max_t);
+    Simd3f ray_direction(ray.direction.v);
+    ray_direction = transform_vector(world_to_object, ray_direction);
 
-        float3 n;
-        float3 t;
+    Simd3f ray_inv_direction = reciprocal(ray_direction);
+
+    alignas(16) uint32_t ray_signs[4];
+    math::sign(ray_inv_direction, ray_signs);
+
+    Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
+    Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
+
+    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
+                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+        float const tray_max_t = ray_max_t.x();
+        ray.max_t              = tray_max_t;
+
+        Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+
+        Matrix4 object_to_world = load_float4x4(transformation.object_to_world);
+
+        Simd3f p_w = transform_point(object_to_world, p);
+
+        Simd3f n;
+        Simd3f t;
         float2 uv;
-        //	tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
-        tree_.interpolate_triangle_data(pi.u.v, pi.v.v, pi.index, n, t, uv);
+        tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
 
-        float3   geo_n          = tree_.triangle_normal(pi.index);
-        float    bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
+        Simd3f geo_n = tree_.triangle_normal_v(pi.index);
+
+        Simd3f bitangent_sign(tree_.triangle_bitangent_sign(pi.index));
+
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        float3 geo_n_w = transform_vector(transformation.rotation, geo_n);
-        float3 n_w     = transform_vector(transformation.rotation, n);
-        float3 t_w     = transform_vector(transformation.rotation, t);
-        float3 b_w     = bitangent_sign * cross(n_w, t_w);
+        Matrix3 rotation = load_float3x3(transformation.rotation);
 
-        intersection.p     = p_w;
-        intersection.t     = t_w;
-        intersection.b     = b_w;
-        intersection.n     = n_w;
-        intersection.geo_n = geo_n_w;
-        intersection.uv    = uv;
-        intersection.part  = material_index;
+        Simd3f geo_n_w = transform_vector(rotation, geo_n);
+        Simd3f n_w     = transform_vector(rotation, n);
+        Simd3f t_w     = transform_vector(rotation, t);
+        Simd3f b_w     = bitangent_sign * cross(n_w, t_w);
+
+        intersection.p     = float3(p_w);
+        intersection.t     = float3(t_w);
+        intersection.b     = float3(b_w);
+        intersection.n     = float3(n_w);
+        intersection.geo_n = float3(geo_n_w);
+
+        intersection.uv   = uv;
+        intersection.part = material_index;
 
         return true;
     }

@@ -126,18 +126,6 @@ void Indexed_data<SV>::interpolate_data(uint32_t index, float2 uv, float3& n, fl
 }
 
 template <typename SV>
-void Indexed_data<SV>::interpolate_data(FVector u, FVector v, uint32_t index, float3& n, float3& t,
-                                        float2& tc) const noexcept {
-    auto const tri = triangles_[index];
-
-    SV const& a = shading_vertices_[tri.a];
-    SV const& b = shading_vertices_[tri.b];
-    SV const& c = shading_vertices_[tri.c];
-
-    triangle::interpolate_data(u, v, a, b, c, n, t, tc);
-}
-
-template <typename SV>
 void Indexed_data<SV>::interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n,
                                         Simd3f& t, float2& tc) const noexcept {
     auto const tri = triangles_[index];
@@ -173,7 +161,8 @@ float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const noexcep
 }
 
 template <typename SV>
-float2 Indexed_data<SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const noexcept {
+float2 Indexed_data<SV>::interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const
+    noexcept {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -209,17 +198,17 @@ float3 Indexed_data<SV>::normal(uint32_t index) const noexcept {
 }
 
 template <typename SV>
-Vector Indexed_data<SV>::normal_v(uint32_t index) const noexcept {
+Simd3f Indexed_data<SV>::normal_v(uint32_t index) const noexcept {
     auto const tri = triangles_[index];
 
-    Vector const ap = simd::load_float4(intersection_vertices_[tri.a].v);
-    Vector const bp = simd::load_float4(intersection_vertices_[tri.b].v);
-    Vector const cp = simd::load_float4(intersection_vertices_[tri.c].v);
+    Simd3f const ap(intersection_vertices_[tri.a].v);
+    Simd3f const bp(intersection_vertices_[tri.b].v);
+    Simd3f const cp(intersection_vertices_[tri.c].v);
 
-    Vector const e1 = math::sub(bp, ap);
-    Vector const e2 = math::sub(cp, ap);
+    Simd3f const e1 = bp - ap;
+    Simd3f const e2 = cp - ap;
 
-    return math::normalized3(cross3(e1, e2));
+    return normalize(cross(e1, e2));
 }
 
 template <typename SV>

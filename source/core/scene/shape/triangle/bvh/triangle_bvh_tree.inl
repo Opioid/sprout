@@ -524,12 +524,6 @@ void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv, float3& n,
 }
 
 template <typename Data>
-void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index, float3& n,
-                                           float3& t, float2& tc) const noexcept {
-    data_.interpolate_data(u, v, index, n, t, tc);
-}
-
-template <typename Data>
 void Tree<Data>::interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index,
                                            Simd3f& n, Simd3f& t, float2& tc) const noexcept {
     data_.interpolate_data(u, v, index, n, t, tc);
@@ -546,7 +540,8 @@ float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const noex
 }
 
 template <typename Data>
-float2 Tree<Data>::interpolate_triangle_uv(FVector u, FVector v, uint32_t index) const noexcept {
+float2 Tree<Data>::interpolate_triangle_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const
+    noexcept {
     return data_.interpolate_uv(u, v, index);
 }
 
@@ -566,7 +561,7 @@ float3 Tree<Data>::triangle_normal(uint32_t index) const noexcept {
 }
 
 template <typename Data>
-Vector Tree<Data>::triangle_normal_v(uint32_t index) const noexcept {
+Simd3f Tree<Data>::triangle_normal_v(uint32_t index) const noexcept {
     return data_.normal_v(index);
 }
 
