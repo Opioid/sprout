@@ -39,8 +39,8 @@ namespace math {
 // This is sincos from
 // http://gruntthepeon.free.fr/ssemath/sse_mathfun.h
 
-static inline Vector sin(Vector x) {
-    Vector  xmm1, xmm2, xmm3, sign_bit, y;
+static inline __m128 sin(__m128 x) {
+    __m128  xmm1, xmm2, xmm3, sign_bit, y;
     __m128i emm0, emm2;
 
     sign_bit = x;
@@ -70,8 +70,8 @@ static inline Vector sin(Vector x) {
     emm2 = _mm_and_si128(emm2, simd::Two_i);
     emm2 = _mm_cmpeq_epi32(emm2, _mm_setzero_si128());
 
-    Vector swap_sign_bit = _mm_castsi128_ps(emm0);
-    Vector poly_mask     = _mm_castsi128_ps(emm2);
+    __m128 swap_sign_bit = _mm_castsi128_ps(emm0);
+    __m128 poly_mask     = _mm_castsi128_ps(emm2);
     sign_bit             = _mm_xor_ps(sign_bit, swap_sign_bit);
 
     // The magic pass: "Extended precision modular arithmetic"
@@ -88,7 +88,7 @@ static inline Vector sin(Vector x) {
 
     // Evaluate the first polynom(0 <= x <= Pi/4)
     y        = simd::Coscof_p0;
-    Vector z = _mm_mul_ps(x, x);
+    __m128 z = _mm_mul_ps(x, x);
 
     y          = _mm_mul_ps(y, z);
     y          = _mm_add_ps(y, simd::Coscof_p1);
@@ -96,13 +96,13 @@ static inline Vector sin(Vector x) {
     y          = _mm_add_ps(y, simd::Coscof_p2);
     y          = _mm_mul_ps(y, z);
     y          = _mm_mul_ps(y, z);
-    Vector tmp = _mm_mul_ps(z, simd::Half);
+    __m128 tmp = _mm_mul_ps(z, simd::Half);
     y          = _mm_sub_ps(y, tmp);
     y          = _mm_add_ps(y, simd::One);
 
     // Evaluate the second polynom(Pi/4 <= x <= 0)
 
-    Vector y2 = simd::Sincof_p0;
+    __m128 y2 = simd::Sincof_p0;
     y2        = _mm_mul_ps(y2, z);
     y2        = _mm_add_ps(y2, simd::Sincof_p1);
     y2        = _mm_mul_ps(y2, z);
@@ -121,8 +121,8 @@ static inline Vector sin(Vector x) {
     return y;
 }
 
-static inline Vector cos(Vector x) {
-    Vector xmm1, xmm2, xmm3, y;
+static inline __m128 cos(__m128 x) {
+    __m128 xmm1, xmm2, xmm3, y;
 
     __m128i emm0, emm2;
 
@@ -148,8 +148,8 @@ static inline Vector cos(Vector x) {
     emm2 = _mm_and_si128(emm2, simd::Two_i);
     emm2 = _mm_cmpeq_epi32(emm2, _mm_setzero_si128());
 
-    Vector sign_bit  = _mm_castsi128_ps(emm0);
-    Vector poly_mask = _mm_castsi128_ps(emm2);
+    __m128 sign_bit  = _mm_castsi128_ps(emm0);
+    __m128 poly_mask = _mm_castsi128_ps(emm2);
 
     // The magic pass: "Extended precision modular arithmetic"
     // x = ((x - y * DP1) - y * DP2) - y * DP3;
@@ -165,7 +165,7 @@ static inline Vector cos(Vector x) {
 
     // Evaluate the first polynom(0 <= x <= Pi/4)
     y        = simd::Coscof_p0;
-    Vector z = _mm_mul_ps(x, x);
+    __m128 z = _mm_mul_ps(x, x);
 
     y          = _mm_mul_ps(y, z);
     y          = _mm_add_ps(y, simd::Coscof_p1);
@@ -173,13 +173,13 @@ static inline Vector cos(Vector x) {
     y          = _mm_add_ps(y, simd::Coscof_p2);
     y          = _mm_mul_ps(y, z);
     y          = _mm_mul_ps(y, z);
-    Vector tmp = _mm_mul_ps(z, simd::Half);
+    __m128 tmp = _mm_mul_ps(z, simd::Half);
     y          = _mm_sub_ps(y, tmp);
     y          = _mm_add_ps(y, simd::One);
 
     // Evaluate the second polynom(Pi/4 <= x <= 0)
 
-    Vector y2 = simd::Sincof_p0;
+    __m128 y2 = simd::Sincof_p0;
     y2        = _mm_mul_ps(y2, z);
     y2        = _mm_add_ps(y2, simd::Sincof_p1);
     y2        = _mm_mul_ps(y2, z);
@@ -199,19 +199,19 @@ static inline Vector cos(Vector x) {
     return y;
 }
 
-static inline void sincos(Vector x, Vector& s, Vector& c) {
-    Vector xmm1, xmm2, xmm3, sign_bit_sin, y;
+static inline void sincos(Simd3f const& x, Simd3f& s, Simd3f& c) {
+    __m128 xmm1, xmm2, xmm3, sign_bit_sin, y;
 
     __m128i emm0, emm2, emm4;
 
-    sign_bit_sin = x;
+    sign_bit_sin = x.v;
     // take the absolute value
-    x = _mm_and_ps(x, simd::Inverse_sign_mask);
+    __m128 xa = _mm_and_ps(x.v, simd::Inverse_sign_mask);
     // extract the sign bit (upper one)
     sign_bit_sin = _mm_and_ps(sign_bit_sin, simd::Sign_mask);
 
     // scale by 4/Pi
-    y = _mm_mul_ps(x, simd::Cephes_FOPI);
+    y = _mm_mul_ps(xa, simd::Cephes_FOPI);
 
     // store the integer part of y in emm2
     emm2 = _mm_cvttps_epi32(y);
@@ -226,12 +226,12 @@ static inline void sincos(Vector x, Vector& s, Vector& c) {
     // get the swap sign flag for the sine
     emm0                     = _mm_and_si128(emm2, simd::Four_i);
     emm0                     = _mm_slli_epi32(emm0, 29);
-    Vector swap_sign_bit_sin = _mm_castsi128_ps(emm0);
+    __m128 swap_sign_bit_sin = _mm_castsi128_ps(emm0);
 
     // get the polynom selection mask for the sine*/
     emm2             = _mm_and_si128(emm2, simd::Two_i);
     emm2             = _mm_cmpeq_epi32(emm2, _mm_setzero_si128());
-    Vector poly_mask = _mm_castsi128_ps(emm2);
+    __m128 poly_mask = _mm_castsi128_ps(emm2);
 
     // The magic pass: "Extended precision modular arithmetic"
     // x = ((x - y * DP1) - y * DP2) - y * DP3;
@@ -241,19 +241,19 @@ static inline void sincos(Vector x, Vector& s, Vector& c) {
     xmm1 = _mm_mul_ps(y, xmm1);
     xmm2 = _mm_mul_ps(y, xmm2);
     xmm3 = _mm_mul_ps(y, xmm3);
-    x    = _mm_add_ps(x, xmm1);
-    x    = _mm_add_ps(x, xmm2);
-    x    = _mm_add_ps(x, xmm3);
+    xa   = _mm_add_ps(xa, xmm1);
+    xa   = _mm_add_ps(xa, xmm2);
+    xa   = _mm_add_ps(xa, xmm3);
 
     emm4                = _mm_sub_epi32(emm4, simd::Two_i);
     emm4                = _mm_andnot_si128(emm4, simd::Four_i);
     emm4                = _mm_slli_epi32(emm4, 29);
-    Vector sign_bit_cos = _mm_castsi128_ps(emm4);
+    __m128 sign_bit_cos = _mm_castsi128_ps(emm4);
 
     sign_bit_sin = _mm_xor_ps(sign_bit_sin, swap_sign_bit_sin);
 
     // Evaluate the first polynom(0 <= x <= Pi/4)
-    Vector z = _mm_mul_ps(x, x);
+    __m128 z = _mm_mul_ps(xa, xa);
     y        = simd::Coscof_p0;
 
     y          = _mm_mul_ps(y, z);
@@ -262,25 +262,25 @@ static inline void sincos(Vector x, Vector& s, Vector& c) {
     y          = _mm_add_ps(y, simd::Coscof_p2);
     y          = _mm_mul_ps(y, z);
     y          = _mm_mul_ps(y, z);
-    Vector tmp = _mm_mul_ps(z, simd::Half);
+    __m128 tmp = _mm_mul_ps(z, simd::Half);
     y          = _mm_sub_ps(y, tmp);
     y          = _mm_add_ps(y, simd::One);
 
     // Evaluate the second polynom(Pi/4 <= x <= 0)
 
-    Vector y2 = simd::Sincof_p0;
+    __m128 y2 = simd::Sincof_p0;
     y2        = _mm_mul_ps(y2, z);
     y2        = _mm_add_ps(y2, simd::Sincof_p1);
     y2        = _mm_mul_ps(y2, z);
     y2        = _mm_add_ps(y2, simd::Sincof_p2);
     y2        = _mm_mul_ps(y2, z);
-    y2        = _mm_mul_ps(y2, x);
-    y2        = _mm_add_ps(y2, x);
+    y2        = _mm_mul_ps(y2, xa);
+    y2        = _mm_add_ps(y2, xa);
 
     // select the correct result from the two polynoms
     xmm3         = poly_mask;
-    Vector ysin2 = _mm_and_ps(xmm3, y2);
-    Vector ysin1 = _mm_andnot_ps(xmm3, y);
+    __m128 ysin2 = _mm_and_ps(xmm3, y2);
+    __m128 ysin1 = _mm_andnot_ps(xmm3, y);
     y2           = _mm_sub_ps(y2, ysin2);
     y            = _mm_sub_ps(y, ysin1);
 
@@ -298,9 +298,9 @@ struct Sincos {
 };
 
 static inline Sincos sincos(float xf) {
-    Vector x = _mm_load_ss(&xf);
+    __m128 x = _mm_load_ss(&xf);
 
-    Vector xmm1, xmm2, xmm3, sign_bit_sin, y;
+    __m128 xmm1, xmm2, xmm3, sign_bit_sin, y;
 
     __m128i emm0, emm2, emm4;
 
@@ -328,13 +328,13 @@ static inline Sincos sincos(float xf) {
     emm0 = _mm_and_si128(emm2, simd::Four_i);
     emm0 = _mm_slli_epi32(emm0, 29);
 
-    Vector swap_sign_bit_sin = _mm_castsi128_ps(emm0);
+    __m128 swap_sign_bit_sin = _mm_castsi128_ps(emm0);
 
     // get the polynom selection mask for the sine*/
     emm2 = _mm_and_si128(emm2, simd::Two_i);
     emm2 = _mm_cmpeq_epi32(emm2, _mm_setzero_si128());
 
-    Vector poly_mask = _mm_castsi128_ps(emm2);
+    __m128 poly_mask = _mm_castsi128_ps(emm2);
 
     // The magic pass: "Extended precision modular arithmetic"
     // x = ((x - y * DP1) - y * DP2) - y * DP3;
@@ -353,12 +353,12 @@ static inline Sincos sincos(float xf) {
     emm4 = _mm_andnot_si128(emm4, simd::Four_i);
     emm4 = _mm_slli_epi32(emm4, 29);
 
-    Vector sign_bit_cos = _mm_castsi128_ps(emm4);
+    __m128 sign_bit_cos = _mm_castsi128_ps(emm4);
 
     sign_bit_sin = _mm_xor_ps(sign_bit_sin, swap_sign_bit_sin);
 
     // Evaluate the first polynom(0 <= x <= Pi/4)
-    Vector z = _mm_mul_ss(x, x);
+    __m128 z = _mm_mul_ss(x, x);
 
     y = simd::Coscof_p0;
     y = _mm_mul_ss(y, z);
@@ -368,14 +368,14 @@ static inline Sincos sincos(float xf) {
     y = _mm_mul_ss(y, z);
     y = _mm_mul_ss(y, z);
 
-    Vector tmp = _mm_mul_ss(z, simd::Half);
+    __m128 tmp = _mm_mul_ss(z, simd::Half);
 
     y = _mm_sub_ss(y, tmp);
     y = _mm_add_ss(y, simd::One);
 
     // Evaluate the second polynom(Pi/4 <= x <= 0)
 
-    Vector y2 = simd::Sincof_p0;
+    __m128 y2 = simd::Sincof_p0;
     y2        = _mm_mul_ss(y2, z);
     y2        = _mm_add_ss(y2, simd::Sincof_p1);
     y2        = _mm_mul_ss(y2, z);
@@ -387,8 +387,8 @@ static inline Sincos sincos(float xf) {
     // select the correct result from the two polynoms
     xmm3 = poly_mask;
 
-    Vector ysin2 = _mm_and_ps(xmm3, y2);
-    Vector ysin1 = _mm_andnot_ps(xmm3, y);
+    __m128 ysin2 = _mm_and_ps(xmm3, y2);
+    __m128 ysin1 = _mm_andnot_ps(xmm3, y);
 
     y2 = _mm_sub_ss(y2, ysin2);
     y  = _mm_sub_ss(y, ysin1);

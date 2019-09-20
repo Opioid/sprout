@@ -4,7 +4,6 @@
 #include "exp.hpp"
 #include "math.hpp"
 #include "simd/simd.inl"
-#include "simd_vector.inl"
 #include "vector2.inl"
 #include "vector3.hpp"
 
@@ -627,26 +626,22 @@ static inline Vector3f_a cos(Vector3f_a const& v) noexcept {
     return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 
+static inline Simd3f sqrt(Simd3f const& x) noexcept;
+
 static inline Vector3f_a sqrt(Vector3f_a const& v) noexcept {
     //	return Vector3f_a(std::sqrt(v[0]), std::sqrt(v[1]), std::sqrt(v[2]));
 
-    Vector x = simd::load_float3(v.v);
-    x        = sqrt(x);
+    Simd3f const x = Simd3f::create_from_3(v.v);
 
-    Vector3f_a r;
-    simd::store_float4(r.v, x);
-    return r;
+    return Vector3f_a(sqrt(x));
 }
 
 static inline Vector3f_a log(Vector3f_a const& v) noexcept {
     //	return Vector3f_a(std::log(v[0]), std::log(v[1]), std::log(v[2]));
 
-    Vector x = simd::load_float4(v.v);
-    x        = log(x);
+    Simd3f x(v);
 
-    Vector3f_a r;
-    simd::store_float4(r.v, x);
-    return r;
+    return Vector3f_a(log(x.v));
 }
 
 static inline constexpr bool operator==(Vector3f_a const& a, Vector3f_a const& b) noexcept {
@@ -774,6 +769,20 @@ static inline Simd3f add_scalar(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_add_ss(a.v, b.v);
 }
 
+static inline float horizontal_sum(Simd3f a) noexcept {
+    //	Vector t = _mm_hadd_ps(a, a);
+    //	t = _mm_hadd_ps(t, t);
+    //	float r;
+    //	_mm_store_ss(&r, t);
+    //	return r;
+
+    __m128 shuf = _mm_movehdup_ps(a.v);
+    __m128 sums = _mm_add_ps(a.v, shuf);
+    shuf        = _mm_movehl_ps(shuf, sums);
+    sums        = _mm_add_ss(sums, shuf);
+    return _mm_cvtss_f32(sums);
+}
+
 static inline Simd3f operator-(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_sub_ps(a.v, b.v);
 }
@@ -828,6 +837,12 @@ static inline Simd3f cross(Simd3f const& a, Simd3f const& b) noexcept {
     __m128 tmp2 = _mm_sub_ps(tmp0, tmp1);
 
     return SU_PERMUTE_PS(tmp2, _MM_SHUFFLE(3, 0, 2, 1));
+}
+
+static inline Simd3f sqrt(Simd3f const& x) noexcept {
+    Vector res  = _mm_rsqrt_ps(x.v);
+    Vector muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
+    return _mm_mul_ps(x.v, _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls)));
 }
 
 static inline Simd3f rsqrt(Simd3f const& x) noexcept {

@@ -63,9 +63,9 @@ namespace math {
 // This is exp from
 // http://gruntthepeon.free.fr/ssemath/sse_mathfun.h
 
-static inline Vector exp(Vector x) {
-    Vector tmp;
-    Vector fx;
+static inline __m128 exp(__m128 x) {
+    __m128 tmp;
+    __m128 fx;
 
     __m128i emm0;
 
@@ -81,18 +81,18 @@ static inline Vector exp(Vector x) {
     tmp  = _mm_cvtepi32_ps(emm0);
 
     // if greater, substract 1
-    Vector mask = _mm_cmpgt_ps(tmp, fx);
+    __m128 mask = _mm_cmpgt_ps(tmp, fx);
     mask        = _mm_and_ps(mask, simd::One);
     fx          = _mm_sub_ps(tmp, mask);
 
     tmp      = _mm_mul_ps(fx, simd::Cephes_exp_C1);
-    Vector z = _mm_mul_ps(fx, simd::Cephes_exp_C2);
+    __m128 z = _mm_mul_ps(fx, simd::Cephes_exp_C2);
     x        = _mm_sub_ps(x, tmp);
     x        = _mm_sub_ps(x, z);
 
     z = _mm_mul_ps(x, x);
 
-    Vector y = simd::Cephes_exp_p0;
+    __m128 y = simd::Cephes_exp_p0;
     y        = _mm_mul_ps(y, x);
     y        = _mm_add_ps(y, simd::Cephes_exp_p1);
     y        = _mm_mul_ps(y, x);
@@ -110,19 +110,19 @@ static inline Vector exp(Vector x) {
     emm0         = _mm_cvttps_epi32(fx);
     emm0         = _mm_add_epi32(emm0, simd::Mask_0x7F);
     emm0         = _mm_slli_epi32(emm0, 23);
-    Vector pow2n = _mm_castsi128_ps(emm0);
+    __m128 pow2n = _mm_castsi128_ps(emm0);
 
     y = _mm_mul_ps(y, pow2n);
     return y;
 }
 
 static inline float exp(float s) {
-    Vector tmp;
-    Vector fx;
+    __m128 tmp;
+    __m128 fx;
 
     __m128i emm0;
 
-    Vector x = _mm_load_ss(&s);
+    __m128 x = _mm_load_ss(&s);
     x        = _mm_min_ss(x, simd::Exp_hi);
     x        = _mm_max_ss(x, simd::Exp_lo);
 
@@ -135,18 +135,18 @@ static inline float exp(float s) {
     tmp  = _mm_cvtepi32_ps(emm0);
 
     // if greater, substract 1
-    Vector mask = _mm_cmpgt_ss(tmp, fx);
+    __m128 mask = _mm_cmpgt_ss(tmp, fx);
     mask        = _mm_and_ps(mask, simd::One);
     fx          = _mm_sub_ss(tmp, mask);
 
     tmp      = _mm_mul_ss(fx, simd::Cephes_exp_C1);
-    Vector z = _mm_mul_ss(fx, simd::Cephes_exp_C2);
+    __m128 z = _mm_mul_ss(fx, simd::Cephes_exp_C2);
     x        = _mm_sub_ss(x, tmp);
     x        = _mm_sub_ss(x, z);
 
     z = _mm_mul_ss(x, x);
 
-    Vector y = simd::Cephes_exp_p0;
+    __m128 y = simd::Cephes_exp_p0;
     y        = _mm_mul_ss(y, x);
     y        = _mm_add_ss(y, simd::Cephes_exp_p1);
     y        = _mm_mul_ss(y, x);
@@ -164,18 +164,18 @@ static inline float exp(float s) {
     emm0         = _mm_cvttps_epi32(fx);
     emm0         = _mm_add_epi32(emm0, simd::Mask_0x7F);
     emm0         = _mm_slli_epi32(emm0, 23);
-    Vector pow2n = _mm_castsi128_ps(emm0);
+    __m128 pow2n = _mm_castsi128_ps(emm0);
 
     y = _mm_mul_ss(y, pow2n);
     return _mm_cvtss_f32(y);
 }
 
-static inline Vector log(Vector x) {
+static inline __m128 log(__m128 x) {
     __m128i emm0;
 
-    Vector one = simd::One;
+    __m128 one = simd::One;
 
-    Vector invalid_mask = _mm_cmple_ps(x, _mm_setzero_ps());
+    __m128 invalid_mask = _mm_cmple_ps(x, _mm_setzero_ps());
 
     x = _mm_max_ps(x, simd::Min_normal);  // cut off denormalized stuff
 
@@ -186,7 +186,7 @@ static inline Vector log(Vector x) {
     x = _mm_or_ps(x, simd::Half);
 
     emm0     = _mm_sub_epi32(emm0, simd::Mask_0x7F);
-    Vector e = _mm_cvtepi32_ps(emm0);
+    __m128 e = _mm_cvtepi32_ps(emm0);
 
     e = _mm_add_ps(e, one);
 
@@ -196,15 +196,15 @@ static inline Vector log(Vector x) {
              x = x + x - 1.0;
            } else { x = x - 1.0; }
     */
-    Vector mask = _mm_cmplt_ps(x, simd::Cephes_SQRTHF);
-    Vector tmp  = _mm_and_ps(x, mask);
+    __m128 mask = _mm_cmplt_ps(x, simd::Cephes_SQRTHF);
+    __m128 tmp  = _mm_and_ps(x, mask);
     x           = _mm_sub_ps(x, one);
     e           = _mm_sub_ps(e, _mm_and_ps(one, mask));
     x           = _mm_add_ps(x, tmp);
 
-    Vector z = _mm_mul_ps(x, x);
+    __m128 z = _mm_mul_ps(x, x);
 
-    Vector y = simd::Cephes_log_p0;
+    __m128 y = simd::Cephes_log_p0;
     y        = _mm_mul_ps(y, x);
     y        = _mm_add_ps(y, simd::Cephes_log_p1);
     y        = _mm_mul_ps(y, x);

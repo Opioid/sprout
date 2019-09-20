@@ -66,13 +66,14 @@ class Tree {
 
     bool intersect(ray& ray, Node_stack& node_stack) const noexcept;
 
-    bool intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-                   FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                   Node_stack& node_stack, Intersection& intersection) const noexcept;
+    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
+                   Simd3f const& ray_inv_direction, Simd3f const& ray_min_t, Simd3f& ray_max_t,
+                   uint32_t ray_signs[4], Node_stack& node_stack, Intersection& intersection) const
+        noexcept;
 
-    bool intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-                   FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                   Node_stack& node_stack) const noexcept;
+    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
+                   Simd3f const& ray_inv_direction, Simd3f const& ray_min_t, Simd3f& ray_max_t,
+                   uint32_t ray_signs[4], Node_stack& node_stack) const noexcept;
 
     bool intersect_p(ray const& ray, Node_stack& node_stack) const noexcept;
 

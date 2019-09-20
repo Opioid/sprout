@@ -3,7 +3,6 @@
 
 #include "matrix4x4.inl"
 #include "simd_matrix.hpp"
-#include "simd_vector.inl"
 
 namespace math {
 

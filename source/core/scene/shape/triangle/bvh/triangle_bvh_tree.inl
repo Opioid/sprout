@@ -115,13 +115,13 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& inter
 
     uint32_t index = 0xFFFFFFFF;
 
-    Vector const ray_origin        = simd::load_float4(ray.origin.v);
-    Vector const ray_direction     = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
-    Vector       u;
-    Vector       v;
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_direction(ray.direction.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
+    Simd3f       ray_max_t = Simd3f::create_scalar(ray.max_t);
+    Simd3f       u;
+    Simd3f       v;
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -150,10 +150,11 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& inter
     }
 
     if (index != 0xFFFFFFFF) {
-        _mm_store_ss(&ray.max_t, ray_max_t);
-        // ray.max_t = _mm_cvtss_f32(ray_max_t);
-        intersection.u     = math::splat_x(u);
-        intersection.v     = math::splat_x(v);
+        ray.max_t = ray_max_t.x();
+
+        intersection.u = u.splat_x();
+        intersection.v = v.splat_x();
+
         intersection.index = index;
         return true;
     }
@@ -168,11 +169,11 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const noexcept {
 
     uint32_t index = 0xFFFFFFFF;
 
-    Vector const ray_origin        = simd::load_float4(ray.origin.v);
-    Vector const ray_direction     = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_direction(ray.direction.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
+    Simd3f       ray_max_t = Simd3f::create_scalar(ray.max_t);
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -201,7 +202,7 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const noexcept {
     }
 
     if (index != 0xFFFFFFFF) {
-        _mm_store_ss(&ray.max_t, ray_max_t);
+        ray.max_t = ray_max_t.x();
         return true;
     }
 
@@ -209,16 +210,17 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const noexcept {
 }
 
 template <typename Data>
-bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-                           FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                           Node_stack& node_stack, Intersection& intersection) const noexcept {
+bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
+                           Simd3f const& ray_inv_direction, Simd3f const& ray_min_t,
+                           Simd3f& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack,
+                           Intersection& intersection) const noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
     uint32_t index = 0xFFFFFFFF;
 
-    Vector u;
-    Vector v;
+    Simd3f u;
+    Simd3f v;
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -247,8 +249,8 @@ bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ra
     }
 
     if (index != 0xFFFFFFFF) {
-        intersection.u     = math::splat_x(u);
-        intersection.v     = math::splat_x(v);
+        intersection.u     = u.splat_x();
+        intersection.v     = v.splat_x();
         intersection.index = index;
         return true;
     }
@@ -257,9 +259,10 @@ bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ra
 }
 
 template <typename Data>
-bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-                           FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
-                           Node_stack& node_stack) const noexcept {
+bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
+                           Simd3f const& ray_inv_direction, Simd3f const& ray_min_t,
+                           Simd3f& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack) const
+    noexcept {
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -303,11 +306,11 @@ bool Tree<Data>::intersect_p(ray const& ray, Node_stack& node_stack) const noexc
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
-    Vector const ray_origin        = simd::load_float4(ray.origin.v);
-    Vector const ray_direction     = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector const ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_direction(ray.direction.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simd3f const ray_min_t = simd::load_float(&ray.min_t);
+    Simd3f const ray_max_t = simd::load_float(&ray.max_t);
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -385,15 +388,15 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter f
 
     float opacity = 0.f;
 
-    Vector const ray_origin        = simd::load_float4(ray.origin.v);
-    Vector const ray_direction     = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
-    Vector const max_t             = ray_max_t;
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_direction(ray.direction.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simd3f const ray_min_t = simd::load_float(&ray.min_t);
+    Simd3f       ray_max_t = simd::load_float(&ray.max_t);
+    Simd3f const max_t     = ray_max_t;
 
-    Vector u;
-    Vector v;
+    Simd3f u;
+    Simd3f v;
 
     //	while (!node_stack.empty()) {
     while (0xFFFFFFFF != n) {
@@ -414,8 +417,8 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter f
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    u         = math::splat_x(u);
-                    v         = math::splat_x(v);
+                    u         = u.splat_x();
+                    v         = v.splat_x();
                     float2 uv = data_.interpolate_uv(u, v, i);
 
                     auto const material = materials[data_.material_index(i)];
@@ -448,15 +451,15 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter
 
     float3 absorption(1.f);
 
-    Vector const ray_origin        = simd::load_float4(ray.origin.v);
-    Vector const ray_direction     = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
-    Vector const max_t             = ray_max_t;
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_direction(ray.direction.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simd3f const ray_min_t = simd::load_float(&ray.min_t);
+    Simd3f       ray_max_t = simd::load_float(&ray.max_t);
+    Simd3f const max_t     = ray_max_t;
 
-    Vector u;
-    Vector v;
+    Simd3f u;
+    Simd3f v;
 
     //	while (!node_stack.empty()) {
     while (0xFFFFFFFF != n) {
@@ -477,8 +480,8 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    u = math::splat_x(u);
-                    v = math::splat_x(v);
+                    u = u.splat_x();
+                    v = v.splat_x();
 
                     float2 uv = data_.interpolate_uv(u, v, i);
 

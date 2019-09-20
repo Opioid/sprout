@@ -3,7 +3,6 @@
 
 #include "base/encoding/encoding.inl"
 #include "base/math/ray.hpp"
-#include "base/math/simd_vector.inl"
 #include "triangle_primitive_mt.hpp"
 
 namespace scene::shape::triangle {
@@ -189,38 +188,36 @@ static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, 
     return false;
 }
 
-static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-                             float const* a, float const* b, float const* c, Vector& u_out,
-                             Vector& v_out) noexcept {
-    using namespace math;
+static inline bool intersect(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
+                             Simd3f& max_t, float const* a, float const* b, float const* c,
+                             Simd3f& u_out, Simd3f& v_out) noexcept {
+    Simd3f ap(a);
+    Simd3f bp(b);
+    Simd3f cp(c);
 
-    Vector ap = simd::load_float4(a);
-    Vector bp = simd::load_float4(b);
-    Vector cp = simd::load_float4(c);
+    Simd3f e1   = bp - ap;
+    Simd3f e2   = cp - ap;
+    Simd3f tvec = origin - ap;
 
-    Vector e1   = sub(bp, ap);
-    Vector e2   = sub(cp, ap);
-    Vector tvec = sub(origin, ap);
+    Simd3f pvec = cross(direction, e2);
+    Simd3f qvec = cross(tvec, e1);
 
-    Vector pvec = cross3(direction, e2);
-    Vector qvec = cross3(tvec, e1);
+    Simd3f e1_d_pv = dot_scalar(e1, pvec);
+    Simd3f tv_d_pv = dot_scalar(tvec, pvec);
+    Simd3f di_d_qv = dot_scalar(direction, qvec);
+    Simd3f e2_d_qv = dot_scalar(e2, qvec);
 
-    Vector e1_d_pv = dot3_1(e1, pvec);
-    Vector tv_d_pv = dot3_1(tvec, pvec);
-    Vector di_d_qv = dot3_1(direction, qvec);
-    Vector e2_d_qv = dot3_1(e2, qvec);
+    Simd3f inv_det = reciprocal_scalar(e1_d_pv);
 
-    Vector inv_det = rcp1(e1_d_pv);
+    Simd3f u     = mul_scalar(tv_d_pv, inv_det);
+    Simd3f v     = mul_scalar(di_d_qv, inv_det);
+    Simd3f hit_t = mul_scalar(e2_d_qv, inv_det);
 
-    Vector u     = mul1(tv_d_pv, inv_det);
-    Vector v     = mul1(di_d_qv, inv_det);
-    Vector hit_t = mul1(e2_d_qv, inv_det);
+    Simd3f uv = add_scalar(u, v);
 
-    Vector uv = add1(u, v);
-
-    if (0 != (_mm_ucomige_ss(u, simd::Zero) & _mm_ucomige_ss(simd::One, u) &
-              _mm_ucomige_ss(v, simd::Zero) & _mm_ucomige_ss(simd::One, uv) &
-              _mm_ucomige_ss(hit_t, min_t) & _mm_ucomige_ss(max_t, hit_t))) {
+    if (0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
+              _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
+              _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v))) {
         max_t = hit_t;
         u_out = u;
         v_out = v;
@@ -230,37 +227,36 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
     return false;
 }
 
-static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
-                             float const* a, float const* b, float const* c) noexcept {
-    using namespace math;
+static inline bool intersect(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
+                             Simd3f& max_t, float const* a, float const* b,
+                             float const* c) noexcept {
+    Simd3f ap(a);
+    Simd3f bp(b);
+    Simd3f cp(c);
 
-    Vector ap = simd::load_float4(a);
-    Vector bp = simd::load_float4(b);
-    Vector cp = simd::load_float4(c);
+    Simd3f e1   = bp - ap;
+    Simd3f e2   = cp - ap;
+    Simd3f tvec = origin - ap;
 
-    Vector e1   = sub(bp, ap);
-    Vector e2   = sub(cp, ap);
-    Vector tvec = sub(origin, ap);
+    Simd3f pvec = cross(direction, e2);
+    Simd3f qvec = cross(tvec, e1);
 
-    Vector pvec = cross3(direction, e2);
-    Vector qvec = cross3(tvec, e1);
+    Simd3f e1_d_pv = dot_scalar(e1, pvec);
+    Simd3f tv_d_pv = dot_scalar(tvec, pvec);
+    Simd3f di_d_qv = dot_scalar(direction, qvec);
+    Simd3f e2_d_qv = dot_scalar(e2, qvec);
 
-    Vector e1_d_pv = dot3_1(e1, pvec);
-    Vector tv_d_pv = dot3_1(tvec, pvec);
-    Vector di_d_qv = dot3_1(direction, qvec);
-    Vector e2_d_qv = dot3_1(e2, qvec);
+    Simd3f inv_det = reciprocal_scalar(e1_d_pv);
 
-    Vector inv_det = rcp1(e1_d_pv);
+    Simd3f u     = mul_scalar(tv_d_pv, inv_det);
+    Simd3f v     = mul_scalar(di_d_qv, inv_det);
+    Simd3f hit_t = mul_scalar(e2_d_qv, inv_det);
 
-    Vector u     = mul1(tv_d_pv, inv_det);
-    Vector v     = mul1(di_d_qv, inv_det);
-    Vector hit_t = mul1(e2_d_qv, inv_det);
+    Simd3f uv = add_scalar(u, v);
 
-    Vector uv = add1(u, v);
-
-    if (0 != (_mm_ucomige_ss(u, simd::Zero) & _mm_ucomige_ss(simd::One, u) &
-              _mm_ucomige_ss(v, simd::Zero) & _mm_ucomige_ss(simd::One, uv) &
-              _mm_ucomige_ss(hit_t, min_t) & _mm_ucomige_ss(max_t, hit_t))) {
+    if (0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
+              _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
+              _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v))) {
         max_t = hit_t;
         return true;
     }
@@ -329,38 +325,38 @@ static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c
     return 0 != (ca & cb & cc & cd & ce & cf);
 }
 
-static inline bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
-                               float const* a, float const* b, float const* c) noexcept {
+static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
+                               Simd3f const& max_t, float const* a, float const* b,
+                               float const* c) noexcept {
     // Implementation C
-    using namespace math;
 
-    Vector ap = simd::load_float4(a);
-    Vector bp = simd::load_float4(b);
-    Vector cp = simd::load_float4(c);
+    Simd3f ap(a);
+    Simd3f bp(b);
+    Simd3f cp(c);
 
-    Vector e1   = sub(bp, ap);
-    Vector e2   = sub(cp, ap);
-    Vector tvec = sub(origin, ap);
+    Simd3f e1   = bp - ap;
+    Simd3f e2   = cp - ap;
+    Simd3f tvec = origin - ap;
 
-    Vector pvec = cross3(direction, e2);
-    Vector qvec = cross3(tvec, e1);
+    Simd3f pvec = cross(direction, e2);
+    Simd3f qvec = cross(tvec, e1);
 
-    Vector e1_d_pv = dot3_1(e1, pvec);
-    Vector tv_d_pv = dot3_1(tvec, pvec);
-    Vector di_d_qv = dot3_1(direction, qvec);
-    Vector e2_d_qv = dot3_1(e2, qvec);
+    Simd3f e1_d_pv = dot_scalar(e1, pvec);
+    Simd3f tv_d_pv = dot_scalar(tvec, pvec);
+    Simd3f di_d_qv = dot_scalar(direction, qvec);
+    Simd3f e2_d_qv = dot_scalar(e2, qvec);
 
-    Vector inv_det = rcp1(e1_d_pv);
+    Simd3f inv_det = reciprocal_scalar(e1_d_pv);
 
-    Vector u     = mul1(tv_d_pv, inv_det);
-    Vector v     = mul1(di_d_qv, inv_det);
-    Vector hit_t = mul1(e2_d_qv, inv_det);
+    Simd3f u     = mul_scalar(tv_d_pv, inv_det);
+    Simd3f v     = mul_scalar(di_d_qv, inv_det);
+    Simd3f hit_t = mul_scalar(e2_d_qv, inv_det);
 
-    Vector uv = add1(u, v);
+    Simd3f uv = add_scalar(u, v);
 
-    return 0 != (_mm_ucomige_ss(u, simd::Zero) & _mm_ucomige_ss(simd::One, u) &
-                 _mm_ucomige_ss(v, simd::Zero) & _mm_ucomige_ss(simd::One, uv) &
-                 _mm_ucomige_ss(hit_t, min_t) & _mm_ucomige_ss(max_t, hit_t));
+    return 0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
+                 _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
+                 _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v));
 }
 
 static inline Simd3f interpolate_p(Simd3f const& a, Simd3f const& b, Simd3f const& c,

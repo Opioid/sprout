@@ -134,13 +134,13 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Simd3f ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
-    math::sign(ray_inv_direction, ray_signs);
+    sign(ray_inv_direction, ray_signs);
 
     Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
     Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
-                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
+                                         ray_max_t, ray_signs, node_stack, pi)) {
         float const tray_max_t = ray_max_t.x();
         ray.max_t              = tray_max_t;
 
@@ -196,13 +196,13 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
     Simd3f ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
-    math::sign(ray_inv_direction, ray_signs);
+    sign(ray_inv_direction, ray_signs);
 
     Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
     Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
-                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
+                                         ray_max_t, ray_signs, node_stack, pi)) {
         float tray_max_t = ray_max_t.x();
         ray.max_t        = tray_max_t;
 
@@ -245,13 +245,13 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
-    math::sign(ray_inv_direction, ray_signs);
+    sign(ray_inv_direction, ray_signs);
 
     Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
     Simd3f       ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
-                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
+                                         ray_max_t, ray_signs, node_stack, pi)) {
         ray.max_t = ray_max_t.x();
 
         Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
@@ -293,7 +293,7 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
     Simd3f ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
-    math::sign(ray_inv_direction, ray_signs);
+    sign(ray_inv_direction, ray_signs);
 
     Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
     Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);

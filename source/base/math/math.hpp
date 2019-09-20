@@ -97,32 +97,32 @@ static T constexpr mod(T k, T n) noexcept {
 }
 
 static inline float sqrt(float x) noexcept {
-    Vector xs    = _mm_load_ss(&x);
-    Vector res   = _mm_rsqrt_ss(xs);
-    Vector muls  = _mm_mul_ss(_mm_mul_ss(xs, res), res);
-    Vector sqrtx = _mm_mul_ss(
+    __m128 xs    = _mm_load_ss(&x);
+    __m128 res   = _mm_rsqrt_ss(xs);
+    __m128 muls  = _mm_mul_ss(_mm_mul_ss(xs, res), res);
+    __m128 sqrtx = _mm_mul_ss(
         xs, _mm_mul_ss(_mm_mul_ss(simd::Half, res), _mm_sub_ss(simd::Three, muls)));
     return _mm_cvtss_f32(sqrtx);
 }
 
 static inline float rsqrt(float x) noexcept {
-    Vector xs   = _mm_load_ss(&x);
-    Vector res  = _mm_rsqrt_ss(xs);
-    Vector muls = _mm_mul_ss(_mm_mul_ss(xs, res), res);
+    __m128 xs   = _mm_load_ss(&x);
+    __m128 res  = _mm_rsqrt_ss(xs);
+    __m128 muls = _mm_mul_ss(_mm_mul_ss(xs, res), res);
     return _mm_cvtss_f32(_mm_mul_ss(_mm_mul_ss(simd::Half, res), _mm_sub_ss(simd::Three, muls)));
 }
 
 static inline float rcp(float x) noexcept {
-    Vector xs   = _mm_load_ss(&x);
-    Vector rcp  = _mm_rcp_ss(xs);
-    Vector muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), xs);
+    __m128 xs   = _mm_load_ss(&x);
+    __m128 rcp  = _mm_rcp_ss(xs);
+    __m128 muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), xs);
     return _mm_cvtss_f32(_mm_sub_ss(_mm_add_ss(rcp, rcp), muls));
 }
 
 // https://twitter.com/ian_mallett/status/910006486453043203
 // copysign1(x) == std::copysign(1.f, x)
 static inline float copysign1(float x) noexcept {
-    Vector const result = _mm_and_ps(simd::Sign_mask, _mm_set1_ps(x));
+    __m128 const result = _mm_and_ps(simd::Sign_mask, _mm_set1_ps(x));
     return _mm_cvtss_f32(_mm_or_ps(result, simd::One));
 }
 

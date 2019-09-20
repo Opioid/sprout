@@ -37,7 +37,6 @@ target_sources(base
     "sampling.inl"
     "simd_matrix.hpp"
     "simd_matrix.inl"
-    "simd_vector.inl"
     "sincos.hpp"
     "transformation.hpp"
     "transformation.inl"

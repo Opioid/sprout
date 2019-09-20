@@ -1,6 +1,5 @@
 #include "triangle_bvh_helper.hpp"
 #include "base/math/plane.inl"
-#include "base/math/simd_vector.inl"
 #include "base/math/vector3.inl"
 
 namespace scene::shape::triangle::bvh {

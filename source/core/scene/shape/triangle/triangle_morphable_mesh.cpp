@@ -66,8 +66,8 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
     Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
     Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin.v, ray_direction.v, ray_inv_direction.v,
-                                         ray_min_t.v, ray_max_t.v, ray_signs, node_stack, pi)) {
+    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
+                                         ray_max_t, ray_signs, node_stack, pi)) {
         float const tray_max_t = ray_max_t.x();
         ray.max_t              = tray_max_t;
 
