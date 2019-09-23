@@ -98,8 +98,8 @@ inline bool AABB::intersect_p(ray const& ray) const noexcept {
 
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
-    Simd3f const ray_max_t = Simd3f::create_scalar(ray.max_t);
+    scalar const ray_min_t(ray.min_t);
+    scalar const ray_max_t(ray.max_t);
 
     Simd3f const bb_min(bounds[0]);
     Simd3f const bb_max(bounds[1]);
@@ -134,8 +134,8 @@ inline bool AABB::intersect_p(ray const& ray) const noexcept {
 inline bool AABB::intersect_p(ray const& ray, float& hit_t) const noexcept {
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
-    Simd3f const ray_max_t = Simd3f::create_scalar(ray.max_t);
+    scalar const ray_min_t(ray.min_t);
+    scalar const ray_max_t(ray.max_t);
 
     Simd3f const bb_min(bounds[0]);
     Simd3f const bb_max(bounds[1]);
@@ -179,8 +179,8 @@ inline bool AABB::intersect_p(ray const& ray, float& hit_t) const noexcept {
 inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const noexcept {
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
-    Simd3f const ray_max_t = Simd3f::create_scalar(ray.max_t);
+    scalar const ray_min_t(ray.min_t);
+    scalar const ray_max_t(ray.max_t);
 
     Simd3f const bb_min(bounds[0]);
     Simd3f const bb_max(bounds[1]);

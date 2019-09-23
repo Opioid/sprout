@@ -52,10 +52,10 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
     noexcept {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
-    Simd3f ray_origin(ray.origin.v);
+    Simd3f ray_origin(ray.origin);
     ray_origin = transform_point(world_to_object, ray_origin);
 
-    Simd3f ray_direction(ray.direction.v);
+    Simd3f ray_direction(ray.direction);
     ray_direction = transform_vector(world_to_object, ray_direction);
 
     Simd3f ray_inv_direction = reciprocal(ray_direction);

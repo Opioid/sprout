@@ -24,13 +24,13 @@ void dft_1d(float2* result, float const* source, int32_t num) {
         float const as = af * float(k);
 
         // Use SSE to work on blocks of 4
-        Simd3f const a = Simd3f::create_scalar(as);
+        Simd3f const a(as);
 
         Simd3f sum_x(simd::Zero);
         Simd3f sum_y(simd::Zero);
 
         for (int32_t x = 0; x < m4; x += 4) {
-            Simd3f const xf = Simd3f::create_scalar(float(x));
+            Simd3f const xf = Simd3f(float(x));
             Simd3f const xv = xf + zv;
             Simd3f const b  = a * xv;
 

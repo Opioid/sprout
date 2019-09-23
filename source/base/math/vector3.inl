@@ -747,10 +747,6 @@ inline Simd3f Simd3f::create_from_3(float const* f) noexcept {
     return _mm_and_ps(v, simd::Mask3);
 }
 
-inline Simd3f Simd3f::create_scalar(float s) noexcept {
-    return _mm_load_ss(&s);
-}
-
 inline float Simd3f::x() const noexcept {
     return _mm_cvtss_f32(v);
 }
@@ -767,10 +763,6 @@ static inline Simd3f operator+(float a, Simd3f const& b) noexcept {
 
 static inline Simd3f operator+(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_add_ps(a.v, b.v);
-}
-
-static inline Simd3f add_scalar(Simd3f const& a, Simd3f const& b) noexcept {
-    return _mm_add_ss(a.v, b.v);
 }
 
 static inline float horizontal_sum(Simd3f a) noexcept {
@@ -803,10 +795,6 @@ static inline Simd3f operator*(float a, Simd3f const& b) noexcept {
 
 static inline Simd3f operator*(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_mul_ps(a.v, b.v);
-}
-
-static inline Simd3f mul_scalar(Simd3f const& a, Simd3f const& b) noexcept {
-    return _mm_mul_ss(a.v, b.v);
 }
 
 static inline Simd3f operator/(Simd3f const& a, Simd3f const& b) noexcept {
@@ -865,12 +853,6 @@ static inline Simd3f reciprocal(Simd3f const& v) noexcept {
     __m128 mul = _mm_mul_ps(v.v, _mm_mul_ps(rcp, rcp));
 
     return _mm_sub_ps(_mm_add_ps(rcp, rcp), mul);
-}
-
-static inline Simd3f reciprocal_scalar(Simd3f const x) noexcept {
-    __m128 rcp  = _mm_rcp_ss(x.v);
-    __m128 muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), x.v);
-    return _mm_sub_ss(_mm_add_ss(rcp, rcp), muls);
 }
 
 static inline Simd3f min(Simd3f const& a, Simd3f const& b) noexcept {

@@ -107,8 +107,8 @@ inline bool Node::intersect_p(math::ray const& ray) const {
 inline bool Node::intersect_p(math::ray const& ray) const {
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
-    Simd3f const ray_max_t = Simd3f::create_scalar(ray.min_t);
+    scalar const ray_min_t(ray.min_t);
+    scalar const ray_max_t(ray.min_t);
 
     Simd3f const bb_min = Simd3f::create_from_3(min_.v);
     Simd3f const bb_max = Simd3f::create_from_3(max_.v);
