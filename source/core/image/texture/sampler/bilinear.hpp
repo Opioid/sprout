@@ -74,7 +74,8 @@ static inline float3 bilinear_simd(float3 const c[4], float s, float t) noexcept
     Simd3f const _s = Simd3f(1.f) - ss;
     Simd3f const _t = Simd3f(1.f) - st;
 
-    return float3(_t * (_s * c[0] + ss * c[1]) + st * (_s * c[2] + ss * c[3]));
+    return float3(_t * (_s * Simd3f(c[0]) + ss * Simd3f(c[1])) +
+                  st * (_s * Simd3f(c[2]) + ss * Simd3f(c[3])));
 }
 
 }  // namespace image::texture::sampler

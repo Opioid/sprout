@@ -729,6 +729,8 @@ inline Simd3f::Simd3f(__m128 m) noexcept : v(m) {}
 
 inline Simd3f::Simd3f(float s) noexcept : v(_mm_set1_ps(s)) {}
 
+inline Simd3f::Simd3f(Simd1f const& s) noexcept : v(SU_PERMUTE_PS(s.v, _MM_SHUFFLE(0, 0, 0, 0))) {}
+
 inline Simd3f::Simd3f(float sx, float sy, float sz) noexcept {
     __m128 x  = _mm_load_ss(&sx);
     __m128 y  = _mm_load_ss(&sy);

@@ -118,11 +118,13 @@ struct Simd3f {
 
     explicit Simd3f(float s) noexcept;
 
+    explicit Simd3f(Simd1f const& s) noexcept;
+
     Simd3f(float sx, float sy, float sz) noexcept;
 
     explicit Simd3f(float const* a) noexcept;
 
-    Simd3f(Vector3f_a const& o) noexcept;
+    explicit Simd3f(Vector3f_a const& o) noexcept;
 
     static Simd3f create_from_3(float const* f) noexcept;
 

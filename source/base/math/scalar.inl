@@ -21,10 +21,6 @@ inline float Simd1f::x() const noexcept {
     return _mm_cvtss_f32(v);
 }
 
-inline Simd3f Simd1f::splat_x() const noexcept {
-    return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
-}
-
 static inline Simd1f operator+(float a, Simd1f const& b) noexcept {
     __m128 const s = _mm_load_ss(&a);
 

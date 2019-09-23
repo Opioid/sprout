@@ -152,8 +152,8 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& inter
     if (index != 0xFFFFFFFF) {
         ray.max_t = ray_max_t.x();
 
-        intersection.u = u.splat_x();
-        intersection.v = v.splat_x();
+        intersection.u = Simd3f(u);
+        intersection.v = Simd3f(v);
 
         intersection.index = index;
         return true;
@@ -249,8 +249,8 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
     }
 
     if (index != 0xFFFFFFFF) {
-        intersection.u     = u.splat_x();
-        intersection.v     = v.splat_x();
+        intersection.u     = Simd3f(u);
+        intersection.v     = Simd3f(v);
         intersection.index = index;
         return true;
     }
@@ -418,7 +418,7 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter f
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    float2 const uv = data_.interpolate_uv(u.splat_x(), v.splat_x(), i);
+                    float2 const uv = data_.interpolate_uv(Simd3f(u), Simd3f(v), i);
 
                     auto const material = materials[data_.material_index(i)];
 
@@ -479,7 +479,7 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    float2 uv = data_.interpolate_uv(u.splat_x(), v.splat_x(), i);
+                    float2 uv = data_.interpolate_uv(Simd3f(u), Simd3f(v), i);
 
                     float3 const normal = data_.normal(i);
 
