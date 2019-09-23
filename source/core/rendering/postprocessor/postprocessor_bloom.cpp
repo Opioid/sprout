@@ -17,22 +17,23 @@ Bloom::Bloom(float angle, float alpha, float threshold, float intensity)
 void Bloom::init(scene::camera::Camera const& camera, thread::Pool& /*pool*/) {
     scratch_.resize(camera.sensor_dimensions());
 
-    float solid_angle = camera.pixel_solid_angle();
+    float const solid_angle = camera.pixel_solid_angle();
 
-    int32_t radius = static_cast<int32_t>(angle_ / solid_angle + 0.5f);
+    int32_t const radius = int32_t(angle_ / solid_angle + 0.5f);
 
-    int32_t width = 2 * radius + 1;
+    int32_t const width = 2 * radius + 1;
 
     kernel_.resize(width);
 
-    float const                    fr = float(radius) + 0.5f;
+    float const fr = float(radius);
+
     math::filter::Gaussian_functor gauss(fr * fr, alpha_);
 
     for (int32_t x = 0; x < width; ++x) {
-        int32_t o = -radius + x;
+        int32_t const o = -radius + x;
 
-        float fo = float(o);
-        float w  = gauss(fo * fo);
+        float const fo = float(o);
+        float const w  = gauss(fo * fo);
 
         kernel_[x] = K{o, w};
     }
@@ -51,16 +52,17 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 
     if (0 == pass) {
         for (int32_t i = begin; i < end; ++i) {
-            int2 c = source.coordinates_2(i);
+            int2 const c = source.coordinates_2(i);
 
             float3 accum(0.f);
             float  weight_sum = 0.f;
             for (auto& k : kernel_) {
-                int32_t kx = c[0] + k.o;
+                int32_t const kx = c[0] + k.o;
 
                 if (kx >= 0 && kx < d[0]) {
-                    float3 color = source.load(kx, c[1]).xyz();
-                    float  l     = spectrum::luminance(color);
+                    float3 const color = source.load(kx, c[1]).xyz();
+
+                    float const l = spectrum::luminance(color);
 
                     if (l > threshold) {
                         accum += k.w * color;
@@ -71,7 +73,7 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
             }
 
             if (weight_sum > 0.f) {
-                float3 bloom = accum / weight_sum;
+                float3 const bloom = accum / weight_sum;
                 scratch_.store(i, float4(bloom));
             } else {
                 scratch_.store(i, float4(0.f));
@@ -79,24 +81,24 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
         }
     } else {
         for (int32_t i = begin; i < end; ++i) {
-            int2 c = source.coordinates_2(i);
+            int2 const c = source.coordinates_2(i);
 
             float3 accum(0.f);
             float  weight_sum = 0.f;
             for (auto& k : kernel_) {
-                int32_t ky = c[1] + k.o;
+                int32_t const ky = c[1] + k.o;
 
                 if (ky >= 0 && ky < d[1]) {
-                    float3 bloom = scratch_.load(c[0], ky).xyz();
+                    float3 const bloom = scratch_.load(c[0], ky).xyz();
                     accum += k.w * bloom;
                     weight_sum += k.w;
                 }
             }
 
-            float4 s = source.load(i);
+            float4 const s = source.load(i);
 
             if (weight_sum > 0.f) {
-                float3 bloom = accum / weight_sum;
+                float3 const bloom = accum / weight_sum;
                 destination.store(i, float4(s.xyz() + intensity * bloom, s[3]));
             } else {
                 destination.store(i, s);

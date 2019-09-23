@@ -762,7 +762,7 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
 
             pipeline.add(new Backplate(backplate));
         } else if ("Bloom" == n->name) {
-            float const angle     = json::read_float(n->value, "angle", 0.05f);
+            float const angle     = json::read_float(n->value, "angle", 0.00002f);
             float const alpha     = json::read_float(n->value, "alpha", 0.005f);
             float const threshold = json::read_float(n->value, "threshold", 2.f);
             float const intensity = json::read_float(n->value, "intensity", 0.1f);
