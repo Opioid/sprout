@@ -455,11 +455,11 @@ static inline Vector3f_a normalize(Vector3f_a const& v) noexcept {
 static inline Vector3f_a reciprocal(Vector3f_a const& v) noexcept {
     //	return Vector3f_a(1.f / v[0], 1.f / v[1], 1.f / v[2]);
 
-    Vector sx = simd::load_float4(v.v);
+    __m128 sx = simd::load_float4(v.v);
 
-    Vector rcp = _mm_rcp_ps(sx);
+    __m128 rcp = _mm_rcp_ps(sx);
     rcp        = _mm_and_ps(rcp, simd::Mask3);
-    Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
+    __m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
     Vector3f_a result;
     simd::store_float4(result.v, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
@@ -490,7 +490,7 @@ static inline Vector3f_a constexpr saturate(Vector3f_a const& v) noexcept {
 
 static inline Vector3f_a exp(Vector3f_a const& v) {
     //	return Vector3f_a(math::exp(v[0]), math::exp(v[1]), math::exp(v[2]));
-    Vector x = simd::load_float4(v.v);
+    __m128 x = simd::load_float4(v.v);
     x        = exp(x);
 
     Vector3f_a r;
@@ -844,8 +844,8 @@ static inline Simd3f cross(Simd3f const& a, Simd3f const& b) noexcept {
 }
 
 static inline Simd3f sqrt(Simd3f const& x) noexcept {
-    Vector res  = _mm_rsqrt_ps(x.v);
-    Vector muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
+    __m128 res  = _mm_rsqrt_ps(x.v);
+    __m128 muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
     return _mm_mul_ps(x.v, _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls)));
 }
 

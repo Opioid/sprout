@@ -43,11 +43,10 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
 
     uint32_t n = 0;
 
-    Vector const ray_origin = simd::load_float4(ray.origin.v);
-    //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
     bvh::Node* nodes = tree_.nodes_;
 
@@ -75,7 +74,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
                 if (props[p].intersect(p, ray, worker, intersection.geo)) {
                     prop      = p;
                     hit       = true;
-                    ray_max_t = simd::load_float(&ray.max_t);
+                    ray_max_t = scalar(ray.max_t);
                 }
             }
         }
@@ -113,11 +112,11 @@ bool BVH_wrapper::intersect_fast(Ray& ray, Worker const& worker, Intersection& i
 
     uint32_t n = 0;
 
-    Vector const ray_origin = simd::load_float4(ray.origin.v);
-    //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
     bvh::Node* nodes = tree_.nodes_;
 
@@ -145,7 +144,7 @@ bool BVH_wrapper::intersect_fast(Ray& ray, Worker const& worker, Intersection& i
                 if (props[p].intersect_fast(p, ray, worker, intersection.geo)) {
                     prop      = p;
                     hit       = true;
-                    ray_max_t = simd::load_float(&ray.max_t);
+                    ray_max_t = scalar(ray.max_t);
                 }
             }
         }
@@ -181,11 +180,11 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
 
     uint32_t n = 0;
 
-    Vector const ray_origin = simd::load_float4(ray.origin.v);
-    //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
     bvh::Node* nodes = tree_.nodes_;
 
@@ -212,7 +211,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
                 uint32_t const p = finite_props[i];
                 if (props[p].intersect(p, ray, worker, normals)) {
                     hit       = true;
-                    ray_max_t = simd::load_float(&ray.max_t);
+                    ray_max_t = scalar(ray.max_t);
                 }
             }
         }
@@ -242,11 +241,10 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const noexce
 
     uint32_t n = 0;
 
-    Vector const ray_origin = simd::load_float4(ray.origin.v);
-    //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
     bvh::Node* nodes = tree_.nodes_;
 
@@ -305,11 +303,10 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
 
     float visibility = 1.f;
 
-    Vector const ray_origin = simd::load_float4(ray.origin.v);
-    //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
     bvh::Node* nodes = tree_.nodes_;
 
@@ -371,11 +368,10 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
 
     float3 absorption(1.f);
 
-    Vector const ray_origin = simd::load_float4(ray.origin.v);
-    //	Vector const ray_direction	   = simd::load_float4(ray.direction.v);
-    Vector const ray_inv_direction = simd::load_float4(ray.inv_direction.v);
-    Vector const ray_min_t         = simd::load_float(&ray.min_t);
-    Vector       ray_max_t         = simd::load_float(&ray.max_t);
+    Simd3f const ray_origin(ray.origin.v);
+    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
     bvh::Node* nodes = tree_.nodes_;
 

@@ -69,7 +69,7 @@ vec3 operator+(vec3 const& a, vec3 const& b) noexcept {
     return _mm_add_ps(a.v, b.v);
 }
 
-scalar SU_CALLCONV dot(vec3 const& a, vec3 const& b) noexcept {
+scalar dot(vec3 const& a, vec3 const& b) noexcept {
     vec3   mul  = _mm_mul_ps(a.v, b.v);
     vec3   shuf = _mm_movehdup_ps(mul.v);
     scalar sums = _mm_add_ss(mul.v, shuf.v);

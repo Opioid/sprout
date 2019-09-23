@@ -1,9 +1,10 @@
 #ifndef SU_BASE_SIMD_CONST_HPP
 #define SU_BASE_SIMD_CONST_HPP
 
-#include <cstdint>
 #include "memory/const.hpp"
 #include "simd.hpp"
+
+#include <cstdint>
 
 namespace simd {
 
@@ -13,10 +14,10 @@ namespace simd {
 struct alignas(16) Vector_f32 {
     union {
         float  f[4];
-        Vector v;
+        __m128 v;
     };
 
-    inline operator Vector() const noexcept {
+    inline operator __m128() const noexcept {
         return v;
     }
 
@@ -32,10 +33,10 @@ struct alignas(16) Vector_f32 {
 struct alignas(16) Vector_i32 {
     union {
         int32_t i[4];
-        Vector  v;
+        __m128  v;
     };
 
-    inline operator Vector() const noexcept {
+    inline operator __m128() const noexcept {
         return v;
     }
 
@@ -51,10 +52,10 @@ struct alignas(16) Vector_i32 {
 struct alignas(16) Vector_u32 {
     union {
         uint32_t u[4];
-        Vector   v;
+        __m128   v;
     };
 
-    inline operator Vector() const noexcept {
+    inline operator __m128() const noexcept {
         return v;
     }
 
