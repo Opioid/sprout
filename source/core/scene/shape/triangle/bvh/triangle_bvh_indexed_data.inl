@@ -53,8 +53,8 @@ bool Indexed_data<SV>::intersect_p(uint32_t index, ray const& ray) const noexcep
 }
 
 template <typename SV>
-bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
-                                 Simd3f& max_t, uint32_t index, Simd3f& u, Simd3f& v) const
+bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
+                                 scalar& max_t, uint32_t index, scalar& u, scalar& v) const
     noexcept {
     auto const tri = triangles_[index];
 
@@ -66,8 +66,8 @@ bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, 
 }
 
 template <typename SV>
-bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
-                                 Simd3f& max_t, uint32_t index) const noexcept {
+bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
+                                 scalar& max_t, uint32_t index) const noexcept {
     auto const tri = triangles_[index];
 
     float const* a = intersection_vertices_[tri.a].v;
@@ -79,7 +79,7 @@ bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, 
 
 template <typename SV>
 bool Indexed_data<SV>::intersect_p(Simd3f const& origin, Simd3f const& direction,
-                                   Simd3f const& min_t, Simd3f const& max_t, uint32_t index) const
+                                   scalar const& min_t, scalar const& max_t, uint32_t index) const
     noexcept {
     auto const tri = triangles_[index];
 

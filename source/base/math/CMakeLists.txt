@@ -35,6 +35,8 @@ target_sources(base
     "ray.inl"
     "sample_distribution.inl"
     "sampling.inl"
+    "scalar.hpp"
+    "scalar.inl"
     "sincos.hpp"
     "transformation.hpp"
     "transformation.inl"

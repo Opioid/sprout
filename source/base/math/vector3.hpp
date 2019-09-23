@@ -4,8 +4,6 @@
 #include "simd/simd.hpp"
 #include "vector.hpp"
 
-#include <algorithm>
-#include <cmath>
 #include <cstdint>
 
 namespace math {

@@ -136,13 +136,12 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
-    Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
-    Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
+    scalar ray_min_t(ray.min_t);
+    scalar ray_max_t(ray.max_t);
 
     if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
                                          ray_max_t, ray_signs, node_stack, pi)) {
-        float const tray_max_t = ray_max_t.x();
-        ray.max_t              = tray_max_t;
+        ray.max_t = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
@@ -198,13 +197,12 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
-    Simd3f ray_min_t = Simd3f::create_scalar(ray.min_t);
-    Simd3f ray_max_t = Simd3f::create_scalar(ray.max_t);
+    scalar ray_min_t(ray.min_t);
+    scalar ray_max_t(ray.max_t);
 
     if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
                                          ray_max_t, ray_signs, node_stack, pi)) {
-        float tray_max_t = ray_max_t.x();
-        ray.max_t        = tray_max_t;
+        ray.max_t = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
@@ -248,8 +246,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
-    Simd3f const ray_min_t = Simd3f::create_scalar(ray.min_t);
-    Simd3f       ray_max_t = Simd3f::create_scalar(ray.max_t);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
     if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
                                          ray_max_t, ray_signs, node_stack, pi)) {

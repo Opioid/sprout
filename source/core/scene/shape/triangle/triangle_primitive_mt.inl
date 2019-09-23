@@ -188,9 +188,9 @@ static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, 
     return false;
 }
 
-static inline bool intersect(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
-                             Simd3f& max_t, float const* a, float const* b, float const* c,
-                             Simd3f& u_out, Simd3f& v_out) noexcept {
+static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
+                             scalar& max_t, float const* a, float const* b, float const* c,
+                             scalar& u_out, scalar& v_out) noexcept {
     Simd3f ap(a);
     Simd3f bp(b);
     Simd3f cp(c);
@@ -202,18 +202,18 @@ static inline bool intersect(Simd3f const& origin, Simd3f const& direction, Simd
     Simd3f pvec = cross(direction, e2);
     Simd3f qvec = cross(tvec, e1);
 
-    Simd3f e1_d_pv = dot_scalar(e1, pvec);
-    Simd3f tv_d_pv = dot_scalar(tvec, pvec);
-    Simd3f di_d_qv = dot_scalar(direction, qvec);
-    Simd3f e2_d_qv = dot_scalar(e2, qvec);
+    scalar e1_d_pv = dot_scalar(e1, pvec);
+    scalar tv_d_pv = dot_scalar(tvec, pvec);
+    scalar di_d_qv = dot_scalar(direction, qvec);
+    scalar e2_d_qv = dot_scalar(e2, qvec);
 
-    Simd3f inv_det = reciprocal_scalar(e1_d_pv);
+    scalar inv_det = reciprocal(e1_d_pv);
 
-    Simd3f u     = mul_scalar(tv_d_pv, inv_det);
-    Simd3f v     = mul_scalar(di_d_qv, inv_det);
-    Simd3f hit_t = mul_scalar(e2_d_qv, inv_det);
+    scalar u     = tv_d_pv * inv_det;
+    scalar v     = di_d_qv * inv_det;
+    scalar hit_t = e2_d_qv * inv_det;
 
-    Simd3f uv = add_scalar(u, v);
+    scalar uv = u + v;
 
     if (0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
               _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
@@ -227,8 +227,8 @@ static inline bool intersect(Simd3f const& origin, Simd3f const& direction, Simd
     return false;
 }
 
-static inline bool intersect(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
-                             Simd3f& max_t, float const* a, float const* b,
+static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
+                             scalar& max_t, float const* a, float const* b,
                              float const* c) noexcept {
     Simd3f ap(a);
     Simd3f bp(b);
@@ -241,18 +241,18 @@ static inline bool intersect(Simd3f const& origin, Simd3f const& direction, Simd
     Simd3f pvec = cross(direction, e2);
     Simd3f qvec = cross(tvec, e1);
 
-    Simd3f e1_d_pv = dot_scalar(e1, pvec);
-    Simd3f tv_d_pv = dot_scalar(tvec, pvec);
-    Simd3f di_d_qv = dot_scalar(direction, qvec);
-    Simd3f e2_d_qv = dot_scalar(e2, qvec);
+    scalar e1_d_pv = dot_scalar(e1, pvec);
+    scalar tv_d_pv = dot_scalar(tvec, pvec);
+    scalar di_d_qv = dot_scalar(direction, qvec);
+    scalar e2_d_qv = dot_scalar(e2, qvec);
 
-    Simd3f inv_det = reciprocal_scalar(e1_d_pv);
+    scalar inv_det = reciprocal(e1_d_pv);
 
-    Simd3f u     = mul_scalar(tv_d_pv, inv_det);
-    Simd3f v     = mul_scalar(di_d_qv, inv_det);
-    Simd3f hit_t = mul_scalar(e2_d_qv, inv_det);
+    scalar u     = tv_d_pv * inv_det;
+    scalar v     = di_d_qv * inv_det;
+    scalar hit_t = e2_d_qv * inv_det;
 
-    Simd3f uv = add_scalar(u, v);
+    scalar uv = u + v;
 
     if (0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
               _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
@@ -325,8 +325,8 @@ static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c
     return 0 != (ca & cb & cc & cd & ce & cf);
 }
 
-static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, Simd3f const& min_t,
-                               Simd3f const& max_t, float const* a, float const* b,
+static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
+                               scalar const& max_t, float const* a, float const* b,
                                float const* c) noexcept {
     // Implementation C
 
@@ -341,18 +341,18 @@ static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, Si
     Simd3f pvec = cross(direction, e2);
     Simd3f qvec = cross(tvec, e1);
 
-    Simd3f e1_d_pv = dot_scalar(e1, pvec);
-    Simd3f tv_d_pv = dot_scalar(tvec, pvec);
-    Simd3f di_d_qv = dot_scalar(direction, qvec);
-    Simd3f e2_d_qv = dot_scalar(e2, qvec);
+    scalar e1_d_pv = dot_scalar(e1, pvec);
+    scalar tv_d_pv = dot_scalar(tvec, pvec);
+    scalar di_d_qv = dot_scalar(direction, qvec);
+    scalar e2_d_qv = dot_scalar(e2, qvec);
 
-    Simd3f inv_det = reciprocal_scalar(e1_d_pv);
+    scalar inv_det = reciprocal(e1_d_pv);
 
-    Simd3f u     = mul_scalar(tv_d_pv, inv_det);
-    Simd3f v     = mul_scalar(di_d_qv, inv_det);
-    Simd3f hit_t = mul_scalar(e2_d_qv, inv_det);
+    scalar u     = tv_d_pv * inv_det;
+    scalar v     = di_d_qv * inv_det;
+    scalar hit_t = e2_d_qv * inv_det;
 
-    Simd3f uv = add_scalar(u, v);
+    scalar uv = u + v;
 
     return 0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
                  _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &

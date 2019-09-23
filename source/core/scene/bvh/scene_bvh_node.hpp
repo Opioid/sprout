@@ -36,8 +36,8 @@ class Node {
 
     bool intersect_p(math::ray const& ray) const;
 
-    bool intersect_p(Simd3f const& origin, Simd3f const& inv_direction, Simd3f const& min_t,
-                     Simd3f const& max_t) const noexcept;
+    bool intersect_p(Simd3f const& origin, Simd3f const& inv_direction, scalar const& min_t,
+                     scalar const& max_t) const noexcept;
 
   private:
     struct alignas(16) Min {

@@ -5,6 +5,8 @@
 
 namespace math {
 
+struct Simd1f;
+
 template <typename T>
 struct Vector2;
 
@@ -19,6 +21,8 @@ struct alignas(16) Vector4f_a;
 struct alignas(16) Vector4i_a;
 
 }  // namespace math
+
+using scalar = math::Simd1f;
 
 using byte2  = math::Vector2<uint8_t>;
 using short2 = math::Vector2<int16_t>;

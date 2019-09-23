@@ -3,9 +3,13 @@
 
 #include "exp.hpp"
 #include "math.hpp"
+#include "scalar.inl"
 #include "simd/simd.inl"
 #include "vector2.inl"
 #include "vector3.hpp"
+
+#include <algorithm>
+#include <cmath>
 
 namespace math {
 
@@ -819,7 +823,7 @@ static inline Simd3f dot(Simd3f const& a, Simd3f const& b) noexcept {
     return SU_PERMUTE_PS(d, _MM_SHUFFLE(0, 0, 0, 0));
 }
 
-static inline Simd3f dot_scalar(Simd3f const& a, Simd3f const& b) noexcept {
+static inline Simd1f dot_scalar(Simd3f const& a, Simd3f const& b) noexcept {
     __m128 mul  = _mm_mul_ps(a.v, b.v);
     __m128 shuf = _mm_movehdup_ps(mul);
     __m128 sums = _mm_add_ss(mul, shuf);
