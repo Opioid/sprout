@@ -292,14 +292,14 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
         for (uint32_t j = triangles_start; j < triangles_end; ++j) {
             Index_triangle& t = triangles[j];
 
-            int32_t const a = previous_index + static_cast<int32_t>(indices[j * 3 + 0]);
-            t.i[0]          = a;
+            int32_t const a = previous_index + int32_t(indices[j * 3 + 0]);
+            t.i[0]          = uint32_t(a);
 
-            int32_t const b = a + static_cast<int32_t>(indices[j * 3 + 1]);
-            t.i[1]          = b;
+            int32_t const b = a + int32_t(indices[j * 3 + 1]);
+            t.i[1]          = uint32_t(b);
 
-            int32_t const c = b + static_cast<int32_t>(indices[j * 3 + 2]);
-            t.i[2]          = c;
+            int32_t const c = b + int32_t(indices[j * 3 + 2]);
+            t.i[2]          = uint32_t(c);
 
             previous_index = c;
 

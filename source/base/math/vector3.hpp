@@ -128,7 +128,12 @@ struct Simd3f {
 
     static Simd3f create_from_3(float const* f) noexcept;
 
+    static Simd3f create_from_3_unaligned(float const* f) noexcept;
+
     float x() const noexcept;
+    float y() const noexcept;
+    float z() const noexcept;
+    float w() const noexcept;
 
     Simd3f splat_x() const noexcept;
 

@@ -749,8 +749,29 @@ inline Simd3f Simd3f::create_from_3(float const* f) noexcept {
     return _mm_and_ps(v, simd::Mask3);
 }
 
+inline Simd3f Simd3f::create_from_3_unaligned(float const* f) noexcept {
+    // Reads an extra float which is zero'd
+    __m128 const v = _mm_loadu_ps(f);
+    return _mm_and_ps(v, simd::Mask3);
+}
+
 inline float Simd3f::x() const noexcept {
     return _mm_cvtss_f32(v);
+}
+
+inline float Simd3f::y() const noexcept {
+    __m128 const t = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
+    return _mm_cvtss_f32(t);
+}
+
+inline float Simd3f::z() const noexcept {
+    __m128 const t = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
+    return _mm_cvtss_f32(t);
+}
+
+inline float Simd3f::w() const noexcept {
+    __m128 const t = SU_PERMUTE_PS(v, _MM_SHUFFLE(3, 3, 3, 3));
+    return _mm_cvtss_f32(t);
 }
 
 inline Simd3f Simd3f::splat_x() const noexcept {

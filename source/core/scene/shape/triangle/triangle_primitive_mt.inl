@@ -482,6 +482,8 @@ static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shad
     simd::store_float4(r.v, v0.v);
     tc[0] = r[3];
     tc[1] = r[1];
+    //    tc[0] = v0.w();
+    //    tc[1] = v1.w();
 }
 
 static inline Simd3f interpolate_normal(Simd3f const& u, Simd3f const& v,

@@ -38,17 +38,19 @@ static inline scalar rsqrt(scalar x) noexcept {
 struct vec3 {
     vec3() noexcept = default;
 
-    vec3(__m128 m) : v(m) {}
+    vec3(__m128 m) noexcept : v(m) {}
 
-    vec3(float s) : v(_mm_set1_ps(s)) {}
+    vec3(float s) noexcept : v(_mm_set1_ps(s)) {}
 
-    vec3(float sx, float sy, float sz) {
-        __m128 x  = _mm_load_ss(&sx);
-        __m128 y  = _mm_load_ss(&sy);
-        __m128 z  = _mm_load_ss(&sz);
-        __m128 xy = _mm_unpacklo_ps(x, y);
-        v         = _mm_movelh_ps(xy, z);
-    }
+    //    vec3(float sx, float sy, float sz) noexcept {
+    //        __m128 x  = _mm_load_ss(&sx);
+    //        __m128 y  = _mm_load_ss(&sy);
+    //        __m128 z  = _mm_load_ss(&sz);
+    //        __m128 xy = _mm_unpacklo_ps(x, y);
+    //        v         = _mm_movelh_ps(xy, z);
+    //    }
+
+    vec3(float sx, float sy, float sz) noexcept : v(_mm_set_ps(0.f, sz, sy, sx)) {}
 
     __m128 v;
 };
