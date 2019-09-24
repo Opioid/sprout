@@ -201,9 +201,9 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
 void make_f_ss_table(std::ostream& stream) noexcept {
     uint32_t constexpr Num_samples = 32;
 
-    stream << "uint32_t constexpr E_size = " << Num_samples << ";\n\n";
+    stream << "SU_GLOBALCONST(uint32_t) E_size = " << Num_samples << ";\n\n";
 
-    stream << "float constexpr E[" << Num_samples << "][" << Num_samples << "] = {\n";
+    stream << "SU_GLOBALCONST(float) E[" << Num_samples << "][" << Num_samples << "] = {\n";
 
     float constexpr step = 1.f / float(Num_samples - 1);
 
@@ -250,10 +250,10 @@ void make_f_ss_table(std::ostream& stream) noexcept {
 void make_f_s_ss_table(std::ostream& stream) noexcept {
     uint32_t constexpr Num_samples = 32;
 
-    stream << "uint32_t constexpr E_s_size = " << Num_samples << ";\n\n";
+    stream << "SU_GLOBALCONST(uint32_t) E_s_size = " << Num_samples << ";\n\n";
 
-    stream << "float constexpr E_s[" << Num_samples << "][" << Num_samples << "][" << Num_samples
-           << "] = {\n";
+    stream << "SU_GLOBALCONST(float) E_s[" << Num_samples << "][" << Num_samples << "]["
+           << Num_samples << "] = {\n";
 
     float constexpr step = 1.f / float(Num_samples - 1);
 
@@ -312,10 +312,10 @@ void make_f_s_ss_table(std::ostream& stream) noexcept {
 void make_f_sd_ss_table(std::ostream& stream) noexcept {
     uint32_t constexpr Num_samples = 32;
 
-    stream << "uint32_t constexpr E_sd_size = " << Num_samples << ";\n\n";
+    stream << "static uint32_t constexpr E_sd_size = " << Num_samples << ";\n\n";
 
-    stream << "float constexpr E_sd[" << Num_samples << "][" << Num_samples << "][" << Num_samples
-           << "] = {\n";
+    stream << "static float constexpr E_sd[" << Num_samples << "][" << Num_samples << "]["
+           << Num_samples << "] = {\n";
 
     float constexpr step = 1.f / float(Num_samples - 1);
 
