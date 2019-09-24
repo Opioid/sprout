@@ -32,7 +32,7 @@
 #include <istream>
 #include <sstream>
 
-//#include "extension/procedural/starburst/starburst.hpp"
+
 //#include "core/scene/material/substitute/substitute_test.hpp"
 //#include "core/scene/material/glass/glass_test.hpp"
 //#include "core/testing/testing_cdf.hpp"
