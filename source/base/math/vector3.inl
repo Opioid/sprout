@@ -731,6 +731,12 @@ inline Simd3f::Simd3f(float s) noexcept : v(_mm_set1_ps(s)) {}
 
 inline Simd3f::Simd3f(Simd1f const& s) noexcept : v(SU_PERMUTE_PS(s.v, _MM_SHUFFLE(0, 0, 0, 0))) {}
 
+inline Simd3f::Simd3f(float sx, float sy) noexcept {
+    __m128 x = _mm_load_ss(&sx);
+    __m128 y = _mm_load_ss(&sy);
+    v        = _mm_unpacklo_ps(x, y);
+}
+
 inline Simd3f::Simd3f(float sx, float sy, float sz) noexcept {
     __m128 x  = _mm_load_ss(&sx);
     __m128 y  = _mm_load_ss(&sy);
@@ -800,6 +806,12 @@ static inline float horizontal_sum(Simd3f a) noexcept {
     shuf        = _mm_movehl_ps(shuf, sums);
     sums        = _mm_add_ss(sums, shuf);
     return _mm_cvtss_f32(sums);
+}
+
+static inline Simd3f operator-(float a, Simd3f const& b) noexcept {
+    __m128 const s = _mm_set1_ps(a);
+
+    return _mm_sub_ps(s, b.v);
 }
 
 static inline Simd3f operator-(Simd3f const& a, Simd3f const& b) noexcept {

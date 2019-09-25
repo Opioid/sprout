@@ -400,13 +400,14 @@ static inline Sincos sincos(float xf) {
     xmm1 = _mm_xor_ps(xmm1, sign_bit_sin);
     xmm2 = _mm_xor_ps(xmm2, sign_bit_cos);
 
-    float s;
-    float c;
+    //    float s;
+    //    float c;
 
-    _mm_store_ss(&s, xmm1);
-    _mm_store_ss(&c, xmm2);
+    //    _mm_store_ss(&s, xmm1);
+    //    _mm_store_ss(&c, xmm2);
 
-    return {s, c};
+    //    return {s, c};
+    return {_mm_cvtss_f32(xmm1), _mm_cvtss_f32(xmm2)};
 }
 
 }  // namespace math

@@ -120,6 +120,8 @@ struct Simd3f {
 
     explicit Simd3f(Simd1f const& s) noexcept;
 
+    Simd3f(float sx, float sy) noexcept;
+
     Simd3f(float sx, float sy, float sz) noexcept;
 
     explicit Simd3f(float const* a) noexcept;

@@ -95,8 +95,16 @@ static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_do
 
 static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float n_dot_wo,
                                                            float alpha2) noexcept {
-    float const t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
-    float const t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
+    //    float const t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
+    //    float const t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
+
+    Simd3f const n_dot(n_dot_wi, n_dot_wo);
+    Simd3f const a2(alpha2);
+
+    Simd3f const t = sqrt(a2 + (1.f - a2) * (n_dot * n_dot));
+
+    float const t_wi = t.x();
+    float const t_wo = t.y();
 
     return {0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi), t_wo + n_dot_wo};
 }
