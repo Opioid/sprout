@@ -53,6 +53,10 @@ static inline Simd1f operator/(Simd1f const& a, Simd1f const& b) noexcept {
     return _mm_div_ss(a.v, b.v);
 }
 
+static inline Simd1f operator-(Simd1f const& s) noexcept {
+    return _mm_sub_ss(simd::Zero, s.v);
+}
+
 static inline Simd1f sqrt(Simd1f const& x) noexcept {
     __m128 const res  = _mm_rsqrt_ss(x.v);
     __m128 const muls = _mm_mul_ss(_mm_mul_ss(x.v, res), res);

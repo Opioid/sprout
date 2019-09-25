@@ -836,6 +836,10 @@ static inline Simd3f operator/(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_div_ps(a.v, b.v);
 }
 
+static inline Simd3f operator-(Simd3f const& v) noexcept {
+    return _mm_sub_ps(_mm_set1_ps(0.0), v.v);
+}
+
 static inline Simd3f dot(Simd3f const& a, Simd3f const& b) noexcept {
     __m128 mul  = _mm_mul_ps(a.v, b.v);
     __m128 shuf = _mm_movehdup_ps(mul);
