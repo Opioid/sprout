@@ -81,7 +81,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        if (!sample_result.type.test(Bxdf_type::Caustic)) {
+        if (!sample_result.type.is(Bxdf_type::Caustic)) {
             if (ray.depth > 0 || settings_.photons_not_only_through_specular) {
                 result += throughput * worker.photon_li(intersection, material_sample);
             }
@@ -110,7 +110,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         ray.max_t = scene::Ray_max_t;
 
-        if (sample_result.type.test(Bxdf_type::Transmission)) {
+        if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         }
 

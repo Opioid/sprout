@@ -338,7 +338,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
             for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
                 auto const& photon = photons_[i];
 
-                if (photon.properties.test_not(Photon::Property::Volumetric)) {
+                if (photon.properties.no(Photon::Property::Volumetric)) {
                     continue;
                 }
 
@@ -368,7 +368,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
             for (int32_t i = cell[0], len = cell[1]; i < len; ++i) {
                 auto const& photon = photons_[i];
 
-                if (photon.properties.test(Photon::Property::Volumetric)) {
+                if (photon.properties.is(Photon::Property::Volumetric)) {
                     continue;
                 }
 

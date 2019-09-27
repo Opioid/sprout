@@ -121,7 +121,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             break;
         }
 
-        if (sample_result.type.test(Bxdf_type::Caustic)) {
+        if (sample_result.type.is(Bxdf_type::Caustic)) {
 #ifdef ONLY_CAUSTICS
             caustic_path |= maybe_caustic;
 #else
@@ -129,7 +129,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
                 break;
             }
 #endif
-        } else if (sample_result.type.test_not(Bxdf_type::Straight)) {
+        } else if (sample_result.type.no(Bxdf_type::Straight)) {
             primary_ray = false;
             filter      = Filter::Nearest;
         }
@@ -139,7 +139,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (material_sample.ior_greater_one()) {
-            transparent &= sample_result.type.test(Bxdf_type::Straight);
+            transparent &= sample_result.type.is(Bxdf_type::Straight);
 
             throughput *= sample_result.reflection / sample_result.pdf;
 
@@ -153,7 +153,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
         ray.max_t = scene::Ray_max_t;
 
-        if (sample_result.type.test(Bxdf_type::Transmission)) {
+        if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         }
 

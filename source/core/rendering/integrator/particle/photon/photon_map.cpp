@@ -71,7 +71,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
 
         auto const indirect_photons = std::partition(
             photons_, photons_ + num_photons_,
-            [](Photon const& p) { return p.properties.test(Photon::Property::First_hit); });
+            [](Photon const& p) { return p.properties.is(Photon::Property::First_hit); });
 
         uint32_t const num_caustics = uint32_t(std::distance(photons_, indirect_photons));
 

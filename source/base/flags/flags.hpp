@@ -17,20 +17,20 @@ struct Flags {
         return impl_type(0) != values;
     }
 
-    constexpr bool test(T flag) const noexcept {
+    constexpr bool is(T flag) const noexcept {
         return static_cast<impl_type>(flag) == (values & static_cast<impl_type>(flag));
     }
 
-    constexpr bool test_not(T flag) const noexcept {
+    constexpr bool no(T flag) const noexcept {
         return 0 == (values & static_cast<impl_type>(flag));
     }
 
-    constexpr bool test_any(T a, T b) const noexcept {
+    constexpr bool any(T a, T b) const noexcept {
         return static_cast<impl_type>(a) == (values & static_cast<impl_type>(a)) ||
                static_cast<impl_type>(b) == (values & static_cast<impl_type>(b));
     }
 
-    constexpr bool test_any(T a, T b, T c) const noexcept {
+    constexpr bool any(T a, T b, T c) const noexcept {
         return static_cast<impl_type>(a) == (values & static_cast<impl_type>(a)) ||
                static_cast<impl_type>(b) == (values & static_cast<impl_type>(b)) ||
                static_cast<impl_type>(c) == (values & static_cast<impl_type>(c));

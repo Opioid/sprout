@@ -106,7 +106,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         }
 
         if (material_sample.ior_greater_one()) {
-            if (sample_result.type.test(Bxdf_type::Caustic)) {
+            if (sample_result.type.is(Bxdf_type::Caustic)) {
                 caustic_ray = true;
             } else {
                 if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
@@ -149,7 +149,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
         ray.max_t = scene::Ray_max_t;
 
-        if (sample_result.type.test(Bxdf_type::Transmission)) {
+        if (sample_result.type.is(Bxdf_type::Transmission)) {
             auto const ior = worker.interface_change_ior(sample_result.wi, intersection);
 
             float const eta = ior.eta_i / ior.eta_t;

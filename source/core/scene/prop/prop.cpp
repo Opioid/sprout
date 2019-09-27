@@ -116,15 +116,15 @@ void Prop::calculate_world_transformation(uint32_t self, Scene& scene) noexcept 
 }
 
 bool Prop::visible_in_camera() const noexcept {
-    return properties_.test(Property::Visible_in_camera);
+    return properties_.is(Property::Visible_in_camera);
 }
 
 bool Prop::visible_in_reflection() const noexcept {
-    return properties_.test(Property::Visible_in_reflection);
+    return properties_.is(Property::Visible_in_reflection);
 }
 
 bool Prop::visible_in_shadow() const noexcept {
-    return properties_.test(Property::Visible_in_shadow);
+    return properties_.is(Property::Visible_in_shadow);
 }
 
 void Prop::set_visible_in_shadow(bool value) noexcept {
@@ -167,7 +167,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
         return false;
     }
 
-    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
+    if (properties_.is(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -183,7 +183,7 @@ bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
         return false;
     }
 
-    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
+    if (properties_.is(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -203,7 +203,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Norma
         return false;
     }
 
-    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
+    if (properties_.is(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -218,7 +218,7 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
         return false;
     }
 
-    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
+    if (properties_.is(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return false;
     }
 
@@ -239,11 +239,11 @@ void Prop::set_shape(Shape* shape) noexcept {
 
 bool Prop::visible(uint32_t ray_depth) const noexcept {
     if (0 == ray_depth) {
-        if (!properties_.test(Property::Visible_in_camera)) {
+        if (!properties_.is(Property::Visible_in_camera)) {
             return false;
         }
     } else {
-        if (!properties_.test(Property::Visible_in_reflection)) {
+        if (!properties_.is(Property::Visible_in_reflection)) {
             return false;
         }
     }
@@ -289,7 +289,7 @@ float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& 
         return 0.f;
     }
 
-    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
+    if (properties_.is(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         return 0.f;
     }
 
@@ -314,7 +314,7 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker 
         return true;
     }
 
-    if (properties_.test(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
+    if (properties_.is(Property::Test_AABB) && !aabb_.intersect_p(ray)) {
         ta = float3(1.f);
         return true;
     }
@@ -327,11 +327,11 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker 
 }
 
 bool Prop::has_masked_material() const noexcept {
-    return properties_.test(Property::Masked_material);
+    return properties_.is(Property::Masked_material);
 }
 
 bool Prop::has_tinted_shadow() const noexcept {
-    return properties_.test(Property::Tinted_shadow);
+    return properties_.is(Property::Tinted_shadow);
 }
 
 size_t Prop::num_bytes() const noexcept {
