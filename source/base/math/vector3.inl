@@ -871,8 +871,8 @@ static inline Simd3f cross(Simd3f const& a, Simd3f const& b) noexcept {
 }
 
 static inline Simd3f sqrt(Simd3f const& x) noexcept {
-    __m128 res  = _mm_rsqrt_ps(x.v);
-    __m128 muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
+    __m128 const res  = _mm_rsqrt_ps(x.v);
+    __m128 const muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
     return _mm_mul_ps(x.v, _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls)));
 }
 
