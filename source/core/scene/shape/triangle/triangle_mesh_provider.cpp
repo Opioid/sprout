@@ -498,19 +498,19 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         memory::Array<Index_triangle> triangles(num_indices / 3);
 
         if (4 == index_bytes) {
-            int32_t* indices32 = reinterpret_cast<int32_t*>(indices);
-
             if (delta_indices) {
+                int32_t const* indices32 = reinterpret_cast<int32_t const*>(indices);
                 fill_triangles_delta(num_parts, parts, indices32, triangles.data());
             } else {
+                uint32_t const* indices32 = reinterpret_cast<uint32_t const*>(indices);
                 fill_triangles(num_parts, parts, indices32, triangles.data());
             }
         } else {
-            int16_t* indices16 = reinterpret_cast<int16_t*>(indices);
-
             if (delta_indices) {
+                int16_t const* indices16 = reinterpret_cast<int16_t const*>(indices);
                 fill_triangles_delta(num_parts, parts, indices16, triangles.data());
             } else {
+                uint16_t const* indices16 = reinterpret_cast<uint16_t const*>(indices);
                 fill_triangles(num_parts, parts, indices16, triangles.data());
             }
         }
