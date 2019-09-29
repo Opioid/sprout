@@ -12,4 +12,5 @@ AlignConsecutiveDeclarations: true
 AlignOperands: true
 PenaltyBreakAssignment: 100
 DerivePointerAlignment: false
+IncludeBlocks: Preserve
 ...
