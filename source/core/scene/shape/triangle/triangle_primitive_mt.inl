@@ -402,7 +402,7 @@ static inline void interpolate_data(const Shading_vertex_MT& a, const Shading_ve
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline Shading_vertex_MTC::Shading_vertex_MTC(float const* n, float const* t, float2 uv) noexcept
+inline Shading_vertex_MTC::Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv) noexcept
     : n_u(n, uv[0]), t_v(t, uv[1]) {
     // Not too happy about handling degenerate tangents here (only one very special case even)
     if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {

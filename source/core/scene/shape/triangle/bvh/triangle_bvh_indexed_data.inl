@@ -274,7 +274,7 @@ void Indexed_data<SV>::allocate_triangles(uint32_t             num_triangles,
     }
 
     for (uint32_t i = 0; i < num_vertices; ++i) {
-        intersection_vertices_[i] = float3(vertices.p(i));
+        intersection_vertices_[i] = vertices.p(i);
 
         shading_vertices_[i] = SV(vertices.n(i), vertices.t(i), vertices.uv(i));
     }

@@ -38,9 +38,9 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
                 Simd_AABB aabb(AABB::empty());
 
                 for (int32_t i = begin; i < end; ++i) {
-                    auto const a = Simd3f::create_from_3_unaligned(vertices.p(triangles[i].i[0]));
-                    auto const b = Simd3f::create_from_3_unaligned(vertices.p(triangles[i].i[1]));
-                    auto const c = Simd3f::create_from_3_unaligned(vertices.p(triangles[i].i[2]));
+                    auto const a = Simd3f(vertices.p(triangles[i].i[0]));
+                    auto const b = Simd3f(vertices.p(triangles[i].i[1]));
+                    auto const c = Simd3f(vertices.p(triangles[i].i[2]));
 
                     auto const min = triangle_min(a, b, c);
                     auto const max = triangle_max(a, b, c);
