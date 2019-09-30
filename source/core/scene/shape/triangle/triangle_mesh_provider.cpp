@@ -369,7 +369,10 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     bool delta_indices = false;
 
-    bool interleaved_vertex_stream = true;
+    bool interleaved_vertex_stream = false;
+
+    bool has_uvs      = false;
+    bool has_tangents = false;
 
     for (auto& n : geometry_value.GetObject()) {
         if ("parts" == n.name) {
@@ -397,14 +400,19 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
                     num_vertices = json::read_uint(vn.value);
                 } else if ("layout" == vn.name) {
                     for (auto const& ln : vn.value.GetArray()) {
-                        if ("Bitangent_sign" == json::read_string(ln, "semantic_name")) {
+                        std::string const semantic_name = json::read_string(ln, "semantic_name");
+                        if ("Tangent" == semantic_name) {
+                            has_tangents = true;
+                        } else if ("Texture_coordinate" == semantic_name) {
+                            has_uvs = true;
+                        } else if ("Bitangent_sign" == semantic_name) {
                             if ("UInt8" != json::read_string(ln, "encoding")) {
                                 logging::push_error("Bitangent_sign must be encoded as UInt8.");
                                 return nullptr;
                             }
 
-                            if (0 != json::read_uint(ln, "stream")) {
-                                interleaved_vertex_stream = false;
+                            if (0 == json::read_uint(ln, "stream")) {
+                                interleaved_vertex_stream = true;
                             }
                         }
                     }
@@ -438,6 +446,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     json_string.release();
 
+    bool const has_uvs_and_tangents = has_uvs && has_tangents;
+
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 
     if (0 == num_vertices) {
@@ -461,19 +471,25 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
         vertex_stream = new Vertex_stream_interleaved(num_vertices, vertices);
     } else {
-        packed_float3* p   = new packed_float3[num_vertices];
-        packed_float3* n   = new packed_float3[num_vertices];
-        packed_float3* t   = new packed_float3[num_vertices];
-        float2*        uv  = new float2[num_vertices];
-        uint8_t*       bts = new uint8_t[num_vertices];
+        packed_float3* p = new packed_float3[num_vertices];
+        packed_float3* n = new packed_float3[num_vertices];
 
         stream.read(reinterpret_cast<char*>(p), num_vertices * sizeof(packed_float3));
         stream.read(reinterpret_cast<char*>(n), num_vertices * sizeof(packed_float3));
-        stream.read(reinterpret_cast<char*>(t), num_vertices * sizeof(packed_float3));
-        stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
-        stream.read(reinterpret_cast<char*>(bts), num_vertices * sizeof(uint8_t));
 
-        vertex_stream = new Vertex_stream_separate(num_vertices, p, n, t, uv, bts);
+        if (has_uvs_and_tangents) {
+            packed_float3* t   = new packed_float3[num_vertices];
+            float2*        uv  = new float2[num_vertices];
+            uint8_t*       bts = new uint8_t[num_vertices];
+
+            stream.read(reinterpret_cast<char*>(t), num_vertices * sizeof(packed_float3));
+            stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
+            stream.read(reinterpret_cast<char*>(bts), num_vertices * sizeof(uint8_t));
+
+            vertex_stream = new Vertex_stream_separate(num_vertices, p, n, t, uv, bts);
+        } else {
+            vertex_stream = new Vertex_stream_separate_compact(num_vertices, p, n);
+        }
     }
 
     if (0 == num_indices) {
