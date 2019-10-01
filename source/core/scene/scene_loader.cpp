@@ -64,8 +64,9 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
     scene.calculate_num_interpolation_frames(camera ? camera->frame_step() : 0,
                                              camera ? camera->frame_duration() : 0);
 
-    uint32_t const parent_id = 0xFFFFFFFF;
-    bool const     success   = load(filename, take_mount_folder, parent_id, scene);
+    uint32_t const parent_id = prop::Null;
+
+    bool const success = load(filename, take_mount_folder, parent_id, scene);
 
     if (success) {
         scene.finish();
@@ -197,6 +198,8 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         return;
     }
 
+    uint32_t previous_entity_id = prop::Null;
+
     for (auto const& e : entities_value.GetArray()) {
         auto const file_node = e.FindMember("file");
         if (e.MemberEnd() != file_node) {
@@ -268,7 +271,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (prop::Null != parent_id) {
-            scene.prop_attach(parent_id, entity_id);
+            scene.prop_attach(parent_id, entity_id, previous_entity_id);
         }
 
         if (!animation) {
@@ -286,6 +289,8 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         if (children) {
             load_entities(*children, entity_id, local_materials, scene);
         }
+
+        previous_entity_id = entity_id;
     }
 }
 

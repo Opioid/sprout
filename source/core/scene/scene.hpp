@@ -148,7 +148,7 @@ class Scene {
     uint32_t create_extension(Extension* extension) noexcept;
     uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
 
-    void prop_attach(uint32_t parent_id, uint32_t child_id) noexcept;
+    void prop_attach(uint32_t parent_id, uint32_t child_id, uint32_t sibbling_hint) noexcept;
 
     void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 

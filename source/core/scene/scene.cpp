@@ -396,7 +396,7 @@ uint32_t Scene::create_extension(Extension* extension, std::string const& name) 
     return dummy;
 }
 
-void Scene::prop_attach(uint32_t parent_id, uint32_t child_id) noexcept {
+void Scene::prop_attach(uint32_t parent_id, uint32_t child_id, uint32_t sibbling_hint) noexcept {
     prop_detach_self(child_id);
 
     prop::Prop_topology& st = prop_topology_[parent_id];
@@ -412,7 +412,11 @@ void Scene::prop_attach(uint32_t parent_id, uint32_t child_id) noexcept {
     if (prop::Null == st.child) {
         st.child = child_id;
     } else {
-        prop_add_sibling(st.child, child_id);
+        if (prop::Null != sibbling_hint && prop_topology_[sibbling_hint].parent == parent_id) {
+            prop_add_sibling(sibbling_hint, child_id);
+        } else {
+            prop_add_sibling(st.child, child_id);
+        }
     }
 }
 

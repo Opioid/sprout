@@ -345,8 +345,12 @@ void Prop::propagate_transformation(uint32_t self, Scene& scene) noexcept {
 
     on_set_transformation(self, scene);
 
+    Keyframe const* frames = frames_;
+
+    uint32_t const num_world_frames = num_world_frames_;
+
     for (uint32_t child = scene.prop_topology(self).child; Null != child;) {
-        scene.prop(child)->inherit_transformation(child, frames_, num_world_frames_, scene);
+        scene.prop(child)->inherit_transformation(child, frames, num_world_frames, scene);
 
         child = scene.prop_topology(child).next;
     }
