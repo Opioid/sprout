@@ -16,7 +16,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-// #define ONLY_CAUSTICS
+#define ONLY_CAUSTICS
 
 namespace rendering::integrator::surface {
 

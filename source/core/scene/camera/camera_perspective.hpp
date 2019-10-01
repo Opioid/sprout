@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_CAMERA_PERSPECTIVE_HPP
 #define SU_CORE_SCENE_CAMERA_PERSPECTIVE_HPP
 
+#include "base/math/frustum.hpp"
 #include "base/math/matrix3x3.hpp"
 #include "camera.hpp"
 
@@ -39,6 +40,8 @@ class Perspective final : public Camera {
                 Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                 Camera_sample_to& sample) const noexcept override final;
 
+    Frustum frustum() const noexcept override final;
+
     void set_fov(float fov) noexcept;
 
     void set_lens(Lens const& lens) noexcept;
@@ -70,6 +73,8 @@ class Perspective final : public Camera {
     float focus_distance_;
 
     float a_;
+
+    Frustum frustum_;
 };
 
 }  // namespace scene::camera

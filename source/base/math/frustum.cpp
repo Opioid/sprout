@@ -1,9 +1,18 @@
 #include "frustum.hpp"
+#include "aabb.inl"
 #include "plane.inl"
 
 namespace math {
 
 Frustum::Frustum() noexcept = default;
+
+Frustum::Frustum(Plane const& left, Plane const& right, Plane const& top,
+                 Plane const& bottom) noexcept {
+    planes_[0] = left;
+    planes_[1] = right;
+    planes_[2] = top;
+    planes_[3] = bottom;
+}
 
 Frustum::Frustum(float4x4 const& combo_matrix) noexcept {
     set_from_matrix(combo_matrix);
@@ -68,6 +77,25 @@ bool Frustum::intersect(float3 const& p, float radius) const noexcept {
     }
 
     return true;
+}
+
+AABB Frustum::calculate_aabb() const noexcept {
+    float3 points[3];
+
+    points[0] = plane::intersection(planes_[0], planes_[2], planes_[3]);  // Left  Bottom  Far
+    points[1] = plane::intersection(planes_[1], planes_[2], planes_[3]);  // Right Bottom  Far
+
+    points[2] = plane::intersection(planes_[0], planes_[1], planes_[2]);
+
+    float3 min(100000.f, -100000.f, 100000.f);
+    float3 max(-100000.f, 100000.f, -100000.f);
+
+    for (size_t i = 0; i < 3; ++i) {
+        min = math::min(min, points[i]);
+        max = math::max(max, points[i]);
+    }
+
+    return AABB(min, max);
 }
 
 }  // namespace math

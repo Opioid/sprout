@@ -326,6 +326,10 @@ inline AABB AABB::merge(AABB const& other) const noexcept {
     return AABB(math::min(bounds[0], other.bounds[0]), math::max(bounds[1], other.bounds[1]));
 }
 
+inline AABB AABB::intersection(AABB const& other) const noexcept {
+    return AABB(math::max(bounds[0], other.bounds[0]), math::min(bounds[1], other.bounds[1]));
+}
+
 inline void AABB::merge_assign(AABB const& other) noexcept {
     bounds[0] = math::min(bounds[0], other.bounds[0]);
     bounds[1] = math::max(bounds[1], other.bounds[1]);

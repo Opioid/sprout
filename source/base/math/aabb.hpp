@@ -53,6 +53,8 @@ struct AABB {
 
     AABB merge(AABB const& other) const noexcept;
 
+    AABB intersection(AABB const& other) const noexcept;
+
     void merge_assign(AABB const& other) noexcept;
 
     void clip_min(float d, uint8_t axis) noexcept;

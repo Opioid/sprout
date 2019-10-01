@@ -1,5 +1,6 @@
 #include "photon_mapper.hpp"
 #include "base/math/aabb.inl"
+#include "base/math/frustum.hpp"
 #include "base/memory/align.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "photon.hpp"
@@ -7,6 +8,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/particle/particle_importance.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
@@ -16,6 +18,8 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
+
+#define ISLAND_MODE
 
 namespace rendering::integrator::particle::photon {
 
@@ -38,8 +42,12 @@ void Mapper::start_pixel() noexcept {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t /*iteration*/,
                       Worker& worker) noexcept {
-    AABB const& bounds = settings_.full_light_path ? worker.scene().aabb()
-                                                   : worker.scene().caustic_aabb();
+    Frustum const frustum = worker.camera().frustum();
+
+    AABB const& world_bounds = settings_.full_light_path ? worker.scene().aabb()
+                                                         : worker.scene().caustic_aabb();
+
+    AABB const bounds = world_bounds.intersection(frustum.calculate_aabb());
 
     bool const infinite_world = worker.scene().is_infinite();
 
@@ -53,9 +61,9 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
         uint32_t       num_photons;
         uint32_t       light_id;
         Sample_from    light_sample;
-        uint32_t const num_iterations = trace_photon(frame, bounds, infinite_world, caustics_only,
-                                                     worker, max_photons, photons_, num_photons,
-                                                     light_id, light_sample);
+        uint32_t const num_iterations = trace_photon(frame, bounds, frustum, infinite_world,
+                                                     caustics_only, worker, max_photons, photons_,
+                                                     num_photons, light_id, light_sample);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
@@ -79,10 +87,10 @@ size_t Mapper::num_bytes() const noexcept {
     return sizeof(*this);
 }
 
-uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
-                              bool caustics_only, Worker& worker, uint32_t max_photons,
-                              Photon* photons, uint32_t& num_photons, uint32_t& light_id,
-                              Sample_from& light_sample) noexcept {
+uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const& frustum,
+                              bool infinite_world, bool caustics_only, Worker& worker,
+                              uint32_t max_photons, Photon* photons, uint32_t& num_photons,
+                              uint32_t& light_id, Sample_from& light_sample) noexcept {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -135,6 +143,12 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
                 break;
             }
 
+#ifdef ISLAND_MODE
+    if (0 == ray.depth && sample_result.type.no(Bxdf_type::Transmission)) {
+        break;
+    }
+#endif
+
             if (material_sample.ior_greater_one()) {
                 if (sample_result.type.is(Bxdf_type::Caustic)) {
                     caustic_path = true;
@@ -143,7 +157,12 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
                         ((caustic_path &&
                           worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                          settings_.full_light_path)) {
-                        if (!infinite_world || unnatural_limit.intersect(intersection.geo.p)) {
+                        if ((!infinite_world || unnatural_limit.intersect(intersection.geo.p))
+        #ifdef ISLAND_MODE
+                                && frustum.intersect(intersection.geo.p, 0.1f)
+                          #endif
+
+                                ) {
                             auto& photon = photons[num_photons];
 
                             photon.p        = intersection.geo.p;
@@ -195,6 +214,12 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, bool infinite_
 
             if (sample_result.type.is(Bxdf_type::Transmission)) {
                 auto const ior = worker.interface_change_ior(sample_result.wi, intersection);
+
+#ifdef ISLAND_MODE
+      if (worker.interface_stack().empty()) {
+          break;
+      }
+#endif
 
                 float const eta = ior.eta_i / ior.eta_t;
 

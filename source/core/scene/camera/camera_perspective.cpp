@@ -1,5 +1,6 @@
 #include "camera_perspective.hpp"
 #include "base/json/json.hpp"
+#include "base/math/frustum.hpp"
 #include "base/math/math.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/plane.inl"
@@ -147,6 +148,10 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
     return true;
 }
 
+Frustum Perspective::frustum() const noexcept {
+    return frustum_;
+}
+
 void Perspective::set_fov(float fov) noexcept {
     fov_ = fov;
 }
@@ -196,6 +201,23 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     left_top_ = left_top + float3(lens_shift_, 0.f);
     d_x_      = (right_top - left_top) / fr[0];
     d_y_      = (left_bottom - left_top) / fr[1];
+
+    Transformation temp;
+    auto const&    transformation = self->transformation_at(entity_, time, temp, worker.scene());
+
+    float3 const ltw = transformation.object_to_world_point(left_top);
+    float3 const lbw = transformation.object_to_world_point(left_bottom);
+    float3 const rtw = transformation.object_to_world_point(right_top);
+    float3 const rbw = lbw + (rtw - ltw);
+
+    float3 const skewed_dir = normalize(float3(-0.6f, 0.f, 0.f) + transformation.rotation.r[2]);
+
+    frustum_ = Frustum(
+        plane::create(transformation.position, ltw, lbw),
+        plane::create(transformation.position, rbw, rtw),
+        plane::create(transformation.position, rtw, ltw),
+        /*plane::create(transformation.position, lbw, rbw)*/
+        plane::create(-skewed_dir, transformation.position + 36.f * transformation.rotation.r[2]));
 
     update_focus(self, time, worker);
 

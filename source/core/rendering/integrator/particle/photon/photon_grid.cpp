@@ -15,6 +15,7 @@
 #include "scene/shape/shape.hpp"
 
 #include <iostream>
+#include "base/math/print.hpp"
 
 namespace rendering::integrator::particle::photon {
 
@@ -63,6 +64,8 @@ void Grid::resize(AABB const& aabb) noexcept {
     int3 const dimensions = int3(ceil(aabb.extent() / (diameter * grid_cell_factor_))) + int(2);
 
     if (dimensions_ != dimensions) {
+        std::cout << dimensions << std::endl;
+
         dimensions_ = dimensions;
 
         local_to_texture_ = 1.f / aabb_.extent() * float3(dimensions - int3(2));

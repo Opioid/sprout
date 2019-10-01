@@ -1,5 +1,6 @@
 #include "camera.hpp"
 #include "base/json/json.hpp"
+#include "base/math/frustum.hpp"
 #include "base/math/matrix3x3.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
@@ -62,6 +63,10 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
     }
 
     on_update(self, time, worker);
+}
+
+Frustum Camera::frustum() const noexcept {
+    return Frustum();
 }
 
 void Camera::set_parameters(json::Value const& parameters) noexcept {

@@ -1,11 +1,16 @@
 #ifndef SU_CORE_SCENE_CAMERA_CAMERA_HPP
 #define SU_CORE_SCENE_CAMERA_CAMERA_HPP
 
-#include <string_view>
 #include "base/json/json_types.hpp"
 #include "base/math/vector2.hpp"
 #include "scene/prop/interface_stack.hpp"
 #include "scene/scene_constants.hpp"
+
+#include <string_view>
+
+namespace math {
+class Frustum;
+}
 
 namespace sampler {
 class Sampler;
@@ -31,6 +36,7 @@ namespace camera {
 
 class Camera {
   public:
+    using Frustum          = math::Frustum;
     using Prop             = prop::Prop;
     using Transformation   = entity::Composed_transformation;
     using Camera_sample    = sampler::Camera_sample;
@@ -62,6 +68,8 @@ class Camera {
     virtual bool sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
                         Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                         Camera_sample_to& sample) const noexcept = 0;
+
+    virtual Frustum frustum() const noexcept;
 
     void set_parameters(json::Value const& parameters) noexcept;
 

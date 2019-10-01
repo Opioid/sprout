@@ -36,6 +36,27 @@ static inline Plane normalize(Plane const& p) noexcept {
     return t * p;
 }
 
+static inline Vector3f_a intersection(Plane const& p0, Plane const& p1, Plane const& p2) noexcept {
+    Vector3f_a const n1(p0[0], p0[1], p0[2]);
+
+    float const d1 = p0[3];
+
+    Vector3f_a const n2(p1[0], p1[1], p1[2]);
+
+    float const d2 = p1[3];
+
+    Vector3f_a const n3(p2[0], p2[1], p2[2]);
+
+    float const d3 = p2[3];
+
+    //    d1 ( N2 * N3 ) + d2 ( N3 * N1 ) + d3 ( N1 * N2 )
+    // P = ------------------------------------------------
+    //                    N1 . ( N2 * N3 )
+
+    return -(d1 * cross(n2, n3) + d2 * cross(n3, n1) + d3 * cross(n1, n2)) /
+           dot(n1, (cross(n2, n3)));
+}
+
 }  // namespace math::plane
 
 #endif

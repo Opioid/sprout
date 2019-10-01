@@ -7,7 +7,8 @@
 
 namespace math {
 struct AABB;
-}
+class Frustum;
+}  // namespace math
 
 namespace scene::shape {
 struct Sample_from;
@@ -29,6 +30,7 @@ class Map;
 class Mapper : public Integrator {
   public:
     using AABB        = math::AABB;
+    using Frustum     = math::Frustum;
     using Sample_from = scene::shape::Sample_from;
 
     struct Settings {
@@ -55,10 +57,10 @@ class Mapper : public Integrator {
     size_t num_bytes() const noexcept override final;
 
   private:
-    uint32_t trace_photon(uint32_t frame, AABB const& bounds, bool infinite_world,
-                          bool caustics_only, Worker& worker, uint32_t max_photons, Photon* photons,
-                          uint32_t& num_photons, uint32_t& light_id,
-                          Sample_from& light_sample) noexcept;
+    uint32_t trace_photon(uint32_t frame, AABB const& bounds, Frustum const& frustum,
+                          bool infinite_world, bool caustics_only, Worker& worker,
+                          uint32_t max_photons, Photon* photons, uint32_t& num_photons,
+                          uint32_t& light_id, Sample_from& light_sample) noexcept;
 
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                             Light& light_out, uint32_t& light_id,
