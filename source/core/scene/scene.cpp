@@ -565,11 +565,11 @@ Scene::Prop_ref Scene::allocate_prop() noexcept {
 }
 
 void Scene::prop_add_sibling(uint32_t self, uint32_t node) noexcept {
-    if (prop::Null == prop_topology(self).next) {
-        prop_topology_[self].next = node;
-    } else {
-        prop_add_sibling(prop_topology(self).next, node);
+    for (; prop::Null != prop_topology_[self].next;) {
+        self = prop_topology_[self].next;
     }
+
+    prop_topology_[self].next = node;
 }
 
 void Scene::prop_detach_self(uint32_t self) noexcept {

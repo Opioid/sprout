@@ -144,9 +144,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
             }
 
 #ifdef ISLAND_MODE
-    if (0 == ray.depth && sample_result.type.no(Bxdf_type::Transmission)) {
-        break;
-    }
+            if (0 == ray.depth && sample_result.type.no(Bxdf_type::Transmission)) {
+                break;
+            }
 #endif
 
             if (material_sample.ior_greater_one()) {
@@ -158,11 +158,11 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                           worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                          settings_.full_light_path)) {
                         if ((!infinite_world || unnatural_limit.intersect(intersection.geo.p))
-        #ifdef ISLAND_MODE
-                                && frustum.intersect(intersection.geo.p, 0.1f)
-                          #endif
+#ifdef ISLAND_MODE
+                            && frustum.intersect(intersection.geo.p, 0.1f)
+#endif
 
-                                ) {
+                        ) {
                             auto& photon = photons[num_photons];
 
                             photon.p        = intersection.geo.p;
@@ -216,9 +216,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 auto const ior = worker.interface_change_ior(sample_result.wi, intersection);
 
 #ifdef ISLAND_MODE
-      if (worker.interface_stack().empty()) {
-          break;
-      }
+                if (worker.interface_stack().empty()) {
+                    break;
+                }
 #endif
 
                 float const eta = ior.eta_i / ior.eta_t;

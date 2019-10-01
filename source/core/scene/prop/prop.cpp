@@ -345,21 +345,15 @@ void Prop::propagate_transformation(uint32_t self, Scene& scene) noexcept {
 
     on_set_transformation(self, scene);
 
-    uint32_t const child = scene.prop_topology(self).child;
-
-    if (Null != child) {
+    for (uint32_t child = scene.prop_topology(self).child; Null != child;) {
         scene.prop(child)->inherit_transformation(child, frames_, num_world_frames_, scene);
+
+        child = scene.prop_topology(child).next;
     }
 }
 
 void Prop::inherit_transformation(uint32_t self, Keyframe const* frames, uint32_t num_frames,
                                   Scene& scene) noexcept {
-    uint32_t const next = scene.prop_topology(self).next;
-
-    if (Null != next) {
-        scene.prop(next)->inherit_transformation(next, frames, num_frames, scene);
-    }
-
     uint32_t const num_local_frames = scene.prop_topology(self).num_local_frames;
     for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
         uint32_t const lf = num_local_frames > 1 ? i : 0;
