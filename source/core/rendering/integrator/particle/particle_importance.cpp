@@ -152,7 +152,7 @@ void Importance_cache::increment_importance(uint32_t light_id, float2 uv) noexce
 void Importance_cache::increment_importance(uint32_t light_id, float2 uv,
                                             float3 const& p) noexcept {
     if (training_) {
-        float const d = std::max(squared_distance(p, eye_), 1.f);
+        float const d = std::exp(std::max(distance(p, eye_), 1.f));
 
         importances_[light_id].increment(uv, 1.f / d);
     }
