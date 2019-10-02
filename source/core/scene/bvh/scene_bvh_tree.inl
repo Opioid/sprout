@@ -8,6 +8,9 @@
 namespace scene::bvh {
 
 template <typename T>
+Tree<T>::Tree() noexcept = default;
+
+template <typename T>
 Tree<T>::~Tree() noexcept {
     memory::free_aligned(nodes_);
 }

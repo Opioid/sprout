@@ -9,7 +9,7 @@ class Node;
 
 template <typename T>
 struct Tree {
-    Tree() noexcept = default;
+    Tree() noexcept;
 
     ~Tree() noexcept;
 

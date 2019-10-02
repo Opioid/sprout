@@ -60,7 +60,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
 
     distribution_.allocate(Dimensions);
 
-    float max = 0;
+    float max = 0.f;
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
         max = std::max(importance_[i], max);
     }
@@ -77,7 +77,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float const weight = std::max(float(importance_[i]) / max, 0.01f);
+                    float const weight = std::max(importance_[i] / max, 0.002f);
 
                     weights[x] = weight;
                 }
@@ -86,29 +86,6 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
             }
         },
         0, Dimensions);
-
-    distribution_.init();
-}
-
-void Importance::bogus() noexcept {
-    if (!distribution_.empty()) {
-        return;
-    }
-
-    Distribution_2D::Distribution_impl* conditional = distribution_.allocate(Dimensions);
-
-    auto weights = memory::Buffer<float>(Dimensions);
-
-    for (int32_t y = 0; y < Dimensions; ++y) {
-        int32_t const d = Dimensions - y;
-        float const   w = float(d * d);
-
-        for (int32_t x = 0; x < Dimensions; ++x) {
-            weights[x] = w;
-        }
-
-        conditional[y].init(weights.data(), Dimensions);
-    }
 
     distribution_.init();
 }
