@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_DRIVER_HPP
 
 #define PARTICLE_TRAINING
+#define PHOTON_TRAINING
 
 #include "base/math/vector2.hpp"
 #include "image/typed_image.hpp"

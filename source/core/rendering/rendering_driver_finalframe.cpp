@@ -145,7 +145,9 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     auto const duration = chrono::seconds_since(start);
     logging::info("Light ray time " + string::to_string(duration) + " s");
 
+#ifdef PARTICLE_TRAINING
     particle_importance_.export_importances();
+#endif
 }
 
 void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
@@ -199,7 +201,13 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
     photon_map_.start();
 
-    uint32_t num_photons = photon_settings_.num_photons;  // / 10 + 1;
+#ifdef PHOTON_TRAINING
+    uint32_t num_photons = photon_settings_.num_photons / 10 + 1;
+    particle_importance_.set_training(true);
+#else
+    uint32_t num_photons = photon_settings_.num_photons;
+    particle_importance_.set_training(false);
+#endif
 
     frame_ = frame;
 
@@ -212,9 +220,7 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
                 photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame_, iteration_);
             },
-            static_cast<int32_t>(begin),
-            static_cast<int32_t>(
-                num_photons) /*static_cast<int32_t>(photon_settings_.num_photons)*/);
+            static_cast<int32_t>(begin), static_cast<int32_t>(num_photons));
 
         for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
             num_paths += uint64_t(photon_infos_[i].num_paths);
@@ -228,7 +234,10 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
         uint32_t const new_begin = photon_map_.compile_iteration(num_photons, num_paths,
                                                                  thread_pool_);
 
+#ifdef PHOTON_TRAINING
         particle_importance_.prepare_sampling(thread_pool_);
+        particle_importance_.set_training(false);
+#endif
 
         if (0 == new_begin || photon_settings_.num_photons == new_begin ||
             1.f <= iteration_threshold ||
@@ -243,7 +252,9 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
     photon_map_.compile_finalize();
 
+#ifdef PHOTON_TRAINING
     particle_importance_.export_importances();
+#endif
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");
