@@ -145,11 +145,11 @@ class alignas(64) Prop {
     Shape* shape_ = nullptr;
 };
 
-struct Prop_ref {
-    Prop*    ref;
+struct Prop_ptr {
+    Prop*    ptr;
     uint32_t id;
 
-    static Prop_ref constexpr Null() noexcept {
+    static Prop_ptr constexpr Null() noexcept {
         return {nullptr, 0xFFFFFFFF};
     }
 };

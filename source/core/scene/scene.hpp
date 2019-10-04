@@ -51,7 +51,7 @@ struct Intersection;
 class Prop;
 struct Prop_material;
 struct Prop_topology;
-struct Prop_ref;
+struct Prop_ptr;
 
 }  // namespace prop
 
@@ -68,7 +68,7 @@ class Scene {
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
     using Prop           = prop::Prop;
-    using Prop_ref       = prop::Prop_ref;
+    using Prop_ptr       = prop::Prop_ptr;
     using Material       = material::Material;
     using Shape          = shape::Shape;
 
@@ -197,7 +197,7 @@ class Scene {
     size_t num_bytes() const noexcept;
 
   private:
-    Prop_ref allocate_prop() noexcept;
+    Prop_ptr allocate_prop() noexcept;
 
     void prop_add_sibling(uint32_t self, uint32_t node) noexcept;
 

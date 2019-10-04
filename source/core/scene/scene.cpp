@@ -299,7 +299,7 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
 uint32_t Scene::create_dummy() noexcept {
     auto const prop = allocate_prop();
 
-    prop.ref->configure(&null_shape_, nullptr);
+    prop.ptr->configure(&null_shape_, nullptr);
 
     return prop.id;
 }
@@ -315,7 +315,7 @@ uint32_t Scene::create_dummy(std::string const& name) noexcept {
 uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     auto const prop = allocate_prop();
 
-    prop.ref->configure(shape, materials.data());
+    prop.ptr->configure(shape, materials.data());
 
     uint32_t const num_parts = shape->num_parts();
 
@@ -554,7 +554,7 @@ size_t Scene::num_bytes() const noexcept {
     return num_bytes + sizeof(*this);
 }
 
-Scene::Prop_ref Scene::allocate_prop() noexcept {
+Scene::Prop_ptr Scene::allocate_prop() noexcept {
     props_.emplace_back();
     prop_world_transformations_.emplace_back();
     prop_morphing_.emplace_back();

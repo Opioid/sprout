@@ -36,7 +36,7 @@ class Volume;
 
 namespace prop {
 class Prop;
-struct Prop_ref;
+struct Prop_ptr;
 }  // namespace prop
 
 namespace shape {

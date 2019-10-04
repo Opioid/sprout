@@ -13,12 +13,12 @@ namespace scene {
 class Scene;
 
 namespace prop {
-struct Prop_ref;
+struct Prop_ptr;
 }
 
 class Extension_provider {
   public:
-    using Prop_ref = prop::Prop_ref;
+    using Prop_ptr = prop::Prop_ptr;
 
     virtual ~Extension_provider() noexcept {}
 
