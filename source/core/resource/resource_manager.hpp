@@ -43,10 +43,7 @@ class Manager {
     void increment_generation() noexcept;
 
     template <typename T>
-    void register_provider(Provider<T>& provider) noexcept;
-
-    template <typename T>
-    std::vector<T*>& resources() noexcept;
+    std::vector<T*> const& register_provider(Provider<T>& provider) noexcept;
 
     template <typename T>
     Resource_ptr<T> load(std::string const& filename,

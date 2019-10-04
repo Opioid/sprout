@@ -123,12 +123,12 @@ int main(int argc, char* argv[]) noexcept {
     }
 
     scene::material::Provider material_provider(args.debug_material);
-    resource_manager.register_provider(material_provider);
+    auto material_resources = resource_manager.register_provider(material_provider);
 
     scene::shape::triangle::Provider mesh_provider;
     resource_manager.register_provider(mesh_provider);
 
-    scene::Scene scene(resource_manager.resources<scene::material::Material>());
+    scene::Scene scene(material_resources);
 
     std::string take_name;
 

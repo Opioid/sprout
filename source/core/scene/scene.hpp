@@ -79,10 +79,9 @@ class Scene {
     using Prop_ptr       = prop::Prop_ptr;
     using Material       = material::Material;
     using Shape          = shape::Shape;
+    using Materials      = memory::Array<resource::Resource_ptr<Material>>;
 
-    using Materials = memory::Array<resource::Resource_ptr<Material>>;
-
-    Scene(std::vector<Material*>& material_backup) noexcept;
+    Scene(std::vector<Material*> const& material_backup) noexcept;
 
     ~Scene() noexcept;
 
@@ -261,7 +260,7 @@ class Scene {
 
     std::vector<animation::Stage> animation_stages_;
 
-    std::vector<Material*>& material_resources_;
+    std::vector<Material*> const& material_resources_;
 };
 
 }  // namespace scene

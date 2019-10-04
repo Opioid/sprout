@@ -40,7 +40,7 @@ class Typed_cache : public Cache {
 
     ~Typed_cache() noexcept override final;
 
-    std::vector<T*>& resources() noexcept;
+    std::vector<T*> const& resources() const noexcept;
 
     Resource_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
                          Manager& manager) noexcept;

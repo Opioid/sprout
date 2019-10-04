@@ -24,7 +24,7 @@ Typed_cache<T>::~Typed_cache() noexcept {
 }
 
 template <typename T>
-std::vector<T*>& Typed_cache<T>::resources() noexcept {
+std::vector<T*> const& Typed_cache<T>::resources() const noexcept {
     return resources_;
 }
 

@@ -9,7 +9,7 @@
 namespace resource {
 
 template <typename T>
-void Manager::register_provider(Provider<T>& provider) noexcept {
+std::vector<T*> const& Manager::register_provider(Provider<T>& provider) noexcept {
     std::string const id = T::identifier();
 
     auto old = caches_.find(id);
@@ -18,17 +18,9 @@ void Manager::register_provider(Provider<T>& provider) noexcept {
         delete old->second;
     }
 
-    caches_[id] = new Typed_cache<T>(provider);
-}
+    auto cache = new Typed_cache<T>(provider);
 
-template <typename T>
-std::vector<T*>& Manager::resources() noexcept {
-    Typed_cache<T>* cache = typed_cache<T>();
-
-    //    // a provider for this resource type was never registered
-    //    if (!cache) {
-    //        return nullptr;
-    //    }
+    caches_[id] = cache;
 
     return cache->resources();
 }
