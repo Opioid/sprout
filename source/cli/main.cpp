@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) noexcept {
     }
 
     scene::material::Provider material_provider(args.debug_material);
-    auto material_resources = resource_manager.register_provider(material_provider);
+    auto const& material_resources = resource_manager.register_provider(material_provider);
 
     scene::shape::triangle::Provider mesh_provider;
     resource_manager.register_provider(mesh_provider);
