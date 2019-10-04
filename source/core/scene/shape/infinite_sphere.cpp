@@ -117,14 +117,14 @@ bool Infinite_sphere::intersect_p(Ray const& /*ray*/, Transformation const& /*tr
 }
 
 float Infinite_sphere::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                               Materials /*materials*/, Filter /*filter*/,
+                               uint32_t /*entity*/, Filter /*filter*/,
                                Worker const& /*worker*/) const noexcept {
     // Implementation for this is not really needed, so just skip it
     return 0.f;
 }
 
 bool Infinite_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                                      Materials /*materials*/, Filter /*filter*/,
+                                      uint32_t /*entity*/, Filter /*filter*/,
                                       Worker const& /*worker*/, float3& ta) const noexcept {
     // Implementation for this is not really needed, so just skip it
     ta = float3(1.f);
@@ -234,9 +234,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 }
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
-                             float /*area*/, bool /*two_sided*/, Sampler&        sampler,
-                             uint32_t sampler_dimension, float2 importance_uv, AABB const& bounds,
-                             Sample_from& sample) const noexcept {
+                             float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
+                             uint32_t /*sampler_dimension*/, float2 importance_uv,
+                             AABB const& bounds, Sample_from& sample) const noexcept {
     float const phi   = (uv[0] - 0.5f) * (2.f * Pi);
     float const theta = uv[1] * Pi;
 

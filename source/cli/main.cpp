@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) noexcept {
     scene::shape::triangle::Provider mesh_provider;
     resource_manager.register_provider(mesh_provider);
 
-    scene::Scene scene;
+    scene::Scene scene(resource_manager.resources<scene::material::Material>());
 
     std::string take_name;
 

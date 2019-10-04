@@ -85,7 +85,7 @@ void Message_handler::handle(std::string const& message) noexcept {
                 std::string index_string = index.substr(1, index.size() - 2);
 
                 scene::material::Material* material =
-                    resource_manager_.get<scene::material::Material>(index_string);
+                    resource_manager_.get<scene::material::Material>(index_string).ptr;
                 handle_material(material, value, parameters);
             }
         } else {

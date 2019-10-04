@@ -3,6 +3,7 @@
 #include "base/math/vector3.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "shape_intersection.hpp"
@@ -124,7 +125,7 @@ bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Plane::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+float Plane::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                      Filter filter, Worker const& worker) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
@@ -137,15 +138,14 @@ float Plane::opacity(Ray const& ray, Transformation const& transformation, Mater
         float3 p = ray.point(hit_t);
         float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 
-        return materials[0]->opacity(uv, ray.time, filter, worker);
+        return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
     }
 
     return 0.f;
 }
 
-bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation,
-                            Materials materials, Filter filter, Worker const& worker,
-                            float3& ta) const noexcept {
+bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                            Filter filter, Worker const& worker, float3& ta) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -157,7 +157,8 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation
         float3 p = ray.point(hit_t);
         float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 
-        ta = materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter, worker);
+        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
+                                                                      ray.time, filter, worker);
         return true;
     }
 

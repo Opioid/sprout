@@ -65,11 +65,13 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         image_options.set("invert", invert);
     }
 
-    auto const image = manager.load<Image>(filename, image_options, resolved_name);
-    if (!image) {
+    auto const image_res = manager.load<Image>(filename, image_options, resolved_name);
+    if (!image_res.ptr) {
         logging::error("Loading texture %S: ", filename);
         return nullptr;
     }
+
+    auto const image = image_res.ptr;
 
     if (Image::Type::Byte1 == image->type()) {
         return new Texture(Byte1_unorm(image->byte1()));

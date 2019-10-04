@@ -170,20 +170,19 @@ bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transform
     return tree_.intersect_p(tray, node_stack);
 }
 
-float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformation,
-                              Materials materials, Filter filter, Worker const& worker) const
-    noexcept {
+float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                              Filter filter, Worker const& worker) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
-    return tree_.opacity(tray, ray.time, materials, filter, worker);
+    return tree_.opacity(tray, ray.time, entity, filter, worker);
 }
 
 bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
-                                     Materials materials, Filter filter, Worker const& worker,
+                                     uint32_t entity, Filter filter, Worker const& worker,
                                      float3& ta) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
@@ -191,7 +190,7 @@ bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& trans
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
-    return tree_.absorption(tray, ray.time, materials, filter, worker, ta);
+    return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*n*/,

@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/material.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
@@ -14,9 +15,6 @@
 
 #include "base/debug/assert.hpp"
 #include "shape_test.hpp"
-
-#include <iostream>
-#include "base/math/print.hpp"
 
 namespace scene::shape {
 
@@ -148,7 +146,7 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
     return true;
 }
 
-float Cube::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+float Cube::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                     Filter filter, Worker const& worker) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = dot(v, ray.direction);
@@ -168,7 +166,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation, Materi
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return materials[0]->opacity(uv, ray.time, filter, worker);
+            return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
 
         float t1 = b + dist;
@@ -182,7 +180,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation, Materi
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return materials[0]->opacity(uv, ray.time, filter, worker);
+            return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
     }
 
@@ -190,7 +188,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation, Materi
 }
 
 bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                           Materials /*materials*/, Filter /*filter*/, Worker const& /*worker*/,
+                           uint32_t /*entity*/, Filter /*filter*/, Worker const& /*worker*/,
                            float3& ta) const noexcept {
     ta = float3(1.f);
     return true;

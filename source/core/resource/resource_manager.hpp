@@ -5,6 +5,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace file {
 class System;
@@ -20,6 +21,9 @@ class Cache;
 
 template <typename T>
 class Typed_cache;
+
+template <typename T>
+struct Resource_ptr;
 
 template <typename T>
 class Provider;
@@ -42,22 +46,30 @@ class Manager {
     void register_provider(Provider<T>& provider) noexcept;
 
     template <typename T>
-    T* load(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;
+    std::vector<T*>& resources() noexcept;
 
     template <typename T>
-    T* load(std::string const& filename, Variant_map const& options,
-            std::string& resolved_name) noexcept;
+    Resource_ptr<T> load(std::string const& filename,
+                         Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>
-    T* load(std::string const& name, void const* data, std::string const& source_name,
-            Variant_map const& options = Variant_map()) noexcept;
+    Resource_ptr<T> load(std::string const& filename, Variant_map const& options,
+                         std::string& resolved_name) noexcept;
 
     template <typename T>
-    T* get(std::string const& filename, Variant_map const& options = Variant_map()) noexcept;
+    Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
+                         Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>
-    void store(std::string const& name, T* resource,
-               Variant_map const& options = Variant_map()) noexcept;
+    Resource_ptr<T> get(std::string const& filename,
+                        Variant_map const& options = Variant_map()) noexcept;
+
+    template <typename T>
+    Resource_ptr<T> store(T* resource) noexcept;
+
+    template <typename T>
+    Resource_ptr<T> store(std::string const& name, T* resource,
+                          Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>
     size_t num_bytes() const noexcept;

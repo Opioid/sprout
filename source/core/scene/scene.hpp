@@ -1,8 +1,6 @@
 #ifndef SU_CORE_SCENE_SCENE_HPP
 #define SU_CORE_SCENE_SCENE_HPP
 
-#include <map>
-#include <vector>
 #include "base/math/distribution/distribution_1d.hpp"
 #include "base/memory/array.hpp"
 #include "bvh/scene_bvh_builder.hpp"
@@ -11,6 +9,16 @@
 #include "scene_constants.hpp"
 #include "shape/null.hpp"
 #include "take/take_settings.hpp"
+
+#include <map>
+#include <vector>
+
+namespace resource {
+
+template <typename T>
+struct Resource_ptr;
+
+}
 
 namespace thread {
 class Pool;
@@ -72,9 +80,9 @@ class Scene {
     using Material       = material::Material;
     using Shape          = shape::Shape;
 
-    using Materials = memory::Array<material::Material*>;
+    using Materials = memory::Array<resource::Resource_ptr<Material>>;
 
-    Scene() noexcept;
+    Scene(std::vector<Material*>& material_backup) noexcept;
 
     ~Scene() noexcept;
 
@@ -85,7 +93,6 @@ class Scene {
     AABB const& aabb() const noexcept;
 
     AABB caustic_aabb() const noexcept;
-    AABB caustic_aabb(float3x3 const& rotation) const noexcept;
 
     bool is_infinite() const noexcept;
 
@@ -105,12 +112,11 @@ class Scene {
     bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
         noexcept;
 
-    Prop const* prop(size_t index) const noexcept;
-    Prop*       prop(size_t index) noexcept;
+    Prop const* prop(uint32_t index) const noexcept;
+    Prop*       prop(uint32_t index) noexcept;
 
     Prop* prop(std::string_view name) noexcept;
 
-    //   std::vector<light::Light*> const& lights() const noexcept;
     std::vector<light::Light> const& lights() const noexcept;
 
     struct Light {
@@ -176,8 +182,6 @@ class Scene {
                                       uint64_t time, bool material_importance_sampling,
                                       thread::Pool& pool) noexcept;
 
-    material::Material* const* prop_materials(uint32_t entity) const noexcept;
-
     material::Material const* prop_material(uint32_t entity, uint32_t part) const noexcept;
 
     prop::Prop_topology const& prop_topology(uint32_t entity) const noexcept;
@@ -188,7 +192,7 @@ class Scene {
 
     float prop_volume(uint32_t entity, uint32_t part) const noexcept;
 
-    void add_material(Material* material) noexcept;
+    void add_material(uint32_t material) noexcept;
 
     animation::Animation* create_animation(uint32_t count) noexcept;
 
@@ -207,7 +211,7 @@ class Scene {
 
     void prop_remove_sibling(uint32_t self, uint32_t node) noexcept;
 
-    bool prop_has_caustic_material(uint32_t entity, uint32_t num_parts) const noexcept;
+    bool prop_has_caustic_material(uint32_t entity) const noexcept;
 
     void add_named_prop(uint32_t prop, std::string const& name) noexcept;
 
@@ -251,11 +255,13 @@ class Scene {
 
     math::Distribution_implicit_pdf_lut_lin_1D light_distribution_;
 
-    std::vector<Material*> materials_;
+    std::vector<uint32_t> materials_;
 
     std::vector<animation::Animation*> animations_;
 
     std::vector<animation::Stage> animation_stages_;
+
+    std::vector<Material*>& material_resources_;
 };
 
 }  // namespace scene

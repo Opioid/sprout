@@ -76,11 +76,11 @@ class Shape {
     virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
                              Node_stack& node_stack) const noexcept = 0;
 
-    virtual float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+    virtual float opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                           Filter filter, Worker const& worker) const noexcept = 0;
 
     virtual bool thin_absorption(Ray const& ray, Transformation const& transformation,
-                                 Materials materials, Filter filter, Worker const& worker,
+                                 uint32_t entity, Filter filter, Worker const& worker,
                                  float3& ta) const noexcept = 0;
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,

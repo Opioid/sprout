@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) noexcept {
 
     uint32_t slot = Options::Operator::Diff == args.op ? 0xFFFFFFFF : 0;
     for (auto& i : args.images) {
-        if (Texture const* image = resource_manager.load<Texture>(i, options); image) {
+        if (Texture const* image = resource_manager.load<Texture>(i, options).ptr; image) {
             std::string const name_out = slot < args.outputs.size() ? args.outputs[slot] : "";
 
             items.emplace_back(Item{i, name_out, image});

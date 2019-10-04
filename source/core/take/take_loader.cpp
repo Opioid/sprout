@@ -746,10 +746,12 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto backplate = manager.load<image::texture::Texture>(name);
-            if (!backplate) {
+            auto backplate_res = manager.load<image::texture::Texture>(name);
+            if (!backplate_res.ptr) {
                 continue;
             }
+
+            auto backplate = backplate_res.ptr;
 
             if (take.view.camera &&
                 backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {

@@ -8,4 +8,5 @@ target_sources(core
     "resource_manager.inl"
     "resource_provider.hpp"
     "resource_provider.inl"
+    "resource.hpp"
 )   

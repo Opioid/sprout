@@ -301,7 +301,7 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
                              ray_signs, node_stack);
 }
 
-float Mesh::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                     Filter filter, Worker const& worker) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
@@ -309,19 +309,18 @@ float Mesh::opacity(Ray const& ray, Transformation const& transformation, Materi
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
-    return tree_.opacity(tray, ray.time, materials, filter, worker);
+    return tree_.opacity(tray, ray.time, entity, filter, worker);
 }
 
-bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
-                           Materials materials, Filter filter, Worker const& worker,
-                           float3& ta) const noexcept {
+bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                           Filter filter, Worker const& worker, float3& ta) const noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
     tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
-    return tree_.absorption(tray, ray.time, materials, filter, worker, ta);
+    return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
 bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,

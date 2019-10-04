@@ -7,6 +7,7 @@
 #include "base/memory/align.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/material/material.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/shape_intersection.hpp"
@@ -379,7 +380,7 @@ bool Tree<Data>::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_directi
 }
 
 template <typename Data>
-float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter filter,
+float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filter,
                           Worker const& worker) const noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
@@ -420,7 +421,8 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter f
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
                     float2 const uv = data_.interpolate_uv(Simd3f(u), Simd3f(v), i);
 
-                    auto const material = materials[data_.material_index(i)];
+                    auto const material = worker.scene().prop_material(entity,
+                                                                       data_.material_index(i));
 
                     opacity += (1.f - opacity) * material->opacity(uv, time, filter, worker);
                     if (opacity >= 1.f) {
@@ -440,7 +442,7 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, Materials materials, Filter f
 }
 
 template <typename Data>
-bool Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
+bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter,
                             Worker const& worker, float3& ta) const noexcept {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
@@ -483,7 +485,8 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, Materials materials, Filter
 
                     float3 const normal = data_.normal(i);
 
-                    auto const material = materials[data_.material_index(i)];
+                    auto const material = worker.scene().prop_material(entity,
+                                                                       data_.material_index(i));
 
                     float3 const tta = material->thin_absorption(ray.direction, normal, uv, time,
                                                                  filter, worker);

@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
@@ -235,7 +236,7 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Sphere::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+float Sphere::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                       Filter filter, Worker const& worker) const noexcept {
     float3 const v = transformation.position - ray.origin;
     float const  b = dot(ray.direction, v);
@@ -258,7 +259,7 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, Mate
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return materials[0]->opacity(uv, ray.time, filter, worker);
+            return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
 
         float t1 = b + dist;
@@ -272,16 +273,15 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, Mate
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return materials[0]->opacity(uv, ray.time, filter, worker);
+            return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
     }
 
     return 0.f;
 }
 
-bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformation,
-                             Materials materials, Filter filter, Worker const& worker,
-                             float3& ta) const noexcept {
+bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                             Filter filter, Worker const& worker, float3& ta) const noexcept {
     float3 const v = transformation.position - ray.origin;
     float const  b = dot(ray.direction, v);
 
@@ -303,7 +303,8 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            ta = materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
+            ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv,
+                                                                          ray.time, filter, worker);
             return true;
         }
 
@@ -318,7 +319,8 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            ta = materials[0]->thin_absorption(ray.direction, n, uv, ray.time, filter, worker);
+            ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv,
+                                                                          ray.time, filter, worker);
             return true;
         }
     }

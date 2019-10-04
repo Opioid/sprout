@@ -29,10 +29,10 @@ class Infinite_sphere final : public Shape {
     bool intersect_p(Ray const& ray, Transformation const& transformation,
                      Node_stack& node_stack) const noexcept override final;
 
-    float opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+    float opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                   Filter filter, Worker const& worker) const noexcept override final;
 
-    bool thin_absorption(Ray const& ray, Transformation const& transformation, Materials materials,
+    bool thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
                          Filter filter, Worker const& worker, float3& ta) const
         noexcept override final;
 

@@ -56,14 +56,15 @@ uint32_t Provider::create_extension(json::Value const& extension_value, std::str
         sun_material = new Sun_material(*sky);
     }
 
-    manager.store<material::Material>("proc:sky", sky_material);
+    auto const sky_material_ptr = manager.store<material::Material>("proc:sky", sky_material);
 
-    manager.store<material::Material>("proc:sun", sun_material);
+    auto const sun_material_ptr = manager.store<material::Material>("proc:sun", sun_material);
 
-    uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material});
+    uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material_ptr});
     scene.prop_allocate_frames(sky_prop, 1, 1);
 
-    uint32_t const sun_prop = scene.create_prop(scene_loader_->celestial_disk(), {sun_material});
+    uint32_t const sun_prop = scene.create_prop(scene_loader_->celestial_disk(),
+                                                {sun_material_ptr});
     scene.prop_allocate_frames(sun_prop, 1, 1);
 
     sky->init(sky_prop, sun_prop, scene);

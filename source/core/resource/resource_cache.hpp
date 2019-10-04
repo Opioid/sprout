@@ -1,14 +1,25 @@
 #ifndef SU_CORE_RESOURCE_CACHE_HPP
 #define SU_CORE_RESOURCE_CACHE_HPP
 
-#include "resource_provider.hpp"
-
 #include <filesystem>
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
+
+namespace memory {
+class Variant_map;
+}
 
 namespace resource {
+
+class Manager;
+
+template <typename T>
+class Provider;
+
+template <typename T>
+struct Resource_ptr;
 
 class Cache {
   public:
@@ -29,28 +40,33 @@ class Typed_cache : public Cache {
 
     ~Typed_cache() noexcept override final;
 
-    T* load(std::string const& filename, memory::Variant_map const& options,
-            Manager& manager) noexcept;
+    std::vector<T*>& resources() noexcept;
 
-    T* load(std::string const& filename, memory::Variant_map const& options, Manager& manager,
-            std::string& resolved_name) noexcept;
+    Resource_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
+                         Manager& manager) noexcept;
 
-    T* load(std::string const& name, void const* data, std::string const& source_name,
-            memory::Variant_map const& options, Manager& manager) noexcept;
+    Resource_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
+                         Manager& manager, std::string& resolved_name) noexcept;
 
-    T* get(std::string const& filename, memory::Variant_map const& options) noexcept;
+    Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
+                         memory::Variant_map const& options, Manager& manager) noexcept;
 
-    void store(std::string const& name, memory::Variant_map const& options, T* resource) noexcept;
+    Resource_ptr<T> get(std::string const& filename, memory::Variant_map const& options) noexcept;
+
+    Resource_ptr<T> store(T* resource) noexcept;
+
+    Resource_ptr<T> store(std::string const& name, memory::Variant_map const& options,
+                          T* resource) noexcept;
 
     size_t num_bytes() const noexcept;
 
   private:
     struct Entry {
-        T* data;
-
-        std::string source_name;
+        uint32_t id;
 
         uint32_t generation;
+
+        std::string source_name;
 
         std::filesystem::file_time_type last_write;
     };
@@ -61,7 +77,9 @@ class Typed_cache : public Cache {
 
     using Key = std::pair<std::string, memory::Variant_map>;
 
-    std::map<Key, Entry> resources_;
+    std::vector<T*> resources_;
+
+    std::map<Key, Entry> entries_;
 };
 
 }  // namespace resource

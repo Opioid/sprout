@@ -14,6 +14,7 @@
 #include "light/light.inl"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
+#include "resource/resource.hpp"
 #include "scene_constants.hpp"
 #include "scene_ray.hpp"
 #include "scene_worker.hpp"
@@ -25,7 +26,8 @@ namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
 
-Scene::Scene() noexcept {
+Scene::Scene(std::vector<Material*>& material_backup) noexcept
+    : material_resources_(material_backup) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_materials_.reserve(Num_reserved_props);
@@ -100,22 +102,9 @@ AABB Scene::caustic_aabb() const noexcept {
     AABB aabb = AABB::empty();
 
     for (auto const i : finite_props_) {
-        Prop const& p = props_[i];
-        if (prop_has_caustic_material(i, p.shape()->num_parts())) {
+        if (prop_has_caustic_material(i)) {
+            Prop const& p = props_[i];
             aabb.merge_assign(p.aabb());
-        }
-    }
-
-    return aabb;
-}
-
-AABB Scene::caustic_aabb(float3x3 const& rotation) const noexcept {
-    AABB aabb = AABB::empty();
-
-    for (auto const i : finite_props_) {
-        Prop const& p = props_[i];
-        if (prop_has_caustic_material(i, p.shape()->num_parts())) {
-            aabb.merge_assign(p.aabb().transform_transposed(rotation));
         }
     }
 
@@ -177,13 +166,13 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
     return false;
 }
 
-prop::Prop const* Scene::prop(size_t index) const noexcept {
+prop::Prop const* Scene::prop(uint32_t index) const noexcept {
     SOFT_ASSERT(index < props_.size());
 
     return &props_[index];
 }
 
-prop::Prop* Scene::prop(size_t index) noexcept {
+prop::Prop* Scene::prop(uint32_t index) noexcept {
     SOFT_ASSERT(index < props_.size());
 
     return &props_[index];
@@ -244,7 +233,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
     }
 
     for (auto m : materials_) {
-        m->simulate(start, end, tick_duration_, thread_pool);
+        material_resources_[m]->simulate(start, end, tick_duration_, thread_pool);
     }
 
     compile(start, thread_pool);
@@ -322,7 +311,7 @@ uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     auto& m = prop_materials_[prop.id];
 
     m.parts     = memory::allocate_aligned<prop::Prop_material::Part>(num_parts);
-    m.materials = memory::allocate_aligned<Material*>(num_parts);
+    m.materials = memory::allocate_aligned<uint32_t>(num_parts);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
         auto& p = m.parts[i];
@@ -330,7 +319,7 @@ uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
         p.area     = 1.f;
         p.light_id = 0xFFFFFFFF;
 
-        m.materials[i] = materials[shape->part_id_to_material_id(i)];
+        m.materials[i] = materials[shape->part_id_to_material_id(i)].id;
     }
 
     if (shape->is_finite()) {
@@ -340,7 +329,7 @@ uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     }
 
     // Shape has no surface
-    if (1 == shape->num_parts() && 1.f == materials[0]->ior()) {
+    if (1 == shape->num_parts() && 1.f == materials[0].ptr->ior()) {
         if (shape->is_finite()) {
             volumes_.push_back(prop.id);
         } else {
@@ -475,8 +464,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     m.parts[part].light_id = light_id;
 
-    m.materials[part]->prepare_sampling(*shape, part, time, transformation, area,
-                                        material_importance_sampling, pool);
+    material_resources_[m.materials[part]]->prepare_sampling(
+        *shape, part, time, transformation, area, material_importance_sampling, pool);
 }
 
 void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
@@ -499,16 +488,12 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     m.parts[part].light_id = light_id;
 
-    m.materials[part]->prepare_sampling(*shape, part, time, transformation, volume,
-                                        material_importance_sampling, pool);
-}
-
-material::Material* const* Scene::prop_materials(uint32_t entity) const noexcept {
-    return prop_materials_[entity].materials;
+    material_resources_[m.materials[part]]->prepare_sampling(
+        *shape, part, time, transformation, volume, material_importance_sampling, pool);
 }
 
 material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].materials[part];
+    return material_resources_[prop_materials_[entity].materials[part]];
 }
 
 prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const noexcept {
@@ -527,7 +512,7 @@ float Scene::prop_volume(uint32_t entity, uint32_t part) const noexcept {
     return prop_materials_[entity].parts[part].volume;
 }
 
-void Scene::add_material(Material* material) noexcept {
+void Scene::add_material(uint32_t material) noexcept {
     materials_.push_back(material);
 }
 
@@ -613,9 +598,10 @@ void Scene::prop_remove_sibling(uint32_t self, uint32_t node) noexcept {
     }
 }
 
-bool Scene::prop_has_caustic_material(uint32_t entity, uint32_t num_parts) const noexcept {
-    for (uint32_t i = 0; i < num_parts; ++i) {
-        if (prop_materials_[entity].materials[i]->is_caustic()) {
+bool Scene::prop_has_caustic_material(uint32_t entity) const noexcept {
+    Prop const& p = props_[entity];
+    for (uint32_t i = 0, len = p.shape()->num_parts(); i < len; ++i) {
+        if (prop_material(entity, i)->is_caustic()) {
             return true;
         }
     }

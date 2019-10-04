@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
@@ -170,7 +171,7 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Disk::opacity(Ray const& ray, Transformation const& transformation, Materials materials,
+float Disk::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                     Filter filter, Worker const& worker) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
@@ -192,16 +193,15 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation, Materi
             float2 uv((-dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
                       (-dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
-            return materials[0]->opacity(uv, ray.time, filter, worker);
+            return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
     }
 
     return 0.f;
 }
 
-bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
-                           Materials materials, Filter filter, Worker const& worker,
-                           float3& ta) const noexcept {
+bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                           Filter filter, Worker const& worker, float3& ta) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -222,7 +222,8 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
             float2 uv((dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
                       (dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
-            ta = materials[0]->thin_absorption(ray.direction, normal, uv, ray.time, filter, worker);
+            ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
+                                                                          ray.time, filter, worker);
 
             return true;
         }

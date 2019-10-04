@@ -152,14 +152,14 @@ bool Celestial_disk::intersect_p(Ray const& ray, Transformation const& transform
 }
 
 float Celestial_disk::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                              Materials /*materials*/, Filter /*filter*/,
+                              uint32_t /*entity*/, Filter /*filter*/,
                               Worker const& /*worker*/) const noexcept {
     // Implementation for this is not really needed, so just skip it
     return 0.f;
 }
 
 bool Celestial_disk::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                                     Materials /*materials*/, Filter /*filter*/,
+                                     uint32_t /*entity*/, Filter /*filter*/,
                                      Worker const& /*worker*/, float3& ta) const noexcept {
     // Implementation for this is not really needed, so just skip it
     ta = float3(1.f);

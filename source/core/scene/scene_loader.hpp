@@ -1,12 +1,14 @@
 #ifndef SU_CORE_SCENE_LOADER_HPP
 #define SU_CORE_SCENE_LOADER_HPP
 
-#include <map>
-#include <string>
-#include <vector>
 #include "base/json/json_types.hpp"
 #include "base/memory/array.hpp"
 #include "material/material.hpp"
+#include "resource/resource.hpp"
+
+#include <map>
+#include <string>
+#include <vector>
 
 namespace file {
 class System;
@@ -14,7 +16,10 @@ class System;
 
 namespace resource {
 class Manager;
-}
+
+template <typename T>
+struct Resource_ptr;
+}  // namespace resource
 
 namespace take {
 struct Take;
@@ -57,11 +62,12 @@ class Scene;
 
 class Loader {
   public:
-    using Shape     = shape::Shape;
-    using Material  = material::Material;
-    using Materials = memory::Array<material::Material*>;
+    using Shape        = shape::Shape;
+    using Material     = material::Material;
+    using Material_ptr = resource::Resource_ptr<Material>;
+    using Materials    = memory::Array<Material_ptr>;
 
-    Loader(resource::Manager& manager, Material& fallback_material) noexcept;
+    Loader(resource::Manager& manager, Material* fallback_material) noexcept;
 
     ~Loader() noexcept;
 
@@ -114,8 +120,8 @@ class Loader {
     void load_materials(json::Value const& materials_value, Local_materials const& local_materials,
                         Scene& scene, Materials& materials) const noexcept;
 
-    Material* load_material(std::string const& name, Local_materials const& local_materials,
-                            Scene& scene) const noexcept;
+    Material_ptr load_material(std::string const& name, Local_materials const& local_materials,
+                               Scene& scene) const noexcept;
 
     resource::Manager& resource_manager_;
 
@@ -128,7 +134,7 @@ class Loader {
     Shape* rectangle_;
     Shape* sphere_;
 
-    Material& fallback_material_;
+    Material_ptr fallback_material_;
 
     std::map<std::string, Extension_provider*> extension_providers_;
 

@@ -1,6 +1,7 @@
 #ifndef SU_CORE_RESOURCE_MANAGER_INL
 #define SU_CORE_RESOURCE_MANAGER_INL
 
+#include "resource.hpp"
 #include "resource_cache.inl"
 #include "resource_manager.hpp"
 #include "resource_provider.inl"
@@ -21,82 +22,111 @@ void Manager::register_provider(Provider<T>& provider) noexcept {
 }
 
 template <typename T>
-T* Manager::load(std::string const& filename, Variant_map const& options) noexcept {
+std::vector<T*>& Manager::resources() noexcept {
+    Typed_cache<T>* cache = typed_cache<T>();
+
+    //    // a provider for this resource type was never registered
+    //    if (!cache) {
+    //        return nullptr;
+    //    }
+
+    return cache->resources();
+}
+
+template <typename T>
+Resource_ptr<T> Manager::load(std::string const& filename, Variant_map const& options) noexcept {
     if (filename.empty()) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     return cache->load(filename, options, *this);
 }
 
 template <typename T>
-T* Manager::load(std::string const& filename, Variant_map const& options,
-                 std::string& resolved_name) noexcept {
+Resource_ptr<T> Manager::load(std::string const& filename, Variant_map const& options,
+                              std::string& resolved_name) noexcept {
     if (filename.empty()) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     return cache->load(filename, options, *this, resolved_name);
 }
 
 template <typename T>
-T* Manager::load(std::string const& name, void const* data, std::string const& source_name,
-                 Variant_map const& options) noexcept {
+Resource_ptr<T> Manager::load(std::string const& name, void const* data,
+                              std::string const& source_name, Variant_map const& options) noexcept {
     if (name.empty()) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     return cache->load(name, data, source_name, options, *this);
 }
 
 template <typename T>
-T* Manager::get(std::string const& filename, Variant_map const& options) noexcept {
+Resource_ptr<T> Manager::get(std::string const& filename, Variant_map const& options) noexcept {
     if (filename.empty()) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return nullptr;
+        return Resource_ptr<T>::Null();
     }
 
     return cache->get(filename, options);
 }
 
 template <typename T>
-void Manager::store(std::string const& name, T* resource, Variant_map const& options) noexcept {
-    if (name.empty() || !resource) {
-        return;
+Resource_ptr<T> Manager::store(T* resource) noexcept {
+    if (!resource) {
+        return Resource_ptr<T>::Null();
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return;
+        return Resource_ptr<T>::Null();
+    }
+
+    return cache->store(resource);
+}
+
+template <typename T>
+Resource_ptr<T> Manager::store(std::string const& name, T* resource,
+                               Variant_map const& options) noexcept {
+    if (name.empty() || !resource) {
+        return Resource_ptr<T>::Null();
+    }
+
+    Typed_cache<T>* cache = typed_cache<T>();
+
+    // a provider for this resource type was never registered
+    if (!cache) {
+        return Resource_ptr<T>::Null();
     }
 
     return cache->store(name, options, resource);

@@ -98,12 +98,11 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
 
     auto const& lights = worker.scene().lights();
     for (uint32_t l = 0, len = uint32_t(lights.size()); l < len; ++l) {
-        //   auto const light = lights[l];
         auto const& light = lights[l];
         for (uint32_t i = 0, nls = settings_.num_light_samples; i < nls; ++i) {
-            if (scene::shape::Sample_to light_sample; light /*->*/.sample(
-                    intersection.geo.p, material_sample.geometric_normal(), ray.time,
-                    material_sample.is_translucent(), sampler_, l, worker, light_sample)) {
+            if (scene::shape::Sample_to light_sample;
+                light.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+                             material_sample.is_translucent(), sampler_, l, worker, light_sample)) {
                 shadow_ray.set_direction(light_sample.wi);
                 shadow_ray.max_t = light_sample.t;
 

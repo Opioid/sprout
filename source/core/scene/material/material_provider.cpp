@@ -91,8 +91,7 @@ static float3 read_color(json::Value const& color_value) noexcept;
 static float3 read_spectrum(json::Value const& spectrum_value) noexcept;
 
 Provider::Provider(bool force_debug_material) noexcept
-    : fallback_material_(Sampler_settings(Sampler_settings::Filter::Linear)),
-      force_debug_material_(force_debug_material) {
+    : force_debug_material_(force_debug_material) {
     Material::init_rainbow();
 }
 
@@ -130,8 +129,8 @@ size_t Provider::num_bytes(Material const* resource) const noexcept {
     return resource->num_bytes();
 }
 
-Material& Provider::fallback_material() noexcept {
-    return fallback_material_;
+Material* Provider::fallback_material() noexcept {
+    return new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
 }
 
 Material* Provider::load(json::Value const& value, std::string_view mount_folder,
@@ -808,7 +807,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
                 std::string const filename = json::read_string(m, "file");
 
                 if (!filename.empty()) {
-                    materials.push_back(manager.load<Material>(filename));
+                    materials.push_back(manager.load<Material>(filename).ptr);
                 } else {
                     materials.push_back(load(m, "", manager));
                 }
@@ -1339,7 +1338,7 @@ Texture_adapter create_texture(const Texture_description& description, memory::V
         options.set("swizzle", description.swizzle);
     }
 
-    return Texture_adapter(manager.load<image::texture::Texture>(description.filename, options),
+    return Texture_adapter(manager.load<image::texture::Texture>(description.filename, options).ptr,
                            description.scale);
 }
 

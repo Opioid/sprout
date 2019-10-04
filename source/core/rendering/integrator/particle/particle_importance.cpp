@@ -111,8 +111,6 @@ void Importance_cache::set_training(bool training) noexcept {
 }
 
 void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
-    //   importances_[0].bogus();
-
     importances_[1].prepare_sampling(pool);
 
     //        for (uint32_t i = 0, len = num_importances_; i < len; ++i) {

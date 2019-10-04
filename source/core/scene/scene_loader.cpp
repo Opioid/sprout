@@ -30,7 +30,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, Material& fallback_material) noexcept
+Loader::Loader(resource::Manager& manager, Material* fallback_material) noexcept
     : resource_manager_(manager),
       canopy_(new shape::Canopy()),
       celestial_disk_(new shape::Celestial_disk()),
@@ -40,7 +40,7 @@ Loader::Loader(resource::Manager& manager, Material& fallback_material) noexcept
       plane_(new shape::Plane()),
       rectangle_(new shape::Rectangle()),
       sphere_(new shape::Sphere()),
-      fallback_material_(fallback_material) {}
+      fallback_material_(manager.store<Material>(fallback_material)) {}
 
 Loader::~Loader() noexcept {
     delete sphere_;
@@ -346,10 +346,10 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
         load_materials(*materials_value, local_materials, scene, materials);
     }
 
-    if (1 == materials.size() && 1.f == materials[0]->ior()) {
+    if (1 == materials.size() && 1.f == materials[0].ptr->ior()) {
     } else {
         while (materials.size() < num_materials) {
-            materials.push_back(&fallback_material_);
+            materials.push_back(fallback_material_);
         }
     }
 
@@ -380,7 +380,7 @@ Scene::Shape* Loader::load_shape(json::Value const& shape_value) noexcept {
     }
 
     if (std::string const file = json::read_string(shape_value, "file"); !file.empty()) {
-        return resource_manager_.load<shape::Shape>(file);
+        return resource_manager_.load<shape::Shape>(file).ptr;
     }
 
     logging::error("Cannot create Shape: Neither shape nor type.");
@@ -439,11 +439,11 @@ void Loader::load_materials(json::Value const&     materials_value,
     }
 }
 
-material::Material* Loader::load_material(std::string const&     name,
-                                          Local_materials const& local_materials,
-                                          Scene&                 scene) const noexcept {
+Loader::Material_ptr Loader::load_material(std::string const&     name,
+                                           Local_materials const& local_materials,
+                                           Scene&                 scene) const noexcept {
     // First, check if we maybe already have cached the material.
-    if (auto material = resource_manager_.get<material::Material>(name); material) {
+    if (auto material = resource_manager_.get<material::Material>(name); material.ptr) {
         return material;
     }
 
@@ -454,9 +454,9 @@ material::Material* Loader::load_material(std::string const&     name,
 
         if (auto material = resource_manager_.load<material::Material>(name, data,
                                                                        local_materials.source_name);
-            material) {
-            if (material->is_animated()) {
-                scene.add_material(material);
+            material.ptr) {
+            if (material.ptr->is_animated()) {
+                scene.add_material(material.id);
             }
 
             return material;
@@ -464,9 +464,9 @@ material::Material* Loader::load_material(std::string const&     name,
     }
 
     // Lastly, try loading the material from the filesystem.
-    if (auto material = resource_manager_.load<material::Material>(name); material) {
-        if (material->is_animated()) {
-            scene.add_material(material);
+    if (auto material = resource_manager_.load<material::Material>(name); material.ptr) {
+        if (material.ptr->is_animated()) {
+            scene.add_material(material.id);
         }
 
         return material;
@@ -474,7 +474,7 @@ material::Material* Loader::load_material(std::string const&     name,
 
     logging::error("Using fallback for material %S: ", name);
 
-    return &fallback_material_;
+    return fallback_material_;
 }
 
 }  // namespace scene

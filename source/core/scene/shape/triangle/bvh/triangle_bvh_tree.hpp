@@ -1,10 +1,11 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_HPP
 
-#include <vector>
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
 #include "scene/material/sampler_settings.hpp"
+
+#include <vector>
 
 namespace math {
 struct Ray;
@@ -82,11 +83,11 @@ class Tree {
                      scalar const& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack) const
         noexcept;
 
-    float opacity(ray& ray, uint64_t time, Materials materials, Filter filter,
+    float opacity(ray& ray, uint64_t time, uint32_t entity, Filter filter,
                   Worker const& worker) const noexcept;
 
-    bool absorption(ray& ray, uint64_t time, Materials materials, Filter filter,
-                    Worker const& worker, float3& ta) const noexcept;
+    bool absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker const& worker,
+                    float3& ta) const noexcept;
 
     float3 interpolate_p(float2 uv, uint32_t index) const noexcept;
 

@@ -5,6 +5,7 @@
 #include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "resource/resource.hpp"
 #include "scene/animation/animation.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene.hpp"
@@ -137,17 +138,17 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) no
     properties_.set(Property::Visible_in_shadow, in_shadow);
 }
 
-void Prop::configure(Shape* shape, Material* const* materials) noexcept {
+void Prop::configure(Shape* shape, Material_ptr const* materials) noexcept {
     set_shape(shape);
 
     for (uint32_t i = 0, len = shape->num_materials(); i < len; ++i) {
         auto const m = materials[i];
 
-        if (m->is_masked()) {
+        if (m.ptr->is_masked()) {
             properties_.set(Property::Masked_material);
         }
 
-        if (m->has_tinted_shadow()) {
+        if (m.ptr->has_tinted_shadow()) {
             properties_.set(Property::Tinted_shadow);
         }
     }
@@ -296,8 +297,7 @@ float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& 
     Transformation temp;
     auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->opacity(ray, transformation, worker.scene().prop_materials(self), filter,
-                           worker);
+    return shape_->opacity(ray, transformation, self, filter, worker);
 }
 
 bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
@@ -322,8 +322,7 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker 
     Transformation temp;
     auto const&    transformation = transformation_at(self, ray.time, temp, worker.scene());
 
-    return shape_->thin_absorption(ray, transformation, worker.scene().prop_materials(self), filter,
-                                   worker, ta);
+    return shape_->thin_absorption(ray, transformation, self, filter, worker, ta);
 }
 
 bool Prop::has_masked_material() const noexcept {

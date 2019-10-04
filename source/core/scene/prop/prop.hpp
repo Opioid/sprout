@@ -9,6 +9,13 @@
 #include "scene/entity/keyframe.hpp"
 #include "scene/material/material.hpp"
 
+namespace resource {
+
+template <typename T>
+struct Resource_ptr;
+
+}
+
 namespace thread {
 class Pool;
 }
@@ -41,6 +48,7 @@ class alignas(64) Prop {
     using Node_stack     = shape::Node_stack;
     using Filter         = material::Sampler_settings::Filter;
     using Material       = material::Material;
+    using Material_ptr   = resource::Resource_ptr<Material>;
     using Shape          = shape::Shape;
     using Keyframe       = entity::Keyframe;
 
@@ -70,7 +78,7 @@ class alignas(64) Prop {
 
     AABB const& aabb() const noexcept;
 
-    void configure(Shape* shape, Material* const* materials) noexcept;
+    void configure(Shape* shape, Material_ptr const* materials) noexcept;
 
     void set_transformation(math::Transformation const& t) noexcept;
 
@@ -155,9 +163,7 @@ struct Prop_ptr {
 };
 
 struct Prop_material {
-    using Material = material::Material;
-
-    Material** materials = nullptr;
+    uint32_t* materials = nullptr;
 
     struct Part {
         union {
