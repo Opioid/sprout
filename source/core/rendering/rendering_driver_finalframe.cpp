@@ -13,7 +13,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/entity/composed_transformation.hpp"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
 #include "take/take_view.hpp"
 
 namespace rendering {

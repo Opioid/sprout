@@ -6,10 +6,10 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "shape_intersection.hpp"
 #include "shape_sample.hpp"
 

@@ -13,6 +13,7 @@ target_sources(core
     "extension_provider.hpp"
     "scene.cpp"
     "scene.hpp"
+    "scene.inl"
     "scene_constants.hpp"
     "scene_loader.cpp"
     "scene_loader.hpp"

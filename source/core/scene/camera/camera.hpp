@@ -62,10 +62,10 @@ class Camera {
 
     void update(Scene& scene, uint64_t time, Worker& worker) noexcept;
 
-    virtual bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
+    virtual bool generate_ray(Camera_sample const& sample, uint32_t frame,
                               uint32_t view, Scene const& scene, Ray& ray) const noexcept = 0;
 
-    virtual bool sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
+    virtual bool sample(int4 const& bounds, uint64_t time, float3 const& p,
                         Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                         Camera_sample_to& sample) const noexcept = 0;
 
@@ -87,7 +87,7 @@ class Camera {
     uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
 
   protected:
-    virtual void on_update(Prop const* self, uint64_t time, Worker& worker) noexcept = 0;
+    virtual void on_update(uint64_t time, Worker& worker) noexcept = 0;
 
     virtual void set_parameter(std::string_view name, json::Value const& value) noexcept = 0;
 

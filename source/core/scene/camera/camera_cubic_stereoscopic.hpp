@@ -23,17 +23,17 @@ class Cubic_stereoscopic final : public Stereoscopic {
 
     float pixel_solid_angle() const noexcept override final;
 
-    bool generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame, uint32_t view,
+    bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
 
-    bool sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
+    bool sample(int4 const& bounds, uint64_t time, float3 const& p,
                 Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                 Camera_sample_to& sample) const noexcept override final;
 
     void set_interpupillary_distance_falloff(float ipd_falloff) noexcept;
 
   private:
-    void on_update(Prop const* self, uint64_t time, Worker& worker) noexcept override final;
+    void on_update(uint64_t time, Worker& worker) noexcept override final;
 
     void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
 

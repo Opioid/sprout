@@ -13,6 +13,7 @@
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
+#include "scene/scene_worker.inl"
 
 #include <iostream>
 #include "base/math/print.hpp"

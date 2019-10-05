@@ -6,6 +6,10 @@
 
 namespace scene {
 
+inline Scene const& Worker::scene() const noexcept {
+    return *scene_;
+}
+
 template <typename T>
 T& Worker::sample(uint32_t sample_level) const noexcept {
     return sample_cache_.get<T>(sample_level);

@@ -5,7 +5,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 #include "core/scene/prop/prop.hpp"
-#include "core/scene/scene.hpp"
+#include "core/scene/scene.inl"
 #include "core/scene/scene_constants.hpp"
 
 namespace procedural::sky {

@@ -8,9 +8,9 @@
 #include "resource/resource.hpp"
 #include "scene/animation/animation.hpp"
 #include "scene/entity/composed_transformation.inl"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
 #include "scene/scene_ray.inl"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/shape/morphable_shape.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/shape_intersection.hpp"
@@ -107,12 +107,14 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
         return false;
     }
 
-    if (properties_.is(Property::Test_AABB) && !worker.scene().prop_aabb_intersect_p(self, ray)) {
+    auto const& scene = worker.scene();
+
+    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
         return false;
     }
 
     Transformation temp;
-    auto const&    transformation = worker.scene().prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
     return shape_->intersect(ray, transformation, worker.node_stack(), intersection);
 }
@@ -123,12 +125,14 @@ bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
         return false;
     }
 
-    if (properties_.is(Property::Test_AABB) && !worker.scene().prop_aabb_intersect_p(self, ray)) {
+    auto const& scene = worker.scene();
+
+    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
         return false;
     }
 
     Transformation temp;
-    auto const&    transformation = worker.scene().prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
     return shape_->intersect_fast(ray, transformation, worker.node_stack(), intersection);
 }
@@ -143,12 +147,14 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Norma
         return false;
     }
 
-    if (properties_.is(Property::Test_AABB) && !worker.scene().prop_aabb_intersect_p(self, ray)) {
+    auto const& scene = worker.scene();
+
+    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
         return false;
     }
 
     Transformation temp;
-    auto const&    transformation = worker.scene().prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
     return shape_->intersect(ray, transformation, worker.node_stack(), normals);
 }
@@ -158,12 +164,14 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
         return false;
     }
 
-    if (properties_.is(Property::Test_AABB) && !worker.scene().prop_aabb_intersect_p(self, ray)) {
+    auto const& scene = worker.scene();
+
+    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
         return false;
     }
 
     Transformation temp;
-    auto const&    transformation = worker.scene().prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
     return shape_->intersect_p(ray, transformation, worker.node_stack());
 }
@@ -201,12 +209,14 @@ float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& 
         return 0.f;
     }
 
-    if (properties_.is(Property::Test_AABB) && !worker.scene().prop_aabb_intersect_p(self, ray)) {
+    auto const& scene = worker.scene();
+
+    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
         return 0.f;
     }
 
     Transformation temp;
-    auto const&    transformation = worker.scene().prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
     return shape_->opacity(ray, transformation, self, filter, worker);
 }
@@ -225,13 +235,15 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker 
         return true;
     }
 
-    if (properties_.is(Property::Test_AABB) && !worker.scene().prop_aabb_intersect_p(self, ray)) {
+    auto const& scene = worker.scene();
+
+    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
         ta = float3(1.f);
         return true;
     }
 
     Transformation temp;
-    auto const&    transformation = worker.scene().prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
     return shape_->thin_absorption(ray, transformation, self, filter, worker, ta);
 }

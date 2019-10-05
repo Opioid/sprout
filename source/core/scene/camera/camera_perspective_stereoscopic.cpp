@@ -38,7 +38,7 @@ float Perspective_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Perspective_stereoscopic::generate_ray(Prop const* self, sampler::Camera_sample const& sample,
+bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
                                             uint32_t frame, uint32_t view, Scene const& scene,
                                             scene::Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
@@ -57,7 +57,7 @@ bool Perspective_stereoscopic::generate_ray(Prop const* self, sampler::Camera_sa
     return true;
 }
 
-bool Perspective_stereoscopic::sample(Prop const* /*self*/, int4 const& /*bounds*/,
+bool Perspective_stereoscopic::sample(int4 const& /*bounds*/,
                                       uint64_t /*time*/, float3 const& /*p*/, Sampler& /*sampler*/,
                                       uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
                                       Camera_sample_to& /*sample*/) const noexcept {
@@ -78,7 +78,7 @@ void Perspective_stereoscopic::set_fov(float fov) noexcept {
     d_y_ = (left_bottom - left_top_) / fr[1];
 }
 
-void Perspective_stereoscopic::on_update(Prop const* /*self*/, uint64_t /*time*/,
+void Perspective_stereoscopic::on_update(uint64_t /*time*/,
                                          Worker& /*worker*/) noexcept {}
 
 void Perspective_stereoscopic::set_parameter(std::string_view   name,

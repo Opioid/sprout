@@ -15,7 +15,7 @@
 #include "logging/logging.hpp"
 #include "prop/prop.hpp"
 #include "resource/resource_manager.inl"
-#include "scene.hpp"
+#include "scene.inl"
 #include "shape/canopy.hpp"
 #include "shape/celestial_disk.hpp"
 #include "shape/cube.hpp"

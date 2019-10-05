@@ -1,4 +1,4 @@
-#include "scene.hpp"
+#include "scene.inl"
 #include "animation/animation.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/distribution/distribution_1d.inl"
@@ -442,15 +442,6 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
     return transformation;
 }
 
-Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const noexcept {
-    return prop_world_transformations_[entity];
-}
-
-math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const noexcept {
-    prop::Prop_frames const& f = prop_frames_[entity];
-
-    return f.frames[f.num_world_frames].transformation;
-}
 
 void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept {
     prop_world_transformations_[entity].set(t);
@@ -614,29 +605,6 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
         *shape, part, time, transformation, volume, material_importance_sampling, pool);
 }
 
-bool Scene::prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept {
-    return prop_aabbs_[entity].intersect_p(ray);
-}
-
-material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) const noexcept {
-    return material_resources_[prop_materials_[entity].materials[part]];
-}
-
-prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const noexcept {
-    return prop_topology_[entity];
-}
-
-uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].parts[part].light_id;
-}
-
-float Scene::prop_area(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].parts[part].area;
-}
-
-float Scene::prop_volume(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].parts[part].volume;
-}
 
 void Scene::add_material(uint32_t material) noexcept {
     materials_.push_back(material);

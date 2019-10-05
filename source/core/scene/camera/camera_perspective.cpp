@@ -15,7 +15,7 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 
 namespace scene::camera {
 
@@ -41,7 +41,7 @@ float Perspective::pixel_solid_angle() const noexcept {
     return x * x;
 }
 
-bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
+bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame,
                                uint32_t /*view*/, Scene const& scene, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -78,7 +78,7 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
     return true;
 }
 
-bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, float3 const& p,
+bool Perspective::sample(int4 const& bounds, uint64_t time, float3 const& p,
                          Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                          Camera_sample_to& sample) const noexcept {
     Transformation temp;
@@ -181,7 +181,7 @@ void Perspective::set_focus(Focus const& focus) noexcept {
     focus_distance_ = focus_.distance;
 }
 
-void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noexcept {
+void Perspective::on_update(uint64_t time, Worker& worker) noexcept {
     float2 const fr(resolution_);
     float const  ratio = fr[1] / fr[0];
 
@@ -220,7 +220,7 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
         /*plane::create(transformation.position, lbw, rbw)*/
         plane::create(-skewed_dir, transformation.position + 36.f * transformation.rotation.r[2]));
 
-    update_focus(self, time, worker);
+    update_focus(time, worker);
 
     float3 const nlb = left_bottom / z;
     float3 const nrt = right_top / z;
@@ -228,7 +228,7 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
 }
 
-void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) noexcept {
+void Perspective::update_focus(uint64_t time, Worker& worker) noexcept {
     if (focus_.use_point && lens_radius_ > 0.f) {
         float3 const direction = normalize(left_top_ + focus_.point[0] * d_x_ +
                                            focus_.point[1] * d_y_);

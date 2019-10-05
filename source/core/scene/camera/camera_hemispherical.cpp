@@ -35,7 +35,7 @@ float Hemispherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Hemispherical::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t frame,
+bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame,
                                  uint32_t /*view*/, Scene const& scene, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -67,14 +67,14 @@ bool Hemispherical::generate_ray(Prop const* self, Camera_sample const& sample, 
     return true;
 }
 
-bool Hemispherical::sample(Prop const* /*self*/, int4 const& /*bounds*/, uint64_t /*time*/,
+bool Hemispherical::sample(int4 const& /*bounds*/, uint64_t /*time*/,
                            float3 const& /*p*/, Sampler& /*sampler*/,
                            uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
                            Camera_sample_to& /*sample*/) const noexcept {
     return false;
 }
 
-void Hemispherical::on_update(prop::Prop const* /*self*/, uint64_t /*time*/,
+void Hemispherical::on_update(uint64_t /*time*/,
                               Worker& /*worker*/) noexcept {}
 
 void Hemispherical::set_parameter(std::string_view /*name*/,

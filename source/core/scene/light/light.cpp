@@ -4,7 +4,7 @@
 #include "base/math/vector3.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/prop/prop.hpp"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
 #include "scene/scene_worker.hpp"
 
 namespace scene::light {

@@ -34,8 +34,6 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
     interface_stack_.clear();
     interfaces_.clear();
 
-    Prop const* self = scene.prop(entity_);
-
     if (scene.has_volumes()) {
         Transformation temp;
         auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
@@ -62,7 +60,7 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
         }
     }
 
-    on_update(self, time, worker);
+    on_update(time, worker);
 }
 
 Frustum Camera::frustum() const noexcept {

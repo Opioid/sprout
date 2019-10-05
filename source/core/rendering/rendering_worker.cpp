@@ -15,6 +15,7 @@
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
