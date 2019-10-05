@@ -105,7 +105,7 @@ void size() {
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);
     print_size<scene::material::volumetric::Grid>("volumetric::Grid", 192);
 
-    print_size<scene::prop::Prop>("prop::Prop", 64);
+    print_size<scene::prop::Prop>("prop::Prop", 8);
 
     print_size<scene::Renderstate>("Renderstate", 112);
 
