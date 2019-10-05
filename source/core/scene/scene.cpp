@@ -26,8 +26,11 @@ namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
 
-Scene::Scene(std::vector<Shape*> const& shape_resources, std::vector<Material*> const& material_resources) noexcept
-	: shape_resources_(shape_resources), material_resources_(material_resources) {
+Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
+             std::vector<Material*> const& material_resources) noexcept
+    : null_shape_(null_shape),
+      shape_resources_(shape_resources),
+      material_resources_(material_resources) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_materials_.reserve(Num_reserved_props);
@@ -291,7 +294,7 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
 uint32_t Scene::create_dummy() noexcept {
     auto const prop = allocate_prop();
 
-    prop.ptr->configure(&null_shape_, nullptr);
+    prop.ptr->configure(null_shape_, nullptr);
 
     return prop.id;
 }
@@ -304,12 +307,12 @@ uint32_t Scene::create_dummy(std::string const& name) noexcept {
     return dummy;
 }
 
-uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
+uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcept {
     auto const prop = allocate_prop();
 
     prop.ptr->configure(shape, materials.data());
 
-    uint32_t const num_parts = shape->num_parts();
+    uint32_t const num_parts = shape.ptr->num_parts();
 
     auto& m = prop_materials_[prop.id];
 
@@ -322,18 +325,18 @@ uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
         p.area     = 1.f;
         p.light_id = 0xFFFFFFFF;
 
-        m.materials[i] = materials[shape->part_id_to_material_id(i)].id;
+        m.materials[i] = materials[shape.ptr->part_id_to_material_id(i)].id;
     }
 
-    if (shape->is_finite()) {
+    if (shape.ptr->is_finite()) {
         finite_props_.push_back(prop.id);
     } else {
         infinite_props_.push_back(prop.id);
     }
 
     // Shape has no surface
-    if (1 == shape->num_parts() && 1.f == materials[0].ptr->ior()) {
-        if (shape->is_finite()) {
+    if (1 == shape.ptr->num_parts() && 1.f == materials[0].ptr->ior()) {
+        if (shape.ptr->is_finite()) {
             volumes_.push_back(prop.id);
         } else {
             infinite_volumes_.push_back(prop.id);
@@ -343,7 +346,7 @@ uint32_t Scene::create_prop(Shape* shape, Materials const& materials) noexcept {
     return prop.id;
 }
 
-uint32_t Scene::create_prop(Shape* shape, Materials const& materials,
+uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials,
                             std::string const& name) noexcept {
     uint32_t const prop = create_prop(shape, materials);
 
@@ -442,7 +445,6 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
     return transformation;
 }
 
-
 void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept {
     prop_world_transformations_[entity].set(t);
 }
@@ -455,7 +457,7 @@ void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
     prop_frames_[entity].frames = memory::allocate_aligned<entity::Keyframe>(num_world_frames +
                                                                              num_local_frames);
 
-    props_[entity].allocate_frames(num_world_frames);
+    props_[entity].allocate_frames(entity, num_world_frames, *this);
 }
 
 void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
@@ -488,7 +490,7 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
         prop_set_world_transformation(entity, f.frames[0].transformation);
     }
 
-    Shape* shape = props_[entity].shape();
+    Shape const* shape = prop_shape(entity);
 
     // Prop::on_set_transformation()
     if (1 == f.num_world_frames) {
@@ -560,9 +562,7 @@ void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflect
 
 void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
                                   bool material_importance_sampling, thread::Pool& pool) noexcept {
-    auto& prop = props_[entity];
-
-    auto shape = prop.shape();
+    auto shape = prop_shape(entity);
 
     shape->prepare_sampling(part);
 
@@ -584,9 +584,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
                                          uint64_t time, bool material_importance_sampling,
                                          thread::Pool& pool) noexcept {
-    auto& prop = props_[entity];
-
-    auto shape = prop.shape();
+    auto shape = prop_shape(entity);
 
     shape->prepare_sampling(part);
 
@@ -604,7 +602,6 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
     material_resources_[m.materials[part]]->prepare_sampling(
         *shape, part, time, transformation, volume, material_importance_sampling, pool);
 }
-
 
 void Scene::add_material(uint32_t material) noexcept {
     materials_.push_back(material);
@@ -650,8 +647,8 @@ Scene::Prop_ptr Scene::allocate_prop() noexcept {
 }
 
 bool Scene::prop_has_caustic_material(uint32_t entity) const noexcept {
-    Prop const& p = props_[entity];
-    for (uint32_t i = 0, len = p.shape()->num_parts(); i < len; ++i) {
+    auto const shape = prop_shape(entity);
+    for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
         if (prop_material(entity, i)->is_caustic()) {
             return true;
         }

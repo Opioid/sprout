@@ -61,7 +61,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
 
     resources_.push_back(resource);
 
-	uint32_t const id = uint32_t(resources_.size()) - 1;
+    uint32_t const id = uint32_t(resources_.size()) - 1;
 
     entries_.insert_or_assign(key, Entry{id, generation_, resolved_name, last_write});
 
@@ -90,7 +90,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
 
     resources_.push_back(resource);
 
-	uint32_t const id = uint32_t(resources_.size()) - 1;
+    uint32_t const id = uint32_t(resources_.size()) - 1;
 
     entries_.insert_or_assign(key, Entry{id, generation_, source_name, last_write});
 
@@ -120,7 +120,7 @@ template <typename T>
 Resource_ptr<T> Typed_cache<T>::store(T* resource) noexcept {
     resources_.push_back(resource);
 
-	uint32_t const id = uint32_t(resources_.size()) - 1;
+    uint32_t const id = uint32_t(resources_.size()) - 1;
 
     return {resource, id};
 }
@@ -132,7 +132,7 @@ Resource_ptr<T> Typed_cache<T>::store(std::string const& name, memory::Variant_m
 
     resources_.push_back(resource);
 
-	uint32_t const id = uint32_t(resources_.size()) - 1;
+    uint32_t const id = uint32_t(resources_.size()) - 1;
 
     entries_.insert_or_assign(key, Entry{id, generation_, "", std::filesystem::file_time_type()});
 

@@ -34,16 +34,14 @@ Prop::Prop() noexcept = default;
 
 Prop::~Prop() noexcept {}
 
-void Prop::allocate_frames(uint32_t num_world_frames) noexcept {
+void Prop::allocate_frames(uint32_t self, uint32_t num_world_frames, Scene const& scene) noexcept {
+    Shape const* shape = scene.prop_shape(self);
+
     properties_.set(Property::Test_AABB,
-                    shape_->is_finite() && (shape_->is_complex() || num_world_frames > 1));
+                    shape->is_finite() && (shape->is_complex() || num_world_frames > 1));
 }
 
-shape::Shape const* Prop::shape() const noexcept {
-    return shape_;
-}
-
-shape::Shape* Prop::shape() noexcept {
+uint32_t Prop::shape() const noexcept {
     return shape_;
 }
 
@@ -77,10 +75,10 @@ void Prop::set_has_parent() noexcept {
     properties_.set(Property::Has_parent);
 }
 
-void Prop::configure(Shape* shape, Material_ptr const* materials) noexcept {
-    set_shape(shape);
+void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
+    set_shape(shape.id);
 
-    for (uint32_t i = 0, len = shape->num_materials(); i < len; ++i) {
+    for (uint32_t i = 0, len = shape.ptr->num_materials(); i < len; ++i) {
         auto const m = materials[i];
 
         if (m.ptr->is_masked()) {
@@ -94,7 +92,7 @@ void Prop::configure(Shape* shape, Material_ptr const* materials) noexcept {
 }
 
 void Prop::morph(uint32_t self, thread::Pool& pool, Scene const& scene) noexcept {
-    if (shape::Morphable_shape* morphable = shape_->morphable_shape(); morphable) {
+    if (shape::Morphable_shape* morphable = scene.prop_shape(self)->morphable_shape(); morphable) {
         //    auto const& m = morphing_;
         auto const& m = scene.prop_morphing(self);
         morphable->morph(m.targets[0], m.targets[1], m.weight, pool);
@@ -116,7 +114,8 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
-    return shape_->intersect(ray, transformation, worker.node_stack(), intersection);
+    return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(),
+                                             intersection);
 }
 
 bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
@@ -134,7 +133,8 @@ bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
-    return shape_->intersect_fast(ray, transformation, worker.node_stack(), intersection);
+    return scene.prop_shape(self)->intersect_fast(ray, transformation, worker.node_stack(),
+                                                  intersection);
 }
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const
@@ -156,7 +156,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Norma
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
-    return shape_->intersect(ray, transformation, worker.node_stack(), normals);
+    return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(), normals);
 }
 
 bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const noexcept {
@@ -173,10 +173,10 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
-    return shape_->intersect_p(ray, transformation, worker.node_stack());
+    return scene.prop_shape(self)->intersect_p(ray, transformation, worker.node_stack());
 }
 
-void Prop::set_shape(Shape* shape) noexcept {
+void Prop::set_shape(uint32_t shape) noexcept {
     shape_ = shape;
 
     properties_.clear();
@@ -218,7 +218,7 @@ float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& 
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
-    return shape_->opacity(ray, transformation, self, filter, worker);
+    return scene.prop_shape(self)->opacity(ray, transformation, self, filter, worker);
 }
 
 bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
@@ -245,7 +245,7 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker 
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
-    return shape_->thin_absorption(ray, transformation, self, filter, worker, ta);
+    return scene.prop_shape(self)->thin_absorption(ray, transformation, self, filter, worker, ta);
 }
 
 bool Prop::has_masked_material() const noexcept {

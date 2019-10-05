@@ -50,23 +50,25 @@ class Prop {
     using Material       = material::Material;
     using Material_ptr   = resource::Resource_ptr<Material>;
     using Shape          = shape::Shape;
+    using Shape_ptr      = resource::Resource_ptr<Shape>;
     using Keyframe       = entity::Keyframe;
 
     Prop() noexcept;
 
     ~Prop() noexcept;
 
-    void allocate_frames(uint32_t num_world_frames) noexcept;
+    void allocate_frames(uint32_t self, uint32_t num_world_frames, Scene const& scene) noexcept;
 
-    shape::Shape const* shape() const noexcept;
-    shape::Shape*       shape() noexcept;
+    uint32_t shape() const noexcept;
 
-    void configure(Shape* shape, Material_ptr const* materials) noexcept;
+    void configure(Shape_ptr shape, Material_ptr const* materials) noexcept;
 
     bool has_no_children() const noexcept;
 
     bool visible_in_camera() const noexcept;
+
     bool visible_in_reflection() const noexcept;
+
     bool visible_in_shadow() const noexcept;
 
     void set_visible_in_shadow(bool value) noexcept;
@@ -95,12 +97,13 @@ class Prop {
                          float3& ca) const noexcept;
 
     bool has_masked_material() const noexcept;
+
     bool has_tinted_shadow() const noexcept;
 
     size_t num_bytes() const noexcept;
 
   private:
-    void set_shape(Shape* shape) noexcept;
+    void set_shape(uint32_t shape) noexcept;
 
     bool visible(uint32_t ray_depth) const noexcept;
 
@@ -116,7 +119,7 @@ class Prop {
 
     flags::Flags<Property> properties_;
 
-    Shape* shape_ = nullptr;
+    uint32_t shape_ = 0xFFFFFFFF;
 };
 
 struct Prop_ptr {

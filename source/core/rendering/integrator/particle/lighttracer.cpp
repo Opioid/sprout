@@ -111,8 +111,8 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                     ((caustic_ray &&
                       worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
                      settings_.full_light_path)) {
-                    if (direct_camera(camera, bounds, radiance, ray, intersection,
-                                      material_sample, filter, worker)) {
+                    if (direct_camera(camera, bounds, radiance, ray, intersection, material_sample,
+                                      filter, worker)) {
                         worker.particle_importance().increment_importance(light_id, light_sample.xy,
                                                                           intersection.geo.p);
                     }
@@ -212,9 +212,8 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
     return true;
 }
 
-bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds,
-                                float3 const& radiance, Ray const& history,
-                                Intersection const&    intersection,
+bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3 const& radiance,
+                                Ray const& history, Intersection const& intersection,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) noexcept {
     if (!worker.scene().prop(intersection.prop)->visible_in_camera()) {
@@ -224,8 +223,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds,
     float3 const p = material_sample.offset_p(intersection.geo.p);
 
     Camera_sample_to camera_sample;
-    if (!camera.sample(bounds, history.time, p, sampler_, 0, worker.scene(),
-                       camera_sample)) {
+    if (!camera.sample(bounds, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {
         return false;
     }
 

@@ -122,22 +122,22 @@ int main(int argc, char* argv[]) noexcept {
         resource_manager.register_provider(texture_provider);
     }
 
-	scene::shape::triangle::Provider mesh_provider;
-	auto const& shape_resources = resource_manager.register_provider(mesh_provider);
+    scene::shape::triangle::Provider mesh_provider;
+    auto const& shape_resources = resource_manager.register_provider(mesh_provider);
 
     scene::material::Provider material_provider(args.debug_material);
     auto const& material_resources = resource_manager.register_provider(material_provider);
 
-	scene::Scene scene(shape_resources, material_resources);
+    scene::Loader scene_loader(resource_manager, material_provider.create_fallback_material());
+
+    procedural::mesh::init(scene_loader);
+    procedural::sky::init(scene_loader, material_provider);
+
+    scene::Scene scene(scene_loader.null_shape(), shape_resources, material_resources);
 
     std::string take_name;
 
     take::Take take;
-
-	scene::Loader scene_loader(resource_manager, material_provider.create_fallback_material());
-
-    procedural::mesh::init(scene_loader);
-    procedural::sky::init(scene_loader, material_provider);
 
     uint32_t const max_sample_size = material_provider.max_sample_size();
 

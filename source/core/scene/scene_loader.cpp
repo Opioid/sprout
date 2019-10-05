@@ -32,14 +32,15 @@ namespace scene {
 
 Loader::Loader(resource::Manager& manager, Material* fallback_material) noexcept
     : resource_manager_(manager),
-	  canopy_(manager.store<Shape>(new shape::Canopy())),
-	  celestial_disk_(manager.store<Shape>(new shape::Celestial_disk())),
-	  cube_(manager.store<Shape>(new shape::Cube())),
-	  disk_(manager.store<Shape>(new shape::Disk())),
-	  infinite_sphere_(manager.store<Shape>(new shape::Infinite_sphere())),
-	  plane_(manager.store<Shape>(new shape::Plane())),
-	  rectangle_(manager.store<Shape>(new shape::Rectangle())),
-	  sphere_(manager.store<Shape>(new shape::Sphere())),
+      canopy_(manager.store<Shape>(new shape::Canopy())),
+      celestial_disk_(manager.store<Shape>(new shape::Celestial_disk())),
+      cube_(manager.store<Shape>(new shape::Cube())),
+      disk_(manager.store<Shape>(new shape::Disk())),
+      infinite_sphere_(manager.store<Shape>(new shape::Infinite_sphere())),
+      plane_(manager.store<Shape>(new shape::Plane())),
+      rectangle_(manager.store<Shape>(new shape::Rectangle())),
+      sphere_(manager.store<Shape>(new shape::Sphere())),
+      null_shape_(manager.store<Shape>(new shape::Null())),
       fallback_material_(manager.store<Material>(fallback_material)) {}
 
 Loader::~Loader() noexcept {}
@@ -78,20 +79,24 @@ void Loader::register_mesh_generator(std::string const&          name,
     mesh_generators_[name] = generator;
 }
 
-Scene::Shape* Loader::canopy() noexcept {
-	return canopy_.ptr;
+Loader::Shape_ptr Loader::canopy() noexcept {
+    return canopy_;
 }
 
-Scene::Shape* Loader::celestial_disk() noexcept {
-	return celestial_disk_.ptr;
+Loader::Shape_ptr Loader::celestial_disk() noexcept {
+    return celestial_disk_;
 }
 
-Scene::Shape* Loader::cube() noexcept {
-	return cube_.ptr;
+Loader::Shape_ptr Loader::cube() noexcept {
+    return cube_;
+}
+
+Loader::Shape_ptr Loader::null_shape() noexcept {
+    return null_shape_;
 }
 
 void Loader::create_light(uint32_t prop_id, Scene& scene) noexcept {
-    auto const shape = scene.prop(prop_id)->shape();
+    auto const shape = scene.prop_shape(prop_id);
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
         if (auto const material = scene.prop_material(prop_id, i); material->is_emissive()) {
             if (material->is_scattering_volume()) {
@@ -304,7 +309,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
                            Local_materials const& local_materials, Scene& scene) noexcept {
     logging::verbose("Loading prop...");
 
-	Shape_ptr shape = Shape_ptr::Null();
+    Shape_ptr shape = Shape_ptr::Null();
 
     json::Value const* visibility      = nullptr;
     json::Value const* materials_value = nullptr;
@@ -320,11 +325,11 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
         }
     }
 
-	if (!shape.ptr) {
+    if (!shape.ptr) {
         return 0xFFFFFFFF;
     }
 
-	uint32_t const num_materials = shape.ptr->num_materials();
+    uint32_t const num_materials = shape.ptr->num_materials();
 
     Materials materials;
     materials.reserve(num_materials);
@@ -340,7 +345,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
         }
     }
 
-	uint32_t const prop = scene.create_prop(shape.ptr, materials, name);
+    uint32_t const prop = scene.create_prop(shape, materials, name);
 
     // It is a annoying that this is done again in load_entities(),
     // but visibility information is already used when creating lights.
@@ -367,18 +372,18 @@ Loader::Shape_ptr Loader::load_shape(json::Value const& shape_value) noexcept {
     }
 
     if (std::string const file = json::read_string(shape_value, "file"); !file.empty()) {
-		return resource_manager_.load<shape::Shape>(file);
+        return resource_manager_.load<shape::Shape>(file);
     }
 
     logging::error("Cannot create Shape: Neither shape nor type.");
 
-	return Shape_ptr::Null();
+    return Shape_ptr::Null();
 }
 
 Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shape_value) const
     noexcept {
     if ("Canopy" == type) {
-		return canopy_;
+        return canopy_;
     } else if ("Celestial_disk" == type) {
         return celestial_disk_;
     } else if ("Cube" == type) {
@@ -396,18 +401,18 @@ Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shap
     } else {
         if (auto g = mesh_generators_.find(type); mesh_generators_.end() != g) {
             auto shape = g->second->create_mesh(shape_value, resource_manager_);
-			if (!shape.ptr) {
+            if (!shape.ptr) {
                 logging::error("Cannot create shape of type \"" + type + "\".");
             }
 
-			return shape;
+            return shape;
 
         } else {
             logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
         }
     }
 
-	return Shape_ptr::Null();
+    return Shape_ptr::Null();
 }
 
 void Loader::load_materials(json::Value const&     materials_value,

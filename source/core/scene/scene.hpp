@@ -6,6 +6,7 @@
 #include "bvh/scene_bvh_builder.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
+#include "resource/resource.hpp"
 #include "scene_constants.hpp"
 #include "shape/null.hpp"
 #include "take/take_settings.hpp"
@@ -81,9 +82,11 @@ class Scene {
     using Prop_ptr       = prop::Prop_ptr;
     using Material       = material::Material;
     using Shape          = shape::Shape;
+    using Shape_ptr      = resource::Resource_ptr<Shape>;
     using Materials      = memory::Array<resource::Resource_ptr<Material>>;
 
-	Scene(std::vector<Shape*> const& shape_resources, std::vector<Material*> const& material_resources) noexcept;
+    Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
+          std::vector<Material*> const& material_resources) noexcept;
 
     ~Scene() noexcept;
 
@@ -139,9 +142,9 @@ class Scene {
     uint32_t create_dummy() noexcept;
     uint32_t create_dummy(std::string const& name) noexcept;
 
-    uint32_t create_prop(Shape* shape, Materials const& materials) noexcept;
+    uint32_t create_prop(Shape_ptr shape, Materials const& materials) noexcept;
 
-    uint32_t create_prop(Shape* shape, Materials const& materials,
+    uint32_t create_prop(Shape_ptr shape, Materials const& materials,
                          std::string const& name) noexcept;
 
     void create_prop_light(uint32_t prop, uint32_t part) noexcept;
@@ -202,6 +205,8 @@ class Scene {
 
     bool prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept;
 
+    Shape* prop_shape(uint32_t entity) const noexcept;
+
     material::Material const* prop_material(uint32_t entity, uint32_t part) const noexcept;
 
     prop::Prop_topology const& prop_topology(uint32_t entity) const noexcept;
@@ -238,7 +243,7 @@ class Scene {
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
 
-    shape::Null null_shape_;
+    Shape_ptr null_shape_;
 
     bool has_masked_material_;
     bool has_tinted_shadow_;
@@ -277,7 +282,7 @@ class Scene {
 
     std::vector<animation::Stage> animation_stages_;
 
-	std::vector<Shape*> const& shape_resources_;
+    std::vector<Shape*> const& shape_resources_;
 
     std::vector<Material*> const& material_resources_;
 };

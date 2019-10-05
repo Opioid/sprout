@@ -36,9 +36,9 @@ class Perspective final : public Camera {
     bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
                       Scene const& scene, Ray& ray) const noexcept override final;
 
-    bool sample(int4 const& bounds, uint64_t time, float3 const& p,
-                Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
-                Camera_sample_to& sample) const noexcept override final;
+    bool sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
+                uint32_t sampler_dimension, Scene const& scene, Camera_sample_to& sample) const
+        noexcept override final;
 
     Frustum frustum() const noexcept override final;
 

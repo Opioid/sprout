@@ -75,9 +75,8 @@ float Cubic_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
-                                      uint32_t frame, uint32_t view, Scene const& scene,
-                                      Ray& ray) const noexcept {
+bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t frame,
+                                      uint32_t view, Scene const& scene, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -108,10 +107,10 @@ bool Cubic_stereoscopic::generate_ray(sampler::Camera_sample const& sample,
     return true;
 }
 
-bool Cubic_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/,
-                                float3 const& /*p*/, Sampler& /*sampler*/,
-                                uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
-                                Camera_sample_to& /*sample*/) const noexcept {
+bool Cubic_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& /*p*/,
+                                Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                                Scene const& /*scene*/, Camera_sample_to& /*sample*/) const
+    noexcept {
     return false;
 }
 
@@ -119,8 +118,7 @@ void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) 
     ipd_falloff_ = std::sqrt(ipd_falloff);
 }
 
-void Cubic_stereoscopic::on_update(uint64_t /*time*/,
-                                   Worker& /*worker*/) noexcept {}
+void Cubic_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
     if ("stereo" == name) {

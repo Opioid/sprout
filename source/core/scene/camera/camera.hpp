@@ -62,11 +62,11 @@ class Camera {
 
     void update(Scene& scene, uint64_t time, Worker& worker) noexcept;
 
-    virtual bool generate_ray(Camera_sample const& sample, uint32_t frame,
-                              uint32_t view, Scene const& scene, Ray& ray) const noexcept = 0;
+    virtual bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
+                              Scene const& scene, Ray& ray) const noexcept = 0;
 
-    virtual bool sample(int4 const& bounds, uint64_t time, float3 const& p,
-                        Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
+    virtual bool sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
+                        uint32_t sampler_dimension, Scene const& scene,
                         Camera_sample_to& sample) const noexcept = 0;
 
     virtual Frustum frustum() const noexcept;

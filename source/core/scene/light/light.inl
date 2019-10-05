@@ -32,7 +32,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float3 const& p, fl
                                entity::Composed_transformation const& transformation,
                                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                                Worker const& worker, Sample_to& result) noexcept {
-    shape::Shape const* shape = worker.scene().prop(prop)->shape();
+    shape::Shape const* shape = worker.scene().prop_shape(prop);
 
     auto const material = worker.scene().prop_material(prop, part);
 
@@ -78,8 +78,8 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float3 const&
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop(prop)->shape()->sample(part, p, rs.uv, transformation, area, two_sided,
-                                                    result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uv, transformation, area, two_sided,
+                                                 result)) {
         return false;
     }
 
@@ -97,9 +97,9 @@ static inline bool volume_sample(uint32_t prop, uint32_t part, float3 const& p, 
                                  Sample_to& result) noexcept {
     float const volume = worker.scene().prop_volume(prop, part);
 
-    if (!worker.scene().prop(prop)->shape()->sample_volume(part, p, transformation, volume, sampler,
-                                                           sampler_dimension, worker.node_stack(),
-                                                           result)) {
+    if (!worker.scene().prop_shape(prop)->sample_volume(part, p, transformation, volume, sampler,
+                                                        sampler_dimension, worker.node_stack(),
+                                                        result)) {
         return false;
     }
 
@@ -127,8 +127,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float3 cons
 
     float const volume = worker.scene().prop_volume(prop, part);
 
-    if (!worker.scene().prop(prop)->shape()->sample(part, p, rs.uvw, transformation, volume,
-                                                    result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw, transformation, volume, result)) {
         return false;
     }
 
@@ -211,9 +210,9 @@ static inline bool prop_sample(uint32_t prop, uint32_t part,
 
     float2 const importance_uv = sampler.generate_sample_2D();
 
-    if (!worker.scene().prop(prop)->shape()->sample(part, transformation, area, two_sided, sampler,
-                                                    sampler_dimension, importance_uv, bounds,
-                                                    worker.node_stack(), result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, transformation, area, two_sided, sampler,
+                                                 sampler_dimension, importance_uv, bounds,
+                                                 worker.node_stack(), result)) {
         return false;
     }
 
@@ -241,9 +240,9 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part,
     float2 const importance_uv = sampler.generate_sample_2D();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop(prop)->shape()->sample(part, rs.uv, transformation, area, two_sided,
-                                                    sampler, sampler_dimension, importance_uv,
-                                                    bounds, result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, rs.uv, transformation, area, two_sided,
+                                                 sampler, sampler_dimension, importance_uv, bounds,
+                                                 result)) {
         return false;
     }
 
@@ -291,9 +290,9 @@ static inline bool prop_sample(uint32_t prop, uint32_t part,
         return false;
     }
 
-    if (!worker.scene().prop(prop)->shape()->sample(part, transformation, area, two_sided, sampler,
-                                                    sampler_dimension, importance_uv.uv, bounds,
-                                                    worker.node_stack(), result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, transformation, area, two_sided, sampler,
+                                                 sampler_dimension, importance_uv.uv, bounds,
+                                                 worker.node_stack(), result)) {
         return false;
     }
 
@@ -328,9 +327,9 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part,
     }
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop(prop)->shape()->sample(part, rs.uv, transformation, area, two_sided,
-                                                    sampler, sampler_dimension, importance_uv.uv,
-                                                    bounds, result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, rs.uv, transformation, area, two_sided,
+                                                 sampler, sampler_dimension, importance_uv.uv,
+                                                 bounds, result)) {
         return false;
     }
 
@@ -432,8 +431,8 @@ static inline float prop_pdf(uint32_t prop, uint32_t part, Ray const& ray,
 
     bool const two_sided = worker.scene().prop_material(prop, part)->is_two_sided();
 
-    return worker.scene().prop(prop)->shape()->pdf(ray, intersection, transformation, area,
-                                                   two_sided, total_sphere);
+    return worker.scene().prop_shape(prop)->pdf(ray, intersection, transformation, area, two_sided,
+                                                total_sphere);
 }
 
 static inline float prop_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
@@ -447,7 +446,7 @@ static inline float prop_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    float const shape_pdf = worker.scene().prop(prop)->shape()->pdf_uv(
+    float const shape_pdf = worker.scene().prop_shape(prop)->pdf_uv(
         ray, intersection, transformation, area, two_sided);
 
     float const material_pdf = material->emission_pdf(intersection.uv, filter, worker);
@@ -461,8 +460,7 @@ static float volume_pdf(uint32_t prop, uint32_t part, Ray const& ray,
                         Worker const&                          worker) noexcept {
     float const volume = worker.scene().prop_volume(prop, part);
 
-    return worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection, transformation,
-                                                          volume);
+    return worker.scene().prop_shape(prop)->pdf_volume(ray, intersection, transformation, volume);
 }
 
 static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
@@ -473,8 +471,8 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ra
 
     auto const material = worker.scene().prop_material(prop, part);
 
-    float const shape_pdf = worker.scene().prop(prop)->shape()->pdf_volume(ray, intersection,
-                                                                           transformation, volume);
+    float const shape_pdf = worker.scene().prop_shape(prop)->pdf_volume(ray, intersection,
+                                                                        transformation, volume);
 
     float const material_pdf = material->emission_pdf(intersection.uvw, filter, worker);
 

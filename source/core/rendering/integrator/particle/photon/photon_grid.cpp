@@ -12,8 +12,8 @@
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/shape/shape.hpp"
 #include "scene/scene_worker.inl"
+#include "scene/shape/shape.hpp"
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -556,8 +556,6 @@ static float3 scattering_coefficient(prop::Intersection const& intersection,
 
     auto const& material = *intersection.material(worker);
 
-    auto const prop = worker.scene().prop(intersection.prop);
-
     if (material.is_heterogeneous_volume()) {
         entity::Composed_transformation temp;
         auto const& transformation = worker.scene().prop_transformation_at(intersection.prop, 0,
@@ -565,7 +563,7 @@ static float3 scattering_coefficient(prop::Intersection const& intersection,
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
 
-        auto const shape = prop->shape();
+        auto const shape = worker.scene().prop_shape(intersection.prop);
 
         float3 const uvw = shape->object_to_texture_point(local_position);
 

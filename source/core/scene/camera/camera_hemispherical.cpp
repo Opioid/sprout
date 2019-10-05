@@ -35,8 +35,8 @@ float Hemispherical::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame,
-                                 uint32_t /*view*/, Scene const& scene, Ray& ray) const noexcept {
+bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/,
+                                 Scene const& scene, Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];
@@ -67,15 +67,13 @@ bool Hemispherical::generate_ray(Camera_sample const& sample, uint32_t frame,
     return true;
 }
 
-bool Hemispherical::sample(int4 const& /*bounds*/, uint64_t /*time*/,
-                           float3 const& /*p*/, Sampler& /*sampler*/,
-                           uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
-                           Camera_sample_to& /*sample*/) const noexcept {
+bool Hemispherical::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& /*p*/,
+                           Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+                           Scene const& /*scene*/, Camera_sample_to& /*sample*/) const noexcept {
     return false;
 }
 
-void Hemispherical::on_update(uint64_t /*time*/,
-                              Worker& /*worker*/) noexcept {}
+void Hemispherical::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
 
 void Hemispherical::set_parameter(std::string_view /*name*/,
                                   json::Value const& /*value*/) noexcept {}
