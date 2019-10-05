@@ -107,7 +107,8 @@ void Prop::set_frames(uint32_t self, animation::Keyframe const* frames, uint32_t
 }
 
 void Prop::calculate_world_transformation(uint32_t self, Scene& scene) noexcept {
-    if (Null == scene.prop_topology(self).parent) {
+ //   if (Null == scene.prop_topology(self).parent) {
+    if (properties_.no(Property::Has_parent)) {
         for (uint32_t i = 0, len = num_world_frames_; i < len; ++i) {
             frames_[i] = frames_[len + i];
         }
@@ -136,6 +137,10 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) no
     properties_.set(Property::Visible_in_camera, in_camera);
     properties_.set(Property::Visible_in_reflection, in_reflection);
     properties_.set(Property::Visible_in_shadow, in_shadow);
+}
+
+void Prop::set_has_parent() noexcept {
+    properties_.set(Property::Has_parent);
 }
 
 void Prop::configure(Shape* shape, Material_ptr const* materials) noexcept {

@@ -95,6 +95,8 @@ class alignas(64) Prop {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
+    void set_has_parent() noexcept;
+
     void morph(uint32_t self, thread::Pool& pool, Scene const& scene) noexcept;
 
     bool intersect(uint32_t self, Ray& ray, Worker const& worker,
@@ -138,6 +140,7 @@ class alignas(64) Prop {
         Masked_material       = 1 << 3,
         Tinted_shadow         = 1 << 4,
         Test_AABB             = 1 << 5,
+        Has_parent            = 1 << 6
     };
 
     flags::Flags<Property> properties_;
@@ -180,7 +183,6 @@ struct Prop_material {
 struct Prop_topology {
     uint32_t num_local_frames = 0;
 
-    uint32_t parent = Null;
     uint32_t next   = Null;
     uint32_t child  = Null;
 };

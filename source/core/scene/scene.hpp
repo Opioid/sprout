@@ -153,7 +153,7 @@ class Scene {
     uint32_t create_extension(Extension* extension) noexcept;
     uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
 
-    void prop_attach(uint32_t parent_id, uint32_t child_id, uint32_t sibling_hint) noexcept;
+    void prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept;
 
     void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
@@ -201,14 +201,6 @@ class Scene {
 
   private:
     Prop_ptr allocate_prop() noexcept;
-
-    void prop_add_sibling(uint32_t self, uint32_t node) noexcept;
-
-    void prop_detach_self(uint32_t self) noexcept;
-
-    void prop_detach(uint32_t self, uint32_t node) noexcept;
-
-    void prop_remove_sibling(uint32_t self, uint32_t node) noexcept;
 
     bool prop_has_caustic_material(uint32_t entity) const noexcept;
 
