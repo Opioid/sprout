@@ -9,13 +9,14 @@
 #include "core/image/texture/sampler/sampler_linear_2d.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/resource/resource_manager.hpp"
+#include "core/resource/resource_cache.inl"
 #include "core/scene/shape/shape_vertex.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/scene/shape/triangle/triangle_primitive.hpp"
 
 namespace procedural::mesh {
 
-scene::shape::Shape* Grass::create_mesh(json::Value const& /*mesh_value*/,
+Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
                                         resource::Manager& manager) noexcept {
     std::vector<scene::shape::triangle::Index_triangle> triangles;
     std::vector<scene::shape::Vertex>                   vertices;
@@ -75,8 +76,10 @@ scene::shape::Shape* Grass::create_mesh(json::Value const& /*mesh_value*/,
 
     calculate_normals(triangles, vertices);
 
-    return scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts,
+	auto mesh = scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts,
                                                          manager.thread_pool());
+
+	return manager.store<Shape>(mesh);
 }
 
 void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,

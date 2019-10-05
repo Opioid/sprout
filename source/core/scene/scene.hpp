@@ -83,7 +83,7 @@ class Scene {
     using Shape          = shape::Shape;
     using Materials      = memory::Array<resource::Resource_ptr<Material>>;
 
-    Scene(std::vector<Material*> const& material_backup) noexcept;
+	Scene(std::vector<Shape*> const& shape_resources, std::vector<Material*> const& material_resources) noexcept;
 
     ~Scene() noexcept;
 
@@ -276,6 +276,8 @@ class Scene {
     std::vector<animation::Animation*> animations_;
 
     std::vector<animation::Stage> animation_stages_;
+
+	std::vector<Shape*> const& shape_resources_;
 
     std::vector<Material*> const& material_resources_;
 };
