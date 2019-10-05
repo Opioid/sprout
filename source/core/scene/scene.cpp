@@ -26,8 +26,8 @@ namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
 
-Scene::Scene(std::vector<Material*> const& material_backup) noexcept
-    : material_resources_(material_backup) {
+Scene::Scene(std::vector<Shape*> const& shape_resources, std::vector<Material*> const& material_resources) noexcept
+	: shape_resources_(shape_resources), material_resources_(material_resources) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_materials_.reserve(Num_reserved_props);

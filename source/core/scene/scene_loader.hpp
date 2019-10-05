@@ -63,6 +63,7 @@ class Scene;
 class Loader {
   public:
     using Shape        = shape::Shape;
+	using Shape_ptr    = resource::Resource_ptr<Shape>;
     using Material     = material::Material;
     using Material_ptr = resource::Resource_ptr<Material>;
     using Materials    = memory::Array<Material_ptr>;
@@ -113,9 +114,9 @@ class Loader {
     uint32_t load_extension(std::string const& type, json::Value const& extension_value,
                             std::string const& name, Scene& scene) noexcept;
 
-    Shape* load_shape(json::Value const& shape_value) noexcept;
+	Shape_ptr load_shape(json::Value const& shape_value) noexcept;
 
-    Shape* shape(std::string const& type, json::Value const& shape_value) const noexcept;
+	Shape_ptr shape(std::string const& type, json::Value const& shape_value) const noexcept;
 
     void load_materials(json::Value const& materials_value, Local_materials const& local_materials,
                         Scene& scene, Materials& materials) const noexcept;
@@ -125,14 +126,14 @@ class Loader {
 
     resource::Manager& resource_manager_;
 
-    Shape* canopy_;
-    Shape* celestial_disk_;
-    Shape* cube_;
-    Shape* disk_;
-    Shape* infinite_sphere_;
-    Shape* plane_;
-    Shape* rectangle_;
-    Shape* sphere_;
+	Shape_ptr canopy_;
+	Shape_ptr celestial_disk_;
+	Shape_ptr cube_;
+	Shape_ptr disk_;
+	Shape_ptr infinite_sphere_;
+	Shape_ptr plane_;
+	Shape_ptr rectangle_;
+	Shape_ptr sphere_;
 
     Material_ptr fallback_material_;
 

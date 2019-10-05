@@ -32,7 +32,7 @@ class Provider final : public resource::Provider<Material> {
 
     size_t num_bytes(Material const* resource) const noexcept override final;
 
-    Material* fallback_material() noexcept;
+	Material* create_fallback_material() noexcept;
 
   private:
     Material* load(json::Value const& value, std::string_view mount_folder,

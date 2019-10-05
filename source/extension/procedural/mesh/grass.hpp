@@ -21,7 +21,7 @@ class Grass : public scene::shape::triangle::Generator {
   public:
     using Shape = scene::shape::Shape;
 
-    virtual Shape* create_mesh(json::Value const& mesh_value,
+	virtual Shape_ptr create_mesh(json::Value const& mesh_value,
                                resource::Manager& manager) noexcept override final;
 
   private:

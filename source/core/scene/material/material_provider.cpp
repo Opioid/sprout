@@ -129,7 +129,7 @@ size_t Provider::num_bytes(Material const* resource) const noexcept {
     return resource->num_bytes();
 }
 
-Material* Provider::fallback_material() noexcept {
+Material* Provider::create_fallback_material() noexcept {
     return new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
 }
 
