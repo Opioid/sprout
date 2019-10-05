@@ -172,27 +172,6 @@ bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
     return false;
 }
 
-prop::Prop const* Scene::prop(uint32_t index) const noexcept {
-    SOFT_ASSERT(index < props_.size());
-
-    return &props_[index];
-}
-
-prop::Prop* Scene::prop(uint32_t index) noexcept {
-    SOFT_ASSERT(index < props_.size());
-
-    return &props_[index];
-}
-
-prop::Prop* Scene::prop(std::string_view name) noexcept {
-    auto e = named_props_.find(name);
-    if (named_props_.end() == e) {
-        return nullptr;
-    }
-
-    return &props_[e->second];
-}
-
 std::vector<light::Light> const& Scene::lights() const noexcept {
     return lights_;
 }
@@ -445,10 +424,6 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
     return transformation;
 }
 
-void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept {
-    prop_world_transformations_[entity].set(t);
-}
-
 void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                                  uint32_t num_local_frames) noexcept {
     prop_frames_[entity].num_world_frames = num_world_frames;
@@ -486,14 +461,12 @@ void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
 void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
     prop::Prop_frames const& f = prop_frames_[entity];
 
-    if (1 == f.num_world_frames) {
-        prop_set_world_transformation(entity, f.frames[0].transformation);
-    }
-
     Shape const* shape = prop_shape(entity);
 
     // Prop::on_set_transformation()
     if (1 == f.num_world_frames) {
+        prop_set_world_transformation(entity, f.frames[0].transformation);
+
         auto const& t = prop_world_transformation(entity);
 
         prop_aabbs_[entity] = shape->transformed_aabb(t.object_to_world,

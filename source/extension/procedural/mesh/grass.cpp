@@ -9,18 +9,23 @@
 #include "core/image/texture/sampler/sampler_linear_2d.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/resource/resource_cache.inl"
-#include "core/resource/resource_manager.hpp"
+#include "core/resource/resource_manager.inl"
+#include "core/scene/shape/shape.hpp"
 #include "core/scene/shape/shape_vertex.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/scene/shape/triangle/triangle_primitive.hpp"
 
 namespace procedural::mesh {
 
+using namespace scene::shape;
+using namespace scene::shape::triangle;
+
 Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
                                     resource::Manager& manager) noexcept {
-    std::vector<scene::shape::triangle::Index_triangle> triangles;
-    std::vector<scene::shape::Vertex>                   vertices;
-    uint32_t                                            num_parts = 1;
+    std::vector<Index_triangle> triangles;
+    std::vector<Vertex>         vertices;
+
+    uint32_t num_parts = 1;
 
     uint32_t const num_vertices = 16;
 
@@ -76,16 +81,15 @@ Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
 
     calculate_normals(triangles, vertices);
 
-    auto mesh = scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts,
-                                                              manager.thread_pool());
+    auto mesh = triangle::Provider::create_mesh(triangles, vertices, num_parts,
+                                                manager.thread_pool());
 
     return manager.store<Shape>(mesh);
 }
 
 void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,
-                      float height, uint32_t vertex_offset,
-                      std::vector<scene::shape::triangle::Index_triangle>& triangles,
-                      std::vector<scene::shape::Vertex>& vertices) const noexcept {
+                      float height, uint32_t vertex_offset, std::vector<Index_triangle>& triangles,
+                      std::vector<Vertex>& vertices) const noexcept {
     scene::shape::triangle::Index_triangle tri;
     tri.material_index = 0;
 
@@ -126,7 +130,7 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
     tri.i[2] = vertex_offset + 1;
     triangles.push_back(tri);
 
-    scene::shape::Vertex v;
+    Vertex v;
     v.t              = packed_float3(1.f, 0.f, 0.f);
     v.bitangent_sign = 0;
 
@@ -200,11 +204,14 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
                             offset);
 
         v.uv = float2(1.f - segment_uvs[i][0], segment_uvs[i][1]);
+
         vertices.push_back(v);
 
         v.p = packed_float3(
             transform_vector(rotation, float3(0.f, segments[i].b[1], segments[i].b[2])) + offset);
+
         v.uv = float2(0.5f, segment_uvs[i][1]);
+
         vertices.push_back(v);
 
         v.p  = packed_float3(transform_vector(rotation, float3(segments[i].a[0], segments[i].a[1],
@@ -218,13 +225,14 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
 
     v.p = packed_float3(
         transform_vector(rotation, float3(0.f, segments[i].a[1], segments[i].a[2])) + offset);
+
     v.uv = float2(0.5f, segment_uvs[i][1]);
 
     vertices.push_back(v);
 }
 
-void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle>& triangles,
-                              std::vector<scene::shape::Vertex>& vertices) noexcept {
+void Grass::calculate_normals(std::vector<Index_triangle>& triangles,
+                              std::vector<Vertex>&         vertices) noexcept {
     std::vector<packed_float3> triangle_normals(triangles.size());
 
     for (size_t i = 0, len = triangles.size(); i < len; ++i) {

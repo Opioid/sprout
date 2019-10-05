@@ -6,11 +6,18 @@
 #include "scene.hpp"
 #include "scene_ray.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace scene {
 
 inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const
     noexcept {
     return prop_world_transformations_[entity];
+}
+
+inline void Scene::prop_set_world_transformation(uint32_t                    entity,
+                                                 math::Transformation const& t) noexcept {
+    prop_world_transformations_[entity].set(t);
 }
 
 inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const noexcept {
@@ -46,6 +53,27 @@ inline float Scene::prop_area(uint32_t entity, uint32_t part) const noexcept {
 
 inline float Scene::prop_volume(uint32_t entity, uint32_t part) const noexcept {
     return prop_materials_[entity].parts[part].volume;
+}
+
+inline prop::Prop const* Scene::prop(uint32_t index) const noexcept {
+    SOFT_ASSERT(index < props_.size());
+
+    return &props_[index];
+}
+
+inline prop::Prop* Scene::prop(uint32_t index) noexcept {
+    SOFT_ASSERT(index < props_.size());
+
+    return &props_[index];
+}
+
+inline prop::Prop* Scene::prop(std::string_view name) noexcept {
+    auto e = named_props_.find(name);
+    if (named_props_.end() == e) {
+        return nullptr;
+    }
+
+    return &props_[e->second];
 }
 
 }  // namespace scene

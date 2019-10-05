@@ -10,7 +10,7 @@
 #include "core/resource/resource_manager.inl"
 #include "core/scene/camera/camera.hpp"
 #include "core/scene/prop/prop.hpp"
-#include "core/scene/scene.hpp"
+#include "core/scene/scene.inl"
 
 namespace controller {
 
