@@ -7,6 +7,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/prop/prop.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -54,7 +55,7 @@ bool Hemispherical::generate_ray(Prop const* self, Camera_sample const& sample, 
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto&          transformation = self->transformation_at(entity_, time, temp, scene);
+    auto&          transformation = scene.prop_transformation_at(entity_, time, temp);
 
     ray.origin = transformation.position;
     ray.set_direction(transform_vector(transformation.rotation, dir));

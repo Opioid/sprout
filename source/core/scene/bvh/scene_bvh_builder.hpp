@@ -10,17 +10,15 @@
 namespace scene::bvh {
 
 class Node;
-template <typename T>
 struct Tree;
 
-template <typename T>
 class Builder {
   public:
     Builder() noexcept;
 
     ~Builder() noexcept;
 
-    void build(Tree<T>& tree, std::vector<uint32_t>& indices, std::vector<T> const& props) noexcept;
+    void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs) noexcept;
 
   private:
     struct Build_node {
@@ -44,10 +42,10 @@ class Builder {
     using index       = typename std::vector<uint32_t>::iterator;
 
     void split(Build_node* node, index begin, index end, const_index origin,
-               std::vector<T> const& props, uint32_t max_shapes) noexcept;
+               std::vector<AABB> const& aabbs, uint32_t max_shapes) noexcept;
 
-    Split_candidate<T> splitting_plane(AABB const& aabb, index begin, index end,
-                                       std::vector<T> const& props) noexcept;
+    Split_candidate splitting_plane(AABB const& aabb, index begin, index end,
+                                    std::vector<AABB> const& aabbs) noexcept;
 
     void serialize(Build_node* node) noexcept;
 
@@ -58,9 +56,9 @@ class Builder {
     static void assign(Build_node* node, const_index begin, const_index end,
                        const_index origin) noexcept;
 
-    static AABB aabb(index begin, index end, std::vector<T> const& props) noexcept;
+    static AABB aabb(index begin, index end, std::vector<AABB> const& aabbs) noexcept;
 
-    std::vector<Split_candidate<T>> split_candidates_;
+    std::vector<Split_candidate> split_candidates_;
 
     Build_node* root_;
 

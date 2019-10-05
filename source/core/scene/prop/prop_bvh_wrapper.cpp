@@ -9,7 +9,7 @@
 
 namespace scene::prop {
 
-bvh::Tree<Prop>& BVH_wrapper::tree() noexcept {
+bvh::Tree& BVH_wrapper::tree() noexcept {
     return tree_;
 }
 

@@ -25,7 +25,7 @@ inline Light::Light(Type type, uint32_t prop, uint32_t part)
 
 inline entity::Composed_transformation const& Light::transformation_at(
     uint64_t time, Transformation& transformation, Scene const& scene) const noexcept {
-    return scene.prop(prop_)->transformation_at(prop_, time, transformation, scene);
+    return scene.prop_transformation_at(prop_, time, transformation);
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float3 const& p, float3 const& n,

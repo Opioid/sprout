@@ -44,6 +44,7 @@ class Entity;
 struct Entity_ref;
 class Dummy;
 struct Morphing;
+struct Keyframe;
 
 }  // namespace entity
 
@@ -58,6 +59,7 @@ namespace prop {
 struct Intersection;
 class Prop;
 struct Prop_material;
+struct Prop_frames;
 struct Prop_topology;
 struct Prop_ptr;
 
@@ -157,7 +159,17 @@ class Scene {
 
     void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
+    // Only the returned reference is guaranteed to contain the actual transformation data.
+    // This might or might not be the same reference which is passed as a parameter,
+    // depending on whether the entity is animated or not.
+    // This can sometimes avoid a relatively costly copy,
+    // while keeping the animated state out of the interface.
+    Transformation const& prop_transformation_at(uint32_t entity, uint64_t time,
+                                                 Transformation& transformation) const noexcept;
+
     Transformation const& prop_world_transformation(uint32_t entity) const noexcept;
+
+    math::Transformation const& prop_local_frame_0(uint32_t entity) const noexcept;
 
     void prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
@@ -166,6 +178,13 @@ class Scene {
 
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                          uint32_t num_frames) noexcept;
+
+    void prop_calculate_world_transformation(uint32_t entity) noexcept;
+
+    void prop_propagate_transformation(uint32_t entity) noexcept;
+
+    void prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames,
+                                     uint32_t num_frames) noexcept;
 
     entity::Morphing const& prop_morphing(uint32_t entity) const noexcept;
 
@@ -180,6 +199,8 @@ class Scene {
     void prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
                                       uint64_t time, bool material_importance_sampling,
                                       thread::Pool& pool) noexcept;
+
+    bool prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept;
 
     material::Material const* prop_material(uint32_t entity, uint32_t part) const noexcept;
 
@@ -212,7 +233,7 @@ class Scene {
 
     uint32_t num_interpolation_frames_ = 0;
 
-    bvh::Builder<prop::Prop> bvh_builder_;
+    bvh::Builder bvh_builder_;
 
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
@@ -227,7 +248,11 @@ class Scene {
     std::vector<Transformation>      prop_world_transformations_;
     std::vector<entity::Morphing>    prop_morphing_;
     std::vector<prop::Prop_material> prop_materials_;
+    std::vector<prop::Prop_frames>   prop_frames_;
     std::vector<prop::Prop_topology> prop_topology_;
+    // Pre-transformed AABB in world space.
+    // For moving objects it must cover the entire area occupied by the object during the tick.
+    std::vector<AABB> prop_aabbs_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;

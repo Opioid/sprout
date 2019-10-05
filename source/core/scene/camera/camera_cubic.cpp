@@ -6,6 +6,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/prop/prop.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 
@@ -87,7 +88,7 @@ bool Cubic::generate_ray(Prop const* self, Camera_sample const& sample, uint32_t
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
+    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
     ray = create_ray(transform_point(transformation.object_to_world, float3(0.f)),
                      transform_vector(transformation.object_to_world, direction), time);

@@ -12,6 +12,7 @@
 #include "scene/entity/composed_transformation.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
+#include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
@@ -65,7 +66,7 @@ bool Perspective::generate_ray(Prop const* self, Camera_sample const& sample, ui
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
+    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
     float3 const origin_w = transformation.object_to_world_point(origin);
 
@@ -81,7 +82,7 @@ bool Perspective::sample(Prop const* self, int4 const& bounds, uint64_t time, fl
                          Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                          Camera_sample_to& sample) const noexcept {
     Transformation temp;
-    auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
+    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
     float3 const po = transformation.world_to_object_point(p);
 
@@ -203,7 +204,7 @@ void Perspective::on_update(Prop const* self, uint64_t time, Worker& worker) noe
     d_y_      = (left_bottom - left_top) / fr[1];
 
     Transformation temp;
-    auto const&    transformation = self->transformation_at(entity_, time, temp, worker.scene());
+    auto const&    transformation = worker.scene().prop_transformation_at(entity_, time, temp);
 
     float3 const ltw = transformation.object_to_world_point(left_top);
     float3 const lbw = transformation.object_to_world_point(left_bottom);
@@ -233,7 +234,7 @@ void Perspective::update_focus(Prop const* self, uint64_t time, Worker& worker) 
                                            focus_.point[1] * d_y_);
 
         Transformation temp;
-        auto const& transformation = self->transformation_at(entity_, time, temp, worker.scene());
+        auto const&    transformation = worker.scene().prop_transformation_at(entity_, time, temp);
 
         Ray ray(transformation.position, transformation.object_to_world_vector(direction), 0.f,
                 Ray_max_t, 0, time, 0.f);

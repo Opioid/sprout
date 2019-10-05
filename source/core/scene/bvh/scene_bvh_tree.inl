@@ -7,16 +7,13 @@
 
 namespace scene::bvh {
 
-template <typename T>
-Tree<T>::Tree() noexcept = default;
+inline Tree::Tree() noexcept = default;
 
-template <typename T>
-Tree<T>::~Tree() noexcept {
+inline Tree::~Tree() noexcept {
     memory::free_aligned(nodes_);
 }
 
-template <typename T>
-bvh::Node* Tree<T>::allocate_nodes(uint32_t num_nodes) noexcept {
+inline bvh::Node* Tree::allocate_nodes(uint32_t num_nodes) noexcept {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 

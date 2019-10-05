@@ -559,8 +559,8 @@ static float3 scattering_coefficient(prop::Intersection const& intersection,
 
     if (material.is_heterogeneous_volume()) {
         entity::Composed_transformation temp;
-        auto const& transformation = prop->transformation_at(intersection.prop, 0, temp,
-                                                             worker.scene());
+        auto const& transformation = worker.scene().prop_transformation_at(intersection.prop, 0,
+                                                                           temp);
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
 

@@ -182,8 +182,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         auto const shape = prop->shape();
 
         Transformation temp;
-        auto const&    transformation = prop->transformation_at(interface->prop, ray.time, temp,
-                                                             worker.scene());
+        auto const&    transformation = worker.scene().prop_transformation_at(interface->prop,
+                                                                           ray.time, temp);
 
         float3 const local_origin = transformation.world_to_object_point(ray.origin);
         float3 const local_dir    = transformation.world_to_object_vector(ray.direction);

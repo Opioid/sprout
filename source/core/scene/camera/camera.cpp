@@ -38,7 +38,7 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
 
     if (scene.has_volumes()) {
         Transformation temp;
-        auto const&    transformation = self->transformation_at(entity_, time, temp, scene);
+        auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
         Ray ray(transformation.position, normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t);
 

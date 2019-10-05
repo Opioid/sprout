@@ -1,9 +1,10 @@
 #ifndef SU_CORE_SCENE_PROP_BVH_WRAPPER_HPP
 #define SU_CORE_SCENE_PROP_BVH_WRAPPER_HPP
 
-#include <vector>
 #include "scene/bvh/scene_bvh_tree.hpp"
 #include "scene/material/sampler_settings.hpp"
+
+#include <vector>
 
 namespace scene {
 
@@ -24,7 +25,7 @@ class BVH_wrapper {
   public:
     using Filter = material::Sampler_settings::Filter;
 
-    bvh::Tree<Prop>& tree() noexcept;
+    bvh::Tree& tree() noexcept;
 
     void set_props(std::vector<uint32_t> const& finite_props,
                    std::vector<uint32_t> const& infinite_props,
@@ -46,7 +47,7 @@ class BVH_wrapper {
         noexcept;
 
   private:
-    bvh::Tree<Prop> tree_;
+    bvh::Tree tree_;
 
     uint32_t const* finite_props_;
 

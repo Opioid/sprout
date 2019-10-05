@@ -7,19 +7,16 @@
 
 namespace scene::bvh {
 
-template <typename T>
-Split_candidate<T>::Split_candidate(math::Plane const& plane, uint8_t axis) noexcept
+Split_candidate::Split_candidate(Plane const& plane, uint8_t axis) noexcept
     : plane_(plane), axis_(axis) {}
 
-template <typename T>
-Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos,
-                                    std::vector<uint32_t> const& indices,
-                                    std::vector<T> const&        props) noexcept
-    : Split_candidate(split_axis, pos, indices.begin(), indices.end(), props) {}
+Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos,
+                                 std::vector<uint32_t> const& indices,
+                                 std::vector<AABB> const&     aabbs) noexcept
+    : Split_candidate(split_axis, pos, indices.begin(), indices.end(), aabbs) {}
 
-template <typename T>
-Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
-                                    std::vector<T> const& props) noexcept
+Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
+                                 std::vector<AABB> const& aabbs) noexcept
     : axis_(split_axis) {
     key_ = 0;
 
@@ -38,16 +35,18 @@ Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index
             break;
     }
 
-    plane_ = math::plane::create(n, pos);
+    plane_ = plane::create(n, pos);
 
-    int      num_side_0 = 0;
-    int      num_side_1 = 0;
-    uint32_t split      = 0;
+    int32_t num_side_0 = 0;
+    int32_t num_side_1 = 0;
+
+    uint32_t split = 0;
 
     for (index i = begin; i != end; ++i) {
-        T const&   p   = props[*i];
-        bool const mib = math::plane::behind(plane_, p.aabb().min());
-        bool const mab = math::plane::behind(plane_, p.aabb().max());
+        AABB const& b = aabbs[*i];
+
+        bool const mib = plane::behind(plane_, b.min());
+        bool const mab = plane::behind(plane_, b.max());
 
         if (mib && mab) {
             ++num_side_0;
@@ -67,18 +66,15 @@ Split_candidate<T>::Split_candidate(uint8_t split_axis, float3 const& pos, index
     }
 }
 
-template <typename T>
-uint64_t Split_candidate<T>::key() const noexcept {
+uint64_t Split_candidate::key() const noexcept {
     return key_;
 }
 
-template <typename T>
-math::Plane const& Split_candidate<T>::plane() const noexcept {
+Plane const& Split_candidate::plane() const noexcept {
     return plane_;
 }
 
-template <typename T>
-uint8_t Split_candidate<T>::axis() const noexcept {
+uint8_t Split_candidate::axis() const noexcept {
     return axis_;
 }
 

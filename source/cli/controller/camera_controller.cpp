@@ -9,7 +9,7 @@ namespace controller {
 
 Camera::Camera(uint32_t camera, scene::Scene const& scene) : camera_(camera) {
     scene::Scene::Transformation temp;
-    auto& transformation = scene.prop(camera_)->transformation_at(camera_, 0, temp, scene);
+    auto const&                  transformation = scene.prop_transformation_at(camera_, 0, temp);
 
     position_ = transformation.position;
 }
@@ -21,7 +21,7 @@ void Camera::mouse_delta(float3 delta, scene::Scene& scene) {
 
     math::Transformation transformation{position_, float3(1.f), math::quaternion::identity()};
 
-    scene.prop(camera_)->set_transformation(transformation);
+    scene.prop_set_transformation(camera_, transformation);
 }
 
 }  // namespace controller

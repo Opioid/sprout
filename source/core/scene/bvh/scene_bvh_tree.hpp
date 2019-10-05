@@ -7,7 +7,6 @@ namespace scene::bvh {
 
 class Node;
 
-template <typename T>
 struct Tree {
     Tree() noexcept;
 

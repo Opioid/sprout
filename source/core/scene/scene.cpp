@@ -7,7 +7,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
-#include "bvh/scene_bvh_builder.inl"
+#include "bvh/scene_bvh_tree.inl"
 #include "entity/composed_transformation.inl"
 #include "extension.hpp"
 #include "image/texture/texture.hpp"
@@ -31,7 +31,9 @@ Scene::Scene(std::vector<Material*> const& material_backup) noexcept
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_materials_.reserve(Num_reserved_props);
+    prop_frames_.reserve(Num_reserved_props);
     prop_topology_.reserve(Num_reserved_props);
+    prop_aabbs_.reserve(Num_reserved_props);
     finite_props_.reserve(Num_reserved_props);
     infinite_props_.reserve(3);
     volumes_.reserve(Num_reserved_props);
@@ -55,6 +57,8 @@ void Scene::clear() noexcept {
 
     prop_materials_.clear();
     prop_topology_.clear();
+    prop_frames_.clear();
+    prop_aabbs_.clear();
 
     prop_world_transformations_.clear();
 
@@ -103,8 +107,7 @@ AABB Scene::caustic_aabb() const noexcept {
 
     for (auto const i : finite_props_) {
         if (prop_has_caustic_material(i)) {
-            Prop const& p = props_[i];
-            aabb.merge_assign(p.aabb());
+            aabb.merge_assign(prop_aabbs_[i]);
         }
     }
 
@@ -249,7 +252,7 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
 
     uint32_t ei = 0;
     for (auto& p : props_) {
-        p.calculate_world_transformation(ei, *this);
+        prop_calculate_world_transformation(ei);
         has_masked_material_ = has_masked_material_ || p.has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p.has_tinted_shadow();
 
@@ -261,11 +264,11 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     }
 
     // rebuild prop BVH
-    bvh_builder_.build(prop_bvh_.tree(), finite_props_, props_);
+    bvh_builder_.build(prop_bvh_.tree(), finite_props_, prop_aabbs_);
     prop_bvh_.set_props(finite_props_, infinite_props_, props_);
 
     // rebuild volume BVH
-    bvh_builder_.build(volume_bvh_.tree(), volumes_, props_);
+    bvh_builder_.build(volume_bvh_.tree(), volumes_, prop_aabbs_);
     volume_bvh_.set_props(volumes_, infinite_volumes_, props_);
 
     // re-sort lights PDF
@@ -387,13 +390,12 @@ uint32_t Scene::create_extension(Extension* extension, std::string const& name) 
 
 void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept {
     prop::Prop_topology& pt = prop_topology_[parent_id];
-    prop::Prop_topology& ct = prop_topology_[child_id];
 
     props_[child_id].set_has_parent();
 
-    if (0 == ct.num_local_frames) {
+    if (0 == prop_frames_[child_id].num_local_frames) {
         // This is the case if n has no animation attached to it directly
-        prop_allocate_frames(child_id, prop(parent_id)->num_world_frames(), 1);
+        prop_allocate_frames(child_id, prop_frames_[parent_id].num_world_frames, 1);
     }
 
     if (prop::Null == pt.child) {
@@ -404,11 +406,50 @@ void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept
 }
 
 void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept {
-    props_[entity].set_transformation(t);
+    prop::Prop_frames const& f = prop_frames_[entity];
+
+    entity::Keyframe& local_frame = f.frames[f.num_world_frames];
+
+    local_frame.transformation = t;
+    local_frame.time           = scene::Static_time;
+}
+
+Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint64_t time,
+                                                           Transformation& transformation) const
+    noexcept {
+    prop::Prop_frames const& f = prop_frames_[entity];
+
+    if (1 == f.num_world_frames) {
+        return prop_world_transformation(entity);
+    }
+
+    for (uint32_t i = 0, len = f.num_world_frames - 1; i < len; ++i) {
+        auto const& a = f.frames[i];
+        auto const& b = f.frames[i + 1];
+
+        if (time >= a.time && time < b.time) {
+            uint64_t const range = b.time - a.time;
+            uint64_t const delta = time - a.time;
+
+            float const t = float(delta) / float(range);
+
+            transformation.set(lerp(a.transformation, b.transformation, t));
+
+            break;
+        }
+    }
+
+    return transformation;
 }
 
 Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const noexcept {
     return prop_world_transformations_[entity];
+}
+
+math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const noexcept {
+    prop::Prop_frames const& f = prop_frames_[entity];
+
+    return f.frames[f.num_world_frames].transformation;
 }
 
 void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept {
@@ -417,13 +458,100 @@ void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation 
 
 void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                                  uint32_t num_local_frames) noexcept {
-    props_[entity].allocate_frames(num_world_frames, num_local_frames);
-    prop_topology_[entity].num_local_frames = num_local_frames;
+    prop_frames_[entity].num_world_frames = num_world_frames;
+    prop_frames_[entity].num_local_frames = num_local_frames;
+
+    prop_frames_[entity].frames = memory::allocate_aligned<entity::Keyframe>(num_world_frames +
+                                                                             num_local_frames);
+
+    props_[entity].allocate_frames(num_world_frames);
 }
 
 void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                             uint32_t num_frames) noexcept {
-    props_[entity].set_frames(entity, frames, num_frames, *this);
+    prop::Prop_frames const& f = prop_frames_[entity];
+
+    entity::Keyframe* local_frames = &f.frames[f.num_world_frames];
+    for (uint32_t i = 0; i < num_frames; ++i) {
+        local_frames[i] = frames[i].k;
+    }
+
+    prop_set_morphing(entity, frames[0].m);
+}
+
+void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
+    if (props_[entity].has_no_children()) {
+        prop::Prop_frames const& f = prop_frames_[entity];
+        for (uint32_t i = 0, len = f.num_world_frames; i < len; ++i) {
+            f.frames[i] = f.frames[len + i];
+        }
+
+        prop_propagate_transformation(entity);
+    }
+}
+
+void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
+    prop::Prop_frames const& f = prop_frames_[entity];
+
+    if (1 == f.num_world_frames) {
+        prop_set_world_transformation(entity, f.frames[0].transformation);
+    }
+
+    Shape* shape = props_[entity].shape();
+
+    // Prop::on_set_transformation()
+    if (1 == f.num_world_frames) {
+        auto const& t = prop_world_transformation(entity);
+
+        prop_aabbs_[entity] = shape->transformed_aabb(t.object_to_world,
+                                                      f.frames[0].transformation);
+    } else {
+        static uint32_t constexpr Num_steps = 4;
+
+        static float constexpr Interval = 1.f / float(Num_steps);
+
+        AABB aabb = shape->transformed_aabb(f.frames[0].transformation);
+
+        for (uint32_t i = 0, len = f.num_world_frames - 1; i < len; ++i) {
+            auto const& a = f.frames[i].transformation;
+            auto const& b = f.frames[i + 1].transformation;
+
+            float t = Interval;
+            for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
+                math::Transformation const interpolated = lerp(a, b, t);
+
+                aabb.merge_assign(shape->transformed_aabb(interpolated));
+            }
+
+            prop_aabbs_[entity] = aabb.merge(shape->transformed_aabb(b));
+        }
+    }
+
+    // ---
+
+    entity::Keyframe const* frames = f.frames;
+
+    uint32_t const num_world_frames = f.num_world_frames;
+
+    for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
+        prop_inherit_transformation(child, frames, num_world_frames);
+
+        child = prop_topology(child).next;
+    }
+}
+
+void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames,
+                                        uint32_t num_frames) noexcept {
+    prop::Prop_frames const& f = prop_frames_[entity];
+
+    uint32_t const num_local_frames = f.num_local_frames;
+    for (uint32_t i = 0, len = f.num_world_frames; i < len; ++i) {
+        uint32_t const lf = num_local_frames > 1 ? i : 0;
+        uint32_t const of = num_frames > 1 ? i : 0;
+        f.frames[len + lf].transform(f.frames[i], frames[of]);
+    }
+
+    prop_propagate_transformation(entity);
 }
 
 entity::Morphing const& Scene::prop_morphing(uint32_t entity) const noexcept {
@@ -448,7 +576,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     shape->prepare_sampling(part);
 
     Transformation temp;
-    auto const&    transformation = prop.transformation_at(entity, time, temp, *this);
+    auto const&    transformation = prop_transformation_at(entity, time, temp);
 
     float const area = shape->area(part, transformation.scale);
 
@@ -472,7 +600,7 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
     shape->prepare_sampling(part);
 
     Transformation temp;
-    auto const&    transformation = prop.transformation_at(entity, time, temp, *this);
+    auto const&    transformation = prop_transformation_at(entity, time, temp);
 
     float const volume = shape->volume(part, transformation.scale);
 
@@ -484,6 +612,10 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     material_resources_[m.materials[part]]->prepare_sampling(
         *shape, part, time, transformation, volume, material_importance_sampling, pool);
+}
+
+bool Scene::prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept {
+    return prop_aabbs_[entity].intersect_p(ray);
 }
 
 material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) const noexcept {
@@ -538,7 +670,9 @@ Scene::Prop_ptr Scene::allocate_prop() noexcept {
     prop_world_transformations_.emplace_back();
     prop_morphing_.emplace_back();
     prop_materials_.emplace_back();
+    prop_frames_.emplace_back();
     prop_topology_.emplace_back();
+    prop_aabbs_.emplace_back();
 
     uint32_t const prop_id = uint32_t(props_.size()) - 1;
 

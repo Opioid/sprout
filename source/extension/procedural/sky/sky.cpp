@@ -90,7 +90,8 @@ void Sky::update(Scene& scene) noexcept {
     sun->set_visibility(e->visible_in_camera(), e->visible_in_reflection(), e->visible_in_shadow());
 
     if (implicit_rotation_) {
-        sun_rotation_ = math::quaternion::create_matrix3x3(e->local_frame_0().rotation);
+        sun_rotation_ = math::quaternion::create_matrix3x3(
+            scene.prop_local_frame_0(prop_).rotation);
 
         private_update(scene);
     }

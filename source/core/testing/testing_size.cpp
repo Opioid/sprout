@@ -137,7 +137,7 @@ void size() {
 
     print_size<image::texture::Adapter>("texture::Adapter", 16);
 
-    print_size<scene::bvh::Split_candidate<scene::prop::Prop>>("Split_candidate", 32);
+    print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
 
     print_size<scene::Worker>("scene::Worker", 240);
     print_size<rendering::Camera_worker>("rendering::Camera_worker", 320);
