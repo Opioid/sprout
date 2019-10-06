@@ -17,6 +17,18 @@
 
 namespace scene::prop {
 
+Prop_material::Prop_material() noexcept : materials(nullptr), parts(nullptr) {}
+
+Prop_material::Prop_material(Prop_material&& other) noexcept : materials(other.materials), parts(other.parts) {
+    other.materials = nullptr;
+    other.parts = nullptr;
+}
+
+Prop_material::~Prop_material() noexcept {
+    memory::free_aligned(parts);
+    memory::free_aligned(materials);
+}
+
 Prop_frames::Prop_frames() noexcept : num_world_frames(0), num_local_frames(0), frames(nullptr) {}
 
 Prop_frames::Prop_frames(Prop_frames&& other) noexcept

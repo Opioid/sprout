@@ -53,11 +53,6 @@ Scene::~Scene() noexcept {
 }
 
 void Scene::clear() noexcept {
-    for (auto& m : prop_materials_) {
-        memory::free_aligned(m.parts);
-        memory::free_aligned(m.materials);
-    }
-
     prop_materials_.clear();
     prop_topology_.clear();
     prop_frames_.clear();

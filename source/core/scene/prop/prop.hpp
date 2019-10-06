@@ -132,7 +132,13 @@ struct Prop_ptr {
 };
 
 struct alignas(16) Prop_material {
-    uint32_t* materials = nullptr;
+    Prop_material() noexcept;
+
+    Prop_material(Prop_material&& other) noexcept;
+
+    ~Prop_material() noexcept;
+
+    uint32_t* materials;
 
     struct Part {
         union {
@@ -143,7 +149,7 @@ struct alignas(16) Prop_material {
         uint32_t light_id;
     };
 
-    Part* parts = nullptr;
+    Part* parts;
 };
 
 struct alignas(16) Prop_frames {
