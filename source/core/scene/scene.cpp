@@ -12,7 +12,7 @@
 #include "extension.hpp"
 #include "image/texture/texture.hpp"
 #include "light/light.inl"
-#include "prop/prop.hpp"
+#include "prop/prop.inl"
 #include "prop/prop_intersection.hpp"
 #include "resource/resource.hpp"
 #include "scene_constants.hpp"
@@ -392,7 +392,7 @@ void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
 }
 
 void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
-    if (props_[entity].has_no_children()) {
+    if (props_[entity].has_no_parent()) {
         prop::Prop_frames const& f = prop_frames_[entity];
         for (uint32_t i = 0, len = f.num_world_frames; i < len; ++i) {
             f.frames[i] = f.frames[len + i];
@@ -405,26 +405,28 @@ void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
 void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
     prop::Prop_frames const& f = prop_frames_[entity];
 
+    entity::Keyframe const* frames = f.frames;
+
+    uint32_t const num_world_frames = f.num_world_frames;
+
     Shape const* shape = prop_shape(entity);
 
-    // Prop::on_set_transformation()
     if (1 == f.num_world_frames) {
-        prop_set_world_transformation(entity, f.frames[0].transformation);
+        prop_set_world_transformation(entity, frames[0].transformation);
 
         auto const& t = prop_world_transformation(entity);
 
-        prop_aabbs_[entity] = shape->transformed_aabb(t.object_to_world,
-                                                      f.frames[0].transformation);
+        prop_aabbs_[entity] = shape->transformed_aabb(t.object_to_world, frames[0].transformation);
     } else {
         static uint32_t constexpr Num_steps = 4;
 
         static float constexpr Interval = 1.f / float(Num_steps);
 
-        AABB aabb = shape->transformed_aabb(f.frames[0].transformation);
+        AABB aabb = shape->transformed_aabb(frames[0].transformation);
 
-        for (uint32_t i = 0, len = f.num_world_frames - 1; i < len; ++i) {
-            auto const& a = f.frames[i].transformation;
-            auto const& b = f.frames[i + 1].transformation;
+        for (uint32_t i = 0, len = num_world_frames - 1; i < len; ++i) {
+            auto const& a = frames[i].transformation;
+            auto const& b = frames[i + 1].transformation;
 
             float t = Interval;
             for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
@@ -436,12 +438,6 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
             prop_aabbs_[entity] = aabb.merge(shape->transformed_aabb(b));
         }
     }
-
-    // ---
-
-    entity::Keyframe const* frames = f.frames;
-
-    uint32_t const num_world_frames = f.num_world_frames;
 
     for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
         prop_inherit_transformation(child, frames, num_world_frames);
@@ -545,6 +541,29 @@ size_t Scene::num_bytes() const noexcept {
     }
 
     return num_bytes + sizeof(*this);
+}
+
+void Scene::prop_animated_transformation_at(uint32_t entity, uint64_t time,
+                                            Transformation& transformation) const noexcept {
+    prop::Prop_frames const& f = prop_frames_[entity];
+
+    entity::Keyframe* frames = f.frames;
+
+    for (uint32_t i = 0, len = f.num_world_frames - 1; i < len; ++i) {
+        auto const& a = frames[i];
+        auto const& b = frames[i + 1];
+
+        if (time >= a.time && time < b.time) {
+            uint64_t const range = b.time - a.time;
+            uint64_t const delta = time - a.time;
+
+            float const t = float(delta) / float(range);
+
+            transformation.set(lerp(a.transformation, b.transformation, t));
+
+            break;
+        }
+    }
 }
 
 Scene::Prop_ptr Scene::allocate_prop() noexcept {

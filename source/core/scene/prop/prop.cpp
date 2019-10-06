@@ -50,15 +50,19 @@ Prop::~Prop() noexcept {}
 void Prop::allocate_frames(uint32_t self, uint32_t num_world_frames, Scene const& scene) noexcept {
     Shape const* shape = scene.prop_shape(self);
 
+    bool const is_animated = num_world_frames > 1;
+
     properties_.set(Property::Test_AABB,
-                    shape->is_finite() && (shape->is_complex() || num_world_frames > 1));
+                    shape->is_finite() && (shape->is_complex() || is_animated));
+
+    properties_.set(Property::Static, !is_animated);
 }
 
 uint32_t Prop::shape() const noexcept {
     return shape_;
 }
 
-bool Prop::has_no_children() const noexcept {
+bool Prop::has_no_parent() const noexcept {
     return properties_.no(Property::Has_parent);
 }
 
@@ -118,6 +122,8 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
         return false;
     }
 
+    bool const is_static = properties_.is(Property::Static);
+
     auto const& scene = worker.scene();
 
     if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
@@ -125,7 +131,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
     return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(),
                                              intersection);
@@ -137,6 +143,8 @@ bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
         return false;
     }
 
+    bool const is_static = properties_.is(Property::Static);
+
     auto const& scene = worker.scene();
 
     if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
@@ -144,7 +152,7 @@ bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
     return scene.prop_shape(self)->intersect_fast(ray, transformation, worker.node_stack(),
                                                   intersection);
@@ -160,6 +168,8 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Norma
         return false;
     }
 
+    bool const is_static = properties_.is(Property::Static);
+
     auto const& scene = worker.scene();
 
     if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
@@ -167,7 +177,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Norma
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
     return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(), normals);
 }
@@ -177,6 +187,8 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
         return false;
     }
 
+    bool const is_static = properties_.is(Property::Static);
+
     auto const& scene = worker.scene();
 
     if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
@@ -184,7 +196,7 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
+    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
     return scene.prop_shape(self)->intersect_p(ray, transformation, worker.node_stack());
 }

@@ -170,6 +170,9 @@ class Scene {
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time,
                                                  Transformation& transformation) const noexcept;
 
+    Transformation const& prop_transformation_at(uint32_t entity, uint64_t time, bool is_static,
+                                                 Transformation& transformation) const noexcept;
+
     Transformation const& prop_world_transformation(uint32_t entity) const noexcept;
 
     math::Transformation const& prop_local_frame_0(uint32_t entity) const noexcept;
@@ -226,6 +229,9 @@ class Scene {
     size_t num_bytes() const noexcept;
 
   private:
+    void prop_animated_transformation_at(uint32_t entity, uint64_t time,
+                                         Transformation& transformation) const noexcept;
+
     Prop_ptr allocate_prop() noexcept;
 
     bool prop_has_caustic_material(uint32_t entity) const noexcept;

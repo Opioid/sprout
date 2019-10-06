@@ -4,6 +4,7 @@ target_sources(core
 	"interface_stack.inl"
 	"prop.cpp"
 	"prop.hpp"
+        "prop.inl"
 	"prop_bvh_wrapper.cpp"
 	"prop_bvh_wrapper.hpp"
 	"prop_intersection.hpp"

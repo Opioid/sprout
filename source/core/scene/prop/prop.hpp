@@ -63,7 +63,7 @@ class Prop {
 
     void configure(Shape_ptr shape, Material_ptr const* materials) noexcept;
 
-    bool has_no_children() const noexcept;
+    bool has_no_parent() const noexcept;
 
     bool visible_in_camera() const noexcept;
 
@@ -114,7 +114,8 @@ class Prop {
         Masked_material       = 1 << 3,
         Tinted_shadow         = 1 << 4,
         Test_AABB             = 1 << 5,
-        Has_parent            = 1 << 6
+        Has_parent            = 1 << 6,
+        Static                = 1 << 7
     };
 
     flags::Flags<Property> properties_;
