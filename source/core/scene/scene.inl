@@ -10,6 +10,58 @@
 
 namespace scene {
 
+inline bool Scene::intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
+    noexcept {
+    return prop_bvh_.intersect(ray, worker, intersection);
+}
+
+inline bool Scene::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const
+    noexcept {
+    return prop_bvh_.intersect(ray, worker, normals);
+}
+
+inline bool Scene::intersect_volume(Ray& ray, Worker const& worker,
+                                    prop::Intersection& intersection) const noexcept {
+    return volume_bvh_.intersect_fast(ray, worker, intersection);
+}
+
+inline bool Scene::intersect_p(Ray const& ray, Worker const& worker) const noexcept {
+    return prop_bvh_.intersect_p(ray, worker);
+}
+
+inline bool Scene::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const
+    noexcept {
+    if (has_masked_material_) {
+        return prop_bvh_.visibility(ray, filter, worker, v);
+    }
+
+    if (!prop_bvh_.intersect_p(ray, worker)) {
+        v = 1.f;
+        return true;
+    }
+
+    v = 0.f;
+    return false;
+}
+
+inline bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
+                                   float3& ta) const noexcept {
+    if (has_tinted_shadow_) {
+        return prop_bvh_.thin_absorption(ray, filter, worker, ta);
+    }
+
+    if (float v; Scene::visibility(ray, filter, worker, v)) {
+        ta = float3(v);
+        return true;
+    }
+
+    return false;
+}
+
+inline std::vector<light::Light> const& Scene::lights() const noexcept {
+    return lights_;
+}
+
 inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const
     noexcept {
     return prop_world_transformations_[entity];

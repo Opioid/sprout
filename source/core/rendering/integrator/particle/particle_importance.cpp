@@ -6,9 +6,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "scene/light/light.hpp"
-#include "scene/scene.hpp"
-
-#include <iostream>
+#include "scene/scene.inl"
 
 namespace rendering::integrator::particle {
 
@@ -29,10 +27,8 @@ Importance::~Importance() noexcept {
 }
 
 void Importance::increment(float2 uv, float weight) noexcept {
-    int32_t const x = std::min(static_cast<int32_t>(uv[0] * dimensions_float_[0]),
-                               dimensions_back_[0]);
-    int32_t const y = std::min(static_cast<int32_t>(uv[1] * dimensions_float_[1]),
-                               dimensions_back_[1]);
+    int32_t const x = std::min(int32_t(uv[0] * dimensions_float_[0]), dimensions_back_[0]);
+    int32_t const y = std::min(int32_t(uv[1] * dimensions_float_[1]), dimensions_back_[1]);
 
     int32_t const id = y * dimensions_[0] + x;
 
