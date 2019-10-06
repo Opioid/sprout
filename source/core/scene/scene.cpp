@@ -62,7 +62,7 @@ void Scene::clear() noexcept {
     prop_topology_.clear();
     prop_frames_.clear();
     prop_aabbs_.clear();
-
+    prop_morphing_.clear();
     prop_world_transformations_.clear();
 
     lights_.clear();

@@ -131,7 +131,7 @@ struct Prop_ptr {
     }
 };
 
-struct Prop_material {
+struct alignas(16) Prop_material {
     uint32_t* materials = nullptr;
 
     struct Part {
@@ -146,7 +146,7 @@ struct Prop_material {
     Part* parts = nullptr;
 };
 
-struct Prop_frames {
+struct alignas(16) Prop_frames {
     Prop_frames() noexcept;
 
     Prop_frames(Prop_frames&& other) noexcept;
@@ -159,7 +159,7 @@ struct Prop_frames {
     entity::Keyframe* frames;
 };
 
-struct Prop_topology {
+struct alignas(8) Prop_topology {
     uint32_t next  = Null;
     uint32_t child = Null;
 };
