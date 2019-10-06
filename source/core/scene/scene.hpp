@@ -192,10 +192,6 @@ class Scene {
     void prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames,
                                      uint32_t num_frames) noexcept;
 
-    entity::Morphing const& prop_morphing(uint32_t entity) const noexcept;
-
-    void prop_set_morphing(uint32_t entity, entity::Morphing const& morphing) noexcept;
-
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
                              bool in_shadow) noexcept;
 
@@ -257,7 +253,6 @@ class Scene {
 
     std::vector<prop::Prop>          props_;
     std::vector<Transformation>      prop_world_transformations_;
-    std::vector<entity::Morphing>    prop_morphing_;
     std::vector<prop::Prop_material> prop_materials_;
     std::vector<prop::Prop_frames>   prop_frames_;
     std::vector<prop::Prop_topology> prop_topology_;

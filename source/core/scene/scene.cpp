@@ -57,7 +57,6 @@ void Scene::clear() noexcept {
     prop_topology_.clear();
     prop_frames_.clear();
     prop_aabbs_.clear();
-    prop_morphing_.clear();
     prop_world_transformations_.clear();
 
     lights_.clear();
@@ -152,13 +151,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
     }
 
     for (auto& s : animation_stages_) {
-        s.update(*this);
-    }
-
-    uint32_t i = 0;
-    for (auto& p : props_) {
-        p.morph(i, thread_pool, *this);
-        ++i;
+        s.update(*this, thread_pool);
     }
 
     for (auto m : materials_) {
@@ -387,8 +380,6 @@ void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
     for (uint32_t i = 0; i < num_frames; ++i) {
         local_frames[i] = frames[i].k;
     }
-
-    prop_set_morphing(entity, frames[0].m);
 }
 
 void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
@@ -458,14 +449,6 @@ void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const*
     }
 
     prop_propagate_transformation(entity);
-}
-
-entity::Morphing const& Scene::prop_morphing(uint32_t entity) const noexcept {
-    return prop_morphing_[entity];
-}
-
-void Scene::prop_set_morphing(uint32_t entity, entity::Morphing const& morphing) noexcept {
-    prop_morphing_[entity] = morphing;
 }
 
 void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
@@ -569,7 +552,6 @@ void Scene::prop_animated_transformation_at(uint32_t entity, uint64_t time,
 Scene::Prop_ptr Scene::allocate_prop() noexcept {
     props_.emplace_back();
     prop_world_transformations_.emplace_back();
-    prop_morphing_.emplace_back();
     prop_materials_.emplace_back();
     prop_frames_.emplace_back();
     prop_topology_.emplace_back();

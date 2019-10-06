@@ -1,8 +1,13 @@
 #ifndef SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
 #define SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
 
-#include <cstdint>
 #include "scene/entity/keyframe.hpp"
+
+#include <cstdint>
+
+namespace thread {
+class Pool;
+}
 
 namespace scene {
 
@@ -43,7 +48,7 @@ class Stage {
 
     void allocate_enitity_frames(Scene& scene) const noexcept;
 
-    void update(Scene& scene) const noexcept;
+    void update(Scene& scene, thread::Pool& pool) const noexcept;
 
   private:
     uint32_t entity_;

@@ -108,14 +108,6 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
     }
 }
 
-void Prop::morph(uint32_t self, thread::Pool& pool, Scene const& scene) noexcept {
-    if (shape::Morphable_shape* morphable = scene.prop_shape(self)->morphable_shape(); morphable) {
-        //    auto const& m = morphing_;
-        auto const& m = scene.prop_morphing(self);
-        morphable->morph(m.targets[0], m.targets[1], m.weight, pool);
-    }
-}
-
 bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
                      shape::Intersection& intersection) const noexcept {
     if (!visible(ray.depth)) {

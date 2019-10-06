@@ -4,7 +4,8 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "scene/entity/keyframe.hpp"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
+#include "scene/shape/morphable_shape.hpp"
 
 namespace scene::animation {
 
@@ -78,9 +79,15 @@ void Stage::allocate_enitity_frames(Scene& scene) const noexcept {
     scene.prop_allocate_frames(entity_, num_frames, num_frames);
 }
 
-void Stage::update(Scene& scene) const noexcept {
+void Stage::update(Scene& scene, thread::Pool& pool) const noexcept {
     scene.prop_set_frames(entity_, animation_->interpolated_frames(),
                           animation_->num_interpolated_frames());
+
+    if (shape::Morphable_shape* morphable = scene.prop_shape(entity_)->morphable_shape();
+        morphable) {
+        auto const& m = animation_->interpolated_frames()[0].m;
+        morphable->morph(m.targets[0], m.targets[1], m.weight, pool);
+    }
 }
 
 }  // namespace scene::animation
