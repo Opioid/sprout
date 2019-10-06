@@ -19,9 +19,10 @@ namespace scene::prop {
 
 Prop_material::Prop_material() noexcept : materials(nullptr), parts(nullptr) {}
 
-Prop_material::Prop_material(Prop_material&& other) noexcept : materials(other.materials), parts(other.parts) {
+Prop_material::Prop_material(Prop_material&& other) noexcept
+    : materials(other.materials), parts(other.parts) {
     other.materials = nullptr;
-    other.parts = nullptr;
+    other.parts     = nullptr;
 }
 
 Prop_material::~Prop_material() noexcept {

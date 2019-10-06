@@ -26,10 +26,10 @@ void Keyframe::interpolate(Keyframe& __restrict result, Keyframe const& __restri
     result.transformation = lerp(transformation, other.transformation, t);
 }
 
-void Keyframe::transform(math::Transformation& result, math::Transformation const& from) const
-    noexcept {
+void Keyframe::transform(math::Transformation& __restrict result,
+                         math::Transformation const& __restrict from) const noexcept {
     result.position = transform_point(float4x4(from), transformation.position);
-    result.rotation = quaternion::mul(transformation.rotation, from.rotation);
+    result.rotation = quaternion::mul(from.rotation, transformation.rotation);
     result.scale    = transformation.scale;
 }
 
@@ -37,10 +37,13 @@ void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict
     noexcept {
     result.transformation.position = transform_point(float4x4(from.transformation),
                                                      transformation.position);
+
     result.transformation.rotation = quaternion::mul(from.transformation.rotation,
                                                      transformation.rotation);
-    result.transformation.scale    = transformation.scale;
-    result.time                    = scene::Static_time == from.time ? time : from.time;
+
+    result.transformation.scale = transformation.scale;
+
+    result.time = scene::Static_time == from.time ? time : from.time;
 }
 
 }  // namespace scene::entity
