@@ -34,13 +34,8 @@ float3 Morphable_mesh::object_to_texture_vector(float3 const& v) const noexcept 
     return v / tree_.aabb().extent();
 }
 
-AABB Morphable_mesh::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const
-    noexcept {
+AABB Morphable_mesh::transformed_aabb(float4x4 const& m) const noexcept {
     return tree_.aabb().transform(m);
-}
-
-AABB Morphable_mesh::transformed_aabb(math::Transformation const& t) const noexcept {
-    return transformed_aabb(float4x4(t), t);
 }
 
 uint32_t Morphable_mesh::num_parts() const noexcept {

@@ -111,7 +111,6 @@ void Prop::configure_animated(uint32_t self, Scene const& scene) noexcept {
     properties_.set(Property::Static, false);
 }
 
-
 bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
                      shape::Intersection& intersection) const noexcept {
     if (!visible(ray.depth)) {

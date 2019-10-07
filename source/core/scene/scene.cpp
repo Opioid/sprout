@@ -360,13 +360,6 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
     return transformation;
 }
 
-void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept {
-    prop_world_transformations_[entity].set(t);
-
-    prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(
-        prop_world_transformations_[entity].object_to_world, t);
-}
-
 void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                                  uint32_t num_local_frames) noexcept {
     prop_frames_[entity].num_world_frames = num_world_frames;
@@ -412,14 +405,24 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
 
     uint32_t const num_world_frames = f.num_world_frames;
 
-    if (num_world_frames > 1) {
+    if (0 == num_world_frames) {
+        auto const& transformation = prop_world_transformation(entity);
+
+        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(transformation.object_to_world);
+
+        for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
+            prop_inherit_transformation(child, transformation);
+
+            child = prop_topology(child).next;
+        }
+    } else {
         Shape const* shape = prop_shape(entity);
 
         static uint32_t constexpr Num_steps = 4;
 
         static float constexpr Interval = 1.f / float(Num_steps);
 
-        AABB aabb = shape->transformed_aabb(frames[0].transformation);
+        AABB aabb = shape->transformed_aabb(float4x4(frames[0].transformation));
 
         for (uint32_t i = 0, len = num_world_frames - 1; i < len; ++i) {
             auto const& a = frames[i].transformation;
@@ -429,21 +432,12 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
             for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
                 math::Transformation const interpolated = lerp(a, b, t);
 
-                aabb.merge_assign(shape->transformed_aabb(interpolated));
+                aabb.merge_assign(shape->transformed_aabb(float4x4(interpolated)));
             }
 
-            prop_aabbs_[entity] = aabb.merge(shape->transformed_aabb(b));
+            prop_aabbs_[entity] = aabb.merge(shape->transformed_aabb(float4x4(b)));
         }
-    }
 
-    if (0 == num_world_frames) {
-        auto const& transformation = prop_world_transformation(entity);
-        for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
-            prop_inherit_transformation(child, transformation);
-
-            child = prop_topology(child).next;
-        }
-    } else {
         for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
             prop_inherit_transformation(child, frames, num_world_frames);
 

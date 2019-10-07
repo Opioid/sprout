@@ -58,7 +58,7 @@
 #include "scene/camera/camera_spherical_stereoscopic.hpp"
 #include "scene/material/volumetric/volumetric_material.hpp"
 #include "scene/prop/prop.hpp"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
 #include "take.hpp"
 
 namespace take {

@@ -25,13 +25,8 @@ float3 Rectangle::object_to_texture_vector(float3 const& v) const noexcept {
     return v * (1.f / float3(2.f, 2.f, 0.2f));
 }
 
-AABB Rectangle::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const
-    noexcept {
+AABB Rectangle::transformed_aabb(float4x4 const& m) const noexcept {
     return AABB(float3(-1.f, -1.f, -0.1f), float3(1.f, 1.f, 0.1f)).transform(m);
-}
-
-AABB Rectangle::transformed_aabb(math::Transformation const& t) const noexcept {
-    return transformed_aabb(float4x4(t), t);
 }
 
 bool Rectangle::intersect(Ray& ray, Transformation const&           transformation,

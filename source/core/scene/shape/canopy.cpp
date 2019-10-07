@@ -28,11 +28,7 @@ float3 Canopy::object_to_texture_vector(float3 const& v) const noexcept {
     return v;
 }
 
-AABB Canopy::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const noexcept {
-    return transformed_aabb(t);
-}
-
-AABB Canopy::transformed_aabb(math::Transformation const& /*t*/) const noexcept {
+AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const noexcept {
     return AABB::empty();
 }
 

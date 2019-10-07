@@ -17,11 +17,7 @@ float3 Null::object_to_texture_vector(float3 const& v) const noexcept {
     return v;
 }
 
-AABB Null::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const noexcept {
-    return transformed_aabb(t);
-}
-
-AABB Null::transformed_aabb(math::Transformation const& /*t*/) const noexcept {
+AABB Null::transformed_aabb(float4x4 const& /*m*/) const noexcept {
     return AABB::empty();
 }
 

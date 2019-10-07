@@ -52,10 +52,7 @@ class Shape {
 
     virtual float3 object_to_texture_vector(float3 const& v) const noexcept = 0;
 
-    virtual AABB transformed_aabb(float4x4 const& m, math::Transformation const& t) const
-        noexcept = 0;
-
-    virtual AABB transformed_aabb(math::Transformation const& t) const noexcept = 0;
+    virtual AABB transformed_aabb(float4x4 const& m) const noexcept = 0;
 
     virtual uint32_t num_parts() const noexcept;
 

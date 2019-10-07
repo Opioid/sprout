@@ -35,13 +35,8 @@ float3 Sphere::object_to_texture_vector(float3 const& v) const noexcept {
     return v * (1.f / float3(2.f));
 }
 
-AABB Sphere::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const noexcept {
-    return transformed_aabb(t);
-}
-
-AABB Sphere::transformed_aabb(math::Transformation const& t) const noexcept {
-    float3 const halfsize(t.scale[0]);
-    return AABB(t.position - halfsize, t.position + halfsize);
+AABB Sphere::transformed_aabb(float4x4 const& m) const noexcept {
+    return AABB(float3(-1.f), float3(1.f)).transform(m);
 }
 
 static inline void intersect(float hit_t, Ray const& ray,

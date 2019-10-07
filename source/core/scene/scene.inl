@@ -67,6 +67,11 @@ inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t en
     return prop_world_transformations_[entity];
 }
 
+inline void Scene::prop_set_world_transformation(uint32_t                    entity,
+                                                 math::Transformation const& t) noexcept {
+    prop_world_transformations_[entity].set(t);
+}
+
 inline Scene::Transformation const& Scene::prop_transformation_at(
     uint32_t entity, uint64_t time, bool is_static, Transformation& transformation) const noexcept {
     if (is_static) {

@@ -22,12 +22,7 @@ float3 Celestial_disk::object_to_texture_vector(float3 const& v) const noexcept 
     return v;
 }
 
-AABB Celestial_disk::transformed_aabb(float4x4 const& /*m*/, math::Transformation const& t) const
-    noexcept {
-    return transformed_aabb(t);
-}
-
-AABB Celestial_disk::transformed_aabb(math::Transformation const& /*t*/) const noexcept {
+AABB Celestial_disk::transformed_aabb(float4x4 const& /*m*/) const noexcept {
     return AABB::empty();
 }
 

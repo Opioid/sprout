@@ -28,12 +28,8 @@ float3 Cube::object_to_texture_vector(float3 const& v) const noexcept {
     return v * (1.f / float3(2.f));
 }
 
-AABB Cube::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const noexcept {
+AABB Cube::transformed_aabb(float4x4 const& m) const noexcept {
     return AABB(float3(-1.f), float3(1.f)).transform(m);
-}
-
-AABB Cube::transformed_aabb(math::Transformation const& t) const noexcept {
-    return transformed_aabb(float4x4(t), t);
 }
 
 bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,

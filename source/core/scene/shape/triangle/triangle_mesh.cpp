@@ -7,7 +7,7 @@
 #include "base/memory/align.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
@@ -47,12 +47,8 @@ float3 Mesh::object_to_texture_vector(float3 const& v) const noexcept {
     return v / tree_.aabb().extent();
 }
 
-AABB Mesh::transformed_aabb(float4x4 const& m, math::Transformation const& /*t*/) const noexcept {
+AABB Mesh::transformed_aabb(float4x4 const& m) const noexcept {
     return tree_.aabb().transform(m);
-}
-
-AABB Mesh::transformed_aabb(math::Transformation const& t) const noexcept {
-    return transformed_aabb(float4x4(t), t);
 }
 
 uint32_t Mesh::num_parts() const noexcept {
