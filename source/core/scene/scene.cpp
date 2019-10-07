@@ -375,7 +375,7 @@ void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
     prop_frames_[entity].frames = memory::allocate_aligned<entity::Keyframe>(num_world_frames +
                                                                              num_local_frames);
 
-    props_[entity].allocate_frames(entity, num_world_frames, *this);
+    props_[entity].configure_animated(entity, *this);
 }
 
 bool Scene::prop_has_animated_world_frames(uint32_t entity) const noexcept {

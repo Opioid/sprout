@@ -21,7 +21,7 @@ void Camera::mouse_delta(float3 delta, scene::Scene& scene) {
 
     math::Transformation transformation{position_, float3(1.f), math::quaternion::identity()};
 
-    scene.prop_set_transformation(camera_, transformation);
+    scene.prop_set_world_transformation(camera_, transformation);
 }
 
 }  // namespace controller

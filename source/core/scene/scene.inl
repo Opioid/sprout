@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_SCENE_INL
 
 #include "base/math/aabb.inl"
-#include "prop/prop.hpp"
+#include "prop/prop.inl"
 #include "scene.hpp"
 #include "scene_ray.hpp"
 

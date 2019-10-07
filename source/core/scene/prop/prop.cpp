@@ -47,17 +47,6 @@ Prop::Prop() noexcept = default;
 
 Prop::~Prop() noexcept {}
 
-void Prop::allocate_frames(uint32_t self, uint32_t num_world_frames, Scene const& scene) noexcept {
-    Shape const* shape = scene.prop_shape(self);
-
-    bool const is_animated = num_world_frames > 1;
-
-    properties_.set(Property::Test_AABB,
-                    shape->is_finite() && (shape->is_complex() || is_animated));
-
-    properties_.set(Property::Static, !is_animated);
-}
-
 bool Prop::has_no_parent() const noexcept {
     return properties_.no(Property::Has_parent);
 }
@@ -89,7 +78,13 @@ void Prop::set_has_parent() noexcept {
 }
 
 void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
-    set_shape(shape.id);
+    shape_ = shape.id;
+
+    properties_.clear();
+
+    properties_.set(Property::Visible_in_camera);
+    properties_.set(Property::Visible_in_reflection);
+    properties_.set(Property::Visible_in_shadow);
 
     properties_.set(Property::Test_AABB, shape.ptr->is_finite() && shape.ptr->is_complex());
 
@@ -107,6 +102,15 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
         }
     }
 }
+
+void Prop::configure_animated(uint32_t self, Scene const& scene) noexcept {
+    Shape const* shape = scene.prop_shape(self);
+
+    properties_.set(Property::Test_AABB, shape->is_finite());
+
+    properties_.set(Property::Static, false);
+}
+
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
                      shape::Intersection& intersection) const noexcept {
@@ -191,15 +195,6 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
     return scene.prop_shape(self)->intersect_p(ray, transformation, worker.node_stack());
-}
-
-void Prop::set_shape(uint32_t shape) noexcept {
-    shape_ = shape;
-
-    properties_.clear();
-    properties_.set(Property::Visible_in_camera);
-    properties_.set(Property::Visible_in_reflection);
-    properties_.set(Property::Visible_in_shadow);
 }
 
 bool Prop::visible(uint32_t ray_depth) const noexcept {

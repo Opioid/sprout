@@ -17,14 +17,14 @@ inline bool Transformation::operator!=(Transformation const& o) const noexcept {
 }
 
 inline Transformation Transformation::transform(Transformation const& other) const noexcept {
-    return Transformation{transform_point(float4x4(other), position), scale,
-                          quaternion::mul(other.rotation, rotation)};
+    return {transform_point(float4x4(other), position), scale,
+            quaternion::mul(other.rotation, rotation)};
 }
 
 static inline Transformation lerp(Transformation const& a, Transformation const& b,
                                   float t) noexcept {
-    return Transformation{lerp(a.position, b.position, t), lerp(a.scale, b.scale, t),
-                          quaternion::slerp(a.rotation, b.rotation, t)};
+    return {lerp(a.position, b.position, t), lerp(a.scale, b.scale, t),
+            quaternion::slerp(a.rotation, b.rotation, t)};
 }
 
 }  // namespace math

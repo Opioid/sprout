@@ -57,11 +57,11 @@ class Prop {
 
     ~Prop() noexcept;
 
-    void allocate_frames(uint32_t self, uint32_t num_world_frames, Scene const& scene) noexcept;
-
     uint32_t shape() const noexcept;
 
     void configure(Shape_ptr shape, Material_ptr const* materials) noexcept;
+
+    void configure_animated(uint32_t self, Scene const& scene) noexcept;
 
     bool has_no_parent() const noexcept;
 
@@ -103,8 +103,6 @@ class Prop {
     size_t num_bytes() const noexcept;
 
   private:
-    void set_shape(uint32_t shape) noexcept;
-
     bool visible(uint32_t ray_depth) const noexcept;
 
     enum class Property {
