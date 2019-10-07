@@ -12,7 +12,6 @@ namespace scene::animation {
 Animation::Animation(uint32_t num_frames, uint32_t num_interpolated_frames) noexcept
     : last_frame_(0),
       num_keyframes_(num_frames),
-      num_interpolated_frames_(num_interpolated_frames),
       keyframes_(memory::allocate_aligned<Keyframe>(num_frames + num_interpolated_frames)) {}
 
 Animation::~Animation() noexcept {
@@ -63,10 +62,6 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) no
     last_frame_ = last_frame;
 }
 
-uint32_t Animation::num_interpolated_frames() const noexcept {
-    return num_interpolated_frames_;
-}
-
 Keyframe const* Animation::interpolated_frames() const noexcept {
     return &keyframes_[num_keyframes_];
 }
@@ -75,13 +70,11 @@ Stage::Stage(uint32_t entity, Animation* animation) noexcept
     : entity_(entity), animation_(animation) {}
 
 void Stage::allocate_enitity_frames(Scene& scene) const noexcept {
-    uint32_t const num_frames = animation_->num_interpolated_frames();
-    scene.prop_allocate_frames(entity_, num_frames, num_frames);
+    scene.prop_allocate_frames(entity_, true);
 }
 
 void Stage::update(Scene& scene, thread::Pool& pool) const noexcept {
-    scene.prop_set_frames(entity_, animation_->interpolated_frames(),
-                          animation_->num_interpolated_frames());
+    scene.prop_set_frames(entity_, animation_->interpolated_frames());
 
     if (shape::Morphable_shape* morphable = scene.prop_shape(entity_)->morphable_shape();
         morphable) {

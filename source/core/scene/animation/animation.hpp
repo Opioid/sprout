@@ -30,14 +30,11 @@ class Animation {
 
     void resample(uint64_t start, uint64_t end, uint64_t frame_length) noexcept;
 
-    uint32_t num_interpolated_frames() const noexcept;
-
     Keyframe const* interpolated_frames() const noexcept;
 
   private:
     uint32_t last_frame_;
     uint32_t num_keyframes_;
-    uint32_t num_interpolated_frames_;
 
     Keyframe* keyframes_;
 };

@@ -61,9 +61,13 @@ class Prop {
 
     void configure(Shape_ptr shape, Material_ptr const* materials) noexcept;
 
-    void configure_animated(uint32_t self, Scene const& scene) noexcept;
+    void configure_animated(uint32_t self, bool local_animation, Scene const& scene) noexcept;
+
+    bool has_local_animation() const noexcept;
 
     bool has_no_parent() const noexcept;
+
+    void set_has_parent() noexcept;
 
     bool visible_in_camera() const noexcept;
 
@@ -74,8 +78,6 @@ class Prop {
     void set_visible_in_shadow(bool value) noexcept;
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
-
-    void set_has_parent() noexcept;
 
     void morph(uint32_t self, thread::Pool& pool, Scene const& scene) noexcept;
 
@@ -113,7 +115,8 @@ class Prop {
         Tinted_shadow         = 1 << 4,
         Test_AABB             = 1 << 5,
         Has_parent            = 1 << 6,
-        Static                = 1 << 7
+        Static                = 1 << 7,
+        Local_animation       = 1 << 8
     };
 
     flags::Flags<Property> properties_;
@@ -151,15 +154,12 @@ struct alignas(16) Prop_material {
     Part* parts;
 };
 
-struct alignas(16) Prop_frames {
+struct Prop_frames {
     Prop_frames() noexcept;
 
     Prop_frames(Prop_frames&& other) noexcept;
 
     ~Prop_frames() noexcept;
-
-    uint32_t num_world_frames;
-    uint32_t num_local_frames;
 
     entity::Keyframe* frames;
 };

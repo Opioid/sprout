@@ -30,12 +30,9 @@ Prop_material::~Prop_material() noexcept {
     memory::free_aligned(materials);
 }
 
-Prop_frames::Prop_frames() noexcept : num_world_frames(0), num_local_frames(0), frames(nullptr) {}
+Prop_frames::Prop_frames() noexcept : frames(nullptr) {}
 
-Prop_frames::Prop_frames(Prop_frames&& other) noexcept
-    : num_world_frames(other.num_world_frames),
-      num_local_frames(other.num_local_frames),
-      frames(other.frames) {
+Prop_frames::Prop_frames(Prop_frames&& other) noexcept : frames(other.frames) {
     other.frames = nullptr;
 }
 
@@ -47,22 +44,6 @@ Prop::Prop() noexcept = default;
 
 Prop::~Prop() noexcept {}
 
-bool Prop::has_no_parent() const noexcept {
-    return properties_.no(Property::Has_parent);
-}
-
-bool Prop::visible_in_camera() const noexcept {
-    return properties_.is(Property::Visible_in_camera);
-}
-
-bool Prop::visible_in_reflection() const noexcept {
-    return properties_.is(Property::Visible_in_reflection);
-}
-
-bool Prop::visible_in_shadow() const noexcept {
-    return properties_.is(Property::Visible_in_shadow);
-}
-
 void Prop::set_visible_in_shadow(bool value) noexcept {
     properties_.set(Property::Visible_in_shadow, value);
 }
@@ -71,10 +52,6 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) no
     properties_.set(Property::Visible_in_camera, in_camera);
     properties_.set(Property::Visible_in_reflection, in_reflection);
     properties_.set(Property::Visible_in_shadow, in_shadow);
-}
-
-void Prop::set_has_parent() noexcept {
-    properties_.set(Property::Has_parent);
 }
 
 void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
@@ -103,12 +80,12 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
     }
 }
 
-void Prop::configure_animated(uint32_t self, Scene const& scene) noexcept {
+void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& scene) noexcept {
     Shape const* shape = scene.prop_shape(self);
 
     properties_.set(Property::Test_AABB, shape->is_finite());
-
     properties_.set(Property::Static, false);
+    properties_.set(Property::Local_animation, local_animation);
 }
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,

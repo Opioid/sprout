@@ -274,7 +274,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (!animation) {
-            if (scene.prop_has_animated_world_frames(entity_id)) {
+            if (scene.prop_has_animated_frames(entity_id)) {
                 scene.prop_set_transformation(entity_id, transformation);
             } else {
                 if (prop::Null != parent_id) {

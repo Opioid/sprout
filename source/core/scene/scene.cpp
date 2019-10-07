@@ -307,14 +307,14 @@ uint32_t Scene::create_extension(Extension* extension, std::string const& name) 
 }
 
 void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept {
-    prop::Prop_topology& pt = prop_topology_[parent_id];
-
     props_[child_id].set_has_parent();
 
-    if (prop_has_animated_world_frames(parent_id) && 0 == prop_frames_[child_id].num_local_frames) {
+    if (prop_has_animated_frames(parent_id) && !prop_has_animated_frames(child_id)) {
         // This is the case if child has no animation attached to it directly
-        prop_allocate_frames(child_id, prop_frames_[parent_id].num_world_frames, 1);
+        prop_allocate_frames(child_id, false);
     }
+
+    prop::Prop_topology& pt = prop_topology_[parent_id];
 
     if (prop::Null == pt.child) {
         pt.child = child_id;
@@ -326,7 +326,7 @@ void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept
 void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept {
     prop::Prop_frames const& f = prop_frames_[entity];
 
-    entity::Keyframe& local_frame = f.frames[f.num_world_frames];
+    entity::Keyframe& local_frame = f.frames[num_interpolation_frames_];
 
     local_frame.transformation = t;
     local_frame.time           = scene::Static_time;
@@ -337,11 +337,11 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
     noexcept {
     prop::Prop_frames const& f = prop_frames_[entity];
 
-    if (0 == f.num_world_frames) {
+    if (nullptr == f.frames) {
         return prop_world_transformation(entity);
     }
 
-    for (uint32_t i = 0, len = f.num_world_frames - 1; i < len; ++i) {
+    for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
         auto const& a = f.frames[i];
         auto const& b = f.frames[i + 1];
 
@@ -360,26 +360,26 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
     return transformation;
 }
 
-void Scene::prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
-                                 uint32_t num_local_frames) noexcept {
-    prop_frames_[entity].num_world_frames = num_world_frames;
-    prop_frames_[entity].num_local_frames = num_local_frames;
+void Scene::prop_allocate_frames(uint32_t entity, bool local_animation) noexcept {
+    uint32_t const num_world_frames = num_interpolation_frames_;
+    uint32_t const num_local_frames = local_animation ? num_world_frames : 1;
 
     prop_frames_[entity].frames = memory::allocate_aligned<entity::Keyframe>(num_world_frames +
                                                                              num_local_frames);
 
-    props_[entity].configure_animated(entity, *this);
+    props_[entity].configure_animated(entity, local_animation, *this);
 }
 
-bool Scene::prop_has_animated_world_frames(uint32_t entity) const noexcept {
-    return prop_frames_[entity].num_world_frames > 1;
+bool Scene::prop_has_animated_frames(uint32_t entity) const noexcept {
+    return nullptr != prop_frames_[entity].frames;
 }
 
-void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
-                            uint32_t num_frames) noexcept {
+void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames) noexcept {
+    uint32_t const num_frames = num_interpolation_frames_;
+
     prop::Prop_frames const& f = prop_frames_[entity];
 
-    entity::Keyframe* local_frames = &f.frames[f.num_world_frames];
+    entity::Keyframe* local_frames = &f.frames[num_frames];
     for (uint32_t i = 0; i < num_frames; ++i) {
         local_frames[i] = frames[i].k;
     }
@@ -390,8 +390,11 @@ void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
 
     if (p.has_no_parent()) {
         prop::Prop_frames const& f = prop_frames_[entity];
-        for (uint32_t i = 0, len = f.num_world_frames; i < len; ++i) {
-            f.frames[i] = f.frames[len + i];
+
+        if (nullptr != f.frames) {
+            for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
+                f.frames[i] = f.frames[len + i];
+            }
         }
 
         prop_propagate_transformation(entity);
@@ -403,9 +406,7 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
 
     entity::Keyframe const* frames = f.frames;
 
-    uint32_t const num_world_frames = f.num_world_frames;
-
-    if (0 == num_world_frames) {
+    if (nullptr == frames) {
         auto const& transformation = prop_world_transformation(entity);
 
         prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(transformation.object_to_world);
@@ -424,7 +425,7 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
 
         AABB aabb = shape->transformed_aabb(float4x4(frames[0].transformation));
 
-        for (uint32_t i = 0, len = num_world_frames - 1; i < len; ++i) {
+        for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
             auto const& a = frames[i].transformation;
             auto const& b = frames[i + 1].transformation;
 
@@ -439,7 +440,7 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
         }
 
         for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
-            prop_inherit_transformation(child, frames, num_world_frames);
+            prop_inherit_transformation(child, frames);
 
             child = prop_topology(child).next;
         }
@@ -448,26 +449,26 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
 
 void Scene::prop_inherit_transformation(uint32_t              entity,
                                         Transformation const& transformation) noexcept {
-    prop::Prop_frames const& f = prop_frames_[entity];
+    if (auto const frames = prop_frames_[entity].frames; nullptr != frames) {
+        bool const local_animation = prop(entity)->has_local_animation();
 
-    uint32_t const num_local_frames = f.num_local_frames;
-    for (uint32_t i = 0, len = f.num_world_frames; i < len; ++i) {
-        uint32_t const lf = num_local_frames > 1 ? i : 0;
-        f.frames[len + lf].transform(f.frames[i], transformation);
+        for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
+            uint32_t const lf = local_animation ? i : 0;
+            frames[len + lf].transform(frames[i], transformation);
+        }
     }
 
     prop_propagate_transformation(entity);
 }
 
-void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames,
-                                        uint32_t num_frames) noexcept {
-    prop::Prop_frames const& f = prop_frames_[entity];
+void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames) noexcept {
+    bool const local_animation = prop(entity)->has_local_animation();
 
-    uint32_t const num_local_frames = f.num_local_frames;
-    for (uint32_t i = 0, len = f.num_world_frames; i < len; ++i) {
-        uint32_t const lf = num_local_frames > 1 ? i : 0;
-        uint32_t const of = num_frames > 1 ? i : 0;
-        f.frames[len + lf].transform(f.frames[i], frames[of]);
+    auto const tf = prop_frames_[entity].frames;
+
+    for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
+        uint32_t const lf = local_animation ? i : 0;
+        tf[len + lf].transform(tf[i], frames[i]);
     }
 
     prop_propagate_transformation(entity);
@@ -554,7 +555,7 @@ void Scene::prop_animated_transformation_at(uint32_t entity, uint64_t time,
 
     entity::Keyframe* frames = f.frames;
 
-    for (uint32_t i = 0, len = f.num_world_frames - 1; i < len; ++i) {
+    for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
         auto const& a = frames[i];
         auto const& b = frames[i + 1];
 

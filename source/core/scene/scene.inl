@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_SCENE_INL
 
 #include "base/math/aabb.inl"
+#include "entity/composed_transformation.inl"
 #include "prop/prop.inl"
 #include "scene.hpp"
 #include "scene_ray.hpp"
@@ -86,7 +87,7 @@ inline Scene::Transformation const& Scene::prop_transformation_at(
 inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const noexcept {
     prop::Prop_frames const& f = prop_frames_[entity];
 
-    return f.frames[f.num_world_frames].transformation;
+    return f.frames[num_interpolation_frames_].transformation;
 }
 
 inline bool Scene::prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept {
