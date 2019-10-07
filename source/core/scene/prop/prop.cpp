@@ -58,10 +58,6 @@ void Prop::allocate_frames(uint32_t self, uint32_t num_world_frames, Scene const
     properties_.set(Property::Static, !is_animated);
 }
 
-uint32_t Prop::shape() const noexcept {
-    return shape_;
-}
-
 bool Prop::has_no_parent() const noexcept {
     return properties_.no(Property::Has_parent);
 }
