@@ -304,8 +304,8 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                     Filter filter, Worker const& worker) const noexcept {
     math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
+    tray.origin = transformation.world_to_object_point(ray.origin);
+    tray.set_direction(transformation.world_to_object_vector(ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -315,8 +315,8 @@ float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32
 bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
                            Filter filter, Worker const& worker, float3& ta) const noexcept {
     math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
+    tray.origin = transformation.world_to_object_point(ray.origin);
+    tray.set_direction(transformation.world_to_object_vector(ray.direction));
     tray.min_t = ray.min_t;
     tray.max_t = ray.max_t;
 
@@ -333,7 +333,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r2, sv, tc);
-    float3 const v = transform_point(transformation.object_to_world, sv);
+    float3 const v = transformation.object_to_world_point(sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
     float3 const wn = transform_vector(transformation.rotation, sn);
@@ -373,7 +373,7 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r0, sv, tc);
-    float3 const ws = transform_point(transformation.object_to_world, sv);
+    float3 const ws = transformation.object_to_world_point(sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
     float3 const wn = transform_vector(transformation.rotation, sn);

@@ -5,6 +5,8 @@
 
 namespace scene::entity {
 
+struct Composed_transformation;
+
 struct Morphing {
     void interpolate(Morphing& __restrict result, Morphing const& __restrict other, float t) const
         noexcept;
@@ -17,8 +19,9 @@ struct alignas(16) Keyframe {
     void interpolate(Keyframe& __restrict result, Keyframe const& __restrict other, float t) const
         noexcept;
 
-    void transform(math::Transformation& __restrict result,
-                   math::Transformation const& __restrict from) const noexcept;
+    using Transformation = Composed_transformation;
+
+    void transform(Keyframe& result, Transformation const& from) const noexcept;
 
     void transform(Keyframe& __restrict result, Keyframe const& __restrict from) const noexcept;
 

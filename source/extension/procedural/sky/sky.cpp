@@ -22,7 +22,7 @@ void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) noexcept {
         float3(0.f), float3(1.f),
         math::quaternion::create_rotation_x(math::degrees_to_radians(90.f))};
 
-    scene.prop_set_transformation(sky, transformation);
+    scene.prop_set_world_transformation(sky, transformation);
 }
 
 void Sky::set_parameters(json::Value const& parameters, Scene& scene) noexcept {
@@ -89,12 +89,12 @@ void Sky::update(Scene& scene) noexcept {
     sky->set_visibility(e->visible_in_camera(), e->visible_in_reflection(), e->visible_in_shadow());
     sun->set_visibility(e->visible_in_camera(), e->visible_in_reflection(), e->visible_in_shadow());
 
-    if (implicit_rotation_) {
-        sun_rotation_ = math::quaternion::create_matrix3x3(
-            scene.prop_local_frame_0(prop_).rotation);
+    //    if (implicit_rotation_) {
+    //        sun_rotation_ = math::quaternion::create_matrix3x3(
+    //            scene.prop_local_frame_0(prop_).rotation);
 
-        private_update(scene);
-    }
+    //        private_update(scene);
+    //    }
 }
 
 void Sky::private_update(Scene& scene) noexcept {
@@ -105,7 +105,7 @@ void Sky::private_update(Scene& scene) noexcept {
     math::Transformation const transformation{float3(0.f), float3(Model::radius()),
                                               math::quaternion::create(sun_rotation_)};
 
-    scene.prop_set_transformation(sun_, transformation);
+    scene.prop_set_world_transformation(sun_, transformation);
 
     model_.compile();
 

@@ -91,6 +91,10 @@ void Prop::set_has_parent() noexcept {
 void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
     set_shape(shape.id);
 
+    properties_.set(Property::Test_AABB, shape.ptr->is_finite() && shape.ptr->is_complex());
+
+    properties_.set(Property::Static, true);
+
     for (uint32_t i = 0, len = shape.ptr->num_materials(); i < len; ++i) {
         auto const m = materials[i];
 

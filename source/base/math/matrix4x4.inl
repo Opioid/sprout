@@ -1,8 +1,10 @@
 #ifndef SU_BASE_MATH_MATRIX4X4_INL
 #define SU_BASE_MATH_MATRIX4X4_INL
 
+#include "matrix3x3.inl"
 #include "matrix4x4.hpp"
-#include "transformation.inl"
+#include "quaternion.inl"
+#include "transformation.hpp"
 
 namespace math {
 

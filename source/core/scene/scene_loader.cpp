@@ -3,6 +3,7 @@
 #include "animation/animation_loader.hpp"
 #include "base/json/json.hpp"
 #include "base/math/quaternion.inl"
+#include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/memory/variant_map.inl"
@@ -58,7 +59,10 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
     uint32_t const parent_id = prop::Null;
 
-    bool const success = load(filename, take_mount_folder, parent_id, scene);
+    math::Transformation const parent_transformation{float3(0.f), float3(1.f),
+                                                     quaternion::identity()};
+
+    bool const success = load(filename, take_mount_folder, parent_id, parent_transformation, scene);
 
     if (success) {
         scene.finish();
@@ -121,7 +125,8 @@ size_t Loader::num_bytes() const noexcept {
 }
 
 bool Loader::load(std::string const& filename, std::string_view take_mount_folder,
-                  uint32_t parent_id, Scene& scene) noexcept {
+                  uint32_t parent_id, math::Transformation const& parent_transformation,
+                  Scene& scene) noexcept {
     auto& filesystem = resource_manager_.filesystem();
 
     if (!take_mount_folder.empty()) {
@@ -159,7 +164,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 
     for (auto const& n : root->GetObject()) {
         if ("entities" == n.name) {
-            load_entities(n.value, parent_id, local_materials, scene);
+            load_entities(n.value, parent_id, parent_transformation, local_materials, scene);
         }
     }
 
@@ -189,6 +194,7 @@ void Loader::read_materials(json::Value const& materials_value, std::string cons
 }
 
 void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id,
+                           math::Transformation const& parent_transformation,
                            Local_materials const& local_materials, Scene& scene) noexcept {
     if (!entities_value.IsArray()) {
         return;
@@ -198,7 +204,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         auto const file_node = e.FindMember("file");
         if (e.MemberEnd() != file_node) {
             std::string const filename = file_node->value.GetString();
-            load(filename, "", parent_id, scene);
+            load(filename, "", parent_id, parent_transformation, scene);
             continue;
         }
 
@@ -269,11 +275,15 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (!animation) {
-            if (prop::Null == parent_id) {
-                scene.prop_allocate_frames(entity_id, 1, 1);
-            }
+            if (scene.prop_has_animated_world_frames(entity_id)) {
+                scene.prop_set_transformation(entity_id, transformation);
+            } else {
+                if (prop::Null != parent_id) {
+                    transformation = transformation.transform(parent_transformation);
+                }
 
-            scene.prop_set_transformation(entity_id, transformation);
+                scene.prop_set_world_transformation(entity_id, transformation);
+            }
         }
 
         if (visibility) {
@@ -281,7 +291,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (children) {
-            load_entities(*children, entity_id, local_materials, scene);
+            load_entities(*children, entity_id, transformation, local_materials, scene);
         }
     }
 }

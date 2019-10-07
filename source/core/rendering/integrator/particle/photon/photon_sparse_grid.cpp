@@ -343,7 +343,7 @@ void Sparse_grid::set_num_paths(uint64_t num_paths) noexcept {
 }
 
 float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& sample,
-                       Photon_ref* photon_refs, scene::Worker const& worker) const noexcept {
+                       Photon_ref* /*photon_refs*/, scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
         return float3(0.f);
     }

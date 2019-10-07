@@ -344,8 +344,7 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
             scene.create_animation_stage(prop_id, animation);
         }
     } else {
-        scene.prop_allocate_frames(prop_id, 1, 1);
-        scene.prop_set_transformation(prop_id, transformation);
+        scene.prop_set_world_transformation(prop_id, transformation);
     }
 
     take.view.camera = camera;

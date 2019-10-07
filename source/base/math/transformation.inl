@@ -1,6 +1,7 @@
 #ifndef SU_BASE_MATH_TRANSFORMATION_INL
 #define SU_BASE_MATH_TRANSFORMATION_INL
 
+#include "matrix4x4.inl"
 #include "quaternion.inl"
 #include "transformation.hpp"
 #include "vector3.inl"
@@ -13,6 +14,11 @@ inline bool Transformation::operator==(Transformation const& o) const noexcept {
 
 inline bool Transformation::operator!=(Transformation const& o) const noexcept {
     return position != o.position || scale != o.scale || rotation != o.rotation;
+}
+
+inline Transformation Transformation::transform(Transformation const& other) const noexcept {
+    return Transformation{transform_point(float4x4(other), position), scale,
+                          quaternion::mul(other.rotation, rotation)};
 }
 
 static inline Transformation lerp(Transformation const& a, Transformation const& b,

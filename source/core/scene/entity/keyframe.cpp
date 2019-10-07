@@ -2,6 +2,7 @@
 #include "base/math/math.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/transformation.inl"
+#include "scene/entity/composed_transformation.hpp"
 #include "scene/scene_constants.hpp"
 
 namespace scene::entity {
@@ -26,11 +27,15 @@ void Keyframe::interpolate(Keyframe& __restrict result, Keyframe const& __restri
     result.transformation = lerp(transformation, other.transformation, t);
 }
 
-void Keyframe::transform(math::Transformation& __restrict result,
-                         math::Transformation const& __restrict from) const noexcept {
-    result.position = transform_point(float4x4(from), transformation.position);
-    result.rotation = quaternion::mul(from.rotation, transformation.rotation);
-    result.scale    = transformation.scale;
+void Keyframe::transform(Keyframe& result, Transformation const& from) const noexcept {
+    result.transformation.position = transform_point(from.object_to_world, transformation.position);
+
+    result.transformation.scale = transformation.scale;
+
+    result.transformation.rotation = quaternion::mul(quaternion::create(from.rotation),
+                                                     transformation.rotation);
+
+    result.time = time;
 }
 
 void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict from) const
@@ -38,10 +43,10 @@ void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict
     result.transformation.position = transform_point(float4x4(from.transformation),
                                                      transformation.position);
 
+    result.transformation.scale = transformation.scale;
+
     result.transformation.rotation = quaternion::mul(from.transformation.rotation,
                                                      transformation.rotation);
-
-    result.transformation.scale = transformation.scale;
 
     result.time = scene::Static_time == from.time ? time : from.time;
 }

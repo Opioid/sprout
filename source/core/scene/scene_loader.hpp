@@ -10,6 +10,10 @@
 #include <string>
 #include <vector>
 
+namespace math {
+struct Transformation;
+}
+
 namespace file {
 class System;
 }
@@ -98,12 +102,13 @@ class Loader {
     };
 
     bool load(std::string const& filename, std::string_view take_mount_folder, uint32_t parent_id,
-              Scene& scene) noexcept;
+              math::Transformation const& parent_transformation, Scene& scene) noexcept;
 
     void read_materials(json::Value const& materials_value, std::string const& source_name,
                         Local_materials& local_materials) const noexcept;
 
     void load_entities(json::Value const& entities_value, uint32_t parent_id,
+                       math::Transformation const& parent_transformation,
                        Local_materials const& local_materials, Scene& scene) noexcept;
 
     static void set_visibility(uint32_t prop, json::Value const& visibility_value,

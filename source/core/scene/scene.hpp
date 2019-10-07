@@ -182,12 +182,17 @@ class Scene {
     void prop_allocate_frames(uint32_t entity, uint32_t num_world_frames,
                               uint32_t num_local_frames) noexcept;
 
+    bool prop_has_animated_world_frames(uint32_t entity) const noexcept;
+
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames,
                          uint32_t num_frames) noexcept;
 
     void prop_calculate_world_transformation(uint32_t entity) noexcept;
 
     void prop_propagate_transformation(uint32_t entity) noexcept;
+
+    void prop_inherit_transformation(uint32_t              entity,
+                                     const Transformation& transformation) noexcept;
 
     void prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames,
                                      uint32_t num_frames) noexcept;
