@@ -30,16 +30,6 @@ Prop_material::~Prop_material() noexcept {
     memory::free_aligned(materials);
 }
 
-Prop_frames::Prop_frames() noexcept : frames(nullptr) {}
-
-Prop_frames::Prop_frames(Prop_frames&& other) noexcept : frames(other.frames) {
-    other.frames = nullptr;
-}
-
-Prop_frames::~Prop_frames() noexcept {
-    memory::free_aligned(frames);
-}
-
 Prop::Prop() noexcept = default;
 
 Prop::~Prop() noexcept {}

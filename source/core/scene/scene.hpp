@@ -256,7 +256,7 @@ class Scene {
     std::vector<prop::Prop>          props_;
     std::vector<Transformation>      prop_world_transformations_;
     std::vector<prop::Prop_material> prop_materials_;
-    std::vector<prop::Prop_frames>   prop_frames_;
+    std::vector<uint32_t>            prop_frames_;
     std::vector<prop::Prop_topology> prop_topology_;
     // Pre-transformed AABB in world space.
     // For moving objects it must cover the entire area occupied by the object during the tick.
@@ -284,6 +284,8 @@ class Scene {
     std::vector<animation::Animation*> animations_;
 
     std::vector<animation::Stage> animation_stages_;
+
+    std::vector<entity::Keyframe> keyframes_;
 
     std::vector<Shape*> const& shape_resources_;
 

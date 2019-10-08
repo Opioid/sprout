@@ -154,16 +154,6 @@ struct alignas(16) Prop_material {
     Part* parts;
 };
 
-struct Prop_frames {
-    Prop_frames() noexcept;
-
-    Prop_frames(Prop_frames&& other) noexcept;
-
-    ~Prop_frames() noexcept;
-
-    entity::Keyframe* frames;
-};
-
 struct alignas(8) Prop_topology {
     uint32_t next  = Null;
     uint32_t child = Null;
