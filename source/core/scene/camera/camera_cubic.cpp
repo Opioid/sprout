@@ -5,6 +5,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/entity/composed_transformation.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"

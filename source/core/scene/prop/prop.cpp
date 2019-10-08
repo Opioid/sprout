@@ -17,6 +17,8 @@
 
 namespace scene::prop {
 
+using Transformation = entity::Composed_transformation;
+
 Prop_material::Prop_material() noexcept : materials(nullptr), light_ids(nullptr) {}
 
 Prop_material::Prop_material(Prop_material&& other) noexcept

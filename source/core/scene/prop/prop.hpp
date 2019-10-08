@@ -2,22 +2,16 @@
 #define SU_CORE_SCENE_PROP_PROP_HPP
 
 #include "base/flags/flags.hpp"
-#include "base/json/json_types.hpp"
-#include "base/math/aabb.hpp"
-#include "base/math/transformation.hpp"
-#include "scene/entity/composed_transformation.hpp"
-#include "scene/entity/keyframe.hpp"
-#include "scene/material/material.hpp"
-
-namespace resource {
-
-template <typename T>
-struct Resource_ptr;
-
-}
+#include "base/math/vector.hpp"
+#include "scene/material/sampler_settings.hpp"
 
 namespace thread {
 class Pool;
+}
+
+namespace resource {
+template <typename T>
+struct Resource_ptr;
 }
 
 namespace scene {
@@ -26,16 +20,14 @@ class Scene;
 class Worker;
 struct Ray;
 
-namespace animation {
-struct Keyframe;
+namespace material {
+class Material;
 }
 
 namespace shape {
-
+class Shape;
 struct Intersection;
 struct Normals;
-class Shape;
-class Node_stack;
 }  // namespace shape
 
 namespace prop {
@@ -44,14 +36,11 @@ static uint32_t constexpr Null = 0xFFFFFFFF;
 
 class Prop {
   public:
-    using Transformation = entity::Composed_transformation;
-    using Node_stack     = shape::Node_stack;
-    using Filter         = material::Sampler_settings::Filter;
-    using Material       = material::Material;
-    using Material_ptr   = resource::Resource_ptr<Material>;
-    using Shape          = shape::Shape;
-    using Shape_ptr      = resource::Resource_ptr<Shape>;
-    using Keyframe       = entity::Keyframe;
+    using Filter       = material::Sampler_settings::Filter;
+    using Material     = material::Material;
+    using Material_ptr = resource::Resource_ptr<Material>;
+    using Shape        = shape::Shape;
+    using Shape_ptr    = resource::Resource_ptr<Shape>;
 
     Prop() noexcept;
 

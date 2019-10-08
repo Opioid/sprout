@@ -3,6 +3,7 @@
 
 #include "base/math/aabb.inl"
 #include "entity/composed_transformation.inl"
+#include "entity/keyframe.hpp"
 #include "light/light.inl"
 #include "prop/prop.inl"
 #include "scene.hpp"

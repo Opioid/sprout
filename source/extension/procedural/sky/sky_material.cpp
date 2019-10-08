@@ -7,6 +7,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture_adapter.inl"
+#include "core/scene/entity/composed_transformation.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/prop/prop.hpp"
