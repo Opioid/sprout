@@ -288,11 +288,11 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
         return false;
     }
 
-    static bool constexpr decomposition = false;
+    //    static bool constexpr decomposition = false;
 
-    if (decomposition && cm.minorant_mu_t() > 0.f) {
-        return decomposition_tracking(ray, cm, material, filter, rng, worker, t_out, w);
-    }
+    //    if (decomposition && cm.minorant_mu_t() > 0.f) {
+    //        return decomposition_tracking(ray, cm, material, filter, rng, worker, t_out, w);
+    //    }
 
     float3 lw = w;
 

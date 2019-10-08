@@ -22,8 +22,10 @@ struct Renderstate {
     float3 geo_n;    // geometry normal in world space
     float2 uv;       // texture coordinates
 
-    float area;
     float ior;
+
+    uint32_t prop;
+    uint32_t part;
 
     bool subsurface;
     bool avoid_caustics;

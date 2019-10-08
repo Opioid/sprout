@@ -214,9 +214,7 @@ class Scene {
 
     uint32_t prop_light_id(uint32_t entity, uint32_t part) const noexcept;
 
-    float prop_area(uint32_t entity, uint32_t part) const noexcept;
-
-    float prop_volume(uint32_t entity, uint32_t part) const noexcept;
+    float light_area(uint32_t entity, uint32_t part) const noexcept;
 
     void add_material(uint32_t material) noexcept;
 

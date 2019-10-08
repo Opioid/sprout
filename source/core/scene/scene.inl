@@ -3,6 +3,7 @@
 
 #include "base/math/aabb.inl"
 #include "entity/composed_transformation.inl"
+#include "light/light.inl"
 #include "prop/prop.inl"
 #include "scene.hpp"
 #include "scene_ray.hpp"
@@ -108,15 +109,17 @@ inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const no
 }
 
 inline uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].parts[part].light_id;
+    return prop_materials_[entity].light_ids[part];
 }
 
-inline float Scene::prop_area(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].parts[part].area;
-}
+inline float Scene::light_area(uint32_t entity, uint32_t part) const noexcept {
+    uint32_t const light_id = prop_materials_[entity].light_ids[part];
 
-inline float Scene::prop_volume(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].parts[part].volume;
+    if (prop::Null == light_id) {
+        return 1.f;
+    }
+
+    return lights_[light_id].area();
 }
 
 inline prop::Prop const* Scene::prop(uint32_t index) const noexcept {

@@ -23,20 +23,31 @@ using Sampler     = sampler::Sampler;
 inline Light::Light(Type type, uint32_t prop, uint32_t part)
     : type_(type), prop_(prop), part_(part) {}
 
+inline float Light::area() const noexcept {
+    return area_;
+}
+
+inline void Light::set_area(float area) noexcept {
+    area_ = area;
+}
+
+inline void Light::set_volume(float volume) noexcept {
+    volume_ = volume;
+}
+
 inline entity::Composed_transformation const& Light::transformation_at(
     uint64_t time, Transformation& transformation, Scene const& scene) const noexcept {
     return scene.prop_transformation_at(prop_, time, transformation);
 }
 
-static inline bool prop_sample(uint32_t prop, uint32_t part, float3 const& p, float3 const& n,
+static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
+                               float3 const&                          n,
                                entity::Composed_transformation const& transformation,
                                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                                Worker const& worker, Sample_to& result) noexcept {
     shape::Shape const* shape = worker.scene().prop_shape(prop);
 
     auto const material = worker.scene().prop_material(prop, part);
-
-    float const area = worker.scene().prop_area(prop, part);
 
     bool const two_sided = material->is_two_sided();
 
@@ -59,7 +70,8 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float3 const& p, fl
     return true;
 }
 
-static inline bool prop_image_sample(uint32_t prop, uint32_t part, float3 const& p, float3 const& n,
+static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
+                                     float3 const&                          n,
                                      entity::Composed_transformation const& transformation,
                                      bool total_sphere, Sampler& sampler,
                                      uint32_t sampler_dimension, Worker const& worker,
@@ -72,8 +84,6 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float3 const&
     if (0.f == rs.pdf) {
         return false;
     }
-
-    float const area = worker.scene().prop_area(prop, part);
 
     bool const two_sided = material->is_two_sided();
 
@@ -91,12 +101,11 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float3 const&
     return false;
 }
 
-static inline bool volume_sample(uint32_t prop, uint32_t part, float3 const& p, float3 const& n,
+static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
+                                 float3 const&                          n,
                                  entity::Composed_transformation const& transformation,
                                  Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                                  Sample_to& result) noexcept {
-    float const volume = worker.scene().prop_volume(prop, part);
-
     if (!worker.scene().prop_shape(prop)->sample_volume(part, p, transformation, volume, sampler,
                                                         sampler_dimension, worker.node_stack(),
                                                         result)) {
@@ -110,7 +119,7 @@ static inline bool volume_sample(uint32_t prop, uint32_t part, float3 const& p, 
     return true;
 }
 
-static inline bool volume_image_sample(uint32_t prop, uint32_t part, float3 const& p,
+static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
                                        float3 const&                          n,
                                        entity::Composed_transformation const& transformation,
                                        Sampler& sampler, uint32_t sampler_dimension,
@@ -124,8 +133,6 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float3 cons
     if (0.f == rs.pdf) {
         return false;
     }
-
-    float const volume = worker.scene().prop_volume(prop, part);
 
     if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw, transformation, volume, result)) {
         return false;
@@ -146,36 +153,34 @@ inline bool Light::sample(float3 const& p, float3 const& n, Transformation const
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, p, n, transformation, total_sphere, sampler,
+            return prop_sample(prop_, part_, area_, p, n, transformation, total_sphere, sampler,
                                sampler_dimension, worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, p, n, transformation, total_sphere, sampler,
-                                     sampler_dimension, worker, result);
+            return prop_image_sample(prop_, part_, area_, p, n, transformation, total_sphere,
+                                     sampler, sampler_dimension, worker, result);
         case Type::Volume:
-            return volume_sample(prop_, part_, p, n, transformation, sampler, sampler_dimension,
-                                 worker, result);
+            return volume_sample(prop_, part_, volume_, p, n, transformation, sampler,
+                                 sampler_dimension, worker, result);
         case Type::Volume_image:
-            return volume_image_sample(prop_, part_, p, n, transformation, sampler,
+            return volume_image_sample(prop_, part_, volume_, p, n, transformation, sampler,
                                        sampler_dimension, worker, result);
     }
 
     return false;
 }
 
-static inline float3 prop_evaluate(uint32_t prop, uint32_t part, Sample_to const& sample,
-                                   Filter filter, Worker const& worker) noexcept {
+static inline float3 prop_evaluate(uint32_t prop, uint32_t part, float area,
+                                   Sample_to const& sample, Filter filter,
+                                   Worker const& worker) noexcept {
     auto const material = worker.scene().prop_material(prop, part);
-
-    float const area = worker.scene().prop_area(prop, part);
 
     return material->evaluate_radiance(sample.wi, sample.uvw.xy(), area, filter, worker);
 }
 
-static inline float3 volume_evaluate(uint32_t prop, uint32_t part, Sample_to const& sample,
-                                     Filter filter, Worker const& worker) noexcept {
+static inline float3 volume_evaluate(uint32_t prop, uint32_t part, float volume,
+                                     Sample_to const& sample, Filter filter,
+                                     Worker const& worker) noexcept {
     auto const material = worker.scene().prop_material(prop, part);
-
-    float const volume = worker.scene().prop_volume(prop, part);
 
     return material->evaluate_radiance(sample.wi, sample.uvw, volume, filter, worker);
 }
@@ -186,25 +191,23 @@ inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker con
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_evaluate(prop_, part_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
         case Type::Prop_image:
-            return prop_evaluate(prop_, part_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
         case Type::Volume:
-            return volume_evaluate(prop_, part_, sample, filter, worker);
+            return volume_evaluate(prop_, part_, volume_, sample, filter, worker);
         case Type::Volume_image:
-            return volume_evaluate(prop_, part_, sample, filter, worker);
+            return volume_evaluate(prop_, part_, volume_, sample, filter, worker);
     }
 
     return float3(0.f);
 }
 
-static inline bool prop_sample(uint32_t prop, uint32_t part,
+static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
                                entity::Composed_transformation const& transformation,
                                Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
                                Worker const& worker, Sample_from& result) noexcept {
     auto const material = worker.scene().prop_material(prop, part);
-
-    float const area = worker.scene().prop_area(prop, part);
 
     bool const two_sided = material->is_two_sided();
 
@@ -219,7 +222,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part,
     return true;
 }
 
-static inline bool prop_image_sample(uint32_t prop, uint32_t part,
+static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
                                      entity::Composed_transformation const& transformation,
                                      Sampler& sampler, uint32_t sampler_dimension,
                                      AABB const& bounds, Worker const& worker,
@@ -232,8 +235,6 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part,
     if (0.f == rs.pdf) {
         return false;
     }
-
-    float const area = worker.scene().prop_area(prop, part);
 
     bool const two_sided = material->is_two_sided();
 
@@ -258,11 +259,11 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, transformation, sampler, sampler_dimension, bounds,
-                               worker, result);
+            return prop_sample(prop_, part_, area_, transformation, sampler, sampler_dimension,
+                               bounds, worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, transformation, sampler, sampler_dimension,
-                                     bounds, worker, result);
+            return prop_image_sample(prop_, part_, area_, transformation, sampler,
+                                     sampler_dimension, bounds, worker, result);
         case Type::Volume:
             return false;
         case Type::Volume_image:
@@ -272,14 +273,12 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
     return false;
 }
 
-static inline bool prop_sample(uint32_t prop, uint32_t part,
+static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
                                entity::Composed_transformation const& transformation,
                                Sampler& sampler, uint32_t sampler_dimension,
                                Distribution_2D const& importance, AABB const& bounds,
                                Worker const& worker, Sample_from& result) noexcept {
     auto const material = worker.scene().prop_material(prop, part);
-
-    float const area = worker.scene().prop_area(prop, part);
 
     bool const two_sided = material->is_two_sided();
 
@@ -301,7 +300,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part,
     return true;
 }
 
-static inline bool prop_image_sample(uint32_t prop, uint32_t part,
+static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
                                      entity::Composed_transformation const& transformation,
                                      Sampler& sampler, uint32_t sampler_dimension,
                                      Distribution_2D const& importance, AABB const& bounds,
@@ -314,8 +313,6 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part,
     if (0.f == rs.pdf) {
         return false;
     }
-
-    float const area = worker.scene().prop_area(prop, part);
 
     bool const two_sided = material->is_two_sided();
 
@@ -346,11 +343,11 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, transformation, sampler, sampler_dimension, importance,
-                               bounds, worker, result);
+            return prop_sample(prop_, part_, area_, transformation, sampler, sampler_dimension,
+                               importance, bounds, worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, transformation, sampler, sampler_dimension,
-                                     importance, bounds, worker, result);
+            return prop_image_sample(prop_, part_, area_, transformation, sampler,
+                                     sampler_dimension, importance, bounds, worker, result);
         case Type::Volume:
             return false;
         case Type::Volume_image:
@@ -360,11 +357,10 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
     return false;
 }
 
-static inline float3 prop_evaluate(uint32_t prop, uint32_t part, Sample_from const& sample,
-                                   Filter filter, Worker const& worker) noexcept {
+static inline float3 prop_evaluate(uint32_t prop, uint32_t part, float area,
+                                   Sample_from const& sample, Filter filter,
+                                   Worker const& worker) noexcept {
     auto const material = worker.scene().prop_material(prop, part);
-
-    float const area = worker.scene().prop_area(prop, part);
 
     return material->evaluate_radiance(-sample.dir, sample.uv, area, filter, worker);
 }
@@ -375,13 +371,13 @@ inline float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker c
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_evaluate(prop_, part_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
         case Type::Prop_image:
-            return prop_evaluate(prop_, part_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
         case Type::Volume:
-            return prop_evaluate(prop_, part_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, volume_, sample, filter, worker);
         case Type::Volume_image:
-            return prop_evaluate(prop_, part_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, volume_, sample, filter, worker);
     }
 
     return float3(0.f);
@@ -423,24 +419,20 @@ inline bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dime
     return sample(transformation, sampler, sampler_dimension, importance, bounds, worker, result);
 }
 
-static inline float prop_pdf(uint32_t prop, uint32_t part, Ray const& ray,
+static inline float prop_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
                              shape::Intersection const&             intersection,
                              entity::Composed_transformation const& transformation,
                              bool total_sphere, Worker const& worker) noexcept {
-    float const area = worker.scene().prop_area(prop, part);
-
     bool const two_sided = worker.scene().prop_material(prop, part)->is_two_sided();
 
     return worker.scene().prop_shape(prop)->pdf(ray, intersection, transformation, area, two_sided,
                                                 total_sphere);
 }
 
-static inline float prop_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
+static inline float prop_image_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
                                    shape::Intersection const&             intersection,
                                    entity::Composed_transformation const& transformation,
                                    Filter filter, Worker const& worker) noexcept {
-    float const area = worker.scene().prop_area(prop, part);
-
     auto const material = worker.scene().prop_material(prop, part);
 
     bool const two_sided = material->is_two_sided();
@@ -454,21 +446,17 @@ static inline float prop_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
     return shape_pdf * material_pdf;
 }
 
-static float volume_pdf(uint32_t prop, uint32_t part, Ray const& ray,
+static float volume_pdf(uint32_t prop, uint32_t /*part*/, float volume, Ray const& ray,
                         shape::Intersection const&             intersection,
                         entity::Composed_transformation const& transformation,
                         Worker const&                          worker) noexcept {
-    float const volume = worker.scene().prop_volume(prop, part);
-
     return worker.scene().prop_shape(prop)->pdf_volume(ray, intersection, transformation, volume);
 }
 
-static inline float volume_image_pdf(uint32_t prop, uint32_t part, Ray const& ray,
+static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume, Ray const& ray,
                                      shape::Intersection const&             intersection,
                                      entity::Composed_transformation const& transformation,
                                      Filter filter, Worker const& worker) noexcept {
-    float const volume = worker.scene().prop_volume(prop, part);
-
     auto const material = worker.scene().prop_material(prop, part);
 
     float const shape_pdf = worker.scene().prop_shape(prop)->pdf_volume(ray, intersection,
@@ -488,14 +476,16 @@ inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool t
         case Type::Null:
             return 0.f;
         case Type::Prop:
-            return prop_pdf(prop_, part_, ray, intersection, transformation, total_sphere, worker);
+            return prop_pdf(prop_, part_, area_, ray, intersection, transformation, total_sphere,
+                            worker);
         case Type::Prop_image:
-            return prop_image_pdf(prop_, part_, ray, intersection, transformation, filter, worker);
+            return prop_image_pdf(prop_, part_, area_, ray, intersection, transformation, filter,
+                                  worker);
         case Type::Volume:
-            return volume_pdf(prop_, part_, ray, intersection, transformation, worker);
+            return volume_pdf(prop_, part_, volume_, ray, intersection, transformation, worker);
         case Type::Volume_image:
-            return volume_image_pdf(prop_, part_, ray, intersection, transformation, filter,
-                                    worker);
+            return volume_image_pdf(prop_, part_, volume_, ray, intersection, transformation,
+                                    filter, worker);
     }
 
     return 0.f;

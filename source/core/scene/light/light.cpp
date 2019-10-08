@@ -11,10 +11,8 @@ namespace scene::light {
 
 Light::Light() = default;
 
-static inline float3 prop_power(uint32_t prop, uint32_t part, AABB const& scene_bb,
+static inline float3 prop_power(uint32_t prop, uint32_t part, float area, AABB const& scene_bb,
                                 Scene const& scene) noexcept {
-    float const area = scene.prop_area(prop, part);
-
     float3 const radiance = scene.prop_material(prop, part)->average_radiance(area);
 
     if (scene.prop_shape(prop)->is_finite()) {
@@ -24,9 +22,8 @@ static inline float3 prop_power(uint32_t prop, uint32_t part, AABB const& scene_
     }
 }
 
-static inline float3 volume_power(uint32_t prop, uint32_t part, Scene const& scene) noexcept {
-    float const volume = scene.prop_volume(prop, part);
-
+static inline float3 volume_power(uint32_t prop, uint32_t part, float volume,
+                                  Scene const& scene) noexcept {
     float3 const radiance = scene.prop_material(prop, part)->average_radiance(volume);
 
     return volume * radiance;
@@ -37,13 +34,13 @@ float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_power(prop_, part_, scene_bb, scene);
+            return prop_power(prop_, part_, area_, scene_bb, scene);
         case Type::Prop_image:
-            return prop_power(prop_, part_, scene_bb, scene);
+            return prop_power(prop_, part_, area_, scene_bb, scene);
         case Type::Volume:
-            return volume_power(prop_, part_, scene);
+            return volume_power(prop_, part_, volume_, scene);
         case Type::Volume_image:
-            return volume_power(prop_, part_, scene);
+            return volume_power(prop_, part_, volume_, scene);
     }
 
     return float3(0.);

@@ -20,10 +20,6 @@ inline uint32_t Intersection::light_id(Worker const& worker) const noexcept {
     return worker.scene().prop_light_id(prop, geo.part);
 }
 
-inline float Intersection::area(Worker const& worker) const noexcept {
-    return worker.scene().prop_area(prop, geo.part);
-}
-
 inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& worker) const
     noexcept {
     return material(worker)->opacity(geo.uv, time, filter, worker);
@@ -52,9 +48,12 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
         rs.geo_n = geo.geo_n;
     }
 
-    rs.uv   = geo.uv;
-    rs.area = area(worker);
-    rs.ior  = worker.ior_outside(wo, *this);
+    rs.uv = geo.uv;
+
+    rs.ior = worker.ior_outside(wo, *this);
+
+    rs.prop = prop;
+    rs.part = geo.part;
 
     rs.subsurface     = subsurface;
     rs.avoid_caustics = avoid_caustics;

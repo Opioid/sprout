@@ -17,16 +17,16 @@
 
 namespace scene::prop {
 
-Prop_material::Prop_material() noexcept : materials(nullptr), parts(nullptr) {}
+Prop_material::Prop_material() noexcept : materials(nullptr), light_ids(nullptr) {}
 
 Prop_material::Prop_material(Prop_material&& other) noexcept
-    : materials(other.materials), parts(other.parts) {
+    : materials(other.materials), light_ids(other.light_ids) {
     other.materials = nullptr;
-    other.parts     = nullptr;
+    other.light_ids = nullptr;
 }
 
 Prop_material::~Prop_material() noexcept {
-    memory::free_aligned(parts);
+    memory::free_aligned(light_ids);
     memory::free_aligned(materials);
 }
 

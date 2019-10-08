@@ -234,16 +234,13 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcep
 
     auto& m = prop_materials_[prop.id];
 
-    m.parts     = memory::allocate_aligned<prop::Prop_material::Part>(num_parts);
     m.materials = memory::allocate_aligned<uint32_t>(num_parts);
+    m.light_ids = memory::allocate_aligned<uint32_t>(num_parts);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
-        auto& p = m.parts[i];
-
-        p.area     = 1.f;
-        p.light_id = 0xFFFFFFFF;
-
         m.materials[i] = materials[shape.ptr->part_id_to_material_id(i)].id;
+
+        m.light_ids[i] = 0xFFFFFFFF;
     }
 
     if (shape.ptr->is_finite()) {
@@ -505,11 +502,11 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     float const area = shape->area(part, transformation.scale);
 
+    lights_[light_id].set_area(area);
+
     auto& m = prop_materials_[entity];
 
-    m.parts[part].area = area;
-
-    m.parts[part].light_id = light_id;
+    m.light_ids[part] = light_id;
 
     material_resources_[m.materials[part]]->prepare_sampling(
         *shape, part, time, transformation, area, material_importance_sampling, pool);
@@ -527,11 +524,11 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     float const volume = shape->volume(part, transformation.scale);
 
+    lights_[light_id].set_volume(volume);
+
     auto& m = prop_materials_[entity];
 
-    m.parts[part].volume = volume;
-
-    m.parts[part].light_id = light_id;
+    m.light_ids[part] = light_id;
 
     material_resources_[m.materials[part]]->prepare_sampling(
         *shape, part, time, transformation, volume, material_importance_sampling, pool);

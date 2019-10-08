@@ -141,17 +141,7 @@ struct alignas(16) Prop_material {
     ~Prop_material() noexcept;
 
     uint32_t* materials;
-
-    struct Part {
-        union {
-            float area;
-            float volume;
-        };
-
-        uint32_t light_id;
-    };
-
-    Part* parts;
+    uint32_t* light_ids;
 };
 
 struct alignas(8) Prop_topology {

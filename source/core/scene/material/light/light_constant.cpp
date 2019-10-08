@@ -3,6 +3,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "light_material_sample.hpp"
 #include "scene/material/material_sample.inl"
+#include "scene/scene.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 
@@ -21,7 +22,7 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.set(emittance_.radiance(rs.area));
+    sample.set(emittance_.radiance(worker.scene().light_area(rs.prop, rs.part)));
 
     return sample;
 }
