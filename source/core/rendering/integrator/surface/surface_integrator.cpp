@@ -11,8 +11,4 @@ Factory::Factory(take::Settings const& settings) noexcept : take_settings_(setti
 
 Factory::~Factory() noexcept {}
 
-uint32_t Factory::max_sample_depth() const noexcept {
-    return 1;
-}
-
 }  // namespace rendering::integrator::surface

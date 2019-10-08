@@ -10,16 +10,15 @@ class Sample_cache {
   public:
     ~Sample_cache() noexcept;
 
-    void init(uint32_t max_sample_size, uint32_t max_sample_level) noexcept;
+    void init(uint32_t max_sample_size) noexcept;
 
     template <typename T>
-    T& get(uint32_t depth) noexcept;
+    T& get() noexcept;
 
     size_t num_bytes() const noexcept;
 
   private:
     uint32_t max_sample_size_ = 0;
-    uint32_t buffer_size_     = 0;
 
     char* buffer_ = nullptr;
 };

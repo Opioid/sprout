@@ -36,7 +36,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
                                                     sampler::Sampler& /*sampler*/,
                                                     Worker const& worker) const noexcept {
     if (rs.subsurface) {
-        auto& sample = worker.sample<Sample_subsurface_volumetric>(rs.sample_level);
+        auto& sample = worker.sample<Sample_subsurface_volumetric>();
 
         sample.set_basis(rs.geo_n, wo);
 
@@ -45,7 +45,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
         return sample;
     }
 
-    auto& sample = worker.sample<Sample_subsurface>(rs.sample_level);
+    auto& sample = worker.sample<Sample_subsurface>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

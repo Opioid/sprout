@@ -29,7 +29,7 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
                                                      Renderstate const& rs, Filter filter,
                                                      Sampler& /*sampler*/,
                                                      Worker const& worker) const noexcept {
-    auto& sample = worker.sample<Sample>(rs.sample_level);
+    auto& sample = worker.sample<Sample>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

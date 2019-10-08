@@ -34,8 +34,6 @@ class Factory {
 
     virtual Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept = 0;
 
-    virtual uint32_t max_sample_depth() const noexcept;
-
   protected:
     take::Settings const& take_settings_;
 };

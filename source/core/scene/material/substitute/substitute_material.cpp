@@ -19,7 +19,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     noexcept {
     SOFT_ASSERT(!rs.subsurface);
 
-    auto& sample = worker.sample<Sample>(rs.sample_level);
+    auto& sample = worker.sample<Sample>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

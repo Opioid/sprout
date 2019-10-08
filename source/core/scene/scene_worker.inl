@@ -11,8 +11,8 @@ inline Scene const& Worker::scene() const noexcept {
 }
 
 template <typename T>
-T& Worker::sample(uint32_t sample_level) const noexcept {
-    return sample_cache_.get<T>(sample_level);
+T& Worker::sample() const noexcept {
+    return sample_cache_.get<T>();
 }
 
 }  // namespace scene

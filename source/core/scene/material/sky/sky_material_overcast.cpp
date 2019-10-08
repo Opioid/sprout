@@ -14,7 +14,7 @@ material::Sample const& Material_overcast::sample(float3 const&      wo, Ray con
                                                   Renderstate const& rs, Filter /*filter*/,
                                                   sampler::Sampler& /*sampler*/,
                                                   Worker const& worker) const noexcept {
-    auto& sample = worker.sample<light::Sample>(rs.sample_level);
+    auto& sample = worker.sample<light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

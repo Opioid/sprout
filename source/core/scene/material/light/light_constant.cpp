@@ -15,7 +15,7 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
                                          Renderstate const& rs, Filter /*filter*/,
                                          sampler::Sampler& /*sampler*/, Worker const& worker) const
     noexcept {
-    auto& sample = worker.sample<Sample>(rs.sample_level);
+    auto& sample = worker.sample<Sample>();
 
     sample.set_basis(rs.geo_n, wo);
 

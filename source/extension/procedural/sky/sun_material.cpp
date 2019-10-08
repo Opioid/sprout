@@ -27,7 +27,7 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
                                              Renderstate const& rs, Filter /*filter*/,
                                              Sampler& /*sampler*/, Worker const& worker) const
     noexcept {
-    auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
+    auto& sample = worker.sample<material::light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
 
@@ -62,7 +62,7 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
                                                    Renderstate const& rs, Filter /*filter*/,
                                                    Sampler& /*sampler*/, Worker const& worker) const
     noexcept {
-    auto& sample = worker.sample<material::light::Sample>(rs.sample_level);
+    auto& sample = worker.sample<material::light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
 

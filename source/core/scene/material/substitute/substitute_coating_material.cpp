@@ -41,7 +41,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
                                                    Renderstate const& rs, Filter filter,
                                                    sampler::Sampler& /*sampler*/,
                                                    Worker const& worker) const noexcept {
-    auto& sample = worker.sample<Sample_clearcoat>(rs.sample_level);
+    auto& sample = worker.sample<Sample_clearcoat>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -96,7 +96,7 @@ material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray con
                                                   Renderstate const& rs, Filter filter,
                                                   sampler::Sampler& /*sampler*/,
                                                   Worker const& worker) const noexcept {
-    auto& sample = worker.sample<Sample_thinfilm>(rs.sample_level);
+    auto& sample = worker.sample<Sample_thinfilm>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

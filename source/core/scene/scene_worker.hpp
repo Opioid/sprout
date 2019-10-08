@@ -46,7 +46,7 @@ class Worker {
     ~Worker() noexcept;
 
     void init(uint32_t id, take::Settings const& settings, Scene const& scene, Camera const& camera,
-              uint32_t max_material_sample_size, uint32_t max_material_sample_depth) noexcept;
+              uint32_t max_material_sample_size) noexcept;
 
     uint32_t id() const noexcept;
 
@@ -73,7 +73,7 @@ class Worker {
     material::Sample_cache& sample_cache() const noexcept;
 
     template <typename T>
-    T& sample(uint32_t sample_level) const noexcept;
+    T& sample() const noexcept;
 
     Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const noexcept;
 

@@ -15,7 +15,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
                                          Renderstate const& rs, Filter /*filter*/,
                                          sampler::Sampler& /*sampler*/, Worker const& worker) const
     noexcept {
-    auto& sample = worker.sample<Sample>(rs.sample_level);
+    auto& sample = worker.sample<Sample>();
 
     //	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 

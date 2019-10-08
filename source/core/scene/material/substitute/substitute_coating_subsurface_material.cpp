@@ -54,7 +54,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
     float const coating_ior = lerp(rs.ior, coating_.ior, weight);
 
     if (rs.subsurface) {
-        auto& sample = worker.sample<Sample_coating_subsurface_volumetric>(rs.sample_level);
+        auto& sample = worker.sample<Sample_coating_subsurface_volumetric>();
 
         sample.set_basis(rs.geo_n, wo);
 
@@ -68,7 +68,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
         return sample;
     }
 
-    auto& sample = worker.sample<Sample_coating_subsurface>(rs.sample_level);
+    auto& sample = worker.sample<Sample_coating_subsurface>();
 
     set_sample(wo, rs, coating_ior, sampler, sample);
 

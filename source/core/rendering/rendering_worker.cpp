@@ -37,8 +37,7 @@ void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scen
                   Photon_map* photon_map, take::Photon_settings const& photon_settings,
                   Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk,
                   Particle_importance* particle_importance) noexcept {
-    scene::Worker::init(id, settings, scene, camera, max_material_sample_size,
-                        surface_factory.max_sample_depth());
+    scene::Worker::init(id, settings, scene, camera, max_material_sample_size);
 
     surface_integrator_ = surface_factory.create(id, rng_);
     surface_integrator_->prepare(scene, num_samples_per_pixel);

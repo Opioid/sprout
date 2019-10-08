@@ -16,7 +16,7 @@ material::Sample const& Material_translucent::sample(float3 const&      wo, Ray 
                                                      Renderstate const& rs, Filter filter,
                                                      sampler::Sampler& /*sampler*/,
                                                      Worker const& worker) const noexcept {
-    auto& sample = worker.sample<Sample_translucent>(rs.sample_level);
+    auto& sample = worker.sample<Sample_translucent>();
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 

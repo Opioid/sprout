@@ -49,8 +49,6 @@ class PM_factory final : public Factory {
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
-    uint32_t max_sample_depth() const noexcept override final;
-
   private:
     PM* integrators_;
 
