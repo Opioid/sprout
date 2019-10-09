@@ -59,7 +59,7 @@ namespace prop {
 
 struct Intersection;
 class Prop;
-struct Prop_material;
+struct Prop_part;
 struct Prop_frames;
 struct Prop_topology;
 struct Prop_ptr;
@@ -253,7 +253,7 @@ class Scene {
 
     std::vector<prop::Prop>          props_;
     std::vector<Transformation>      prop_world_transformations_;
-    std::vector<prop::Prop_material> prop_materials_;
+    std::vector<prop::Prop_part>     prop_parts_;
     std::vector<uint32_t>            prop_frames_;
     std::vector<prop::Prop_topology> prop_topology_;
     // Pre-transformed AABB in world space.

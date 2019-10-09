@@ -67,7 +67,7 @@ void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
 }
 
 bool Light::is_light(uint32_t id) noexcept {
-    return 0xFFFFFFFF != id;
+    return Null != id;
 }
 
 bool Light::is_area_light(uint32_t id) noexcept {

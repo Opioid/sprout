@@ -19,19 +19,19 @@ namespace scene::prop {
 
 using Transformation = entity::Composed_transformation;
 
-Prop_material::Prop_material() noexcept : materials(nullptr), light_ids(nullptr) {}
+Prop_part::Prop_part() noexcept : materials(nullptr), light_ids(nullptr) {}
 
-Prop_material::Prop_material(Prop_material&& other) noexcept
+Prop_part::Prop_part(Prop_part&& other) noexcept
     : materials(other.materials), light_ids(other.light_ids) {
     other.materials = nullptr;
     other.light_ids = nullptr;
 }
 
-Prop_material::~Prop_material() noexcept {
+Prop_part::~Prop_part() noexcept {
     memory::free_aligned(materials);
 }
 
-void Prop_material::allocate(uint32_t num_parts) noexcept {
+void Prop_part::allocate(uint32_t num_parts) noexcept {
     materials = memory::allocate_aligned<uint32_t>(2 * num_parts);
     light_ids = &materials[num_parts];
 }
@@ -64,13 +64,13 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
     properties_.set(Property::Static, true);
 
     for (uint32_t i = 0, len = shape.ptr->num_materials(); i < len; ++i) {
-        auto const m = materials[i];
+        auto const m = materials[i].ptr;
 
-        if (m.ptr->is_masked()) {
+        if (m->is_masked()) {
             properties_.set(Property::Masked_material);
         }
 
-        if (m.ptr->has_tinted_shadow()) {
+        if (m->has_tinted_shadow()) {
             properties_.set(Property::Tinted_shadow);
         }
     }

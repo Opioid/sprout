@@ -118,16 +118,16 @@ struct Prop_ptr {
     uint32_t id;
 
     static Prop_ptr constexpr Null() noexcept {
-        return {nullptr, 0xFFFFFFFF};
+        return {nullptr, prop::Null};
     }
 };
 
-struct alignas(16) Prop_material {
-    Prop_material() noexcept;
+struct alignas(16) Prop_part {
+    Prop_part() noexcept;
 
-    Prop_material(Prop_material&& other) noexcept;
+    Prop_part(Prop_part&& other) noexcept;
 
-    ~Prop_material() noexcept;
+    ~Prop_part() noexcept;
 
     void allocate(uint32_t num_parts) noexcept;
 

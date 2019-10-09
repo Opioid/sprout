@@ -44,6 +44,8 @@ struct Ray;
 
 namespace light {
 
+static uint32_t constexpr Null = 0xFFFFFFFF;
+
 class alignas(16) Light {
   public:
     using Transformation = entity::Composed_transformation;

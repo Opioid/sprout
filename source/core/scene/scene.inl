@@ -102,7 +102,7 @@ inline shape::Shape* Scene::prop_shape(uint32_t entity) const noexcept {
 
 inline material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) const
     noexcept {
-    return material_resources_[prop_materials_[entity].materials[part]];
+    return material_resources_[prop_parts_[entity].materials[part]];
 }
 
 inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const noexcept {
@@ -110,11 +110,11 @@ inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const no
 }
 
 inline uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const noexcept {
-    return prop_materials_[entity].light_ids[part];
+    return prop_parts_[entity].light_ids[part];
 }
 
 inline float Scene::light_area(uint32_t entity, uint32_t part) const noexcept {
-    uint32_t const light_id = prop_materials_[entity].light_ids[part];
+    uint32_t const light_id = prop_parts_[entity].light_ids[part];
 
     if (prop::Null == light_id) {
         return 1.f;

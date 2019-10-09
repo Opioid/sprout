@@ -33,7 +33,7 @@ Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
       material_resources_(material_resources) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
-    prop_materials_.reserve(Num_reserved_props);
+    prop_parts_.reserve(Num_reserved_props);
     prop_frames_.reserve(Num_reserved_props);
     prop_topology_.reserve(Num_reserved_props);
     prop_aabbs_.reserve(Num_reserved_props);
@@ -54,7 +54,7 @@ Scene::~Scene() noexcept {
 }
 
 void Scene::clear() noexcept {
-    prop_materials_.clear();
+    prop_parts_.clear();
     prop_topology_.clear();
     prop_frames_.clear();
     prop_aabbs_.clear();
@@ -232,14 +232,14 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcep
 
     uint32_t const num_parts = shape.ptr->num_parts();
 
-    auto& m = prop_materials_[prop.id];
+    auto& p = prop_parts_[prop.id];
 
-    m.allocate(num_parts);
+    p.allocate(num_parts);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
-        m.materials[i] = materials[shape.ptr->part_id_to_material_id(i)].id;
+        p.materials[i] = materials[shape.ptr->part_id_to_material_id(i)].id;
 
-        m.light_ids[i] = 0xFFFFFFFF;
+        p.light_ids[i] = light::Null;
     }
 
     if (shape.ptr->is_finite()) {
@@ -249,7 +249,7 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcep
     }
 
     // Shape has no surface
-    if (1 == shape.ptr->num_parts() && 1.f == materials[0].ptr->ior()) {
+    if (1 == num_parts && 1.f == materials[0].ptr->ior()) {
         if (shape.ptr->is_finite()) {
             volumes_.push_back(prop.id);
         } else {
@@ -503,7 +503,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     lights_[light_id].set_area(area);
 
-    auto& m = prop_materials_[entity];
+    auto& m = prop_parts_[entity];
 
     m.light_ids[part] = light_id;
 
@@ -525,7 +525,7 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     lights_[light_id].set_volume(volume);
 
-    auto& m = prop_materials_[entity];
+    auto& m = prop_parts_[entity];
 
     m.light_ids[part] = light_id;
 
@@ -584,7 +584,7 @@ void Scene::prop_animated_transformation_at(uint32_t entity, uint64_t time,
 Scene::Prop_ptr Scene::allocate_prop() noexcept {
     props_.emplace_back();
     prop_world_transformations_.emplace_back();
-    prop_materials_.emplace_back();
+    prop_parts_.emplace_back();
     prop_frames_.emplace_back(prop::Null);
     prop_topology_.emplace_back();
     prop_aabbs_.emplace_back();
