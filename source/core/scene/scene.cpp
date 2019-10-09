@@ -234,8 +234,7 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcep
 
     auto& m = prop_materials_[prop.id];
 
-    m.materials = memory::allocate_aligned<uint32_t>(num_parts);
-    m.light_ids = memory::allocate_aligned<uint32_t>(num_parts);
+    m.allocate(num_parts);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
         m.materials[i] = materials[shape.ptr->part_id_to_material_id(i)].id;

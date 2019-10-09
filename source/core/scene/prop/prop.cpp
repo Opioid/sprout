@@ -28,8 +28,12 @@ Prop_material::Prop_material(Prop_material&& other) noexcept
 }
 
 Prop_material::~Prop_material() noexcept {
-    memory::free_aligned(light_ids);
     memory::free_aligned(materials);
+}
+
+void Prop_material::allocate(uint32_t num_parts) noexcept {
+    materials = memory::allocate_aligned<uint32_t>(2 * num_parts);
+    light_ids = &materials[num_parts];
 }
 
 Prop::Prop() noexcept = default;

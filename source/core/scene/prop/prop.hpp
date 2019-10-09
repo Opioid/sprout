@@ -129,6 +129,8 @@ struct alignas(16) Prop_material {
 
     ~Prop_material() noexcept;
 
+    void allocate(uint32_t num_parts) noexcept;
+
     uint32_t* materials;
     uint32_t* light_ids;
 };
