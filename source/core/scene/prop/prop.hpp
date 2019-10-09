@@ -5,6 +5,8 @@
 #include "base/math/vector.hpp"
 #include "scene/material/sampler_settings.hpp"
 
+#include <cstddef>
+
 namespace thread {
 class Pool;
 }

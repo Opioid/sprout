@@ -25,11 +25,11 @@ class Pool {
 
     uint32_t num_threads() const noexcept;
 
-    void run_parallel(Parallel_program program) noexcept;
+    void run_parallel(Parallel_program&& program) noexcept;
 
-    void run_range(Range_program program, int32_t begin, int32_t end) noexcept;
+    void run_range(Range_program&& program, int32_t begin, int32_t end) noexcept;
 
-    void run_async(Async_program program) noexcept;
+    void run_async(Async_program&& program) noexcept;
 
     void wait_async() noexcept;
 

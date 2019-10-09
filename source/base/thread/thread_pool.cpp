@@ -48,7 +48,7 @@ uint32_t Pool::num_threads() const noexcept {
     return num_threads_;
 }
 
-void Pool::run_parallel(Parallel_program program) noexcept {
+void Pool::run_parallel(Parallel_program&& program) noexcept {
     parallel_program_ = program;
 
     range_program_ = nullptr;
@@ -58,7 +58,7 @@ void Pool::run_parallel(Parallel_program program) noexcept {
     wait_all();
 }
 
-void Pool::run_range(Range_program program, int32_t begin, int32_t end) noexcept {
+void Pool::run_range(Range_program&& program, int32_t begin, int32_t end) noexcept {
     range_program_ = program;
 
     parallel_program_ = nullptr;
@@ -68,7 +68,7 @@ void Pool::run_range(Range_program program, int32_t begin, int32_t end) noexcept
     wait_all();
 }
 
-void Pool::run_async(Async_program program) noexcept {
+void Pool::run_async(Async_program&& program) noexcept {
     wait_async();
 
     async_.program = program;
