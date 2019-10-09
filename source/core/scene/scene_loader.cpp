@@ -444,7 +444,7 @@ Loader::Material_ptr Loader::load_material(std::string const&     name,
                                            Local_materials const& local_materials,
                                            Scene&                 scene) const noexcept {
     // First, check if we maybe already have cached the material.
-    if (auto material = resource_manager_.get<material::Material>(name); material.ptr) {
+    if (auto material = resource_manager_.get<Material>(name); material.ptr) {
         return material;
     }
 
@@ -453,11 +453,11 @@ Loader::Material_ptr Loader::load_material(std::string const&     name,
         local_materials.materials.end() != material_node) {
         void const* data = reinterpret_cast<void const*>(material_node->second);
 
-        if (auto material = resource_manager_.load<material::Material>(name, data,
-                                                                       local_materials.source_name);
+        if (auto material = resource_manager_.load<Material>(name, data,
+                                                             local_materials.source_name);
             material.ptr) {
             if (material.ptr->is_animated()) {
-                scene.add_material(material.id);
+                scene.add_animated_material(material.id);
             }
 
             return material;
@@ -465,9 +465,9 @@ Loader::Material_ptr Loader::load_material(std::string const&     name,
     }
 
     // Lastly, try loading the material from the filesystem.
-    if (auto material = resource_manager_.load<material::Material>(name); material.ptr) {
+    if (auto material = resource_manager_.load<Material>(name); material.ptr) {
         if (material.ptr->is_animated()) {
-            scene.add_material(material.id);
+            scene.add_animated_material(material.id);
         }
 
         return material;
