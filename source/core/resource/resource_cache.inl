@@ -44,9 +44,9 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
     auto const key = std::make_pair(filename, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
-        auto const& entry = cached->second;
+        auto& entry = cached->second;
 
-        if (is_up_to_date(entry)) {
+        if (check_up_to_date(entry)) {
             uint32_t const id = entry.id;
             return {resources_[id], id};
         }
@@ -103,9 +103,9 @@ Resource_ptr<T> Typed_cache<T>::get(std::string const&         filename,
     auto const key = std::make_pair(filename, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
-        auto const& entry = cached->second;
+        auto& entry = cached->second;
 
-        if (is_up_to_date(entry)) {
+        if (check_up_to_date(entry)) {
             uint32_t const id = entry.id;
             return {resources_[id], id};
         }
@@ -153,12 +153,13 @@ size_t Typed_cache<T>::num_bytes() const noexcept {
 }
 
 template <typename T>
-bool Typed_cache<T>::is_up_to_date(Entry const& entry) const noexcept {
+bool Typed_cache<T>::check_up_to_date(Entry& entry) const noexcept {
     if (entry.generation == generation_ || entry.source_name.empty()) {
         return true;
     }
 
     if (std::filesystem::last_write_time(entry.source_name) == entry.last_write) {
+        entry.generation = generation_;
         return true;
     }
 

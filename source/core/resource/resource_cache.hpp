@@ -71,7 +71,7 @@ class Typed_cache : public Cache {
         std::filesystem::file_time_type last_write;
     };
 
-    bool is_up_to_date(Entry const& entry) const noexcept;
+    bool check_up_to_date(Entry& entry) const noexcept;
 
     Provider<T>& provider_;
 
