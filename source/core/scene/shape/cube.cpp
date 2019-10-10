@@ -146,7 +146,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation, uint32
                     Filter filter, Worker const& worker) const noexcept {
     float3 v      = transformation.position - ray.origin;
     float  b      = dot(v, ray.direction);
-    float  radius = transformation.scale[0];
+    float  radius = transformation.scale_x();
     float  det    = (b * b) - dot(v, v) + (radius * radius);
 
     if (det > 0.f) {
@@ -195,7 +195,7 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
                   Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = squared_length(axis);
-    float const  radius              = transformation.scale[0];
+    float const  radius              = transformation.scale_x();
     float const  radius_square       = radius * radius;
     float const  sin_theta_max2      = radius_square / axis_squared_length;
     float        cos_theta_max       = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
@@ -252,7 +252,8 @@ float Cube::pdf(Ray const&            ray, Intersection const& /*intersection*/,
                 bool /*total_sphere*/) const noexcept {
     float3 const axis                = transformation.position - ray.origin;
     float const  axis_squared_length = squared_length(axis);
-    float const  radius_square       = transformation.scale[0] * transformation.scale[0];
+    float const  radius              = transformation.scale_x();
+    float const  radius_square       = radius * radius;
     float const  sin_theta_max2      = radius_square / axis_squared_length;
     float        cos_theta_max       = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
     cos_theta_max                    = std::min(0.99999995f, cos_theta_max);

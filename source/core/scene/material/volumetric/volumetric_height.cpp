@@ -78,7 +78,7 @@ float Height::density(float3 const& p, Transformation const& transformation,
         // p is in object space already
 
         // calculate scaled height
-        float const height = transformation.scale[1] * (1.f + p[1]);
+        float const height = transformation.scale_y() * (1.f + p[1]);
 
         return a_ * math::exp(-b_ * height);
 }

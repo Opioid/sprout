@@ -73,7 +73,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale[0];
+    float const radius       = transformation.scale_x();
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant >= 0.0f) {
@@ -128,7 +128,7 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale[0];
+    float const radius       = transformation.scale_x();
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -166,7 +166,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale[0];
+    float const radius       = transformation.scale_x();
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -210,7 +210,7 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale[0];
+    float const radius       = transformation.scale_x();
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -238,7 +238,7 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, uint
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale[0];
+    float const radius       = transformation.scale_x();
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -282,7 +282,7 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale[0];
+    float const radius       = transformation.scale_x();
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -332,7 +332,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     float const axis_squared_length = squared_length(axis);
 
-    float const radius         = transformation.scale[0];
+    float const radius         = transformation.scale_x();
     float const radius_square  = radius * radius;
     float const sin_theta_max2 = radius_square / axis_squared_length;
     float const cos_theta_max  = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
@@ -371,7 +371,7 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float3 const ls = sample_sphere_uniform(r0);
 
-    float3 const ws = transformation.position + (transformation.scale[0] * ls);
+    float3 const ws = transformation.position + (transformation.scale_x() * ls);
 
     auto const [x, y] = orthonormal_basis(ls);
 
@@ -391,7 +391,8 @@ float Sphere::pdf(Ray const&            ray, Intersection const& /*intersection*
     float3 const axis = transformation.position - ray.origin;
 
     float const axis_squared_length = squared_length(axis);
-    float const radius_square       = transformation.scale[0] * transformation.scale[0];
+    float const radius              = transformation.scale_x();
+    float const radius_square       = radius * radius;
     float const sin_theta_max2      = radius_square / axis_squared_length;
     float const cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
                                          0.99999995f);

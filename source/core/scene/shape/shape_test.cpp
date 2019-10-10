@@ -25,7 +25,7 @@ bool check(Intersection const& intersection, const entity::Composed_transformati
         print(intersection);
 
         std::cout << "t.rotation: " << transformation.rotation << std::endl;
-        std::cout << "t.scale: " << transformation.scale << std::endl;
+        std::cout << "t.scale: " << transformation.scale() << std::endl;
 
         return false;
     }

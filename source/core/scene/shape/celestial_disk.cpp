@@ -4,7 +4,7 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "shape_intersection.hpp"
@@ -37,7 +37,7 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&           transfo
         return false;
     }
 
-    float const radius = transformation.scale[0];
+    float const radius = transformation.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
@@ -76,7 +76,7 @@ bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           tr
         return false;
     }
 
-    float const radius = transformation.scale[0];
+    float const radius = transformation.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
@@ -111,7 +111,7 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&      transformati
         return false;
     }
 
-    float const radius = transformation.scale[0];
+    float const radius = transformation.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
@@ -136,7 +136,7 @@ bool Celestial_disk::intersect_p(Ray const& ray, Transformation const& transform
         return false;
     }
 
-    float const radius = transformation.scale[0];
+    float const radius = transformation.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
@@ -170,7 +170,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
 
     float3 const ls = float3(xy, 0.f);
 
-    float const radius = transformation.scale[0];
+    float const radius = transformation.scale_x();
 
     float3 const ws = radius * transform_vector(transformation.rotation, ls);
 
@@ -191,7 +191,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
 
     float3 const ls = float3(xy, 0.f);
 
-    float const radius = transformation.scale[0];
+    float const radius = transformation.scale_x();
 
     float3 const ws = radius * transform_vector(transformation.rotation, ls);
 

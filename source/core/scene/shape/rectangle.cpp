@@ -4,7 +4,7 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/material/material.hpp"
 #include "scene/scene.inl"
 #include "scene/scene_constants.hpp"
@@ -44,14 +44,14 @@ bool Rectangle::intersect(Ray& ray, Transformation const&           transformati
 
         float3 t = -transformation.rotation.r[0];
 
-        float u = dot(t, k / transformation.scale[0]);
+        float u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
             return false;
         }
 
         float3 b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale[1]);
+        float v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
             return false;
         }
@@ -89,14 +89,14 @@ bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transfo
 
         float3 t = -transformation.rotation.r[0];
 
-        float u = dot(t, k / transformation.scale[0]);
+        float u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
             return false;
         }
 
         float3 b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale[1]);
+        float v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
             return false;
         }
@@ -130,14 +130,14 @@ bool Rectangle::intersect(Ray& ray, Transformation const&      transformation,
 
         float3 t = -transformation.rotation.r[0];
 
-        float u = dot(t, k / transformation.scale[0]);
+        float u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
             return false;
         }
 
         float3 b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale[1]);
+        float v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
             return false;
         }
@@ -168,14 +168,14 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation
 
         float3 t = -transformation.rotation.r[0];
 
-        float u = dot(t, k / transformation.scale[0]);
+        float u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
             return false;
         }
 
         float3 b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale[1]);
+        float v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
             return false;
         }
@@ -201,14 +201,14 @@ float Rectangle::opacity(Ray const& ray, Transformation const& transformation, u
 
         float3 t = -transformation.rotation.r[0];
 
-        float u = dot(t, k / transformation.scale[0]);
+        float u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
             return 0.f;
         }
 
         float3 b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale[1]);
+        float v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
             return 0.f;
         }
@@ -236,7 +236,7 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& transforma
 
         float3 t = -transformation.rotation.r[0];
 
-        float u = dot(t, k / transformation.scale[0]);
+        float u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
             ta = float3(1.f);
             return true;
@@ -244,7 +244,7 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& transforma
 
         float3 b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale[1]);
+        float v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
             ta = float3(1.f);
             return true;
@@ -266,7 +266,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const&
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = 2.f * r2 - float2(1.f);
 
-    float3 const scale(transformation.scale.xy(), 1.f);
+    float3 const scale(transformation.scale_xy(), 1.f);
 
     float3 const ls = float3(xy, 0.f);
 
@@ -304,7 +304,7 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = 2.f * r0 - float2(1.f);
 
-    float3 const scale(transformation.scale.xy(), 1.f);
+    float3 const scale(transformation.scale_xy(), 1.f);
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +

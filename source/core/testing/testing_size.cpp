@@ -71,7 +71,7 @@ void size() {
 
     print_size<scene::entity::Keyframe>("Keyframe", 64);
 
-    print_size<scene::entity::Composed_transformation>("Composed_transformation", 256);
+    print_size<scene::entity::Composed_transformation>("Composed_transformation", 128);
 
     print_size<ray>("ray", 64);
     print_size<scene::Ray>("scene::Ray", 80);

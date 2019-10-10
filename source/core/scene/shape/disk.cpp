@@ -46,7 +46,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         float3 k = p - transformation.position;
         float  l = dot(k, k);
 
-        float radius = transformation.scale[0];
+        float radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             intersection.p     = p;
@@ -58,7 +58,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
             intersection.n     = normal;
 
             float3 sk          = k / radius;
-            float  uv_scale    = 0.5f * transformation.scale[2];
+            float  uv_scale    = 0.5f * transformation.scale_z();
             intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
             intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
 
@@ -88,7 +88,7 @@ bool Disk::intersect_fast(Ray& ray, Transformation const&           transformati
         float3 k = p - transformation.position;
         float  l = dot(k, k);
 
-        float radius = transformation.scale[0];
+        float radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             intersection.p     = p;
@@ -98,7 +98,7 @@ bool Disk::intersect_fast(Ray& ray, Transformation const&           transformati
             float3 b = -transformation.rotation.r[1];
 
             float3 sk          = k / radius;
-            float  uv_scale    = 0.5f * transformation.scale[2];
+            float  uv_scale    = 0.5f * transformation.scale_z();
             intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
             intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
 
@@ -128,7 +128,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         float3 k = p - transformation.position;
         float  l = dot(k, k);
 
-        float radius = transformation.scale[0];
+        float radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             ray.max_t = hit_t;
@@ -157,7 +157,7 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
         float3 k = p - transformation.position;
         float  l = dot(k, k);
 
-        float radius = transformation.scale[0];
+        float radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             return true;
@@ -181,11 +181,11 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation, uint32
         float3 k = p - transformation.position;
         float  l = dot(k, k);
 
-        float radius = transformation.scale[0];
+        float radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             float3 sk       = k / radius;
-            float  uv_scale = 0.5f * transformation.scale[2];
+            float  uv_scale = 0.5f * transformation.scale_z();
             float2 uv((-dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
                       (-dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
@@ -210,11 +210,11 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
         float3 k = p - transformation.position;
         float  l = dot(k, k);
 
-        float radius = transformation.scale[0];
+        float radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             float3 sk       = k / radius;
-            float  uv_scale = 0.5f * transformation.scale[2];
+            float  uv_scale = 0.5f * transformation.scale_z();
             float2 uv((dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
                       (dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
@@ -237,7 +237,7 @@ bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +
-                      transformation.scale[0] * transform_vector(transformation.rotation, ls);
+                      transformation.scale_x() * transform_vector(transformation.rotation, ls);
 
     float3 const axis = ws - p;
 
@@ -278,7 +278,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = transformation.position +
-                      transform_vector(transformation.rotation, transformation.scale[0] * ls);
+                      transform_vector(transformation.rotation, transformation.scale_x() * ls);
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, transformation.rotation);
 
