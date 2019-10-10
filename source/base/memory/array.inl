@@ -11,11 +11,11 @@ template <typename T>
 Array<T>::Array() noexcept : capacity_(0), size_(0), data_(nullptr) {}
 
 template <typename T>
-Array<T>::Array(uint64_t size) noexcept
+Array<T>::Array(uint32_t size) noexcept
     : capacity_(size), size_(size), data_(allocate_aligned<T>(size)) {}
 
 template <typename T>
-Array<T>::Array(uint64_t size, T const& def) noexcept : Array<T>(size) {
+Array<T>::Array(uint32_t size, T const& def) noexcept : Array<T>(size) {
     for (uint64_t i = 0; i < size; ++i) {
         data_[i] = def;
     }
@@ -53,12 +53,12 @@ bool Array<T>::full() const noexcept {
 }
 
 template <typename T>
-uint64_t Array<T>::capacity() const noexcept {
+uint32_t Array<T>::capacity() const noexcept {
     return capacity_;
 }
 
 template <typename T>
-uint64_t Array<T>::size() const noexcept {
+uint32_t Array<T>::size() const noexcept {
     return size_;
 }
 
@@ -94,14 +94,14 @@ void Array<T>::release() noexcept {
 }
 
 template <typename T>
-void Array<T>::resize(uint64_t size) noexcept {
+void Array<T>::resize(uint32_t size) noexcept {
     size_ = size;
 
     allocate(size);
 }
 
 template <typename T>
-void Array<T>::reserve(uint64_t capacity) noexcept {
+void Array<T>::reserve(uint32_t capacity) noexcept {
     size_ = 0;
 
     allocate(capacity);
@@ -115,12 +115,12 @@ void Array<T>::push_back(T const& v) noexcept {
 }
 
 template <typename T>
-T const& Array<T>::operator[](uint64_t i) const noexcept {
+T const& Array<T>::operator[](uint32_t i) const noexcept {
     return data_[i];
 }
 
 template <typename T>
-T& Array<T>::operator[](uint64_t i) noexcept {
+T& Array<T>::operator[](uint32_t i) noexcept {
     return data_[i];
 }
 

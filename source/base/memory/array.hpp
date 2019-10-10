@@ -11,9 +11,9 @@ class Array {
   public:
     Array() noexcept;
 
-    Array(uint64_t size) noexcept;
+    Array(uint32_t size) noexcept;
 
-    Array(uint64_t size, T const& def) noexcept;
+    Array(uint32_t size, T const& def) noexcept;
 
     Array(std::initializer_list<T> list) noexcept;
 
@@ -25,8 +25,8 @@ class Array {
 
     bool full() const noexcept;
 
-    uint64_t capacity() const noexcept;
-    uint64_t size() const noexcept;
+    uint32_t capacity() const noexcept;
+    uint32_t size() const noexcept;
 
     T const* data() const noexcept;
     T*       data() noexcept;
@@ -37,14 +37,14 @@ class Array {
 
     void release() noexcept;
 
-    void resize(uint64_t capacity) noexcept;
+    void resize(uint32_t capacity) noexcept;
 
-    void reserve(uint64_t capacity) noexcept;
+    void reserve(uint32_t capacity) noexcept;
 
     void push_back(T const& v) noexcept;
 
-    T const& operator[](uint64_t i) const noexcept;
-    T&       operator[](uint64_t i) noexcept;
+    T const& operator[](uint32_t i) const noexcept;
+    T&       operator[](uint32_t i) noexcept;
 
     T const* begin() const noexcept;
     T*       begin() noexcept;
@@ -55,8 +55,8 @@ class Array {
   private:
     void allocate(uint64_t capacity) noexcept;
 
-    uint64_t capacity_;
-    uint64_t size_;
+    uint32_t capacity_;
+    uint32_t size_;
 
     T* data_;
 };
