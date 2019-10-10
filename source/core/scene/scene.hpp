@@ -78,7 +78,9 @@ class Scene {
     using Entity         = entity::Entity;
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
+    using Keyframe       = entity::Keyframe;
     using Prop           = prop::Prop;
+    using Prop_topology  = prop::Prop_topology;
     using Prop_ptr       = prop::Prop_ptr;
     using Material       = material::Material;
     using Shape          = shape::Shape;
@@ -249,25 +251,24 @@ class Scene {
     bool has_tinted_shadow_;
     bool has_volumes_;
 
-    std::vector<prop::Prop>          props_;
-    std::vector<Transformation>      prop_world_transformations_;
-    std::vector<prop::Prop_part>     prop_parts_;
-    std::vector<uint32_t>            prop_frames_;
-    std::vector<prop::Prop_topology> prop_topology_;
+    std::vector<Prop>           props_;
+    std::vector<Transformation> prop_world_transformations_;
+    std::vector<uint32_t>       prop_parts_;
+    std::vector<uint32_t>       prop_frames_;
+    std::vector<Prop_topology>  prop_topology_;
     // Pre-transformed AABB in world space.
     // For moving objects it must cover the entire area occupied by the object during the tick.
     std::vector<AABB> prop_aabbs_;
 
-    std::vector<uint32_t> finite_props_;
-    std::vector<uint32_t> infinite_props_;
-
-    std::vector<uint32_t> volumes_;
-    std::vector<uint32_t> infinite_volumes_;
-
-    // std::vector<light::Light*> lights_;
     std::vector<light::Light> lights_;
 
-    std::vector<Extension*> extensions_;
+    std::vector<uint32_t> materials_;
+    std::vector<uint32_t> light_ids_;
+    std::vector<Keyframe> keyframes_;
+
+    std::vector<animation::Animation*> animations_;
+
+    std::vector<animation::Stage> animation_stages_;
 
     std::map<std::string, uint32_t, std::less<>> named_props_;
 
@@ -275,15 +276,17 @@ class Scene {
 
     math::Distribution_implicit_pdf_lut_lin_1D light_distribution_;
 
-    std::vector<animation::Animation*> animations_;
-
-    std::vector<animation::Stage> animation_stages_;
-
-    std::vector<entity::Keyframe> keyframes_;
-
     std::vector<Shape*> const& shape_resources_;
 
     std::vector<Material*> const& material_resources_;
+
+    std::vector<uint32_t> finite_props_;
+    std::vector<uint32_t> infinite_props_;
+
+    std::vector<uint32_t> volumes_;
+    std::vector<uint32_t> infinite_volumes_;
+
+    std::vector<Extension*> extensions_;
 };
 
 }  // namespace scene

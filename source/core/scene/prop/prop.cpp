@@ -19,23 +19,6 @@ namespace scene::prop {
 
 using Transformation = entity::Composed_transformation;
 
-Prop_part::Prop_part() noexcept : materials(nullptr), light_ids(nullptr) {}
-
-Prop_part::Prop_part(Prop_part&& other) noexcept
-    : materials(other.materials), light_ids(other.light_ids) {
-    other.materials = nullptr;
-    other.light_ids = nullptr;
-}
-
-Prop_part::~Prop_part() noexcept {
-    memory::free_aligned(materials);
-}
-
-void Prop_part::allocate(uint32_t num_parts) noexcept {
-    materials = memory::allocate_aligned<uint32_t>(2 * num_parts);
-    light_ids = &materials[num_parts];
-}
-
 Prop::Prop() noexcept = default;
 
 Prop::~Prop() noexcept {}

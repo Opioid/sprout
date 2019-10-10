@@ -124,19 +124,6 @@ struct Prop_ptr {
     }
 };
 
-struct alignas(16) Prop_part {
-    Prop_part() noexcept;
-
-    Prop_part(Prop_part&& other) noexcept;
-
-    ~Prop_part() noexcept;
-
-    void allocate(uint32_t num_parts) noexcept;
-
-    uint32_t* materials;
-    uint32_t* light_ids;
-};
-
 struct alignas(8) Prop_topology {
     uint32_t next  = Null;
     uint32_t child = Null;

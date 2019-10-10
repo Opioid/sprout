@@ -37,15 +37,17 @@ Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
     prop_frames_.reserve(Num_reserved_props);
     prop_topology_.reserve(Num_reserved_props);
     prop_aabbs_.reserve(Num_reserved_props);
-    finite_props_.reserve(Num_reserved_props);
-    infinite_props_.reserve(3);
-    volumes_.reserve(Num_reserved_props);
-    infinite_volumes_.reserve(1);
+    materials_.reserve(Num_reserved_props);
+    light_ids_.reserve(Num_reserved_props);
+    keyframes_.reserve(Num_reserved_props);
     lights_.reserve(Num_reserved_props);
     extensions_.reserve(Num_reserved_props);
     animations_.reserve(Num_reserved_props);
     animation_stages_.reserve(Num_reserved_props);
-    keyframes_.reserve(Num_reserved_props);
+    finite_props_.reserve(Num_reserved_props);
+    infinite_props_.reserve(3);
+    volumes_.reserve(Num_reserved_props);
+    infinite_volumes_.reserve(1);
 }
 
 Scene::~Scene() noexcept {
@@ -61,6 +63,10 @@ void Scene::clear() noexcept {
 
     lights_.clear();
 
+    keyframes_.clear();
+    light_ids_.clear();
+    materials_.clear();
+
     infinite_volumes_.clear();
     volumes_.clear();
 
@@ -75,8 +81,6 @@ void Scene::clear() noexcept {
     animations_.clear();
 
     animation_stages_.clear();
-
-    keyframes_.clear();
 
     for (auto e : extensions_) {
         delete e;
@@ -227,16 +231,16 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcep
 
     prop.ptr->configure(shape, materials.data());
 
+    uint32_t const parts_start = uint32_t(materials_.size());
+
+    prop_parts_[prop.id] = parts_start;
+
     uint32_t const num_parts = shape.ptr->num_parts();
 
-    auto& p = prop_parts_[prop.id];
-
-    p.allocate(num_parts);
-
     for (uint32_t i = 0; i < num_parts; ++i) {
-        p.materials[i] = materials[shape.ptr->part_id_to_material_id(i)].id;
+        materials_.emplace_back(materials[shape.ptr->part_id_to_material_id(i)].id);
 
-        p.light_ids[i] = light::Null;
+        light_ids_.emplace_back(light::Null);
     }
 
     if (shape.ptr->is_finite()) {
@@ -500,12 +504,12 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     lights_[light_id].set_area(area);
 
-    auto& m = prop_parts_[entity];
+    uint32_t const p = prop_parts_[entity] + part;
 
-    m.light_ids[part] = light_id;
+    light_ids_[p] = light_id;
 
-    material_resources_[m.materials[part]]->prepare_sampling(
-        *shape, part, time, transformation, area, material_importance_sampling, pool);
+    material_resources_[materials_[p]]->prepare_sampling(*shape, part, time, transformation, area,
+                                                         material_importance_sampling, pool);
 }
 
 void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
@@ -522,12 +526,12 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     lights_[light_id].set_volume(volume);
 
-    auto& m = prop_parts_[entity];
+    uint32_t const p = prop_parts_[entity] + part;
 
-    m.light_ids[part] = light_id;
+    light_ids_[p] = light_id;
 
-    material_resources_[m.materials[part]]->prepare_sampling(
-        *shape, part, time, transformation, volume, material_importance_sampling, pool);
+    material_resources_[materials_[p]]->prepare_sampling(*shape, part, time, transformation, volume,
+                                                         material_importance_sampling, pool);
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) noexcept {
