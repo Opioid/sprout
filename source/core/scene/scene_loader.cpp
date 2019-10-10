@@ -344,7 +344,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
     materials.reserve(num_materials);
 
     if (materials_value) {
-        load_materials(*materials_value, local_materials, scene, materials);
+        load_materials(*materials_value, local_materials, materials);
     }
 
     if (1 == materials.size() && 1.f == materials[0].ptr->ior()) {
@@ -425,14 +425,14 @@ Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shap
 }
 
 void Loader::load_materials(json::Value const&     materials_value,
-                            Local_materials const& local_materials, Scene& scene,
-                            Materials& materials) const noexcept {
+                            Local_materials const& local_materials, Materials& materials) const
+    noexcept {
     if (!materials_value.IsArray()) {
         return;
     }
 
     for (auto const& m : materials_value.GetArray()) {
-        materials.push_back(load_material(m.GetString(), local_materials, scene));
+        materials.push_back(load_material(m.GetString(), local_materials));
 
         if (materials.full()) {
             break;
@@ -441,8 +441,7 @@ void Loader::load_materials(json::Value const&     materials_value,
 }
 
 Loader::Material_ptr Loader::load_material(std::string const&     name,
-                                           Local_materials const& local_materials,
-                                           Scene&                 scene) const noexcept {
+                                           Local_materials const& local_materials) const noexcept {
     // First, check if we maybe already have cached the material.
     if (auto material = resource_manager_.get<Material>(name); material.ptr) {
         return material;
@@ -456,20 +455,12 @@ Loader::Material_ptr Loader::load_material(std::string const&     name,
         if (auto material = resource_manager_.load<Material>(name, data,
                                                              local_materials.source_name);
             material.ptr) {
-            if (material.ptr->is_animated()) {
-                scene.add_animated_material(material.id);
-            }
-
             return material;
         }
     }
 
     // Lastly, try loading the material from the filesystem.
     if (auto material = resource_manager_.load<Material>(name); material.ptr) {
-        if (material.ptr->is_animated()) {
-            scene.add_animated_material(material.id);
-        }
-
         return material;
     }
 

@@ -125,10 +125,10 @@ class Loader {
     Shape_ptr shape(std::string const& type, json::Value const& shape_value) const noexcept;
 
     void load_materials(json::Value const& materials_value, Local_materials const& local_materials,
-                        Scene& scene, Materials& materials) const noexcept;
+                        Materials& materials) const noexcept;
 
-    Material_ptr load_material(std::string const& name, Local_materials const& local_materials,
-                               Scene& scene) const noexcept;
+    Material_ptr load_material(std::string const&     name,
+                               Local_materials const& local_materials) const noexcept;
 
     resource::Manager& resource_manager_;
 

@@ -216,8 +216,6 @@ class Scene {
 
     float light_area(uint32_t entity, uint32_t part) const noexcept;
 
-    void add_animated_material(uint32_t material) noexcept;
-
     animation::Animation* create_animation(uint32_t count) noexcept;
 
     void create_animation_stage(uint32_t entity, animation::Animation* animation) noexcept;
@@ -276,8 +274,6 @@ class Scene {
     memory::Array<float> light_powers_;
 
     math::Distribution_implicit_pdf_lut_lin_1D light_distribution_;
-
-    std::vector<uint32_t> animated_materials_;
 
     std::vector<animation::Animation*> animations_;
 

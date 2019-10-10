@@ -43,7 +43,6 @@ Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
     infinite_volumes_.reserve(1);
     lights_.reserve(Num_reserved_props);
     extensions_.reserve(Num_reserved_props);
-    animated_materials_.reserve(Num_reserved_props);
     animations_.reserve(Num_reserved_props);
     animation_stages_.reserve(Num_reserved_props);
     keyframes_.reserve(Num_reserved_props);
@@ -69,8 +68,6 @@ void Scene::clear() noexcept {
     finite_props_.clear();
     props_.clear();
 
-    animated_materials_.clear();
-
     for (auto a : animations_) {
         delete a;
     }
@@ -94,7 +91,7 @@ void Scene::finish() noexcept {
         lights_.emplace_back(light::Light::Type::Null, dummy, prop::Null);
     }
 
-    light_powers_.resize(lights_.size());
+    light_powers_.resize(uint32_t(lights_.size()));
 }
 
 AABB const& Scene::aabb() const noexcept {
@@ -156,8 +153,8 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
         s.update(*this, thread_pool);
     }
 
-    for (auto m : animated_materials_) {
-        material_resources_[m]->simulate(start, end, tick_duration_, thread_pool);
+    for (auto m : material_resources_) {
+        m->simulate(start, end, tick_duration_, thread_pool);
     }
 
     compile(start, thread_pool);
@@ -531,10 +528,6 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     material_resources_[m.materials[part]]->prepare_sampling(
         *shape, part, time, transformation, volume, material_importance_sampling, pool);
-}
-
-void Scene::add_animated_material(uint32_t material) noexcept {
-    animated_materials_.push_back(material);
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) noexcept {
