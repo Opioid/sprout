@@ -11,8 +11,10 @@ struct Transformation;
 
 namespace scene::entity {
 
-struct alignas(64) Composed_transformation {
+struct Composed_transformation {
     void set(math::Transformation const& t) noexcept;
+
+    float4x4 object_to_world() const noexcept;
 
     float3 world_to_object_point(float3 const& p) const noexcept;
     float3 world_to_object_vector(float3 const& v) const noexcept;
@@ -21,7 +23,6 @@ struct alignas(64) Composed_transformation {
     float3 object_to_world_vector(float3 const& v) const noexcept;
 
     float4x4 world_to_object;
-    float4x4 object_to_world;
     float3x3 rotation;
     float3   position;
     float3   scale;

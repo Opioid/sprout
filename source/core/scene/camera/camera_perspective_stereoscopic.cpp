@@ -6,7 +6,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -52,8 +52,8 @@ bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample
     Transformation temp;
     auto&          transformation = scene.prop_transformation_at(entity_, time, temp);
 
-    ray = create_ray(transform_point(transformation.object_to_world, eye_offsets_[view]),
-                     transform_vector(transformation.object_to_world, direction), time);
+    ray = create_ray(transformation.object_to_world_point(eye_offsets_[view]),
+                     transformation.object_to_world_vector(direction), time);
 
     return true;
 }

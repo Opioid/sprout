@@ -417,7 +417,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
     float cos_phi   = std::cos(phi);
 
     float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-    float3 ws = transform_point(transformation.object_to_world, ls);
+    float3 ws = transformation.object_to_world_point(ls);
 
     float3 axis = ws - p;
     float  sl   = squared_length(axis);

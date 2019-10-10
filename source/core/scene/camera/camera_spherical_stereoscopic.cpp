@@ -6,7 +6,7 @@
 #include "base/math/vector4.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -71,7 +71,7 @@ bool Spherical_stereoscopic::generate_ray(Camera_sample const& sample, uint32_t 
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
-    ray = create_ray(transform_point(transformation.object_to_world, eye_pos),
+    ray = create_ray(transformation.object_to_world_point(eye_pos),
                      transform_vector(transformation.rotation, dir), time);
 
     return true;

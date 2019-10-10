@@ -345,7 +345,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv,
                        Transformation const& transformation, float area, bool two_sided,
                        Sample_to& sample) const noexcept {
     float3 ls(-2.f * uv[0] + 1.f, -2.f * uv[1] + 1.f, 0.f);
-    float3 ws = transform_point(transformation.object_to_world, ls);
+    float3 ws = transformation.object_to_world_point(ls);
 
     float3 axis = ws - p;
     float  sl   = squared_length(axis);

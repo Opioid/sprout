@@ -141,7 +141,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f const object_to_world(transformation.object_to_world);
+        Simd4x4f const object_to_world(transformation.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -202,7 +202,7 @@ bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_s
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f const object_to_world(transformation.object_to_world);
+        Simd4x4f const object_to_world(transformation.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 

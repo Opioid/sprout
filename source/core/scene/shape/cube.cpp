@@ -233,7 +233,7 @@ bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation cons
 
     float3 const r3(r2, r1);
     float3 const xyz  = 2.f * (r3 - 0.5f);
-    float3 const wp   = transform_point(transformation.object_to_world, xyz);
+    float3 const wp   = transformation.object_to_world_point(xyz);
     float3 const axis = wp - p;
 
     float const sl = squared_length(axis);
@@ -276,7 +276,7 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, float3 const& uvw,
                   Transformation const& transformation, float volume, Sample_to& sample) const
     noexcept {
     float3 const xyz  = 2.f * (uvw - 0.5f);
-    float3 const wp   = transform_point(transformation.object_to_world, xyz);
+    float3 const wp   = transformation.object_to_world_point(xyz);
     float3 const axis = wp - p;
 
     float const sl = squared_length(axis);

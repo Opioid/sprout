@@ -415,7 +415,8 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
     if (prop::Null == f) {
         auto const& transformation = prop_world_transformation(entity);
 
-        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(transformation.object_to_world);
+        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(
+            transformation.object_to_world());
 
         for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
             prop_inherit_transformation(child, transformation);

@@ -14,11 +14,14 @@ inline void Composed_transformation::set(math::Transformation const& t) noexcept
     float4x4 const otw = compose(rot, t.scale, t.position);
 
     world_to_object = affine_inverted(otw);
-    object_to_world = otw;
 
     rotation = rot;
     position = t.position;
     scale    = t.scale;
+}
+
+inline float4x4 Composed_transformation::object_to_world() const noexcept {
+    return compose(rotation, scale, position);
 }
 
 inline float3 Composed_transformation::world_to_object_point(float3 const& p) const noexcept {
@@ -30,11 +33,20 @@ inline float3 Composed_transformation::world_to_object_vector(float3 const& v) c
 }
 
 inline float3 Composed_transformation::object_to_world_point(float3 const& v) const noexcept {
-    return transform_point(object_to_world, v);
+    return Vector3f_a(
+        scale[0] * (v[0] * rotation.r[0][0] + v[1] * rotation.r[1][0] + v[2] * rotation.r[2][0]) +
+            position[0],
+        scale[1] * (v[0] * rotation.r[0][1] + v[1] * rotation.r[1][1] + v[2] * rotation.r[2][1]) +
+            position[1],
+        scale[2] * (v[0] * rotation.r[0][2] + v[1] * rotation.r[1][2] + v[2] * rotation.r[2][2]) +
+            position[2]);
 }
 
 inline float3 Composed_transformation::object_to_world_vector(float3 const& v) const noexcept {
-    return transform_vector(object_to_world, v);
+    return Vector3f_a(
+        scale[0] * (v[0] * rotation.r[0][0] + v[1] * rotation.r[1][0] + v[2] * rotation.r[2][0]),
+        scale[1] * (v[0] * rotation.r[0][1] + v[1] * rotation.r[1][1] + v[2] * rotation.r[2][1]),
+        scale[2] * (v[0] * rotation.r[0][2] + v[1] * rotation.r[1][2] + v[2] * rotation.r[2][2]));
 }
 
 }  // namespace scene::entity

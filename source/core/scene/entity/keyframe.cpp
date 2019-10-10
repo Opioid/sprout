@@ -2,7 +2,7 @@
 #include "base/math/math.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/transformation.inl"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 
 namespace scene::entity {
@@ -28,7 +28,7 @@ void Keyframe::interpolate(Keyframe& __restrict result, Keyframe const& __restri
 }
 
 void Keyframe::transform(Keyframe& result, Transformation const& from) const noexcept {
-    result.transformation.position = transform_point(from.object_to_world, transformation.position);
+    result.transformation.position = from.object_to_world_point(transformation.position);
 
     result.transformation.scale = transformation.scale;
 
