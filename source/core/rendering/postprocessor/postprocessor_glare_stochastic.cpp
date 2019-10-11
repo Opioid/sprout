@@ -16,7 +16,7 @@
 namespace rendering::postprocessor {
 
 Glare_stochastic::Glare_stochastic(Adaption adaption, float threshold, float intensity)
-    : Postprocessor(4),
+    : Postprocessor(2),
       adaption_(adaption),
       threshold_(threshold),
       intensity_(intensity),
@@ -248,9 +248,9 @@ void Glare_stochastic::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t 
         float const fdm0 = float(d[0] - 1);
         float const fdm1 = float(d[1] - 1);
 
-        uint32_t const num_samples = 4096;
+        uint32_t const num_samples = 4 * 4096;
 
-        float const weight = Pi_inv * pow2(0.5f * fd[0]);
+        float const weight = (fd[0] * fd[1]) / float(num_samples);
 
         float const intensity = weight * intensity_;
 
@@ -271,10 +271,29 @@ void Glare_stochastic::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t 
             for (uint32_t j = 0; j < num_samples; ++j) {
                 float2 const uv = hammersley(j, num_samples, r);
 
-                float2 const disk = float2(1.f, ratio) * math::sample_disk_concentric(uv);
+                float2 disk = sample_disk_concentric(uv);
 
-                int32_t const sx = static_cast<int32_t>((disk[0] * disk[0] + 1.f) / 2.f * fdm0);
-                int32_t const sy = static_cast<int32_t>((disk[1] * disk[1] + 1.f) / 2.f * fdm1);
+                float w = squared_length(disk);
+
+                disk *= w;//squared_length(disk);
+
+                int32_t  sx = c[0] + int32_t(disk[0] * fdm0);
+                int32_t  sy = c[1] + int32_t(disk[1] * fdm0);
+
+//                if (sx >= d[0]) {
+//                    sx = c[0] + (d[0] - sx);
+//                }
+
+//                if (sy < 0) {
+//                    sy = c[1] + sy;
+//                }
+
+                if (sx < 0 || sx >= d[0] || sy < 0 || sy >= d[1]) {
+                    continue;
+                }
+
+//                int32_t const sx = static_cast<int32_t>(uv[0] * fdm0);
+//                int32_t const sy = static_cast<int32_t>(uv[1] * fdm1);
 
                 int32_t const si = sy * d[0] + sx;
 
@@ -284,14 +303,14 @@ void Glare_stochastic::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t 
 
                 float3 const k = kernel_[ki];
 
-                float const w = squared_length(disk);
+            //    float const w = 1.f;
 
-                glare += w * (k * high_pass_[si]);
+                glare +=/* w * */(k * high_pass_[si]);
 
                 weight_sum += w;
             }
 
-            destination.store(i, float4((intensity * glare) / (weight_sum)));
+            destination.store(i, float4((intensity * glare)));
         }
     } else if (2 == pass) {
         // vertical
