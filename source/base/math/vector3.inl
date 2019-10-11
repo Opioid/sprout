@@ -794,6 +794,11 @@ static inline Simd3f operator+(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_add_ps(a.v, b.v);
 }
 
+static inline Simd3f& operator+=(Simd3f& a, Simd3f const& b) noexcept {
+    a = _mm_add_ps(a.v, b.v);
+    return a;
+}
+
 static inline float horizontal_sum(Simd3f a) noexcept {
     //	Vector t = _mm_hadd_ps(a, a);
     //	t = _mm_hadd_ps(t, t);

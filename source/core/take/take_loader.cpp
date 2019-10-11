@@ -4,6 +4,7 @@
 #include "base/math/math.hpp"
 #include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
+#include "base/math/vector.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/string/string.hpp"
@@ -30,6 +31,8 @@
 #include "rendering/integrator/volume/tracking_single.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
+#include "rendering/postprocessor/postprocessor_glare.hpp"
+#include "rendering/postprocessor/postprocessor_glare_stochastic.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
 #include "rendering/postprocessor/tonemapping/identity.hpp"
@@ -769,6 +772,38 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
             float const intensity = json::read_float(n->value, "intensity", 0.1f);
 
             pipeline.add(new Bloom(angle, alpha, threshold, intensity));
+        } else if ("Glare" == n->name) {
+            Glare::Adaption adaption = Glare::Adaption::Mesopic;
+
+            std::string const adaption_name = json::read_string(n->value, "adaption");
+            if ("Scotopic" == adaption_name) {
+                adaption = Glare::Adaption::Scotopic;
+            } else if ("Mesopic" == adaption_name) {
+                adaption = Glare::Adaption::Mesopic;
+            } else if ("Photopic" == adaption_name) {
+                adaption = Glare::Adaption::Photopic;
+            }
+
+            float const threshold = json::read_float(n->value, "threshold", 2.f);
+            float const intensity = json::read_float(n->value, "intensity", 1.f);
+
+            pipeline.add(new Glare(adaption, threshold, intensity));
+        } else if ("Glare_stochastic" == n->name) {
+            Glare_stochastic::Adaption adaption = Glare_stochastic::Adaption::Mesopic;
+
+            std::string const adaption_name = json::read_string(n->value, "adaption");
+            if ("Scotopic" == adaption_name) {
+                adaption = Glare_stochastic::Adaption::Scotopic;
+            } else if ("Mesopic" == adaption_name) {
+                adaption = Glare_stochastic::Adaption::Mesopic;
+            } else if ("Photopic" == adaption_name) {
+                adaption = Glare_stochastic::Adaption::Photopic;
+            }
+
+            float const threshold = json::read_float(n->value, "threshold", 2.f);
+            float const intensity = json::read_float(n->value, "intensity", 1.f);
+
+            pipeline.add(new Glare_stochastic(adaption, threshold, intensity));
         } else {
             logging::warning("Unknown postprocessor \"" + std::string(n->name.GetString()) + "\"");
         }

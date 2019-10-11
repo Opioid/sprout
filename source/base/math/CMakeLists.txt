@@ -1,6 +1,5 @@
 add_subdirectory(distribution)
 add_subdirectory(filter)
-add_subdirectory(fourier)
 
 target_sources(base
     PRIVATE
