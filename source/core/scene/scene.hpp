@@ -230,6 +230,9 @@ class Scene {
 
     Prop_ptr allocate_prop() noexcept;
 
+    bool prop_is_instance(Shape_ptr shape, Materials const& materials, uint32_t num_parts) const
+        noexcept;
+
     bool prop_has_caustic_material(uint32_t entity) const noexcept;
 
     void add_named_prop(uint32_t prop, std::string const& name) noexcept;

@@ -101,6 +101,7 @@ Loader::Shape_ptr Loader::null_shape() noexcept {
 
 void Loader::create_light(uint32_t prop_id, Scene& scene) noexcept {
     auto const shape = scene.prop_shape(prop_id);
+
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
         if (auto const material = scene.prop_material(prop_id, i); material->is_emissive()) {
             if (material->is_scattering_volume()) {

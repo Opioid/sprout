@@ -231,16 +231,22 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcep
 
     prop.ptr->configure(shape, materials.data());
 
-    uint32_t const parts_start = uint32_t(materials_.size());
-
-    prop_parts_[prop.id] = parts_start;
-
     uint32_t const num_parts = shape.ptr->num_parts();
 
-    for (uint32_t i = 0; i < num_parts; ++i) {
-        materials_.emplace_back(materials[shape.ptr->part_id_to_material_id(i)].id);
+    // This calls a very simple test to check whether the prop added just before this one
+    // has the same shape, same materials, and is not a light.
+    if (prop_is_instance(shape, materials, num_parts)) {
+        prop_parts_[prop.id] = prop_parts_[props_.size() - 2];
+    } else {
+        uint32_t const parts_start = uint32_t(materials_.size());
 
-        light_ids_.emplace_back(light::Null);
+        prop_parts_[prop.id] = parts_start;
+
+        for (uint32_t i = 0; i < num_parts; ++i) {
+            materials_.emplace_back(materials[shape.ptr->part_id_to_material_id(i)].id);
+
+            light_ids_.emplace_back(light::Null);
+        }
     }
 
     if (shape.ptr->is_finite()) {
@@ -592,6 +598,26 @@ Scene::Prop_ptr Scene::allocate_prop() noexcept {
     prop::Prop* prop = &props_[prop_id];
 
     return {prop, prop_id};
+}
+
+bool Scene::prop_is_instance(Shape_ptr shape, Materials const& materials, uint32_t num_parts) const
+    noexcept {
+    if (props_.size() < 2 || props_[props_.size() - 2].shape() != shape.id) {
+        return false;
+    }
+
+    uint32_t const p = prop_parts_[props_.size() - 2];
+    for (uint32_t i = 0; i < num_parts; ++i) {
+        if (materials[shape.ptr->part_id_to_material_id(i)].id != materials_[p + i]) {
+            return false;
+        }
+
+        if (light_ids_[p + i] != light::Null) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool Scene::prop_has_caustic_material(uint32_t entity) const noexcept {
