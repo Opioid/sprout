@@ -23,7 +23,7 @@ Array<T>::Array(uint32_t size, T const& def) noexcept : Array<T>(size) {
 
 template <typename T>
 Array<T>::Array(std::initializer_list<T> list) noexcept
-    : capacity_(list.size()), size_(0), data_(allocate_aligned<T>(list.size())) {
+    : capacity_(uint32_t(list.size())), size_(0), data_(allocate_aligned<T>(list.size())) {
     for (auto e : list) {
         push_back(e);
     }
@@ -145,7 +145,7 @@ T* Array<T>::end() noexcept {
 }
 
 template <typename T>
-void Array<T>::allocate(uint64_t capacity) noexcept {
+void Array<T>::allocate(uint32_t capacity) noexcept {
     if (capacity_ >= capacity) {
         return;
     }

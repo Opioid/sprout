@@ -31,7 +31,7 @@ class Pipeline {
 
     void clear() noexcept;
 
-    void reserve(size_t num_pps) noexcept;
+    void reserve(uint32_t num_pps) noexcept;
 
     void add(Postprocessor* pp) noexcept;
 

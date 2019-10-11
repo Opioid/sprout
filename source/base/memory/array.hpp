@@ -53,7 +53,7 @@ class Array {
     T*       end() noexcept;
 
   private:
-    void allocate(uint64_t capacity) noexcept;
+    void allocate(uint32_t capacity) noexcept;
 
     uint32_t capacity_;
     uint32_t size_;

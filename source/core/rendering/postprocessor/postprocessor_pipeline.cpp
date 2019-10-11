@@ -23,7 +23,7 @@ void Pipeline::clear() noexcept {
     postprocessors_.clear();
 }
 
-void Pipeline::reserve(size_t num_pps) noexcept {
+void Pipeline::reserve(uint32_t num_pps) noexcept {
     postprocessors_.reserve(num_pps);
 }
 
