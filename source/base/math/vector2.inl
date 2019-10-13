@@ -77,6 +77,11 @@ static constexpr Vector2<T> operator/(Vector2<T> a, Vector2<T> b) noexcept {
 }
 
 template <typename T>
+static constexpr Vector2<T> operator-(Vector2<T> v) noexcept {
+    return Vector2(-v[0], -v[1]);
+}
+
+template <typename T>
 static constexpr Vector2<T>& operator+=(Vector2<T>& a, Vector2<T> b) noexcept {
     a[0] += b[0];
     a[1] += b[1];
@@ -179,6 +184,11 @@ static constexpr Vector2<T> min(Vector2<T> a, Vector2<T> b) noexcept {
 template <typename T>
 static constexpr Vector2<T> max(Vector2<T> a, Vector2<T> b) noexcept {
     return Vector2<T>(a[0] > b[0] ? a[0] : b[0], a[1] > b[1] ? a[1] : b[1]);
+}
+
+template <typename T>
+static constexpr Vector2<T> abs(Vector2<T> v) noexcept {
+    return Vector2<T>(std::abs(v[0]), std::abs(v[1]));
 }
 
 template <typename T>
