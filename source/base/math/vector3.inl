@@ -841,6 +841,11 @@ static inline Simd3f operator/(Simd3f const& a, Simd3f const& b) noexcept {
     return _mm_div_ps(a.v, b.v);
 }
 
+static inline Simd3f& operator*=(Simd3f& a, Simd3f const& b) noexcept {
+    a = _mm_mul_ps(a.v, b.v);
+    return a;
+}
+
 static inline Simd3f operator-(Simd3f const& v) noexcept {
     return _mm_sub_ps(_mm_set1_ps(0.0), v.v);
 }

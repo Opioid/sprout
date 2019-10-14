@@ -74,12 +74,12 @@ class Buffer {
         return data_;
     }
 
-    template <class I>
+    template <typename I>
     T const& operator[](I i) const noexcept {
         return data_[i];
     }
 
-    template <class I>
+    template <typename I>
     T& operator[](I i) noexcept {
         return data_[i];
     }

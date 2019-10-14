@@ -18,11 +18,19 @@ class Interpolated_function_1D {
 
     ~Interpolated_function_1D() noexcept;
 
+    void allocate(float range_begin, float range_end, uint32_t num_samples) noexcept;
+
     void from_array(float range_begin, float range_end, uint32_t num_samples, T const t[]) noexcept;
 
     void scale(T s) noexcept;
 
     T operator()(float x) const noexcept;
+
+    template <typename I>
+    T const& operator[](I i) const noexcept;
+
+    template <typename I>
+    T& operator[](I i) noexcept;
 
   private:
     float range_end_;
