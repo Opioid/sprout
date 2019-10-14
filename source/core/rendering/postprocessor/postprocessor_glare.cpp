@@ -1,6 +1,5 @@
 #include "postprocessor_glare.hpp"
 #include "base/math/exp.hpp"
-#include "base/math/filter/gaussian.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/memory/array.inl"
@@ -250,7 +249,6 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
                     int32_t const si = y * d[0] + x;
 
                     int32_t const kcx = std::abs(kb[0] + x);
-
                     int32_t const ki = krow + kcx;
 
                     Simd3f const k(kernel_[ki].v);

@@ -104,7 +104,7 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
 
     static uint32_t constexpr num_samples = 1024;
 
-    auto cache = memory::Buffer<float3>(num_samples);
+    emission_.allocate(0.f, 1.f, num_samples);
 
     for (uint32_t i = 0; i < num_samples; ++i) {
         float const v = float(i) / float(num_samples - 1);
@@ -113,10 +113,8 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
 
         SOFT_ASSERT(all_finite_and_positive(radiance));
 
-        cache[i] = radiance;
+        emission_[i] = radiance;
     }
-
-    emission_.from_array(0.f, 1.f, num_samples, cache.data());
 }
 
 size_t Sun_baked_material::num_bytes() const noexcept {
