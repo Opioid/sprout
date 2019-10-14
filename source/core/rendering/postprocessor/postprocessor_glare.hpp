@@ -9,7 +9,7 @@ class Glare : public Postprocessor {
   public:
     enum class Adaption { Scotopic, Mesopic, Photopic };
 
-    Glare(Adaption adaption, float threshold, float intensity);
+    Glare(Adaption adaption, float threshold, float intensity, float radius);
 
     ~Glare() override final;
 
@@ -25,12 +25,12 @@ class Glare : public Postprocessor {
 
     float threshold_;
     float intensity_;
+    float radius_;
 
-    //	image::Float3 high_pass_;
-    int2    dimensions_;
+    int2 dimensions_;
+
     float3* high_pass_;
 
-    int2    kernel_dimensions_;
     float3* kernel_;
 };
 

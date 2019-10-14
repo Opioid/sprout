@@ -786,8 +786,9 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
 
             float const threshold = json::read_float(n->value, "threshold", 2.f);
             float const intensity = json::read_float(n->value, "intensity", 1.f);
+            float const radius    = json::read_float(n->value, "radius", 1.f);
 
-            pipeline.add(new Glare(adaption, threshold, intensity));
+            pipeline.add(new Glare(adaption, threshold, intensity, radius));
         } else if ("Glare_stochastic" == n->name) {
             Glare_stochastic::Adaption adaption = Glare_stochastic::Adaption::Mesopic;
 

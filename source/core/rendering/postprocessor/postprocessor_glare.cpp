@@ -12,11 +12,12 @@
 
 namespace rendering::postprocessor {
 
-Glare::Glare(Adaption adaption, float threshold, float intensity)
+Glare::Glare(Adaption adaption, float threshold, float intensity, float radius)
     : Postprocessor(2),
       adaption_(adaption),
       threshold_(threshold),
       intensity_(intensity),
+      radius_(radius),
       high_pass_(nullptr),
       kernel_(nullptr) {}
 
@@ -49,16 +50,14 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     auto const dim = camera.sensor_dimensions();
 
     dimensions_ = dim;
-    high_pass_  = memory::allocate_aligned<float3>(dim[0] * dim[1]);
 
-    // This seems a bit arbitrary
-    float const solid_angle = math::radians_to_degrees(std::sqrt(camera.pixel_solid_angle()));
+    uint32_t const buffer_size = uint32_t(dim[0] * dim[1]);
 
-    kernel_dimensions_ = /*2 * */dim;
+    high_pass_  = memory::allocate_aligned<float3>(buffer_size);
 
-    int32_t const kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
+    float const angle = math::radians_to_degrees(std::sqrt(camera.pixel_solid_angle()));
 
-    kernel_ = memory::allocate_aligned<float3>(kernel_size);
+    kernel_ = memory::allocate_aligned<float3>(buffer_size);
 
     spectrum::Interpolated const CIE_X(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
                                        spectrum::CIE_X_360_830_1nm);
@@ -83,7 +82,7 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
         float3 d;
     };
 
-    memory::Buffer<F> f(static_cast<uint32_t>(kernel_size));
+    memory::Buffer<F> f(static_cast<uint32_t>(buffer_size));
 
     struct Init {
         float  a_sum = 0.f;
@@ -95,16 +94,15 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     memory::Array<Init> inits(pool.num_threads());
 
     pool.run_range(
-        [this, dim, solid_angle, wl_norm, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits](
-            uint32_t id, int32_t begin, int32_t end) {
+        [this, angle, wl_norm, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits](uint32_t id, int32_t begin,
+                                                                   int32_t end) {
             Init& init = inits[id];
 
             for (int32_t y = begin; y < end; ++y) {
-                for (int32_t x = 0; x < kernel_dimensions_[0]; ++x) {
-                 //   float2 const p(float(-dim[0] + x) + 0.5f, float(-dim[1] + y) + 0.5f);
+                for (int32_t x = 0; x < dimensions_[0]; ++x) {
                     float2 const p(float(x) + 0.5f, float(y) + 0.5f);
 
-                    float const theta = length(p) * solid_angle;
+                    float const theta = length(p) * angle;
 
                     float const a = f0(theta);
                     float const b = f1(theta);
@@ -131,13 +129,13 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
                         init.d_sum += d;
                     }
 
-                    int32_t const i = y * kernel_dimensions_[0] + x;
+                    int32_t const i = y * dimensions_[0] + x;
 
                     f[i] = F{a, b, c, d};
                 }
             }
         },
-        0, kernel_dimensions_[1]);
+        0, dimensions_[1]);
 
     float  a_sum = 0.f;
     float  b_sum = 0.f;
@@ -175,18 +173,18 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
             break;
     }
 
-    float a_n = scale[0] / (4.f * a_sum);
-    float b_n = scale[1] / (4.f * b_sum);
-    float c_n = scale[2] / (4.f * c_sum);
+    float const a_n = scale[0] / (4.f * a_sum);
+    float const b_n = scale[1] / (4.f * b_sum);
+    float const c_n = scale[2] / (4.f * c_sum);
 
     if (Adaption::Photopic == adaption_) {
-        for (int32_t i = 0, len = kernel_size; i < len; ++i) {
+        for (uint32_t i = 0, len = buffer_size; i < len; ++i) {
             kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c);
         }
     } else {
-        float3 d_n = scale[3] / (4.f * d_sum);
+        float3 const d_n = scale[3] / (4.f * d_sum);
 
-        for (int32_t i = 0, len = kernel_size; i < len; ++i) {
+        for (uint32_t i = 0, len = buffer_size; i < len; ++i) {
             kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
         }
     }
@@ -194,7 +192,7 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
 
 size_t Glare::num_bytes() const {
     return sizeof(*this) + (dimensions_[0] * dimensions_[1]) * sizeof(float3) +
-           (kernel_dimensions_[0] * kernel_dimensions_[1]) * sizeof(float3);
+           (dimensions_[0] * dimensions_[1]) * sizeof(float3);
 }
 
 void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
@@ -203,9 +201,9 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
         float threshold = threshold_;
 
         for (int32_t i = begin; i < end; ++i) {
-            float3 color = source.at(i).xyz();
+            float3 const color = source.at(i).xyz();
 
-            float l = spectrum::luminance(color);
+            float const l = spectrum::luminance(color);
 
             if (l > threshold) {
                 high_pass_[i] = color;
@@ -219,14 +217,15 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 
         auto const d = destination.description().dimensions.xy();
 
-        int32_t const kd0 = kernel_dimensions_[0];
+        int32_t const radius = int32_t(float(std::max(d[0], d[1])) * radius_ + 0.5f);
 
         for (int32_t i = begin; i < end; ++i) {
             int2 const c = destination.coordinates_2(i);
 
-            int2 const kb = d - c;
+            int2 const bb = max(c - radius, int2(0));
+            int2 const be = min(c + radius, d);
 
-            int2 const kbm = -c;
+            int2 const kb = -c;
             /*
                          float3 glare(0.f);
                          for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0)
@@ -245,23 +244,23 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 
             Simd3f glare(simd::Zero);
 
-            int32_t const kstart = kb[1] * kd0 + kb[0];
+            for (int32_t y = bb[1]; y < be[1]; ++y) {
+                int32_t const krow = std::abs(kb[1] + y) * d[0];
+                for (int32_t x = bb[0]; x < be[0]; ++x) {
+                    int32_t const si = y * d[0] + x;
 
-            for (int32_t y = 0, si = 0; y < d[1]; ++y) {
-                for (int32_t x = 0, ki = kstart + y * kd0; x < d[0]; ++x, ++si, ++ki) {
+                    int32_t const kcx = std::abs(kb[0] + x);
 
-                    int2 const kc = abs(kbm + int2(x, y));
+                    int32_t const ki = krow + kcx;
 
-                    int32_t const kim = kc[1] * d[0] + kc[0];
-
-                    Simd3f const k(kernel_[kim].v);
+                    Simd3f const k(kernel_[ki].v);
                     Simd3f const h(high_pass_[si].v);
 
                     glare += k * h;
                 }
             }
 
-            glare = glare * intensity;
+            glare *= intensity;
 
             Simd3f s(reinterpret_cast<float*>(source.address(i)));
 
