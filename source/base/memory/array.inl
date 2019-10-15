@@ -225,7 +225,10 @@ T* Concurrent_array<T>::data() noexcept {
 
 template <typename T>
 void Concurrent_array<T>::operator=(Concurrent_array&& other) noexcept {
-    std::swap(size_, other.size_);
+    int32_t const tmp = size_;
+    size_ = other.size_;
+    other.size_ = tmp;
+
     std::swap(capacity_, other.capacity_);
     std::swap(data_, other.data_);
 }
