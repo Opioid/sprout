@@ -23,10 +23,14 @@ void Postprocessor::apply(image::Float4 const& source, image::Float4& destinatio
                 apply(id, p, begin, end, source, destination);
             },
             0, destination.description().area());
+
+        post_pass(p);
     }
 }
 
 void Postprocessor::pre_apply(image::Float4 const& /*source*/, image::Float4& /*destination*/,
                               thread::Pool& /*pool*/) {}
+
+void Postprocessor::post_pass(uint32_t /*pass*/) {}
 
 }  // namespace rendering::postprocessor

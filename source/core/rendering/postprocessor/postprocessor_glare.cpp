@@ -11,18 +11,15 @@
 
 namespace rendering::postprocessor {
 
-Glare::Glare(Adaption adaption, float threshold, float intensity, float radius)
+Glare::Glare(Adaption adaption, float threshold, float intensity)
     : Postprocessor(2),
       adaption_(adaption),
       threshold_(threshold),
       intensity_(intensity),
-      radius_(radius),
-      high_pass_(nullptr),
       kernel_(nullptr) {}
 
 Glare::~Glare() {
     memory::free_aligned(kernel_);
-    memory::free_aligned(high_pass_);
 }
 
 static inline float f0(float theta) {
@@ -52,7 +49,7 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
 
     uint32_t const buffer_size = uint32_t(dim[0] * dim[1]);
 
-    high_pass_  = memory::allocate_aligned<float3>(buffer_size);
+    high_.reserve(buffer_size);
 
     float const angle = math::radians_to_degrees(std::sqrt(camera.pixel_solid_angle()));
 
@@ -190,8 +187,9 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
 }
 
 size_t Glare::num_bytes() const {
-    return sizeof(*this) + (dimensions_[0] * dimensions_[1]) * sizeof(float3) +
-           (dimensions_[0] * dimensions_[1]) * sizeof(float3);
+    uint32_t const buffer_size = uint32_t(dimensions_[0] * dimensions_[1]);
+    return sizeof(*this) + buffer_size * sizeof(float3) +
+           buffer_size * sizeof(int32_t);
 }
 
 void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
@@ -205,57 +203,28 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
             float const l = spectrum::luminance(color);
 
             if (l > threshold) {
-                high_pass_[i] = color;
-            } else {
-                high_pass_[i] = float3(0.f);
+                int2 const c = destination.coordinates_2(i);
+                high_.push_back(c);
             }
         }
     } else {
-        //    float intensity = intensity_;
         Simd3f const intensity(intensity_);
 
-        auto const d = destination.description().dimensions.xy();
-
-        int32_t const radius = int32_t(float(std::max(d[0], d[1])) * radius_ + 0.5f);
+        int32_t const d0 = destination.description().dimensions.xy()[0];
 
         for (int32_t i = begin; i < end; ++i) {
-            int2 const c = destination.coordinates_2(i);
-
-            int2 const bb = max(c - radius, int2(0));
-            int2 const be = min(c + radius, d);
-
-            int2 const kb = -c;
-            /*
-                         float3 glare(0.f);
-                         for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0)
-               { int32_t si = (cd1 + ky) * d[0]; for (int32_t ki = kb[0] + krow, kl = ke[0] + krow;
-               ki < kl; ++ki, ++si) { float3 k = kernel_[ki];
-
-                                                                glare += k * high_pass_[si];
-                                                        }
-                                                }
-
-                                                float4 s = source.load(i);
-
-                                                destination.store(i, float4(s.xyz() + intensity *
-               glare, s[3]));
-            */
+            int2 const kb = -destination.coordinates_2(i);
 
             Simd3f glare(simd::Zero);
+            for (int2 hc : high_) {
+                int2 const kc = abs(kb + hc);
 
-            for (int32_t y = bb[1]; y < be[1]; ++y) {
-                int32_t const krow = std::abs(kb[1] + y) * d[0];
-                for (int32_t x = bb[0]; x < be[0]; ++x) {
-                    int32_t const si = y * d[0] + x;
+                int32_t const ki = kc[1] * d0 + kc[0];
 
-                    int32_t const kcx = std::abs(kb[0] + x);
-                    int32_t const ki = krow + kcx;
+                Simd3f const k(kernel_[ki].v);
+                Simd3f const h(source.at(hc[0], hc[1]).v);
 
-                    Simd3f const k(kernel_[ki].v);
-                    Simd3f const h(high_pass_[si].v);
-
-                    glare += k * h;
-                }
+                glare += k * h;
             }
 
             glare *= intensity;
@@ -266,6 +235,12 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 
             simd::store_float4(reinterpret_cast<float*>(destination.address(i)), s.v);
         }
+    }
+}
+
+void Glare::post_pass(uint32_t pass) {
+    if (0 == pass) {
+        std::sort(high_.begin(), high_.end());
     }
 }
 

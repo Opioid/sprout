@@ -187,6 +187,11 @@ static constexpr Vector2<T> max(Vector2<T> a, Vector2<T> b) noexcept {
 }
 
 template <typename T>
+static constexpr bool operator<(Vector2<T> a, Vector2<T> b) noexcept {
+    return a[0] < b[0] || a[1] < b[1];
+}
+
+template <typename T>
 static constexpr Vector2<T> abs(Vector2<T> v) noexcept {
     return Vector2<T>(std::abs(v[0]), std::abs(v[1]));
 }
@@ -205,6 +210,7 @@ template <typename T>
 static bool all_finite(const Vector2<T> v) noexcept {
     return std::isfinite(v[0]) && std::isfinite(v[1]);
 }
+
 
 }  // namespace math
 

@@ -1,10 +1,11 @@
 #ifndef SU_CORE_RENDERING_TILE_QUEUE_HPP
 #define SU_CORE_RENDERING_TILE_QUEUE_HPP
 
-#include <atomic>
 #include "base/math/vector2.hpp"
 #include "base/math/vector4.hpp"
 #include "base/random/generator.hpp"
+
+#include <atomic>
 
 namespace rendering {
 

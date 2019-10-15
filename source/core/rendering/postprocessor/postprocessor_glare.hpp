@@ -2,6 +2,7 @@
 #define SU_CORE_RENDERING_POSTPROCESSOR_GLARE_HPP
 
 #include "postprocessor.hpp"
+#include "base/memory/array.hpp"
 
 namespace rendering::postprocessor {
 
@@ -9,7 +10,7 @@ class Glare : public Postprocessor {
   public:
     enum class Adaption { Scotopic, Mesopic, Photopic };
 
-    Glare(Adaption adaption, float threshold, float intensity, float radius);
+    Glare(Adaption adaption, float threshold, float intensity);
 
     ~Glare() override final;
 
@@ -21,15 +22,16 @@ class Glare : public Postprocessor {
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
                image::Float4& destination) override final;
 
+    void post_pass(uint32_t pass) override final;
+
     Adaption adaption_;
 
     float threshold_;
     float intensity_;
-    float radius_;
 
     int2 dimensions_;
 
-    float3* high_pass_;
+    memory::Concurrent_array<int2> high_;
 
     float3* kernel_;
 };

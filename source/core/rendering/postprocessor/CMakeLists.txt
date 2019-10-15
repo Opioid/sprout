@@ -8,8 +8,6 @@ target_sources(core
 	"postprocessor_bloom.hpp"
 	"postprocessor_glare.cpp"
 	"postprocessor_glare.hpp"
-    "postprocessor_glare_stochastic.cpp"
-    "postprocessor_glare_stochastic.hpp"
 	"postprocessor_pipeline.cpp"
 	"postprocessor_pipeline.hpp"
 	"postprocessor.cpp"
