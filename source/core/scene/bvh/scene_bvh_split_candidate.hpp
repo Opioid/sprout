@@ -23,14 +23,14 @@ class Split_candidate {
 
     uint8_t axis() const noexcept;
 
-    uint64_t key() const noexcept;
+    float cost() const noexcept;
 
   private:
     float d_;
 
     uint8_t axis_;
 
-    uint64_t key_;
+    float cost_;
 };
 
 }  // namespace scene::bvh

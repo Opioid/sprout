@@ -88,7 +88,7 @@ void Builder::split(Build_node* node, index begin, index end, const_index origin
     }
 }
 
-Split_candidate Builder::splitting_plane(AABB const& /*aabb*/, index begin, index end,
+Split_candidate Builder::splitting_plane(AABB const& aabb, index begin, index end,
                                          std::vector<AABB> const& aabbs) noexcept {
     split_candidates_.clear();
 
@@ -104,8 +104,23 @@ Split_candidate Builder::splitting_plane(AABB const& /*aabb*/, index begin, inde
     split_candidates_.emplace_back(uint8_t(1), average, begin, end, aabbs);
     split_candidates_.emplace_back(uint8_t(2), average, begin, end, aabbs);
 
+    split_candidates_.emplace_back(uint8_t(0), aabb.position(), begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(1), aabb.position(), begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(2), aabb.position(), begin, end, aabbs);
+
+/*
+    split_candidates_.emplace_back(uint8_t(0), float3(aabb.position()[0] + 0.5f * (aabb.min()[0] - aabb.position()[0]), aabb.position()[1], aabb.position()[2]), begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(0), float3(aabb.position()[0] - 0.5f * (aabb.min()[0] - aabb.position()[0]), aabb.position()[1], aabb.position()[2]), begin, end, aabbs);
+
+
+    split_candidates_.emplace_back(uint8_t(1), float3(aabb.position()[0], aabb.position()[1] + 0.5f * (aabb.min()[1] - aabb.position()[1]), aabb.position()[2]), begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(1), float3(aabb.position()[0], aabb.position()[1] - 0.5f * (aabb.min()[1] - aabb.position()[1]), aabb.position()[2]), begin, end, aabbs);
+
+    split_candidates_.emplace_back(uint8_t(2), float3(aabb.position()[0], aabb.position()[1], aabb.position()[2] + 0.5f * (aabb.min()[2] - aabb.position()[2])), begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(2), float3(aabb.position()[0], aabb.position()[1], aabb.position()[2] - 0.5f * (aabb.min()[2] - aabb.position()[2])), begin, end, aabbs);
+*/
     std::sort(split_candidates_.begin(), split_candidates_.end(),
-              [](Split_candidate const& a, Split_candidate const& b) { return a.key() < b.key(); });
+              [](Split_candidate const& a, Split_candidate const& b) { return a.cost() < b.cost(); });
 
     return split_candidates_[0];
 }

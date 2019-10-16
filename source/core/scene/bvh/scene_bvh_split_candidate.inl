@@ -14,8 +14,7 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos,
 
 Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
                                  std::vector<AABB> const& aabbs) noexcept
-    : axis_(split_axis) {
-    key_ = 0;
+    : axis_(split_axis), cost_(0.f) {
 
     float3 n;
 
@@ -56,10 +55,14 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index be
         }
     }
 
-    key_ += split;
+    float const total = float(std::distance(begin, end));
+
+    cost_ += float(split) / total;
+
+//    cost_ += 0.0125f * float(std::abs(num_side_0 - num_side_1)) / total;
 
     if (0 == num_side_0) {
-        key_ += 0x1000000000000000;
+        cost_ += 1000.f;
     }
 }
 
@@ -71,8 +74,8 @@ uint8_t Split_candidate::axis() const noexcept {
     return axis_;
 }
 
-uint64_t Split_candidate::key() const noexcept {
-    return key_;
+float Split_candidate::cost() const noexcept {
+    return cost_;
 }
 
 }  // namespace scene::bvh
