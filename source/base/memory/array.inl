@@ -226,8 +226,8 @@ T* Concurrent_array<T>::data() noexcept {
 template <typename T>
 void Concurrent_array<T>::operator=(Concurrent_array&& other) noexcept {
     int32_t const tmp = size_;
-    size_ = other.size_;
-    other.size_ = tmp;
+    size_             = other.size_;
+    other.size_       = tmp;
 
     std::swap(capacity_, other.capacity_);
     std::swap(data_, other.data_);
@@ -310,7 +310,6 @@ void Concurrent_array<T>::allocate(uint32_t capacity) noexcept {
 
     data_ = allocate_aligned<T>(capacity);
 }
-
 
 }  // namespace memory
 

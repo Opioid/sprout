@@ -7,9 +7,6 @@
 
 namespace scene::bvh {
 
-Split_candidate::Split_candidate(Plane const& plane, uint8_t axis) noexcept
-    : plane_(plane), axis_(axis) {}
-
 Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos,
                                  std::vector<uint32_t> const& indices,
                                  std::vector<AABB> const&     aabbs) noexcept
@@ -35,7 +32,7 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index be
             break;
     }
 
-    plane_ = plane::create(n, pos);
+    d_ = pos[split_axis];
 
     int32_t num_side_0 = 0;
     int32_t num_side_1 = 0;
@@ -45,8 +42,8 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index be
     for (index i = begin; i != end; ++i) {
         AABB const& b = aabbs[*i];
 
-        bool const mib = plane::behind(plane_, b.min());
-        bool const mab = plane::behind(plane_, b.max());
+        bool const mib = behind(b.min());
+        bool const mab = behind(b.max());
 
         if (mib && mab) {
             ++num_side_0;
@@ -66,16 +63,16 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index be
     }
 }
 
-uint64_t Split_candidate::key() const noexcept {
-    return key_;
-}
-
-Plane const& Split_candidate::plane() const noexcept {
-    return plane_;
+bool Split_candidate::behind(float3 const& point) const noexcept {
+    return point[axis_] < d_;
 }
 
 uint8_t Split_candidate::axis() const noexcept {
     return axis_;
+}
+
+uint64_t Split_candidate::key() const noexcept {
+    return key_;
 }
 
 }  // namespace scene::bvh

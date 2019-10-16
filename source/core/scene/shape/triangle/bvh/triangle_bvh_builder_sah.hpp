@@ -2,10 +2,12 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH_HPP
 
 //#include "triangle_bvh_builder_base.hpp"
-#include <vector>
+
 #include "base/math/aabb.hpp"
 #include "base/math/plane.hpp"
 #include "base/math/vector3.hpp"
+
+#include <vector>
 
 namespace thread {
 class Pool;
@@ -76,7 +78,8 @@ class Builder_SAH /*: private Builder_base*/ {
         bool behind(float const* point) const;
 
         uint8_t axis() const;
-        bool    spatial() const;
+
+        bool spatial() const;
 
         AABB const& aabb_0() const;
         AABB const& aabb_1() const;

@@ -1,8 +1,8 @@
 #ifndef SU_CORE_RENDERING_POSTPROCESSOR_GLARE_HPP
 #define SU_CORE_RENDERING_POSTPROCESSOR_GLARE_HPP
 
-#include "postprocessor.hpp"
 #include "base/memory/array.hpp"
+#include "postprocessor.hpp"
 
 namespace rendering::postprocessor {
 
@@ -20,7 +20,7 @@ class Glare : public Postprocessor {
 
   private:
     void pre_apply(image::Float4 const& source, image::Float4& destination,
-                               thread::Pool& pool) override final;
+                   thread::Pool& pool) override final;
 
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
                image::Float4& destination) override final;

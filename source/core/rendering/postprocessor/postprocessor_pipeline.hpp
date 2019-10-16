@@ -29,8 +29,6 @@ class Pipeline {
 
     ~Pipeline() noexcept;
 
-    bool empty() const noexcept;
-
     void clear() noexcept;
 
     void reserve(uint32_t num_pps) noexcept;

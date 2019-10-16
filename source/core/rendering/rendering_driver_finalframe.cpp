@@ -62,18 +62,16 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         auto const render_duration = chrono::seconds_since(render_start);
         logging::info("Render time " + string::to_string(render_duration) + " s");
 
-        if (!view_.pipeline.empty()) {
-            auto const pp_start = std::chrono::high_resolution_clock::now();
+        auto const pp_start = std::chrono::high_resolution_clock::now();
 
-            if (ranges_.size() > 0 && view_.num_samples_per_pixel > 0) {
-                view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
-            } else {
-                view_.pipeline.apply(sensor, target_, thread_pool_);
-            }
-
-            auto const pp_duration = chrono::seconds_since(pp_start);
-            logging::info("Post-process time " + string::to_string(pp_duration) + " s");
+        if (ranges_.size() > 0 && view_.num_samples_per_pixel > 0) {
+            view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
+        } else {
+            view_.pipeline.apply(sensor, target_, thread_pool_);
         }
+
+        auto const pp_duration = chrono::seconds_since(pp_start);
+        logging::info("Post-process time " + string::to_string(pp_duration) + " s");
 
         auto const export_start = std::chrono::high_resolution_clock::now();
 

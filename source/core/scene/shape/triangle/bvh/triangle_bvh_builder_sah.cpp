@@ -100,13 +100,13 @@ void Builder_SAH::Split_candidate::evaluate(References const& references, float 
         aabb_1_.set_min_max(box_1.min, box_1.max);
     }
 
-    bool const empty_side = 0 == num_side_0 || 0 == num_side_1;
-    if (empty_side) {
+    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
         cost_ = 2.f + float(references.size());
     } else {
         float const weight_0 = float(num_side_0) * aabb_0_.surface_area();
         float const weight_1 = float(num_side_1) * aabb_1_.surface_area();
-        cost_                = 2.f + (weight_0 + weight_1) / aabb_surface_area;
+
+        cost_ = 2.f + (weight_0 + weight_1) / aabb_surface_area;
     }
 
     num_side_0_ = num_side_0;
@@ -209,7 +209,7 @@ void Builder_SAH::split(Build_node* node, References& references, AABB const& aa
                 if (exhausted) {
                     // TODO
                     // Implement a fallback solution that arbitrarily distributes the primitives
-                    // to sub-nodes without needing a meaningful splittng plane.
+                    // to sub-nodes without needing a meaningful splitting plane.
                     logging::warning("Cannot split node further");
                     return;
                 }

@@ -211,7 +211,6 @@ static bool all_finite(const Vector2<T> v) noexcept {
     return std::isfinite(v[0]) && std::isfinite(v[1]);
 }
 
-
 }  // namespace math
 
 #endif

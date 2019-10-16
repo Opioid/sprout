@@ -46,7 +46,8 @@ Interpolated_function_1D<T>::~Interpolated_function_1D() noexcept {
 }
 
 template <typename T>
-void Interpolated_function_1D<T>::allocate(float range_begin, float range_end, uint32_t num_samples) noexcept {
+void Interpolated_function_1D<T>::allocate(float range_begin, float range_end,
+                                           uint32_t num_samples) noexcept {
     if (num_samples_ != num_samples) {
         memory::free_aligned(samples_);
 

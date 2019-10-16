@@ -15,10 +15,6 @@ Pipeline::~Pipeline() noexcept {
     }
 }
 
-bool Pipeline::empty() const noexcept {
-    return postprocessors_.empty();
-}
-
 void Pipeline::clear() noexcept {
     for (auto pp : postprocessors_) {
         delete pp;

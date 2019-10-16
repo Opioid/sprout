@@ -66,9 +66,10 @@ void Builder::split(Build_node* node, index begin, index end, const_index origin
         node->axis = sp.axis();
 
         index props1_begin = std::partition(begin, end, [&sp, &aabbs](uint32_t b) {
-            AABB const& p   = aabbs[b];
-            bool const  mib = math::plane::behind(sp.plane(), p.min());
-            bool const  mab = math::plane::behind(sp.plane(), p.max());
+            AABB const& p = aabbs[b];
+
+            bool const mib = sp.behind(p.min());
+            bool const mab = sp.behind(p.max());
 
             return mib && mab;
         });
