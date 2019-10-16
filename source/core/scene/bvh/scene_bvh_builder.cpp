@@ -71,7 +71,7 @@ void Builder::split(Build_node* node, index begin, index end, const_index origin
             bool const mib = sp.behind(p.min());
             bool const mab = sp.behind(p.max());
 
-            return mib && mab;
+            return mib & mab;
         });
 
         if (begin == props1_begin) {
@@ -100,25 +100,54 @@ Split_candidate Builder::splitting_plane(AABB const& aabb, index begin, index en
 
     average /= float(std::distance(begin, end));
 
-    split_candidates_.emplace_back(uint8_t(0), average, begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(1), average, begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(2), average, begin, end, aabbs);
+    float const surface_area = aabb.surface_area();
 
-    split_candidates_.emplace_back(uint8_t(0), aabb.position(), begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(1), aabb.position(), begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(2), aabb.position(), begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(0), average, begin, end, aabbs, surface_area);
+    split_candidates_.emplace_back(uint8_t(1), average, begin, end, aabbs, surface_area);
+    split_candidates_.emplace_back(uint8_t(2), average, begin, end, aabbs, surface_area);
 
-/*
-    split_candidates_.emplace_back(uint8_t(0), float3(aabb.position()[0] + 0.5f * (aabb.min()[0] - aabb.position()[0]), aabb.position()[1], aabb.position()[2]), begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(0), float3(aabb.position()[0] - 0.5f * (aabb.min()[0] - aabb.position()[0]), aabb.position()[1], aabb.position()[2]), begin, end, aabbs);
+    float3 const center = aabb.position();
+
+    split_candidates_.emplace_back(uint8_t(0), center, begin, end, aabbs, surface_area);
+    split_candidates_.emplace_back(uint8_t(1), center, begin, end, aabbs, surface_area);
+    split_candidates_.emplace_back(uint8_t(2), center, begin, end, aabbs, surface_area);
+
+    /*for (uint8_t i = 0; i < 3; ++i)*/
+    // {
+//        uint8_t i = 0;
+//    split_candidates_.emplace_back(i, float3(center[0] + 0.5f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0] - 0.5f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0] + 0.25f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0] - 0.25f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0] + 0.75f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0] - 0.75f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+//    }
+
+    /*for (uint8_t i = 0; i < 3; ++i)*/
+    //    {
+//        uint8_t i = 1;
+//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.5f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.5f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.25f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.25f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.75f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.75f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
+//}
+
+/*for (uint8_t i = 0; i < 3; ++i)*/
+    // {
+//        uint8_t i = 2;
+//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.5f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.5f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.25f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.25f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.75f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.75f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+//}
 
 
-    split_candidates_.emplace_back(uint8_t(1), float3(aabb.position()[0], aabb.position()[1] + 0.5f * (aabb.min()[1] - aabb.position()[1]), aabb.position()[2]), begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(1), float3(aabb.position()[0], aabb.position()[1] - 0.5f * (aabb.min()[1] - aabb.position()[1]), aabb.position()[2]), begin, end, aabbs);
 
-    split_candidates_.emplace_back(uint8_t(2), float3(aabb.position()[0], aabb.position()[1], aabb.position()[2] + 0.5f * (aabb.min()[2] - aabb.position()[2])), begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(2), float3(aabb.position()[0], aabb.position()[1], aabb.position()[2] - 0.5f * (aabb.min()[2] - aabb.position()[2])), begin, end, aabbs);
-*/
+
     std::sort(split_candidates_.begin(), split_candidates_.end(),
               [](Split_candidate const& a, Split_candidate const& b) { return a.cost() < b.cost(); });
 

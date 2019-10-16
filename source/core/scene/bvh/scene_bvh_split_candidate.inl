@@ -7,31 +7,13 @@
 
 namespace scene::bvh {
 
-Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos,
-                                 std::vector<uint32_t> const& indices,
-                                 std::vector<AABB> const&     aabbs) noexcept
-    : Split_candidate(split_axis, pos, indices.begin(), indices.end(), aabbs) {}
-
 Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
-                                 std::vector<AABB> const& aabbs) noexcept
+                                 std::vector<AABB> const& aabbs, float aabb_surface_area) noexcept
     : axis_(split_axis), cost_(0.f) {
-
-    float3 n;
-
-    switch (split_axis) {
-        default:
-        case 0:
-            n = float3(1.f, 0.f, 0.f);
-            break;
-        case 1:
-            n = float3(0.f, 1.f, 0.f);
-            break;
-        case 2:
-            n = float3(0.f, 0.f, 1.f);
-            break;
-    }
-
     d_ = pos[split_axis];
+
+    AABB box_0 = AABB::empty();
+    AABB box_1 = AABB::empty();
 
     int32_t num_side_0 = 0;
     int32_t num_side_1 = 0;
@@ -46,24 +28,38 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index be
 
         if (mib && mab) {
             ++num_side_0;
+
+            box_0.merge_assign(b);
         } else {
             if (mib != mab) {
                 ++split;
             }
 
             ++num_side_1;
+
+            box_1.merge_assign(b);
         }
     }
 
     float const total = float(std::distance(begin, end));
 
-    cost_ += float(split) / total;
+   cost_ += float(split) / total;
 
 //    cost_ += 0.0125f * float(std::abs(num_side_0 - num_side_1)) / total;
 
     if (0 == num_side_0) {
         cost_ += 1000.f;
     }
+
+
+//    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
+//        cost_ += 2.f + total;
+//    } else {
+//        float const weight_0 = float(num_side_0) * box_0.surface_area();
+//        float const weight_1 = float(num_side_1) * box_1.surface_area();
+
+//        cost_ += 2.f + (weight_0 + weight_1) / aabb_surface_area;
+//    }
 }
 
 bool Split_candidate::behind(float3 const& point) const noexcept {
