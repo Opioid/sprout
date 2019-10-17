@@ -31,7 +31,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
 
         References references(num_triangles);
 
-        memory::Array<math::Simd_AABB> aabbs(thread_pool.num_threads());
+        memory::Array<Simd_AABB> aabbs(thread_pool.num_threads());
 
         thread_pool.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin, int32_t end) {

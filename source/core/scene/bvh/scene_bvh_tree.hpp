@@ -16,8 +16,14 @@ struct Tree {
 
     Node* allocate_nodes(uint32_t num_nodes) noexcept;
 
+    void alllocate_indices(uint32_t num_indices) noexcept;
+
     uint32_t num_nodes_ = 0;
+    uint32_t num_indices_ = 0;
+
     Node*    nodes_     = nullptr;
+
+    uint32_t* indices_ = nullptr;
 
     AABB aabb_;
 };

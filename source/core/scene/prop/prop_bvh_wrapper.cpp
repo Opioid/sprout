@@ -51,7 +51,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
     bvh::Node* nodes = tree_.nodes_;
 
     Prop const*     props        = props_;
-    uint32_t const* finite_props = finite_props_;
+    uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
         auto const& node = nodes[n];
@@ -121,7 +121,7 @@ bool BVH_wrapper::intersect_fast(Ray& ray, Worker const& worker, Intersection& i
     bvh::Node* nodes = tree_.nodes_;
 
     Prop const*     props        = props_;
-    uint32_t const* finite_props = finite_props_;
+    uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
         auto const& node = nodes[n];
@@ -189,7 +189,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
     bvh::Node* nodes = tree_.nodes_;
 
     Prop const*     props        = props_;
-    uint32_t const* finite_props = finite_props_;
+    uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
         auto const& node = nodes[n];
@@ -249,7 +249,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const noexce
     bvh::Node* nodes = tree_.nodes_;
 
     Prop const*     props        = props_;
-    uint32_t const* finite_props = finite_props_;
+    uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
         auto const& node = nodes[n];
@@ -311,7 +311,7 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
     bvh::Node* nodes = tree_.nodes_;
 
     Prop const*     props        = props_;
-    uint32_t const* finite_props = finite_props_;
+    uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
         auto& node = nodes[n];
@@ -376,7 +376,7 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
     bvh::Node* nodes = tree_.nodes_;
 
     Prop const*     props        = props_;
-    uint32_t const* finite_props = finite_props_;
+    uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
         auto& node = nodes[n];
