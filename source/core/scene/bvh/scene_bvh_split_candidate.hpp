@@ -39,7 +39,7 @@ class Split_candidate {
     using index = typename std::vector<uint32_t>::const_iterator;
 
     Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
-                    std::vector<AABB> const& aabbs, float aabb_surface_area) noexcept;
+                    std::vector<AABB> const& aabbs) noexcept;
 
     bool behind(float3 const& point) const noexcept;
 

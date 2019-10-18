@@ -208,11 +208,9 @@ Split_candidate Builder::splitting_plane(AABB const& aabb, index begin, index en
 
     average /= float(std::distance(begin, end));
 
-    float const surface_area = aabb.surface_area();
-
-    split_candidates_.emplace_back(uint8_t(0), average, begin, end, aabbs, surface_area);
-    split_candidates_.emplace_back(uint8_t(1), average, begin, end, aabbs, surface_area);
-    split_candidates_.emplace_back(uint8_t(2), average, begin, end, aabbs, surface_area);
+    split_candidates_.emplace_back(uint8_t(0), average, begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(1), average, begin, end, aabbs);
+    split_candidates_.emplace_back(uint8_t(2), average, begin, end, aabbs);
 
 //    float3 const center = aabb.position();
 

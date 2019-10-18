@@ -16,6 +16,7 @@ class Pool;
 namespace scene {
 
 namespace bvh {
+struct Reference;
 class Node;
 }
 
@@ -28,24 +29,6 @@ namespace triangle {
 struct Index_triangle;
 
 namespace bvh {
-
-struct Reference {
-    Reference() {}
-
-    uint32_t primitive() const;
-
-    void set_min_max_primitive(Simd3f const& min, Simd3f const& max, uint32_t primitive);
-
-    void clip_min(float d, uint8_t axis);
-    void clip_max(float d, uint8_t axis);
-
-    struct alignas(16) Vector {
-        float    v[3];
-        uint32_t index;
-    };
-
-    Vector bounds[2];
-};
 
 template <typename Data>
 class Tree;
@@ -62,6 +45,7 @@ class Builder_SAH /*: private Builder_base*/ {
                uint32_t max_primitives, thread::Pool& thread_pool);
 
   private:
+    using Reference = scene::bvh::Reference;
     using References = std::vector<Reference>;
 
     class Split_candidate {

@@ -5,34 +5,13 @@
 #include "base/thread/thread_pool.hpp"
 #include "logging/logging.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
+#include "scene/bvh/scene_bvh_split_candidate.inl"
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "triangle_bvh_helper.hpp"
 #include "triangle_bvh_tree.inl"
 
 namespace scene::shape::triangle::bvh {
-
-uint32_t Reference::primitive() const {
-    return bounds[0].index;
-}
-
-void Reference::set_min_max_primitive(Simd3f const& min, Simd3f const& max, uint32_t primitive) {
-    float3 const tmp(min);
-    bounds[0].v[0]  = tmp[0];
-    bounds[0].v[1]  = tmp[1];
-    bounds[0].v[2]  = tmp[2];
-    bounds[0].index = primitive;
-
-    simd::store_float4(bounds[1].v, max.v);
-}
-
-void Reference::clip_min(float d, uint8_t axis) {
-    bounds[0].v[axis] = std::max(d, bounds[0].v[axis]);
-}
-
-void Reference::clip_max(float d, uint8_t axis) {
-    bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
-}
 
 Builder_SAH::Build_node::Build_node() : start_index(0), end_index(0), children{nullptr, nullptr} {}
 
