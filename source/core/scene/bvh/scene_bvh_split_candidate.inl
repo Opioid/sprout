@@ -44,83 +44,14 @@ inline void Reference::clip_max(float d, uint8_t axis) noexcept {
     bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
 }
 
-
-inline Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
-                                 std::vector<AABB> const& aabbs) noexcept
-    : axis_(split_axis), cost_(0.f) {
-    d_ = pos[split_axis];
-
-    AABB box_0 = AABB::empty();
-    AABB box_1 = AABB::empty();
-
-    int32_t num_side_0 = 0;
-    int32_t num_side_1 = 0;
-
-    uint32_t split = 0;
-
-    for (index i = begin; i != end; ++i) {
-        AABB const& b = aabbs[*i];
-
-        bool const mib = behind(b.min());
-        bool const mab = behind(b.max());
-
-        if (mib && mab) {
-            ++num_side_0;
-
-            box_0.merge_assign(b);
-        } else {
-            if (mib != mab) {
-                ++split;
-            }
-
-            ++num_side_1;
-
-            box_1.merge_assign(b);
-        }
-    }
-
-    float const total = float(std::distance(begin, end));
-
-   cost_ += float(split) / total;
-
-//    cost_ += 0.0125f * float(std::abs(num_side_0 - num_side_1)) / total;
-
-    if (0 == num_side_0) {
-        cost_ += 1000.f;
-    }
-
-
-//    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
-//        cost_ += 2.f + total;
-//    } else {
-//        float const weight_0 = float(num_side_0) * box_0.surface_area();
-//        float const weight_1 = float(num_side_1) * box_1.surface_area();
-
-//        cost_ += 2.f + (weight_0 + weight_1) / aabb_surface_area;
-//    }
-}
-
-inline bool Split_candidate::behind(float3 const& point) const noexcept {
-    return point[axis_] < d_;
-}
-
-inline uint8_t Split_candidate::axis() const noexcept {
-    return axis_;
-}
-
-inline float Split_candidate::cost() const noexcept {
-    return cost_;
-}
-
-
-inline Split_candidate1::Split_candidate1(uint8_t split_axis, float3 const& p, bool spatial)
+inline Split_candidate::Split_candidate(uint8_t split_axis, float3 const& p, bool spatial)
     : aabb_0_(AABB::empty()),
       aabb_1_(AABB::empty()),
       d_(p.v[split_axis]),
       axis_(split_axis),
       spatial_(spatial) {}
 
-inline void Split_candidate1::evaluate(References const& references, float aabb_surface_area) {
+inline void Split_candidate::evaluate(References const& references, float aabb_surface_area) {
     uint32_t num_side_0 = 0;
     uint32_t num_side_1 = 0;
 
@@ -185,7 +116,7 @@ inline void Split_candidate1::evaluate(References const& references, float aabb_
     num_side_1_ = num_side_1;
 }
 
-inline void Split_candidate1::distribute(References const& references, References& references0,
+inline void Split_candidate::distribute(References const& references, References& references0,
                                               References& references1) const {
     references0.reserve(num_side_0_);
     references1.reserve(num_side_1_);
@@ -217,35 +148,35 @@ inline void Split_candidate1::distribute(References const& references, Reference
     }
 }
 
-inline float Split_candidate1::cost() const {
+inline float Split_candidate::cost() const {
     return cost_;
 }
 
-inline bool Split_candidate1::behind(float const* point) const {
+inline bool Split_candidate::behind(float const* point) const {
     return point[axis_] < d_;
 }
 
-inline uint8_t Split_candidate1::axis() const {
+inline uint8_t Split_candidate::axis() const {
     return axis_;
 }
 
-inline bool Split_candidate1::spatial() const {
+inline bool Split_candidate::spatial() const {
     return spatial_;
 }
 
-inline AABB const& Split_candidate1::aabb_0() const {
+inline AABB const& Split_candidate::aabb_0() const {
     return aabb_0_;
 }
 
-inline AABB const& Split_candidate1::aabb_1() const {
+inline AABB const& Split_candidate::aabb_1() const {
     return aabb_1_;
 }
 
-inline uint32_t Split_candidate1::num_side_0() const {
+inline uint32_t Split_candidate::num_side_0() const {
     return num_side_0_;
 }
 
-inline uint32_t Split_candidate1::num_side_1() const {
+inline uint32_t Split_candidate::num_side_1() const {
     return num_side_1_;
 }
 

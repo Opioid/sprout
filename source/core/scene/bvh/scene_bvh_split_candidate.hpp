@@ -9,8 +9,6 @@
 
 namespace scene::bvh {
 
-
-
 struct Reference {
     Reference() noexcept;
 
@@ -34,30 +32,8 @@ struct Reference {
 using References = std::vector<Reference>;
 
 class Split_candidate {
-  public:
-
-    using index = typename std::vector<uint32_t>::const_iterator;
-
-    Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
-                    std::vector<AABB> const& aabbs) noexcept;
-
-    bool behind(float3 const& point) const noexcept;
-
-    uint8_t axis() const noexcept;
-
-    float cost() const noexcept;
-
-  private:
-    float d_;
-
-    uint8_t axis_;
-
-    float cost_;
-};
-
-class Split_candidate1 {
       public:
-        Split_candidate1(uint8_t split_axis, float3 const& p, bool spatial);
+        Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
 
         void evaluate(References const& references, float aabb_surface_area);
 

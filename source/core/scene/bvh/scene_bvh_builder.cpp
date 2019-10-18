@@ -65,7 +65,6 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
 
         num_nodes_ = 1;
         num_references_ = 0;
-   //     split(root_, indices.begin(), indices.end(), indices.begin(), aabbs, 4);
 
         split(root_, references, AABB(aabb.min, aabb.max), 4, 0, pool);
 
@@ -74,10 +73,9 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
         nodes_ = tree.allocate_nodes(num_nodes_);
 
         current_node_ = 0;
-    //    serialize(root_);
 
         uint32_t current_prop = 0;
-        serialize1(root_, tree, current_prop);
+        serialize(root_, tree, current_prop);
     }
 
     tree.aabb_ = root_->aabb;
@@ -107,41 +105,6 @@ void Builder::Build_node::clear() noexcept {
     // It is an arbitrary size that will be used to calculate the power of some lights.
     aabb = AABB(float3(-1.f), float3(1.f));
 }
-
-void Builder::split(Build_node* node, index begin, index end, const_index origin,
-                    std::vector<AABB> const& aabbs, uint32_t max_shapes) noexcept {
-    node->aabb = aabb(begin, end, aabbs);
-
-    if (uint32_t(std::distance(begin, end)) <= max_shapes) {
-        assign(node, begin, end, origin);
-    } else {
-        Split_candidate sp = splitting_plane(node->aabb, begin, end, aabbs);
-
-        node->axis = sp.axis();
-
-        index props1_begin = std::partition(begin, end, [&sp, &aabbs](uint32_t b) {
-            AABB const& p = aabbs[b];
-
-            bool const mib = sp.behind(p.min());
-            bool const mab = sp.behind(p.max());
-
-            return mib & mab;
-        });
-
-        if (begin == props1_begin) {
-            assign(node, props1_begin, end, origin);
-        } else {
-            node->children[0] = new Build_node;
-            split(node->children[0], begin, props1_begin, origin, aabbs, max_shapes);
-
-            node->children[1] = new Build_node;
-            split(node->children[1], props1_begin, end, origin, aabbs, max_shapes);
-
-            num_nodes_ += 2;
-        }
-    }
-}
-
 void Builder::split(Build_node* node, References& references, AABB const& aabb,
                         uint32_t max_primitives, uint32_t depth, thread::Pool& pool) {
     node->aabb = aabb;
@@ -152,7 +115,7 @@ void Builder::split(Build_node* node, References& references, AABB const& aabb,
         assign(node, references);
     } else {
         bool                  exhausted;
-        Split_candidate1 const sp = splitting_plane(references, aabb, depth, exhausted, pool);
+        Split_candidate const sp = splitting_plane(references, aabb, depth, exhausted, pool);
 
         if (num_primitives <= 0xFF && (float(num_primitives) <= sp.cost() || exhausted)) {
             assign(node, references);
@@ -196,71 +159,8 @@ void Builder::split(Build_node* node, References& references, AABB const& aabb,
     }
 }
 
-Split_candidate Builder::splitting_plane(AABB const& aabb, index begin, index end,
-                                         std::vector<AABB> const& aabbs) noexcept {
-    split_candidates_.clear();
 
-    float3 average = float3(0.f);
-
-    for (index i = begin; i != end; ++i) {
-        average += aabbs[*i].position();
-    }
-
-    average /= float(std::distance(begin, end));
-
-    split_candidates_.emplace_back(uint8_t(0), average, begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(1), average, begin, end, aabbs);
-    split_candidates_.emplace_back(uint8_t(2), average, begin, end, aabbs);
-
-//    float3 const center = aabb.position();
-
-//    split_candidates_.emplace_back(uint8_t(0), center, begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(uint8_t(1), center, begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(uint8_t(2), center, begin, end, aabbs, surface_area);
-
-    /*for (uint8_t i = 0; i < 3; ++i)*/
-    // {
-//        uint8_t i = 0;
-//    split_candidates_.emplace_back(i, float3(center[0] + 0.5f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] - 0.5f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] + 0.25f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] - 0.25f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] + 0.75f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] - 0.75f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    }
-
-    /*for (uint8_t i = 0; i < 3; ++i)*/
-    //    {
-//        uint8_t i = 1;
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.5f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.5f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.25f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.25f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.75f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.75f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//}
-
-/*for (uint8_t i = 0; i < 3; ++i)*/
-    // {
-//        uint8_t i = 2;
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.5f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.5f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.25f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.25f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.75f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.75f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//}
-
-
-
-
-    std::sort(split_candidates_.begin(), split_candidates_.end(),
-              [](Split_candidate const& a, Split_candidate const& b) { return a.cost() < b.cost(); });
-
-    return split_candidates_[0];
-}
-
-Split_candidate1 Builder::splitting_plane(References const& references,
+Split_candidate Builder::splitting_plane(References const& references,
                                                           AABB const& aabb, uint32_t depth,
                                                           bool&         exhausted,
                                                           thread::Pool& pool) {
@@ -268,23 +168,23 @@ Split_candidate1 Builder::splitting_plane(References const& references,
     static uint8_t constexpr Y = 1;
     static uint8_t constexpr Z = 2;
 
-    split_candidates1_.clear();
+    split_candidates_.clear();
 
     uint32_t const num_triangles = uint32_t(references.size());
 
     float3 const halfsize = aabb.halfsize();
     float3 const position = aabb.position();
 
-    split_candidates1_.emplace_back(X, position, true);
-    split_candidates1_.emplace_back(Y, position, true);
-    split_candidates1_.emplace_back(Z, position, true);
+    split_candidates_.emplace_back(X, position, true);
+    split_candidates_.emplace_back(Y, position, true);
+    split_candidates_.emplace_back(Z, position, true);
 
     if (num_triangles <= sweep_threshold_) {
         for (auto const& r : references) {
             float3 const max(r.bounds[1].v);
-            split_candidates1_.emplace_back(X, max, false);
-            split_candidates1_.emplace_back(Y, max, false);
-            split_candidates1_.emplace_back(Z, max, false);
+            split_candidates_.emplace_back(X, max, false);
+            split_candidates_.emplace_back(Y, max, false);
+            split_candidates_.emplace_back(Z, max, false);
         }
     } else {
         float3 const& min = aabb.min();
@@ -294,18 +194,18 @@ Split_candidate1 Builder::splitting_plane(References const& references,
             float const fi = float(i);
 
             float3 const slice_x(min[0] + fi * step[0], position[1], position[2]);
-            split_candidates1_.emplace_back(X, slice_x, false);
+            split_candidates_.emplace_back(X, slice_x, false);
 
             float3 const slice_y(position[0], min[1] + fi * step[1], position[2]);
-            split_candidates1_.emplace_back(Y, slice_y, false);
+            split_candidates_.emplace_back(Y, slice_y, false);
 
             float3 const slice_z(position[0], position[1], min[2] + fi * step[2]);
-            split_candidates1_.emplace_back(Z, slice_z, false);
+            split_candidates_.emplace_back(Z, slice_z, false);
 
             if (depth < spatial_split_threshold_) {
-                split_candidates1_.emplace_back(X, slice_x, true);
-                split_candidates1_.emplace_back(Y, slice_y, true);
-                split_candidates1_.emplace_back(Z, slice_z, true);
+                split_candidates_.emplace_back(X, slice_x, true);
+                split_candidates_.emplace_back(Y, slice_y, true);
+                split_candidates_.emplace_back(Z, slice_z, true);
             }
         }
     }
@@ -314,7 +214,7 @@ Split_candidate1 Builder::splitting_plane(References const& references,
 
     // Arbitrary heuristic for starting the thread pool
     if (num_triangles < 1024) {
-        for (auto& sc : split_candidates1_) {
+        for (auto& sc : split_candidates_) {
             sc.evaluate(references, aabb_surface_area);
         }
     } else {
@@ -322,17 +222,17 @@ Split_candidate1 Builder::splitting_plane(References const& references,
             [this, &references, aabb_surface_area](uint32_t /*id*/, int32_t sc_begin,
                                                    int32_t sc_end) {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
-                    split_candidates1_[i].evaluate(references, aabb_surface_area);
+                    split_candidates_[uint32_t(i)].evaluate(references, aabb_surface_area);
                 }
             },
-            0, static_cast<int32_t>(split_candidates1_.size()));
+            0, static_cast<int32_t>(split_candidates_.size()));
     }
 
     size_t sc       = 0;
-    float  min_cost = split_candidates1_[0].cost();
+    float  min_cost = split_candidates_[0].cost();
 
-    for (size_t i = 1, len = split_candidates1_.size(); i < len; ++i) {
-        float const cost = split_candidates1_[i].cost();
+    for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
+        float const cost = split_candidates_[i].cost();
 
         if (cost < min_cost) {
             sc       = i;
@@ -340,7 +240,7 @@ Split_candidate1 Builder::splitting_plane(References const& references,
         }
     }
 
-    auto const& sp = split_candidates1_[sc];
+    auto const& sp = split_candidates_[sc];
 
     exhausted = (sp.aabb_0() == aabb && num_triangles == sp.num_side_0()) ||
                 (sp.aabb_1() == aabb && num_triangles == sp.num_side_1());
@@ -348,32 +248,16 @@ Split_candidate1 Builder::splitting_plane(References const& references,
     return sp;
 }
 
-void Builder::serialize(Build_node* node) noexcept {
+void Builder::serialize(Build_node* node, Tree& tree, uint32_t& current_prop) noexcept {
     auto& n = new_node();
     n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 
     if (node->children[0]) {
-        serialize(node->children[0]);
+        serialize(node->children[0], tree, current_prop);
 
         n.set_split_node(current_node_index(), node->axis);
 
-        serialize(node->children[1]);
-    } else {
-        uint8_t const num_primitives = uint8_t(node->props_end - node->offset);
-        n.set_leaf_node(node->offset, num_primitives);
-    }
-}
-
-void Builder::serialize1(Build_node* node, Tree& tree, uint32_t& current_prop) noexcept {
-    auto& n = new_node();
-    n.set_aabb(node->aabb.min().v, node->aabb.max().v);
-
-    if (node->children[0]) {
-        serialize1(node->children[0], tree, current_prop);
-
-        n.set_split_node(current_node_index(), node->axis);
-
-        serialize1(node->children[1], tree, current_prop);
+        serialize(node->children[1], tree, current_prop);
     } else {
         uint8_t const num_primitives = uint8_t(node->end_index - node->start_index);
         n.set_leaf_node(node->start_index, num_primitives);
@@ -396,13 +280,6 @@ uint32_t Builder::current_node_index() const noexcept {
     return current_node_;
 }
 
-void Builder::assign(Build_node* node, const_index begin, const_index end,
-                     const_index origin) noexcept {
-    node->offset = uint32_t(begin - origin);
-
-    node->props_end = uint32_t(end - origin);
-}
-
 void Builder::assign(Build_node* node, References const& references) {
     size_t const num_references = references.size();
     node->primitives.resize(num_references);
@@ -415,14 +292,5 @@ void Builder::assign(Build_node* node, References const& references) {
     node->end_index = num_references_;
 }
 
-AABB Builder::aabb(index begin, index end, std::vector<AABB> const& aabbs) noexcept {
-    AABB aabb = AABB::empty();
-
-    for (index i = begin; i != end; ++i) {
-        aabb.merge_assign(aabbs[*i]);
-    }
-
-    return aabb;
-}
 
 }  // namespace scene::bvh

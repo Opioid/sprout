@@ -54,36 +54,21 @@ class Builder {
     using const_index = typename std::vector<uint32_t>::const_iterator;
     using index       = typename std::vector<uint32_t>::iterator;
 
-    void split(Build_node* node, index begin, index end, const_index origin,
-               std::vector<AABB> const& aabbs, uint32_t max_shapes) noexcept;
-
     void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
                uint32_t depth, thread::Pool& pool);
 
-    Split_candidate splitting_plane(AABB const& aabb, index begin, index end,
-                                    std::vector<AABB> const& aabbs) noexcept;
-
-    Split_candidate1 splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
+    Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
                                     bool& exhausted, thread::Pool& pool);
 
-    void serialize(Build_node* node) noexcept;
-
-    void serialize1(Build_node* node, Tree& tree, uint32_t& current_prop) noexcept;
+    void serialize(Build_node* node, Tree& tree, uint32_t& current_prop) noexcept;
 
     Node& new_node() noexcept;
 
     uint32_t current_node_index() const noexcept;
 
-    static void assign(Build_node* node, const_index begin, const_index end,
-                       const_index origin) noexcept;
-
     void assign(Build_node* node, References const& references);
 
-    static AABB aabb(index begin, index end, std::vector<AABB> const& aabbs) noexcept;
-
     std::vector<Split_candidate> split_candidates_;
-
-    std::vector<Split_candidate1> split_candidates1_;
 
     Build_node* root_;
 
