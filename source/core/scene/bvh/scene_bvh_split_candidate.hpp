@@ -32,43 +32,43 @@ struct Reference {
 using References = std::vector<Reference>;
 
 class Split_candidate {
-      public:
-        Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
+  public:
+    Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
 
-        void evaluate(References const& references, float aabb_surface_area);
+    void evaluate(References const& references, float aabb_surface_area);
 
-        void distribute(References const& references, References& references0,
-                        References& references1) const;
+    void distribute(References const& references, References& references0,
+                    References& references1) const;
 
-        float cost() const;
+    float cost() const;
 
-        bool behind(float const* point) const;
+    bool behind(float const* point) const;
 
-        uint8_t axis() const;
+    uint8_t axis() const;
 
-        bool spatial() const;
+    bool spatial() const;
 
-        AABB const& aabb_0() const;
-        AABB const& aabb_1() const;
+    AABB const& aabb_0() const;
+    AABB const& aabb_1() const;
 
-        uint32_t num_side_0() const;
-        uint32_t num_side_1() const;
+    uint32_t num_side_0() const;
+    uint32_t num_side_1() const;
 
-      private:
-        AABB aabb_0_;
-        AABB aabb_1_;
+  private:
+    AABB aabb_0_;
+    AABB aabb_1_;
 
-        uint32_t num_side_0_;
-        uint32_t num_side_1_;
+    uint32_t num_side_0_;
+    uint32_t num_side_1_;
 
-        float d_;
+    float d_;
 
-        float cost_;
+    float cost_;
 
-        uint8_t axis_;
+    uint8_t axis_;
 
-        bool spatial_;
-    };
+    bool spatial_;
+};
 
 }  // namespace scene::bvh
 

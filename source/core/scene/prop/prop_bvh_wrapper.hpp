@@ -48,7 +48,7 @@ class BVH_wrapper {
   private:
     bvh::Tree tree_;
 
-    uint32_t        num_infinite_props_;
+    uint32_t num_infinite_props_;
 
     uint32_t const* infinite_props_;
 

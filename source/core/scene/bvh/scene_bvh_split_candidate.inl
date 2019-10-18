@@ -23,7 +23,6 @@ inline void Reference::set(float3 const& min, float3 const& max, uint32_t primit
     bounds[1].v[1]  = max[1];
     bounds[1].v[2]  = max[2];
     bounds[1].index = 0;
-
 }
 
 inline void Reference::set(Simd3f const& min, Simd3f const& max, uint32_t primitive) noexcept {
@@ -117,7 +116,7 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
 }
 
 inline void Split_candidate::distribute(References const& references, References& references0,
-                                              References& references1) const {
+                                        References& references1) const {
     references0.reserve(num_side_0_);
     references1.reserve(num_side_1_);
 

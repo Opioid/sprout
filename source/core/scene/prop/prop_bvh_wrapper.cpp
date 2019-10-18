@@ -17,7 +17,7 @@ void BVH_wrapper::set_props(std::vector<uint32_t> const& infinite_props,
                             std::vector<Prop> const&     props) noexcept {
     num_infinite_props_ = uint32_t(infinite_props.size());
 
-    infinite_props_     = infinite_props.data();
+    infinite_props_ = infinite_props.data();
 
     props_ = props.data();
 }
@@ -48,7 +48,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
 
     bvh::Node* nodes = tree_.nodes_;
 
-    Prop const*     props        = props_;
+    Prop const* props = props_;
 
     uint32_t const* finite_props = tree_.indices_;
 
@@ -119,7 +119,7 @@ bool BVH_wrapper::intersect_fast(Ray& ray, Worker const& worker, Intersection& i
 
     bvh::Node* nodes = tree_.nodes_;
 
-    Prop const*     props        = props_;
+    Prop const* props = props_;
 
     uint32_t const* finite_props = tree_.indices_;
 
@@ -188,7 +188,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
 
     bvh::Node* nodes = tree_.nodes_;
 
-    Prop const*     props        = props_;
+    Prop const* props = props_;
 
     uint32_t const* finite_props = tree_.indices_;
 
@@ -249,7 +249,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const noexce
 
     bvh::Node* nodes = tree_.nodes_;
 
-    Prop const*     props        = props_;
+    Prop const* props = props_;
 
     uint32_t const* finite_props = tree_.indices_;
 
@@ -377,7 +377,7 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
 
     bvh::Node* nodes = tree_.nodes_;
 
-    Prop const*     props        = props_;
+    Prop const* props = props_;
 
     uint32_t const* finite_props = tree_.indices_;
 
