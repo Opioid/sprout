@@ -14,8 +14,6 @@ struct Reference {
 
     uint32_t primitive() const noexcept;
 
-    void set(float3 const& min, float3 const& max, uint32_t primitive) noexcept;
-
     void set(Simd3f const& min, Simd3f const& max, uint32_t primitive) noexcept;
 
     void clip_min(float d, uint8_t axis) noexcept;
@@ -33,26 +31,26 @@ using References = std::vector<Reference>;
 
 class Split_candidate {
   public:
-    Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
+    Split_candidate(uint8_t split_axis, float3 const& p, bool spatial) noexcept;
 
-    void evaluate(References const& references, float aabb_surface_area);
+    void evaluate(References const& references, float aabb_surface_area) noexcept;
 
     void distribute(References const& references, References& references0,
-                    References& references1) const;
+                    References& references1) const noexcept;
 
-    float cost() const;
+    float cost() const noexcept;
 
-    bool behind(float const* point) const;
+    bool behind(float const* point) const noexcept;
 
-    uint8_t axis() const;
+    uint8_t axis() const noexcept;
 
-    bool spatial() const;
+    bool spatial() const noexcept;
 
-    AABB const& aabb_0() const;
-    AABB const& aabb_1() const;
+    AABB const& aabb_0() const noexcept;
+    AABB const& aabb_1() const noexcept;
 
-    uint32_t num_side_0() const;
-    uint32_t num_side_1() const;
+    uint32_t num_side_0() const noexcept;
+    uint32_t num_side_1() const noexcept;
 
   private:
     AABB aabb_0_;

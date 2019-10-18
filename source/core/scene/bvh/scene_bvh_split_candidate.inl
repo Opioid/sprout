@@ -13,18 +13,6 @@ inline uint32_t Reference::primitive() const noexcept {
     return bounds[0].index;
 }
 
-inline void Reference::set(float3 const& min, float3 const& max, uint32_t primitive) noexcept {
-    bounds[0].v[0]  = min[0];
-    bounds[0].v[1]  = min[1];
-    bounds[0].v[2]  = min[2];
-    bounds[0].index = primitive;
-
-    bounds[1].v[0]  = max[0];
-    bounds[1].v[1]  = max[1];
-    bounds[1].v[2]  = max[2];
-    bounds[1].index = 0;
-}
-
 inline void Reference::set(Simd3f const& min, Simd3f const& max, uint32_t primitive) noexcept {
     float3 const tmp(min);
     bounds[0].v[0]  = tmp[0];
@@ -43,14 +31,15 @@ inline void Reference::clip_max(float d, uint8_t axis) noexcept {
     bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
 }
 
-inline Split_candidate::Split_candidate(uint8_t split_axis, float3 const& p, bool spatial)
+inline Split_candidate::Split_candidate(uint8_t split_axis, float3 const& p, bool spatial) noexcept
     : aabb_0_(AABB::empty()),
       aabb_1_(AABB::empty()),
       d_(p.v[split_axis]),
       axis_(split_axis),
       spatial_(spatial) {}
 
-inline void Split_candidate::evaluate(References const& references, float aabb_surface_area) {
+inline void Split_candidate::evaluate(References const& references,
+                                      float             aabb_surface_area) noexcept {
     uint32_t num_side_0 = 0;
     uint32_t num_side_1 = 0;
 
@@ -116,7 +105,7 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
 }
 
 inline void Split_candidate::distribute(References const& references, References& references0,
-                                        References& references1) const {
+                                        References& references1) const noexcept {
     references0.reserve(num_side_0_);
     references1.reserve(num_side_1_);
 
@@ -147,35 +136,35 @@ inline void Split_candidate::distribute(References const& references, References
     }
 }
 
-inline float Split_candidate::cost() const {
+inline float Split_candidate::cost() const noexcept {
     return cost_;
 }
 
-inline bool Split_candidate::behind(float const* point) const {
+inline bool Split_candidate::behind(float const* point) const noexcept {
     return point[axis_] < d_;
 }
 
-inline uint8_t Split_candidate::axis() const {
+inline uint8_t Split_candidate::axis() const noexcept {
     return axis_;
 }
 
-inline bool Split_candidate::spatial() const {
+inline bool Split_candidate::spatial() const noexcept {
     return spatial_;
 }
 
-inline AABB const& Split_candidate::aabb_0() const {
+inline AABB const& Split_candidate::aabb_0() const noexcept {
     return aabb_0_;
 }
 
-inline AABB const& Split_candidate::aabb_1() const {
+inline AABB const& Split_candidate::aabb_1() const noexcept {
     return aabb_1_;
 }
 
-inline uint32_t Split_candidate::num_side_0() const {
+inline uint32_t Split_candidate::num_side_0() const noexcept {
     return num_side_0_;
 }
 
-inline uint32_t Split_candidate::num_side_1() const {
+inline uint32_t Split_candidate::num_side_1() const noexcept {
     return num_side_1_;
 }
 

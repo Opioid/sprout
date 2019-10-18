@@ -17,12 +17,14 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
                     thread::Pool& pool) noexcept {
     Build_node root;
 
-    root.aabb = AABB(float3(-1.f), float3(1.f));
+    if (indices.empty()) {
+        root.aabb = AABB(float3(-1.f), float3(1.f));
 
-    {
-        if (indices.empty()) {
-            nodes_ = tree.allocate_nodes(0);
-        } else {
+        tree.alllocate_indices(0);
+
+        nodes_ = tree.allocate_nodes(0);
+    } else {
+        {
             float const log2_num_triangles = std::log2(float(indices.size()));
 
             spatial_split_threshold_ = uint32_t(log2_num_triangles / 2.f + 0.5f);
@@ -33,17 +35,14 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
 
             pool.run_range(
                 [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin, int32_t end) {
-                    AABB aabb(AABB::empty());
+                    Simd_AABB aabb(AABB::empty());
 
                     for (int32_t i = begin; i < end; ++i) {
                         uint32_t const prop = indices[uint32_t(i)];
 
-                        AABB const& b = aabbs[prop];
+                        Simd_AABB const b(aabbs[prop]);
 
-                        float3 const& min = b.min();
-                        float3 const& max = b.max();
-
-                        references[uint32_t(i)].set(min, max, prop);
+                        references[uint32_t(i)].set(b.min, b.max, prop);
 
                         aabb.merge_assign(b);
                     }

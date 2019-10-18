@@ -78,7 +78,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
 
     split_candidates_.clear();
 
-    uint32_t const num_triangles = uint32_t(references.size());
+    uint32_t const num_references = uint32_t(references.size());
 
     float3 const halfsize = aabb.halfsize();
     float3 const position = aabb.position();
@@ -87,7 +87,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     split_candidates_.emplace_back(Y, position, true);
     split_candidates_.emplace_back(Z, position, true);
 
-    if (num_triangles <= sweep_threshold_) {
+    if (num_references <= sweep_threshold_) {
         for (auto const& r : references) {
             float3 const max(r.bounds[1].v);
             split_candidates_.emplace_back(X, max, false);
@@ -121,7 +121,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     float const aabb_surface_area = aabb.surface_area();
 
     // Arbitrary heuristic for starting the thread pool
-    if (num_triangles < 1024) {
+    if (num_references < 1024) {
         for (auto& sc : split_candidates_) {
             sc.evaluate(references, aabb_surface_area);
         }
@@ -140,9 +140,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     float  min_cost = split_candidates_[0].cost();
 
     for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
-        float const cost = split_candidates_[i].cost();
-
-        if (cost < min_cost) {
+        if (float const cost = split_candidates_[i].cost(); cost < min_cost) {
             sc       = i;
             min_cost = cost;
         }
@@ -150,8 +148,8 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
 
     auto const& sp = split_candidates_[sc];
 
-    exhausted = (sp.aabb_0() == aabb && num_triangles == sp.num_side_0()) ||
-                (sp.aabb_1() == aabb && num_triangles == sp.num_side_1());
+    exhausted = (sp.aabb_0() == aabb && num_references == sp.num_side_0()) ||
+                (sp.aabb_1() == aabb && num_references == sp.num_side_1());
 
     return sp;
 }
