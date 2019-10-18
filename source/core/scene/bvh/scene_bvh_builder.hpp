@@ -1,8 +1,8 @@
 #ifndef SU_CORE_SCENE_BVH_BUILDER_HPP
 #define SU_CORE_SCENE_BVH_BUILDER_HPP
 
+#include "scene_bvh_builder_base.hpp"
 #include "base/math/aabb.hpp"
-#include "base/math/plane.hpp"
 #include "scene_bvh_split_candidate.hpp"
 
 #include <cstddef>
@@ -17,7 +17,7 @@ namespace scene::bvh {
 class Node;
 struct Tree;
 
-class Builder {
+class Builder : private Builder_base {
   public:
     Builder() noexcept;
 
@@ -26,27 +26,7 @@ class Builder {
     void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs, thread::Pool& pool) noexcept;
 
   private:
-    struct Build_node {
-        Build_node() noexcept = default;
 
-        ~Build_node() noexcept;
-
-        void clear() noexcept;
-
-        AABB aabb;
-
-        uint8_t axis;
-
-
-        std::vector<uint32_t> primitives;
-
-        uint32_t start_index;
-        uint32_t end_index;
-
-
-
-        Build_node* children[2] = {nullptr, nullptr};
-    };
 
     using const_index = typename std::vector<uint32_t>::const_iterator;
     using index       = typename std::vector<uint32_t>::iterator;

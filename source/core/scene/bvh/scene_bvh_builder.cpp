@@ -1,6 +1,5 @@
 #include "scene_bvh_builder.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/plane.inl"
 #include "base/memory/array.inl"
 #include "scene/scene.inl"
 #include "scene_bvh_node.inl"
@@ -83,25 +82,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
     root_->clear();
 }
 
-Builder::Build_node::~Build_node() noexcept {
-    delete children[0];
-    delete children[1];
-}
 
-void Builder::Build_node::clear() noexcept {
-    delete children[0];
-    children[0] = nullptr;
-
-    delete children[1];
-    children[1] = nullptr;
-
-    start_index = 0;
-    end_index = 0;
-
-    // This size will be used even if there are only infinite props in the scene.
-    // It is an arbitrary size that will be used to calculate the power of some lights.
-    aabb = AABB(float3(-1.f), float3(1.f));
-}
 void Builder::split(Build_node* node, References& references, AABB const& aabb,
                         uint32_t max_primitives, uint32_t depth, thread::Pool& pool) {
     node->aabb = aabb;

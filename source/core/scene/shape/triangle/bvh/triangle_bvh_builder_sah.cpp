@@ -1,6 +1,5 @@
 #include "triangle_bvh_builder_sah.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/plane.inl"
 #include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 #include "logging/logging.hpp"
@@ -12,13 +11,6 @@
 #include "triangle_bvh_tree.inl"
 
 namespace scene::shape::triangle::bvh {
-
-Builder_SAH::Build_node::Build_node() : start_index(0), end_index(0), children{nullptr, nullptr} {}
-
-Builder_SAH::Build_node::~Build_node() {
-    delete children[0];
-    delete children[1];
-}
 
 Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold)
     : num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}

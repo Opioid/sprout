@@ -4,7 +4,6 @@
 #include "triangle_bvh_builder_sah.hpp"
 //#include "triangle_bvh_builder_base.inl"
 #include "base/math/aabb.inl"
-#include "base/math/plane.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"

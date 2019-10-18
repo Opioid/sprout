@@ -1,10 +1,8 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_BUILDER_SAH_HPP
 
-//#include "triangle_bvh_builder_base.hpp"
-
+#include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "base/math/aabb.hpp"
-#include "base/math/plane.hpp"
 #include "base/math/vector3.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 
@@ -34,7 +32,7 @@ namespace bvh {
 template <typename Data>
 class Tree;
 
-class Builder_SAH /*: private Builder_base*/ {
+class Builder_SAH : private scene::bvh::Builder_base {
   public:
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
 
@@ -48,22 +46,6 @@ class Builder_SAH /*: private Builder_base*/ {
   private:
     using Reference = scene::bvh::Reference;
     using References = std::vector<Reference>;
-
-    struct Build_node {
-        Build_node();
-        ~Build_node();
-
-        AABB aabb;
-
-        std::vector<uint32_t> primitives;
-
-        uint32_t start_index;
-        uint32_t end_index;
-
-        uint8_t axis;
-
-        Build_node* children[2];
-    };
 
     void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
                uint32_t depth, thread::Pool& thread_pool);

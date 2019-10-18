@@ -1,7 +1,5 @@
 target_sources(core
 	PRIVATE
-	"triangle_bvh_builder_base.cpp"
-	"triangle_bvh_builder_base.hpp"
 	"triangle_bvh_builder_sah.cpp"
 	"triangle_bvh_builder_sah.hpp"
 	"triangle_bvh_builder_sah.inl"
