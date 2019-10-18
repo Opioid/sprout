@@ -6,6 +6,7 @@
 #include "base/math/aabb.hpp"
 #include "base/math/plane.hpp"
 #include "base/math/vector3.hpp"
+#include "scene/bvh/scene_bvh_split_candidate.hpp"
 
 #include <vector>
 
@@ -48,45 +49,6 @@ class Builder_SAH /*: private Builder_base*/ {
     using Reference = scene::bvh::Reference;
     using References = std::vector<Reference>;
 
-    class Split_candidate {
-      public:
-        Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
-
-        void evaluate(References const& references, float aabb_surface_area);
-
-        void distribute(References const& references, References& references0,
-                        References& references1) const;
-
-        float cost() const;
-
-        bool behind(float const* point) const;
-
-        uint8_t axis() const;
-
-        bool spatial() const;
-
-        AABB const& aabb_0() const;
-        AABB const& aabb_1() const;
-
-        uint32_t num_side_0() const;
-        uint32_t num_side_1() const;
-
-      private:
-        AABB aabb_0_;
-        AABB aabb_1_;
-
-        uint32_t num_side_0_;
-        uint32_t num_side_1_;
-
-        float d_;
-
-        float cost_;
-
-        uint8_t axis_;
-
-        bool spatial_;
-    };
-
     struct Build_node {
         Build_node();
         ~Build_node();
@@ -105,6 +67,8 @@ class Builder_SAH /*: private Builder_base*/ {
 
     void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
                uint32_t depth, thread::Pool& thread_pool);
+
+    using Split_candidate = scene::bvh::Split_candidate;
 
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
                                     bool& exhausted, thread::Pool& thread_pool);

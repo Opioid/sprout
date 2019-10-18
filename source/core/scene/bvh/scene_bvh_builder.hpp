@@ -37,9 +37,6 @@ class Builder {
 
         uint8_t axis;
 
-        uint32_t offset;
-        uint32_t props_end;
-
 
         std::vector<uint32_t> primitives;
 

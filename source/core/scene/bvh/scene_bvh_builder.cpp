@@ -95,9 +95,6 @@ void Builder::Build_node::clear() noexcept {
     delete children[1];
     children[1] = nullptr;
 
-    props_end = 0;
-    offset    = 0;
-
     start_index = 0;
     end_index = 0;
 
