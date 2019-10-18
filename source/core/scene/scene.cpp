@@ -187,11 +187,11 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
 
     // rebuild prop BVH
     bvh_builder_.build(prop_bvh_.tree(), finite_props_, prop_aabbs_, pool);
-    prop_bvh_.set_props(finite_props_, infinite_props_, props_);
+    prop_bvh_.set_props(infinite_props_, props_);
 
     // rebuild volume BVH
     bvh_builder_.build(volume_bvh_.tree(), volumes_, prop_aabbs_, pool);
-    volume_bvh_.set_props(volumes_, infinite_volumes_, props_);
+    volume_bvh_.set_props(infinite_volumes_, props_);
 
     // re-sort lights PDF
     for (uint32_t i = 0, len = uint32_t(lights_.size()); i < len; ++i) {

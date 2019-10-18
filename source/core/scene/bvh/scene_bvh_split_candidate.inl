@@ -7,11 +7,13 @@
 
 namespace scene::bvh {
 
-uint32_t Reference::primitive() const {
+inline Reference::Reference() noexcept = default;
+
+inline uint32_t Reference::primitive() const noexcept {
     return bounds[0].index;
 }
 
-void Reference::set_min_max_primitive(float3 const& min, float3 const& max, uint32_t primitive) {
+inline void Reference::set(float3 const& min, float3 const& max, uint32_t primitive) noexcept {
     bounds[0].v[0]  = min[0];
     bounds[0].v[1]  = min[1];
     bounds[0].v[2]  = min[2];
@@ -20,15 +22,25 @@ void Reference::set_min_max_primitive(float3 const& min, float3 const& max, uint
     bounds[1].v[0]  = max[0];
     bounds[1].v[1]  = max[1];
     bounds[1].v[2]  = max[2];
- //   bounds[1].index = primitive;
+    bounds[1].index = 0;
 
 }
 
-void Reference::clip_min(float d, uint8_t axis) {
+inline void Reference::set(Simd3f const& min, Simd3f const& max, uint32_t primitive) noexcept {
+    float3 const tmp(min);
+    bounds[0].v[0]  = tmp[0];
+    bounds[0].v[1]  = tmp[1];
+    bounds[0].v[2]  = tmp[2];
+    bounds[0].index = primitive;
+
+    simd::store_float4(bounds[1].v, max.v);
+}
+
+inline void Reference::clip_min(float d, uint8_t axis) noexcept {
     bounds[0].v[axis] = std::max(d, bounds[0].v[axis]);
 }
 
-void Reference::clip_max(float d, uint8_t axis) {
+inline void Reference::clip_max(float d, uint8_t axis) noexcept {
     bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
 }
 

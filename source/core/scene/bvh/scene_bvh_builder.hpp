@@ -23,7 +23,7 @@ class Builder {
 
     ~Builder() noexcept;
 
-    void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs, thread::Pool& thread_pool) noexcept;
+    void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs, thread::Pool& pool) noexcept;
 
   private:
     struct Build_node {
@@ -58,13 +58,13 @@ class Builder {
                std::vector<AABB> const& aabbs, uint32_t max_shapes) noexcept;
 
     void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
-               uint32_t depth, thread::Pool& thread_pool);
+               uint32_t depth, thread::Pool& pool);
 
     Split_candidate splitting_plane(AABB const& aabb, index begin, index end,
                                     std::vector<AABB> const& aabbs) noexcept;
 
     Split_candidate1 splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
-                                    bool& exhausted, thread::Pool& thread_pool);
+                                    bool& exhausted, thread::Pool& pool);
 
     void serialize(Build_node* node) noexcept;
 

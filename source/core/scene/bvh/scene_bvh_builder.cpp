@@ -2,6 +2,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
 #include "base/memory/array.inl"
+#include "scene/scene.inl"
 #include "scene_bvh_node.inl"
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
@@ -19,7 +20,7 @@ Builder::~Builder() noexcept {
 }
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
-                    std::vector<AABB> const& aabbs, thread::Pool& thread_pool) noexcept {
+                    std::vector<AABB> const& aabbs, thread::Pool& pool) noexcept {
     if (indices.empty()) {
         nodes_ = tree.allocate_nodes(0);
     } else {
@@ -29,28 +30,28 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
 
         References references(indices.size());
 
-           memory::Array<Simd_AABB> taabbs(thread_pool.num_threads());
+           memory::Array<Simd_AABB> taabbs(pool.num_threads());
 
-           thread_pool.run_range(
+           pool.run_range(
                [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin, int32_t end) {
                    AABB aabb(AABB::empty());
 
                    for (int32_t i = begin; i < end; ++i) {
-                       uint32_t const prop = indices[i];
+                       uint32_t const prop = indices[uint32_t(i)];
 
                        AABB const& b = aabbs[prop];
 
                        float3 const& min = b.min();
                        float3 const& max = b.max();
 
-                       references[i].set_min_max_primitive(min, max, prop);
+                       references[uint32_t(i)].set(min, max, prop);
 
                        aabb.merge_assign(b);
                    }
 
                    taabbs[id] = aabb;
                },
-               0, indices.size());
+               0, int32_t(indices.size()));
 
            Simd_AABB aabb(AABB::empty());
            for (auto& b : taabbs) {
@@ -66,7 +67,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
         num_references_ = 0;
    //     split(root_, indices.begin(), indices.end(), indices.begin(), aabbs, 4);
 
-        split(root_, references, AABB(aabb.min, aabb.max), 4, 0, thread_pool);
+        split(root_, references, AABB(aabb.min, aabb.max), 4, 0, pool);
 
         tree.alllocate_indices(num_references_);
 
@@ -142,7 +143,7 @@ void Builder::split(Build_node* node, index begin, index end, const_index origin
 }
 
 void Builder::split(Build_node* node, References& references, AABB const& aabb,
-                        uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool) {
+                        uint32_t max_primitives, uint32_t depth, thread::Pool& pool) {
     node->aabb = aabb;
 
     uint32_t const num_primitives = uint32_t(references.size());
@@ -151,7 +152,7 @@ void Builder::split(Build_node* node, References& references, AABB const& aabb,
         assign(node, references);
     } else {
         bool                  exhausted;
-        Split_candidate1 const sp = splitting_plane(references, aabb, depth, exhausted, thread_pool);
+        Split_candidate1 const sp = splitting_plane(references, aabb, depth, exhausted, pool);
 
         if (num_primitives <= 0xFF && (float(num_primitives) <= sp.cost() || exhausted)) {
             assign(node, references);
@@ -181,13 +182,13 @@ void Builder::split(Build_node* node, References& references, AABB const& aabb,
 
                 node->children[0] = new Build_node;
                 split(node->children[0], references0, sp.aabb_0(), max_primitives, depth,
-                      thread_pool);
+                      pool);
 
                 references0 = References();
 
                 node->children[1] = new Build_node;
                 split(node->children[1], references1, sp.aabb_1(), max_primitives, depth,
-                      thread_pool);
+                      pool);
 
                 num_nodes_ += 2;
             }
@@ -264,7 +265,7 @@ Split_candidate Builder::splitting_plane(AABB const& aabb, index begin, index en
 Split_candidate1 Builder::splitting_plane(References const& references,
                                                           AABB const& aabb, uint32_t depth,
                                                           bool&         exhausted,
-                                                          thread::Pool& thread_pool) {
+                                                          thread::Pool& pool) {
     static uint8_t constexpr X = 0;
     static uint8_t constexpr Y = 1;
     static uint8_t constexpr Z = 2;
@@ -319,7 +320,7 @@ Split_candidate1 Builder::splitting_plane(References const& references,
             sc.evaluate(references, aabb_surface_area);
         }
     } else {
-        thread_pool.run_range(
+        pool.run_range(
             [this, &references, aabb_surface_area](uint32_t /*id*/, int32_t sc_begin,
                                                    int32_t sc_end) {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
