@@ -12,9 +12,7 @@ template <typename T>
 std::vector<T*> const& Manager::register_provider(Provider<T>& provider) noexcept {
     std::string const id = T::identifier();
 
-    auto old = caches_.find(id);
-
-    if (caches_.end() != old) {
+    if (auto old = caches_.find(id); caches_.end() != old) {
         delete old->second;
     }
 
@@ -126,7 +124,7 @@ Resource_ptr<T> Manager::store(std::string const& name, T* resource,
 
 template <typename T>
 size_t Manager::num_bytes() const noexcept {
-    const Typed_cache<T>* cache = typed_cache<T>();
+    Typed_cache<T> const* cache = typed_cache<T>();
     if (!cache) {
         return 0;
     }

@@ -17,11 +17,10 @@ void Reference::set_min_max_primitive(float3 const& min, float3 const& max, uint
     bounds[0].v[2]  = min[2];
     bounds[0].index = primitive;
 
-    bounds[1].v[0]  = max[0];
-    bounds[1].v[1]  = max[1];
-    bounds[1].v[2]  = max[2];
- //   bounds[1].index = primitive;
-
+    bounds[1].v[0] = max[0];
+    bounds[1].v[1] = max[1];
+    bounds[1].v[2] = max[2];
+    //   bounds[1].index = primitive;
 }
 
 void Reference::clip_min(float d, uint8_t axis) {
@@ -31,7 +30,6 @@ void Reference::clip_min(float d, uint8_t axis) {
 void Reference::clip_max(float d, uint8_t axis) {
     bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
 }
-
 
 Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
                                  std::vector<AABB> const& aabbs, float aabb_surface_area) noexcept
@@ -69,23 +67,22 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3 const& pos, index be
 
     float const total = float(std::distance(begin, end));
 
-   cost_ += float(split) / total;
+    cost_ += float(split) / total;
 
-//    cost_ += 0.0125f * float(std::abs(num_side_0 - num_side_1)) / total;
+    //    cost_ += 0.0125f * float(std::abs(num_side_0 - num_side_1)) / total;
 
     if (0 == num_side_0) {
         cost_ += 1000.f;
     }
 
+    //    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
+    //        cost_ += 2.f + total;
+    //    } else {
+    //        float const weight_0 = float(num_side_0) * box_0.surface_area();
+    //        float const weight_1 = float(num_side_1) * box_1.surface_area();
 
-//    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
-//        cost_ += 2.f + total;
-//    } else {
-//        float const weight_0 = float(num_side_0) * box_0.surface_area();
-//        float const weight_1 = float(num_side_1) * box_1.surface_area();
-
-//        cost_ += 2.f + (weight_0 + weight_1) / aabb_surface_area;
-//    }
+    //        cost_ += 2.f + (weight_0 + weight_1) / aabb_surface_area;
+    //    }
 }
 
 bool Split_candidate::behind(float3 const& point) const noexcept {
@@ -99,7 +96,6 @@ uint8_t Split_candidate::axis() const noexcept {
 float Split_candidate::cost() const noexcept {
     return cost_;
 }
-
 
 Split_candidate1::Split_candidate1(uint8_t split_axis, float3 const& p, bool spatial)
     : aabb_0_(AABB::empty()),
@@ -174,7 +170,7 @@ void Split_candidate1::evaluate(References const& references, float aabb_surface
 }
 
 void Split_candidate1::distribute(References const& references, References& references0,
-                                              References& references1) const {
+                                  References& references1) const {
     references0.reserve(num_side_0_);
     references1.reserve(num_side_1_);
 

@@ -2,11 +2,11 @@
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
 #include "base/memory/array.inl"
+#include "base/thread/thread_pool.hpp"
+#include "logging/logging.hpp"
 #include "scene_bvh_node.inl"
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
-#include "base/thread/thread_pool.hpp"
-#include "logging/logging.hpp"
 
 namespace scene::bvh {
 
@@ -18,8 +18,8 @@ Builder::~Builder() noexcept {
     delete root_;
 }
 
-void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
-                    std::vector<AABB> const& aabbs, thread::Pool& thread_pool) noexcept {
+void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
+                    thread::Pool& thread_pool) noexcept {
     if (indices.empty()) {
         nodes_ = tree.allocate_nodes(0);
     } else {
@@ -29,42 +29,37 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
 
         References references(indices.size());
 
-           memory::Array<Simd_AABB> taabbs(thread_pool.num_threads());
+        memory::Array<Simd_AABB> taabbs(thread_pool.num_threads());
 
-           thread_pool.run_range(
-               [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin, int32_t end) {
-                   AABB aabb(AABB::empty());
+        thread_pool.run_range(
+            [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin, int32_t end) {
+                AABB aabb(AABB::empty());
 
-                   for (int32_t i = begin; i < end; ++i) {
-                       uint32_t const prop = indices[i];
+                for (int32_t i = begin; i < end; ++i) {
+                    uint32_t const prop = indices[i];
 
-                       AABB const& b = aabbs[prop];
+                    AABB const& b = aabbs[prop];
 
-                       float3 const& min = b.min();
-                       float3 const& max = b.max();
+                    float3 const& min = b.min();
+                    float3 const& max = b.max();
 
-                       references[i].set_min_max_primitive(min, max, prop);
+                    references[i].set_min_max_primitive(min, max, prop);
 
-                       aabb.merge_assign(b);
-                   }
+                    aabb.merge_assign(b);
+                }
 
-                   taabbs[id] = aabb;
-               },
-               0, indices.size());
+                taabbs[id] = aabb;
+            },
+            0, indices.size());
 
-           Simd_AABB aabb(AABB::empty());
-           for (auto& b : taabbs) {
-               aabb.merge_assign(b);
-           }
+        Simd_AABB aabb(AABB::empty());
+        for (auto& b : taabbs) {
+            aabb.merge_assign(b);
+        }
 
-
-
-
-
-
-        num_nodes_ = 1;
+        num_nodes_      = 1;
         num_references_ = 0;
-   //     split(root_, indices.begin(), indices.end(), indices.begin(), aabbs, 4);
+        //     split(root_, indices.begin(), indices.end(), indices.begin(), aabbs, 4);
 
         split(root_, references, AABB(aabb.min, aabb.max), 4, 0, thread_pool);
 
@@ -73,7 +68,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices,
         nodes_ = tree.allocate_nodes(num_nodes_);
 
         current_node_ = 0;
-    //    serialize(root_);
+        //    serialize(root_);
 
         uint32_t current_prop = 0;
         serialize1(root_, tree, current_prop);
@@ -100,7 +95,7 @@ void Builder::Build_node::clear() noexcept {
     offset    = 0;
 
     start_index = 0;
-    end_index = 0;
+    end_index   = 0;
 
     // This size will be used even if there are only infinite props in the scene.
     // It is an arbitrary size that will be used to calculate the power of some lights.
@@ -142,7 +137,7 @@ void Builder::split(Build_node* node, index begin, index end, const_index origin
 }
 
 void Builder::split(Build_node* node, References& references, AABB const& aabb,
-                        uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool) {
+                    uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool) {
     node->aabb = aabb;
 
     uint32_t const num_primitives = uint32_t(references.size());
@@ -150,8 +145,9 @@ void Builder::split(Build_node* node, References& references, AABB const& aabb,
     if (num_primitives <= max_primitives) {
         assign(node, references);
     } else {
-        bool                  exhausted;
-        Split_candidate1 const sp = splitting_plane(references, aabb, depth, exhausted, thread_pool);
+        bool                   exhausted;
+        Split_candidate1 const sp = splitting_plane(references, aabb, depth, exhausted,
+                                                    thread_pool);
 
         if (num_primitives <= 0xFF && (float(num_primitives) <= sp.cost() || exhausted)) {
             assign(node, references);
@@ -213,58 +209,71 @@ Split_candidate Builder::splitting_plane(AABB const& aabb, index begin, index en
     split_candidates_.emplace_back(uint8_t(1), average, begin, end, aabbs, surface_area);
     split_candidates_.emplace_back(uint8_t(2), average, begin, end, aabbs, surface_area);
 
-//    float3 const center = aabb.position();
+    //    float3 const center = aabb.position();
 
-//    split_candidates_.emplace_back(uint8_t(0), center, begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(uint8_t(1), center, begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(uint8_t(2), center, begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(uint8_t(0), center, begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(uint8_t(1), center, begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(uint8_t(2), center, begin, end, aabbs, surface_area);
 
     /*for (uint8_t i = 0; i < 3; ++i)*/
     // {
-//        uint8_t i = 0;
-//    split_candidates_.emplace_back(i, float3(center[0] + 0.5f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] - 0.5f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] + 0.25f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] - 0.25f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] + 0.75f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0] - 0.75f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
-//    }
+    //        uint8_t i = 0;
+    //    split_candidates_.emplace_back(i, float3(center[0] + 0.5f * (aabb.min()[0] - center[0]),
+    //    center[1], center[2]), begin, end, aabbs, surface_area); split_candidates_.emplace_back(i,
+    //    float3(center[0] - 0.5f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end,
+    //    aabbs, surface_area); split_candidates_.emplace_back(i, float3(center[0] + 0.25f *
+    //    (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0] - 0.25f * (aabb.min()[0] - center[0]),
+    //    center[1], center[2]), begin, end, aabbs, surface_area); split_candidates_.emplace_back(i,
+    //    float3(center[0] + 0.75f * (aabb.min()[0] - center[0]), center[1], center[2]), begin, end,
+    //    aabbs, surface_area); split_candidates_.emplace_back(i, float3(center[0] - 0.75f *
+    //    (aabb.min()[0] - center[0]), center[1], center[2]), begin, end, aabbs, surface_area);
+    //    }
 
     /*for (uint8_t i = 0; i < 3; ++i)*/
     //    {
-//        uint8_t i = 1;
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.5f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.5f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.25f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.25f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.75f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.75f * (aabb.min()[1] - center[1]), center[2]), begin, end, aabbs, surface_area);
-//}
+    //        uint8_t i = 1;
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.5f * (aabb.min()[1] -
+    //    center[1]), center[2]), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.5f * (aabb.min()[1] -
+    //    center[1]), center[2]), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.25f * (aabb.min()[1] -
+    //    center[1]), center[2]), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.25f * (aabb.min()[1] -
+    //    center[1]), center[2]), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1] + 0.75f * (aabb.min()[1] -
+    //    center[1]), center[2]), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1] - 0.75f * (aabb.min()[1] -
+    //    center[1]), center[2]), begin, end, aabbs, surface_area);
+    //}
 
-/*for (uint8_t i = 0; i < 3; ++i)*/
+    /*for (uint8_t i = 0; i < 3; ++i)*/
     // {
-//        uint8_t i = 2;
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.5f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.5f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.25f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.25f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.75f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.75f * (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
-//}
+    //        uint8_t i = 2;
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.5f *
+    //    (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.5f *
+    //    (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.25f *
+    //    (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.25f *
+    //    (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] + 0.75f *
+    //    (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+    //    split_candidates_.emplace_back(i, float3(center[0], center[1], center[2] - 0.75f *
+    //    (aabb.min()[2] - center[2])), begin, end, aabbs, surface_area);
+    //}
 
-
-
-
-    std::sort(split_candidates_.begin(), split_candidates_.end(),
-              [](Split_candidate const& a, Split_candidate const& b) { return a.cost() < b.cost(); });
+    std::sort(
+        split_candidates_.begin(), split_candidates_.end(),
+        [](Split_candidate const& a, Split_candidate const& b) { return a.cost() < b.cost(); });
 
     return split_candidates_[0];
 }
 
-Split_candidate1 Builder::splitting_plane(References const& references,
-                                                          AABB const& aabb, uint32_t depth,
-                                                          bool&         exhausted,
-                                                          thread::Pool& thread_pool) {
+Split_candidate1 Builder::splitting_plane(References const& references, AABB const& aabb,
+                                          uint32_t depth, bool& exhausted,
+                                          thread::Pool& thread_pool) {
     static uint8_t constexpr X = 0;
     static uint8_t constexpr Y = 1;
     static uint8_t constexpr Z = 2;

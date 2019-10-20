@@ -48,10 +48,6 @@ static void log_memory_consumption(resource::Manager const& manager, take::Take 
 
 static bool is_json(std::string const& text) noexcept;
 
-using time_point = std::chrono::high_resolution_clock::time_point;
-
-static std::string str_seconds_since(time_point point) noexcept;
-
 int main(int argc, char* argv[]) noexcept {
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
@@ -167,7 +163,7 @@ int main(int argc, char* argv[]) noexcept {
         }
 
         if (success) {
-            logging::info("Loading time " + str_seconds_since(loading_start) + " s");
+            logging::info("Loading time %f s", chrono::seconds_since(loading_start));
 
             logging::info("Rendering...");
 
@@ -199,9 +195,9 @@ int main(int argc, char* argv[]) noexcept {
                     logging::error("No camera specified.");
                 }
 
-                logging::info("Total render time " + str_seconds_since(rendering_start) + " s");
+                logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
 
-                logging::info("Total elapsed time " + str_seconds_since(loading_start) + " s");
+                logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
             }
 
             log_memory_consumption(resource_manager, take, scene_loader, scene,
@@ -264,8 +260,4 @@ bool is_json(std::string const& text) noexcept {
     }
 
     return false;
-}
-
-std::string str_seconds_since(time_point point) noexcept {
-    return string::to_string(chrono::seconds_since(point));
 }

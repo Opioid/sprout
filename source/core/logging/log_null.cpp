@@ -4,6 +4,8 @@ namespace logging {
 
 void Null::post(Type /*type*/, std::string const& /*text*/) {}
 
+void Null::post(Type /*type*/, std::string const& /*text*/, float /*a*/) {}
+
 void Null::post(Type /*type*/, std::string const& /*text*/, std::string const& /*a*/) {}
 
 void Null::push(Type /*type*/, std::string const& /*text*/) {}

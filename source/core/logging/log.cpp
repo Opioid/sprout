@@ -1,6 +1,13 @@
 #include "log.hpp"
+#include "base/string/string.hpp"
 
 namespace logging {
+
+static std::string resolve(std::string const& text, float a) {
+    auto const i = text.find("%f");
+
+    return text.substr(0, i) + string::to_string(a) + text.substr(i + 2);
+}
 
 static std::string resolve(std::string const& text, std::string const& a) {
     auto const i = text.find("%S");
@@ -27,6 +34,10 @@ void Log::post(Type type, std::string const& text) {
 
         internal_post(type, concat);
     }
+}
+
+void Log::post(Type type, std::string const& text, float a) {
+    post(type, resolve(text, a));
 }
 
 void Log::post(Type type, std::string const& text, std::string const& a) {

@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
-
 #include "base/math/vector3.hpp"
 #include "texture_byte1_unorm.hpp"
 #include "texture_byte2_snorm.hpp"

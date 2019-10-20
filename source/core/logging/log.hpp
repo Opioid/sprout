@@ -13,6 +13,8 @@ class Log {
 
     virtual void post(Type type, std::string const& text = "");
 
+    virtual void post(Type type, std::string const& text, float a);
+
     virtual void post(Type type, std::string const& text, std::string const& a);
 
     virtual void push(Type type, std::string const& text);

@@ -27,6 +27,10 @@ void info(std::string const& text) noexcept {
     log->post(Log::Type::Info, text);
 }
 
+void info(std::string const& text, float a) noexcept {
+    log->post(Log::Type::Info, text, a);
+}
+
 void info(std::string const& text, std::string const& a) noexcept {
     log->post(Log::Type::Info, text, a);
 }

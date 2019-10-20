@@ -45,6 +45,9 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         particle_importance_.set_eye_position(
             scene_.prop_world_transformation(camera.entity()).position);
 
+        auto const preparation_duration = chrono::seconds_since(render_start);
+        logging::info("Preparation time %f s", preparation_duration);
+
         bake_photons(current_frame);
 
         progressor_.start(backward_progress_range);
@@ -60,7 +63,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         progressor_.end();
 
         auto const render_duration = chrono::seconds_since(render_start);
-        logging::info("Render time " + string::to_string(render_duration) + " s");
+        logging::info("Render time %f s", render_duration);
 
         auto const pp_start = std::chrono::high_resolution_clock::now();
 
@@ -71,7 +74,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         }
 
         auto const pp_duration = chrono::seconds_since(pp_start);
-        logging::info("Post-process time " + string::to_string(pp_duration) + " s");
+        logging::info("Post-process time %f s", pp_duration);
 
         auto const export_start = std::chrono::high_resolution_clock::now();
 
@@ -80,7 +83,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         }
 
         auto const export_duration = chrono::seconds_since(export_start);
-        logging::info("Export time " + string::to_string(export_duration) + " s");
+        logging::info("Export time %f s", export_duration);
     }
 }
 

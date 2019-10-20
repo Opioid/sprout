@@ -10,6 +10,7 @@ enum class Type { Null, Std_out };
 void init(Type type, bool verbose = false) noexcept;
 
 void info(std::string const& text) noexcept;
+void info(std::string const& text, float a) noexcept;
 void info(std::string const& text, std::string const& a) noexcept;
 
 void warning(std::string const& text) noexcept;

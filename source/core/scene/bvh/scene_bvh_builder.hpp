@@ -23,7 +23,8 @@ class Builder {
 
     ~Builder() noexcept;
 
-    void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs, thread::Pool& thread_pool) noexcept;
+    void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
+               thread::Pool& thread_pool) noexcept;
 
   private:
     struct Build_node {
@@ -40,13 +41,10 @@ class Builder {
         uint32_t offset;
         uint32_t props_end;
 
-
         std::vector<uint32_t> primitives;
 
         uint32_t start_index;
         uint32_t end_index;
-
-
 
         Build_node* children[2] = {nullptr, nullptr};
     };
@@ -64,7 +62,7 @@ class Builder {
                                     std::vector<AABB> const& aabbs) noexcept;
 
     Split_candidate1 splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
-                                    bool& exhausted, thread::Pool& thread_pool);
+                                     bool& exhausted, thread::Pool& thread_pool);
 
     void serialize(Build_node* node) noexcept;
 
@@ -92,12 +90,12 @@ class Builder {
 
     Node* nodes_;
 
-     uint32_t num_references_;
+    uint32_t num_references_;
 
-     uint32_t spatial_split_threshold_;
+    uint32_t spatial_split_threshold_;
 
-     uint32_t const num_slices_;
-     uint32_t const sweep_threshold_;
+    uint32_t const num_slices_;
+    uint32_t const sweep_threshold_;
 };
 
 }  // namespace scene::bvh
