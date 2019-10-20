@@ -10,14 +10,14 @@
 namespace scene::bvh {
 
 struct Reference {
-    Reference() {}
+    Reference() noexcept;
 
-    uint32_t primitive() const;
+    uint32_t primitive() const noexcept;
 
-    void set_min_max_primitive(float3 const& min, float3 const& max, uint32_t primitive);
+    void set(Simd3f const& min, Simd3f const& max, uint32_t primitive) noexcept;
 
-    void clip_min(float d, uint8_t axis);
-    void clip_max(float d, uint8_t axis);
+    void clip_min(float d, uint8_t axis) noexcept;
+    void clip_max(float d, uint8_t axis) noexcept;
 
     struct alignas(16) Vector {
         float    v[3];
@@ -31,47 +31,26 @@ using References = std::vector<Reference>;
 
 class Split_candidate {
   public:
-    using index = typename std::vector<uint32_t>::const_iterator;
+    Split_candidate(uint8_t split_axis, float3 const& p, bool spatial) noexcept;
 
-    Split_candidate(uint8_t split_axis, float3 const& pos, index begin, index end,
-                    std::vector<AABB> const& aabbs, float aabb_surface_area) noexcept;
+    void evaluate(References const& references, float aabb_surface_area) noexcept;
 
-    bool behind(float3 const& point) const noexcept;
-
-    uint8_t axis() const noexcept;
+    void distribute(References const& references, References& references0,
+                    References& references1) const noexcept;
 
     float cost() const noexcept;
 
-  private:
-    float d_;
+    bool behind(float const* point) const noexcept;
 
-    uint8_t axis_;
+    uint8_t axis() const noexcept;
 
-    float cost_;
-};
+    bool spatial() const noexcept;
 
-class Split_candidate1 {
-  public:
-    Split_candidate1(uint8_t split_axis, float3 const& p, bool spatial);
+    AABB const& aabb_0() const noexcept;
+    AABB const& aabb_1() const noexcept;
 
-    void evaluate(References const& references, float aabb_surface_area);
-
-    void distribute(References const& references, References& references0,
-                    References& references1) const;
-
-    float cost() const;
-
-    bool behind(float const* point) const;
-
-    uint8_t axis() const;
-
-    bool spatial() const;
-
-    AABB const& aabb_0() const;
-    AABB const& aabb_1() const;
-
-    uint32_t num_side_0() const;
-    uint32_t num_side_1() const;
+    uint32_t num_side_0() const noexcept;
+    uint32_t num_side_1() const noexcept;
 
   private:
     AABB aabb_0_;

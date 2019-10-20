@@ -4,11 +4,11 @@
 #include "triangle_bvh_builder_sah.hpp"
 //#include "triangle_bvh_builder_base.inl"
 #include "base/math/aabb.inl"
-#include "base/math/plane.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
+#include "scene/bvh/scene_bvh_split_candidate.inl"
 #include "scene/shape/node_stack.hpp"
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
@@ -45,7 +45,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
                     auto const min = triangle_min(a, b, c);
                     auto const max = triangle_max(a, b, c);
 
-                    references[i].set_min_max_primitive(min, max, uint32_t(i));
+                    references[i].set(min, max, uint32_t(i));
 
                     aabb.merge_assign(min, max);
                 }
