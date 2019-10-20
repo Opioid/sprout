@@ -3,7 +3,7 @@
 
 #include "base/math/distribution/distribution_2d.hpp"
 #include "core/image/texture/texture.hpp"
-#include "core/image/texture/texture_float_3.hpp"
+#include "core/image/texture/texture_float3.hpp"
 #include "core/image/typed_image.hpp"
 #include "sky_material_base.hpp"
 

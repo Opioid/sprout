@@ -1,4 +1,4 @@
-#include "texture_float_1.hpp"
+#include "texture_float1.hpp"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
 

@@ -1,4 +1,4 @@
-#include "texture_byte_3_unorm.hpp"
+#include "texture_byte3_unorm.hpp"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
 #include "texture_encoding.hpp"

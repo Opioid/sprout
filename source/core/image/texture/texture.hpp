@@ -1,19 +1,21 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
-#include <string>
+
 #include "base/math/vector3.hpp"
-#include "texture_byte_1_unorm.hpp"
-#include "texture_byte_2_snorm.hpp"
-#include "texture_byte_2_unorm.hpp"
-#include "texture_byte_3_snorm.hpp"
-#include "texture_byte_3_srgb.hpp"
-#include "texture_byte_3_unorm.hpp"
-#include "texture_byte_4_srgb.hpp"
-#include "texture_float_1.hpp"
-#include "texture_float_2.hpp"
-#include "texture_float_3.hpp"
-#include "texture_half_3.hpp"
+#include "texture_byte1_unorm.hpp"
+#include "texture_byte2_snorm.hpp"
+#include "texture_byte2_unorm.hpp"
+#include "texture_byte3_snorm.hpp"
+#include "texture_byte3_srgb.hpp"
+#include "texture_byte3_unorm.hpp"
+#include "texture_byte4_srgb.hpp"
+#include "texture_float1.hpp"
+#include "texture_float2.hpp"
+#include "texture_float3.hpp"
+#include "texture_half3.hpp"
+
+#include <string>
 
 namespace image::texture {
 

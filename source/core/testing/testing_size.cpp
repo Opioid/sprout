@@ -4,7 +4,7 @@
 #include "base/math/vector3.inl"
 #include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
-#include "image/texture/texture_byte_3_srgb.hpp"
+#include "image/texture/texture_byte3_srgb.hpp"
 #include "image/typed_image.hpp"
 #include "rendering/integrator/particle/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"

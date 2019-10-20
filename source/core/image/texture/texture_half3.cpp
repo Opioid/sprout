@@ -1,4 +1,4 @@
-#include "texture_half_3.hpp"
+#include "texture_half3.hpp"
 #include "base/math/half.inl"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"

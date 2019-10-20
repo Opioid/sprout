@@ -1,4 +1,4 @@
-#include "texture_byte_4_srgb.hpp"
+#include "texture_byte4_srgb.hpp"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
 #include "texture_encoding.hpp"
