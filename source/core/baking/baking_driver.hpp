@@ -46,6 +46,8 @@ class Sink;
 
 namespace baking {
 
+class Baking_worker;
+
 class Driver {
   public:
     using Scene  = scene::Scene;
@@ -59,6 +61,14 @@ class Driver {
     void render() noexcept;
 
   private:
+    Scene& scene_;
+
+    take::View& view_;
+
+    thread::Pool& thread_pool_;
+
+    Baking_worker* workers_;
+
     progress::Sink& progressor_;
 };
 
