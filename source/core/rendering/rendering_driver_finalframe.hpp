@@ -21,7 +21,7 @@ namespace rendering {
 class Driver_finalframe : public Driver {
   public:
     Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-                      uint32_t max_sample_size, progress::Sink& progressor) noexcept;
+                      uint32_t max_material_sample_size, progress::Sink& progressor) noexcept;
 
     using Exporters = memory::Array<exporting::Sink*>;
 
@@ -35,8 +35,6 @@ class Driver_finalframe : public Driver {
     void bake_photons(uint32_t frame) noexcept;
 
     progress::Sink& progressor_;
-
-    bool photons_baked_;
 };
 
 }  // namespace rendering

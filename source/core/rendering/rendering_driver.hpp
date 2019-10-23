@@ -4,7 +4,6 @@
 #define PARTICLE_TRAINING
 #define PHOTON_TRAINING
 
-#include "base/math/vector2.hpp"
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"
 #include "integrator/particle/particle_importance.hpp"

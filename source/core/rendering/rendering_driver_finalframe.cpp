@@ -19,12 +19,11 @@
 namespace rendering {
 
 Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-                                     uint32_t max_sample_size, progress::Sink& progressor) noexcept
-    : Driver(take, scene, thread_pool, max_sample_size), progressor_(progressor) {}
+                                     uint32_t        max_material_sample_size,
+                                     progress::Sink& progressor) noexcept
+    : Driver(take, scene, thread_pool, max_material_sample_size), progressor_(progressor) {}
 
 void Driver_finalframe::render(Exporters& exporters) noexcept {
-    photons_baked_ = false;
-
     auto& camera = *view_.camera;
     auto& sensor = camera.sensor();
 
@@ -266,8 +265,6 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");
-
-    photons_baked_ = true;
 }
 
 }  // namespace rendering
