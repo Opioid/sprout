@@ -460,14 +460,14 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         }
     }
 
-    stream.seekg(binary_start + vertices_offset);
+    stream.seekg(std::streamoff(binary_start + vertices_offset));
 
     Vertex_stream* vertex_stream = nullptr;
 
     if (interleaved_vertex_stream) {
         Vertex* vertices = new Vertex[num_vertices];
 
-        stream.read(reinterpret_cast<char*>(vertices), vertices_size);
+        stream.read(reinterpret_cast<char*>(vertices), std::streamsize(vertices_size));
 
         vertex_stream = new Vertex_stream_interleaved(num_vertices, vertices);
     } else {
@@ -498,8 +498,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
 
     char* indices = new char[indices_size];
 
-    stream.seekg(binary_start + indices_offset);
-    stream.read(indices, indices_size);
+    stream.seekg(std::streamoff(binary_start + indices_offset));
+    stream.read(indices, std::streamsize(indices_size));
 
     auto mesh = new Mesh;
 

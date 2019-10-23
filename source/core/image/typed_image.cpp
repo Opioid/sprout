@@ -216,6 +216,13 @@ Typed_sparse_image<T>::Typed_sparse_image(Description const& description) noexce
 }
 
 template <typename T>
+Typed_sparse_image<T>::Typed_sparse_image(Typed_sparse_image&& other) noexcept
+    : description_(other.description()), num_cells_(other.num_cells_), cells_(other.cells_) {
+    other.num_cells_ = int3(0);
+    other.cells_     = nullptr;
+}
+
+template <typename T>
 Typed_sparse_image<T>::~Typed_sparse_image() noexcept {
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 

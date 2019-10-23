@@ -115,10 +115,10 @@ Image* Reader::read(std::istream& stream) noexcept {
 
             memory::Bitfield field(description.num_pixels());
 
-            stream.seekg(static_cast<std::streamoff>(binary_start + topology_offset));
+            stream.seekg(std::streamoff(binary_start + topology_offset));
             stream.read(reinterpret_cast<char*>(field.data()), std::streamsize(field.num_bytes()));
 
-            stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
+            stream.seekg(std::streamoff(binary_start + pixels_offset));
 
             auto image = new Image(Byte1(description));
 
@@ -142,10 +142,10 @@ Image* Reader::read(std::istream& stream) noexcept {
 
             memory::Bitfield field(description.num_pixels());
 
-            stream.seekg(static_cast<std::streamoff>(binary_start + topology_offset));
+            stream.seekg(std::streamoff(binary_start + topology_offset));
             stream.read(reinterpret_cast<char*>(field.data()), std::streamsize(field.num_bytes()));
 
-            stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
+            stream.seekg(std::streamoff(binary_start + pixels_offset));
 
             if (sparse) {
                 auto image = new Image(Float1_sparse(description));
@@ -179,7 +179,7 @@ Image* Reader::read(std::istream& stream) noexcept {
             }
         }
     } else {
-        stream.seekg(static_cast<std::streamoff>(binary_start + pixels_offset));
+        stream.seekg(std::streamoff(binary_start + pixels_offset));
 
         if (Image::Type::Byte1 == type) {
             Description description(dimensions);
