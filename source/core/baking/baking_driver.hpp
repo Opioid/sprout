@@ -1,14 +1,22 @@
-#pragma once
+#ifndef SU_CORE_BAKING_DRIVER_HPP
+#define SU_CORE_BAKING_DRIVER_HPP
 
 #include <cstdint>
 
 namespace take {
+struct Take;
 struct View;
-}
+}  // namespace take
 
 namespace scene {
-class Scene;
+
+namespace camera {
+class Camera;
 }
+
+class Scene;
+
+}  // namespace scene
 
 namespace sampler {
 class Factory;
@@ -18,15 +26,9 @@ namespace thread {
 class Pool;
 }
 
-namespace exporting {
-class Sink;
-}
+namespace rendering {
 
-namespace progress {
-class Sink;
-}
-
-namespace rendering::integrator {
+namespace integrator {
 
 namespace surface {
 class Factory;
@@ -35,25 +37,31 @@ namespace volume {
 class Factory;
 }
 
-}  // namespace rendering::integrator
+}  // namespace integrator
+}  // namespace rendering
+
+namespace progress {
+class Sink;
+}
 
 namespace baking {
 
 class Driver {
   public:
-    using Surface_integrator_factory = rendering::integrator::surface::Factory;
-    using Volume_integrator_factory  = rendering::integrator::volume::Factory;
+    using Scene  = scene::Scene;
+    using Camera = scene::camera::Camera;
 
-    Driver(Surface_integrator_factory* surface_integrator_factory,
-           Volume_integrator_factory* volume_integrator_factory, sampler::Factory* sampler_factory);
+    Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
+           uint32_t max_material_sample_size, progress::Sink& progressor) noexcept;
 
-    void render(scene::Scene& scene, const take::View& view, thread::Pool& thread_pool,
-                uint32_t max_sample_size, exporting::Sink& exporter, progress::Sink& progressor);
+    ~Driver() noexcept;
+
+    void render() noexcept;
 
   private:
-    Surface_integrator_factory* surface_integrator_factory_;
-    Volume_integrator_factory*  volume_integrator_factory_;
-    sampler::Factory*           sampler_factory_;
+    progress::Sink& progressor_;
 };
 
 }  // namespace baking
+
+#endif
