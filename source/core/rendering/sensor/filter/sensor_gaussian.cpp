@@ -35,9 +35,10 @@ float Gaussian::evaluate(float2 p) const noexcept {
 }
 
 float Gaussian::integral(uint32_t num_samples) const noexcept {
-    float const interval = (2.f * radius_) / float(num_samples);
+    // The function is symmetric; so integrate one half, then double the result
+    float const interval = radius_ / float(num_samples);
 
-    float s = -radius_ + 0.5f * interval;
+    float s = 0.5f * interval;
 
     float sum = 0.f;
 
@@ -49,7 +50,7 @@ float Gaussian::integral(uint32_t num_samples) const noexcept {
         sum += a;
     }
 
-    return sum;
+    return sum + sum;
 }
 
 // inline float Gaussian::gaussian(float d) const {
