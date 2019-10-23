@@ -85,6 +85,8 @@ class Typed_sparse_image {
   public:
     Typed_sparse_image(Description const& description) noexcept;
 
+    Typed_sparse_image(Typed_sparse_image&& other) noexcept;
+
     ~Typed_sparse_image() noexcept;
 
     Description const& description() const noexcept;
