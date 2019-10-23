@@ -376,7 +376,7 @@ rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value)
 
 template <>
 rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value) noexcept {
-    float radius = 1.f;
+    float radius = 2.f;
     float b      = 1.f / 3.f;
     float c      = 1.f / 3.f;
 
