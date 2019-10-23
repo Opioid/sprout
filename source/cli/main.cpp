@@ -185,14 +185,9 @@ int main(int argc, char* argv[]) noexcept {
 
                     driver.render(take.exporters);
                 } else {
-                    //			baking::Driver
-                    // driver(take->surface_integrator_factory,
-                    //								  take->volume_integrator_factory,
-                    //								  take->sampler_factory);
+                    baking::Driver driver(take, scene, thread_pool, max_sample_size, progressor);
 
-                    //			driver.render(scene, take->view, thread_pool,
-                    //*take->exporter, progressor);
-                    logging::error("No camera specified.");
+                    driver.render();
                 }
 
                 logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
