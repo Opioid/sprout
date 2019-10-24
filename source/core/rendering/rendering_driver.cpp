@@ -50,8 +50,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
       target_(Description(take.view.camera->sensor_dimensions())),
       photon_settings_(take.photon_settings),
       photon_map_(take.photon_settings.num_photons, take.photon_settings.search_radius,
-                  take.photon_settings.merge_radius, take.photon_settings.coarse_search_radius,
-                  take.photon_settings.separate_indirect && take.photon_settings.indirect_photons),
+                  take.photon_settings.merge_radius),
       photon_infos_(nullptr) {
     uint32_t const num_photons = take.photon_settings.num_photons;
     if (num_photons) {

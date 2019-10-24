@@ -15,16 +15,13 @@
 
 namespace rendering::integrator::particle::photon {
 
-Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float coarse_search_radius,
-         bool separate_indirect) noexcept
+Map::Map(uint32_t num_photons, float search_radius, float merge_radius) noexcept
     : num_photons_(num_photons),
       photons_(nullptr),
-      separate_indirect_(separate_indirect),
       merge_radius_(merge_radius),
       aabbs_(nullptr),
       num_reduced_(nullptr),
-      fine_grid_(search_radius, 1.5f, false),
-      coarse_grid_(coarse_search_radius, 1.1f, true) {}
+      grid_(search_radius, 1.5f, false) {}
 
 Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);
@@ -39,9 +36,8 @@ void Map::init(uint32_t num_workers) noexcept {
 }
 
 void Map::start() noexcept {
-    red_num_fine_   = 0;
-    red_num_coarse_ = 0;
-    caustic_only_   = false;
+    reduced_num_  = 0;
+    caustic_only_ = false;
 }
 
 void Map::insert(Photon const& photon, uint32_t index) noexcept {
@@ -52,99 +48,35 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
                                 thread::Pool& pool) noexcept {
     AABB const aabb = calculate_aabb(num_photons, pool);
 
-    fine_grid_.resize(aabb);
+    grid_.resize(aabb);
 
-    if (caustic_only_) {
-        num_caustic_paths_ = num_paths;
-    } else {
-        num_caustic_paths_  = num_paths;
-        num_indirect_paths_ = num_paths;
-    }
+    num_paths_ = num_paths;
 
-    uint32_t num_reduced;
+    grid_.init_cells(num_photons, photons_);
 
-    if (separate_indirect_) {
-        coarse_grid_.resize(aabb);
+    uint32_t const reduced_num = num_photons == num_photons_
+                                     ? grid_.reduce_and_move(photons_, merge_radius_, num_reduced_,
+                                                             pool)
+                                     : num_photons;
 
-        auto const indirect_photons = std::partition(
-            photons_, photons_ + num_photons_,
-            [](Photon const& p) { return p.properties.is(Photon::Property::First_hit); });
+    float const percentage_caustics = float(reduced_num) / float(num_photons_);
 
-        uint32_t const num_caustics = uint32_t(std::distance(photons_, indirect_photons));
+    std::cout << reduced_num << " total left of " << num_photons_ << " ("
+              << uint32_t(100.f * percentage_caustics) << "%)" << std::endl;
 
-        uint32_t const num_indirect = num_photons_ - num_caustics;
+    reduced_num_ = reduced_num;
 
-        fine_grid_.init_cells(num_caustics, photons_);
-
-        uint32_t const red_num_caustics = fine_grid_.reduce_and_move(photons_, merge_radius_,
-                                                                     num_reduced_, pool);
-
-        float const percentage_caustics = float(red_num_caustics) / float(num_caustics);
-
-        std::cout << red_num_caustics << " caustics left of " << num_caustics << " ("
-                  << uint32_t(100.f * percentage_caustics) << "%)" << std::endl;
-
-        red_num_fine_ = red_num_caustics;
-
-        if (caustic_only_) {
-            std::copy(indirect_photons, indirect_photons + num_indirect,
-                      photons_ + red_num_caustics);
-
-            return red_num_caustics + red_num_coarse_;
-        }
-
-        fine_grid_.init_cells(num_indirect, photons_ + num_caustics);
-
-        uint32_t const red_num_indirect = fine_grid_.reduce_and_move(
-            photons_ + red_num_caustics, merge_radius_, num_reduced_, pool);
-
-        float const percentage_indirect = float(red_num_indirect) / float(num_indirect);
-
-        std::cout << red_num_indirect << " indirect left of " << num_indirect << " ("
-                  << uint32_t(100.f * percentage_indirect) << "%)" << std::endl;
-
-        if (red_num_indirect <= red_num_coarse_) {
-            caustic_only_ = true;
-        }
-
-        red_num_coarse_ = red_num_indirect;
-
-        num_reduced = red_num_caustics + red_num_indirect;
-    } else {
-        fine_grid_.init_cells(num_photons, photons_);
-
-        uint32_t const red_num_caustics = num_photons == num_photons_
-                                              ? fine_grid_.reduce_and_move(photons_, merge_radius_,
-                                                                           num_reduced_, pool)
-                                              : num_photons;
-
-        float const percentage_caustics = float(red_num_caustics) / float(num_photons_);
-
-        std::cout << red_num_caustics << " total left of " << num_photons_ << " ("
-                  << uint32_t(100.f * percentage_caustics) << "%)" << std::endl;
-
-        red_num_fine_ = red_num_caustics;
-
-        num_reduced = red_num_caustics;
-    }
-
-    return num_reduced;
+    return reduced_num;
 }
 
 void Map::compile_finalize() noexcept {
-    fine_grid_.init_cells(red_num_fine_, photons_);
-    fine_grid_.set_num_paths(num_caustic_paths_);
-
-    if (separate_indirect_) {
-        coarse_grid_.init_cells(red_num_coarse_, photons_ + red_num_fine_);
-        coarse_grid_.set_num_paths(num_indirect_paths_);
-    }
+    grid_.init_cells(reduced_num_, photons_);
+    grid_.set_num_paths(num_paths_);
 }
 
 float3 Map::li(Intersection const& intersection, Material_sample const& sample,
                scene::Worker const& worker) const noexcept {
-    return fine_grid_.li(intersection, sample, worker) +
-           coarse_grid_.li(intersection, sample, worker);
+    return grid_.li(intersection, sample, worker);
 }
 
 bool Map::caustics_only() const noexcept {
@@ -154,7 +86,7 @@ bool Map::caustics_only() const noexcept {
 size_t Map::num_bytes() const noexcept {
     size_t num_bytes = num_photons_ * sizeof(Photon);
 
-    num_bytes += fine_grid_.num_bytes() + coarse_grid_.num_bytes();
+    num_bytes += grid_.num_bytes();
 
     return num_bytes;
 }

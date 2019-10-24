@@ -716,15 +716,13 @@ static Particle_factory_ptr load_particle_integrator_factory(json::Value const& 
 }
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {
-    settings.num_photons          = json::read_uint(value, "num_photons", 0);
-    settings.max_bounces          = json::read_uint(value, "max_bounces", 4);
-    settings.iteration_threshold  = json::read_float(value, "iteration_threshold", 1.f);
-    settings.search_radius        = json::read_float(value, "search_radius", 0.002f);
-    settings.merge_radius         = json::read_float(value, "merge_radius", 0.001f);
-    settings.coarse_search_radius = json::read_float(value, "coarse_search_radius", 0.02f);
-    settings.indirect_photons     = json::read_bool(value, "indirect_photons", true);
-    settings.separate_indirect    = json::read_bool(value, "separate_indirect", false);
-    settings.full_light_path      = json::read_bool(value, "full_light_path", false);
+    settings.num_photons         = json::read_uint(value, "num_photons", 0);
+    settings.max_bounces         = json::read_uint(value, "max_bounces", 4);
+    settings.iteration_threshold = json::read_float(value, "iteration_threshold", 1.f);
+    settings.search_radius       = json::read_float(value, "search_radius", 0.002f);
+    settings.merge_radius        = json::read_float(value, "merge_radius", 0.001f);
+    settings.indirect_photons    = json::read_bool(value, "indirect_photons", true);
+    settings.full_light_path     = json::read_bool(value, "full_light_path", false);
 }
 
 static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,

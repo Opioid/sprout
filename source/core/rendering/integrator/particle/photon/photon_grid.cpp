@@ -352,9 +352,9 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
         result *= volume_normalization_ / mu_s;
     } else {
-        float const radius_2 = search_radius_ * search_radius_;
+        float const radius2 = search_radius_ * search_radius_;
 
-        float const inv_radius_2 = 1.f / radius_2;
+        float const inv_radius2 = 1.f / radius2;
 
         Plane const disk = plane::create(intersection.geo.n, position);
 
@@ -370,8 +370,8 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                     continue;
                 }
 
-                if (float const distance_2 = squared_distance(photon.p, position);
-                    distance_2 < radius_2) {
+                if (float const distance2 = squared_distance(photon.p, position);
+                    distance2 < radius2) {
                     if (check_disk_ && std::abs(plane::dot(disk, photon.p)) > disk_thickness) {
                         continue;
                     }
@@ -381,7 +381,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
                         // float const k = cone_filter(distance_2, inv_radius_2);
 
-                        float const k = conely_filter(distance_2, inv_radius_2);
+                        float const k = conely_filter(distance2, inv_radius2);
 
                         auto const bxdf = sample.evaluate_b(photon.wi, true);
 
