@@ -15,12 +15,12 @@
 
 namespace controller {
 
-size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& resource_manager,
-                   thread::Pool& threads, uint32_t max_sample_size) {
+void progressive(take::Take& take, scene::Scene& scene, resource::Manager& resource_manager,
+                 thread::Pool& threads, uint32_t max_sample_size) {
     logging::info("Progressive mode... type stuff to interact");
 
     if (!take.view.camera) {
-        return 0;
+        return;
     }
 
     rendering::Driver_progressive driver(take, scene, threads, max_sample_size);
@@ -58,8 +58,6 @@ size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& res
     driver.abort();
 
     server.shutdown();
-
-    return driver.num_bytes();
 }
 
 }  // namespace controller

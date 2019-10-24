@@ -183,16 +183,6 @@ sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-size_t Pathtracer::num_bytes() const noexcept {
-    size_t sampler_bytes = 0;
-
-    for (auto& s : material_samplers_) {
-        sampler_bytes += s.num_bytes();
-    }
-
-    return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
-}
-
 Pathtracer_factory::Pathtracer_factory(take::Settings const& take_settings,
                                        uint32_t num_integrators, uint32_t num_samples,
                                        uint32_t min_bounces, uint32_t max_bounces,

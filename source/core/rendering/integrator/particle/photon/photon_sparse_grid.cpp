@@ -438,14 +438,6 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
     return result;
 }
 
-size_t Sparse_grid::num_bytes() const noexcept {
-    int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
-
-    size_t const num_bytes = size_t(num_cells) * sizeof(int32_t);
-
-    return num_bytes;
-}
-
 void Sparse_grid::release() noexcept {
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 

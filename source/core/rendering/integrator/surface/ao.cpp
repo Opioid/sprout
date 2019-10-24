@@ -57,10 +57,6 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, result, result, 1.f);
 }
 
-size_t AO::num_bytes() const noexcept {
-    return sizeof(*this) + sampler_.num_bytes();
-}
-
 AO_factory::AO_factory(take::Settings const& settings, uint32_t num_integrators,
                        uint32_t num_samples, float radius) noexcept
     : Factory(settings), integrators_(memory::allocate_aligned<AO>(num_integrators)) {

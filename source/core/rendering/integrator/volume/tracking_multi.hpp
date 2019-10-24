@@ -23,8 +23,6 @@ class alignas(64) Tracking_multi final : public Integrator {
     Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
                     float3& transmittance) noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
-
   private:
     using Interface = scene::prop::Interface;
 

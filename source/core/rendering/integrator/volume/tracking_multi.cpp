@@ -260,10 +260,6 @@ void Tracking_multi::set_scattering(Intersection& intersection, Interface const*
     intersection.subsurface = true;
 }
 
-size_t Tracking_multi::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 Tracking_multi_factory::Tracking_multi_factory(take::Settings const& take_settings,
                                                uint32_t              num_integrators) noexcept
     : Factory(take_settings, num_integrators),

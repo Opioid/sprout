@@ -64,8 +64,6 @@ class alignas(64) Lighttracer final : public Integrator {
     void li(uint32_t frame, int4 const& bounds, Worker& worker,
             Interface_stack const& initial_stack) noexcept;
 
-    size_t num_bytes() const noexcept override final;
-
   private:
     bool generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
                             uint32_t& light_id, Sample_from& light_sample) noexcept;

@@ -124,10 +124,6 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     return settings_.num_light_samples_reciprocal * result;
 }
 
-size_t Whitted::num_bytes() const noexcept {
-    return sizeof(*this) + sampler_.num_bytes();
-}
-
 Whitted_factory::Whitted_factory(take::Settings const& take_settings, uint32_t num_integrators,
                                  uint32_t num_light_samples) noexcept
     : Factory(take_settings), integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {

@@ -410,14 +410,6 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     return result;
 }
 
-size_t Grid::num_bytes() const noexcept {
-    int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
-
-    size_t const num_bytes = size_t(num_cells) * sizeof(int32_t);
-
-    return num_bytes;
-}
-
 uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
     float const merge_grid_cell_factor = (search_radius_ * grid_cell_factor_) / merge_radius;
 

@@ -56,10 +56,6 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(0.5f * (vector + float3(1.f)), 1.f);
 }
 
-size_t Debug::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 Debug_factory::Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
                              Debug::Settings::Vector vector) noexcept
     : Factory(take_settings), integrators_(memory::allocate_aligned<Debug>(num_integrators)) {

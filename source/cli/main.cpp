@@ -42,9 +42,8 @@
 //#include "core/sampler/sampler_test.hpp"
 //#include "core/scene/material/ggx/ggx_integrate.hpp"
 
-static void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
-                                   scene::Loader const& loader, scene::Scene const& scene,
-                                   size_t rendering_num_bytes) noexcept;
+static void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
+                                   scene::Scene const& scene) noexcept;
 
 static bool is_json(std::string const& text) noexcept;
 
@@ -167,11 +166,8 @@ int main(int argc, char* argv[]) noexcept {
 
             logging::info("Rendering...");
 
-            size_t rendering_num_bytes = 0;
-
             if (args.progressive) {
-                rendering_num_bytes = controller::progressive(take, scene, resource_manager,
-                                                              threads, max_sample_size);
+                controller::progressive(take, scene, resource_manager, threads, max_sample_size);
             } else {
                 progress::Std_out progressor;
 
@@ -180,8 +176,6 @@ int main(int argc, char* argv[]) noexcept {
                 if (take.view.camera) {
                     rendering::Driver_finalframe driver(take, scene, threads, max_sample_size,
                                                         progressor);
-
-                    rendering_num_bytes += driver.num_bytes();
 
                     driver.render(take.exporters);
                 } else {
@@ -195,8 +189,7 @@ int main(int argc, char* argv[]) noexcept {
                 logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
             }
 
-            log_memory_consumption(resource_manager, take, scene_loader, scene,
-                                   rendering_num_bytes);
+            log_memory_consumption(resource_manager, scene_loader, scene);
         }
 
         if (args.quit) {
@@ -217,9 +210,8 @@ int main(int argc, char* argv[]) noexcept {
     return 0;
 }
 
-void log_memory_consumption(resource::Manager const& manager, take::Take const& take,
-                            scene::Loader const& loader, scene::Scene const& scene,
-                            size_t rendering_num_bytes) noexcept {
+void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
+                            scene::Scene const& scene) noexcept {
     if (!logging::is_verbose()) {
         return;
     }
@@ -235,15 +227,11 @@ void log_memory_consumption(resource::Manager const& manager, take::Take const& 
     size_t const mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
     logging::verbose("\tMeshes: " + string::print_bytes(mesh_num_bytes));
 
-    size_t const renderer_num_bytes = take.view.pipeline.num_bytes() +
-                                      take.view.camera->sensor().num_bytes() + rendering_num_bytes;
-    logging::verbose("\tRenderer: " + string::print_bytes(renderer_num_bytes));
-
     size_t const scene_num_bytes = loader.num_bytes() + scene.num_bytes();
     logging::verbose("\tScene: " + string::print_bytes(scene_num_bytes));
 
     size_t const total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes +
-                                   renderer_num_bytes + scene_num_bytes;
+                                   scene_num_bytes;
     logging::verbose("\tTotal: " + string::print_bytes(total_num_bytes));
 }
 

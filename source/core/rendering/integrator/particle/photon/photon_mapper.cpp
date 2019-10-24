@@ -85,10 +85,6 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
     return num_paths;
 }
 
-size_t Mapper::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const& frustum,
                               bool infinite_world, bool caustics_only, Worker& worker,
                               uint32_t max_photons, Photon* photons, uint32_t& num_photons,

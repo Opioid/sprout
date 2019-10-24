@@ -39,10 +39,6 @@ void Bloom::init(scene::camera::Camera const& camera, thread::Pool& /*pool*/) {
     }
 }
 
-size_t Bloom::num_bytes() const {
-    return sizeof(*this) + scratch_.num_bytes() + kernel_.size() * sizeof(K);
-}
-
 void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
                   image::Float4 const& source, image::Float4& destination) {
     float threshold = threshold_;

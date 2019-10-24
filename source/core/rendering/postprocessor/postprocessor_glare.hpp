@@ -16,8 +16,6 @@ class Glare : public Postprocessor {
 
     void init(scene::camera::Camera const& camera, thread::Pool& threads) override final;
 
-    size_t num_bytes() const override final;
-
   private:
     void pre_apply(image::Float4 const& source, image::Float4& destination,
                    thread::Pool& threads) override final;

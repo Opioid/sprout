@@ -59,8 +59,6 @@ class Interface_stack {
 
     void pop() noexcept;
 
-    size_t num_bytes() const noexcept;
-
   private:
     static int32_t constexpr Num_entries = 16;
 

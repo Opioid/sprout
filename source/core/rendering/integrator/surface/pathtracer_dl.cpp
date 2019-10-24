@@ -236,10 +236,6 @@ sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-size_t Pathtracer_DL::num_bytes() const noexcept {
-    return sizeof(*this) + sampler_.num_bytes();
-}
-
 Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings,
                                              uint32_t num_integrators, uint32_t min_bounces,
                                              uint32_t max_bounces, uint32_t num_light_samples,

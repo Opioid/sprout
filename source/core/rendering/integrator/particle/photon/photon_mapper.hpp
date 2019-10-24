@@ -54,8 +54,6 @@ class Mapper : public Integrator {
 
     void export_importances() const noexcept;
 
-    size_t num_bytes() const noexcept override final;
-
   private:
     uint32_t trace_photon(uint32_t frame, AABB const& bounds, Frustum const& frustum,
                           bool infinite_world, bool caustics_only, Worker& worker,

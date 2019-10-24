@@ -23,10 +23,6 @@ float Hammersley::generate_sample_1D(uint32_t /*dimension*/) noexcept {
     return rng_.random_float();
 }
 
-size_t Hammersley::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 void Hammersley::on_resize() noexcept {}
 
 void Hammersley::on_start_pixel() noexcept {

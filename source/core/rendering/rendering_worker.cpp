@@ -143,18 +143,6 @@ Worker::Particle_importance& Worker::particle_importance() const noexcept {
     return *particle_importance_;
 }
 
-size_t Worker::num_bytes() const noexcept {
-    size_t num_bytes = sizeof(*this);
-
-    num_bytes += surface_integrator_->num_bytes();
-    num_bytes += volume_integrator_->num_bytes();
-    num_bytes += sampler_->num_bytes();
-    num_bytes += interface_stack_.num_bytes();
-    num_bytes += interface_stack_temp_.num_bytes();
-
-    return num_bytes;
-}
-
 bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
     if (!scene_->has_volumes()) {
         transmittance = float3(1.f);

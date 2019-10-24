@@ -11,8 +11,6 @@ class Tonemapper : public Postprocessor {
 
     void init(scene::camera::Camera const& camera, thread::Pool& threads) override final;
 
-    size_t num_bytes() const override final;
-
   protected:
     static float normalization_factor(float hdr_max, float tonemapped_max);
 };

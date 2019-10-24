@@ -46,8 +46,6 @@ class Pipeline {
     void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
                           thread::Pool& threads) noexcept;
 
-    size_t num_bytes() const noexcept;
-
   private:
     image::Float4 scratch_;
 

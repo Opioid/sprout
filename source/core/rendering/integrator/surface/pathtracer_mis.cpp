@@ -101,20 +101,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
     return num_samples_reciprocal * li + float4(photon_li, 0.f);
 }
 
-size_t Pathtracer_MIS::num_bytes() const noexcept {
-    size_t sampler_bytes = 0;
-
-    for (auto const& s : material_samplers_) {
-        sampler_bytes += s.num_bytes();
-    }
-
-    for (auto const& s : light_samplers_) {
-        sampler_bytes += s.num_bytes();
-    }
-
-    return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
-}
-
 Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection,
                                                  Worker& worker, bool integrate_photons) noexcept {
     uint32_t const max_bounces = settings_.max_bounces;

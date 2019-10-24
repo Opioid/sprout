@@ -21,10 +21,6 @@ float Random::generate_sample_1D(uint32_t /*dimension*/) noexcept {
     return rng_.random_float();
 }
 
-size_t Random::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 void Random::on_resize() noexcept {}
 
 void Random::on_start_pixel() noexcept {}

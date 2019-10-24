@@ -114,13 +114,4 @@ void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& tar
     }
 }
 
-size_t Pipeline::num_bytes() const noexcept {
-    size_t num_bytes = 0;
-    for (auto const pp : postprocessors_) {
-        num_bytes += pp->num_bytes();
-    }
-
-    return num_bytes;
-}
-
 }  // namespace rendering::postprocessor

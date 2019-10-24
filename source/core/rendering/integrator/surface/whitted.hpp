@@ -28,8 +28,6 @@ class alignas(64) Whitted final : public Integrator {
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
-
   private:
     float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept;
 

@@ -26,11 +26,6 @@ bool Transparent::has_alpha_transparency() const noexcept {
     return true;
 }
 
-size_t Transparent::num_bytes() const noexcept {
-    auto const d = dimensions();
-    return d[0] * d[1] * sizeof(Pixel);
-}
-
 void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) noexcept {
     auto const d = dimensions();
 

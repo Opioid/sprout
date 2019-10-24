@@ -38,8 +38,6 @@ class Map {
 
     bool caustics_only() const noexcept;
 
-    size_t num_bytes() const noexcept;
-
   private:
     AABB calculate_aabb(uint32_t num_photons, thread::Pool& threads) const noexcept;
 

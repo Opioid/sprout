@@ -49,8 +49,6 @@ class Sparse_grid {
     float3 li(Intersection const& intersection, Material_sample const& sample,
               Photon_ref* photon_refs, scene::Worker const& worker) const noexcept;
 
-    size_t num_bytes() const noexcept;
-
   private:
     void release() noexcept;
 

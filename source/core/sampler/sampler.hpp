@@ -33,8 +33,6 @@ class Sampler {
 
     virtual float generate_sample_1D(uint32_t dimension = 0) noexcept = 0;
 
-    virtual size_t num_bytes() const noexcept = 0;
-
   protected:
     virtual void on_resize() noexcept = 0;
 
