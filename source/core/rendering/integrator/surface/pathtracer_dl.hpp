@@ -29,8 +29,6 @@ class alignas(64) Pathtracer_DL final : public Integrator {
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
-
   private:
     float3 direct_light(Ray const& ray, Intersection const& intersection,
                         Material_sample const& material_sample, bool evaluate_back, Filter filter,

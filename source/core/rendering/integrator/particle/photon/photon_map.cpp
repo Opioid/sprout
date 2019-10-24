@@ -83,14 +83,6 @@ bool Map::caustics_only() const noexcept {
     return caustic_only_;
 }
 
-size_t Map::num_bytes() const noexcept {
-    size_t num_bytes = num_photons_ * sizeof(Photon);
-
-    num_bytes += grid_.num_bytes();
-
-    return num_bytes;
-}
-
 AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& pool) const noexcept {
     pool.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {

@@ -30,10 +30,6 @@ Event Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /
     return Event::Pass;
 }
 
-size_t Emission::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 Emission_factory::Emission_factory(take::Settings const& settings, uint32_t num_integrators,
                                    float step_size) noexcept
     : Factory(settings, num_integrators),

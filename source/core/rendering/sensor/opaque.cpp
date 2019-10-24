@@ -25,11 +25,6 @@ bool Opaque::has_alpha_transparency() const noexcept {
     return false;
 }
 
-size_t Opaque::num_bytes() const noexcept {
-    auto const d = dimensions();
-    return size_t(d[0] * d[1]) * sizeof(float4);
-}
-
 void Opaque::add_pixel(int2 pixel, float4 const& color, float weight) noexcept {
     auto const d = dimensions();
 

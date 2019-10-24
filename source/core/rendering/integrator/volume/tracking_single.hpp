@@ -20,8 +20,6 @@ class alignas(64) Tracking_single final : public Integrator {
     Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
                     float3& transmittance) noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
-
   private:
     float3 direct_light(Ray const& ray, float3 const& position, Intersection const& intersection,
                         Worker& worker) noexcept;

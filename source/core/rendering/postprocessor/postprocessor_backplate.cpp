@@ -14,10 +14,6 @@ bool Backplate::alpha_out(bool /*alpha_in*/) const {
     return false;
 }
 
-size_t Backplate::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Backplate::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
                       image::Float4 const& source, image::Float4& destination) {
     for (int32_t i = begin; i < end; ++i) {

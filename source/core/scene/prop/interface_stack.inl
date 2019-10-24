@@ -135,10 +135,6 @@ inline void Interface_stack::pop() noexcept {
     }
 }
 
-inline size_t Interface_stack::num_bytes() const noexcept {
-    return sizeof(*this) + Num_entries * sizeof(Interface);
-}
-
 }  // namespace scene::prop
 
 #endif

@@ -15,8 +15,6 @@ class alignas(64) Random : public Sampler {
 
     float generate_sample_1D(uint32_t dimension = 0) noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
-
   private:
     void on_resize() noexcept override final;
 

@@ -67,10 +67,6 @@ float RD::generate_sample_1D(uint32_t dimension) noexcept {
     return r1(seed, n);
 }
 
-size_t RD::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 void RD::on_resize() noexcept {
     memory::free_aligned(seeds_2D_);
 

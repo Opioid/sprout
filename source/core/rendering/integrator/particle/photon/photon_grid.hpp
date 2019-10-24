@@ -48,8 +48,6 @@ class Grid {
     float3 li(Intersection const& intersection, Material_sample const& sample,
               scene::Worker const& worker) const noexcept;
 
-    size_t num_bytes() const noexcept;
-
   private:
     uint32_t reduce(float merge_radius, int32_t begin, int32_t end) noexcept;
 

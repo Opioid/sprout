@@ -186,11 +186,6 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
     }
 }
 
-size_t Glare::num_bytes() const {
-    uint32_t const buffer_size = uint32_t(dimensions_[0] * dimensions_[1]);
-    return sizeof(*this) + buffer_size * sizeof(float3) + buffer_size * sizeof(int32_t);
-}
-
 void Glare::pre_apply(image::Float4 const& /*source*/, image::Float4& /*destination*/,
                       thread::Pool& /*pool*/) {
     high_.clear();

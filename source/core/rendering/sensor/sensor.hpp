@@ -45,8 +45,6 @@ class Sensor {
 
     virtual bool has_alpha_transparency() const noexcept = 0;
 
-    virtual size_t num_bytes() const noexcept = 0;
-
   protected:
     virtual void add_pixel(int2 pixel, float4 const& color, float weight) noexcept = 0;
 

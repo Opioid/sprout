@@ -25,8 +25,6 @@ class alignas(64) Emission final : public Integrator {
     virtual Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
                             float3& li, float3& transmittance) noexcept override final;
 
-    virtual size_t num_bytes() const noexcept override final;
-
     Settings const settings_;
 };
 

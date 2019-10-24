@@ -22,10 +22,6 @@ float Uniform::generate_sample_1D(uint32_t /*dimension*/) noexcept {
     return rng_.random_float();
 }
 
-size_t Uniform::num_bytes() const noexcept {
-    return sizeof(*this);
-}
-
 void Uniform::on_resize() noexcept {}
 
 void Uniform::on_start_pixel() noexcept {}

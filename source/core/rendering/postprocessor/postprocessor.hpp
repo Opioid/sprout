@@ -18,8 +18,6 @@ class Postprocessor {
 
     virtual void init(scene::camera::Camera const& camera, thread::Pool& pool) = 0;
 
-    virtual size_t num_bytes() const = 0;
-
     virtual bool alpha_out(bool alpha_in) const;
 
     void apply(image::Float4 const& source, image::Float4& destination, thread::Pool& pool);

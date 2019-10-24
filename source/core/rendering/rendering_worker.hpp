@@ -93,8 +93,6 @@ class Worker : public scene::Worker {
 
     Particle_importance& particle_importance() const noexcept;
 
-    size_t num_bytes() const noexcept;
-
   protected:
     bool transmittance(Ray const& ray, float3& transmittance) noexcept;
 

@@ -15,8 +15,6 @@ class Opaque : public Sensor {
 
     bool has_alpha_transparency() const noexcept override final;
 
-    size_t num_bytes() const noexcept override final;
-
   protected:
     void add_pixel(int2 pixel, float4 const& color, float weight) noexcept override final;
 
