@@ -26,7 +26,6 @@ class Worker;
 namespace rendering::integrator::particle::photon {
 
 struct Photon;
-struct Photon_ref;
 
 class Grid {
   public:
@@ -47,7 +46,7 @@ class Grid {
     void set_num_paths(uint64_t num_paths) noexcept;
 
     float3 li(Intersection const& intersection, Material_sample const& sample,
-              Photon_ref* photon_refs, scene::Worker const& worker) const noexcept;
+              scene::Worker const& worker) const noexcept;
 
     size_t num_bytes() const noexcept;
 

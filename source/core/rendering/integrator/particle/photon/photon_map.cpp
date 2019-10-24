@@ -24,11 +24,9 @@ Map::Map(uint32_t num_photons, float search_radius, float merge_radius, float co
       aabbs_(nullptr),
       num_reduced_(nullptr),
       fine_grid_(search_radius, 1.5f, false),
-      coarse_grid_(coarse_search_radius, 1.1f, true),
-      photon_refs_(nullptr) {}
+      coarse_grid_(coarse_search_radius, 1.1f, true) {}
 
 Map::~Map() noexcept {
-    memory::free_aligned(photon_refs_);
     memory::free_aligned(num_reduced_);
     memory::free_aligned(aabbs_);
     memory::free_aligned(photons_);
@@ -36,9 +34,8 @@ Map::~Map() noexcept {
 
 void Map::init(uint32_t num_workers) noexcept {
     photons_     = memory::allocate_aligned<Photon>(num_photons_);
-    aabbs_       = memory::allocate_aligned<AABB>(num_photons_);
+    aabbs_       = memory::allocate_aligned<AABB>(num_workers);
     num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
-    photon_refs_ = memory::allocate_aligned<Photon_ref>(num_workers * Num_refs);
 }
 
 void Map::start() noexcept {
@@ -146,10 +143,8 @@ void Map::compile_finalize() noexcept {
 
 float3 Map::li(Intersection const& intersection, Material_sample const& sample,
                scene::Worker const& worker) const noexcept {
-    Photon_ref* photon_refs = &photon_refs_[worker.id() * Num_refs];
-
-    return fine_grid_.li(intersection, sample, photon_refs, worker) +
-           coarse_grid_.li(intersection, sample, photon_refs, worker);
+    return fine_grid_.li(intersection, sample, worker) +
+           coarse_grid_.li(intersection, sample, worker);
 }
 
 bool Map::caustics_only() const noexcept {

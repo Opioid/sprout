@@ -19,7 +19,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-#define ISLAND_MODE
+//#define ISLAND_MODE
 
 namespace rendering::integrator::particle::photon {
 

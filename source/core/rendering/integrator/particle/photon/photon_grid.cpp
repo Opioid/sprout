@@ -22,10 +22,6 @@ namespace rendering::integrator::particle::photon {
 
 using namespace scene;
 
-static inline bool operator<(Photon_ref a, Photon_ref b) noexcept {
-    return a.sd < b.sd;
-}
-
 enum Adjacent { None = 0, Positive = 1, Negative = 2 };
 
 static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
@@ -315,7 +311,7 @@ void Grid::set_num_paths(uint64_t num_paths) noexcept {
 }
 
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
-                Photon_ref* /*photon_refs*/, scene::Worker const&        worker) const noexcept {
+                scene::Worker const& worker) const noexcept {
     if (0 == num_photons_) {
         return float3(0.f);
     }
