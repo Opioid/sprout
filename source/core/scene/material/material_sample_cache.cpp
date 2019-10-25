@@ -12,8 +12,4 @@ void Sample_cache::init(uint32_t max_sample_size) noexcept {
     buffer_          = memory::allocate_aligned<char>(max_sample_size_);
 }
 
-size_t Sample_cache::num_bytes() const noexcept {
-    return sizeof(*this) + max_sample_size_ * sizeof(char);
-}
-
 }  // namespace scene::material

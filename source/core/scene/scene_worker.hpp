@@ -5,9 +5,14 @@
 #include "base/random/generator.hpp"
 #include "material/material_sample.hpp"
 #include "material/material_sample_cache.hpp"
-#include "material/sampler_cache.hpp"
+#include "material/sampler_settings.hpp"
 #include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
+
+namespace image::texture::sampler {
+class Sampler_2D;
+class Sampler_3D;
+}  // namespace image::texture::sampler
 
 namespace scene {
 
@@ -46,8 +51,6 @@ class Worker {
 
     void init(uint32_t id, Scene const& scene, Camera const& camera,
               uint32_t max_sample_size) noexcept;
-
-    uint32_t id() const noexcept;
 
     bool intersect(Ray& ray, Intersection& intersection) const noexcept;
 
@@ -89,9 +92,6 @@ class Worker {
     material::IoR interface_change_ior(float3 const&       dir,
                                        Intersection const& intersection) noexcept;
 
-  private:
-    uint32_t id_;
-
   protected:
     rnd::Generator rng_;
 
@@ -99,13 +99,9 @@ class Worker {
 
     Camera const* camera_;
 
-    //   Tile_queue const* tiles_;
-
     mutable shape::Node_stack node_stack_;
 
     mutable material::Sample_cache sample_cache_;
-
-    material::Sampler_cache const sampler_cache_;
 
     Interface_stack interface_stack_;
     Interface_stack interface_stack_temp_;

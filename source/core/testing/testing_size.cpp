@@ -1,6 +1,4 @@
 #include "testing_size.hpp"
-#include <iostream>
-#include <string>
 #include "base/math/vector3.inl"
 #include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
@@ -10,6 +8,7 @@
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/rendering_camera_worker.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
@@ -44,6 +43,9 @@
 #include "scene/shape/triangle/triangle_morphable_mesh.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
 
+#include <iostream>
+#include <string>
+
 namespace testing {
 
 template <typename T>
@@ -77,6 +79,8 @@ void size() {
     print_size<scene::Ray>("scene::Ray", 80);
 
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
+
+    print_size<sampler::Sampler>("Sampler", 48);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
 
@@ -139,9 +143,9 @@ void size() {
 
     print_size<scene::bvh::Split_candidate>("Split_candidate", 96);
 
-    print_size<scene::Worker>("scene::Worker", 232);
-    print_size<rendering::Worker>("rendering::Worker", 288);
-    print_size<rendering::Camera_worker>("rendering::Camera_worker", 320);
+    print_size<scene::Worker>("scene::Worker", 96);
+    print_size<rendering::Worker>("rendering::Worker", 152);
+    print_size<rendering::Camera_worker>("rendering::Camera_worker", 192);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 128);
     print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 512);

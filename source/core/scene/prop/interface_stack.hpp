@@ -1,9 +1,9 @@
 #ifndef SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 #define SU_CORE_SCENE_PROP_INTERFACE_STACK_HPP
 
-#include <cstddef>
-#include <cstdint>
 #include "base/math/vector2.hpp"
+
+#include <cstdint>
 
 namespace scene {
 
@@ -62,7 +62,8 @@ class Interface_stack {
   private:
     static int32_t constexpr Num_entries = 16;
 
-    int32_t    index_;
+    int32_t index_;
+
     Interface* stack_;
 };
 

@@ -1,8 +1,9 @@
 #ifndef SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
 #define SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
 
-#include <cstdint>
 #include "sampler_settings.hpp"
+
+#include <cstdint>
 
 namespace image::texture::sampler {
 class Sampler_2D;

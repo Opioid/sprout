@@ -32,10 +32,6 @@ inline uint32_t Node_stack::pop() noexcept {
     return stack_[--end_];
 }
 
-inline size_t Node_stack::num_bytes() const noexcept {
-    return sizeof(*this) + size_t(num_elements_) * sizeof(uint32_t);
-}
-
 }  // namespace scene::shape
 
 #endif

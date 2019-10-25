@@ -15,24 +15,21 @@
 
 namespace scene {
 
+static material::Sampler_cache const Sampler_cache;
+
 using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 
 Worker::Worker() noexcept : node_stack_(128 + 16) {}
 
+Worker::~Worker() noexcept {}
+
 void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
                   uint32_t max_sample_size) noexcept {
-    id_ = id;
     rng_.start(0, id);
     scene_  = &scene;
     camera_ = &camera;
     sample_cache_.init(max_sample_size);
-}
-
-Worker::~Worker() noexcept {}
-
-uint32_t Worker::id() const noexcept {
-    return id_;
 }
 
 bool Worker::intersect(Ray& ray, Intersection& intersection) const noexcept {
@@ -103,11 +100,11 @@ material::Sample_cache& Worker::sample_cache() const noexcept {
 }
 
 Texture_sampler_2D const& Worker::sampler_2D(uint32_t key, Filter filter) const noexcept {
-    return sampler_cache_.sampler_2D(key, filter);
+    return Sampler_cache.sampler_2D(key, filter);
 }
 
 Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Filter filter) const noexcept {
-    return sampler_cache_.sampler_3D(key, filter);
+    return Sampler_cache.sampler_3D(key, filter);
 }
 
 prop::Interface_stack& Worker::interface_stack() noexcept {
