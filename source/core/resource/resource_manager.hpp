@@ -32,13 +32,13 @@ class Manager {
   public:
     using Variant_map = memory::Variant_map;
 
-    Manager(file::System& filesystem, thread::Pool& thread_pool) noexcept;
+    Manager(file::System& filesystem, thread::Pool& threads) noexcept;
 
     ~Manager() noexcept;
 
     file::System& filesystem() noexcept;
 
-    thread::Pool& thread_pool() noexcept;
+    thread::Pool& threads() noexcept;
 
     void increment_generation() noexcept;
 
@@ -80,7 +80,7 @@ class Manager {
 
     file::System& filesystem_;
 
-    thread::Pool& thread_pool_;
+    thread::Pool& threads_;
 
     std::map<std::string, Cache*> caches_;
 };

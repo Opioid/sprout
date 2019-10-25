@@ -54,7 +54,7 @@ class Driver {
     using Scene  = scene::Scene;
     using Camera = scene::camera::Camera;
 
-    Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
+    Driver(take::Take& take, Scene& scene, thread::Pool& threads,
            uint32_t max_sample_size) noexcept;
 
     ~Driver() noexcept;
@@ -71,7 +71,7 @@ class Driver {
 
     take::View& view_;
 
-    thread::Pool& thread_pool_;
+    thread::Pool& threads_;
 
     Camera_worker* workers_;
 

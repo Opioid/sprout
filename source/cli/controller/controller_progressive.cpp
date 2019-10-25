@@ -16,14 +16,14 @@
 namespace controller {
 
 size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& resource_manager,
-                   thread::Pool& thread_pool, uint32_t max_sample_size) {
+                   thread::Pool& threads, uint32_t max_sample_size) {
     logging::info("Progressive mode... type stuff to interact");
 
     if (!take.view.camera) {
         return 0;
     }
 
-    rendering::Driver_progressive driver(take, scene, thread_pool, max_sample_size);
+    rendering::Driver_progressive driver(take, scene, threads, max_sample_size);
 
     //	driver.set_force_statistics(true);
 

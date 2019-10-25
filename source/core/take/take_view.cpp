@@ -17,9 +17,9 @@ void View::clear() noexcept {
     pipeline.clear();
 }
 
-void View::init(thread::Pool& pool) noexcept {
+void View::init(thread::Pool& threads) noexcept {
     if (camera) {
-        pipeline.init(*camera, pool);
+        pipeline.init(*camera, threads);
     }
 }
 

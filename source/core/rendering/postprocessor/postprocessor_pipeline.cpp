@@ -33,7 +33,7 @@ void Pipeline::add(Postprocessor* pp) noexcept {
     }
 }
 
-void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) noexcept {
+void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& threads) noexcept {
     if (postprocessors_.empty()) {
         return;
     }
@@ -41,7 +41,7 @@ void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& pool) noe
     scratch_.resize(camera.sensor_dimensions());
 
     for (auto pp : postprocessors_) {
-        pp->init(camera, pool);
+        pp->init(camera, threads);
     }
 }
 
@@ -54,22 +54,22 @@ bool Pipeline::has_alpha_transparency(bool alpha_in) const noexcept {
 }
 
 void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target,
-                    thread::Pool& pool) noexcept {
+                    thread::Pool& threads) noexcept {
     if (postprocessors_.empty()) {
-        sensor.resolve(pool, target);
+        sensor.resolve(threads, target);
     } else {
         if (0 == postprocessors_.size() % 2) {
-            sensor.resolve(pool, target);
+            sensor.resolve(threads, target);
         } else {
-            sensor.resolve(pool, scratch_);
+            sensor.resolve(threads, scratch_);
         }
     }
 }
 
 void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target,
-                     thread::Pool& pool) noexcept {
+                     thread::Pool& threads) noexcept {
     if (postprocessors_.empty()) {
-        sensor.resolve(pool, target);
+        sensor.resolve(threads, target);
     } else {
         image::Float4* targets[2];
 
@@ -81,19 +81,19 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target,
             targets[1] = &target;
         }
 
-        sensor.resolve(pool, *targets[0]);
+        sensor.resolve(threads, *targets[0]);
 
         for (auto pp : postprocessors_) {
-            pp->apply(*targets[0], *targets[1], pool);
+            pp->apply(*targets[0], *targets[1], threads);
             std::swap(targets[0], targets[1]);
         }
     }
 }
 
 void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
-                                thread::Pool& pool) noexcept {
+                                thread::Pool& threads) noexcept {
     if (postprocessors_.empty()) {
-        sensor.resolve_accumulate(pool, target);
+        sensor.resolve_accumulate(threads, target);
     } else {
         image::Float4* targets[2];
 
@@ -105,10 +105,10 @@ void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& tar
             targets[1] = &target;
         }
 
-        sensor.resolve_accumulate(pool, *targets[0]);
+        sensor.resolve_accumulate(threads, *targets[0]);
 
         for (auto pp : postprocessors_) {
-            pp->apply(*targets[0], *targets[1], pool);
+            pp->apply(*targets[0], *targets[1], threads);
             std::swap(targets[0], targets[1]);
         }
     }

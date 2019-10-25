@@ -39,7 +39,7 @@ class Builder_SAH : private scene::bvh::Builder_base {
 
     template <typename Data>
     void build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
-               uint32_t max_primitives, thread::Pool& thread_pool);
+               uint32_t max_primitives, thread::Pool& threads);
 
   private:
     using Reference  = scene::bvh::Reference;

@@ -106,9 +106,9 @@ int main(int argc, char* argv[]) noexcept {
 
     logging::info("#Threads " + string::to_string(num_workers));
 
-    thread::Pool thread_pool(num_workers);
+    thread::Pool threads(num_workers);
 
-    resource::Manager resource_manager(file_system, thread_pool);
+    resource::Manager resource_manager(file_system, threads);
 
     image::Provider image_provider;
     resource_manager.register_provider(image_provider);
@@ -171,21 +171,21 @@ int main(int argc, char* argv[]) noexcept {
 
             if (args.progressive) {
                 rendering_num_bytes = controller::progressive(take, scene, resource_manager,
-                                                              thread_pool, max_sample_size);
+                                                              threads, max_sample_size);
             } else {
                 progress::Std_out progressor;
 
                 auto const rendering_start = std::chrono::high_resolution_clock::now();
 
                 if (take.view.camera) {
-                    rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size,
+                    rendering::Driver_finalframe driver(take, scene, threads, max_sample_size,
                                                         progressor);
 
                     rendering_num_bytes += driver.num_bytes();
 
                     driver.render(take.exporters);
                 } else {
-                    baking::Driver driver(take, scene, thread_pool, max_sample_size, progressor);
+                    baking::Driver driver(take, scene, threads, max_sample_size, progressor);
 
                     driver.render();
                 }

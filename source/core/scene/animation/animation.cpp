@@ -73,13 +73,13 @@ void Stage::allocate_enitity_frames(Scene& scene) const noexcept {
     scene.prop_allocate_frames(entity_, true);
 }
 
-void Stage::update(Scene& scene, thread::Pool& pool) const noexcept {
+void Stage::update(Scene& scene, thread::Pool& threads) const noexcept {
     scene.prop_set_frames(entity_, animation_->interpolated_frames());
 
     if (shape::Morphable_shape* morphable = scene.prop_shape(entity_)->morphable_shape();
         morphable) {
         auto const& m = animation_->interpolated_frames()[0].m;
-        morphable->morph(m.targets[0], m.targets[1], m.weight, pool);
+        morphable->morph(m.targets[0], m.targets[1], m.weight, threads);
     }
 }
 

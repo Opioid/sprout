@@ -14,11 +14,11 @@ bool Postprocessor::alpha_out(bool alpha_in) const {
 }
 
 void Postprocessor::apply(image::Float4 const& source, image::Float4& destination,
-                          thread::Pool& pool) {
-    pre_apply(source, destination, pool);
+                          thread::Pool& threads) {
+    pre_apply(source, destination, threads);
 
     for (uint32_t p = 0; p < num_passes_; ++p) {
-        pool.run_range(
+        threads.run_range(
             [this, p, &source, &destination](uint32_t id, int32_t begin, int32_t end) {
                 apply(id, p, begin, end, source, destination);
             },

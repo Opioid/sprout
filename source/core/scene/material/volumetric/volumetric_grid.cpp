@@ -50,11 +50,11 @@ CCE Grid::collision_coefficients_emission(float3 const& uvw, Filter filter,
     return {{d * cc_.a, d * cc_.s}, emission_};
 }
 
-void Grid::compile(thread::Pool& pool) noexcept {
+void Grid::compile(thread::Pool& threads) noexcept {
     auto const& texture = density_.texture();
 
     Octree_builder builder;
-    builder.build(tree_, texture, cm_, pool);
+    builder.build(tree_, texture, cm_, threads);
 
     is_scattering_ = any_greater_zero(cc_.s);
 }
@@ -102,7 +102,7 @@ float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const
 
 void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                      Transformation const& /*transformation*/, float /*area*/,
-                                     bool importance_sampling, thread::Pool& pool) noexcept {
+                                     bool importance_sampling, thread::Pool& threads) noexcept {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
@@ -118,9 +118,9 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         Distribution_2D* conditional_2d = distribution_.allocate(d[2]);
 
-        memory::Array<float3> ars(pool.num_threads());
+        memory::Array<float3> ars(threads.num_threads());
 
-        pool.run_range(
+        threads.run_range(
             [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
                                                             int32_t end) {
                 float* luminance = memory::allocate_aligned<float>(d[0]);
@@ -226,11 +226,11 @@ void Grid_color::set_attenuation(float scattering_factor, float distance) noexce
     scattering_factor_ = scattering_factor;
 }
 
-void Grid_color::compile(thread::Pool& pool) noexcept {
+void Grid_color::compile(thread::Pool& threads) noexcept {
     auto const& texture = color_.texture();
 
     Octree_builder builder;
-    builder.build(tree_, texture, CM(distance_, scattering_factor_), pool);
+    builder.build(tree_, texture, CM(distance_, scattering_factor_), threads);
 }
 
 Gridtree const* Grid_color::volume_tree() const noexcept {

@@ -15,7 +15,7 @@ class Gaussian {
   public:
     Gaussian(float radius, float alpha) noexcept;
 
-    void apply(Typed_image<T>& target, thread::Pool& pool) noexcept;
+    void apply(Typed_image<T>& target, thread::Pool& threads) noexcept;
 
   private:
     Typed_image<T> scratch_;

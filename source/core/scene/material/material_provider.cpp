@@ -194,7 +194,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
         return nullptr;
     }
 
-    material->compile(manager.thread_pool());
+    material->compile(manager.threads());
 
     return material;
 }

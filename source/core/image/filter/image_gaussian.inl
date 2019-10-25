@@ -30,15 +30,15 @@ Gaussian<T>::Gaussian(float radius, float alpha) noexcept : scratch_(Description
 }
 
 template <typename T>
-void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) noexcept {
+void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& threads) noexcept {
     auto const d = target.description().dimensions;
 
     scratch_.resize(d);
 
     // vertical
 
-    pool.run_range(
-        [&target, d, this](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+    threads.run_range(
+        [&target, d, this ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < d[0]; ++x) {
                     T     accum(0.f);
@@ -61,8 +61,8 @@ void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) noexcept {
 
     // horizontal
 
-    pool.run_range(
-        [&target, d, this](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+    threads.run_range(
+        [&target, d, this ](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < d[0]; ++x) {
                     T     accum(0.f);

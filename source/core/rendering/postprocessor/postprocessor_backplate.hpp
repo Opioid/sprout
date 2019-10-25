@@ -10,7 +10,7 @@ class Backplate : public Postprocessor {
   public:
     Backplate(image::texture::Texture* backplate);
 
-    void init(scene::camera::Camera const& camera, thread::Pool& pool) override final;
+    void init(scene::camera::Camera const& camera, thread::Pool& threads) override final;
 
     bool alpha_out(bool alpha_in) const override final;
 

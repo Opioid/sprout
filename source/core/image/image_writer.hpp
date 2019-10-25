@@ -17,7 +17,7 @@ class Writer {
 
     virtual std::string file_extension() const = 0;
 
-    virtual bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) = 0;
+    virtual bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) = 0;
 };
 
 }  // namespace image

@@ -68,7 +68,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
         scene.finish();
     }
 
-    resource_manager_.thread_pool().wait_async();
+    resource_manager_.threads().wait_async();
 
     return success;
 }

@@ -78,7 +78,8 @@ void Pool::run_async(Async_program&& program) noexcept {
 
 void Pool::wait_async() noexcept {
     std::unique_lock<std::mutex> lock(async_.mutex);
-    async_.done_signal.wait(lock, [this]() noexcept { return !async_.wake; });
+    async_.done_signal.wait(
+        lock, [this]() noexcept { return !async_.wake; });
 }
 
 void Pool::wake_all() noexcept {
@@ -142,7 +143,8 @@ void Pool::wait_all() noexcept {
         auto& u = uniques_[i];
 
         std::unique_lock<std::mutex> lock(u.mutex);
-        u.done_signal.wait(lock, [&u]() noexcept { return !u.wake; });
+        u.done_signal.wait(
+            lock, [&u]() noexcept { return !u.wake; });
     }
 }
 
@@ -151,7 +153,8 @@ void Pool::loop(uint32_t id) noexcept {
 
     for (;;) {
         std::unique_lock<std::mutex> lock(unique.mutex);
-        unique.wake_signal.wait(lock, [&unique]() noexcept { return unique.wake; });
+        unique.wake_signal.wait(
+            lock, [&unique]() noexcept { return unique.wake; });
 
         if (quit_) {
             break;
@@ -178,7 +181,8 @@ void Pool::loop(uint32_t id) noexcept {
 void Pool::async_loop(Async& async) noexcept {
     for (;;) {
         std::unique_lock<std::mutex> lock(async.mutex);
-        async.wake_signal.wait(lock, [&async]() noexcept { return async.wake; });
+        async.wake_signal.wait(
+            lock, [&async]() noexcept { return async.wake; });
 
         if (async.quit) {
             break;

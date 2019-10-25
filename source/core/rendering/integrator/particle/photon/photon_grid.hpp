@@ -42,7 +42,7 @@ class Grid {
     void init_cells(uint32_t num_photons, Photon* photons) noexcept;
 
     uint32_t reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                             thread::Pool& pool) noexcept;
+                             thread::Pool& threads) noexcept;
 
     void set_num_paths(uint64_t num_paths) noexcept;
 

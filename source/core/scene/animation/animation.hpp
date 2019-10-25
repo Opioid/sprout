@@ -45,7 +45,7 @@ class Stage {
 
     void allocate_enitity_frames(Scene& scene) const noexcept;
 
-    void update(Scene& scene, thread::Pool& pool) const noexcept;
+    void update(Scene& scene, thread::Pool& threads) const noexcept;
 
   private:
     uint32_t entity_;

@@ -51,9 +51,9 @@ int main(int argc, char* argv[]) noexcept {
 
     //   logging::info("#Threads " + string::to_string(num_workers));
 
-    thread::Pool thread_pool(num_workers);
+    thread::Pool threads(num_workers);
 
-    resource::Manager resource_manager(file_system, thread_pool);
+    resource::Manager resource_manager(file_system, threads);
 
     image::Provider image_provider;
     resource_manager.register_provider(image_provider);
@@ -83,18 +83,18 @@ int main(int argc, char* argv[]) noexcept {
     }
 
     if (Options::Operator::Average == args.op) {
-        if (uint32_t const num = op::average(items, args, resource_manager.thread_pool()); num) {
+        if (uint32_t const num = op::average(items, args, resource_manager.threads()); num) {
             logging::verbose("average " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
-        if (uint32_t const num = op::difference(items, args, resource_manager.thread_pool()); num) {
+        if (uint32_t const num = op::difference(items, args, resource_manager.threads()); num) {
             logging::verbose("diff " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Cat == args.op) {
         if (uint32_t const num = op::concatenate(items, args.concat_num_per_row, args.clip,
-                                                 resource_manager.thread_pool());
+                                                 resource_manager.threads());
             num) {
             logging::verbose("cat " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");

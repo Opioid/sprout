@@ -66,10 +66,10 @@ class Material {
 
     void set_parameters(json::Value const& parameters) noexcept;
 
-    virtual void compile(thread::Pool& pool) noexcept;
+    virtual void compile(thread::Pool& threads) noexcept;
 
     virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
-                          thread::Pool& pool) noexcept;
+                          thread::Pool& threads) noexcept;
 
     virtual const Sample& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, Sampler& sampler, Worker const& worker) const
@@ -139,7 +139,7 @@ class Material {
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                                   Transformation const& transformation, float area,
-                                  bool importance_sampling, thread::Pool& pool) noexcept;
+                                  bool importance_sampling, thread::Pool& threads) noexcept;
 
     virtual bool is_animated() const noexcept;
 

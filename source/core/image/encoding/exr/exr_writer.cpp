@@ -27,7 +27,7 @@ static void w(std::ostream& stream, int64_t i) noexcept;
 static void w(std::ostream& stream, std::string const& s) noexcept;
 static void w(std::ostream& stream, Channel const& c) noexcept;
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
     stream.write(reinterpret_cast<const char*>(Signature), Signature_size);
 
     uint8_t version[4];
@@ -129,9 +129,9 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool
     if (Compression::No == compression) {
         return no_compression(stream, image);
     } else if (Compression::ZIPS == compression) {
-        return zip_compression(stream, image, Compression::ZIPS, pool);
+        return zip_compression(stream, image, Compression::ZIPS, threads);
     } else if (Compression::ZIP == compression) {
-        return zip_compression(stream, image, Compression::ZIP, pool);
+        return zip_compression(stream, image, Compression::ZIP, threads);
     }
 
     return false;
@@ -286,7 +286,7 @@ static inline void block_float(uint8_t* destination, Float4 const& image, int32_
 }
 
 bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
-                             thread::Pool& pool) const noexcept {
+                             thread::Pool& threads) const noexcept {
     int2 const d = image.description().dimensions2();
 
     int32_t const rows_per_block = exr::num_scanlines_per_block(compression);
@@ -300,8 +300,8 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compress
                                               uint32_t(memory::L1_cache_line_size));
 
     memory::Buffer<uint8_t> image_buffer(uint32_t(d[1]) * bytes_per_row);
-    memory::Buffer<uint8_t> tmp_buffer(bytes_per_block * pool.num_threads());
-    memory::Buffer<uint8_t> block_buffer(bytes_per_block * pool.num_threads());
+    memory::Buffer<uint8_t> tmp_buffer(bytes_per_block * threads.num_threads());
+    memory::Buffer<uint8_t> block_buffer(bytes_per_block * threads.num_threads());
 
     struct Compressed_block {
         uint32_t size;
@@ -334,7 +334,7 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compress
                     bytes_per_block, half_,      image_buffer, tmp_buffer,
                     block_buffer,    cb,         image};
 
-    pool.run_range(
+    threads.run_range(
         [&args](uint32_t id, int32_t begin, int32_t end) {
             mz_stream zip;
             zip.zalloc = nullptr;

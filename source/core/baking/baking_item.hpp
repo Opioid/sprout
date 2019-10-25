@@ -10,6 +10,6 @@ struct Item {
     float3 wi;
 };
 
-}
+}  // namespace baking
 
 #endif

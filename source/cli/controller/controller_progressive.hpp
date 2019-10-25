@@ -23,7 +23,7 @@ class Pool;
 namespace controller {
 
 size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& resource_manager,
-                   thread::Pool& thread_pool, uint32_t max_sample_size);
+                   thread::Pool& threads, uint32_t max_sample_size);
 }
 
 #endif

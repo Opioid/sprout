@@ -35,16 +35,16 @@ class Pipeline {
 
     void add(Postprocessor* pp) noexcept;
 
-    void init(scene::camera::Camera const& camera, thread::Pool& pool) noexcept;
+    void init(scene::camera::Camera const& camera, thread::Pool& threads) noexcept;
 
     bool has_alpha_transparency(bool alpha_in) const noexcept;
 
-    void seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool) noexcept;
+    void seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) noexcept;
 
-    void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& pool) noexcept;
+    void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) noexcept;
 
     void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
-                          thread::Pool& pool) noexcept;
+                          thread::Pool& threads) noexcept;
 
     size_t num_bytes() const noexcept;
 

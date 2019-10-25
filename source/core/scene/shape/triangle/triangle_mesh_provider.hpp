@@ -42,19 +42,19 @@ class Provider : public resource::Provider<Shape> {
     size_t num_bytes(Shape const* resource) const noexcept override final;
 
     static Shape* create_mesh(Triangles const& triangles, Vertices const& vertices,
-                              uint32_t num_parts, thread::Pool& thread_pool) noexcept;
+                              uint32_t num_parts, thread::Pool& threads) noexcept;
 
   private:
     Shape* load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
                                resource::Manager& manager) noexcept;
 
     static void build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                          Vertex_stream const& vertices, thread::Pool& thread_pool) noexcept;
+                          Vertex_stream const& vertices, thread::Pool& threads) noexcept;
 
     //	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
-    //						  BVH_preset bvh_preset, thread::Pool& thread_pool);
+    //						  BVH_preset bvh_preset, thread::Pool& threads);
 
-    static Shape* load_binary(std::istream& stream, thread::Pool& thread_pool) noexcept;
+    static Shape* load_binary(std::istream& stream, thread::Pool& threads) noexcept;
 };
 
 }  // namespace triangle

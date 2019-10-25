@@ -81,8 +81,7 @@ Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
 
     calculate_normals(triangles, vertices);
 
-    auto mesh = triangle::Provider::create_mesh(triangles, vertices, num_parts,
-                                                manager.thread_pool());
+    auto mesh = triangle::Provider::create_mesh(triangles, vertices, num_parts, manager.threads());
 
     return manager.store<Shape>(mesh);
 }

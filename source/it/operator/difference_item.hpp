@@ -41,7 +41,7 @@ class Difference_item {
     float psnr() const noexcept;
 
     void calculate_difference(Texture const* other, Scratch* scratch, float clamp, float2 clip,
-                              thread::Pool& pool) noexcept;
+                              thread::Pool& threads) noexcept;
 
   private:
     std::string name_;

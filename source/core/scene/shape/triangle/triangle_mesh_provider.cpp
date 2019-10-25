@@ -46,7 +46,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     file::Type const type = file::query_type(*stream_pointer);
     if (file::Type::SUB == type) {
-        Shape* mesh = load_binary(*stream_pointer, manager.thread_pool());
+        Shape* mesh = load_binary(*stream_pointer, manager.threads());
         if (!mesh) {
             logging::error("Loading mesh %S: ", filename);
         }
@@ -119,7 +119,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         mesh->set_material_for_part(p, handler->parts()[p].material_index);
     }
 
-    manager.thread_pool().run_async([mesh, handler_raw{handler.release()}, &manager]() {
+    manager.threads().run_async([mesh, handler_raw{handler.release()}, &manager]() {
         logging::verbose("Started asynchronously building triangle mesh BVH.");
 
         auto& triangles = handler_raw->triangles();
@@ -141,7 +141,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
 
         build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream,
-                  manager.thread_pool());
+                  manager.threads());
 
         delete handler_raw;
 
@@ -166,7 +166,7 @@ size_t Provider::num_bytes(Shape const* resource) const noexcept {
 }
 
 Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
-                             uint32_t num_parts, thread::Pool& thread_pool) noexcept {
+                             uint32_t num_parts, thread::Pool& threads) noexcept {
     if (triangles.empty() || vertices.empty() || !num_parts) {
         logging::error("No mesh data.");
         return nullptr;
@@ -180,15 +180,15 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
         mesh->set_material_for_part(i, i);
     }
 
-    thread_pool.run_async([mesh, triangles_in{std::move(triangles)},
-                           vertices_in{std::move(vertices)}, &thread_pool]() {
+    threads.run_async([mesh, triangles_in{std::move(triangles)}, vertices_in{std::move(vertices)},
+                       &threads]() {
         Vertex_stream_interleaved vertex_stream(uint32_t(vertices_in.size()), vertices_in.data());
 
         build_bvh(*mesh, uint32_t(triangles_in.size()), triangles_in.data(), vertex_stream,
-                  thread_pool);
+                  threads);
     });
 
-    //	build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
+    //	build_bvh(*mesh, triangles, vertices, bvh_preset, threads);
 
     return mesh;
 }
@@ -273,9 +273,9 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 }
 
 void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                         Vertex_stream const& vertices, thread::Pool& thread_pool) noexcept {
+                         Vertex_stream const& vertices, thread::Pool& threads) noexcept {
     bvh::Builder_SAH builder(16, 64);
-    builder.build(mesh.tree(), num_triangles, triangles, vertices, 4, thread_pool);
+    builder.build(mesh.tree(), num_triangles, triangles, vertices, 4, threads);
 }
 
 template <typename Index>
@@ -329,7 +329,7 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
     }
 }
 
-Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) noexcept {
+Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) noexcept {
     stream.seekg(4);
 
     uint64_t json_size = 0;
@@ -509,8 +509,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         mesh->set_material_for_part(p, parts[p].material_index);
     }
 
-    thread_pool.run_async([mesh, num_parts, parts, num_indices, indices, vertex_stream, index_bytes,
-                           delta_indices, &thread_pool]() {
+    threads.run_async([mesh, num_parts, parts, num_indices, indices, vertex_stream, index_bytes,
+                       delta_indices, &threads]() {
         memory::Array<Index_triangle> triangles(num_indices / 3);
 
         if (4 == index_bytes) {
@@ -534,7 +534,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) no
         delete[] indices;
         delete[] parts;
 
-        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), *vertex_stream, thread_pool);
+        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), *vertex_stream, threads);
 
         vertex_stream->release();
 

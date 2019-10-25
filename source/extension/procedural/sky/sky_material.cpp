@@ -118,7 +118,8 @@ float Sky_baked_material::emission_pdf(float2 uv, Filter filter, Worker const& w
 
 void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                           Transformation const& transformation, float /*area*/,
-                                          bool importance_sampling, thread::Pool& pool) noexcept {
+                                          bool                  importance_sampling,
+                                          thread::Pool&         threads) noexcept {
     using namespace image;
 
     if (!sky_.sky_changed_since_last_check()) {
@@ -128,16 +129,16 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     //	std::ofstream stream("sky.png", std::ios::binary);
     //	if (stream) {
     //		image::encoding::png::Writer writer(d);
-    //		writer.write(stream, *cache, pool);
+    //		writer.write(stream, *cache, threads);
     //	}
 
     if (importance_sampling) {
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(
             Bake_dimensions[1]);
 
-        memory::Array<float4> artws(pool.num_threads(), float4(0.f));
+        memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 
-        pool.run_range(
+        threads.run_range(
             [this, &transformation, &conditional, &artws, &shape](uint32_t id, int32_t begin,
                                                                   int32_t end) {
                 image::Float3& cache = cache_;

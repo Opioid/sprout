@@ -13,9 +13,9 @@
 
 namespace rendering {
 
-Driver_progressive::Driver_progressive(take::Take& take, scene::Scene& scene,
-                                       thread::Pool& thread_pool, uint32_t max_sample_size)
-    : Driver(take, scene, thread_pool, max_sample_size),
+Driver_progressive::Driver_progressive(take::Take& take, scene::Scene& scene, thread::Pool& threads,
+                                       uint32_t max_sample_size)
+    : Driver(take, scene, threads, max_sample_size),
       iteration_(0),
       samples_per_iteration_(1),
       rendering_(false),
@@ -26,7 +26,7 @@ void Driver_progressive::render(exporting::Sink& exporter) {
         return;
     }
 
-    //    scene_.tick(thread_pool_);
+    //    scene_.tick(threads_);
 
     restart();
 
@@ -68,7 +68,7 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
         tiles_.restart();
 
-        thread_pool_.run_parallel([this, v](uint32_t index) {
+        threads_.run_parallel([this, v](uint32_t index) {
             auto& worker = workers_[index];
 
             for (;;) {
@@ -82,11 +82,11 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
         });
     }
 
-    view_.pipeline.apply(view_.camera->sensor(), target_, thread_pool_);
-    exporter.write(target_, iteration_, thread_pool_);
+    view_.pipeline.apply(view_.camera->sensor(), target_, threads_);
+    exporter.write(target_, iteration_, threads_);
 
     if (schedule_.statistics || force_statistics_) {
-        statistics_.write(target_, iteration_, thread_pool_);
+        statistics_.write(target_, iteration_, threads_);
         schedule_.statistics = false;
     }
 
@@ -100,7 +100,7 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
 
 void Driver_progressive::restart() {
     if (schedule_.recompile) {
-        scene_.compile(0, thread_pool_);
+        scene_.compile(0, threads_);
     }
 
     schedule_.restart = false;

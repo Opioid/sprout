@@ -52,8 +52,8 @@ void Map::insert(Photon const& photon, uint32_t index) noexcept {
 }
 
 uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
-                                thread::Pool& pool) noexcept {
-    AABB const aabb = calculate_aabb(num_photons, pool);
+                                thread::Pool& threads) noexcept {
+    AABB const aabb = calculate_aabb(num_photons, threads);
 
     fine_grid_.resize(aabb);
 
@@ -80,7 +80,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
         fine_grid_.init_cells(num_caustics, photons_);
 
         uint32_t const red_num_caustics = fine_grid_.reduce_and_move(photons_, merge_radius_,
-                                                                     num_reduced_, pool);
+                                                                     num_reduced_, threads);
 
         float const percentage_caustics = float(red_num_caustics) / float(num_caustics);
 
@@ -99,7 +99,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
         fine_grid_.init_cells(num_indirect, photons_ + num_caustics);
 
         uint32_t const red_num_indirect = fine_grid_.reduce_and_move(
-            photons_ + red_num_caustics, merge_radius_, num_reduced_, pool);
+            photons_ + red_num_caustics, merge_radius_, num_reduced_, threads);
 
         float const percentage_indirect = float(red_num_indirect) / float(num_indirect);
 
@@ -118,7 +118,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
 
         uint32_t const red_num_caustics = num_photons == num_photons_
                                               ? fine_grid_.reduce_and_move(photons_, merge_radius_,
-                                                                           num_reduced_, pool)
+                                                                           num_reduced_, threads)
                                               : num_photons;
 
         float const percentage_caustics = float(red_num_caustics) / float(num_photons_);
@@ -164,8 +164,8 @@ size_t Map::num_bytes() const noexcept {
     return num_bytes;
 }
 
-AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& pool) const noexcept {
-    pool.run_range(
+AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& threads) const noexcept {
+    threads.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {
             AABB aabb = AABB::empty();
 
@@ -179,7 +179,7 @@ AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& pool) const noexcep
 
     AABB aabb = AABB::empty();
 
-    for (uint32_t i = 0, len = pool.num_threads(); i < len; ++i) {
+    for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
         aabb.merge_assign(aabbs_[i]);
     }
 

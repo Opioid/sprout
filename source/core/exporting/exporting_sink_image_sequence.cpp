@@ -14,14 +14,14 @@ Image_sequence::~Image_sequence() noexcept {
 }
 
 void Image_sequence::write(image::Float4 const& image, uint32_t frame,
-                           thread::Pool& pool) noexcept {
+                           thread::Pool& threads) noexcept {
     std::ofstream stream(filename_ + string::to_string(frame, 6) + "." + writer_->file_extension(),
                          std::ios::binary);
     if (!stream) {
         return;
     }
 
-    writer_->write(stream, image, pool);
+    writer_->write(stream, image, threads);
 }
 
 }  // namespace exporting
