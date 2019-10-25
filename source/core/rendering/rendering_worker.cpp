@@ -31,13 +31,13 @@ Worker::~Worker() noexcept {
 }
 
 void Worker::init(uint32_t id, take::Settings const& settings, Scene const& scene,
-                  Camera const& camera, uint32_t max_material_sample_size,
-                  uint32_t num_samples_per_pixel, Surface_factory& surface_factory,
-                  Volume_factory& volume_factory, sampler::Factory& sampler_factory,
-                  Photon_map* photon_map, take::Photon_settings const& photon_settings,
+                  Camera const& camera, uint32_t max_sample_size, uint32_t num_samples_per_pixel,
+                  Surface_factory& surface_factory, Volume_factory& volume_factory,
+                  sampler::Factory& sampler_factory, Photon_map* photon_map,
+                  take::Photon_settings const& photon_settings,
                   Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk,
                   Particle_importance* particle_importance) noexcept {
-    scene::Worker::init(id, settings, scene, camera, max_material_sample_size);
+    scene::Worker::init(id, settings, scene, camera, max_sample_size);
 
     surface_integrator_ = surface_factory.create(id, rng_);
     surface_integrator_->prepare(scene, num_samples_per_pixel);
