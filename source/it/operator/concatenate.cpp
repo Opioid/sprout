@@ -18,7 +18,7 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
 void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) noexcept;
 
 uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row, float2 clip,
-                     thread::Pool& pool) noexcept {
+                     thread::Pool& threads) noexcept {
     bool const alpha = any_has_alpha_channel(items);
 
     if (0 == num_per_row) {
@@ -60,10 +60,10 @@ uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row, float
 
     if (alpha) {
         encoding::png::Writer_alpha writer(dimensions, false, false);
-        writer.write(stream, target, pool);
+        writer.write(stream, target, threads);
     } else {
         encoding::png::Writer writer(dimensions, false);
-        writer.write(stream, target, pool);
+        writer.write(stream, target, threads);
     }
 
     return uint32_t(items.size());

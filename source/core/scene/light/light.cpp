@@ -47,21 +47,21 @@ float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
 }
 
 void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
-                             thread::Pool& pool) const noexcept {
+                             thread::Pool& threads) const noexcept {
     switch (type_) {
         case Type::Null:
             break;
         case Type::Prop:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, pool);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, threads);
             break;
         case Type::Prop_image:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, pool);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, threads);
             break;
         case Type::Volume:
-            scene.prop_prepare_sampling_volume(prop_, part_, light_id, time, false, pool);
+            scene.prop_prepare_sampling_volume(prop_, part_, light_id, time, false, threads);
             break;
         case Type::Volume_image:
-            scene.prop_prepare_sampling_volume(prop_, part_, light_id, time, true, pool);
+            scene.prop_prepare_sampling_volume(prop_, part_, light_id, time, true, threads);
             break;
     }
 }

@@ -25,7 +25,7 @@ class Sky_material : public Material {
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& pool) noexcept override final;
+                          bool importance_sampling, thread::Pool& threads) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 };
@@ -55,7 +55,7 @@ class Sky_baked_material : public Material {
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& pool) noexcept override final;
+                          bool importance_sampling, thread::Pool& threads) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

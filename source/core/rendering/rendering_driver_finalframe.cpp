@@ -18,9 +18,9 @@
 
 namespace rendering {
 
-Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
+Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& threads,
                                      uint32_t max_sample_size, progress::Sink& progressor) noexcept
-    : Driver(take, scene, thread_pool, max_sample_size), progressor_(progressor) {}
+    : Driver(take, scene, threads, max_sample_size), progressor_(progressor) {}
 
 void Driver_finalframe::render(Exporters& exporters) noexcept {
     auto& camera = *view_.camera;
@@ -36,7 +36,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         auto const render_start = std::chrono::high_resolution_clock::now();
 
         uint64_t const start = current_frame * camera.frame_step();
-        scene_.simulate(start, start + camera.frame_duration(), thread_pool_);
+        scene_.simulate(start, start + camera.frame_duration(), threads_);
 
         camera.update(scene_, start, workers_[0]);
 
@@ -66,9 +66,9 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         auto const pp_start = std::chrono::high_resolution_clock::now();
 
         if (ranges_.size() > 0 && view_.num_samples_per_pixel > 0) {
-            view_.pipeline.apply_accumulate(sensor, target_, thread_pool_);
+            view_.pipeline.apply_accumulate(sensor, target_, threads_);
         } else {
-            view_.pipeline.apply(sensor, target_, thread_pool_);
+            view_.pipeline.apply(sensor, target_, threads_);
         }
 
         auto const pp_duration = chrono::seconds_since(pp_start);
@@ -77,7 +77,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
         auto const export_start = std::chrono::high_resolution_clock::now();
 
         for (auto& e : exporters) {
-            e->write(target_, current_frame, thread_pool_);
+            e->write(target_, current_frame, threads_);
         }
 
         auto const export_duration = chrono::seconds_since(export_start);
@@ -109,7 +109,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
         ranges_.restart();
 
-        thread_pool_.run_parallel([this](uint32_t index) noexcept {
+        threads_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
             for (ulong2 range; ranges_.pop(0, range);) {
@@ -122,7 +122,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
 #ifdef PARTICLE_TRAINING
 
-    particle_importance_.prepare_sampling(thread_pool_);
+    particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
 
     for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
@@ -130,7 +130,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
         ranges_.restart();
 
-        thread_pool_.run_parallel([this](uint32_t index) noexcept {
+        threads_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
             for (ulong2 range; ranges_.pop(1, range);) {
@@ -145,7 +145,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
     // If there will be a forward pass later...
     if (view_.num_samples_per_pixel > 0) {
-        view_.pipeline.seed(view_.camera->sensor(), target_, thread_pool_);
+        view_.pipeline.seed(view_.camera->sensor(), target_, threads_);
     }
 
     auto const duration = chrono::seconds_since(start);
@@ -174,7 +174,7 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
 
         tiles_.restart();
 
-        thread_pool_.run_parallel([this](uint32_t index) noexcept {
+        threads_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
             uint32_t const num_samples = view_.num_samples_per_pixel;
@@ -220,7 +220,7 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     for (uint32_t iteration = 0;; ++iteration) {
         iteration_ = iteration;
 
-        thread_pool_.run_range(
+        threads_.run_range(
             [this](uint32_t id, int32_t begin, int32_t end) noexcept {
                 auto& worker = workers_[id];
 
@@ -228,7 +228,7 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
             },
             static_cast<int32_t>(begin), static_cast<int32_t>(num_photons));
 
-        for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
+        for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
             num_paths += uint64_t(photon_infos_[i].num_paths);
         }
 
@@ -237,11 +237,10 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
             break;
         }
 
-        uint32_t const new_begin = photon_map_.compile_iteration(num_photons, num_paths,
-                                                                 thread_pool_);
+        uint32_t const new_begin = photon_map_.compile_iteration(num_photons, num_paths, threads_);
 
 #ifdef PHOTON_TRAINING
-        particle_importance_.prepare_sampling(thread_pool_);
+        particle_importance_.prepare_sampling(threads_);
         particle_importance_.set_training(false);
 #endif
 

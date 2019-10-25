@@ -14,7 +14,7 @@ Builder::Builder() noexcept : Builder_base(16, 64) {}
 Builder::~Builder() noexcept {}
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
-                    thread::Pool& pool) noexcept {
+                    thread::Pool& threads) noexcept {
     Build_node root;
 
     if (indices.empty()) {
@@ -31,9 +31,9 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
 
             References references(indices.size());
 
-            memory::Array<Simd_AABB> taabbs(pool.num_threads());
+            memory::Array<Simd_AABB> taabbs(threads.num_threads());
 
-            pool.run_range(
+            threads.run_range(
                 [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin, int32_t end) {
                     Simd_AABB aabb(AABB::empty());
 
@@ -59,7 +59,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
             num_nodes_      = 1;
             num_references_ = 0;
 
-            split(&root, references, AABB(aabb.min, aabb.max), 4, 0, pool);
+            split(&root, references, AABB(aabb.min, aabb.max), 4, 0, threads);
         }
 
         tree.alllocate_indices(num_references_);

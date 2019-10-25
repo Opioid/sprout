@@ -42,7 +42,7 @@ static inline float f3(float theta, float lambda) {
     return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }
 
-void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
+void Glare::init(scene::camera::Camera const& camera, thread::Pool& threads) {
     auto const dim = camera.sensor_dimensions();
 
     dimensions_ = dim;
@@ -87,9 +87,9 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& pool) {
         float3 d_sum = float3(0.f);
     };
 
-    memory::Array<Init> inits(pool.num_threads());
+    memory::Array<Init> inits(threads.num_threads());
 
-    pool.run_range(
+    threads.run_range(
         [this, angle, wl_norm, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits](uint32_t id, int32_t begin,
                                                                    int32_t end) {
             Init& init = inits[id];

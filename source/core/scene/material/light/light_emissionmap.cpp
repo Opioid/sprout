@@ -71,14 +71,14 @@ float Emissionmap::emission_pdf(float2 uv, Filter filter, Worker const& worker) 
 
 void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                    Transformation const& /*transformation*/, float /*area*/,
-                                   bool importance_sampling, thread::Pool& pool) noexcept {
+                                   bool importance_sampling, thread::Pool& threads) noexcept {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
         return;
     }
 
-    prepare_sampling_internal(shape, 0, importance_sampling, pool);
+    prepare_sampling_internal(shape, 0, importance_sampling, threads);
 }
 
 void Emissionmap::set_emission_map(Texture_adapter const& emission_map) noexcept {
@@ -94,7 +94,8 @@ size_t Emissionmap::num_bytes() const noexcept {
 }
 
 void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
-                                            bool importance_sampling, thread::Pool& pool) noexcept {
+                                            bool          importance_sampling,
+                                            thread::Pool& threads) noexcept {
     if (importance_sampling) {
         auto const& texture = emission_map_.texture();
 
@@ -102,13 +103,13 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(d[1]);
 
-        memory::Array<float4> artws(pool.num_threads(), float4(0.f));
+        memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 
         float2 const idf = 1.f / float2(d);
 
         float const ef = emission_factor_;
 
-        pool.run_range(
+        threads.run_range(
             [conditional, &artws, &shape, &texture, d, idf, element, ef](uint32_t id, int32_t begin,
                                                                          int32_t end) {
                 auto luminance = memory::Buffer<float>(uint32_t(d[0]));

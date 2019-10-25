@@ -135,9 +135,9 @@ class Scene {
 
     Light random_light(float random) const noexcept;
 
-    void simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept;
+    void simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept;
 
-    void compile(uint64_t time, thread::Pool& pool) noexcept;
+    void compile(uint64_t time, thread::Pool& threads) noexcept;
 
     void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) noexcept;
 
@@ -200,11 +200,11 @@ class Scene {
                              bool in_shadow) noexcept;
 
     void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
-                               bool material_importance_sampling, thread::Pool& pool) noexcept;
+                               bool material_importance_sampling, thread::Pool& threads) noexcept;
 
     void prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
                                       uint64_t time, bool material_importance_sampling,
-                                      thread::Pool& pool) noexcept;
+                                      thread::Pool& threads) noexcept;
 
     bool prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept;
 

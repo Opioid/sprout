@@ -11,7 +11,7 @@ class Writer : public image::Writer {
     virtual std::string file_extension() const override final;
 
     virtual bool write(std::ostream& stream, Float4 const& image,
-                       thread::Pool& pool) override final;
+                       thread::Pool& threads) override final;
 
   private:
     static void write_header(std::ostream& stream, int2 dimensions);

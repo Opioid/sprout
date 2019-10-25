@@ -16,15 +16,15 @@ class Postprocessor {
 
     virtual ~Postprocessor();
 
-    virtual void init(scene::camera::Camera const& camera, thread::Pool& pool) = 0;
+    virtual void init(scene::camera::Camera const& camera, thread::Pool& threads) = 0;
 
     virtual bool alpha_out(bool alpha_in) const;
 
-    void apply(image::Float4 const& source, image::Float4& destination, thread::Pool& pool);
+    void apply(image::Float4 const& source, image::Float4& destination, thread::Pool& threads);
 
   private:
     virtual void pre_apply(image::Float4 const& source, image::Float4& destination,
-                           thread::Pool& pool);
+                           thread::Pool& threads);
 
     virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
                        image::Float4 const& source, image::Float4& destination) = 0;

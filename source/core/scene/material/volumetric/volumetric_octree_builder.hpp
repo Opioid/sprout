@@ -19,7 +19,7 @@ class Octree_builder {
   public:
     using Texture = image::texture::Texture;
 
-    void build(Gridtree& tree, Texture const& texture, CM const& cm, thread::Pool& pool);
+    void build(Gridtree& tree, Texture const& texture, CM const& cm, thread::Pool& threads);
 
   private:
     struct Build_node {

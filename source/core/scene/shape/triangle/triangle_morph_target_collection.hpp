@@ -25,7 +25,8 @@ class Morph_target_collection {
 
     void add_swap_vertices(std::vector<Vertex>& vertices) noexcept;
 
-    void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool, Vertex* vertices) noexcept;
+    void morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads,
+               Vertex* vertices) noexcept;
 
   private:
     std::vector<Index_triangle> triangles_;

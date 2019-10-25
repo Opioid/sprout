@@ -47,7 +47,7 @@ void Importance::export_heatmap(std::string_view name) const noexcept {
     image::encoding::png::Writer::write_heatmap(name, importance_, dimensions_);
 }
 
-void Importance::prepare_sampling(thread::Pool& pool) noexcept {
+void Importance::prepare_sampling(thread::Pool& threads) noexcept {
     //    return;
 
     if (!distribution_.empty()) {
@@ -61,7 +61,7 @@ void Importance::prepare_sampling(thread::Pool& pool) noexcept {
         max = std::max(importance_[i], max);
     }
 
-    pool.run_range(
+    threads.run_range(
         [this, max](uint32_t /*id*/, int32_t begin, int32_t end) {
             Distribution_2D::Distribution_impl* conditional = distribution_.conditional();
 
@@ -106,15 +106,15 @@ void Importance_cache::set_training(bool training) noexcept {
     training_ = training;
 }
 
-void Importance_cache::prepare_sampling(thread::Pool& pool) noexcept {
+void Importance_cache::prepare_sampling(thread::Pool& threads) noexcept {
     // This entire ordeal is very hacky!
     // We need a proper way to select which light should have importances and which not.
     uint32_t const light = std::min(1u, num_importances_);
 
-    importances_[light].prepare_sampling(pool);
+    importances_[light].prepare_sampling(threads);
 
     //        for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-    //            importances_[i].prepare_sampling(pool);
+    //            importances_[i].prepare_sampling(threads);
     //        }
 }
 

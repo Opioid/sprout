@@ -70,7 +70,7 @@ class Prop {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
 
-    void morph(uint32_t self, thread::Pool& pool, Scene const& scene) noexcept;
+    void morph(uint32_t self, thread::Pool& threads, Scene const& scene) noexcept;
 
     bool intersect(uint32_t self, Ray& ray, Worker const& worker,
                    shape::Intersection& intersection) const noexcept;

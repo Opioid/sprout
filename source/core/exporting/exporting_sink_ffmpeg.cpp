@@ -39,13 +39,13 @@ Ffmpeg::~Ffmpeg() noexcept {
     }
 }
 
-void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool& pool) noexcept {
+void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool& threads) noexcept {
     if (!stream_) {
         return;
     }
 
     auto const d = image.description().dimensions;
-    pool.run_range(
+    threads.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
         0, d[1]);
 

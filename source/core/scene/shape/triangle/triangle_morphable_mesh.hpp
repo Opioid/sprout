@@ -96,7 +96,7 @@ class alignas(64) Morphable_mesh : public Shape, public Morphable_shape {
 
     Morphable_shape* morphable_shape() noexcept override final;
 
-    void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) noexcept override final;
+    void morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

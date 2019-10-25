@@ -21,7 +21,7 @@ namespace scene::shape::triangle::bvh {
 
 template <typename Data>
 void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles,
-                        Vertices vertices, uint32_t max_primitives, thread::Pool& thread_pool) {
+                        Vertices vertices, uint32_t max_primitives, thread::Pool& threads) {
     Build_node root;
 
     {
@@ -31,9 +31,9 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
 
         References references(num_triangles);
 
-        memory::Array<Simd_AABB> aabbs(thread_pool.num_threads());
+        memory::Array<Simd_AABB> aabbs(threads.num_threads());
 
-        thread_pool.run_range(
+        threads.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin, int32_t end) {
                 Simd_AABB aabb(AABB::empty());
 
@@ -62,7 +62,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
         num_nodes_      = 1;
         num_references_ = 0;
 
-        split(&root, references, AABB(aabb.min, aabb.max), max_primitives, 0, thread_pool);
+        split(&root, references, AABB(aabb.min, aabb.max), max_primitives, 0, threads);
     }
 
     tree.allocate_triangles(num_references_, vertices);

@@ -31,13 +31,13 @@ static uint64_t tail(uint64_t total) noexcept {
 
 #endif
 
-Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
+Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads,
                uint32_t max_sample_size) noexcept
     : scene_(scene),
       view_(take.view),
-      thread_pool_(thread_pool),
-      workers_(memory::construct_array_aligned<Camera_worker>(thread_pool.num_threads(), tiles_,
-                                                              ranges_)),
+      threads_(threads),
+      workers_(
+          memory::construct_array_aligned<Camera_worker>(threads.num_threads(), tiles_, ranges_)),
       tiles_(take.view.camera->resolution(), int2(32, 32),
              take.view.camera->sensor().filter_radius_int()),
 #ifdef PARTICLE_TRAINING
@@ -54,7 +54,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
       photon_infos_(nullptr) {
     uint32_t const num_photons = take.photon_settings.num_photons;
     if (num_photons) {
-        uint32_t const num_workers = thread_pool.num_threads();
+        uint32_t const num_workers = threads.num_threads();
 
         photon_map_.init(num_workers);
 
@@ -72,7 +72,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
         particle_importance_.init(scene);
     }
 
-    for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
+    for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
         workers_[i].init(i, take.settings, scene, *take.view.camera, max_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
                          *take.volume_integrator_factory, *take.sampler_factory, photon_map,
@@ -83,7 +83,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
 
 Driver::~Driver() noexcept {
     delete[] photon_infos_;
-    memory::destroy_aligned(workers_, thread_pool_.num_threads());
+    memory::destroy_aligned(workers_, threads_.num_threads());
 }
 
 scene::camera::Camera& Driver::camera() noexcept {

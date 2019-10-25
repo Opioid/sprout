@@ -276,14 +276,14 @@ Morphable_shape* Morphable_mesh::morphable_shape() noexcept {
     return this;
 }
 
-void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) noexcept {
-    collection_->morph(a, b, weight, pool, vertices_);
+void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads) noexcept {
+    collection_->morph(a, b, weight, threads, vertices_);
 
     Vertex_stream_interleaved vertices(collection_->num_vertices(), vertices_);
 
     bvh::Builder_SAH builder(16, 64);
     builder.build(tree_, uint32_t(collection_->triangles().size()), collection_->triangles().data(),
-                  vertices, 4, pool);
+                  vertices, 4, threads);
 }
 
 size_t Morphable_mesh::num_bytes() const noexcept {

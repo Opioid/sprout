@@ -13,8 +13,8 @@ Octree_builder::Build_node::~Build_node() {
 }
 
 void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& cm,
-                           thread::Pool& pool) {
-    pool.wait_async();
+                           thread::Pool& threads) {
+    threads.wait_async();
 
     int3 const d = texture.dimensions_3();
 
@@ -26,9 +26,9 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& cm,
 
     Build_node* grid = new Build_node[cell_len];
 
-    Splitter* splitters = new Splitter[pool.num_threads()];
+    Splitter* splitters = new Splitter[threads.num_threads()];
 
-    pool.run_range(
+    threads.run_range(
         [splitters, grid, &texture, &cm, &num_cells](uint32_t id, int32_t begin, int32_t end) {
             Splitter& splitter = splitters[id];
 
@@ -55,7 +55,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& cm,
     uint32_t num_nodes = cell_len;
     uint32_t num_data  = 0;
 
-    for (uint32_t i = 0, len = pool.num_threads(); i < len; ++i) {
+    for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
         num_nodes += splitters[i].num_nodes;
         num_data += splitters[i].num_data;
     }

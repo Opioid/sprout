@@ -18,7 +18,7 @@ Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold) noexce
     : num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
 void Builder_base::split(Build_node* node, References& references, AABB const& aabb,
-                         uint32_t max_primitives, uint32_t depth, thread::Pool& pool) noexcept {
+                         uint32_t max_primitives, uint32_t depth, thread::Pool& threads) noexcept {
     node->aabb = aabb;
 
     uint32_t const num_primitives = uint32_t(references.size());
@@ -27,7 +27,7 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
         assign(node, references);
     } else {
         bool                  exhausted;
-        Split_candidate const sp = splitting_plane(references, aabb, depth, exhausted, pool);
+        Split_candidate const sp = splitting_plane(references, aabb, depth, exhausted, threads);
 
         if (num_primitives <= 0xFF && (float(num_primitives) <= sp.cost() || exhausted)) {
             assign(node, references);
@@ -56,12 +56,12 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
                 references = References();
 
                 node->children[0] = new Build_node;
-                split(node->children[0], references0, sp.aabb_0(), max_primitives, depth, pool);
+                split(node->children[0], references0, sp.aabb_0(), max_primitives, depth, threads);
 
                 references0 = References();
 
                 node->children[1] = new Build_node;
-                split(node->children[1], references1, sp.aabb_1(), max_primitives, depth, pool);
+                split(node->children[1], references1, sp.aabb_1(), max_primitives, depth, threads);
 
                 num_nodes_ += 2;
             }
@@ -71,7 +71,7 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
 
 Split_candidate Builder_base::splitting_plane(References const& references, AABB const& aabb,
                                               uint32_t depth, bool& exhausted,
-                                              thread::Pool& pool) noexcept {
+                                              thread::Pool& threads) noexcept {
     static uint8_t constexpr X = 0;
     static uint8_t constexpr Y = 1;
     static uint8_t constexpr Z = 2;
@@ -126,7 +126,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
             sc.evaluate(references, aabb_surface_area);
         }
     } else {
-        pool.run_range(
+        threads.run_range(
             [this, &references, aabb_surface_area](uint32_t /*id*/, int32_t sc_begin,
                                                    int32_t sc_end) {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {

@@ -24,7 +24,7 @@ class Builder : private Builder_base {
     ~Builder() noexcept;
 
     void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
-               thread::Pool& pool) noexcept;
+               thread::Pool& threads) noexcept;
 
   private:
     void serialize(Build_node* node, Tree& tree, uint32_t& current_prop) noexcept;

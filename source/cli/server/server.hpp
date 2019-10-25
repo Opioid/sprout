@@ -23,7 +23,7 @@ class Server : public exporting::Sink {
     void shutdown() noexcept;
 
     void write(image::Float4 const& image, uint32_t frame,
-               thread::Pool& pool) noexcept override final;
+               thread::Pool& threads) noexcept override final;
 
   private:
     void accept_loop();

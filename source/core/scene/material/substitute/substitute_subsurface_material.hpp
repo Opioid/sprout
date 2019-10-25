@@ -10,7 +10,7 @@ class Material_subsurface final : public Material_base {
   public:
     Material_subsurface(Sampler_settings const& sampler_settings) noexcept;
 
-    void compile(thread::Pool& pool) noexcept override final;
+    void compile(thread::Pool& threads) noexcept override final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const

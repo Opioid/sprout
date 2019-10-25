@@ -20,12 +20,12 @@ namespace scene::material::substitute {
 Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings) noexcept
     : Material_base(sampler_settings, false) {}
 
-void Material_subsurface::compile(thread::Pool& pool) noexcept {
+void Material_subsurface::compile(thread::Pool& threads) noexcept {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture();
 
         volumetric::Octree_builder builder;
-        builder.build(tree_, texture, cm_, pool);
+        builder.build(tree_, texture, cm_, threads);
     }
 
     is_scattering_ = color_map_.is_valid() || any_greater_zero(cc_.s);

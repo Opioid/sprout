@@ -37,10 +37,10 @@ class Builder_base {
     };
 
     void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
-               uint32_t depth, thread::Pool& pool) noexcept;
+               uint32_t depth, thread::Pool& threads) noexcept;
 
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
-                                    bool& exhausted, thread::Pool& pool) noexcept;
+                                    bool& exhausted, thread::Pool& threads) noexcept;
 
     void assign(Build_node* node, References const& references) noexcept;
 

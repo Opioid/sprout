@@ -3,8 +3,8 @@
 
 namespace resource {
 
-Manager::Manager(file::System& filesystem, thread::Pool& thread_pool) noexcept
-    : filesystem_(filesystem), thread_pool_(thread_pool) {}
+Manager::Manager(file::System& filesystem, thread::Pool& threads) noexcept
+    : filesystem_(filesystem), threads_(threads) {}
 
 Manager::~Manager() noexcept {
     for (auto c : caches_) {
@@ -16,8 +16,8 @@ file::System& Manager::filesystem() noexcept {
     return filesystem_;
 }
 
-thread::Pool& Manager::thread_pool() noexcept {
-    return thread_pool_;
+thread::Pool& Manager::threads() noexcept {
+    return threads_;
 }
 
 void Manager::increment_generation() noexcept {

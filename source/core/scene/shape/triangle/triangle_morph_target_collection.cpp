@@ -23,7 +23,7 @@ uint32_t Morph_target_collection::num_vertices() const noexcept {
     return uint32_t(morph_targets_[0].size());
 }
 
-void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool,
+void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads,
                                     Vertex* vertices) noexcept {
     struct Args {
         Vertex const* va;
@@ -34,7 +34,7 @@ void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread
 
     Args const args{morph_targets_[a].data(), morph_targets_[b].data(), vertices, weight};
 
-    pool.run_range(
+    threads.run_range(
         [&args](uint32_t /*id*/, int32_t begin, int32_t end) {
             for (int32_t i = begin; i < end; ++i) {
                 args.vertices[i].p  = lerp(args.va[i].p, args.vb[i].p, args.weight);

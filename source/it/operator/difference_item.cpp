@@ -39,7 +39,7 @@ float Difference_item::psnr() const noexcept {
 }
 
 void Difference_item::calculate_difference(Texture const* other, Scratch* scratch, float clamp,
-                                           float2 clip, thread::Pool& pool) noexcept {
+                                           float2 clip, thread::Pool& threads) noexcept {
     int2 const d = image_->dimensions_2();
 
     int32_t const num_pixel = d[0] * d[1];
@@ -58,7 +58,7 @@ void Difference_item::calculate_difference(Texture const* other, Scratch* scratc
 
     Args args = Args{image_, other, difference_, scratch, clamp, clip};
 
-    pool.run_range(
+    threads.run_range(
         [&args](uint32_t id, int32_t begin, int32_t end) {
             float max_val = 0.f;
             float max_dif = 0.f;
@@ -91,7 +91,7 @@ void Difference_item::calculate_difference(Texture const* other, Scratch* scratc
     float max_dif = args.scratch[0].max_dif;
     float dif_sum = args.scratch[0].dif_sum;
 
-    for (uint32_t i = 1, len = pool.num_threads(); i < len; ++i) {
+    for (uint32_t i = 1, len = threads.num_threads(); i < len; ++i) {
         max_val = std::max(max_val, args.scratch[i].max_val);
 
         max_dif = std::max(max_dif, args.scratch[i].max_dif);

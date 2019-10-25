@@ -117,7 +117,7 @@ static void load_light_sampling(json::Value const& parent_value, Light_sampling&
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
                   resource::Manager& manager) noexcept {
-    uint32_t const num_threads = manager.thread_pool().num_threads();
+    uint32_t const num_threads = manager.threads().num_threads();
 
     std::string error;
     auto const  root = json::parse(stream, error);
@@ -222,7 +222,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
     }
 
-    take.view.init(manager.thread_pool());
+    take.view.init(manager.threads());
 
     return true;
 }

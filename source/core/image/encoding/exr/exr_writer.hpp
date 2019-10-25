@@ -12,13 +12,13 @@ class Writer : public image::Writer {
 
     std::string file_extension() const override final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& pool) override final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) override final;
 
   private:
     bool no_compression(std::ostream& stream, Float4 const& image) const noexcept;
 
     bool zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
-                         thread::Pool& pool) const noexcept;
+                         thread::Pool& threads) const noexcept;
 
     bool half_ = true;
     bool alpha_;

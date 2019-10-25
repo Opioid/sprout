@@ -63,7 +63,7 @@ float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
 void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,
                                             Transformation const& /*transformation*/,
                                             float /*area*/, bool importance_sampling,
-                                            thread::Pool& pool) noexcept {
+                                            thread::Pool& threads) noexcept {
     int32_t const element = static_cast<int32_t>((time / frame_length_) %
                                                  uint64_t(emission_map_.texture().num_elements()));
 
@@ -73,7 +73,7 @@ void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*
 
     element_ = element;
 
-    prepare_sampling_internal(shape, element, importance_sampling, pool);
+    prepare_sampling_internal(shape, element, importance_sampling, threads);
 }
 
 bool Emissionmap_animated::is_animated() const noexcept {

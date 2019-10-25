@@ -18,10 +18,10 @@ std::string Writer::file_extension() const {
     return "png";
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
     auto const d = image.description().dimensions;
 
-    pool.run_range(
+    threads.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
         0, d[1]);
 
@@ -39,7 +39,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& pool
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value, thread::Pool& pool) noexcept {
+                           float max_value, thread::Pool& threads) noexcept {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -47,7 +47,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
 
     float const im = max_value > 0.f ? 1.f / max_value : 1.f;
 
-    pool.run_range(
+    threads.run_range(
         [this, data, im](uint32_t /*id*/, int32_t begin, int32_t end) {
             for (int32_t i = begin; i < end; ++i) {
                 float const n = data[i] * im;
@@ -315,10 +315,10 @@ std::string Writer_alpha::file_extension() const {
     return "png";
 }
 
-bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& pool) {
+bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
     auto const d = image.description().dimensions;
 
-    pool.run_range(
+    threads.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
         0, d[1]);
 

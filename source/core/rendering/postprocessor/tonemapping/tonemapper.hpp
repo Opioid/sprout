@@ -9,7 +9,7 @@ class Tonemapper : public Postprocessor {
   public:
     ~Tonemapper() override;
 
-    void init(scene::camera::Camera const& camera, thread::Pool& pool) override final;
+    void init(scene::camera::Camera const& camera, thread::Pool& threads) override final;
 
   protected:
     static float normalization_factor(float hdr_max, float tonemapped_max);

@@ -29,7 +29,7 @@ class Importance {
 
     void export_heatmap(std::string_view name) const noexcept;
 
-    void prepare_sampling(thread::Pool& pool) noexcept;
+    void prepare_sampling(thread::Pool& threads) noexcept;
 
   private:
     int2   dimensions_;
@@ -53,7 +53,7 @@ class Importance_cache {
 
     void set_training(bool training) noexcept;
 
-    void prepare_sampling(thread::Pool& pool) noexcept;
+    void prepare_sampling(thread::Pool& threads) noexcept;
 
     void increment_importance(uint32_t light_id, float2 uv) noexcept;
     void increment_importance(uint32_t light_id, float2 uv, float3 const& p) noexcept;

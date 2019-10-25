@@ -144,7 +144,7 @@ Scene::Light Scene::random_light(float random) const noexcept {
     return {lights_[l.offset], l.pdf, l.offset};
 }
 
-void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {
+void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;
     uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
@@ -154,17 +154,17 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) no
     }
 
     for (auto& s : animation_stages_) {
-        s.update(*this, thread_pool);
+        s.update(*this, threads);
     }
 
     for (auto m : material_resources_) {
-        m->simulate(start, end, tick_duration_, thread_pool);
+        m->simulate(start, end, tick_duration_, threads);
     }
 
-    compile(start, thread_pool);
+    compile(start, threads);
 }
 
-void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
+void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
 
@@ -186,17 +186,17 @@ void Scene::compile(uint64_t time, thread::Pool& pool) noexcept {
     }
 
     // rebuild prop BVH
-    bvh_builder_.build(prop_bvh_.tree(), finite_props_, prop_aabbs_, pool);
+    bvh_builder_.build(prop_bvh_.tree(), finite_props_, prop_aabbs_, threads);
     prop_bvh_.set_props(infinite_props_, props_);
 
     // rebuild volume BVH
-    bvh_builder_.build(volume_bvh_.tree(), volumes_, prop_aabbs_, pool);
+    bvh_builder_.build(volume_bvh_.tree(), volumes_, prop_aabbs_, threads);
     volume_bvh_.set_props(infinite_volumes_, props_);
 
     // re-sort lights PDF
     for (uint32_t i = 0, len = uint32_t(lights_.size()); i < len; ++i) {
         auto& l = lights_[i];
-        l.prepare_sampling(i, time, *this, pool);
+        l.prepare_sampling(i, time, *this, threads);
         light_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
     }
 
@@ -499,7 +499,8 @@ void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflect
 }
 
 void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
-                                  bool material_importance_sampling, thread::Pool& pool) noexcept {
+                                  bool          material_importance_sampling,
+                                  thread::Pool& threads) noexcept {
     auto shape = prop_shape(entity);
 
     shape->prepare_sampling(part);
@@ -516,12 +517,12 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     light_ids_[p] = light_id;
 
     material_resources_[materials_[p]]->prepare_sampling(*shape, part, time, transformation, area,
-                                                         material_importance_sampling, pool);
+                                                         material_importance_sampling, threads);
 }
 
 void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
                                          uint64_t time, bool material_importance_sampling,
-                                         thread::Pool& pool) noexcept {
+                                         thread::Pool& threads) noexcept {
     auto shape = prop_shape(entity);
 
     shape->prepare_sampling(part);
@@ -538,7 +539,7 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
     light_ids_[p] = light_id;
 
     material_resources_[materials_[p]]->prepare_sampling(*shape, part, time, transformation, volume,
-                                                         material_importance_sampling, pool);
+                                                         material_importance_sampling, threads);
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) noexcept {

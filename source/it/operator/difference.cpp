@@ -21,7 +21,7 @@ using Texture = texture::Texture;
 namespace op {
 
 uint32_t difference(std::vector<Item> const& items, it::options::Options const& options,
-                    thread::Pool& pool) noexcept {
+                    thread::Pool& threads) noexcept {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
         return 0;
@@ -44,12 +44,12 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
         candidates.emplace_back(item);
     }
 
-    memory::Array<Scratch> scratch(pool.num_threads(), Scratch{0.f, 0.f, 0.f});
+    memory::Array<Scratch> scratch(threads.num_threads(), Scratch{0.f, 0.f, 0.f});
 
     float max_dif = 0.f;
 
     for (auto& c : candidates) {
-        c.calculate_difference(reference, scratch.data(), options.clamp, options.clip, pool);
+        c.calculate_difference(reference, scratch.data(), options.clamp, options.clip, threads);
 
         max_dif = std::max(c.max_dif(), max_dif);
     }

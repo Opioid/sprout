@@ -27,9 +27,9 @@ class Sensor {
 
     int2 dimensions() const noexcept;
 
-    void resolve(thread::Pool& pool, image::Float4& target) const noexcept;
+    void resolve(thread::Pool& threads, image::Float4& target) const noexcept;
 
-    void resolve_accumulate(thread::Pool& pool, image::Float4& target) const noexcept;
+    void resolve_accumulate(thread::Pool& threads, image::Float4& target) const noexcept;
 
     virtual int32_t filter_radius_int() const noexcept = 0;
 
