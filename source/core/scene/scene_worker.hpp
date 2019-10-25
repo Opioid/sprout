@@ -46,7 +46,7 @@ class Worker {
     ~Worker() noexcept;
 
     void init(uint32_t id, take::Settings const& settings, Scene const& scene, Camera const& camera,
-              uint32_t max_material_sample_size) noexcept;
+              uint32_t max_sample_size) noexcept;
 
     uint32_t id() const noexcept;
 

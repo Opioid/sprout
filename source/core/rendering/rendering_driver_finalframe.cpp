@@ -19,9 +19,8 @@
 namespace rendering {
 
 Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-                                     uint32_t        max_material_sample_size,
-                                     progress::Sink& progressor) noexcept
-    : Driver(take, scene, thread_pool, max_material_sample_size), progressor_(progressor) {}
+                                     uint32_t max_sample_size, progress::Sink& progressor) noexcept
+    : Driver(take, scene, thread_pool, max_sample_size), progressor_(progressor) {}
 
 void Driver_finalframe::render(Exporters& exporters) noexcept {
     auto& camera = *view_.camera;

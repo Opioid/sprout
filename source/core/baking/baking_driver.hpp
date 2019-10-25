@@ -53,8 +53,8 @@ class Driver {
     using Scene  = scene::Scene;
     using Camera = scene::camera::Camera;
 
-    Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool,
-           uint32_t max_material_sample_size, progress::Sink& progressor) noexcept;
+    Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool, uint32_t max_sample_size,
+           progress::Sink& progressor) noexcept;
 
     ~Driver() noexcept;
 
