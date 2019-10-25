@@ -41,18 +41,18 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads,
       tiles_(take.view.camera->resolution(), int2(32, 32),
              take.view.camera->sensor().filter_radius_int()),
 #ifdef PARTICLE_TRAINING
-      ranges_(take.lighttracer_factory ? head(take.num_particles) : 0,
-              take.lighttracer_factory ? tail(take.num_particles) : 0, Num_particles_per_chunk),
+      ranges_(take.lighttracer_factory ? head(take.view.num_particles) : 0,
+              take.lighttracer_factory ? tail(take.view.num_particles) : 0,
+              Num_particles_per_chunk),
 #else
       ranges_(take.lighttracer_factory ? take.num_particles : 0, 0, Num_particles_per_chunk),
 #endif
 
       target_(Description(take.view.camera->sensor_dimensions())),
-      photon_settings_(take.photon_settings),
-      photon_map_(take.photon_settings.num_photons, take.photon_settings.search_radius,
-                  take.photon_settings.merge_radius),
+      photon_map_(take.view.photon_settings.num_photons, take.view.photon_settings.search_radius,
+                  take.view.photon_settings.merge_radius),
       photon_infos_(nullptr) {
-    uint32_t const num_photons = take.photon_settings.num_photons;
+    uint32_t const num_photons = take.view.photon_settings.num_photons;
     if (num_photons) {
         uint32_t const num_workers = threads.num_threads();
 
@@ -73,11 +73,11 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads,
     }
 
     for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
-        workers_[i].init(i, take.settings, scene, *take.view.camera, max_sample_size,
+        workers_[i].init(i, scene, *take.view.camera, max_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
                          *take.volume_integrator_factory, *take.sampler_factory, photon_map,
-                         take.photon_settings, take.lighttracer_factory, Num_particles_per_chunk,
-                         &particle_importance_);
+                         take.view.photon_settings, take.lighttracer_factory,
+                         Num_particles_per_chunk, &particle_importance_);
     }
 }
 

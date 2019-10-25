@@ -5,7 +5,7 @@
 
 namespace scene::shape {
 
-std::string Shape::identifier() noexcept {
+char const* Shape::identifier() noexcept {
     return "Shape";
 }
 

@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_SHAPE_SHAPE_HPP
 #define SU_CORE_SCENE_SHAPE_SHAPE_HPP
 
-#include <string>
 #include "base/math/aabb.hpp"
 #include "base/math/matrix.hpp"
 #include "scene/material/sampler_settings.hpp"
@@ -44,7 +43,7 @@ class Shape {
     using Sampler        = sampler::Sampler;
     using Transformation = entity::Composed_transformation;
 
-    static std::string identifier() noexcept;
+    static char const* identifier() noexcept;
 
     virtual ~Shape() noexcept;
 

@@ -8,7 +8,6 @@
 #include "image/typed_image_fwd.hpp"
 #include "integrator/particle/particle_importance.hpp"
 #include "integrator/particle/photon/photon_map.hpp"
-#include "take/take_settings.hpp"
 #include "tile_queue.hpp"
 
 namespace take {
@@ -81,8 +80,6 @@ class Driver {
     Range_queue ranges_;
 
     image::Float4 target_;
-
-    take::Photon_settings photon_settings_;
 
     integrator::particle::photon::Map photon_map_;
 

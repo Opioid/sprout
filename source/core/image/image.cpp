@@ -33,7 +33,7 @@ namespace image {
             return float4_.NAME(__VA_ARGS__);        \
     }
 
-std::string Image::identifier() noexcept {
+char const* Image::identifier() noexcept {
     return "Image";
 }
 

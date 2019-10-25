@@ -10,9 +10,8 @@
 
 namespace rendering::integrator::surface {
 
-Debug::Debug(rnd::Generator& rng, take::Settings const& take_settings,
-             Settings const& settings) noexcept
-    : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
+Debug::Debug(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng), settings_(settings), sampler_(rng) {}
 
 void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
 
@@ -56,9 +55,8 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(0.5f * (vector + float3(1.f)), 1.f);
 }
 
-Debug_factory::Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                             Debug::Settings::Vector vector) noexcept
-    : Factory(take_settings), integrators_(memory::allocate_aligned<Debug>(num_integrators)) {
+Debug_factory::Debug_factory(uint32_t num_integrators, Debug::Settings::Vector vector) noexcept
+    : integrators_(memory::allocate_aligned<Debug>(num_integrators)) {
     settings_.vector = vector;
 }
 
@@ -67,7 +65,7 @@ Debug_factory::~Debug_factory() noexcept {
 }
 
 Integrator* Debug_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Debug(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Debug(rng, settings_);
 }
 
 }  // namespace rendering::integrator::surface

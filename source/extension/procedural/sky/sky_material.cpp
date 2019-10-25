@@ -53,8 +53,8 @@ float3 Sky_material::average_radiance(float /*area*/) const noexcept {
 
 void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*pool*/) noexcept {
-}
+                                    bool /*importance_sampling*/,
+                                    thread::Pool& /*threads*/) noexcept {}
 
 size_t Sky_material::num_bytes() const noexcept {
     return sizeof(*this);

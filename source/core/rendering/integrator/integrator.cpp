@@ -2,8 +2,7 @@
 
 namespace rendering::integrator {
 
-Integrator::Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept
-    : rng_(rng), take_settings_(settings) {}
+Integrator::Integrator(rnd::Generator& rng) noexcept : rng_(rng) {}
 
 Integrator::~Integrator() noexcept {}
 

@@ -187,7 +187,7 @@ void Glare::init(scene::camera::Camera const& camera, thread::Pool& threads) {
 }
 
 void Glare::pre_apply(image::Float4 const& /*source*/, image::Float4& /*destination*/,
-                      thread::Pool& /*pool*/) {
+                      thread::Pool& /*threads*/) {
     high_.clear();
 }
 

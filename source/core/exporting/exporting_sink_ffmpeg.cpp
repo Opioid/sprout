@@ -1,9 +1,10 @@
 #include "exporting_sink_ffmpeg.hpp"
-#include <sstream>
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"
+
+#include <sstream>
 
 // http://blog.mmacklin.com/2013/06/11/real-time-video-capture-with-ffmpeg/
 

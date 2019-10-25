@@ -22,9 +22,8 @@
 
 namespace rendering::integrator::particle {
 
-Lighttracer::Lighttracer(rnd::Generator& rng, take::Settings const& take_settings,
-                         Settings const& settings) noexcept
-    : Integrator(rng, take_settings),
+Lighttracer::Lighttracer(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng),
       settings_(settings),
       sampler_(rng),
       light_sampler_(rng),
@@ -261,12 +260,10 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Lighttracer_factory::Lighttracer_factory(take::Settings const& take_settings,
-                                         uint32_t num_integrators, uint32_t min_bounces,
+Lighttracer_factory::Lighttracer_factory(uint32_t num_integrators, uint32_t min_bounces,
                                          uint32_t max_bounces, uint64_t num_light_paths,
                                          bool indirect_caustics, bool full_light_path) noexcept
-    : take_settings_(take_settings),
-      integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
+    : integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces, float(num_light_paths), indirect_caustics,
                 full_light_path} {}
 
@@ -275,7 +272,7 @@ Lighttracer_factory::~Lighttracer_factory() noexcept {
 }
 
 Lighttracer* Lighttracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Lighttracer(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Lighttracer(rng, settings_);
 }
 
 uint32_t Lighttracer_factory::max_sample_depth() const noexcept {

@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_IMAGE_HPP
 #define SU_CORE_IMAGE_IMAGE_HPP
 
-#include <string>
 #include "typed_image.hpp"
 
 namespace image {
@@ -21,7 +20,7 @@ class alignas(64) Image {
         Float4
     };
 
-    static std::string identifier() noexcept;
+    static char const* identifier() noexcept;
 
     Image(Byte1&& image) noexcept;
     Image(Byte2&& image) noexcept;

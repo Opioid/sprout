@@ -9,7 +9,6 @@
 #include "resource/resource.hpp"
 #include "scene_constants.hpp"
 #include "shape/null.hpp"
-#include "take/take_settings.hpp"
 
 #include <map>
 #include <vector>

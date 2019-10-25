@@ -11,7 +11,7 @@ Statistics::Statistics() noexcept {}
 Statistics::~Statistics() noexcept {}
 
 void Statistics::write(image::Float4 const& image, uint32_t frame,
-                       thread::Pool& /*pool*/) noexcept {
+                       thread::Pool& /*threads*/) noexcept {
     logging::info("Frame: " + string::to_string(frame));
 
     float3 max_rgb;

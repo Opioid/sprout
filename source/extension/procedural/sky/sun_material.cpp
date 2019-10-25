@@ -49,8 +49,8 @@ float3 Sun_material::average_radiance(float /*area*/) const noexcept {
 
 void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*pool*/) noexcept {
-}
+                                    bool /*importance_sampling*/,
+                                    thread::Pool& /*threads*/) noexcept {}
 
 size_t Sun_material::num_bytes() const noexcept {
     return sizeof(*this);
@@ -95,7 +95,7 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
                                           uint64_t /*time*/,
                                           Transformation const& /*transformation*/, float /*area*/,
                                           bool /*importance_sampling*/,
-                                          thread::Pool& /*pool*/) noexcept {
+                                          thread::Pool& /*threads*/) noexcept {
     using namespace image;
 
     if (!sky_.sun_changed_since_last_check()) {

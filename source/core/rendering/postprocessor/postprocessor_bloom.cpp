@@ -14,7 +14,7 @@ Bloom::Bloom(float angle, float alpha, float threshold, float intensity)
       intensity_(intensity),
       scratch_(image::Description()) {}
 
-void Bloom::init(scene::camera::Camera const& camera, thread::Pool& /*pool*/) {
+void Bloom::init(scene::camera::Camera const& camera, thread::Pool& /*threads*/) {
     scratch_.resize(camera.sensor_dimensions());
 
     float const solid_angle = camera.pixel_solid_angle();

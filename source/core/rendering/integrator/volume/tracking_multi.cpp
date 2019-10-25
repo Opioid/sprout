@@ -20,8 +20,7 @@
 
 namespace rendering::integrator::volume {
 
-Tracking_multi::Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings) noexcept
-    : Integrator(rng, take_settings) {}
+Tracking_multi::Tracking_multi(rnd::Generator& rng) noexcept : Integrator(rng) {}
 
 void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
 
@@ -260,17 +259,15 @@ void Tracking_multi::set_scattering(Intersection& intersection, Interface const*
     intersection.subsurface = true;
 }
 
-Tracking_multi_factory::Tracking_multi_factory(take::Settings const& take_settings,
-                                               uint32_t              num_integrators) noexcept
-    : Factory(take_settings, num_integrators),
-      integrators_(memory::allocate_aligned<Tracking_multi>(num_integrators)) {}
+Tracking_multi_factory::Tracking_multi_factory(uint32_t num_integrators) noexcept
+    : integrators_(memory::allocate_aligned<Tracking_multi>(num_integrators)) {}
 
 Tracking_multi_factory::~Tracking_multi_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
 Integrator* Tracking_multi_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Tracking_multi(rng, take_settings_);
+    return new (&integrators_[id]) Tracking_multi(rng);
 }
 
 }  // namespace rendering::integrator::volume

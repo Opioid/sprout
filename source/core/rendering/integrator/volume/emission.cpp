@@ -12,9 +12,8 @@
 
 namespace rendering::integrator::volume {
 
-Emission::Emission(rnd::Generator& rng, take::Settings const& take_settings,
-                   Settings const& settings) noexcept
-    : Integrator(rng, take_settings), settings_(settings) {}
+Emission::Emission(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng), settings_(settings) {}
 
 void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {
 }
@@ -30,18 +29,15 @@ Event Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /
     return Event::Pass;
 }
 
-Emission_factory::Emission_factory(take::Settings const& settings, uint32_t num_integrators,
-                                   float step_size) noexcept
-    : Factory(settings, num_integrators),
-      integrators_(memory::allocate_aligned<Emission>(num_integrators)),
-      settings_{step_size} {}
+Emission_factory::Emission_factory(uint32_t num_integrators, float step_size) noexcept
+    : integrators_(memory::allocate_aligned<Emission>(num_integrators)), settings_{step_size} {}
 
 Emission_factory::~Emission_factory() noexcept {
     memory::free_aligned(integrators_);
 }
 
 Integrator* Emission_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Emission(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Emission(rng, settings_);
 }
 
 }  // namespace rendering::integrator::volume

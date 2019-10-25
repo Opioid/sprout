@@ -14,13 +14,11 @@
 #include "texture_float3.hpp"
 #include "texture_half3.hpp"
 
-#include <string>
-
 namespace image::texture {
 
 class alignas(64) Texture {
   public:
-    static std::string identifier() noexcept;
+    static char const* identifier() noexcept;
 
     Texture(Byte1_unorm const& texture) noexcept;
     Texture(Byte2_snorm const& texture) noexcept;

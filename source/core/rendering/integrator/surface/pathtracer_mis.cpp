@@ -22,9 +22,8 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, take::Settings const& take_settings,
-                               Settings const& settings) noexcept
-    : Integrator(rng, take_settings),
+Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng),
       settings_(settings),
       sampler_(rng),
       material_samplers_{rng, rng, rng},
@@ -443,13 +442,11 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Pathtracer_MIS_factory::Pathtracer_MIS_factory(take::Settings const& take_settings,
-                                               uint32_t num_integrators, uint32_t num_samples,
+Pathtracer_MIS_factory::Pathtracer_MIS_factory(uint32_t num_integrators, uint32_t num_samples,
                                                uint32_t min_bounces, uint32_t max_bounces,
                                                Light_sampling light_sampling, bool enable_caustics,
                                                bool photons_only_through_specular) noexcept
-    : Factory(take_settings),
-      integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
+    : integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
       settings_{num_samples,    min_bounces,      max_bounces,
                 light_sampling, !enable_caustics, !photons_only_through_specular} {}
 
@@ -458,7 +455,7 @@ Pathtracer_MIS_factory::~Pathtracer_MIS_factory() noexcept {
 }
 
 Integrator* Pathtracer_MIS_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Pathtracer_MIS(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Pathtracer_MIS(rng, settings_);
 }
 
 }  // namespace rendering::integrator::surface

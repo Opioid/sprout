@@ -12,13 +12,11 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
-#include "take/take_settings.hpp"
 
 namespace rendering::integrator::surface {
 
-Whitted::Whitted(rnd::Generator& rng, take::Settings const& take_settings,
-                 Settings const& settings) noexcept
-    : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
+Whitted::Whitted(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng), settings_(settings), sampler_(rng) {}
 
 void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
     uint32_t num_lights = uint32_t(scene.lights().size());
@@ -124,9 +122,8 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     return settings_.num_light_samples_reciprocal * result;
 }
 
-Whitted_factory::Whitted_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                                 uint32_t num_light_samples) noexcept
-    : Factory(take_settings), integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {
+Whitted_factory::Whitted_factory(uint32_t num_integrators, uint32_t num_light_samples) noexcept
+    : integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {
     settings_.num_light_samples            = num_light_samples;
     settings_.num_light_samples_reciprocal = 1.f / float(num_light_samples);
 }
@@ -136,7 +133,7 @@ Whitted_factory::~Whitted_factory() noexcept {
 }
 
 Integrator* Whitted_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Whitted(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Whitted(rng, settings_);
 }
 
 }  // namespace rendering::integrator::surface

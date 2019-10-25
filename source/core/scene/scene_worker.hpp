@@ -8,7 +8,6 @@
 #include "material/sampler_cache.hpp"
 #include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
-#include "take/take_settings.hpp"
 
 namespace scene {
 
@@ -45,7 +44,7 @@ class Worker {
 
     ~Worker() noexcept;
 
-    void init(uint32_t id, take::Settings const& settings, Scene const& scene, Camera const& camera,
+    void init(uint32_t id, Scene const& scene, Camera const& camera,
               uint32_t max_sample_size) noexcept;
 
     uint32_t id() const noexcept;
@@ -95,8 +94,6 @@ class Worker {
 
   protected:
     rnd::Generator rng_;
-
-    take::Settings settings_;
 
     Scene const* scene_;
 

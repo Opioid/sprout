@@ -16,7 +16,7 @@ class alignas(64) PM final : public Integrator {
         bool photons_not_only_through_specular;
     };
 
-    PM(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
+    PM(rnd::Generator& rng, Settings const& settings) noexcept;
 
     ~PM() noexcept override final;
 
@@ -40,8 +40,8 @@ class alignas(64) PM final : public Integrator {
 
 class PM_factory final : public Factory {
   public:
-    PM_factory(take::Settings const& take_settings, uint32_t num_integrators, uint32_t min_bounces,
-               uint32_t max_bounces, bool photons_only_through_specular) noexcept;
+    PM_factory(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
+               bool photons_only_through_specular) noexcept;
 
     ~PM_factory() noexcept override final;
 

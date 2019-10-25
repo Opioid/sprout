@@ -203,12 +203,14 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     uint64_t num_paths = 0;
     uint32_t begin     = 0;
 
-    float const iteration_threshold = photon_settings_.iteration_threshold;
+    float const iteration_threshold = view_.photon_settings.iteration_threshold;
+
+    uint32_t const settings_num_photons = view_.photon_settings.num_photons;
 
     photon_map_.start();
 
 #ifdef PHOTON_TRAINING
-    uint32_t num_photons = std::max(photon_settings_.num_photons / 10, 1u);
+    uint32_t num_photons = std::max(settings_num_photons / 10, 1u);
     particle_importance_.set_training(true);
 #else
     uint32_t num_photons = photon_settings_.num_photons;
@@ -244,15 +246,14 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
         particle_importance_.set_training(false);
 #endif
 
-        if (0 == new_begin || photon_settings_.num_photons == new_begin ||
-            1.f <= iteration_threshold ||
+        if (0 == new_begin || settings_num_photons == new_begin || 1.f <= iteration_threshold ||
             float(begin) / float(new_begin) > (1.f - iteration_threshold)) {
             break;
         }
 
         begin = new_begin;
 
-        num_photons = photon_settings_.num_photons;
+        num_photons = settings_num_photons;
     }
 
     photon_map_.compile_finalize();

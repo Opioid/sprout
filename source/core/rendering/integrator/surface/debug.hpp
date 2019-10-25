@@ -13,8 +13,7 @@ class alignas(64) Debug final : public Integrator {
         Vector vector;
     };
 
-    Debug(rnd::Generator& rng, take::Settings const& take_settings,
-          Settings const& settings) noexcept;
+    Debug(rnd::Generator& rng, Settings const& settings) noexcept;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -31,8 +30,7 @@ class alignas(64) Debug final : public Integrator {
 
 class Debug_factory final : public Factory {
   public:
-    Debug_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                  Debug::Settings::Vector vector) noexcept;
+    Debug_factory(uint32_t num_integrators, Debug::Settings::Vector vector) noexcept;
 
     ~Debug_factory() noexcept override final;
 

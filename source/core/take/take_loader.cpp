@@ -86,17 +86,17 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
                                       Take& take) noexcept;
 
 static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
-                                                           Settings const&    settings,
-                                                           uint32_t           num_workers,
-                                                           bool               lighttracer) noexcept;
+
+                                                           uint32_t num_workers,
+                                                           bool     lighttracer) noexcept;
 
 static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
-                                                         Settings const&    settings,
-                                                         uint32_t           num_workers) noexcept;
+
+                                                         uint32_t num_workers) noexcept;
 
 static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
-                                                             Settings const&    settings,
-                                                             uint32_t           num_workers,
+
+                                                             uint32_t  num_workers,
                                                              uint64_t& num_particles) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
@@ -110,8 +110,6 @@ static bool peek_stereoscopic(json::Value const& parameters_value) noexcept;
 
 static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporter_value,
                                                       View const&        view) noexcept;
-
-static void load_settings(json::Value const& settings_value, Settings& settings) noexcept;
 
 static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) noexcept;
 
@@ -149,8 +147,6 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
                                                         take.view.num_samples_per_pixel);
         } else if ("scene" == n.name) {
             take.scene_filename = n.value.GetString();
-        } else if ("settings" == n.name) {
-            load_settings(n.value, take.settings);
         }
     }
 
@@ -209,15 +205,14 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         bool const enable_caustics = false;
 
         take.surface_integrator_factory = new surface::Pathtracer_MIS_factory(
-            take.settings, num_threads, num_samples, min_bounces, max_bounces, light_sampling,
-            enable_caustics, false);
+            num_threads, num_samples, min_bounces, max_bounces, light_sampling, enable_caustics,
+            false);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
 
     if (!take.volume_integrator_factory) {
-        take.volume_integrator_factory = new volume::Tracking_multi_factory(take.settings,
-                                                                            num_threads);
+        take.volume_integrator_factory = new volume::Tracking_multi_factory(num_threads);
 
         logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
     }
@@ -546,26 +541,25 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
 
     if (integrator_value.MemberEnd() != particle_node) {
         take.lighttracer_factory = load_particle_integrator_factory(
-            particle_node->value, take.settings, num_workers, take.num_particles);
+            particle_node->value, num_workers, take.view.num_particles);
     }
 
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
             take.surface_integrator_factory = load_surface_integrator_factory(
-                n.value, take.settings, num_workers, nullptr != take.lighttracer_factory);
+                n.value, num_workers, nullptr != take.lighttracer_factory);
         } else if ("volume" == n.name) {
-            take.volume_integrator_factory = load_volume_integrator_factory(n.value, take.settings,
-                                                                            num_workers);
+            take.volume_integrator_factory = load_volume_integrator_factory(n.value, num_workers);
         } else if ("photon" == n.name) {
-            load_photon_settings(n.value, take.photon_settings);
+            load_photon_settings(n.value, take.view.photon_settings);
         }
     }
 }
 
 static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
-                                                           Settings const&    settings,
-                                                           uint32_t           num_workers,
-                                                           bool lighttracer) noexcept {
+
+                                                           uint32_t num_workers,
+                                                           bool     lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -581,12 +575,12 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 
             float const radius = json::read_float(n.value, "radius", 1.f);
 
-            return new AO_factory(settings, num_workers, num_samples, radius);
+            return new AO_factory(num_workers, num_samples, radius);
         } else if ("Whitted" == n.name) {
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
                                                                light_sampling.num_samples);
 
-            return new Whitted_factory(settings, num_workers, num_light_samples);
+            return new Whitted_factory(num_workers, num_light_samples);
         } else if ("PM" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -596,7 +590,7 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 
             bool const photons_only_through_specular = /*true;  //*/ lighttracer;
 
-            return new PM_factory(settings, num_workers, min_bounces, max_bounces,
+            return new PM_factory(num_workers, min_bounces, max_bounces,
                                   photons_only_through_specular);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
@@ -609,8 +603,8 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return new Pathtracer_factory(settings, num_workers, num_samples, min_bounces,
-                                          max_bounces, enable_caustics);
+            return new Pathtracer_factory(num_workers, num_samples, min_bounces, max_bounces,
+                                          enable_caustics);
         } else if ("PTDL" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -623,7 +617,7 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return new Pathtracer_DL_factory(settings, num_workers, min_bounces, max_bounces,
+            return new Pathtracer_DL_factory(num_workers, min_bounces, max_bounces,
                                              num_light_samples, enable_caustics);
         } else if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
@@ -641,8 +635,8 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 
             bool const photons_only_through_specular = lighttracer;
 
-            return new Pathtracer_MIS_factory(settings, num_workers, num_samples, min_bounces,
-                                              max_bounces, light_sampling, enable_caustics,
+            return new Pathtracer_MIS_factory(num_workers, num_samples, min_bounces, max_bounces,
+                                              light_sampling, enable_caustics,
                                               photons_only_through_specular);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
@@ -661,7 +655,7 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
                 vector = Debug::Settings::Vector::UV;
             }
 
-            return new Debug_factory(settings, num_workers, vector);
+            return new Debug_factory(num_workers, vector);
         }
     }
 
@@ -669,15 +663,15 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
 }
 
 static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
-                                                         Settings const&    settings,
-                                                         uint32_t           num_workers) noexcept {
+
+                                                         uint32_t num_workers) noexcept {
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
         if ("Emission" == n.name) {
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
-            return new Emission_factory(settings, num_workers, step_size);
+            return new Emission_factory(num_workers, step_size);
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
@@ -688,9 +682,9 @@ static Volume_factory_ptr load_volume_integrator_factory(json::Value const& inte
             Volumetric_material::set_similarity_relation_range(sr_range[0], sr_range[1]);
 
             if (multiple_scattering) {
-                return new Tracking_multi_factory(settings, num_workers);
+                return new Tracking_multi_factory(num_workers);
             } else {
-                return new Tracking_single_factory(settings, num_workers);
+                return new Tracking_single_factory(num_workers);
             }
         }
     }
@@ -699,8 +693,8 @@ static Volume_factory_ptr load_volume_integrator_factory(json::Value const& inte
 }
 
 static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
-                                                             Settings const&    settings,
-                                                             uint32_t           num_workers,
+
+                                                             uint32_t  num_workers,
                                                              uint64_t& num_particles) noexcept {
     using namespace rendering::integrator::particle;
 
@@ -711,8 +705,8 @@ static Particle_factory_ptr load_particle_integrator_factory(json::Value const& 
 
     num_particles = json::read_uint64(integrator_value, "num_particles", 1280000);
 
-    return new Lighttracer_factory(settings, num_workers, 1, max_bounces, num_particles,
-                                   indirect_caustics, full_light_path);
+    return new Lighttracer_factory(num_workers, 1, max_bounces, num_particles, indirect_caustics,
+                                   full_light_path);
 }
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {
@@ -893,11 +887,6 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
     }
 
     return exporters;
-}
-
-static void load_settings(json::Value const& /*settings_value*/, Settings& /*settings*/) noexcept {
-    //    for (auto& n : settings_value.GetObject()) {
-    //    }
 }
 
 static void load_light_sampling(json::Value const& parent_value,

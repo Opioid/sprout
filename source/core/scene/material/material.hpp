@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
-#include <string_view>
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
@@ -9,6 +8,8 @@
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_types.hpp"
 #include "sampler_settings.hpp"
+
+#include <string_view>
 
 namespace math {
 struct ray;
@@ -56,7 +57,7 @@ class Material {
     using Transformation = entity::Composed_transformation;
     using Sampler        = sampler::Sampler;
 
-    static std::string identifier() noexcept;
+    static char const* identifier() noexcept;
 
     Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
