@@ -7,21 +7,21 @@ namespace memory {
 
 class Bitfield {
   public:
-    Bitfield(size_t num_bits) noexcept;
+    Bitfield(uint64_t num_bits) noexcept;
 
     ~Bitfield() noexcept;
 
-    size_t num_bytes() const noexcept;
+    uint64_t num_bytes() const noexcept;
 
     void clear() noexcept;
 
-    void set(size_t index, bool value) noexcept;
+    void set(uint64_t index, bool value) noexcept;
 
-    bool get(size_t index) const noexcept;
+    bool get(uint64_t index) const noexcept;
 
     uint32_t* data() const noexcept;
 
-    static size_t num_bytes(size_t num_bits) noexcept;
+    static uint64_t num_bytes(uint64_t num_bits) noexcept;
 
   private:
     uint64_t num_bytes_;
