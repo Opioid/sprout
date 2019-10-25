@@ -116,20 +116,19 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
     if (importance_sampling) {
         auto const& d = texture.dimensions_3();
 
-        Distribution_2D* conditional_2d = distribution_.allocate(d[2]);
+        Distribution_2D* conditional_2d = distribution_.allocate(uint32_t(d[2]));
 
         memory::Array<float3> ars(pool.num_threads());
 
         pool.run_range(
             [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
                                                             int32_t end) {
-                float* luminance = memory::allocate_aligned<float>(d[0]);
+                auto luminance = memory::Buffer<float>(uint32_t(d[0]));
 
                 float3 ar(0.f);
 
                 for (int32_t z = begin; z < end; ++z) {
-                    Distribution_2D::Distribution_impl* conditional = conditional_2d[z].allocate(
-                        d[1]);
+                    auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
 
                     for (int32_t y = 0; y < d[1]; ++y) {
                         for (int32_t x = 0; x < d[0]; ++x) {
@@ -142,15 +141,13 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                             ar += radiance;
                         }
 
-                        conditional[y].init(luminance, d[0]);
+                        conditional[y].init(luminance, uint32_t(d[0]));
                     }
 
                     conditional_2d[z].init();
                 }
 
                 ars[id] = ar;
-
-                memory::free_aligned(luminance);
             },
             0, d[2]);
 
