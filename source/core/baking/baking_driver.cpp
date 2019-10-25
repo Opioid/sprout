@@ -1,5 +1,6 @@
 #include "baking_driver.hpp"
 #include "baking_worker.hpp"
+#include "baking_item.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
@@ -16,13 +17,17 @@
 
 namespace baking {
 
+static uint32_t constexpr Num_items = 1024 * 1024;
+
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool, uint32_t max_sample_size,
                progress::Sink& progressor) noexcept
     : scene_(scene),
       view_(take.view),
       thread_pool_(thread_pool),
       workers_(new Baking_worker[thread_pool.num_threads()]),
-      progressor_(progressor) {
+      progressor_(progressor),
+      num_items_(Num_items),
+      items_(new Item[Num_items]) {
     for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
         workers_[i].init(i, take.settings, scene, *take.view.camera, max_sample_size,
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
@@ -32,9 +37,18 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& thread_pool, uint32
 }
 
 Driver::~Driver() noexcept {
+    delete[] items_;
     delete[] workers_;
 }
 
-void Driver::render() noexcept {}
+void Driver::render() noexcept {
+    scene_.simulate(0, scene_.tick_duration(), thread_pool_);
+
+    thread_pool_.run_range(
+        [](uint32_t id, int32_t begin, int32_t end) {
+
+
+    }, 0, num_items_);
+}
 
 }  // namespace baking

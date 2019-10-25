@@ -144,6 +144,10 @@ Scene::Light Scene::random_light(float random) const noexcept {
     return {lights_[l.offset], l.pdf, l.offset};
 }
 
+uint64_t Scene::tick_duration() const noexcept {
+    return tick_duration_;
+}
+
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& thread_pool) noexcept {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;

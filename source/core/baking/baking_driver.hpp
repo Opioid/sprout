@@ -46,6 +46,8 @@ class Sink;
 
 namespace baking {
 
+struct Item;
+
 class Baking_worker;
 
 class Driver {
@@ -70,6 +72,10 @@ class Driver {
     Baking_worker* workers_;
 
     progress::Sink& progressor_;
+
+    uint32_t num_items_;
+
+    Item* items_;
 };
 
 }  // namespace baking
