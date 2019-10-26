@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) noexcept {
     image::Provider image_provider;
     resource_manager.register_provider(image_provider);
 
-    texture::Provider texture_provider;
+    texture::Provider texture_provider(false);
     resource_manager.register_provider(texture_provider);
 
     std::vector<Item> items;

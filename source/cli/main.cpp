@@ -112,10 +112,8 @@ int main(int argc, char* argv[]) noexcept {
     image::Provider image_provider;
     resource_manager.register_provider(image_provider);
 
-    image::texture::Provider texture_provider;
-    //  if (!args.no_textures) {
+    image::texture::Provider texture_provider(args.no_textures);
     auto const& texture_resources = resource_manager.register_provider(texture_provider);
-    //   }
 
     scene::shape::triangle::Provider mesh_provider;
     auto const& shape_resources = resource_manager.register_provider(mesh_provider);
